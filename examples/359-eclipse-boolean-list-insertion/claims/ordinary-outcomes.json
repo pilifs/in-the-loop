@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "ordinary-outcomes",
+  "statement": "The original indices two, three and four retain the expected return or rejection.",
+  "assume": "code >= 942 && code < 945",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 64
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.InsertBits#returns(I)I",
+    "mapping": "The original indices two, three and four retain the expected return or rejection. Its original receiver and direct outcome are indexed in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 2865
+  }
+}

@@ -413,6 +413,9 @@ fn the_modelled_methods_throw_as_the_jdks_do() {
     verified(&cp, "charAtBounds", bounded(3));
     verified(&cp, "copiedRange", bounded(3));
     verified(&cp, "nullSlice", bounded(3));
+    let mut unbound = ClassPath::new();
+    unbound.add(compiled().unwrap()).unwrap();
+    no_verdict(&unbound, "nullSlice", bounded(3), "selected JDK constructor");
     verified(&cp, "codePointAtUnit", bounded(3));
     refuted(&cp, "firstUnitAlwaysAWholePoint", bounded(3));
     verified(&cp, "startsWithNull", bounded(3));

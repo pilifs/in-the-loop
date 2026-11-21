@@ -5281,6 +5281,14 @@ impl<'a> Engine<'a> {
                     _ => {}
                 }
             }
+            if special && member.name == "<init>" && member.owner == "java/lang/StringIndexOutOfBoundsException"
+                && path.objects[o].class == member.owner {
+                if let Some((cf, method)) = self.cp.string_range_constructor(&member.owner, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
+            }
             if !special {
                 if let Some((cf, method)) = self.cp.image_default_method(&path.objects[o].class, &member.name, &member.descriptor) {
                     let mut full = vec![Val::R(Some(o))];

@@ -26,10 +26,12 @@ public final class Checks {
     }
 
     public static void nullSlice() {
-        try {
-            new String((char[]) null, -1, Integer.MAX_VALUE);
-            throw new AssertionError();
-        } catch (NullPointerException expected) {}
+        for (int i = 0; i < 3; i++) {
+            try {
+                new String((char[]) null, i == 0 ? -1 : 0, i == 1 ? -1 : 1);
+                throw new AssertionError();
+            } catch (NullPointerException expected) {}
+        }
     }
 
     public static void codePointAtUnit(String s, int index) {

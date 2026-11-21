@@ -497,6 +497,13 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
     };
     match native {
         Native::Throwable { .. } => {
+            if owner == "java/lang/StringIndexOutOfBoundsException" && m.class_of(r) == owner {
+                if let Some((class, method)) = m.cp.string_range_constructor(owner, descriptor) {
+                    let mut full = vec![Value::Ref(r)];
+                    full.extend(args);
+                    return m.invoke(&class, &method, full);
+                }
+            }
             init_throwable(m, r, owner, descriptor, &args)?;
         }
         Native::StringBuilder(_) => {
@@ -532,9 +539,15 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
                     char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?
                 }
                 "([CII)V" => {
-                    let Some(a) = args[0].as_ref() else { return Err(m.npe()) };
-                    let units = char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?;
                     let (offset, count) = (args[1].as_int(), args[2].as_int());
+                    let Some(a) = args[0].as_ref() else {
+                        if offset >= 0 && count >= 0 { return Err(m.npe()) }
+                        let Some((class, method)) = m.cp.string_range_constructor(owner, descriptor) else {
+                            return unsupported("String(char[], int, int) exception order needs the selected JDK constructor");
+                        };
+                        return m.invoke(&class, &method, vec![Value::Ref(r), Value::Null, args[1], args[2]]);
+                    };
+                    let units = char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?;
                     if offset < 0 || count < 0 || offset as i64 + count as i64 > units.len() as i64 {
                         return Err(m.throw("java/lang/StringIndexOutOfBoundsException", Some(&format!("offset {offset}, count {count}, length {}", units.len()))));
                     }

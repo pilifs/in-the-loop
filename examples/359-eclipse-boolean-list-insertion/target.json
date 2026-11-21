@@ -1,0 +1,194 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "eclipse-boolean-list-insertion",
+    "family": "eclipse-collections",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/eclipse-collections/eclipse-collections",
+    "revisions": {
+      "parent": {
+        "commit": "8a34cc65bd5449e4f45c9c39e75d7d92ec2717e6"
+      },
+      "fix": {
+        "commit": "88982ba82c3195039ace015ef8ba88ddc979cfe4",
+        "parent": "8a34cc65bd5449e4f45c9c39e75d7d92ec2717e6"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/organic/InsertBits.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "eclipse-collections/pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "17"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z"
+    },
+    {
+      "id": "returns-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/returns.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted"
+    },
+    {
+      "id": "returns-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/returns.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "contents-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/contents.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted"
+    },
+    {
+      "id": "contents-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/contents.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "ordinary-outcomes-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/ordinary-outcomes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "ordinary-outcomes-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/ordinary-outcomes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "ordinary-contents-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/ordinary-contents.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "ordinary-contents-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "claim": "claims/ordinary-contents.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/organic/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

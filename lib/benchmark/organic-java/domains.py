@@ -8,7 +8,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 NAMES = {"353": "SumView", "354": "SurrogateCuts", "355": "WritableBuffer",
-         "356": "OverflowNumber", "357": "BomReader", "358": "HexWrites"}
+         "356": "OverflowNumber", "357": "BomReader", "358": "HexWrites",
+         "359": "InsertBits", "360": "TreeOrder"}
 
 
 def units(text):
@@ -77,6 +78,24 @@ def rows(number):
         for writes in ([3, 4, 3], [10], [2, 4, 4]):
             yield {"hex": "4142434445", "writes": writes}, {"bytes": list(b"ABCDE")}
 
+    elif number == "359":
+        def words(bound):
+            for length in range(bound + 1):
+                yield from itertools.product((False, True), repeat=length)
+        for source in words(4):
+            for inserted in words(3):
+                for index in range(-1, len(source) + 2):
+                    valid = 0 <= index <= len(source)
+                    result = list(source[:index] + inserted + source[index:]) if valid else list(source)
+                    outcome = ('true' if inserted else 'false') if valid else 'index-out-of-bounds'
+                    yield {'source': list(source), 'insert': list(inserted), 'index': index}, {
+                        'returns': outcome, 'contents': {'size': len(result), 'values':result}}
+    elif number == "360":
+        for package in ('','com'):
+            post = ['name','package','root'] if package else ['root']
+            yield {'package':package}, {'postorder':post, 'preorder':list(reversed(post)),
+                                        'terminal':{'nodes':post,'exhausted':True}}
+
 
 def table(number):
     cases = [{"id": i, "input": args, "expected": expected} for i, (args, expected) in enumerate(rows(number))]
@@ -102,7 +121,12 @@ def wrong_results(number):
         return [(0, "token", "peek:MalformedJsonException"), (0, "lexeme", str(2**64))]
     if number == "357":
         return [(6, "chunked", units("foo")), (8, "plain", units("foo"))]
-    return [(2048, "bytes", list(b"ABCD"))]
+    if number == "358":
+        return [(2048, "bytes", list(b"ABCD"))]
+    if number == "359":
+        return [(0, "returns", "true"), (0, "contents", {"size": 1, "values": [False]})]
+    return [(0, "postorder", []), (1, "preorder", ["name", "package", "root"]),
+            (1, "terminal", {"nodes": ["name", "package", "root"], "exhausted": False})]
 
 
 def check_controls(number, path):

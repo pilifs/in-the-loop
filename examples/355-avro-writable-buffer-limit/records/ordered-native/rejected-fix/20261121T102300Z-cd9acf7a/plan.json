@@ -1,0 +1,266 @@
+{
+  "plan": {
+    "example": "355",
+    "task": "rejected-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "rejected-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+      "file": "claims/rejected.json",
+      "sha256": "b34cf0c2ce9e5d388f83715d275c5a699cfa2237950e7a12fe783a400845c190",
+      "property": "rejected",
+      "claimKind": "property",
+      "statement": "The first index outside the logical prefix throws and leaves the position at zero.",
+      "assume": "code >= 0 && code < 21",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "d3518c5a8aea6a4bc8fe83669ecaa90a91fd773c9e24846791e9ba475fb8ee6d"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d6ea6da9d85dc5f130a1dde089ab92aed7b30701a5b331431f79fa0737db67f0"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.WritableBuffer#rejected(I)I",
+        "mapping": "The first index outside the logical prefix throws and leaves the position at zero. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 21
+      },
+      "key": "1c8d8d403a85a5e8"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
+        "parent": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+        "orderedClasses": [
+          "org.apache.hadoop.security.authentication.server.package-info",
+          "org.apache.hadoop.yarn.api.resource.package-info",
+          "org.apache.hadoop.yarn.client.api.impl.package-info",
+          "org.apache.hadoop.yarn.client.api.package-info",
+          "org.apache.hadoop.yarn.factories.package-info",
+          "org.apache.hadoop.yarn.factory.providers.package-info",
+          "org.apache.hadoop.yarn.util.package-info"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "lang/java/mapred",
+            "-am",
+            "-DskipTests",
+            "-Dinvoker.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-avro-root/build-fix.json",
+          "sha256": "a66e86d7f7725c510796540b359ecc394c57b96a16a5499b43da3131313a9ebf"
+        },
+        "adapters": [
+          "adapter/organic/WritableBuffer.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/rejected-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-100724-355-ordered-native-checks-on-the-origina/examples/355-avro-writable-buffer-limit",
+    "network": true
+  },
+  "inputs": {
+    "example": "355",
+    "task": "rejected-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "rejected-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+      "file": "claims/rejected.json",
+      "sha256": "b34cf0c2ce9e5d388f83715d275c5a699cfa2237950e7a12fe783a400845c190",
+      "property": "rejected",
+      "claimKind": "property",
+      "statement": "The first index outside the logical prefix throws and leaves the position at zero.",
+      "assume": "code >= 0 && code < 21",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "d3518c5a8aea6a4bc8fe83669ecaa90a91fd773c9e24846791e9ba475fb8ee6d"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d6ea6da9d85dc5f130a1dde089ab92aed7b30701a5b331431f79fa0737db67f0"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.WritableBuffer#rejected(I)I",
+        "mapping": "The first index outside the logical prefix throws and leaves the position at zero. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 21
+      },
+      "key": "1c8d8d403a85a5e8"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
+        "parent": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+        "orderedClasses": [
+          "org.apache.hadoop.security.authentication.server.package-info",
+          "org.apache.hadoop.yarn.api.resource.package-info",
+          "org.apache.hadoop.yarn.client.api.impl.package-info",
+          "org.apache.hadoop.yarn.client.api.package-info",
+          "org.apache.hadoop.yarn.factories.package-info",
+          "org.apache.hadoop.yarn.factory.providers.package-info",
+          "org.apache.hadoop.yarn.util.package-info"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "lang/java/mapred",
+            "-am",
+            "-DskipTests",
+            "-Dinvoker.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-avro-root/build-fix.json",
+          "sha256": "a66e86d7f7725c510796540b359ecc394c57b96a16a5499b43da3131313a9ebf"
+        },
+        "adapters": [
+          "adapter/organic/WritableBuffer.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/WritableBuffer.java",
+        "sha256": "b104a923ceae282544fce0f642e5bdf197eb962c5b3cee8595fcfa965b0c65b1"
+      }
+    ]
+  },
+  "key": "df0b81669ab17d7884a6d01f7c91028bab1398fc69cc62e4834e6d7210fbcbba"
+}

@@ -13,14 +13,19 @@ ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "examples/tools"))
 import build
 from targets import finite_check, finite_oracle, native_selectors, route, sidecar
+from domains import check_controls, wrong_results
+from upstream import named_failure
 
 PRIMARY = {
     "353": ["lookup", "entries"], "354": ["truncate", "abbreviate"], "355": ["bounds", "rejected"],
     "356": ["token", "lexeme"], "357": ["chunked"], "358": ["bytes", "ten"],
+    "359": ["returns", "contents", "ordinary-outcomes"], "360": ["postorder", "terminal"],
 }
 WITNESS = {"353": (32, "lookup"), "354": (2, "fixedCut"), "355": (18, "rejected"),
-           "356": (0, "lexeme"), "357": (7, "chunked"), "358": (2048, "bytes")}
-PRESERVED = {"353": "live", "354": "width-five", "355": "prefix", "356": "controls", "357": "plain", "358": "controls"}
+           "356": (0, "lexeme"), "357": (7, "chunked"), "358": (2048, "bytes"),
+           "359": (940, "returns"), "360": (0, "postorder")}
+PRESERVED = {"353": "live", "354": "width-five", "355": "prefix", "356": "controls", "357": "plain", "358": "controls",
+             "359": "ordinary-contents", "360": "preorder"}
 
 
 def read(path):
@@ -51,8 +56,11 @@ def original_observations(folder, table):
                              "disagreements": dict(Counter(field for _, field in problems))}
             rows[side] = {r["id"]: r for r in records}
         i, field = WITNESS[folder.name[:3]]
+        witness_input = rows["parent"][i]["input"]
+        if field == "fixedCut":
+            witness_input = {"units": [97, 0xd83d, 0xde00, 98], "start": i % 36 // 6, "width": i % 6}
         return {"receipt": rel(receipt), "observations": sources, "witness": {
-            "index": i, "field": field, "input": rows["parent"][i]["input"], "parent": rows["parent"][i]["direct"],
+            "index": i, "field": field, "input": witness_input, "parent": rows["parent"][i]["direct"],
             "fix": rows["fix"][i]["direct"]}}
     return {"status": "original JVM replay pending"}
 
@@ -73,8 +81,14 @@ def native(folder, task, stages, plan):
                 execution = read(journal)
                 if execution["preparedClaim"] != d["claim"]["id"]:
                     raise ValueError("the native execution is bound to another artifact")
-                result.update(usage=execution.get("usage"), checker=execution.get("checker"),
+                checker_id = execution.get("checker") or {}
+                result.update(usage=execution.get("usage"), execution=rel(journal),
+                              checker={k: checker_id[k] for k in ("commit", "libTree", "jvmcontract", "jdk", "engine", "gaps", "bounds") if k in checker_id},
                               checkerSeconds=execution.get("checkerSeconds"), budget=execution["budget"])
+                checker = journal.with_name("checker.json")
+                if checker.exists():
+                    timings = [o.get("search") or {} for o in read(checker).get("outcomes", [])]
+                    result["solverSeconds"] = sum((t.get("native") or {}).get("solving_seconds", 0) for t in timings)
             if c["status"] not in ("established", "refuted"):
                 return result
             assert a["engine"] == "native" and stated["gapMode"] == "strict" and not c["vacuous"]
@@ -84,14 +98,22 @@ def native(folder, task, stages, plan):
                 assert e["replay"] == {"by": "jvm", "reproduced": True} and e["counterexamples"]
             result["qualified"] = c["status"] == task["expected"] and c["expectation"] == "yes"
             return result
+        journals = sorted((base / "executions").glob("*/attempt.json"), reverse=True)
+        if journals:
+            path = journals[0]
+            a = read(path)
+            refusal = a.get("firstBlocker") or a.get("refusal") or {}
+            return {"status": "open", "qualified": False, "stage": stage, "receipt": rel(path),
+                    "problem": refusal, "lastCompletedStage": a.get("lastCompletedStage")}
     return {"status": "open", "qualified": False, "problem": "no completed native receipt"}
 
 
-def finite(folder, task, plan):
-    for path in sorted((folder / "records/baseline-finite").glob("*/" + task["id"] + ".json"), reverse=True):
+def finite(folder, task, plan, stages):
+    paths = (p for stage in stages for p in sorted((folder / "records" / (stage + "-finite")).glob("*/" + task["id"] + ".json"), reverse=True))
+    for path in paths:
         record = read(path)
         finite_check.validate_record(plan, record)
-        return {key: record.get(key) for key in ("status", "inputs", "differences", "reason", "prepareSeconds", "controlSeconds")} | {
+        return {key: record.get(key) for key in ("status", "inputs", "differences", "reason", "prepareSeconds", "controlSeconds", "wallSeconds")} | {
             "qualified": record["status"] == task["expected"], "receipt": rel(path),
             "peakRssBytes": max((s.get("peakRssBytes", 0) for s in record.get("sides", {}).values()), default=0)}
     return {"status": "open", "qualified": False, "reason": "no complete finite record"}
@@ -111,18 +133,24 @@ def score(number, case, stages):
         if not current["qualified"]:
             for proof in reversed(native_selectors.evidence(folder, plan)):
                 if proof.get("status") == task["expected"]:
+                    file = (folder / proof["record"]).resolve()
+                    report = read(file)
+                    solving = sum((read(file.parents[2] / r["raw"])[0].get("search") or {})
+                                  .get("native", {}).get("solving_seconds", 0) for r in report["checked"])
                     current = {"status": proof["status"], "qualified": True, "route": "strict native selectors",
-                               "receipt": str(folder.relative_to(ROOT) / proof["record"]),
-                               "unsplit": current}
+                               "receipt": rel(file), "checker": report["checker"], "admitted": proof["admitted"],
+                               "checked": proof["checked"], "cost": report["cost"], "solverSeconds": solving, "unsplit": current}
                     break
         results[task["id"]] = {"expected": task["expected"], "guard": plan.claim["assume"], "claimKey": plan.claim["key"],
-                               "baseline": original, "current": current, "finite": finite(folder, task, plan)}
+                               "baseline": original, "current": current, "finiteBaseline": finite(folder, task, plan, ["baseline"]),
+                               "finite": finite(folder, task, plan, stages)}
     table = finite_oracle.Table(folder / "controls/table.json")
+    check_controls(number, folder / "controls/table.json")
     formal = {version: all(results[field + "-" + side][version]["qualified"]
                            for field in [*PRIMARY[number], PRESERVED[number]] for side in ("parent", "fix"))
-              for version in ("baseline", "current", "finite")}
+              for version in ("baseline", "current", "finiteBaseline", "finite")}
     upstream = {}
-    for directory in sorted((folder / "records").iterdir(), reverse=True):
+    for directory in sorted((folder / "records").glob("*"), reverse=True):
         if not all((directory / (side + "-upstream.json")).is_file() for side in ("parent", "fix")):
             continue
         pair = {}
@@ -149,9 +177,10 @@ def score(number, case, stages):
                 status = next((key for key in ("failure", "error", "skipped") if t.find(key) is not None), "passed")
                 if status != row["status"] or ((rev == "fix") != (status == "passed")) or status == "skipped":
                     break
-                if rev == "parent" and row["class"] + "." + row["method"] + "(" not in (t.find(status).text or ""):
+                location = named_failure(t, t.find(status), r["upstreamTest"]["execution"]) if rev == "parent" else None
+                if rev == "parent" and not location:
                     break
-                tests[selector] = {**row, "xml": rel(xml)}
+                tests[selector] = {**row, "xml": rel(xml), "failureLocationEvidence": location}
             if set(tests) != set(case["tests"]):
                 break
             pair[rev] = {"receipt": rel(f), "revision": r["revision"], "named": tests,
@@ -168,24 +197,41 @@ def score(number, case, stages):
         builds[rev] = {"receipt": rel(f), "originalJarSha256": r["artifacts"][0]["sha256"],
                        "productionClass": output["selectedClass"], "classSha256": output["selectedClassSha256"],
                        "classpathEntries": len(r["artifacts"])}
-    return {"upstream": case["repository"] + "/pull/" + str(case["pullRequest"]), "history": target["history"]["revisions"],
+    adapters = {name: {"sha256": digest(folder / name), "sourceLines": len((folder / name).read_text().splitlines())}
+                for name in target["preparation"]["adapters"]}
+    runs = {}
+    for group in ("baseline", *stages):
+        for kind in ("native", "finite"):
+            f = folder / "records" / (group + "-" + kind) / "run.json"
+            if f.is_file():
+                r = read(f)
+                runs[group + "-" + kind] = {k: r[k] for k in ("seconds", "verifierCommit", "checkerSha256", "workflowExit")} | {"record": rel(f)}
+    return {"handwrittenAdapters": adapters, "wrongResultControlsRejected": len(wrong_results(number)),
+            "runs": runs, "upstream": case["repository"] + "/pull/" + str(case["pullRequest"]), "history": target["history"]["revisions"],
             "inputs": len(table.cases), "builds": builds, "originals": original_observations(folder, table), "upstreamTests": upstream,
             "primary": PRIMARY[number], "preservation": PRESERVED[number], "caseDecided": formal, "tasks": results}
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--stages", default="final,streams,utf16,baseline", help="most recent first")
+    ap.add_argument("--stages", default="final,reserve,ordered,streams,utf16,baseline", help="most recent first")
     ap.add_argument("--output", type=Path, default=ROOT / "verification/organic-java-pr-campaign.json")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
-    cases = read(HERE / "cases.json")["cases"]
-    rows = {n: score(n, c, args.stages.split(",")) for n, c in cases.items()}
+    corpus = read(HERE / "cases.json")
+    rows = {n: score(n, c, args.stages.split(",")) for n, c in corpus["cases"].items()}
+    reserves = {n: score(n, c, args.stages.split(",")) for n, c in corpus.get("reserves", {}).items()
+                if (ROOT / "examples" / c["folder"] / "target.json").is_file()}
     summary = {}
-    for v in ("baseline", "current", "finite"):
+    for v in ("baseline", "current", "finiteBaseline", "finite"):
         summary[v] = {"completeCases": sum(c["caseDecided"][v] for c in rows.values()),
                       "qualifiedObligations": sum(t[v]["qualified"] for c in rows.values() for t in c["tasks"].values())}
-    result = {"baselinePin": read(HERE / "baseline.json"), "summary": summary, "cases": rows}
+    pins = {(run["verifierCommit"], run["checkerSha256"]) for r in rows.values() for name, run in r["runs"].items() if name.startswith("final-")}
+    if len(pins) > 1:
+        raise ValueError("the final primary runs used different verifier builds")
+    pin = next(iter(pins), None)
+    result = {"baselinePin": read(HERE / "baseline.json"), "finalVerifier": None if pin is None else {"commit": pin[0], "executableSha256": pin[1]},
+              "summary": summary, "cases": rows, "reserves": reserves}
     raw = json.dumps(result, indent=2, ensure_ascii=True) + "\n"
     if args.check:
         if args.output.read_text() != raw:

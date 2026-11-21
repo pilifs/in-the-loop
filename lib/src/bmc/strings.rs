@@ -355,7 +355,19 @@ impl Engine<'_> {
     /// String(char[], offset, count) owns the selected units even if the array is later mutated.
     pub(super) fn initialize_string_range(&mut self, path: &mut Path, object: usize, source: Option<usize>,
                                           offset: &Bits, count: &Bits) -> Step {
-        let Some(source) = source else { return self.raise(path, "java/lang/NullPointerException") };
+        let Some(source) = source else {
+            if let Some((class, method)) = self.cp.string_range_constructor(STRING, "([CII)V") {
+                return self.enter_method(path, STRING, class, method,
+                    vec![Val::R(Some(object)), Val::R(None), Val::I(offset.clone()), Val::I(count.clone())]);
+            }
+            let invalid = self.any(&[self.b.negative(offset), self.b.negative(count)]);
+            let mut assumptions = path.cond.clone();
+            assumptions.push(invalid);
+            if self.solve(&assumptions)? {
+                return unsupported("String(char[], int, int) exception order needs the selected JDK constructor");
+            }
+            return self.raise(path, "java/lang/NullPointerException");
+        };
         self.keeps(path, Some(object), "initializes a pre-existing String")?;
         if self.there_before(path, source) {
             self.reads(path, || "String(char[], int, int) reads an array that existed before the call".into())?;

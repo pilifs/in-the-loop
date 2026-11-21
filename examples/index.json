@@ -17087,6 +17087,210 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 358 TASK"
       }
+    },
+    {
+      "id": "359",
+      "path": "examples/359-eclipse-boolean-list-insertion",
+      "title": "Boolean list insertion at every boundary in a single word",
+      "summary": "Insert into a real BooleanArrayList, then inspect the same receiver's size and every bit, including after rejection.",
+      "origin": "real-world",
+      "system": "Eclipse Collections",
+      "symbol": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "This is a conditional transfer case outside the six primary PRs. The Gson and Codec stream checks retained exact content across separate transfers and a later observation.",
+        "The independent original-scope grid has 2865 inputs. Both revisions use the same declared receiver shapes."
+      ],
+      "source": "https://github.com/eclipse-collections/eclipse-collections/pull/1434",
+      "target": {
+        "family": "eclipse-collections",
+        "role": "calibration",
+        "case": "eclipse-boolean-list-insertion",
+        "tasks": [
+          "replay",
+          "returns-parent",
+          "returns-fix",
+          "contents-parent",
+          "contents-fix",
+          "ordinary-outcomes-parent",
+          "ordinary-outcomes-fix",
+          "ordinary-contents-parent",
+          "ordinary-contents-fix"
+        ],
+        "readiness": "partial",
+        "taskReadiness": {
+          "replay": "partial",
+          "returns-parent": "partial",
+          "returns-fix": "partial",
+          "contents-parent": "partial",
+          "contents-fix": "partial",
+          "ordinary-outcomes-parent": "partial",
+          "ordinary-outcomes-fix": "partial",
+          "ordinary-contents-parent": "partial",
+          "ordinary-contents-fix": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "returns-parent": "refuted",
+          "returns-fix": "established",
+          "contents-parent": "refuted",
+          "contents-fix": "established",
+          "ordinary-outcomes-parent": "established",
+          "ordinary-outcomes-fix": "established",
+          "ordinary-contents-parent": "established",
+          "ordinary-contents-fix": "established"
+        },
+        "claims": {
+          "returns-parent": null,
+          "returns-fix": null,
+          "contents-parent": null,
+          "contents-fix": null,
+          "ordinary-outcomes-parent": null,
+          "ordinary-outcomes-fix": null,
+          "ordinary-contents-parent": null,
+          "ordinary-contents-fix": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/eclipse-collections/eclipse-collections/pull/1434",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 359 TASK"
+      }
+    },
+    {
+      "id": "360",
+      "path": "examples/360-javaparser-postorder-root",
+      "title": "Postorder traversal of the root and its original children",
+      "summary": "Walk two publicly constructed compilation units and compare each returned node by identity, in order, with the objects in the original tree.",
+      "origin": "real-world",
+      "system": "JavaParser",
+      "symbol": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "This is a conditional transfer case outside the six primary PRs. Guava's entry iterator carried the backing count through its nested frames and exhausted normally.",
+        "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes."
+      ],
+      "source": "https://github.com/javaparser/javaparser/pull/4538",
+      "target": {
+        "family": "javaparser",
+        "role": "calibration",
+        "case": "javaparser-postorder-root",
+        "tasks": [
+          "replay",
+          "postorder-parent",
+          "postorder-fix",
+          "terminal-parent",
+          "terminal-fix",
+          "preorder-parent",
+          "preorder-fix",
+          "nonempty-parent",
+          "nonempty-fix"
+        ],
+        "readiness": "partial",
+        "taskReadiness": {
+          "replay": "partial",
+          "postorder-parent": "partial",
+          "postorder-fix": "partial",
+          "terminal-parent": "partial",
+          "terminal-fix": "partial",
+          "preorder-parent": "partial",
+          "preorder-fix": "partial",
+          "nonempty-parent": "partial",
+          "nonempty-fix": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "postorder-parent": "refuted",
+          "postorder-fix": "established",
+          "terminal-parent": "refuted",
+          "terminal-fix": "established",
+          "preorder-parent": "established",
+          "preorder-fix": "established",
+          "nonempty-parent": "established",
+          "nonempty-fix": "established"
+        },
+        "claims": {
+          "postorder-parent": null,
+          "postorder-fix": null,
+          "terminal-parent": null,
+          "terminal-fix": null,
+          "preorder-parent": null,
+          "preorder-fix": null,
+          "nonempty-parent": null,
+          "nonempty-fix": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/javaparser/javaparser/pull/4538",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 360 TASK"
+      }
     }
   ]
 }

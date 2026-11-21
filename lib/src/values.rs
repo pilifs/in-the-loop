@@ -170,7 +170,7 @@ const LIST: &str = "java/util/List";
 /// no content before (for example 290, whose registrations are named `"servlet" + i`). Model 7 adds `getBytes(String)`
 /// with a constant name the JDK takes for UTF-8 (for example 307, whose previous version converts so), and
 /// `getBytes(US_ASCII)` (307's mutation control). Model 9 adds UTF-16 array slice construction and code-point reads.
-pub const STRING_MODEL: &str = "jvmcontract String model 9: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+pub const STRING_MODEL: &str = "jvmcontract String model 10: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";

@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -47,7 +48,9 @@ def build_args(case):
     # The Avro reactor publishes test JARs for its dependents. Package them while leaving the
     # separate invoker cross-JDK compatibility suite to upstream CI.
     flags = ["-DskipTests", "-Dinvoker.skip=true"] if case.get("providedHost") else ["-Dmaven.test.skip=true"]
-    return [*OPTIONS, *module_args(case, case["module"]), *flags, "install"]
+    selection = (["-f", case["module"] + "/pom.xml"] if case.get("prerequisitePoms")
+                 else module_args(case, case["module"]))
+    return [*OPTIONS, *selection, *flags, "install"]
 
 
 def toolchains(command, case, work, jdk26):
@@ -107,7 +110,7 @@ def maven(command, args, directory, name):
             "tail": lines[-9:]}
 
 
-def capture(case, side, project, module, local_repo, out, build, cp, jdk, compilers):
+def capture(case, side, project, module, local_repo, out, build, cp, jdk, compilers, prerequisites):
     """Store only JARs from the original owning module and Maven's ordered runtime resolution."""
     revision = case[side]
     cls = case["productionClass"].replace(".", "/") + ".class"
@@ -159,7 +162,7 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
             "installed in the build's local repository by the recipe" if installed else
             "resolved by Maven from Maven Central (the build's one repository), checksums strict")
     recipe = {"repository": case["repository"], "commit": revision, "class": case["productionClass"],
-              "build": {"tool": "maven", "argv": ["mvn", *build_args(case)], "jdk": "21"}}
+              "build": {"tool": "maven", "argv": ["mvn", *build_args(case)], "jdk": case.get("buildJdk", "21")}}
     if side == "fix":
         recipe["parent"] = case["parent"]
     checkout = {"commit": revision, "tree": git(project, "rev-parse", "HEAD^{tree}").decode().strip(),
@@ -171,13 +174,25 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
                "selectedClass": cls, "selectedClassSha256": cls_digest, "sourceSha256": digest(project / case["productionSource"])}
     record = {"schema": "upstream-jar-build/v1", "recipe": recipe, "artifacts": records,
               "build": {"checkout": checkout, "outputs": outputs, "toolchain": {"jdk": runtime_jdk.identity(jdk), "declaredCompilers": compilers},
-                        "steps": [build, cp]}}
+                        "steps": [*prerequisites, build, cp]}}
     if case.get("providedHost"):
         record["build"]["outputs"]["hostClasspath"] = "Maven runtime, followed by the original module's compile-only entries including its provided Hadoop client"
     upstream_artifact.products(record, {"repository": case["repository"], "commit": revision,
                                        "parent": recipe.get("parent"), **recipe["build"]})
     write(out / ("build-" + side + ".json"), record)
     return outputs
+
+
+def named_failure(testcase, failed, execution):
+    """Surefire can truncate XML stack text at an isolated surrogate. Its text summary retains the source line."""
+    method = testcase.get("classname") + "." + testcase.get("name")
+    if method + "(" in (failed.text or ""):
+        return "XML stack frame"
+    short = method.rsplit(".", 2)[-2:]
+    pattern = re.compile(r"^\[ERROR\]\s+" + re.escape(".".join(short)) + r":[1-9][0-9]*\s")
+    if failed.tag == "failure" and any(pattern.match(line) for line in execution.get("errors", [])):
+        return "Surefire named assertion and source line"
+    return None
 
 
 def tests(case, side, project, command, scratch, out):
@@ -195,11 +210,17 @@ def tests(case, side, project, command, scratch, out):
     # The Guava testlib's Java 9 descriptor needs the packaged multi-release Guava JAR.
     # A reactor stopped at the test phase substitutes target/classes and loses its descriptor.
     support = None
+    test_dependencies = []
     selection = module_args(case, case["testModule"])
     if case["module"] == "guava":
         support = maven(command, [*OPTIONS, "-f", "guava-testlib/pom.xml", "-Dmaven.test.skip=true", "install"],
                         scratch, "install-original-testlib")
         selection = ["-f", "guava-tests/pom.xml"]
+    if case.get("testPrerequisitePoms"):
+        for pom in case["testPrerequisitePoms"]:
+            test_dependencies.append(maven(command, [*OPTIONS, "-N", "-f", pom, "-Dmaven.test.skip=true", "install"],
+                                           scratch, "test-support-" + Path(pom).parent.name))
+        selection = ["-f", case["testModule"] + "/pom.xml"]
     args = [*OPTIONS, *selection, "-Dmaven.build.cache.enabled=false", "-Dsurefire.failIfNoSpecifiedTests=false", "-Dtest=" + ",".join(case["tests"]), "test"]
     run = maven(command, args, scratch, "upstream-tests")
     found = {name: [] for name in case["tests"]}
@@ -212,17 +233,17 @@ def tests(case, side, project, command, scratch, out):
                 failure = t.find(status) if status in ("failure", "error") else None
                 if failure is not None:
                     row.update(failureType=failure.get("type"), message=failure.get("message", "")[:600],
-                               atNamedTest=(t.get("classname") + "." + t.get("name") + "(") in (failure.text or ""))
+                               atNamedTest=bool(named_failure(t, failure, run)))
                 found[name].append(row)
                 (out / (side + "-" + xml.name + ".gz")).write_bytes(gzip.compress(xml.read_bytes(), mtime=0))
-    return {"execution": run, "packagedTestSupport": support, "testSourceSha256": sources,
+    return {"execution": run, "packagedTestSupport": support, "testPrerequisites": test_dependencies, "testSourceSha256": sources,
             "transplant": sorted(changed), "named": found}
 
 
 def run_side(case, side, args):
     out = args.output
     out.mkdir(parents=True, exist_ok=True)
-    jdk = runtime_jdk.home("21")
+    jdk = runtime_jdk.home(case.get("buildJdk", "21"))
     status = {"revision": case[side], "side": side}
     with tempfile.TemporaryDirectory(prefix="organic-upstream-") as temp:
         base = Path(temp)
@@ -241,6 +262,16 @@ def run_side(case, side, args):
         command, compilers = toolchains(command, case, work, args.jdk26)
         module = project / Path(case["reactorPom"]).parent / case["module"]
         with serve(args.maven_cache, sockets, 3 * 1024**3) as requests:
+            prerequisites = []
+            for i, pom in enumerate(case.get("prerequisitePoms", [])):
+                # Maven resolves extensions of every module while reading an aggregator.
+                # Build the original prerequisite POMs individually when an unrelated distribution module is unavailable.
+                step = maven(command, [*OPTIONS, "-N", "-f", pom, "-Dmaven.test.skip=true", "install"],
+                             base, "prerequisite-" + str(i))
+                prerequisites.append(step)
+                if step["exit"]:
+                    break
+            status["prerequisites"] = prerequisites
             build = maven(command, build_args(case), base, "module-build")
             status["build"] = build
             if build["exit"] == 0:
@@ -259,7 +290,7 @@ def run_side(case, side, args):
                 status["classpath"] = cp
                 if cp["exit"] == 0:
                     try:
-                        status["artifact"] = capture(case, side, project, module, work / "repository", out, build, cp, jdk, compilers)
+                        status["artifact"] = capture(case, side, project, module, work / "repository", out, build, cp, jdk, compilers, prerequisites)
                     except (ValueError, OSError, runtime_maven.Blocked) as error:
                         status["artifactError"] = str(error)
             status["upstreamTest"] = tests(case, side, project, command, base, out)
@@ -280,7 +311,7 @@ def bind(case, output):
     for side in ("parent", "fix"):
         path = output.resolve() / ("build-" + side + ".json")
         record = json.loads(path.read_text())
-        recipe = {"tool": "maven", "argv": ["mvn", *build_args(case)], "jdk": "21"}
+        recipe = {"tool": "maven", "argv": ["mvn", *build_args(case)], "jdk": case.get("buildJdk", "21")}
         upstream_artifact.products(record, {"repository": case["repository"], "commit": case[side],
                                            "parent": case["parent"] if side == "fix" else None, **recipe})
         if record["build"]["outputs"]["selectedClass"] != case["productionClass"].replace(".", "/") + ".class":

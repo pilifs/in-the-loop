@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-102303-354-final-native-checks-on-the-original",
+  "title": "354 final native checks on the original commons-lang public calls",
+  "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/commons-lang#1719 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+  "kind": "real-world",
+  "capabilities": [
+    "organic-java-pr",
+    "organic:native"
+  ],
+  "links": {
+    "examples": [
+      "354"
+    ]
+  },
+  "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+  "submitted": {
+    "at": "2026-11-21T10:23:03+00:00",
+    "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "memoryLimit": "7G",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 354 --route native --stage final --seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/354-commons-lang-surrogate-cuts/records/final-native"
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "javaparser-postorder-root",
+    "family": "javaparser",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/javaparser/javaparser",
+    "revisions": {
+      "parent": {
+        "commit": "e0eb16b8870fc05c03ab794e502dd76f97422e26"
+      },
+      "fix": {
+        "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+        "parent": "e0eb16b8870fc05c03ab794e502dd76f97422e26"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/organic/TreeOrder.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "javaparser-core",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "17"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;"
+    },
+    {
+      "id": "postorder-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "claim": "claims/postorder.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted"
+    },
+    {
+      "id": "postorder-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "claim": "claims/postorder.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "terminal-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+      "claim": "claims/terminal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted"
+    },
+    {
+      "id": "terminal-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+      "claim": "claims/terminal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "preorder-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "claim": "claims/preorder.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "preorder-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "claim": "claims/preorder.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "nonempty-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "parent",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "claim": "claims/nonempty.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "nonempty-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "fix",
+      "target": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+      "claim": "claims/nonempty.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/organic/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

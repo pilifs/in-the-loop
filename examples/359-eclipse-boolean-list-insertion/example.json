@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "359",
+  "title": "Boolean list insertion at every boundary in a single word",
+  "summary": "Insert into a real BooleanArrayList, then inspect the same receiver's size and every bit, including after rejection.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Eclipse Collections",
+    "symbol": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+    "file": "eclipse-collections/src/main/java/org/eclipse/collections/impl/list/mutable/primitive/BooleanArrayList.java"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Insert into a real BooleanArrayList, then inspect the same receiver's size and every bit, including after rejection."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/eclipse-collections/eclipse-collections",
+    "url": "https://github.com/eclipse-collections/eclipse-collections/pull/1434"
+  },
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "This is a conditional transfer case outside the six primary PRs. The Gson and Codec stream checks retained exact content across separate transfers and a later observation.",
+    "The independent original-scope grid has 2865 inputs. Both revisions use the same declared receiver shapes."
+  ]
+}

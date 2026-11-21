@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "360",
+  "title": "Postorder traversal of the root and its original children",
+  "summary": "Walk two publicly constructed compilation units and compare each returned node by identity, in order, with the objects in the original tree.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "JavaParser",
+    "symbol": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+    "file": "javaparser-core/src/main/java/com/github/javaparser/ast/Node.java"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Walk two publicly constructed compilation units and compare each returned node by identity, in order, with the objects in the original tree."
+  },
+  "target": "target.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/javaparser/javaparser",
+    "url": "https://github.com/javaparser/javaparser/pull/4538"
+  },
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "This is a conditional transfer case outside the six primary PRs. Guava's entry iterator carried the backing count through its nested frames and exhausted normally.",
+    "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes."
+  ]
+}

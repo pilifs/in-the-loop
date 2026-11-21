@@ -161,6 +161,8 @@ pub struct ClassPath {
     entries: Vec<Entry>,
     jar_release: Option<u32>,
     jdk: Option<JImage>,
+    /// Bootstrap bytecode for String range checks on a selected pre-module JDK.
+    legacy_boot: Option<crate::zip::ZipArchive>,
     /// Whether the tool's models of JDK classes are part of this class path (they are, unless turned off).
     models: bool,
     cache: RefCell<HashMap<String, Option<Loaded>>>,
@@ -192,7 +194,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -240,7 +242,14 @@ impl ClassPath {
 
     /// Uses the JDK found through `JAVA_HOME` or `PATH` for JDK class shapes, if there is one.
     pub fn with_default_jdk(mut self) -> ClassPath {
-        if let Some(jdk) = JImage::open_default() {
+        let legacy = std::env::var_os("JAVA_HOME").map(PathBuf::from).and_then(|home| {
+            if home.join("lib/modules").is_file() { return None }
+            [home.join("jre/lib/rt.jar"), home.join("lib/rt.jar")].into_iter().find(|p| p.is_file())
+        });
+        self.legacy_boot = None;
+        if let Some(archive) = legacy {
+            self.legacy_boot = crate::zip::ZipArchive::open(&archive).ok();
+        } else if let Some(jdk) = JImage::open_default() {
             return self.with_jdk(jdk);
         }
         self.jdk = None;
@@ -258,6 +267,7 @@ impl ClassPath {
             }
         }
         self.jdk = Some(jdk);
+        self.legacy_boot = None;
         self.reset_runtime_caches();
         self
     }
@@ -276,6 +286,23 @@ impl ClassPath {
 
     pub fn has_jdk(&self) -> bool {
         self.jdk.is_some()
+    }
+
+    /// The public constructor itself chooses which exception wins when the array is null and a bound is negative.
+    pub(crate) fn string_range_constructor(&self, owner: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if !matches!((owner, descriptor), ("java/lang/String", "([CII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
+        let class = if let Some(boot) = &self.legacy_boot {
+            let bytes = boot.read(&format!("{owner}.class")).ok()??;
+            let class = ClassFile::parse(&bytes).ok()?;
+            if class.name != owner { return None }
+            Rc::new(class)
+        } else {
+            let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+            class
+        };
+        let method = class.method("<init>", descriptor)?.clone();
+        method.code.as_ref()?;
+        Some((class, method))
     }
 
     /// The entries, for messages.
@@ -742,6 +769,7 @@ impl ClassPath {
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
             | ("java/nio/CharBuffer", "wrap", "([CII)Ljava/nio/CharBuffer;" | "([C)Ljava/nio/CharBuffer;")
             | ("java/lang/String", "decodeASCII", "([BI[CII)I")
+            | ("java/lang/String", "rangeCheck", "([CII)Ljava/lang/Void;")
             | ("java/lang/StringCoding", "countPositives", "([BII)I")
             | ("java/lang/StringLatin1", "inflate", "([BI[CII)V")
             | ("sun/nio/cs/UTF_8", "updatePositions", "(Ljava/nio/Buffer;ILjava/nio/Buffer;I)V")
