@@ -4,6 +4,7 @@ import io
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 from urllib.error import HTTPError
 from unittest.mock import patch
@@ -13,7 +14,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE / "baselines"))
 import engineering
 from corpus_ci import fresh_reports
-from complete_client import declared_scope
+from complete_client import declared_scope, jar_directory
 from maven_mirror import artifact_path, declared_releases, open_release
 from restore_archived import restore
 
@@ -50,6 +51,17 @@ class OriginalInputs(unittest.TestCase):
                 deps = "<dependencies>" + (dependency.format(direct) if direct else "") + "</dependencies>"
                 pom.write_text('<project xmlns="http://maven.apache.org/POM/4.0.0">' + managed + deps + "</project>")
                 self.assertEqual(declared_scope(pom, "g:a"), direct or None)
+
+            # Frameworks enumerate package directories before reading their component classes.
+            classes = Path(temp) / "classes"
+            package = classes / "example/beans"
+            package.mkdir(parents=True)
+            (package / "Component.class").write_bytes(b"fixture")
+            archive = Path(temp) / "test-classes.jar"
+            jar_directory(classes, archive, include_directories=True)
+            with zipfile.ZipFile(archive) as jar:
+                self.assertTrue(jar.getinfo("example/beans/").is_dir())
+                self.assertEqual(jar.read("example/beans/Component.class"), b"fixture")
 
     def test_relocated_operand_follows_the_published_pom_to_the_runtime_jar(self):
         case = {"dependency": "old.group:client", "versions": {"new": "1"}}

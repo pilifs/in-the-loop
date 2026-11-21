@@ -56,6 +56,14 @@ def check_input(path, entry, dependency):
     for key in ("operandScope", "declaredDependencyScope", "modulePomSha256"):
         if key in doc:
             binding[key] = doc[key]
+    if "frameworkFixtures" in doc:
+        fixture = doc["frameworkFixtures"]
+        count = fixture["runtimeCount"]
+        if (type(count) is not int or not 1 < count < len(files) or dependency not in hashes[1:count]
+                or hashes[count] != fixture["testClassesSha256"] or hashes[count] in hashes[:count]
+                or doc.get("operandScope") != "runtime" or not doc.get("modulePomSha256")):
+            raise ValueError("framework fixtures must follow the original production runtime and operand")
+        binding["frameworkFixtures"] = fixture
     return files, files[hashes.index(dependency)], binding
 
 
@@ -199,6 +207,9 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             raise ValueError(f"{side} preparation does not establish the declared {operand_scope} dependency environment")
     if prepared["old"][2]["sourceSha256"] != prepared["new"][2]["sourceSha256"]:
         raise ValueError("the selected caller source differs between dependency revisions")
+    for _, _, binding in prepared.values():
+        if ("frameworkFixtures" in binding) != spec.get("withTestFixtures", False):
+            raise ValueError("the caller scope and preparation disagree about original test fixtures")
     if dependencies[0] == dependencies[1]:
         raise ValueError("the dependency digests identify the same bytes")
     report = {} if progress is None else progress
