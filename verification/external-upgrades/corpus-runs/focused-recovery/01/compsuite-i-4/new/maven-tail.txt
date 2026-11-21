@@ -1,0 +1,45 @@
+-------------------------------------------------------
+Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
+Running com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.406 sec <<< FAILURE! - in com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
+testGetFactoryFromRegistry(com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest)  Time elapsed: 0.378 sec  <<< ERROR!
+java.lang.ExceptionInInitializerError
+	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
+Caused by: com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Guice Injector!
+	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
+Caused by: java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
+
+
+Results :
+
+Tests in error: 
+  DefaultConfigFactoryManagerTest.setUp:24 ExceptionInInitializer
+
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
+
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for Apollo 1.4.0:
+[INFO] 
+[INFO] Apollo ............................................. SUCCESS [  1.076 s]
+[INFO] Apollo Core ........................................ SUCCESS [  4.198 s]
+[INFO] Apollo Client ...................................... FAILURE [  4.965 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11.356 s
+[INFO] Finished at: 2026-11-21T05:50:30Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.19.1:test (default-test) on project apollo-client: There are test failures.
+[ERROR] 
+[ERROR] Please refer to /project/apollo-client/target/surefire-reports for the individual test results.
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :apollo-client

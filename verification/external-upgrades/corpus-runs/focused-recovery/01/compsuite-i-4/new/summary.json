@@ -1,0 +1,68 @@
+{
+  "revision": "b494d596132961f8f6dc7f229a1d0e4919da151b",
+  "historicalCiFiles": {
+    ".travis.yml": {
+      "sha256": "4db9f6f0c2ab47c0196581e3f0cdf073fab0bd6e700b2de8a83b5b8d52b5217a",
+      "mavenCommandLines": [
+        "- mvn clean test jacoco:report coveralls:report"
+      ]
+    }
+  },
+  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
+  "module": "apollo-client",
+  "goals": [
+    "-pl",
+    "apollo-client",
+    "-am",
+    "-Dtest=DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
+    "-DfailIfNoTests=false",
+    "-Dsurefire.failIfNoSpecifiedTests=false",
+    "test"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client with a serial public Maven mirror",
+  "declaredReleaseRepositories": [],
+  "resolver": {
+    "cachedRequests": 1132
+  },
+  "exit": 1,
+  "seconds": 12.93,
+  "logSha256": "4fecc9bbaeeb23bbeb5a8d4bb24ab63371e27017d820db379217a26465c5abe7",
+  "freshReports": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
+        "method": "testGetFactoryFromRegistry",
+        "outcome": "error",
+        "type": "java.lang.ExceptionInInitializerError",
+        "message": ""
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
+        "method": "testGetFactoryFromRegistry",
+        "outcome": "error",
+        "type": "java.lang.ExceptionInInitializerError",
+        "message": ""
+      }
+    ],
+    "reportCount": 1,
+    "reportsSha256": "2094b80016b32332d9b0dea3ef8a4f278a3b802511a1e837246c5eb32e366f91"
+  },
+  "diagnostic": [
+    "java.lang.ExceptionInInitializerError",
+    "Caused by: com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Guice Injector!",
+    "Caused by: java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V",
+    "Tests in error:",
+    "DefaultConfigFactoryManagerTest.setUp:24 ExceptionInInitializer"
+  ],
+  "namedTest": "DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}
