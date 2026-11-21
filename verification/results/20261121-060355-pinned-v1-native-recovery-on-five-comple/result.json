@@ -1,0 +1,239 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-060355-pinned-v1-native-recovery-on-five-comple",
+  "title": "Pinned V1 native recovery on five complete original Maven modules",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1.6s, peak 119.4 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-060355-pinned-v1-native-recovery-on-five-comple.json",
+    "sha256": "bc544a8a17e2da8b9b28aafb0fc18f00cae386f4e04113e4e385bd1a163f09c8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-060355-pinned-v1-native-recovery-on-five-comple",
+      "title": "Pinned V1 native recovery on five complete original Maven modules",
+      "description": "Five pairs unavailable to original intake now have both complete original Maven production modules. Re-run the same pinned native checker and 90-second case budget on these source-bound classpaths. Record the next operation on the real caller. This recovery stays separate from the matched first comparisons on 32.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Every selected upgrade retains its actual outcome, including missing inputs and open proof obligations.",
+      "submitted": {
+        "at": "2026-11-21T06:03:55+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m",
+        "memoryLimit": "6G",
+        "timeout": "110m"
+      },
+      "steps": [
+        {
+          "name": "Check recovered original modules in group 1",
+          "cwd": ".",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME\"/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract --repositories \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json --work \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules --maven-cache \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository --maven8 \"$HOME\"/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn --output verification/external-upgrades/corpus-runs/v1-complete/01 --case compsuite-i-85 --case compsuite-i-62 --case compsuite-i-94"
+        },
+        {
+          "name": "Check recovered original modules in group 2",
+          "cwd": ".",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME\"/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract --repositories \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json --work \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete --maven-cache \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository --maven8 \"$HOME\"/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn --output verification/external-upgrades/corpus-runs/v1-complete/02 --case compsuite-i-37 --case reflector-35"
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/v1-complete/01",
+        "verification/external-upgrades/corpus-runs/v1-complete/02"
+      ]
+    }
+  },
+  "sourceCommit": "8f1d6a0613ef6feda294e431c191a0659a11b586",
+  "startedAt": "2026-11-21T06:06:19+00:00",
+  "finishedAt": "2026-11-21T06:06:24+00:00",
+  "wallSeconds": 5.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 259118,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 125247488,
+    "wallSeconds": 1.6,
+    "cpuSeconds": 1.4,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check recovered original modules in group 1",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME\"/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract --repositories \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json --work \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules --maven-cache \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository --maven8 \"$HOME\"/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn --output verification/external-upgrades/corpus-runs/v1-complete/01 --case compsuite-i-85 --case compsuite-i-62 --case compsuite-i-94",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6600.0,
+      "cancelled": false,
+      "wallSeconds": 1.209,
+      "cpuSeconds": 1.015,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 125247488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-recovered-original-modul.log",
+        "lines": 3,
+        "bytes": 1284,
+        "sha256": "28738876019b6d0c5f2c5d55745561f17b6a6d5a8af7158afa1dff7a33bfef4a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-85 current open parameter orderId has type pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId, which is outside the objects a regression check makes: pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId has 2 constructors; an object made by one of seve",
+        "compsuite-i-62 current open the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPa",
+        "compsuite-i-94 current open validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: com.alibaba.citrus.service.form.impl.validation.DateValidator "
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check recovered original modules in group 2",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME\"/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract --repositories \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json --work \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete --maven-cache \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository --maven8 \"$HOME\"/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn --output verification/external-upgrades/corpus-runs/v1-complete/02 --case compsuite-i-37 --case reflector-35",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6600.0,
+      "cancelled": false,
+      "wallSeconds": 0.401,
+      "cpuSeconds": 0.372,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 62124032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-recovered-original-modul.log",
+        "lines": 2,
+        "bytes": 447,
+        "sha256": "261eba48e25011501fc10dbc47f9a0198395efbe9ca48b5d55823664830914c1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-37 current open review the recorded exact overloads",
+        "reflector-35 current open newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassG"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 17463,
+      "sha256": "c53b8269921ef2600c91da88757b3d53dd5e0f1afcfd14b65c424d4a4ac92c0f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-85.json",
+      "change": "added",
+      "bytes": 13551,
+      "sha256": "8cca001dd5cc330898c38f356213bc967cbd22b3b3dfb77632de09731b77c910",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 11349,
+      "sha256": "884cecf77fff1554be5051314d3d991cd8ff4ceb84036805acc0a8d29c6f44d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-complete/02/current/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 10215,
+      "sha256": "94c4a9fdf69daa8db92f6e4a74db8f7c0b8a9e18bd690599c082e5c96adc202e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v1-complete/02/current/reflector-35.json",
+      "change": "added",
+      "bytes": 7974,
+      "sha256": "8da2f6d134095e2dc38227fda950376bcf6640eeef8f746e440185a335f0879d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T06:06:28+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-62.json",
+      "verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-85.json",
+      "verification/external-upgrades/corpus-runs/v1-complete/01/current/compsuite-i-94.json",
+      "verification/external-upgrades/corpus-runs/v1-complete/02/current/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/v1-complete/02/current/reflector-35.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
