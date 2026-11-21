@@ -1,0 +1,459 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-151148-verify-the-real-avro-factory-with-its-ob",
+  "title": "Verify the real Avro factory with its observed weak registry",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 21.2s, peak 388.8 MiB (estimated 2m00s, 3.0 GiB); 32 output file(s) changed",
+  "attention": [
+    "step 1 (Check the three-root and four-root factory states) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-151148-verify-the-real-avro-factory-with-its-ob.json",
+    "sha256": "2a08889b378da47ef4c9810f8c2eff3e8426feb6f36cb1a17a351a307c20e7e7",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-151148-verify-the-real-avro-factory-with-its-ob",
+      "title": "Verify the real Avro factory with its observed weak registry",
+      "description": "Check the fixed public factory over all 21 original inputs after a fresh subject JVM has observed the weak registry's null values. Repeat with Credentials initialized after Hadoop JobConf. Each claim uses its own state digest, the original 124-entry classpath and the actual configuration constructor.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T15:11:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check the three-root and four-root factory states",
+          "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage weak-registry --tasks bounds-fix-registry-startup,bounds-fix-credentials-startup",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/weak-registry-native"
+      ]
+    }
+  },
+  "sourceCommit": "f006ff3165bd65cd20cc9b1557ceb5944f2160a4",
+  "startedAt": "2026-11-21T15:20:55+00:00",
+  "finishedAt": "2026-11-21T15:24:08+00:00",
+  "wallSeconds": 193.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 718774,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 407695360,
+    "wallSeconds": 21.2,
+    "cpuSeconds": 25.7,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 165.027,
+      "cpuSeconds": 165.201,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2172624896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "184d2bb67a37881269ff2a3825f030c91d90a7bc9452b32a3dcccd2e4e7ae026",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-151148-verify-the-real-avro-factory-with-its-ob/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 44s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the three-root and four-root factory states",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage weak-registry --tasks bounds-fix-registry-startup,bounds-fix-credentials-startup",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 21.247,
+      "cpuSeconds": 25.688,
+      "cpuThrottledSeconds": 1.353,
+      "peakMemoryBytes": 407695360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-three-root-and-four.log",
+        "lines": 1,
+        "bytes": 521,
+        "sha256": "98329fffd134b0122dec26297c499b6d2b86c62e7c092cfd5c50ead9cf635c0a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"native\", \"stage\": \"weak-registry\", \"workflowExit\": 1, \"seconds\": 20.966, \"checkerSeconds\": 60, \"tasks\": [\"bounds-fix-registry-startup\", \"bounds-fix-credentials-startup\"], \"verifierCommit\": \"f006ff3165bd65cd20cc9b1557ceb5944f2160a4\", \"checkerSha256\": \"8b180b4a27b624694807"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "523ce6df40f52193d10b469ea160e6c1211dbdeee7c76f6b58446b9854c0705e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/plan.json",
+      "change": "added",
+      "bytes": 10387,
+      "sha256": "04868d7c71f09ddd29c03f967462643c1ed85e734a258a8ebb49b8b664a285d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 728,
+      "sha256": "20c25bf13b430efbf072f25d42e769b310dfd99a2085c2e68f1a13884b213ef5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/controls.json",
+      "change": "added",
+      "bytes": 61893,
+      "sha256": "5e4e7e7a775146b1259b91677f1dc52894754a9689d64a02b8944a4753461c8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/execution.json",
+      "change": "added",
+      "bytes": 410666,
+      "sha256": "e08fb3ee0243828a62fa35b5ae11ccaa9f5851fdef93ba7bf0f9dff8f3e93ca0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/streams.json",
+      "change": "added",
+      "bytes": 1953,
+      "sha256": "9cfda61b23ecdf23e5c3316e49b2e0ba1e79aacf7f6e024c7de8cbb0016112ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 335,
+      "sha256": "5b4db288714a42f9abf16cf7d887be89526e9cc65bde276a5262457c9caca51b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier.json",
+      "change": "added",
+      "bytes": 337633,
+      "sha256": "aa12df126e288eff48cca6ca15a69c3e212f3e51681b897679d01266fb682d00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 34625,
+      "sha256": "900725d330d664098df10d0cee1ca6aaaf1b9f812f4ca0a2f34c9d877feba564",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/result.json",
+      "change": "added",
+      "bytes": 92462,
+      "sha256": "2047ccf662232fdda6aed719d9c4f3e53e91fdc45b0836c211678d9ed00b3b45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/executions/20261121T152401Z-425c44a3/attempt.json",
+      "change": "added",
+      "bytes": 351713,
+      "sha256": "413ddef1969725f7adb67b7b10cc75adaff718d9a48e030020461f6c3c63819c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/executions/20261121T152401Z-425c44a3/checker.json",
+      "change": "added",
+      "bytes": 50742,
+      "sha256": "073bc27b581a417cdd0dcd177234792b3ea5f324dbe7a5a3306eb3a8bf025f7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/executions/20261121T152401Z-425c44a3/correspondence.json",
+      "change": "added",
+      "bytes": 7447,
+      "sha256": "59558d95d9e4d691dccf312e416fa5576f4e4304d0c45c2bf2bb9fa2049cc1ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5a1ad0cc1148f2730af2a1d3b7933370b28f6ebd8fe8ccee954f0049bdb4e2a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/plan.json",
+      "change": "added",
+      "bytes": 10130,
+      "sha256": "71d1e3de2af0e66615b511fd054d1643fed5a0db8e83365deeb7bfe3f43250bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 728,
+      "sha256": "20c25bf13b430efbf072f25d42e769b310dfd99a2085c2e68f1a13884b213ef5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/controls.json",
+      "change": "added",
+      "bytes": 61887,
+      "sha256": "ed7d65b1c6aabcc9e6656ed89bcdd8003f96747ca7a21c30353fc756fc220de9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/execution.json",
+      "change": "added",
+      "bytes": 410481,
+      "sha256": "7396470d7ad464bdf45b9d0e6671e294970ddcabf16d01f547ffbe324548a9ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/streams.json",
+      "change": "added",
+      "bytes": 1953,
+      "sha256": "cbbb050c4139a5a76207e89d0fc65fbcc16940481b8e2703df80d8d593d0bde7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 511,
+      "sha256": "f42ab7984398373926a7c361a9b48c5aa1a43304268fc4cddd86f3b9f8ab67c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier.json",
+      "change": "added",
+      "bytes": 337450,
+      "sha256": "3627773cfe9c6cd5b3d318c99a9c5ad7c3361911264c5dab932b67966fe42975",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 34933,
+      "sha256": "77ec84cad7af9674ac0d2984580b16bf0e8fc3e72fecbf731775ce8cc189e878",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/result.json",
+      "change": "added",
+      "bytes": 92412,
+      "sha256": "8f70327f6cdb45ddca1b8e66464fd2564ff7d49beba9b05da97e0497010a2e7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/executions/20261121T152347Z-913828bc/attempt.json",
+      "change": "added",
+      "bytes": 351398,
+      "sha256": "7dc12a9886b5a417d0f6e8d2914e1c7f73c1245479c494c7ebb76ab17a17e621",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/executions/20261121T152347Z-913828bc/checker.json",
+      "change": "added",
+      "bytes": 50985,
+      "sha256": "577ac2c74c01918c36c4cf456b305abceeddb0fb1c21cf532b2177c87199b836",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/executions/20261121T152347Z-913828bc/correspondence.json",
+      "change": "added",
+      "bytes": 7447,
+      "sha256": "59558d95d9e4d691dccf312e416fa5576f4e4304d0c45c2bf2bb9fa2049cc1ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/run.json",
+      "change": "added",
+      "bytes": 567,
+      "sha256": "4180980a9f1ec5653b5a03127d7a77a1f855f75152ab40a430c69a4946554d5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/weak-registry-native/workflow.log",
+      "change": "added",
+      "bytes": 593,
+      "sha256": "98a9221f5b3ff51ce44b43a8ed93fb1412f65f6dd687f4a432acd4bfcf33e18d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T15:24:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/20261121T152401Z-425c44a3/result.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/executions/20261121T152401Z-425c44a3/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/executions/20261121T152401Z-425c44a3/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-credentials-startup/executions/20261121T152401Z-425c44a3/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/20261121T152347Z-913828bc/result.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/executions/20261121T152347Z-913828bc/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/executions/20261121T152347Z-913828bc/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/bounds-fix-registry-startup/executions/20261121T152347Z-913828bc/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/run.json",
+      "examples/355-avro-writable-buffer-limit/records/weak-registry-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 2790881,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "a93423013d489fb6559e2265ad9273a62258b785",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a93423013d489fb6559e2265ad9273a62258b785/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}
