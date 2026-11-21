@@ -26,16 +26,41 @@ inodes instead and no command could start (ENOSPC: check `df -i /tmp`).
 **Why:** a session that cannot see its commands' output cannot work, and one that clears `/tmp` breaks another
 session's tests.
 
-## The default test run is run when it is due, not after every change
+## The default test run belongs to a promotion, not to a landing
 
 The user's decision, 2026-11-18: the default test run (`python3 lib/tools/test_costs.py run`) was one of the
-biggest bottlenecks of a run with frequent merges. After a merge use `python3 lib/tools/default_run.py
-after-merge` (`--final` after a run's last merge), which runs it only when the last one failed or none has
-passed in the last hour. And: tests are never run because `lib/tests/costs.json` changed. The inventory is an
-indicative file, left to evolve; no rule selects tests from it.
+biggest bottlenecks of a run with frequent merges, so after a merge it ran only when due
+(`python3 lib/tools/default_run.py after-merge`). Since the process-plumbing brief of 2026-11-21 it is owed only
+at a promotion to `main` and at a release, which run it themselves when no passed run covers the commit: not
+when an example is done, not when a stream or a run lands, not after a merge. A checkpoint to `develop`
+(`sync.py checkpoint`) runs none and confers no test status. Any agent may still run it when it answers a
+development question, with `after-merge` (in a memory cap of its own) rather than the bare run. And: tests are
+never run because `lib/tests/costs.json` changed. The inventory is an indicative file, left to evolve; no rule
+selects tests from it.
 
 **Why:** the run takes minutes and gigabytes, and it ran after every merge; a `--changed` run that took in all
 of `cargo test` because `costs.json` had changed filled a stream's memory and got it killed (VF-037).
+
+## Checkpoints and the private archive
+
+- `sync.py checkpoint --rev REV` is how code reaches the remote between promotions, and it is the watcher's to
+  run ([`specification.md`](specification.md#checkpoints)). It never forces: when `develop` moved on the remote,
+  fetch and bring the line onto it. A refusal names the path or commit and the kind, never the value; a
+  credential that reached a commit is taken out of the history before the line is checkpointed, not waived.
+- Once a commit is on `develop` it is immutable for jj (the repository's `immutable_heads()` names
+  `develop@origin`): `sync.py commit` no longer stamps it, and `jj describe` on it is refused. Don't work round
+  that with `--ignore-immutable`: others have fetched the commit.
+- Originals are sealed by the tools that produce them (the runner, the collector, `sync.py commit` for
+  transcripts) and uploaded in the background. `python3 llm-dlc/tools/artifacts.py status` says what is still on
+  this machine only; `upload --drain` finishes what a dead uploader left. Before removing a run directory, a work
+  directory or a workspace by hand, check that what it holds is `remote_verified`
+  (`artifacts.py list --job ID --include-attempts`), or run `python3 llm-dlc/tools/vm_inventory.py protect` first.
+- A test that runs the pipeline or `sync.py` must not seal into this machine's archive: the test runner sets
+  `ITL_ORIGINALS_OFF=1`, and a test of capture itself points `ITL_ORIGINALS_HOME` and `ITL_ORIGINALS_STORE` at a
+  temporary folder.
+
+**Why:** a force or a rewrite of a published commit breaks every reader of `develop`, and the archive is the only
+whole copy of what the pipeline cuts to fit a commit.
 
 ## A blocked external artifact: an anonymous, verifiable copy first
 

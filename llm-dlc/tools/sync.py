@@ -55,6 +55,12 @@ Commands:
                                 It first requires a passed default test run covering @- (lib/tools/
                                 default_run.py gate --run: one is run inline when none is recorded);
                                 --skip-tests REASON is the user's word to push without
+  sync.py checkpoint --rev REV [--dry-run]
+                                put one committed revision on origin's `develop`, forward only, for others to
+                                read while work goes on: it reads no working copy, runs no test, uploads no
+                                log and waits for nothing; it refuses if what the push would expose holds a
+                                conflict, a raw payload, a credential or an undecided redaction decision
+                                (checkpoint.py). --bootstrap creates `develop` where origin's `main` is
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -166,6 +172,9 @@ PURGE_TOKEN = Path.home() / ".config" / "llm-traces" / "cloudflare-token"
 # An R2 API token for the llm-traces bucket (Object Read & Write): account_id=, access_key_id= and
 # secret_access_key= lines. With it, puts and deletes go to R2's S3 API (R2Client); without it, wrangler.
 R2_CREDENTIALS = Path.home() / ".config" / "llm-traces" / "r2-credentials"
+# Where the private archive of original outputs keeps its R2 tokens (llm-dlc/tools/artifacts.py): secrets of this
+# machine like the one above, so the redactor removes them from every log.
+ORIGINALS_CREDENTIALS = Path.home() / ".config" / "in-the-loop"
 SCHEMA = "llm-trace-manifest/v1"
 # Wrangler keeps its OAuth tokens here; the spec forbids printing them, redaction removes them anyway.
 WRANGLER_CONFIGS = (Path.home() / ".config" / ".wrangler" / "config" / "default.toml",
@@ -330,6 +339,9 @@ def personal_literals() -> tuple[list[tuple[str, str, int, str]], str]:
         secrets.append(PURGE_TOKEN.read_text().strip())
     # Both keys; the account id is not a secret (it is in every R2 endpoint) and is left alone.
     secrets += [v for k, v in read_r2_credentials().items() if k in ("access_key_id", "secret_access_key")]
+    # The private archive's tokens (artifacts.py): the writer's and each reader's.
+    for credential in sorted(ORIGINALS_CREDENTIALS.glob("r2-originals-*")) if ORIGINALS_CREDENTIALS.is_dir() else []:
+        secrets += [v for k, v in read_r2_credentials(credential).items() if k in ("access_key_id", "secret_access_key")]
     for cfg in WRANGLER_CONFIGS:
         if cfg.exists():
             secrets += re.findall(r'^(?:oauth_token|refresh_token)\s*=\s*"([^"]+)"', cfg.read_text(), re.M)
@@ -2507,7 +2519,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
     paths = [transcript_of(a) for a in named] if named else session_transcripts()
     redact = redact or Redactor()
     cache, states = transcript_cache(redact, full), sync_cache(redact, trusted=not every)
-    me, index, unchanged = running_session(), commit_index(), 0
+    me, index, unchanged, synced = running_session(), commit_index(), 0, []
     with journaled("sync"):
         publish_runs(redact)  # before the sessions: their summaries list the copies
         for p in paths:
@@ -2519,6 +2531,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
                 perf.count("sessions unchanged, not synced")
                 continue
             state = session_state(p, status, current, None)  # its sources, before they are read
+            synced.append(p)
             with perf.phase("process"):
                 m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache)
             index = commit_index()  # process may have described changes
@@ -2531,6 +2544,8 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
                   f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
         if unchanged:
             print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
+        with perf.phase("seal transcripts"):
+            seal_transcripts(synced)
         with perf.phase("metrics elsewhere"):
             refresh_metrics({sid_of(p) for p in session_transcripts()}, redact, states)
         publish_runs(redact)  # again, for a session whose trace the loop above started
@@ -2541,6 +2556,32 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
         with perf.phase("index"):
             write_index()  # once, after every session: it reads all their manifests
     return redact
+
+
+def seal_transcripts(transcripts: list[Path]) -> None:
+    """Hand each synced session's source transcript, and its subagents', to the private archive (artifacts.py), in
+    restricted custody, as an append-only stream: what the file gained since it was last sealed, so a commit seals
+    the turns that led to it and the transfer off this machine starts then. The redacted log is what is published;
+    this is the original it was made from. Only a file in a client's own session store is sealed (a test's is not),
+    and nothing here fails a sync: an error goes to the hook log."""
+    try:
+        import artifacts
+        if artifacts.off():
+            return
+        todo = [(key, path, sid_of(t)) for t in transcripts for _, path in transcripts_of(t)
+                if (key := artifacts.transcript_key(path))]
+        if not todo:
+            return
+        archive = artifacts.Archive()
+        try:
+            for key, path, session in todo:
+                if archive.capture_stream(path, key, "session-transcript", f"transcripts/{key}", session=session):
+                    perf.count("transcript segments sealed")
+        finally:
+            archive.close()
+        artifacts.kick()
+    except Exception:
+        log(traceback.format_exc())
 
 
 def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int:
@@ -4218,6 +4259,9 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_commit(args)
     elif cmd == "push":
         return cmd_push(args)
+    elif cmd == "checkpoint":
+        import checkpoint  # llm-dlc/tools/checkpoint.py; it is handed this module, which runs as __main__
+        return checkpoint.cmd_checkpoint(sys.modules[__name__], args)
     elif cmd == "upload":
         return cmd_upload()
     elif cmd == "unpublish":

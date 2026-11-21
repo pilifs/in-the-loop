@@ -660,7 +660,9 @@ def tier_runs(tier, doc, root=ROOT, only=None, tests=(), test_threads=None):
         raise ValueError(f"tier {tier!r}: the tiers to run are {', '.join(RUN_TIERS)}")
     value = {"default": "tool", "unit": "unit", "proof": "proof"}[tier]
     # VERIFY_MACHINE_CONFIG empty: no test reads this machine's runner settings (verification/pipeline.py).
-    env = {"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value, "VERIFY_MACHINE_CONFIG": ""}
+    # ITL_ORIGINALS_OFF: a test that runs the pipeline in a copy of the repository seals nothing into this machine's
+    # private archive (llm-dlc/tools/artifacts.py); the tests of capture itself use a spool of their own.
+    env = {"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value, "VERIFY_MACHINE_CONFIG": "", "ITL_ORIGINALS_OFF": "1"}
     runs = []
     if only in (None, "rust"):
         # The default and unit tiers in the test-fast profile (lib/Cargo.toml: dev, lightly optimised), the proof

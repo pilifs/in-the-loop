@@ -220,7 +220,8 @@ class RunningATier(unittest.TestCase):
             self.assertEqual([r[0] for r in runs], ["cargo test", "tools/targets/test_x.py", "tools/test_y.py"])
             label, argv, env, cwd = runs[0]
             self.assertEqual(argv, ["cargo", "test", "--manifest-path", "lib/Cargo.toml", "--profile", "test-fast"])
-            self.assertEqual((env, cwd), ({"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value, "VERIFY_MACHINE_CONFIG": ""}, self.root))
+            self.assertEqual((env, cwd), ({"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value, "VERIFY_MACHINE_CONFIG": "",
+                                           "ITL_ORIGINALS_OFF": "1"}, self.root))
             _, argv, env, _ = runs[1]
             self.assertEqual(argv[1:], ["-m", "unittest", "targets.test_x"])
             self.assertEqual(env["PYTHONPATH"], os.pathsep.join(["tools", "tools/targets"]))
