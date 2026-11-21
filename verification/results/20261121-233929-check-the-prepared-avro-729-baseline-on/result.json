@@ -1,0 +1,899 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-233929-check-the-prepared-avro-729-baseline-on",
+  "title": "Check the prepared Avro 729 baseline on both original products",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 passed step(s) in 14.8s, peak 168.9 MiB (estimated 3m00s, 2.0 GiB); 81 output file(s) changed",
+  "attention": [
+    "step 1 (Freeze native outcomes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-233929-check-the-prepared-avro-729-baseline-on.json",
+    "sha256": "f0ff70127fd3b2d4564565ce91e27fa89154bdc92bc9824053948b42b525c781",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-233929-check-the-prepared-avro-729-baseline-on",
+      "title": "Check the prepared Avro 729 baseline on both original products",
+      "description": "Run both frozen properties on both fully prepared original products, including the exhaustive JVM controls, with the pre-foundation verifier. Supersedes the baseline job announced by a temporary revision during a scoped commit.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvm:finite-domain"
+      ],
+      "links": {
+        "examples": [
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:39:29+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Freeze native outcomes",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route native",
+          "cwd": "."
+        },
+        {
+          "name": "Check all finite JVM inputs",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route finite",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native",
+        "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite"
+      ]
+    }
+  },
+  "sourceCommit": "4b7e8c23997bd516718be6c1d331f889d43017ef",
+  "startedAt": "2026-11-21T23:40:10+00:00",
+  "finishedAt": "2026-11-21T23:45:12+00:00",
+  "wallSeconds": 302.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2411852,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 177143808,
+    "wallSeconds": 14.8,
+    "cpuSeconds": 24.2,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 177.288,
+      "cpuSeconds": 177.655,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2237214720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "c8d8da9f0f0363e32fc2c97cb3f377be355f91e5446114ca0042038869385bf8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-233929-check-the-prepared-avro-729-baseline-on/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Freeze native outcomes",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route native",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 5.412,
+      "cpuSeconds": 7.814,
+      "cpuThrottledSeconds": 0.209,
+      "peakMemoryBytes": 165036032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-freeze-native-outcomes.log",
+        "lines": 1,
+        "bytes": 535,
+        "sha256": "a7192c2b28d73b41062f7c4624b413080119ba2b8383d422ab1d278d95a97276",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"361\", \"route\": \"native\", \"stage\": \"adoption-baseline\", \"workflowExit\": 1, \"seconds\": 5.215, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"cursor-parent\", \"cursor-fix\", \"decimals-parent\", \"decimals-fix\"], \"verifierCommit\": \"4b7e8c23997bd516718be6c1d331f889d43017ef\", \"checkerSha256\": \"5a8efb"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check all finite JVM inputs",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route finite",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 9.425,
+      "cpuSeconds": 16.427,
+      "cpuThrottledSeconds": 0.922,
+      "peakMemoryBytes": 177143808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-all-finite-jvm-inputs.log",
+        "lines": 1,
+        "bytes": 525,
+        "sha256": "173cbc919aba568ee52721403a616a9ef086696733cb7a8a3e09c0b325376b67",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"361\", \"route\": \"finite\", \"stage\": \"adoption-baseline\", \"workflowExit\": 0, \"seconds\": 9.261, \"checkerSeconds\": 60, \"tasks\": [\"cursor-parent\", \"cursor-fix\", \"decimals-parent\", \"decimals-fix\"], \"verifierCommit\": \"4b7e8c23997bd516718be6c1d331f889d43017ef\", \"checkerSha256\": \"5a8efb0dd81cbfbf"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "eae0b11a11fd160a74aedd70a9a60c34fb78298ee3fd9025c6c6ae2988b1c183",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/plan.json",
+      "change": "added",
+      "bytes": 7523,
+      "sha256": "fb1d8037f7aecdc5bd197f6db9f088adfc5cef830ea85d67c23403f7cb6386ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/controls.json",
+      "change": "added",
+      "bytes": 11922,
+      "sha256": "6207e998dccf19ac225403a2f02ef6237ce5cd10a3d39dbcc1289ac4e9ddc0d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/execution.json",
+      "change": "added",
+      "bytes": 34673,
+      "sha256": "b21f4fb6a823fb8288cb2aa024983f1cd665908936b205e5d14ca166f32a6fa8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "45b3b67b1594349188504491d6727918a68e1cabec751bb3ae43bdba856e1bbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 468,
+      "sha256": "b63f335fbec5970d6927a991af6927f3212fb32f7b4cff60a4024bfce40c94f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier.json",
+      "change": "added",
+      "bytes": 22338,
+      "sha256": "85046ceb802940a8111ce94aa9ed3e408077489895717bb94e5e2eed07a71680",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5907,
+      "sha256": "90a7a92d10ff83b1e1cba50f4f0d9081a9c94482733fe4bfc70b22b177cd2aa5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/result.json",
+      "change": "added",
+      "bytes": 17507,
+      "sha256": "48608eba0e9efe633010d9e8ad8137a5e800cb706255c0cd287e87fdfd249f23",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/executions/20261121T234501Z-0a066768/attempt.json",
+      "change": "added",
+      "bytes": 22132,
+      "sha256": "3a6988b2b8644d792c2c27d90c92dfabd56746c676ccf06da167cb9e0a05d2d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/executions/20261121T234501Z-0a066768/checker.json",
+      "change": "added",
+      "bytes": 8049,
+      "sha256": "7ad6d894722083ea66cd79690c4f2cff010bfb9fb912cc0eb28d285c27ceec0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/executions/20261121T234501Z-0a066768/correspondence.json",
+      "change": "added",
+      "bytes": 1557,
+      "sha256": "7f67b070484f8c172eaefca01bcf5445e30c25b83f7352e2380158468a7844b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "aa07bda1aac52532b16738fafce928b4398d40f7433e54de59829ab116d6cf0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/plan.json",
+      "change": "added",
+      "bytes": 7428,
+      "sha256": "4a4f6c7b29ae45a89fe8591c9579a0aca8f80f56881971a1c2c7a01a8df62a08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/controls.json",
+      "change": "added",
+      "bytes": 11662,
+      "sha256": "3888d81a6fc330850498fc0ceffb4bd2da00e8404c02e1e7522e8742a9df508d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/execution.json",
+      "change": "added",
+      "bytes": 34128,
+      "sha256": "a220b7a64bf51b717b8c7d38cd18afa45156e101373fe5b8ab1da40a7639eeff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "a83ea33965ed7fd56d12ada295cb06afc20abdb3645949333652914ab1933e86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 468,
+      "sha256": "b63f335fbec5970d6927a991af6927f3212fb32f7b4cff60a4024bfce40c94f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier.json",
+      "change": "added",
+      "bytes": 22084,
+      "sha256": "072cb738036fe7445adf1fb2f99ea1b1094a6d7dffcd7a3ccbc90d2f91ad22e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5907,
+      "sha256": "903eaa2b53a238fbdc5c26bb60c6d67407bcaef87287581a954ae5c8738cabca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/result.json",
+      "change": "added",
+      "bytes": 17605,
+      "sha256": "e04c126218e905a768ddac0a4f7a187491bb77a9fe990fd10780541ee7901d2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/executions/20261121T234500Z-90029523/attempt.json",
+      "change": "added",
+      "bytes": 21897,
+      "sha256": "43528102295e7fa333610b27fd35d9d9f8215379e6dea8e4aa56dad99962fa7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/executions/20261121T234500Z-90029523/checker.json",
+      "change": "added",
+      "bytes": 8082,
+      "sha256": "7e06ae57f95b5e2680143e22a8fd74b4219235754072569bc79677ffec231523",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/executions/20261121T234500Z-90029523/correspondence.json",
+      "change": "added",
+      "bytes": 1560,
+      "sha256": "bff18eb863d5a1762f042936b8461afb7fb847a7791d0cf913ac61ba1d535a68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fe88affa651d5b8a5b979b00d598c0dcf036e415903aa87df419f2720c2530c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/plan.json",
+      "change": "added",
+      "bytes": 7649,
+      "sha256": "fb9129ca948a0ff2f226a35dcc6ad032f0be5e353bfc2858f32e7021297eae49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/controls.json",
+      "change": "added",
+      "bytes": 11926,
+      "sha256": "19764d2c2864e73f96cd694b5840d66ab66e47f2aac652f01316594c2bd19a21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/execution.json",
+      "change": "added",
+      "bytes": 35164,
+      "sha256": "880b14f814c49919632dbac24356eb1ccecf51a8443f729604e1abb7865d3ac9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "937372f01a7ff07eef4cb5a3dd9b2d4e3ccb84c68f08168da572e40a981276c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 472,
+      "sha256": "a43c1423c886ceb527bd1fdf99fee67f0db52549d42f056311721e736994bfaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier.json",
+      "change": "added",
+      "bytes": 22817,
+      "sha256": "93620cc46b629f2a82552d0af1a5b165b471af84ef57db9672194048f6b99c3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5921,
+      "sha256": "60b95d58201e9e73d3d959ecad2cc6a3dcd0689f88503c542335aaf79d000f25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/result.json",
+      "change": "added",
+      "bytes": 17581,
+      "sha256": "93d491882f73d7588755131992507e9f41696f5cf25bd91e3218f13ee613a5f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/executions/20261121T234502Z-09285ce2/attempt.json",
+      "change": "added",
+      "bytes": 22580,
+      "sha256": "e438ea489b988635294fa4b2b3626f5c732d270211631f05b7ecd577afe7a197",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/executions/20261121T234502Z-09285ce2/checker.json",
+      "change": "added",
+      "bytes": 8065,
+      "sha256": "58ae0966a8ebca7fea13b52eb75775fea2d3947fd73d762c389fc7bd60d1bb12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/executions/20261121T234502Z-09285ce2/correspondence.json",
+      "change": "added",
+      "bytes": 1585,
+      "sha256": "564b864dd2ae8c2150b4181689490097171f6ec196eb54f8fe9672ab8647f93f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "82789d27c3bea037a2302ad2290c095d6caa60ccaf760873ec47f392694a9b36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/plan.json",
+      "change": "added",
+      "bytes": 7554,
+      "sha256": "17a6291c45ece68e4ec4f001a58d553c5497688b38f3511a2af727f62c70f993",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/controls.json",
+      "change": "added",
+      "bytes": 11666,
+      "sha256": "aac82dcd2547ca3774b19d450f3ea784aafc978b8e7bb839081c02613323265f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/execution.json",
+      "change": "added",
+      "bytes": 34619,
+      "sha256": "0312e325333b97d7cf9ad7e09f433c615d903167d0bb1b04c6f24f943b11eb14",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "c4a1d0d4fb3357c7fbbac888f2be44af501f9cdf42cb8b12dbf89b8d56900a8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 472,
+      "sha256": "a43c1423c886ceb527bd1fdf99fee67f0db52549d42f056311721e736994bfaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier.json",
+      "change": "added",
+      "bytes": 22563,
+      "sha256": "de6744e5afec152a722ff24b265390ccb7f00a2eb9881bea0db95236f314b151",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5921,
+      "sha256": "091eeea08e0e604073edc1a9e832b512e14eae996056d14d5ce1e3e5bc00f56a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/result.json",
+      "change": "added",
+      "bytes": 17680,
+      "sha256": "598fa4d4b1a651e68c3b03172af24565c1a9727b137ebfc3e72f13889cedbbac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/executions/20261121T234501Z-8493c390/attempt.json",
+      "change": "added",
+      "bytes": 22346,
+      "sha256": "91bfe6cea9260eec16c69eae85d9753cc969efae9029130585b7f675aad7c5db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/executions/20261121T234501Z-8493c390/checker.json",
+      "change": "added",
+      "bytes": 8098,
+      "sha256": "30763199bff130b98280780857c991e97970777aa5941a3ba93811dfb6e26e89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/executions/20261121T234501Z-8493c390/correspondence.json",
+      "change": "added",
+      "bytes": 1588,
+      "sha256": "5f13bb4caaf942f32d5ade6b364424743e35f4d32062f2493e15ab94491991ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "39f4bbf113297be1f5c58d33539b0191744d09c0b836dc3691fc44fdcbe2813b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/plan.json",
+      "change": "added",
+      "bytes": 8203,
+      "sha256": "0149b9193063b1823f76a389f3a8eaa90c2ca12b8a7f455216be2ea48fcca8b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/controls.json",
+      "change": "added",
+      "bytes": 23520,
+      "sha256": "57038835f70e847c1d7c6e2967639927a7d3492f66aa648043fd04da9664ab59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/execution.json",
+      "change": "added",
+      "bytes": 24453,
+      "sha256": "c8228d039be0fa040939eb4594ab964d7be10631601c6da6741d1a807bb2a329",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/streams.json",
+      "change": "added",
+      "bytes": 1715,
+      "sha256": "303b26aa9fc2c62146edd4f35a286d26544b13af4c3243f1e3be5b67d0632304",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/summary.txt",
+      "change": "added",
+      "bytes": 720,
+      "sha256": "7e938ed16d10cc84c8546f1ec5bd85aa3d7046573a19af2f694e4f8403c80276",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/result.json",
+      "change": "added",
+      "bytes": 15772,
+      "sha256": "4a7518563f23ef067892b06f543e75e145fd4154013fb950b268037a772c4d78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/executions/20261121T234457Z-78f4761f/attempt.json",
+      "change": "added",
+      "bytes": 12450,
+      "sha256": "192e5d8aaf7003c9337382d6167fd0fb59436a1a8d7b3e6925e71813a3e2ed91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/run.json",
+      "change": "added",
+      "bytes": 593,
+      "sha256": "19c8a6d5060cafb674c5f1acfb05fab457016562d9ebc9e6fc36ed801b10b88b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/workflow.log",
+      "change": "added",
+      "bytes": 1191,
+      "sha256": "c54d04f88a4c106d5276c7a0c82e1fdb6f97f1a8f132d448fb87e4bd8fe3b8a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/batch.json",
+      "change": "added",
+      "bytes": 2627,
+      "sha256": "e4af880d6b469425567719b25b3214698a333894b663bbdef93b65c2f03f42b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/cursor-fix.json",
+      "change": "added",
+      "bytes": 8586,
+      "sha256": "d9bb40cb2317e4cb4e7b59745fb71635efab4290cb7b9548e6a1a95d30ed16be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/cursor-parent.json",
+      "change": "added",
+      "bytes": 11319,
+      "sha256": "7cc07f6561755ee30b2a72026d9069da9faee2b720b146e9fca719c0380d728d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/decimals-fix.json",
+      "change": "added",
+      "bytes": 8622,
+      "sha256": "726434bc4fbd2ce546a91d2e10f09ee320d67e9a89606e16c630b70c95d5b8a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/decimals-parent.json",
+      "change": "added",
+      "bytes": 11362,
+      "sha256": "62b9601417d94f98e37eaf216a4c17880fa9ff87f0e3a9cec0a668052a5d6468",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/run.json",
+      "change": "added",
+      "bytes": 579,
+      "sha256": "717400c360634391f33ecec0d418ccad4baec1e9f3eae8aca45bcfc40f5b3e91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/workflow.log",
+      "change": "added",
+      "bytes": 162,
+      "sha256": "5b957b7fe98636f9309eeeb3ff67a93c5c4af308117a41fc6d961013dc801afb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:45:47+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/20261121T234501Z-0a066768/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/executions/20261121T234501Z-0a066768/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/executions/20261121T234501Z-0a066768/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-fix/executions/20261121T234501Z-0a066768/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/20261121T234500Z-90029523/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/executions/20261121T234500Z-90029523/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/executions/20261121T234500Z-90029523/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/cursor-parent/executions/20261121T234500Z-90029523/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/20261121T234502Z-09285ce2/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/executions/20261121T234502Z-09285ce2/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/executions/20261121T234502Z-09285ce2/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-fix/executions/20261121T234502Z-09285ce2/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/20261121T234501Z-8493c390/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/executions/20261121T234501Z-8493c390/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/executions/20261121T234501Z-8493c390/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/decimals-parent/executions/20261121T234501Z-8493c390/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/records/summary.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/20261121T234457Z-78f4761f/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/replay/executions/20261121T234457Z-78f4761f/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/run.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native/workflow.log",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/batch.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/cursor-fix.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/cursor-parent.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/decimals-fix.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/20261121T234502Z-d07894cd/decimals-parent.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/run.json",
+      "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite/workflow.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "61f037ad756c22431176e67fd3a28fd2e186819b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/61f037ad756c22431176e67fd3a28fd2e186819b/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T234512Z-2614146a676509b4",
+      "outputs": "20261121T234512Z-291529ddd9eab8f9",
+      "diff": "20261121T234512Z-3160418d966d1897",
+      "workdir": "20261121T234515Z-384669aa58809cfa"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-233929-check-the-prepared-avro-729-baseline-on"
+}

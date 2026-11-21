@@ -42,7 +42,31 @@ public class WrappedBuffers {
         }
     }
 
+    public static boolean duplicate(boolean marked) {
+        byte[] bytes = {9, 2, 3, 8};
+        ByteBuffer original = ByteBuffer.wrap(bytes, 1, 2);
+        if (marked) original.mark();
+        ByteBuffer copy = original.duplicate();
+        if (copy == original || copy.array() != bytes || copy.capacity() != 4 || copy.limit() != 3) return false;
+        byte[] result = new byte[2];
+        copy.get(result);
+        if (result[0] != 2 || result[1] != 3 || original.position() != 1 || copy.position() != 3) return false;
+        copy.put(1, (byte) 7);
+        if (original.get(1) != 7 || bytes[1] != 7) return false;
+        if (marked) {
+            copy.reset();
+            if (copy.position() != 1) return false;
+        }
+        return true;
+    }
+
+    public static boolean wrongSharedCursor() {
+        ByteBuffer original = ByteBuffer.wrap(new byte[]{3, 7});
+        original.duplicate().get();
+        return original.position() == 1;
+    }
+
     public static void main(String[] args) {
-        if (!window(false) || !window(true) || !whole() || !invalid()) throw new AssertionError();
+        if (!window(false) || !window(true) || !whole() || !invalid() || !duplicate(false) || !duplicate(true) || wrongSharedCursor()) throw new AssertionError();
     }
 }

@@ -1439,7 +1439,9 @@ fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.WrappedBuffers").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["window", "whole", "invalid"] {
+    for name in ["window", "whole", "invalid", "duplicate"] {
         proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
     }
+    let wrong = run(&options(classes, "claims.WrappedBuffers#wrongSharedCursor", 4, "heap-buffer-cursor"));
+    assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
 }

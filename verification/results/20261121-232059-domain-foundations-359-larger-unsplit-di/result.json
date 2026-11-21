@@ -1,0 +1,312 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-232059-domain-foundations-359-larger-unsplit-di",
+  "title": "Domain foundations 359 larger unsplit diagnostic",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m11s, peak 575.0 MiB (estimated 5m00s, 3.0 GiB); 17 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-232059-domain-foundations-359-larger-unsplit-di.json",
+    "sha256": "2956f5e149de65e4918f119d7aeba81e666fb1d6d44141f7ae5912f38d8f5364",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-232059-domain-foundations-359-larger-unsplit-di",
+      "title": "Domain foundations 359 larger unsplit diagnostic",
+      "description": "Measure one unsplit strict native query with 180 seconds on the same guard, JDK, default solver and bounds. The exact per-input proof already covers the full domain. This measures performance only.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "359"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:20:59+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check foundation-180s",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 359 --route native --stage foundation-180s --tasks contents-fix --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native"
+      ]
+    }
+  },
+  "sourceCommit": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+  "startedAt": "2026-11-21T23:24:54+00:00",
+  "finishedAt": "2026-11-21T23:30:46+00:00",
+  "wallSeconds": 352.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2195921,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 602898432,
+    "wallSeconds": 131.4,
+    "cpuSeconds": 133.6,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.44
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check foundation-180s",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 359 --route native --stage foundation-180s --tasks contents-fix --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 131.422,
+      "cpuSeconds": 133.622,
+      "cpuThrottledSeconds": 0.115,
+      "peakMemoryBytes": 602898432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-foundation-180s.log",
+        "lines": 1,
+        "bytes": 476,
+        "sha256": "1f084c4359951a52f6305f3c959abc0f437e16fd2b09347e7d8a56d678e2eb9b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"359\", \"route\": \"native\", \"stage\": \"foundation-180s\", \"workflowExit\": 0, \"seconds\": 131.163, \"checkerSeconds\": 180, \"tasks\": [\"contents-fix\"], \"verifierCommit\": \"3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d\", \"checkerSha256\": \"5a8efb0dd81cbfbf886e4ee644af5d15d8495369e3227aa41e579f884d201246\""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "894341fbb9031cc2a195e47a4ab483943f126584b0a3be8e553877d4525076f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/plan.json",
+      "change": "added",
+      "bytes": 7517,
+      "sha256": "34490dd42215f87ae4365f722bdcf4f32e4ed1c6dda039d96988b9fa3d886467",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "7bb9416e1eed8604a32e1b8522a26aedbb18cb3de5a36164c2da3bc1bd8d3833",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/execution.json",
+      "change": "added",
+      "bytes": 626755,
+      "sha256": "99832d079b9610d8c55fbe4058dca4b8939e7179951d3bbd23175ff8ef131688",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "3d6b2113defc60fa3194045eebc438e78185141b06ea70ba6ba9bcfaec8fe938",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 293,
+      "sha256": "3eb99329e0a41f0fe239c82800f1871ae3c66cbf3428ae5459d7a876079c88a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier.json",
+      "change": "added",
+      "bytes": 14984,
+      "sha256": "9077794e941ea2350fff5e7b81bcc235027c1f1f5bccf05dbb077afbfc64733a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5312,
+      "sha256": "7a000aadd0b9c37083932b45a0e9b8de4826b74459909b481ba72381cfe72606",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/result.json",
+      "change": "added",
+      "bytes": 17112,
+      "sha256": "290516c0738252ef184a8f41a2e8f426463c9f64642369f9acabad1203bcc40d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/executions/20261121T232835Z-13364749/attempt.json",
+      "change": "added",
+      "bytes": 12408,
+      "sha256": "5c6f91740fa5a2e2b235a9b3a0260172eddf8a92e3c9706ca0254217c15df4b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/executions/20261121T232835Z-13364749/checker.json",
+      "change": "added",
+      "bytes": 6808,
+      "sha256": "725bc29fb99fa29c46fe4f50fa3d42fdd0fb83ca534ed5bf4c9f1eade5360e1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/executions/20261121T232835Z-13364749/correspondence.json",
+      "change": "added",
+      "bytes": 1504,
+      "sha256": "89e24e52409aaf278c8bd5306529268ff9cc2a5964a3e79da1cfcdb319c992c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/run.json",
+      "change": "added",
+      "bytes": 518,
+      "sha256": "61fbd6d373044f01340e8724f7343e8a73e895e305b1f143f6205e47fd58dcdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/workflow.log",
+      "change": "added",
+      "bytes": 238,
+      "sha256": "7aeb252fca5992b332b696b12959ce4e516ee340c52fde290c3f91518b211bb4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:33:18+00:00",
+    "applied": [
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/20261121T232835Z-13364749/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/executions/20261121T232835Z-13364749/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/executions/20261121T232835Z-13364749/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/contents-fix/executions/20261121T232835Z-13364749/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/run.json",
+      "examples/359-eclipse-boolean-list-insertion/records/foundation-180s-native/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1226860,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "426f4c91db2e578a5a5744892da13f5391cb9b51",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/426f4c91db2e578a5a5744892da13f5391cb9b51/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T233046Z-1395637fa9b9c0f0",
+      "outputs": "20261121T233046Z-174131e3eafd4fb2",
+      "diff": "20261121T233046Z-2029712731e6892a"
+    }
+  }
+}

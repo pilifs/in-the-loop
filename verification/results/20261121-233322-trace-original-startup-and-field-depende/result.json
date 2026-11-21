@@ -1,0 +1,213 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-233322-trace-original-startup-and-field-depende",
+  "title": "Trace original startup and field dependencies for 355",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.0s, peak 205.7 MiB (estimated 4m00s, 2.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-233322-trace-original-startup-and-field-depende.json",
+    "sha256": "f7c2b1cf0e9607468c9fcd550d1eece02433a0b5e9b0d44763f98a949ee8de70",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-233322-trace-original-startup-and-field-depende",
+      "title": "Trace original startup and field dependencies for 355",
+      "description": "Compare fresh ordinary and nontransforming JVMTI-observed JVM calls on both historical revisions. Record actual field instruction offsets, class initialization status, selected transitive class bytes, static declarations and candidate writers. Vary the process profiles and challenge the observer with a changed dependency.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:startup-effects"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:33:22+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "cc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Trace both original classpaths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/startup.py 355 --output examples/355-avro-writable-buffer-limit/records/foundation-profiles",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/foundation-profiles"
+      ]
+    }
+  },
+  "sourceCommit": "ca072c349c384adecf3cce4a35325fa369699e27",
+  "startedAt": "2026-11-21T23:38:04+00:00",
+  "finishedAt": "2026-11-21T23:39:05+00:00",
+  "wallSeconds": 61.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2411852,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 215642112,
+    "wallSeconds": 20.0,
+    "cpuSeconds": 27.1,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Trace both original classpaths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/startup.py 355 --output examples/355-avro-writable-buffer-limit/records/foundation-profiles",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 20.044,
+      "cpuSeconds": 27.116,
+      "cpuThrottledSeconds": 1.028,
+      "peakMemoryBytes": 215642112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-trace-both-original-classpaths.log",
+        "lines": 2,
+        "bytes": 109,
+        "sha256": "8b48639544796edd637b82ade627a8390b0d35bb1e510cacd5ce1e21a3d8e7b1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "355 parent 12 paired JVM profiles, 226 selected classes",
+        "355 fix 12 paired JVM profiles, 226 selected classes"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/foundation-profiles/fix/field-events.json.gz",
+      "change": "added",
+      "bytes": 176125,
+      "sha256": "6a0e1e3bf7f114edb3351fd1401fbe5105142235f4dbbe8cd74d812d971fe721",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/foundation-profiles/fix/profiles.json",
+      "change": "added",
+      "bytes": 17087,
+      "sha256": "58e81828b420b38d141b593788595e188da1c129686b5a30e44377c41befb6f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/foundation-profiles/fix/static-inventory.json.gz",
+      "change": "added",
+      "bytes": 39895,
+      "sha256": "7f70be2394cc590dcb2daf59490383949e110d7ee836324f501152523ecfbc24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/foundation-profiles/parent/field-events.json.gz",
+      "change": "added",
+      "bytes": 176072,
+      "sha256": "de937a745b24b556b7272b850d2bc50d1280fa11f9afdd07bcc50152988202d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/foundation-profiles/parent/profiles.json",
+      "change": "added",
+      "bytes": 17092,
+      "sha256": "27ec9fe17f50981d3ea24d45c97ef669d81964562e5539115c1fda5cca58e985",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/foundation-profiles/parent/static-inventory.json.gz",
+      "change": "added",
+      "bytes": 39895,
+      "sha256": "113034053f07475fc5b47100ace945586dc72f6d1c203f9b93eaf18bdcbb7aad",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:39:11+00:00",
+    "applied": [
+      "examples/355-avro-writable-buffer-limit/records/foundation-profiles/fix/field-events.json.gz",
+      "examples/355-avro-writable-buffer-limit/records/foundation-profiles/fix/profiles.json",
+      "examples/355-avro-writable-buffer-limit/records/foundation-profiles/fix/static-inventory.json.gz",
+      "examples/355-avro-writable-buffer-limit/records/foundation-profiles/parent/field-events.json.gz",
+      "examples/355-avro-writable-buffer-limit/records/foundation-profiles/parent/profiles.json",
+      "examples/355-avro-writable-buffer-limit/records/foundation-profiles/parent/static-inventory.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T233905Z-4966438ae5120cfb",
+      "outputs": "20261121T233905Z-529637219f64a6e8",
+      "diff": "20261121T233905Z-548149d973108e8f"
+    }
+  }
+}
