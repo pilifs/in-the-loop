@@ -14,7 +14,9 @@
 //! subclass) whose keys are Strings or null and whose values are held, an empty exact ConcurrentHashMap with
 //! its single-threaded registry model selected, and an array of integral primitives or of
 //! held references. A final application class with only final integral and String fields is held with every
-//! superclass through Object. The observer binds each declaring class's bytes and field layout. Two fields
+//! superclass through Object. A final application enum can also hold its own constants, including their
+//! inherited name and ordinal. The checker binds the bootstrap getters to their actual fields and refuses
+//! other bootstrap field accesses. The observer binds each declaring class's bytes and field layout. Two fields
 //! that hold one object hold one object here. Any other value (a `float` or an `IdentityHashMap`) is **not held**: the field has no value in the
 //! check, and a read of it before the check writes it is refused by name ([`Observed::fields`]), so nothing is
 //! made up for it.
@@ -81,6 +83,7 @@ use crate::Error;
 /// The program that observes one class, as Java: javac compiles it and a JVM runs it once for each class.
 const SOURCE: &str = include_str!("observed/ObservedInitializer.java");
 const CLASS: &str = "ObservedInitializer";
+pub(crate) const ENUM: &str = "java/lang/Enum";
 /// The line of its output that holds the observation.
 const MARK: &str = "@observed ";
 /// How long the JVM is given for one class.
@@ -238,7 +241,7 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
     let absolute = |p: &Path| std::path::absolute(p).unwrap_or_else(|_| p.to_path_buf());
     let entries: Vec<PathBuf> = std::iter::once(absolute(&dir)).chain(classpath.iter().map(|e| absolute(e))).collect();
     let class_path = std::env::join_paths(&entries).map_err(|e| Error::new(format!("a class path entry cannot be joined: {e}")))?;
-    let mut tool = crate::classpath::ClassPath::new();
+    let mut tool = crate::classpath::ClassPath::new().with_jdk(crate::jimage::JImage::open(&home)?);
     for entry in &entries[1..] {
         tool.add(entry)?;
     }
@@ -343,6 +346,31 @@ fn tool_sha256(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Opt
     Ok(tool.application_bytes(internal)?.map(|b| crate::digest::sha256_hex(&b)))
 }
 
+/// Bind the two final public getters read by the observer to the fields used by this JDK.
+/// In particular, no value is supplied for JDKs that also cache an identity hash in Enum.
+fn bind_enum_base(observed: &Observed, base: &ValueClass, tool: &crate::classpath::ClassPath) -> Result<bool, Error> {
+    use crate::classfile::{Insn, Kind};
+    let Some(image) = tool.jdk() else { return Ok(false) };
+    let Some(bytes) = image.read_class(ENUM)? else { return Ok(false) };
+    let Some(loaded) = tool.load(ENUM)? else { return Ok(false) };
+    if loaded.origin != crate::classpath::Origin::Jdk || crate::digest::sha256_hex(&bytes) != base.sha256 || base.fields.len() != 2 {
+        return Ok(false);
+    }
+    for (name, descriptor, kind) in [("name", "Ljava/lang/String;", Kind::Ref), ("ordinal", "I", Kind::Int)] {
+        let Some(method) = loaded.class.method(name, &format!("(){descriptor}")).filter(|m| m.is_final()) else { return Ok(false) };
+        let Some(insns) = method.code.as_ref().filter(|c| c.exception_table.is_empty()).and_then(|c| c.instructions().ok()) else { return Ok(false) };
+        let [(_, Insn::Load(Kind::Ref, 0)), (_, Insn::GetField(index)), (_, Insn::Return(Some(result)))] = insns.as_slice() else { return Ok(false) };
+        let member = loaded.class.pool.member(*index)?;
+        if *result != kind || member.owner != ENUM || member.name != name || member.descriptor != descriptor { return Ok(false); }
+        match base.fields.get(&(name.into(), descriptor.into())) {
+            Some(Slot::Object(id)) if kind == Kind::Ref && matches!(observed.objects.get(*id), Some(Object::Str { .. })) => {}
+            Some(Slot::Number(n)) if kind == Kind::Int && i32::try_from(*n).is_ok() => {}
+            _ => return Ok(false),
+        }
+    }
+    Ok(true)
+}
+
 /// Check every declaring class independently. The JVM's class-loader resource and
 /// the verifier's selected bytes must agree, and no inherited field may be omitted.
 fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::ClassPath) -> Result<(), Error> {
@@ -350,6 +378,13 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
         let Object::Value(chain) = object else { continue };
         for (i, part) in chain.iter().enumerate() {
             let mismatch = || Error::new(format!("--observed-initializer {binary}: immutable value {} does not match its selected application class bytes or complete field layout", part.name));
+            if part.name == ENUM {
+                if i != 1 || chain.len() != 2 || chain[0].name != binary.replace('.', "/")
+                    || !tool.application(&chain[0].name)?.is_some_and(|cf| cf.is_enum()) || !bind_enum_base(observed, part, tool)? {
+                    return Err(mismatch());
+                }
+                continue;
+            }
             let cf = tool.application(&part.name)?.ok_or_else(mismatch)?;
             let parent = chain.get(i + 1).map_or("java/lang/Object", |c| &c.name);
             if tool_sha256(tool, &part.name)?.as_deref() != Some(part.sha256.as_str()) || (i == 0 && !cf.is_final())
@@ -540,7 +575,7 @@ pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous
         let held = format!("{}/{class}", previous.prefix);
         for object in &mut observed.objects {
             if let Object::Value(chain) = object {
-                for part in chain {
+                for part in chain.iter_mut().filter(|p| p.name != ENUM) {
                     let Found::Class(held) = previous.find(&part.name) else {
                         return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the previous version's immutable value class {}", part.name)));
                     };
@@ -548,10 +583,15 @@ pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous
                 }
                 continue;
             }
-            let Object::Class(name) = object else { continue };
-            // A class by its internal name, or an array of one by its descriptor (`[Lx/Y;`).
+            let name = match object {
+                Object::Class(name) => name,
+                Object::Array { element, .. } => element,
+                _ => continue,
+            };
+            // Class literals use internal names; an array element is a descriptor, possibly another array.
             let (open, element, close) = match name.rfind("[L") {
                 Some(at) if name.ends_with(';') => (&name[..at + 2], &name[at + 2..name.len() - 1], ";"),
+                None if name.starts_with('L') && name.ends_with(';') => ("L", &name[1..name.len() - 1], ";"),
                 _ if name.starts_with('[') => continue,
                 _ => ("", name.as_str(), ""),
             };

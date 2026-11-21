@@ -92,8 +92,9 @@ def main():
             parser.error("the original native executable differs from the baseline")
         env.update(JVMCONTRACT=str(exe), JVMCONTRACT_LIB_TREE=pin["libTree"], VERIFY_SOURCE_COMMIT=pin["revision"])
     archive.mkdir(parents=True, exist_ok=False)
-    tasks = args.tasks or ",".join(t["id"] for t in read(folder / "target.json")["tasks"]
-                                  if args.route == "native" or t["kind"] != "replay")
+    target = read(folder / "target.json")
+    original = [t for t in target["tasks"] if t["kind"] == "replay" or not read(folder / t["claim"]).get("observedInitializers")]
+    tasks = args.tasks or ",".join(t["id"] for t in original if args.route == "native" or t["kind"] != "replay")
     argv = [sys.executable, "examples/tools/build.py", args.example]
     if args.route == "finite":
         argv += ["--finite-domain", "--tasks", tasks, "--checker-seconds", str(args.seconds)]

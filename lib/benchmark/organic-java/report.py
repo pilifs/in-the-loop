@@ -136,7 +136,10 @@ def score(number, case, stages):
     product_runs = (folder / "records" / (stage + "-native") / "run.json"
                     for stage in stages if stage in ("confirmation", "final", "reserve"))
     pinned = next((read(path) for path in product_runs if path.is_file()), None)
-    for task in target["tasks"]:
+    frozen_tasks = read(folder / "records/baseline-native/run.json")["tasks"]
+    registered = {task["id"]: task for task in target["tasks"]}
+    for name in frozen_tasks:
+        task = registered[name]
         if task["kind"] == "replay":
             continue
         plan = route.resolve(folder, ex, target, task["id"])

@@ -781,6 +781,9 @@ impl ClassPath {
             | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
             | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
+            | ("java/util/Collections", "unmodifiableList", "(Ljava/util/List;)Ljava/util/List;")
+            | ("java/util/Collections", "singletonList", "(Ljava/lang/Object;)Ljava/util/List;")
+            | ("java/util/Collections", "singletonIterator", "(Ljava/lang/Object;)Ljava/util/Iterator;")
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
             | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
@@ -1012,6 +1015,9 @@ impl ClassPath {
             | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"
             | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
             | "java/util/TimSort" | "java/util/ComparableTimSort" | "java/util/BitSet"
+            | "java/util/Stack" | "java/util/Vector" | "java/util/Collections$SingletonList" | "java/util/Collections$1"
+            | "java/util/Collections$UnmodifiableList" | "java/util/Collections$UnmodifiableRandomAccessList"
+            | "java/util/Collections$UnmodifiableCollection$1"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
             | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"

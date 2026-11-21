@@ -111,6 +111,34 @@ fn proving(target: &str, assert: &str, name: &str) -> property::Options {
     o
 }
 
+#[test]
+fn observed_enum_constants_keep_their_aliases_and_both_declaring_classes_fields() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(&c.app).arg("oc.ObservedModes").output().unwrap();
+    assert!(jvm.status.success());
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true");
+
+    let observed = |entry, owner: &str, work| {
+        let mut o = proving(entry, "result", work);
+        o.observed_initializers = vec![owner.into()];
+        property::run(&o).unwrap()
+    };
+    let own = observed("oc.ObservedModes#matches", "oc.ObservedModes", "enum-fields");
+    assert_eq!(own.verdict, Verdict::Verified, "{}", own.output);
+    assert!(own.stated.unwrap().assumptions.iter().any(|a| a.text.contains("oc.mode, not set")));
+    let borrowed = observed("oc.ObservedModes$Borrower#matches", "oc.ObservedModes$Borrower", "foreign-enum");
+    assert_eq!(borrowed.verdict, Verdict::Unverifiable, "{}", borrowed.output);
+    assert!(borrowed.output.contains("COPIED") && borrowed.output.contains("no value"), "{}", borrowed.output);
+
+    let cp = jvmcontract::classpath::ClassPath::new().with_default_jdk();
+    if cp.load("java/lang/Enum").unwrap().unwrap().class.field("hash").is_some() {
+        let hash = observed("oc.ObservedModes#stableHash", "oc.ObservedModes", "enum-hash");
+        assert_eq!(hash.verdict, Verdict::Unverifiable, "{}", hash.output);
+        assert!(hash.output.contains("java.lang.Enum.hash"), "{}", hash.output);
+    }
+}
+
 /// A class a multi-release JAR holds a class file of for Java 17 on is the one a JVM 17+ runs: `mr.Release.get()`
 /// is 20 there, not the base file's 1. The tool read only the base, and so proved `released() == 1` and
 /// `releasedField() == 1`, found `released() == 20` violated on a witness whose outcome was 1, and, with the class's

@@ -458,6 +458,7 @@ public final class ObservedInitializer {
         private final IdentityHashMap<Object, Integer> ids = new IdentityHashMap<>();
         private final List<String> objects = new ArrayList<>();
         private final boolean describe;
+        private Class<?> owner;
 
         Dump(boolean describe) {
             this.describe = describe;
@@ -465,6 +466,7 @@ public final class ObservedInitializer {
 
         /** `"fields":[...],"objects":[...]` of the class's static fields. */
         String of(Class<?> c) {
+            owner = c;
             StringBuilder fields = new StringBuilder();
             for (Field f : c.getDeclaredFields()) {
                 if (!Modifier.isStatic(f.getModifiers())) {
@@ -531,13 +533,13 @@ public final class ObservedInitializer {
             return "{\"n\":" + ((Number) boxed).longValue() + "}";
         }
 
-        /** A final application value with only final integral and String fields all the
-         * way to Object. Read the complete layout without invoking any application code. */
+        /** Only the observed enum owns its constants. Another class's copy would lose singleton identity. */
         private List<Class<?>> valueHierarchy(Class<?> type) {
             if (!Modifier.isFinal(type.getModifiers()) || type.isHidden() || type.isArray()) return null;
             List<Class<?>> hierarchy = new ArrayList<>();
             boolean hasField = false;
             for (Class<?> c = type; c != Object.class; c = c.getSuperclass()) {
+                if (c == Enum.class && type == owner && type.isEnum()) return hierarchy;
                 if (c == null || c.getClassLoader() != ClassLoader.getSystemClassLoader()) return null;
                 hierarchy.add(c);
                 for (Field f : c.getDeclaredFields()) {
@@ -567,6 +569,13 @@ public final class ObservedInitializer {
                 }
                 String digest = sha256(c.getClassLoader(), name);
                 classes.add("{\"name\":" + text(name) + ",\"sha256\":" + text(digest) + ",\"fields\":[" + String.join(",", fields) + "]}");
+            }
+            if (instance instanceof Enum<?> constant) {
+                // Final bootstrap getters. The checker verifies their bytecode and refuses reads of other Enum fields.
+                String digest = sha256(ClassLoader.getPlatformClassLoader(), "java/lang/Enum");
+                classes.add("{\"name\":\"java/lang/Enum\",\"sha256\":" + text(digest) + ",\"fields\":["
+                        + "{\"name\":\"name\",\"type\":\"Ljava/lang/String;\",\"value\":" + value(constant.name()) + "},"
+                        + "{\"name\":\"ordinal\",\"type\":\"I\",\"value\":" + primitive(int.class, constant.ordinal()) + "}]}");
             }
             return "{\"k\":\"value\",\"classes\":[" + String.join(",", classes) + "]}";
         }

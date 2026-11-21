@@ -4833,6 +4833,15 @@ impl<'a> Engine<'a> {
             return Ok(throwables::SUPPRESSED.into());
         }
         let class = &path.objects[o].class;
+        // Observed enum constants carry their own fields and the two verified bootstrap getters.
+        // A private field added by a JDK (for example its cached hash) has no observed value.
+        if self.is_observed(class) && self.cp.is_subtype(class, crate::observed::ENUM) {
+            let declaring = self.cp.resolve_field(owner, name, descriptor).ok_or_else(|| Stop::Unsupported(format!("no field {}.{name}", owner.replace('/', "."))))?;
+            if declaring == crate::observed::ENUM && !matches!((name, descriptor), ("name", "Ljava/lang/String;") | ("ordinal", "I")) {
+                return unsupported(format!("reads or writes java.lang.Enum.{name}, outside the observed state of {}", class.replace('/', ".")));
+            }
+            return Ok(self.cp.field_key(class, &declaring, name));
+        }
         // The active model's own bytecode can access representation fields absent from the JDK class.
         // A subclass declaring the same name still has a distinct field.
         if let Some(frame) = path.frames.last().filter(|f| f.class.name == owner && self.cp.runs_model(owner)) {
