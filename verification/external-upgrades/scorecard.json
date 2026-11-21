@@ -3,17 +3,17 @@
   "groups": {
     "main": {
       "attempted": 24,
-      "changes": 1,
-      "preservations": 8,
-      "open": 15,
+      "changes": 2,
+      "preservations": 12,
+      "open": 10,
       "v0Relevant": 0,
       "unresolvedContradictedAssurances": 0
     },
     "transfer": {
       "attempted": 8,
-      "changes": 1,
+      "changes": 2,
       "preservations": 2,
-      "open": 5,
+      "open": 4,
       "v0Relevant": 0,
       "unresolvedContradictedAssurances": 0
     }
@@ -25,7 +25,8 @@
       "preserved": 1
     },
     "new": {
-      "open": 3,
+      "open": 2,
+      "changed": 1,
       "preserved": 1
     }
   },
@@ -60,7 +61,62 @@
           "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-38/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 31.93,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-38/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 16.35,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-38/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 7.6,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-38/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 9.91,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "compcheck": {
+        "file": "verification/external-upgrades/compcheck-runs/compsuite-i-38/treatments.json",
+        "sites": [
+          "c4-4",
+          "c4-5",
+          "c4-6"
+        ],
+        "treatments": 6,
+        "withMatchingStockContext": 3,
+        "sameIncidentRemoved": true
+      },
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/03/compsuite-i-38.json",
+          "state": "changed",
+          "reason": null,
+          "seconds": 4.399
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/03/compsuite-i-38.json",
         "seconds": 4.399,
@@ -68,7 +124,12 @@
         "oracleDisagreements": [],
         "differences": [
           0
-        ]
+        ],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "compsuite-i-1": {
@@ -77,7 +138,7 @@
       "family": "wire-runtime",
       "familyRelation": null,
       "v0": "open",
-      "current": "open",
+      "current": "preserved",
       "relevant": false,
       "epochs": {
         "intake-1": {
@@ -96,7 +157,86 @@
           "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-1/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 12.3,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-1/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 10.96,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 51.62,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "retrofit2.converter.wire.WireConverterFactoryTest",
+              "method": "serializeAndDeserialize",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 24.08,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "retrofit2.converter.wire.WireConverterFactoryTest",
+              "method": "serializeAndDeserialize",
+              "outcome": "error",
+              "type": "java.lang.NoSuchMethodError",
+              "message": "okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-1.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 5.177
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-1.json",
+        "seconds": 5.177,
+        "inputs": 2,
+        "oracleDisagreements": [],
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [
+          {
+            "kind": "java",
+            "file": "Phone.java",
+            "source": "retrofit-converters/wire/src/test/java/retrofit2/converter/wire/Phone.java",
+            "sha256": "1666f5317a58c0507f121d65da1469efe33df538157ed79fe3da9aaba5dd416e",
+            "class": "retrofit2.converter.wire.Phone"
+          }
+        ],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "compsuite-i-70": {
       "set": "main",
@@ -123,7 +263,104 @@
           "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-70/old/summary.json",
+          "status": "passed",
+          "tests": 41,
+          "seconds": 15.54,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.monitorjbl.xlsx.StreamingSheetTest",
+              "method": "testEmptyCellShouldHaveGeneralStyle",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-70/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 41,
+          "seconds": 22.63,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.monitorjbl.xlsx.StreamingSheetTest",
+              "method": "testEmptyCellShouldHaveGeneralStyle",
+              "outcome": "error",
+              "type": "java.lang.IncompatibleClassChangeError",
+              "message": "Found class org.apache.poi.util.POILogger, but interface was expected"
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 7.14,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.monitorjbl.xlsx.StreamingSheetTest",
+              "method": "testEmptyCellShouldHaveGeneralStyle",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 6.92,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.monitorjbl.xlsx.StreamingSheetTest",
+              "method": "testEmptyCellShouldHaveGeneralStyle",
+              "outcome": "error",
+              "type": "java.lang.IncompatibleClassChangeError",
+              "message": "Found class org.apache.poi.util.POILogger, but interface was expected"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/03/compsuite-i-70.json",
+          "state": "open",
+          "reason": "new input 0: the original caller method was never entered. java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303)",
+          "seconds": null
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/03/compsuite-i-70.json",
+        "seconds": null,
+        "inputs": 1,
+        "oracleDisagreements": null,
+        "differences": null,
+        "runtimeCompanions": [],
+        "originalFixtures": [
+          {
+            "kind": "resource",
+            "file": "large.xlsx",
+            "source": "src/test/resources/large.xlsx",
+            "sha256": "1688458848b942e9c8ee73210829972b7e62b23464669638bb42f56822e54243"
+          }
+        ],
+        "stoppedAt": {
+          "side": "new",
+          "input": 0,
+          "repetition": 1,
+          "exception": "java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303)"
+        },
+        "reason": "new input 0: the original caller method was never entered. java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303)",
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "compsuite-i-10": {
       "set": "main",
@@ -150,7 +387,44 @@
           "firstBlocker": "original Maven classpath"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-10/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 26.06,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-10/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 14.35,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-10/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 6.89,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-10/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 6.82,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": []
     },
     "compsuite-i-85": {
       "set": "main",
@@ -177,7 +451,72 @@
           "firstBlocker": "original classpath"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-85/old/summary.json",
+          "status": "passed",
+          "tests": 3,
+          "seconds": 9.68,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+              "method": "canNotPurchaseIfOfferChanged",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-85/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3,
+          "seconds": 13.79,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+              "method": "canNotPurchaseIfOfferChanged",
+              "outcome": "error",
+              "type": "java.lang.IllegalStateException",
+              "message": "Failed to load ApplicationContext"
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 9.35,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+              "method": "canNotPurchaseIfOfferChanged",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 10.44,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+              "method": "canNotPurchaseIfOfferChanged",
+              "outcome": "error",
+              "type": "java.lang.IllegalStateException",
+              "message": "Failed to load ApplicationContext"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": []
     },
     "compsuite-i-9": {
       "set": "main",
@@ -204,7 +543,44 @@
           "firstBlocker": "original Maven classpath"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-9/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 11.29,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/01/compsuite-i-9/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 16.2,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-9/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 28.82,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-9/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 9.83,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": []
     },
     "compsuite-i-4": {
       "set": "main",
@@ -231,7 +607,94 @@
           "firstBlocker": "getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-4/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 29.6,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-4/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 332,
+          "seconds": 27.68,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
+              "method": "testGetFactoryFromRegistry",
+              "outcome": "error",
+              "type": "java.lang.ExceptionInInitializerError",
+              "message": ""
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 5.0,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 14.61,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
+              "method": "testGetFactoryFromRegistry",
+              "outcome": "error",
+              "type": "java.lang.ExceptionInInitializerError",
+              "message": ""
+            }
+          ]
+        }
+      },
+      "compcheck": {
+        "file": "verification/external-upgrades/compcheck-runs/compsuite-i-4/treatments.json",
+        "sites": [
+          "c6-2",
+          "c6-3"
+        ],
+        "treatments": 2,
+        "withMatchingStockContext": 0,
+        "sameIncidentRemoved": false
+      },
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-4.json",
+          "state": "open",
+          "reason": "old input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)",
+          "seconds": null
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-4.json",
+        "seconds": null,
+        "inputs": 2,
+        "oracleDisagreements": null,
+        "differences": null,
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": {
+          "side": "old",
+          "input": 0,
+          "repetition": 1,
+          "exception": "com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)"
+        },
+        "reason": "old input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)",
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "compsuite-i-62": {
       "set": "main",
@@ -258,7 +721,64 @@
           "firstBlocker": "original Maven classpath"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-62/old/summary.json",
+          "status": "passed",
+          "tests": 94,
+          "seconds": 27.11,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
+              "method": "testAddCarsExcludeGroupsIgnore",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-62/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 64,
+          "seconds": 26.94,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 12.97,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
+              "method": "testAddCarsExcludeGroupsIgnore",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 12.79,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptorTest",
+              "method": "testAddCarsExcludeGroupsIgnore",
+              "outcome": "error",
+              "type": "java.lang.IllegalStateException",
+              "message": "Failed to load ApplicationContext"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": []
     },
     "compsuite-i-94": {
       "set": "main",
@@ -285,7 +805,58 @@
           "firstBlocker": "original Maven classpath"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-94/old/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1153,
+          "seconds": 75.78,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-94/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1153,
+          "seconds": 57.75,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-94/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 24.16,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.alibaba.citrus.service.form.impl.validation.DateValidatorTests",
+              "method": "validate_minDate",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-94/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 40.36,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.alibaba.citrus.service.form.impl.validation.DateValidatorTests",
+              "method": "validate_minDate",
+              "outcome": "error",
+              "type": "java.lang.NoSuchFieldError",
+              "message": "STANDARD_NUMBER_TYPES"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": []
     },
     "compsuite-i-81": {
       "set": "main",
@@ -312,7 +883,44 @@
           "firstBlocker": "original Maven classpath"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-81/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 8.58,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-81/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 4.32,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-81/old/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 4.78,
+          "namedTestExecuted": false,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-81/new/summary.json",
+          "status": "failed before tests",
+          "tests": 0,
+          "seconds": 4.76,
+          "namedTestExecuted": false,
+          "named": []
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": []
     },
     "compsuite-i-39": {
       "set": "main",
@@ -320,7 +928,7 @@
       "family": "ASM",
       "familyRelation": null,
       "v0": "open",
-      "current": "open",
+      "current": "preserved",
       "relevant": false,
       "epochs": {
         "intake-1": {
@@ -339,7 +947,100 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-39/old/summary.json",
+          "status": "passed",
+          "tests": 106,
+          "seconds": 10.82,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.ea.async.instrumentation.TransformerTest",
+              "method": "simpleAsyncMethod",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-39/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 106,
+          "seconds": 10.89,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.ea.async.instrumentation.TransformerTest",
+              "method": "simpleAsyncMethod",
+              "outcome": "error",
+              "type": "java.lang.IllegalArgumentException",
+              "message": "Unsupported api 17235968"
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-39/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 8.48,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.ea.async.instrumentation.TransformerTest",
+              "method": "simpleAsyncMethod",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-39/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 8.68,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.ea.async.instrumentation.TransformerTest",
+              "method": "simpleAsyncMethod",
+              "outcome": "error",
+              "type": "java.lang.IllegalArgumentException",
+              "message": "Unsupported api 17235968"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/03/compsuite-i-39.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 5.57
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/03/compsuite-i-39.json",
+        "seconds": 5.57,
+        "inputs": 2,
+        "oracleDisagreements": [],
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [
+          {
+            "kind": "java",
+            "file": "Task.java",
+            "source": "async/src/test/java/com/ea/async/Task.java",
+            "sha256": "c7a40dc32645fe0c0cef73545226447f70a78e4e7c8639411da112120373626a",
+            "class": "com.ea.async.Task"
+          }
+        ],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "compsuite-i-29": {
       "set": "main",
@@ -347,8 +1048,8 @@
       "family": "Jackson",
       "familyRelation": null,
       "v0": "open",
-      "current": "open",
-      "relevant": false,
+      "current": "changed",
+      "relevant": true,
       "epochs": {
         "intake-1": {
           "file": "verification/external-upgrades/corpus-runs/intake-1/04/V0/compsuite-i-29.json",
@@ -366,7 +1067,102 @@
           "firstBlocker": "runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-29/old/summary.json",
+          "status": "passed",
+          "tests": 69,
+          "seconds": 33.0,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.uber.profiling.ArgumentsTest",
+              "method": "processConfigProvider_OverrideConfigProvider",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/02/compsuite-i-29/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 64,
+          "seconds": 9.6,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.uber.profiling.ArgumentsTest",
+              "method": "processConfigProvider_OverrideConfigProvider",
+              "outcome": "failure",
+              "type": "java.lang.AssertionError",
+              "message": "expected:<9001> but was:<9000>"
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-29/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 7.58,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.uber.profiling.ArgumentsTest",
+              "method": "processConfigProvider_OverrideConfigProvider",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-29/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 7.36,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.uber.profiling.ArgumentsTest",
+              "method": "processConfigProvider_OverrideConfigProvider",
+              "outcome": "failure",
+              "type": "java.lang.AssertionError",
+              "message": "expected:<9001> but was:<9000>"
+            }
+          ]
+        }
+      },
+      "compcheck": {
+        "file": "verification/external-upgrades/compcheck-runs/compsuite-i-29/treatments.json",
+        "sites": [
+          "c3-1"
+        ],
+        "treatments": 1,
+        "withMatchingStockContext": 1,
+        "sameIncidentRemoved": false
+      },
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-29.json",
+          "state": "changed",
+          "reason": null,
+          "seconds": 6.416
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-29.json",
+        "seconds": 6.416,
+        "inputs": 2,
+        "oracleDisagreements": [],
+        "differences": [
+          0
+        ],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "compsuite-i-36": {
       "set": "transfer",
@@ -393,7 +1189,90 @@
           "firstBlocker": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-36/old/summary.json",
+          "status": "passed",
+          "tests": 3,
+          "seconds": 33.01,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.jupiter.common.util.ReflectsTest",
+              "method": "testFindMatchingMethod",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-36/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3,
+          "seconds": 20.01,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.jupiter.common.util.ReflectsTest",
+              "method": "testFindMatchingMethod",
+              "outcome": "error",
+              "type": "java.lang.IllegalArgumentException",
+              "message": "Class versions V1_5 or less must use F_NEW frames."
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 12.45,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.jupiter.common.util.ReflectsTest",
+              "method": "testFindMatchingMethod",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 21.87,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.jupiter.common.util.ReflectsTest",
+              "method": "testFindMatchingMethod",
+              "outcome": "error",
+              "type": "java.lang.IllegalArgumentException",
+              "message": "Class versions V1_5 or less must use F_NEW frames."
+            }
+          ]
+        }
+      },
+      "compcheck": {
+        "file": "verification/external-upgrades/compcheck-runs/compsuite-i-36/treatments.json",
+        "sites": [
+          "c4-1",
+          "c4-2",
+          "c4-3"
+        ],
+        "treatments": 3,
+        "withMatchingStockContext": 3,
+        "sameIncidentRemoved": false
+      },
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-36.json",
+          "state": "changed",
+          "reason": null,
+          "seconds": 4.853
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-36.json",
         "seconds": 4.853,
@@ -402,7 +1281,12 @@
         "differences": [
           0,
           1
-        ]
+        ],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "compsuite-i-103": {
@@ -430,7 +1314,72 @@
           "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-103/old/summary.json",
+          "status": "passed",
+          "tests": 48,
+          "seconds": 47.25,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest",
+              "method": "testFirstOrder",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-103/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 55,
+          "seconds": 42.8,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest",
+              "method": "testFirstOrder",
+              "outcome": "error",
+              "type": "java.lang.NoClassDefFoundError",
+              "message": "org/springframework/core/ErrorCoded"
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 19.85,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest",
+              "method": "testFirstOrder",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 9.95,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest",
+              "method": "testFirstOrder",
+              "outcome": "error",
+              "type": "java.lang.NoClassDefFoundError",
+              "message": "org/springframework/core/ErrorCoded"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": []
     },
     "compsuite-i-37": {
       "set": "transfer",
@@ -438,7 +1387,7 @@
       "family": "core",
       "familyRelation": "new",
       "v0": "open",
-      "current": "open",
+      "current": "preserved",
       "relevant": false,
       "epochs": {
         "intake-1": {
@@ -457,7 +1406,88 @@
           "firstBlocker": "original Maven classpath"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-37/old/summary.json",
+          "status": "passed",
+          "tests": 66,
+          "seconds": 18.35,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "net.glxn.qrgen.javase.QRCodeTest",
+              "method": "shouldGetFileFromTextWithDefaults",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-37/new/summary.json",
+          "status": "passed",
+          "tests": 66,
+          "seconds": 19.5,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "net.glxn.qrgen.javase.QRCodeTest",
+              "method": "shouldGetFileFromTextWithDefaults",
+              "outcome": "passed"
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 7.54,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "net.glxn.qrgen.javase.QRCodeTest",
+              "method": "shouldGetFileFromTextWithDefaults",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 7.08,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "net.glxn.qrgen.javase.QRCodeTest",
+              "method": "shouldGetFileFromTextWithDefaults",
+              "outcome": "passed"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/04/compsuite-i-37.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 9.044
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/04/compsuite-i-37.json",
+        "seconds": 9.044,
+        "inputs": 3,
+        "oracleDisagreements": [],
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "compsuite-i-80": {
       "set": "transfer",
@@ -465,8 +1495,8 @@
       "family": "slf4j-api",
       "familyRelation": "new",
       "v0": "open",
-      "current": "open",
-      "relevant": false,
+      "current": "changed",
+      "relevant": true,
       "epochs": {
         "intake-1": {
           "file": "verification/external-upgrades/corpus-runs/intake-1/05/V0/compsuite-i-80.json",
@@ -484,16 +1514,110 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-80/old/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 90,
+          "seconds": 20.7,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.zeroturnaround.exec.test.ProcessExecutorLoggerTest",
+              "method": "testShortName",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/05/compsuite-i-80/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 90,
+          "seconds": 20.1,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.zeroturnaround.exec.test.ProcessExecutorLoggerTest",
+              "method": "testShortName",
+              "outcome": "failure",
+              "type": "org.junit.ComparisonFailure",
+              "message": "expected:<[org.zeroturnaround.exec.test.ProcessExecutorLoggerTest.MyLogger]> but was:<[NOP]>"
+            }
+          ]
+        }
+      },
+      "focusedCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/summary.json",
+          "status": "passed",
+          "tests": 1,
+          "seconds": 6.34,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.zeroturnaround.exec.test.ProcessExecutorLoggerTest",
+              "method": "testShortName",
+              "outcome": "passed"
+            }
+          ]
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 1,
+          "seconds": 6.38,
+          "namedTestExecuted": true,
+          "named": [
+            {
+              "class": "org.zeroturnaround.exec.test.ProcessExecutorLoggerTest",
+              "method": "testShortName",
+              "outcome": "failure",
+              "type": "org.junit.ComparisonFailure",
+              "message": "expected:<[org.zeroturnaround.exec.test.ProcessExecutorLoggerTest.MyLogger]> but was:<[NOP]>"
+            }
+          ]
+        }
+      },
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-80.json",
+          "state": "open",
+          "reason": null,
+          "seconds": 4.528
+        },
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-80.json",
+          "state": "changed",
+          "reason": null,
+          "seconds": 5.197
+        }
+      ],
       "finite": {
-        "file": "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-80.json",
-        "seconds": 4.528,
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-80.json",
+        "seconds": 5.197,
         "inputs": 2,
-        "oracleDisagreements": [
+        "oracleDisagreements": [],
+        "differences": [
           0,
           1
         ],
-        "differences": []
+        "runtimeCompanions": [
+          {
+            "mavenPath": "ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar",
+            "sha256": "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22"
+          },
+          {
+            "mavenPath": "ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar",
+            "sha256": "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
+          }
+        ],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "ea-async-27": {
@@ -521,13 +1645,46 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/ea-async-27/old/summary.json",
+          "status": "passed",
+          "tests": 106,
+          "seconds": 35.35,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/ea-async-27/new/summary.json",
+          "status": "passed",
+          "tests": 106,
+          "seconds": 17.93,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/06/ea-async-27.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 20.322
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/06/ea-async-27.json",
         "seconds": 20.322,
         "inputs": 8,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "whatjdk-12": {
@@ -555,13 +1712,46 @@
           "firstBlocker": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/whatjdk-12/old/summary.json",
+          "status": "zero tests",
+          "tests": 0,
+          "seconds": 17.5,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/whatjdk-12/new/summary.json",
+          "status": "zero tests",
+          "tests": 0,
+          "seconds": 7.6,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/06/whatjdk-12.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 9.471
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/06/whatjdk-12.json",
         "seconds": 9.471,
         "inputs": 4,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "incremental-analysis-28": {
@@ -570,8 +1760,8 @@
       "family": "ASM",
       "familyRelation": null,
       "v0": "open",
-      "current": "open",
-      "relevant": false,
+      "current": "preserved",
+      "relevant": true,
       "epochs": {
         "intake-1": {
           "file": "verification/external-upgrades/corpus-runs/intake-1/01/V0/incremental-analysis-28.json",
@@ -589,16 +1779,53 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/incremental-analysis-28/old/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3,
+          "seconds": 37.21,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/incremental-analysis-28/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3,
+          "seconds": 39.82,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/06/incremental-analysis-28.json",
+          "state": "open",
+          "reason": null,
+          "seconds": 7.208
+        },
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/01/incremental-analysis-28.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 12.664
+        }
+      ],
       "finite": {
-        "file": "verification/external-upgrades/corpus-runs/finite-callers/06/incremental-analysis-28.json",
-        "seconds": 7.208,
-        "inputs": 3,
-        "oracleDisagreements": [
-          0,
-          1
-        ],
-        "differences": []
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/01/incremental-analysis-28.json",
+        "seconds": 12.664,
+        "inputs": 5,
+        "oracleDisagreements": [],
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-text-775": {
@@ -626,13 +1853,46 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/commons-text-775/old/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 11,
+          "seconds": 44.54,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/commons-text-775/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 11,
+          "seconds": 31.42,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/03/commons-text-775.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 10.86
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/03/commons-text-775.json",
         "seconds": 10.86,
         "inputs": 5,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-compress-767": {
@@ -660,13 +1920,46 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/commons-compress-767/old/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 2904,
+          "seconds": 222.49,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/commons-compress-767/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3107,
+          "seconds": 227.67,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-767.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 9.889
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-767.json",
         "seconds": 9.889,
         "inputs": 4,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-compress-822": {
@@ -694,13 +1987,46 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/commons-compress-822/old/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3456,
+          "seconds": 217.81,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/03/commons-compress-822/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3300,
+          "seconds": 217.12,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-822.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 9.192
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-822.json",
         "seconds": 9.192,
         "inputs": 4,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-configuration-565": {
@@ -709,8 +2035,8 @@
       "family": "Jackson",
       "familyRelation": null,
       "v0": "open",
-      "current": "open",
-      "relevant": false,
+      "current": "preserved",
+      "relevant": true,
       "epochs": {
         "intake-1": {
           "file": "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-configuration-565.json",
@@ -728,13 +2054,53 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-configuration-565/old/summary.json",
+          "status": "passed",
+          "tests": 3011,
+          "seconds": 151.6,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-configuration-565/new/summary.json",
+          "status": "passed",
+          "tests": 3011,
+          "seconds": 92.21,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-565.json",
+          "state": "open",
+          "reason": "exception occurred outside the declared original caller",
+          "seconds": null
+        },
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/01/commons-configuration-565.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 20.628
+        }
+      ],
       "finite": {
-        "file": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-565.json",
-        "seconds": null,
-        "inputs": 0,
-        "oracleDisagreements": null,
-        "differences": null
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/01/commons-configuration-565.json",
+        "seconds": 20.628,
+        "inputs": 4,
+        "oracleDisagreements": [],
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-configuration-601": {
@@ -743,8 +2109,8 @@
       "family": "snakeyaml",
       "familyRelation": null,
       "v0": "open",
-      "current": "open",
-      "relevant": false,
+      "current": "preserved",
+      "relevant": true,
       "epochs": {
         "intake-1": {
           "file": "verification/external-upgrades/corpus-runs/intake-1/06/V0/commons-configuration-601.json",
@@ -762,13 +2128,53 @@
           "firstBlocker": "review the recorded exact overloads"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-configuration-601/old/summary.json",
+          "status": "passed",
+          "tests": 3012,
+          "seconds": 87.9,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-configuration-601/new/summary.json",
+          "status": "passed",
+          "tests": 3012,
+          "seconds": 74.05,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-601.json",
+          "state": "open",
+          "reason": "exception occurred outside the declared original caller",
+          "seconds": null
+        },
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/01/commons-configuration-601.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 19.294
+        }
+      ],
       "finite": {
-        "file": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-601.json",
-        "seconds": null,
-        "inputs": 0,
-        "oracleDisagreements": null,
-        "differences": null
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/01/commons-configuration-601.json",
+        "seconds": 19.294,
+        "inputs": 4,
+        "oracleDisagreements": [],
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "cucumber-reporting-1220": {
@@ -777,8 +2183,8 @@
       "family": "Commons IO",
       "familyRelation": null,
       "v0": "open",
-      "current": "open",
-      "relevant": false,
+      "current": "preserved",
+      "relevant": true,
       "epochs": {
         "intake-1": {
           "file": "verification/external-upgrades/corpus-runs/intake-1/07/V0/cucumber-reporting-1220.json",
@@ -796,7 +2202,54 @@
           "firstBlocker": "generateReports is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of net.masterthought.cucumber.ReportBuilder made by its constructor, whose the argument jsonFiles of net.masterthought.cucumber.ReportBuilder's constructor has type java.util.List; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/cucumber-reporting-1220/old/summary.json",
+          "status": "passed",
+          "tests": 665,
+          "seconds": 50.19,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/cucumber-reporting-1220/new/summary.json",
+          "status": "passed",
+          "tests": 665,
+          "seconds": 50.23,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/03/cucumber-reporting-1220.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 7.923
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/03/cucumber-reporting-1220.json",
+        "seconds": 7.923,
+        "inputs": 1,
+        "oracleDisagreements": [],
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [
+          {
+            "kind": "resource",
+            "file": "simple.json",
+            "source": "src/test/resources/json/simple.json",
+            "sha256": "1210d1ae18da52afb39b73ce4912fe588197ad255673fbdc861c342d11e613a9"
+          }
+        ],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "cucumber-reporting-1198": {
       "set": "main",
@@ -823,13 +2276,46 @@
           "firstBlocker": "parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/cucumber-reporting-1198/old/summary.json",
+          "status": "passed",
+          "tests": 664,
+          "seconds": 51.92,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/cucumber-reporting-1198/new/summary.json",
+          "status": "passed",
+          "tests": 664,
+          "seconds": 42.71,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/04/cucumber-reporting-1198.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 14.084
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/04/cucumber-reporting-1198.json",
         "seconds": 14.084,
         "inputs": 4,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-beanutils-440": {
@@ -857,13 +2343,46 @@
           "firstBlocker": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-beanutils-440/old/summary.json",
+          "status": "passed",
+          "tests": 1315,
+          "seconds": 121.83,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-beanutils-440/new/summary.json",
+          "status": "passed",
+          "tests": 1315,
+          "seconds": 108.31,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-beanutils-440.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 12.24
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-beanutils-440.json",
         "seconds": 12.24,
         "inputs": 5,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-csv-8993be87": {
@@ -891,13 +2410,46 @@
           "firstBlocker": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-csv-8993be87/old/summary.json",
+          "status": "passed",
+          "tests": 914,
+          "seconds": 32.01,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/04/commons-csv-8993be87/new/summary.json",
+          "status": "passed",
+          "tests": 914,
+          "seconds": 32.65,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-csv-8993be87.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 8.937
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-csv-8993be87.json",
         "seconds": 8.937,
         "inputs": 4,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "reflector-35": {
@@ -925,7 +2477,52 @@
           "firstBlocker": "original source compilation"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/reflector-35/old/summary.json",
+          "status": "zero tests",
+          "tests": 0,
+          "seconds": 49.6,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/reflector-35/new/summary.json",
+          "status": "zero tests",
+          "tests": 0,
+          "seconds": 26.3,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/04/reflector-35.json",
+          "state": "open",
+          "reason": "old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.reflector.util.ObjectUtil.orDefault(ObjectUtil.java:10)",
+          "seconds": null
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/04/reflector-35.json",
+        "seconds": null,
+        "inputs": 2,
+        "oracleDisagreements": null,
+        "differences": null,
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": {
+          "side": "old",
+          "input": 0,
+          "repetition": 1,
+          "exception": "java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.reflector.util.ObjectUtil.orDefault(ObjectUtil.java:10)"
+        },
+        "reason": "old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.reflector.util.ObjectUtil.orDefault(ObjectUtil.java:10)",
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "commons-fileupload-377": {
       "set": "transfer",
@@ -952,13 +2549,46 @@
           "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use"
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/commons-fileupload-377/old/summary.json",
+          "status": "passed",
+          "tests": 49,
+          "seconds": 62.13,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/commons-fileupload-377/new/summary.json",
+          "status": "passed",
+          "tests": 49,
+          "seconds": 32.98,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/05/commons-fileupload-377.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 9.265
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/05/commons-fileupload-377.json",
         "seconds": 9.265,
         "inputs": 4,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     },
     "commons-vfs-55c96cfd": {
@@ -986,7 +2616,65 @@
           "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apache.commons.vfs2.provider.AbstractFileObject; a class made by its constructor must extend Object directly"
         }
       },
-      "originalCi": {}
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/commons-vfs-55c96cfd/old/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3201,
+          "seconds": 592.89,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/commons-vfs-55c96cfd/new/summary.json",
+          "status": "tests or lifecycle failed",
+          "tests": 3201,
+          "seconds": 549.85,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-recovery",
+          "file": "verification/external-upgrades/corpus-runs/finite-recovery/04/commons-vfs-55c96cfd.json",
+          "state": "open",
+          "reason": "old input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/slf4j/LoggerFactory at org.apache.ftpserver.usermanager.impl.PropertiesUserManager.<init>(PropertiesUserManager.java:117) caused by java.lang.ClassNotFoundException: org.slf4j.LoggerFactory at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)",
+          "seconds": null
+        }
+      ],
+      "finite": {
+        "file": "verification/external-upgrades/corpus-runs/finite-recovery/04/commons-vfs-55c96cfd.json",
+        "seconds": null,
+        "inputs": 3,
+        "oracleDisagreements": null,
+        "differences": null,
+        "runtimeCompanions": [
+          {
+            "mavenPath": "org/apache/ftpserver/ftpserver-core/1.2.1/ftpserver-core-1.2.1.jar",
+            "sha256": "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec"
+          },
+          {
+            "mavenPath": "org/apache/ftpserver/ftplet-api/1.2.1/ftplet-api-1.2.1.jar",
+            "sha256": "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07"
+          },
+          {
+            "mavenPath": "org/apache/mina/mina-core/2.2.5/mina-core-2.2.5.jar",
+            "sha256": "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62"
+          }
+        ],
+        "originalFixtures": [],
+        "stoppedAt": {
+          "side": "old",
+          "input": 0,
+          "repetition": 1,
+          "exception": "java.lang.NoClassDefFoundError: org/slf4j/LoggerFactory at org.apache.ftpserver.usermanager.impl.PropertiesUserManager.<init>(PropertiesUserManager.java:117) caused by java.lang.ClassNotFoundException: org.slf4j.LoggerFactory at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)"
+        },
+        "reason": "old input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/slf4j/LoggerFactory at org.apache.ftpserver.usermanager.impl.PropertiesUserManager.<init>(PropertiesUserManager.java:117) caused by java.lang.ClassNotFoundException: org.slf4j.LoggerFactory at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)",
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
+      }
     },
     "commons-validator-86e32931": {
       "set": "transfer",
@@ -1013,14 +2701,53 @@
           "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
         }
       },
-      "originalCi": {},
+      "originalCi": {
+        "old": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/commons-validator-86e32931/old/summary.json",
+          "status": "passed",
+          "tests": 990,
+          "seconds": 31.28,
+          "namedTestExecuted": null,
+          "named": []
+        },
+        "new": {
+          "file": "verification/external-upgrades/corpus-runs/original-ci/06/commons-validator-86e32931/new/summary.json",
+          "status": "passed",
+          "tests": 990,
+          "seconds": 30.75,
+          "namedTestExecuted": null,
+          "named": []
+        }
+      },
+      "focusedCi": {},
+      "compcheck": null,
+      "finiteAttempts": [
+        {
+          "epoch": "finite-callers",
+          "file": "verification/external-upgrades/corpus-runs/finite-callers/03/commons-validator-86e32931.json",
+          "state": "preserved",
+          "reason": null,
+          "seconds": 10.399
+        }
+      ],
       "finite": {
         "file": "verification/external-upgrades/corpus-runs/finite-callers/03/commons-validator-86e32931.json",
         "seconds": 10.399,
         "inputs": 4,
         "oracleDisagreements": [],
-        "differences": []
+        "differences": [],
+        "runtimeCompanions": [],
+        "originalFixtures": [],
+        "stoppedAt": null,
+        "reason": null,
+        "assistance": "reviewed case-specific observer and receiver on original inputs"
       }
     }
+  },
+  "pairedTransfer": {
+    "both": 0,
+    "v0Only": 0,
+    "v1Only": 4,
+    "neither": 4
   }
 }

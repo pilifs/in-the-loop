@@ -1,0 +1,810 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
++	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
++	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
++	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
++	at java.lang.reflect.Method.invoke(Method.java:498)
++	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
++	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
++	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
++	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
++	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
++
++
++Results :
++
++Tests in error: 
++  serializeAndDeserialize(retrofit2.converter.wire.WireConverterFactoryTest): okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Retrofit (Parent) 2.6.0:
++[INFO] 
++[INFO] Retrofit (Parent) .................................. SUCCESS [  1.694 s]
++[INFO] Retrofit ........................................... SUCCESS [ 18.738 s]
++[INFO] Converters ......................................... SUCCESS [  0.105 s]
++[INFO] Converter: Wire Protocol Buffers ................... FAILURE [  0.955 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  22.692 s
++[INFO] Finished at: 2026-11-21T05:22:39Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project converter-wire: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/retrofit-converters/wire/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :converter-wire
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/new/summary.json
+@@ -0,0 +1,69 @@
++{
++  "revision": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "1e8905df3c51388c5dc6c4640ce86ebecde7dfd37c484f635283ef481d2a2565",
++      "mavenCommandLines": [
++        "install: mvn install javadoc:jar source:jar -DskipTests=true -B -V",
++        "script: mvn test -B"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "retrofit-converters/wire",
++  "goals": [
++    "-pl",
++    "retrofit-converters/wire",
++    "-am",
++    "-Dtest=WireConverterFactoryTest#serializeAndDeserialize",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 1406,
++    "downloadedBytes": 80,
++    "downloadedFiles": 2
++  },
++  "exit": 1,
++  "seconds": 24.08,
++  "logSha256": "b79c36393b00fe3dd57d7398b63ff80e63d14803f1f8d993f7c2a17456e516c9",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "retrofit2.converter.wire.WireConverterFactoryTest",
++        "method": "serializeAndDeserialize",
++        "outcome": "error",
++        "type": "java.lang.NoSuchMethodError",
++        "message": "okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J"
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "retrofit2.converter.wire.WireConverterFactoryTest",
++        "method": "serializeAndDeserialize",
++        "outcome": "error",
++        "type": "java.lang.NoSuchMethodError",
++        "message": "okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J"
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "940498ed6986c101cd8d6a1799d628b58b4da90a10b1e967dcebba240ae09ce6"
++  },
++  "diagnostic": [
++    "java.lang.NoSuchMethodError: okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J",
++    "Tests in error:",
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project converter-wire: There are test failures.",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++  ],
++  "namedTest": "WireConverterFactoryTest#serializeAndDeserialize",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/new/testcases/78bba93c07b7.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] skip non existing resourceDirectory /project/retrofit-converters/wire/src/test/resources
++[INFO] 
++[INFO] --- maven-compiler-plugin:3.6.1:testCompile (default-testCompile) @ converter-wire ---
++[INFO] Changes detected - recompiling the module!
++[INFO] Compiling 2 source files to /project/retrofit-converters/wire/target/test-classes
++[INFO] 
++[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ converter-wire ---
++[INFO] Surefire report directory: /project/retrofit-converters/wire/target/surefire-reports
++                    
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running retrofit2.converter.wire.WireConverterFactoryTest
++Nov 21, 2026 5:22:14 AM okhttp3.mockwebserver.MockWebServer$2 execute
++INFO: MockWebServer[49817] starting to accept connections
++Nov 21, 2026 5:22:14 AM okhttp3.mockwebserver.MockWebServer$3 processOneRequest
++INFO: MockWebServer[49817] received request: POST / HTTP/1.1 and responded: HTTP/1.1 200 OK
++Nov 21, 2026 5:22:15 AM okhttp3.mockwebserver.MockWebServer$2 acceptConnections
++INFO: MockWebServer[49817] done accepting connections: Socket closed
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.375 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] 
++[INFO] --- animal-sniffer-maven-plugin:1.14:check (default) @ converter-wire ---
++[INFO] Checking unresolved references to org.codehaus.mojo.signature:java16:1.1
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Retrofit (Parent) 2.6.0:
++[INFO] 
++[INFO] Retrofit (Parent) .................................. SUCCESS [  3.415 s]
++[INFO] Retrofit ........................................... SUCCESS [ 43.014 s]
++[INFO] Converters ......................................... SUCCESS [  0.089 s]
++[INFO] Converter: Wire Protocol Buffers ................... SUCCESS [  0.965 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  50.289 s
++[INFO] Finished at: 2026-11-21T05:22:15Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/old/summary.json
+@@ -0,0 +1,53 @@
++{
++  "revision": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "1e8905df3c51388c5dc6c4640ce86ebecde7dfd37c484f635283ef481d2a2565",
++      "mavenCommandLines": [
++        "install: mvn install javadoc:jar source:jar -DskipTests=true -B -V",
++        "script: mvn test -B"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "retrofit-converters/wire",
++  "goals": [
++    "-pl",
++    "retrofit-converters/wire",
++    "-am",
++    "-Dtest=WireConverterFactoryTest#serializeAndDeserialize",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 1161,
++    "downloadedBytes": 79544502,
++    "downloadedFiles": 245
++  },
++  "exit": 0,
++  "seconds": 51.62,
++  "logSha256": "49c1bb9af6fe6750870b2a5a6f3767b1fb17060f568012d23319f4b1daba880d",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "retrofit2.converter.wire.WireConverterFactoryTest",
++        "method": "serializeAndDeserialize",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "950ff0574d704979c977c4c1ca92e7f87546589830ee09a24dec16aa408ab80d"
++  },
++  "namedTest": "WireConverterFactoryTest#serializeAndDeserialize",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/old/testcases/78bba93c07b7.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-10/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++                   
++                   
++                    
++                    
++                    
++                   
++                    
++                    
++                    
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                    
++                    
++                   
++                    
++                    
++                    
++                   
++                   
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for languagetool-parent 4.6:
++[INFO] 
++[INFO] languagetool-parent ................................ SUCCESS [  0.785 s]
++[INFO] LanguageTool Style and Grammar Checker Core ........ FAILURE [  1.434 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  3.234 s
++[INFO] Finished at: 2026-11-21T05:23:07Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:44885/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :languagetool-core
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-10/new/summary.json
+@@ -0,0 +1,47 @@
++{
++  "revision": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "languagetool-core",
++  "goals": [
++    "-pl",
++    "languagetool-core",
++    "-am",
++    "-Dtest=LuceneSingleIndexLanguageModelTest#testLanguageModel",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 596,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 6.82,
++  "logSha256": "4312764ff84df46b826b5c61da0392b153516438d4ceab714984a3b4e557a030",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:44885/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++  ],
++  "namedTest": "LuceneSingleIndexLanguageModelTest#testLanguageModel",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-10/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                   
++                   
++                    
++                    
++                    
++                   
++                    
++                    
++                    
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                    
++                    
++                   
++                    
++                    
++                    
++                   
++                   
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for languagetool-parent 4.6:
++[INFO] 
++[INFO] languagetool-parent ................................ SUCCESS [  0.712 s]
++[INFO] LanguageTool Style and Grammar Checker Core ........ FAILURE [  1.533 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  3.260 s
++[INFO] Finished at: 2026-11-21T05:23:00Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:42763/) -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :languagetool-core
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-10/old/summary.json
+@@ -0,0 +1,47 @@
++{
++  "revision": "fe77e85a2f7b472ba71564821e7545025eeda242",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "languagetool-core",
++  "goals": [
++    "-pl",
++    "languagetool-core",
++    "-am",
++    "-Dtest=LuceneSingleIndexLanguageModelTest#testLanguageModel",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 590,
++    "upstreamHttp404": 2
++  },
++  "exit": 1,
++  "seconds": 6.89,
++  "logSha256": "40743498dd45cde09c8e793ab18a9239cb5b65c8452594eff909c8d2a0fa9188",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal on project languagetool-core: Could not resolve dependencies for project org.languagetool:languagetool-core:jar:4.6: Could not find artifact biz.k11i:xgboost-predictor:jar:0.3.0 in isolated-central (http://127.0.0.1:42763/) -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++  ],
++  "namedTest": "LuceneSingleIndexLanguageModelTest#testLanguageModel",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-38/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++                   
++                   
++                    
++                    
++                   
++                    
++                   
++                   
++                   
++                    
++                    
++                    
++                   
++                    
++                   
++                    
++                   
++                    
++                   
++                    
++                   
++                    
++                    
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++                    
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  8.576 s
++[INFO] Finished at: 2026-11-21T05:21:23Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.6.1:test (default-test) on project reflectasm: The used JUnit Version 4.8.2 is not supported anymore. Please update to version 4.12+ -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-38/new/summary.json
+@@ -0,0 +1,43 @@
++{
++  "revision": "5c636af1a65b92fa570582628a27aa1e7d29f24b",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "57ce67fbbd1956f9a7a8b1299a4a5d3feb1f9c38a1a207b702e00e38754a9cc6",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=MethodAccessTest#testInvokeInterface",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 816
++  },
++  "exit": 1,
++  "seconds": 9.91,
++  "logSha256": "30e65ff02e9494f352294ef847f557428bd5b26caf8f206d82f58db6e107f986",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.6.1:test (default-test) on project reflectasm: The used JUnit Version 4.8.2 is not supported anymore. Please update to version 4.12+ -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException"
++  ],
++  "namedTest": "MethodAccessTest#testInvokeInterface",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-38/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                   
++                   
++                    
++                    
++                   
++                    
++                   
++                   
++                   
++                    
++                    
++                    
++                   
++                    
++                   
++                    
++                   
++                    
++                   
++                    
++                   
++                    
++                    
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++                    
++                    
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  6.406 s
++[INFO] Finished at: 2026-11-21T05:21:13Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.6.1:test (default-test) on project reflectasm: The used JUnit Version 4.8.2 is not supported anymore. Please update to version 4.12+ -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-38/old/summary.json
+@@ -0,0 +1,43 @@
++{
++  "revision": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "57ce67fbbd1956f9a7a8b1299a4a5d3feb1f9c38a1a207b702e00e38754a9cc6",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=MethodAccessTest#testInvokeInterface",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 818
++  },
++  "exit": 1,
++  "seconds": 7.6,
++  "logSha256": "daeb38f46076f9d71561a4613f02403e0a52674a9b4d925405c046cd9feee17d",
++  "freshReports": {
++    "tests": 0,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [],
++    "firstFailures": [],
++    "reportCount": 0,
++    "reportsSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.6.1:test (default-test) on project reflectasm: The used JUnit Version 4.8.2 is not supported anymore. Please update to version 4.12+ -> [Help 1]",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException"
++  ],
++  "namedTest": "MethodAccessTest#testInvokeInterface",
++  "namedTestExecuted": false,
++  "disposition": "failed before tests"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
++	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
++	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
++	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
++	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
++	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
++	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
++	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:242)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:137)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
++	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
++	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
++	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
++	at java.lang.reflect.Method.invoke(Method.java:498)
++	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
++	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
++	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
++	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
++	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
++
++
++Results :
++
++Tests in error: 
++  testEmptyCellShouldHaveGeneralStyle(com.monitorjbl.xlsx.StreamingSheetTest): Found class org.apache.poi.util.POILogger, but interface was expected
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  5.499 s
++[INFO] Finished at: 2026-11-21T05:22:53Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project xlsx-streamer: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/new/summary.json
+@@ -0,0 +1,56 @@
++{
++  "revision": "eed036e11b5aecaeb5889fae26505e9409bdc438",
++  "historicalCiFiles": {},
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=StreamingSheetTest#testEmptyCellShouldHaveGeneralStyle",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 566
++  },
++  "exit": 1,
++  "seconds": 6.92,
++  "logSha256": "7e1a3f2a675bce07d4a8add9ef9f172d1d3e0a29e40f946d8c357b54d143d4e7",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.monitorjbl.xlsx.StreamingSheetTest",
++        "method": "testEmptyCellShouldHaveGeneralStyle",
++        "outcome": "error",
++        "type": "java.lang.IncompatibleClassChangeError",
++        "message": "Found class org.apache.poi.util.POILogger, but interface was expected"
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "com.monitorjbl.xlsx.StreamingSheetTest",
++        "method": "testEmptyCellShouldHaveGeneralStyle",
++        "outcome": "error",
++        "type": "java.lang.IncompatibleClassChangeError",
++        "message": "Found class org.apache.poi.util.POILogger, but interface was expected"
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "9323a03450012395becf67759aa298f274531cbf56dbba9fe9478576b76fee1b"
++  },
++  "diagnostic": [
++    "java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected",
++    "Tests in error:",
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project xlsx-streamer: There are test failures.",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++  ],
++  "namedTest": "StreamingSheetTest#testEmptyCellShouldHaveGeneralStyle",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/new/testcases/511a3546e07d.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                   
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                    
++                   
++                    
++                   
++                   
++                   
++[INFO] Surefire report directory: /project/target/surefire-reports
++                    
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running com.monitorjbl.xlsx.StreamingSheetTest
++2026-11-21 05:22:46,168 [com.monitorjbl.xlsx.impl.StreamingWorkbookReader] DEBUG: Created temp file [/scratch/jvm/tmp-4101634910538375660.xlsx]
++2026-11-21 05:22:46,563 [com.monitorjbl.xlsx.impl.StreamingWorkbookReader] DEBUG: Deleting tmp file [/scratch/jvm/tmp-4101634910538375660.xlsx]
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.51 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  5.853 s
++[INFO] Finished at: 2026-11-21T05:22:46Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/old/summary.json
+@@ -0,0 +1,40 @@
++{
++  "revision": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++  "historicalCiFiles": {},
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=StreamingSheetTest#testEmptyCellShouldHaveGeneralStyle",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 546
++  },
++  "exit": 0,
++  "seconds": 7.14,
++  "logSha256": "b3eb17cbdab36b3883562c0d9c10fec740bb53656fda981fcebd9393b5fb64a2",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.monitorjbl.xlsx.StreamingSheetTest",
++        "method": "testEmptyCellShouldHaveGeneralStyle",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "39d049255ff805c5d4dfd77ecae79e203c09958250c7a1988345f1e1cd7c6014"
++  },
++  "namedTest": "StreamingSheetTest#testEmptyCellShouldHaveGeneralStyle",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/old/testcases/511a3546e07d.xml.gz changed

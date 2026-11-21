@@ -1,0 +1,195 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-051152-complete-modules-3-materialize-original",
+  "title": "Complete modules 3 materialize original classes and resources",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m29s, peak 1.0 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [
+    "step 1 (Build complete original Maven modules) was held back 2m20s by its 2-CPU quota in 1m29s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-051152-complete-modules-3-materialize-original.json",
+    "sha256": "fe160d82d28244b001f8f10109274825b568ae0373b097f0e354b412b654ae75",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-051152-complete-modules-3-materialize-original",
+      "title": "Complete modules 3 materialize original classes and resources",
+      "description": "Build the exact original Maven revisions and reactor prerequisites, including generated production classes and processed resources. Bind the resulting original client archive and resolved runtime order by digest; clean the Maven working tree after each side. Cases: compsuite-i-9, compsuite-i-10, compsuite-i-85, compsuite-i-37.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Record both original revisions, the precise unverified stage when unavailable and the true result on each qualified finite caller.",
+      "submitted": {
+        "at": "2026-11-21T05:11:52+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "6G",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "Build complete original Maven modules",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/complete-modules/03 --case compsuite-i-9 --case compsuite-i-10 --case compsuite-i-85 --case compsuite-i-37",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/complete-modules/03"
+      ]
+    }
+  },
+  "sourceCommit": "4964365145d610ee68b5e1cd068e2b35c1affe87",
+  "startedAt": "2026-11-21T05:29:53+00:00",
+  "finishedAt": "2026-11-21T05:31:30+00:00",
+  "wallSeconds": 97.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3972301,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1079140352,
+    "wallSeconds": 89.5,
+    "cpuSeconds": 163.8,
+    "memoryOfEstimate": 0.5,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build complete original Maven modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/complete-modules/03 --case compsuite-i-9 --case compsuite-i-10 --case compsuite-i-85 --case compsuite-i-37",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 89.544,
+      "cpuSeconds": 163.771,
+      "cpuThrottledSeconds": 140.478,
+      "peakMemoryBytes": 1079140352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-complete-original-maven.log",
+        "lines": 8,
+        "bytes": 346,
+        "sha256": "5887f0a16b1766bec472ee7448f362182d07bbbc1bee7c4243ea258d0655c268",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-9 old original Maven build unavailable",
+        "compsuite-i-9 new original Maven build unavailable",
+        "compsuite-i-10 old original Maven build unavailable",
+        "compsuite-i-10 new original Maven build unavailable",
+        "compsuite-i-85 old artifacts ready",
+        "compsuite-i-85 new artifacts ready",
+        "compsuite-i-37 old artifacts ready",
+        "compsuite-i-37 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-10.json",
+      "change": "added",
+      "bytes": 4295,
+      "sha256": "906ec14b5f398ab20ac0b7be01a6795ac987544bc3a48e1548612e9edf9472e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 2481,
+      "sha256": "2de98f94156c6274c96c2bad0c5c5c81f9bd6c7fc411c5721ea2e60664d1cbed",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-85.json",
+      "change": "added",
+      "bytes": 8293,
+      "sha256": "abbd839b5490a1431b92c1af1ddd56e274e69d717e17d35975b844984c1c37aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 4315,
+      "sha256": "b506d2b8be05e4031fcebc76229b8abcb6b23e945a001492a94c317c1fc0811a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:34:43+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-10.json",
+      "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-85.json",
+      "verification/external-upgrades/corpus-runs/complete-modules/03/compsuite-i-9.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

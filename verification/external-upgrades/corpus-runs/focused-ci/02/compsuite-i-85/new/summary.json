@@ -1,0 +1,57 @@
+{
+  "revision": "f500f1ea3c84932963cdf847fea48a98f2f492d0",
+  "historicalCiFiles": {},
+  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
+  "module": ".",
+  "goals": [
+    "-Dtest=OrderingTest#canNotPurchaseIfOfferChanged",
+    "-DfailIfNoTests=false",
+    "-Dsurefire.failIfNoSpecifiedTests=false",
+    "test"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client and serialized Maven Central mirror",
+  "resolver": {
+    "cachedRequests": 638
+  },
+  "exit": 1,
+  "seconds": 10.44,
+  "logSha256": "4315c4b2e102f56efba575ab608309a2b441ff0101a6cab0088b986e4dacab9c",
+  "freshReports": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+        "method": "canNotPurchaseIfOfferChanged",
+        "outcome": "error",
+        "type": "java.lang.IllegalStateException",
+        "message": "Failed to load ApplicationContext"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+        "method": "canNotPurchaseIfOfferChanged",
+        "outcome": "error",
+        "type": "java.lang.IllegalStateException",
+        "message": "Failed to load ApplicationContext"
+      }
+    ],
+    "reportCount": 1,
+    "reportsSha256": "234ae56da0fd5c8cec872784e47b2ded6a4c15c4034e3dcbf7e077bf1b079575"
+  },
+  "diagnostic": [
+    "[2026-11-21 05:21:25,882] WARN  1275[main] - org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:546) - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory",
+    "[2026-11-21 05:21:25,884]ERROR  1277[main] - org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:231) - Caught exception while allowing TestExecutionListener [org.springframework.test.context.support.DependencyInjectionTestExecutionListener@6cd64ee8] to prepare test instance [pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest@620c8641]",
+    "java.lang.IllegalStateException: Failed to load ApplicationContext",
+    "Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory",
+    "Caused by: javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory"
+  ],
+  "namedTest": "OrderingTest#canNotPurchaseIfOfferChanged",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}

@@ -1,0 +1,63 @@
+{
+  "revision": "f500f1ea3c84932963cdf847fea48a98f2f492d0",
+  "historicalCiFiles": {},
+  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
+  "module": ".",
+  "goals": [
+    "verify"
+  ],
+  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenHome": "apache-maven-3.6.3",
+  "network": "isolated client and serialized Maven Central mirror",
+  "resolver": {
+    "cachedRequests": 635,
+    "downloadedBytes": 280,
+    "downloadedFiles": 7
+  },
+  "exit": 1,
+  "seconds": 13.79,
+  "logSha256": "7371f2b1d33bd0d8a2dd352fa46d7e3ed766fa56c4e12fef4f197738d82e97db",
+  "freshReports": {
+    "tests": 3,
+    "failures": 0,
+    "errors": 2,
+    "skipped": 0,
+    "named": [
+      {
+        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+        "method": "canNotPurchaseIfOfferChanged",
+        "outcome": "error",
+        "type": "java.lang.IllegalStateException",
+        "message": "Failed to load ApplicationContext"
+      }
+    ],
+    "firstFailures": [
+      {
+        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+        "method": "canNotPurchaseIfOfferChanged",
+        "outcome": "error",
+        "type": "java.lang.IllegalStateException",
+        "message": "Failed to load ApplicationContext"
+      },
+      {
+        "class": "pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest",
+        "method": "shouldPurchaseProducts",
+        "outcome": "error",
+        "type": "java.lang.IllegalStateException",
+        "message": "Failed to load ApplicationContext"
+      }
+    ],
+    "reportCount": 2,
+    "reportsSha256": "334f1543a530778849c1d77c3da226def9348599f475af9ae1b5e99eabc0ff59"
+  },
+  "diagnostic": [
+    "[2026-11-21 04:48:30,964] WARN  1274[main] - org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:546) - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory",
+    "[2026-11-21 04:48:30,966]ERROR  1276[main] - org.springframework.test.context.TestContextManager.prepareTestInstance(TestContextManager.java:231) - Caught exception while allowing TestExecutionListener [org.springframework.test.context.support.DependencyInjectionTestExecutionListener@561b61ed] to prepare test instance [pl.com.bottega.ecommerce.sales.acceptancetests.OrderingTest@654c7d2d]",
+    "java.lang.IllegalStateException: Failed to load ApplicationContext",
+    "Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'entityManagerFactory' defined in class path resource [configurationContext.xml]: Invocation of init method failed; nested exception is javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory",
+    "Caused by: javax.persistence.PersistenceException: [PersistenceUnit: defaultPU] Unable to build Hibernate SessionFactory"
+  ],
+  "namedTest": "OrderingTest#canNotPurchaseIfOfferChanged",
+  "namedTestExecuted": true,
+  "disposition": "tests or lifecycle failed"
+}

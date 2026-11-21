@@ -1,0 +1,224 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-044031-original-ci-group-6-run-unmodified-maven",
+  "title": "Original CI group 6 run unmodified Maven upgrade revisions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 22m57s, peak 2.4 GiB (estimated 25m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-044031-original-ci-group-6-run-unmodified-maven.json",
+    "sha256": "588e5187006487c47bd7083578d1ab4e2e551e837c6a7216e03edaef568f1063",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-044031-original-ci-group-6-run-unmodified-maven",
+      "title": "Original CI group 6 run unmodified Maven upgrade revisions",
+      "description": "Run the ordinary Maven verify lifecycle on both original revisions in clean isolated checkouts. Use the owning reactor module and its prerequisites, preserve historical CI configuration digests, actual fresh JUnit test outcomes, setup failures and timings. A passing lifecycle without tests receives its own disposition. Cases: reflector-35, commons-fileupload-377, commons-vfs-55c96cfd, commons-validator-86e32931.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation"
+      ],
+      "links": {},
+      "expected": "Both revisions produce honest CI availability, test counts and fresh named outcomes where present. A wrapper exit alone gives no case result.",
+      "submitted": {
+        "at": "2026-11-21T04:40:31+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "bwrap",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "25m",
+        "memoryLimit": "6G",
+        "timeout": "150m"
+      },
+      "steps": [
+        {
+          "name": "Run original Maven lifecycle",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/original-ci/06 --case reflector-35 --case commons-fileupload-377 --case commons-vfs-55c96cfd --case commons-validator-86e32931",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/original-ci/06"
+      ]
+    }
+  },
+  "sourceCommit": "8fa7d9b64307f07af1a6185719cc0a5d44e9df9b",
+  "startedAt": "2026-11-21T04:45:30+00:00",
+  "finishedAt": "2026-11-21T05:08:34+00:00",
+  "wallSeconds": 1384.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3548250,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 9000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2529132544,
+    "wallSeconds": 1377.1,
+    "cpuSeconds": 1010.3,
+    "memoryOfEstimate": 0.79,
+    "durationOfEstimate": 0.92
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run original Maven lifecycle",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/original-ci/06 --case reflector-35 --case commons-fileupload-377 --case commons-vfs-55c96cfd --case commons-validator-86e32931",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9000.0,
+      "cancelled": false,
+      "wallSeconds": 1377.092,
+      "cpuSeconds": 1010.34,
+      "cpuThrottledSeconds": 663.005,
+      "peakMemoryBytes": 2529132544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-original-maven-lifecycle.log",
+        "lines": 8,
+        "bytes": 330,
+        "sha256": "eecbaf0fe372ce8cb96c62774fe6addadd86d53be880f0a83f821409d5ce98f2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "reflector-35 old zero tests 0",
+        "reflector-35 new zero tests 0",
+        "commons-fileupload-377 old passed 49",
+        "commons-fileupload-377 new passed 49",
+        "commons-vfs-55c96cfd old tests or lifecycle failed 3201",
+        "commons-vfs-55c96cfd new tests or lifecycle failed 3201",
+        "commons-validator-86e32931 old passed 990",
+        "commons-validator-86e32931 new passed 990"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/commons-fileupload-377/new/summary.json",
+      "change": "added",
+      "bytes": 1605,
+      "sha256": "1ced27d2ed62c42f9eabeca4ee1b1efbb1d4d42a8b21dec10d94ed322d65ae26",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/commons-fileupload-377/old/summary.json",
+      "change": "added",
+      "bytes": 1666,
+      "sha256": "ea88d80d2360aace4d2578e22c48092734614ecb2c1c9e67958fbce2f8dd92c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/commons-validator-86e32931/new/summary.json",
+      "change": "added",
+      "bytes": 1582,
+      "sha256": "14d2968411de07fc7e6289c0b72b4593ca5598122ad51e127fd25004d96e77cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/commons-validator-86e32931/old/summary.json",
+      "change": "added",
+      "bytes": 1529,
+      "sha256": "5d8f583c33bcaa0b41590df3a1b438758580448abd8cd39c1879038092b41794",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/commons-vfs-55c96cfd/new/summary.json",
+      "change": "added",
+      "bytes": 4951,
+      "sha256": "26f0b4acc416510e3d4b67f26ba2b919bd4eb14936cb114e4249a03e8a70300b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/commons-vfs-55c96cfd/old/summary.json",
+      "change": "added",
+      "bytes": 4959,
+      "sha256": "17a1ccb3971ac6375f1b96d2b2829c3beb3bd29db60cfe3cd0f0207ef0e613c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/reflector-35/new/summary.json",
+      "change": "added",
+      "bytes": 1851,
+      "sha256": "643d735ad70e6aac0c9eec882fa9e824250d2cc41179f95a19f3179b0cd2ea30",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/original-ci/06/reflector-35/old/summary.json",
+      "change": "added",
+      "bytes": 1858,
+      "sha256": "89c8fe93294293bfbe92dd22d464739256348d57c095fae5ec84aede6b39a610",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:08:48+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/original-ci/06/commons-fileupload-377/new/summary.json",
+      "verification/external-upgrades/corpus-runs/original-ci/06/commons-fileupload-377/old/summary.json",
+      "verification/external-upgrades/corpus-runs/original-ci/06/commons-validator-86e32931/new/summary.json",
+      "verification/external-upgrades/corpus-runs/original-ci/06/commons-validator-86e32931/old/summary.json",
+      "verification/external-upgrades/corpus-runs/original-ci/06/commons-vfs-55c96cfd/new/summary.json",
+      "verification/external-upgrades/corpus-runs/original-ci/06/commons-vfs-55c96cfd/old/summary.json",
+      "verification/external-upgrades/corpus-runs/original-ci/06/reflector-35/new/summary.json",
+      "verification/external-upgrades/corpus-runs/original-ci/06/reflector-35/old/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

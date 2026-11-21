@@ -1,0 +1,847 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
++	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
++	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
++	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
++	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
++Caused by: java.lang.ClassNotFoundException: org.springframework.core.ErrorCoded
++	at java.net.URLClassLoader.findClass(URLClassLoader.java:387)
++	at java.lang.ClassLoader.loadClass(ClassLoader.java:418)
++	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:352)
++	at java.lang.ClassLoader.loadClass(ClassLoader.java:351)
++	... 62 more
++
++
++Results :
++
++Tests in error: 
++  testFirstOrder(com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest): org/springframework/core/ErrorCoded
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Alibaba Nacos :: Spring :: POM 0.3.1:
++[INFO] 
++[INFO] Alibaba Nacos :: Spring :: POM ..................... SUCCESS [  2.295 s]
++[INFO] Alibaba Nacos :: Samples :: Embedded Web Server .... SUCCESS [  2.235 s]
++[INFO] Alibaba Nacos :: Spring :: Context ................. FAILURE [  3.503 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  8.540 s
++[INFO] Finished at: 2026-11-21T05:22:10Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project nacos-spring-context: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/nacos-spring-context/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :nacos-spring-context
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/summary.json
+@@ -0,0 +1,65 @@
++{
++  "revision": "67693f18a9427f1d46b6769fd4da3282207a37c7",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "a3cbdaaa24bcac3b7ac8e08958560a31868dd62f6aa80cfc2b428acbd22bc499",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "nacos-spring-context",
++  "goals": [
++    "-pl",
++    "nacos-spring-context",
++    "-am",
++    "-Dtest=NacosPropertySourcePostProcessorTest#testFirstOrder",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 740
++  },
++  "exit": 1,
++  "seconds": 9.95,
++  "logSha256": "bf088d1b16500b71a01cbfcd178a650946b30e084e47eae047dcc0eb2f8a4dc1",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest",
++        "method": "testFirstOrder",
++        "outcome": "error",
++        "type": "java.lang.NoClassDefFoundError",
++        "message": "org/springframework/core/ErrorCoded"
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest",
++        "method": "testFirstOrder",
++        "outcome": "error",
++        "type": "java.lang.NoClassDefFoundError",
++        "message": "org/springframework/core/ErrorCoded"
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "55d246fc931785ed05a83ccfc51e8a0f8255bfd243aeebc617fb344caa09a913"
++  },
++  "diagnostic": [
++    "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
++    "java.lang.NoClassDefFoundError: org/springframework/core/ErrorCoded",
++    "Caused by: java.lang.ClassNotFoundException: org.springframework.core.ErrorCoded",
++    "Tests in error:",
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project nacos-spring-context: There are test failures."
++  ],
++  "namedTest": "NacosPropertySourcePostProcessorTest#testFirstOrder",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/testcases/3b2804ab057d.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest
++SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
++SLF4J: Defaulting to no-operation (NOP) logger implementation
++SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
++[main] Embedded Nacos HTTP Server(port : 34131) is starting...
++[main] Embedded Nacos HTTP Server mapped request URI : /nacos/v1/cs/configs...
++Nov 21, 2026 5:21:59 AM org.springframework.context.support.GenericApplicationContext prepareRefresh
++INFO: Refreshing org.springframework.context.support.GenericApplicationContext@1efbd816: startup date [Sat Nov 21 05:21:59 UTC 2026]; root of context hierarchy
++Nov 21, 2026 5:21:59 AM org.springframework.context.support.GenericApplicationContext postProcessAfterInitialization
++INFO: Bean 'namingServiceBeanBuilder' of type [class com.alibaba.nacos.spring.beans.factory.annotation.NamingServiceBeanBuilder] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
++Nov 21, 2026 5:21:59 AM org.springframework.context.support.GenericApplicationContext postProcessAfterInitialization
++INFO: Bean 'namingMaintainServiceBeanBuilder' of type [class com.alibaba.nacos.spring.beans.factory.annotation.NamingMaintainServiceBeanBuilder] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
++Nov 21, 2026 5:21:59 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
++INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@ed9d034: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,nacosPropertySourcePostProcessorTest,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor,org.springframework.context.support.PropertySourcesPlaceholderConfigurer,nacosApplicationContextHolder,annotationNacosInjectedBeanPostProcessor,propertySourcesPlaceholderConfigurer,nacosConfigurationPropertiesBindingPostProcessor,nacosConfigListenerMethodProcessor,nacosPropertySourcePostProcessor,annotationNacosPropertySourceBuilder,nacosValueAnnotationBeanPostProcessor,configServiceBeanBuilder,loggingNacosConfigMetadataEventListener,namingServiceBeanBuilder,namingMaintainServiceBeanBuilder]; root of factory hierarchy
++Nov 21, 2026 5:21:59 AM org.springframework.context.annotation.AnnotationConfigApplicationContext prepareRefresh
++INFO: Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@657c8ad9: startup date [Sat Nov 21 05:21:59 UTC 2026]; root of context hierarchy
++Nov 21, 2026 5:22:00 AM org.springframework.beans.factory.support.DefaultListableBeanFactory preInstantiateSingletons
++INFO: Pre-instantiating singletons in org.springframework.beans.factory.support.DefaultListableBeanFactory@7e07db1f: defining beans [org.springframework.context.annotation.internalConfigurationAnnotationProcessor,org.springframework.context.annotation.internalAutowiredAnnotationProcessor,org.springframework.context.annotation.internalRequiredAnnotationProcessor,org.springframework.context.annotation.internalCommonAnnotationProcessor,annotationNacosInjectedBeanPostProcessor,nacosPropertySourcePostProcessor,configServiceBeanBuilder,annotationNacosPropertySourceBuilder,testConfiguration,testApplicationHolder,nacosPropertySourcePostProcessorTest.FirstOrderNacosPropertySource,org.springframework.context.annotation.ConfigurationClassPostProcessor.importAwareProcessor,globalNacosProperties,nacosApplicationContextHolder]; root of factory hierarchy
++[main] Embedded Nacos HTTP Server(port : 34131) is stopping...
++[main] Embedded Nacos HTTP Server(port : 34131) is stopped.
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.907 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Alibaba Nacos :: Spring :: POM 0.3.1:
++[INFO] 
++[INFO] Alibaba Nacos :: Spring :: POM ..................... SUCCESS [  8.583 s]
++[INFO] Alibaba Nacos :: Samples :: Embedded Web Server .... SUCCESS [  5.929 s]
++[INFO] Alibaba Nacos :: Spring :: Context ................. SUCCESS [  3.683 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  18.720 s
++[INFO] Finished at: 2026-11-21T05:22:00Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/summary.json
+@@ -0,0 +1,48 @@
++{
++  "revision": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "a3cbdaaa24bcac3b7ac8e08958560a31868dd62f6aa80cfc2b428acbd22bc499",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "nacos-spring-context",
++  "goals": [
++    "-pl",
++    "nacos-spring-context",
++    "-am",
++    "-Dtest=NacosPropertySourcePostProcessorTest#testFirstOrder",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 742
++  },
++  "exit": 0,
++  "seconds": 19.85,
++  "logSha256": "0a17c2fe41343b5b0dca5c2c6b7ecc9f5ed64ba91ec9ff2a978665d597abe565",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.alibaba.nacos.spring.context.annotation.config.NacosPropertySourcePostProcessorTest",
++        "method": "testFirstOrder",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "3dd4b7ca9aae174c200c3131630a1dfcdf45767334a9bda81d37b403cfd9e4af"
++  },
++  "namedTest": "NacosPropertySourcePostProcessorTest#testFirstOrder",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/old/testcases/3b2804ab057d.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:242)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:137)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
++	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
++	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
++	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
++	at java.lang.reflect.Method.invoke(Method.java:498)
++	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
++	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
++	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
++	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
++	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
++
++
++Results :
++
++Tests in error: 
++  testFindMatchingMethod(org.jupiter.common.util.ReflectsTest): Class versions V1_5 or less must use F_NEW frames.
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Jupiter 1.3.0:
++[INFO] 
++[INFO] Jupiter ............................................ SUCCESS [  3.870 s]
++[INFO] jupiter-common ..................................... FAILURE [ 16.507 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  20.568 s
++[INFO] Finished at: 2026-11-21T05:21:40Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project jupiter-common: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/jupiter-common/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :jupiter-common
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/summary.json
+@@ -0,0 +1,67 @@
++{
++  "revision": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "704852e07808a4294397cc10fbb5e0638fb0a4e7d14e60c0ccb6f334391f688e",
++      "mavenCommandLines": [
++        "- mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V",
++        "- travis_retry mvn clean test"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "jupiter-common",
++  "goals": [
++    "-pl",
++    "jupiter-common",
++    "-am",
++    "-Dtest=ReflectsTest#testFindMatchingMethod",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 726
++  },
++  "exit": 1,
++  "seconds": 21.87,
++  "logSha256": "32fd24b5e99a99e875cc437709265640f2cb8b74afb42265c3168064b244a95b",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "org.jupiter.common.util.ReflectsTest",
++        "method": "testFindMatchingMethod",
++        "outcome": "error",
++        "type": "java.lang.IllegalArgumentException",
++        "message": "Class versions V1_5 or less must use F_NEW frames."
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "org.jupiter.common.util.ReflectsTest",
++        "method": "testFindMatchingMethod",
++        "outcome": "error",
++        "type": "java.lang.IllegalArgumentException",
++        "message": "Class versions V1_5 or less must use F_NEW frames."
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "aff2402fb27a3cd838ba478582fc7b0eb799ce252f4a1ca5cb36cf388a312cc8"
++  },
++  "diagnostic": [
++    "java.lang.IllegalArgumentException: Class versions V1_5 or less must use F_NEW frames.",
++    "Tests in error:",
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project jupiter-common: There are test failures.",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++  ],
++  "namedTest": "ReflectsTest#testFindMatchingMethod",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/testcases/32a57423836e.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                   
++                   
++                   
++                    
++                    
++                   
++                   
++                    
++                   
++                    
++                    
++                    
++                   
++                    
++                   
++                   
++                   
++[INFO] Surefire report directory: /project/jupiter-common/target/surefire-reports
++                    
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running org.jupiter.common.util.ReflectsTest
++Integer i, CharSequence s
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Jupiter 1.3.0:
++[INFO] 
++[INFO] Jupiter ............................................ SUCCESS [  2.246 s]
++[INFO] jupiter-common ..................................... SUCCESS [  8.715 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  11.170 s
++[INFO] Finished at: 2026-11-21T05:21:18Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/summary.json
+@@ -0,0 +1,51 @@
++{
++  "revision": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "704852e07808a4294397cc10fbb5e0638fb0a4e7d14e60c0ccb6f334391f688e",
++      "mavenCommandLines": [
++        "- mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V",
++        "- travis_retry mvn clean test"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "jupiter-common",
++  "goals": [
++    "-pl",
++    "jupiter-common",
++    "-am",
++    "-Dtest=ReflectsTest#testFindMatchingMethod",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 728
++  },
++  "exit": 0,
++  "seconds": 12.45,
++  "logSha256": "e64accb8654592bea3fa707f5f84797e3db4d7c35340ee3a7626681a294ba0c1",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "org.jupiter.common.util.ReflectsTest",
++        "method": "testFindMatchingMethod",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "5fef71a4ad5209454e39b197577c341c8b6fe985145b5007e813e6e85062a1c9"
++  },
++  "namedTest": "ReflectsTest#testFindMatchingMethod",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/old/testcases/32a57423836e.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ javase ---
++[INFO] 
++[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ javase ---
++[INFO] Using 'UTF-8' encoding to copy filtered resources.
++[INFO] skip non existing resourceDirectory /project/javase/src/main/resources
++[INFO] 
++[INFO] --- maven-compiler-plugin:2.3.2:compile (default-compile) @ javase ---
++[INFO] Compiling 1 source file to /project/javase/target/classes
++[INFO] 
++[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ javase ---
++[INFO] Using 'UTF-8' encoding to copy filtered resources.
++[INFO] skip non existing resourceDirectory /project/javase/src/test/resources
++[INFO] 
++[INFO] --- maven-compiler-plugin:2.3.2:testCompile (default-testCompile) @ javase ---
++[INFO] Compiling 1 source file to /project/javase/target/test-classes
++[INFO] 
++[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ javase ---
++[INFO] Surefire report directory: /project/javase/target/surefire-reports
++                    
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running net.glxn.qrgen.javase.QRCodeTest
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.136 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for QRGen-parent 2.5.0:
++[INFO] 
++[INFO] QRGen-parent ....................................... SUCCESS [  1.110 s]
++[INFO] QRGen-core ......................................... SUCCESS [  3.219 s]
++[INFO] QRGen-javase ....................................... SUCCESS [  1.121 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  5.938 s
++[INFO] Finished at: 2026-11-21T05:22:25Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/summary.json
+@@ -0,0 +1,48 @@
++{
++  "revision": "da2fc8cfba0e8ec28967256689a799b14babb04b",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "30a815b77315fb08e04702399e2e276065e4f74e6d9d1268dfaf7d0d3c2313e1",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "javase",
++  "goals": [
++    "-pl",
++    "javase",
++    "-am",
++    "-Dtest=QRCodeTest#shouldGetFileFromTextWithDefaults",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 454
++  },
++  "exit": 0,
++  "seconds": 7.08,
++  "logSha256": "28ab684bf145c3b0d915c81385161e7d27f5d2d975ec510133dc29684e95640d",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "net.glxn.qrgen.javase.QRCodeTest",
++        "method": "shouldGetFileFromTextWithDefaults",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "5bc44fac8016707212b881796f906349e53362b177b03e4d5ba5d2ac317be5b3"
++  },
++  "namedTest": "QRCodeTest#shouldGetFileFromTextWithDefaults",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/testcases/20d0b16c59d4.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] --- maven-enforcer-plugin:1.0:enforce (enforce-maven) @ javase ---
++[INFO] 
++[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ javase ---
++[INFO] Using 'UTF-8' encoding to copy filtered resources.
++[INFO] skip non existing resourceDirectory /project/javase/src/main/resources
++[INFO] 
++[INFO] --- maven-compiler-plugin:2.3.2:compile (default-compile) @ javase ---
++[INFO] Compiling 1 source file to /project/javase/target/classes
++[INFO] 
++[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ javase ---
++[INFO] Using 'UTF-8' encoding to copy filtered resources.
++[INFO] skip non existing resourceDirectory /project/javase/src/test/resources
++[INFO] 
++[INFO] --- maven-compiler-plugin:2.3.2:testCompile (default-testCompile) @ javase ---
++[INFO] Compiling 1 source file to /project/javase/target/test-classes
++[INFO] 
++[INFO] --- maven-surefire-plugin:2.12.4:test (default-test) @ javase ---
++[INFO] Surefire report directory: /project/javase/target/surefire-reports
++                    
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running net.glxn.qrgen.javase.QRCodeTest
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.109 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for QRGen-parent 2.5.0:
++[INFO] 
++[INFO] QRGen-parent ....................................... SUCCESS [  1.306 s]
++[INFO] QRGen-core ......................................... SUCCESS [  3.410 s]
++[INFO] QRGen-javase ....................................... SUCCESS [  1.227 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  6.397 s
++[INFO] Finished at: 2026-11-21T05:22:17Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/summary.json
+@@ -0,0 +1,48 @@
++{
++  "revision": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "30a815b77315fb08e04702399e2e276065e4f74e6d9d1268dfaf7d0d3c2313e1",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "javase",
++  "goals": [
++    "-pl",
++    "javase",
++    "-am",
++    "-Dtest=QRCodeTest#shouldGetFileFromTextWithDefaults",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 452
++  },
++  "exit": 0,
++  "seconds": 7.54,
++  "logSha256": "ac8842fa7df1268a38aa5770524cc96580e7b38f85f75dfba48b4f3b217bb3a2",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "net.glxn.qrgen.javase.QRCodeTest",
++        "method": "shouldGetFileFromTextWithDefaults",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "d3c12383d89c5e6110360ad73cf847e92ab22bab07a7e7add924f9a703694cf3"
++  },
++  "namedTest": "QRCodeTest#shouldGetFileFromTextWithDefaults",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/old/testcases/20d0b16c59d4.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:271)
++	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:70)
++	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:50)
++	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:238)
++	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:63)
++	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:236)
++	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:53)
++	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:229)
++	at org.junit.runners.ParentRunner.run(ParentRunner.java:309)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:242)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:137)
++	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
++	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
++	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
++	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
++	at java.lang.reflect.Method.invoke(Method.java:498)
++	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
++	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
++	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
++	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
++	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
++
++
++Results :
++
++Failed tests:   testShortName(org.zeroturnaround.exec.test.ProcessExecutorLoggerTest): expected:<[org.zeroturnaround.exec.test.ProcessExecutorLoggerTest.MyLogger]> but was:<[NOP]>
++
++Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  5.216 s
++[INFO] Finished at: 2026-11-21T05:22:37Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project zt-exec: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/summary.json
+@@ -0,0 +1,59 @@
++{
++  "revision": "938bbeb343eb5fd465517c713fe9065ce997058a",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "abf48d8882758b71511c9f15ba9a9a46863739de0d125aeaf06bafa1be72660b",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=ProcessExecutorLoggerTest#testShortName",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 606
++  },
++  "exit": 1,
++  "seconds": 6.38,
++  "logSha256": "8cf01260533d0aadbf24f9cf3f52c6f1de281adbae3d11c2c5f543e3474f87b5",
++  "freshReports": {
++    "tests": 1,
++    "failures": 1,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "org.zeroturnaround.exec.test.ProcessExecutorLoggerTest",
++        "method": "testShortName",
++        "outcome": "failure",
++        "type": "org.junit.ComparisonFailure",
++        "message": "expected:<[org.zeroturnaround.exec.test.ProcessExecutorLoggerTest.MyLogger]> but was:<[NOP]>"
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "org.zeroturnaround.exec.test.ProcessExecutorLoggerTest",
++        "method": "testShortName",
++        "outcome": "failure",
++        "type": "org.junit.ComparisonFailure",
++        "message": "expected:<[org.zeroturnaround.exec.test.ProcessExecutorLoggerTest.MyLogger]> but was:<[NOP]>"
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "0cf348e2dd1b9eea346602ff2a14e7af181b494a593de0a9c0a03d9a659a5111"
++  },
++  "diagnostic": [
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.12.4:test (default-test) on project zt-exec: There are test failures.",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++  ],
++  "namedTest": "ProcessExecutorLoggerTest#testShortName",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/testcases/fa79beaac13e.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++                   
++                   
++                    
++                    
++                    
++                   
++                    
++                   
++                    
++                   
++                   
++                   
++                   
++                   
++                    
++                   
++                   
++                   
++                   
++                   
++                   
++                   
++                   
++[INFO] Surefire report directory: /project/target/surefire-reports
++                    
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running org.zeroturnaround.exec.test.ProcessExecutorLoggerTest
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.189 sec
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  5.311 s
++[INFO] Finished at: 2026-11-21T05:22:31Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/summary.json
+@@ -0,0 +1,45 @@
++{
++  "revision": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "abf48d8882758b71511c9f15ba9a9a46863739de0d125aeaf06bafa1be72660b",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": ".",
++  "goals": [
++    "-Dtest=ProcessExecutorLoggerTest#testShortName",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client and serialized Maven Central mirror",
++  "resolver": {
++    "cachedRequests": 606
++  },
++  "exit": 0,
++  "seconds": 6.34,
++  "logSha256": "1fa9155829e825262e0d4458061e11959bd180262f7981fdee2927dcae9d3647",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "org.zeroturnaround.exec.test.ProcessExecutorLoggerTest",
++        "method": "testShortName",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "7d50362944db774c18069aee3659f0cf4c0518706b10509d02b024b78937776e"
++  },
++  "namedTest": "ProcessExecutorLoggerTest#testShortName",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/old/testcases/fa79beaac13e.xml.gz changed

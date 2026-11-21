@@ -1,0 +1,45 @@
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:148)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:117)
+	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:190)
+	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:186)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:750)
+Caused by: org.eclipse.jgit.errors.RevWalkException: Walk failure.
+	at org.eclipse.jgit.revwalk.RevWalk.iterator(RevWalk.java:1325)
+	at pl.project13.jgit.JGitCommon.findCommitsUntilSomeTag(JGitCommon.java:274)
+	... 21 more
+Caused by: org.eclipse.jgit.errors.MissingObjectException: Missing commit 537c82b11ea9022b1f094e667a4d66eb63d20976
+	at org.eclipse.jgit.internal.storage.file.WindowCursor.open(WindowCursor.java:147)
+	at org.eclipse.jgit.revwalk.RevWalk.getCachedBytes(RevWalk.java:903)
+	at org.eclipse.jgit.revwalk.RevCommit.parseHeaders(RevCommit.java:150)
+	at org.eclipse.jgit.revwalk.PendingGenerator.next(PendingGenerator.java:147)
+	at org.eclipse.jgit.revwalk.StartGenerator.next(StartGenerator.java:184)
+	at org.eclipse.jgit.revwalk.RevWalk.next(RevWalk.java:435)
+	at org.eclipse.jgit.revwalk.RevWalk.iterator(RevWalk.java:1323)
+	... 22 more
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for Apollo 1.4.0:
+[INFO] 
+[INFO] Apollo ............................................. SUCCESS [  1.204 s]
+[INFO] Apollo Core ........................................ FAILURE [  1.102 s]
+[INFO] Apollo Client ...................................... SKIPPED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.578 s
+[INFO] Finished at: 2026-11-21T05:22:09Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal pl.project13.maven:git-commit-id-plugin:2.2.0:revision (default) on project apollo-core: Could not complete Mojo execution...: Unable to find commits until some tag: Walk failure. Missing commit 537c82b11ea9022b1f094e667a4d66eb63d20976 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
+[ERROR] 
+[ERROR] After correcting the problems, you can resume the build with the command
+[ERROR]   mvn <args> -rf :apollo-core

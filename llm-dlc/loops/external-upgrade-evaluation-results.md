@@ -4,12 +4,16 @@ ReflectASM's upgrade from ASM 5.1 to 7.2 prevents its caller from constructing a
 
 | Evaluation | V0 | Current measured recovery |
 |---|---|---|
-| Main, 12 reported changes | 0/12 | 1/12 replayed on the original caller |
-| Main, 12 routine upgrades | 0/12 | 8/12 scoped preservation decisions on real JVMs |
-| Transfer, four changes and four routine upgrades | 0/8 | 3/8 gained, with one change and two preservations. Both versions missed five. |
+| Main, 12 reported changes | 0/12 | 2/12 replayed on the original caller |
+| Main, 12 routine upgrades | 0/12 | 12/12 scoped preservation decisions on real JVMs |
+| Transfer, four changes and four routine upgrades | 0/8 | 4/8 gained, with two changes and two preservations. Both versions missed four. |
 | Advisory pilot, three teams and five upgrades each | 0/15 decisions | The retrospective change threshold is 8/12. |
 
-The recovery used case-specific, reviewed observers. It qualified eight finite main-set preservation claims and one change. Each admitted input entered the declared original JVM method twice on both releases, and the runtime loaded classes from the pinned dependency. The three transfer gains include two on represented library families and one preservation on a new family. No accepted scope has a reproduced contradiction. [Machine-readable scorecard](../../verification/external-upgrades/scorecard.json) · [Reports for all 32 upgrades](external-upgrade-case-reports.md)
+The recovery used case-specific, reviewed observers. It qualified all 12 finite main-set preservation claims and two changes. Each admitted input entered the declared original JVM method twice on both releases, and the runtime loaded classes from the pinned dependency. The four transfer gains cover two represented-family clients and two new-family clients. No accepted scope has a reproduced contradiction. [Machine-readable scorecard](../../verification/external-upgrades/scorecard.json) · [Reports for all 32 upgrades](external-upgrade-case-reports.md)
+
+The JVM profiler ignored the tagged settings after the upgrade. On the tagged input the old client read interval 9001 and the new client read 9000. The untagged fallback still agreed. With the original Logback test backend, ZT-exec’s short and fully qualified logger names both changed to NOP. The earlier production-only replay found NOP before and after. The receiver environment matters to that decision. [JVM profiler replay](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-29.json) · [ZT-exec replay](../../verification/external-upgrades/corpus-runs/finite-recovery/02/compsuite-i-80.json)
+
+The corrected Apache Configuration observers distinguished an absent list from an empty one. The bytecode analysis now uses two classes with independently checked SourceFile attributes and two controls without them. Those three routine comparisons and the Cucumber report count all preserved their specified outcomes. The Retrofit response decoder, async transformation on fixed bytecode, and QR image round trip also preserved their observations. Their published change cases still lack a counterexample on those particular operations. [Recovery receipts](../../verification/external-upgrades/corpus-runs/finite-recovery)
 
 Since 03:05 UTC on 21 November, one gpt-6.2-astra session operates and reviews every case. The six Claude calibration reports and the earlier custody procedure are superseded. Public revision IDs and expected observations may be recorded directly. [Engineering protocol](../../lib/benchmark/external-upgrades/protocol.md#active-engineering-protocol-from-0305-utc-on-21-november)
 
@@ -39,11 +43,22 @@ The pinned native workflow left all five disclosed claims open. The JDBC, time, 
 
 The release-aware native loader cleared all four multi-release blockers in the main set. Three then exposed an ambiguous `read` overload and one reached receiver construction. The exact-overload pass invoked each common declaration at its actual parameter types. It issued no relevant assurance on its own. On Cucumber Reporting the native route reached the paired checker's restriction on declared checked exceptions. The classpath and JVM route outcomes are reported independently. [Native reruns](../../verification/external-upgrades/corpus-runs/multi-release) · [Overload reruns](../../verification/external-upgrades/corpus-runs/overloads)
 
+The finite checker also established both unchanged string claims. Commons Text returned identical UTF-16 units on all 156 fields admitted by its guard. Cucumber Reporting returned the same three-digit duration on all 18 deserialized inputs. Neither case produced a differing input. [Commons Text finite proof](../../examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/preservation.json) · [Cucumber Reporting finite proof](../../examples/352-cucumber-duration/records/finite-proofs/20261121T045926Z-69ee0144/format.json)
+
 ## Historical calibration treatments
 
 The three Claude profiles produced six opening reports before the user changed the operator. Those reports are superseded and excluded from every count above. The original five native calibration results and the JVM observations remain available as historical evidence. [Calibration ledger](../../verification/external-upgrade-calibrations.json) · [Earlier protocol](../../lib/benchmark/external-upgrades/protocol.md)
 
 ## CI and CompCheck
+
+The original Maven verify lifecycle ran on both revisions of all 32 upgrades in isolated checkouts. Across the 48 main-set builds, 19 passed, 16 failed during tests or a later lifecycle stage, 11 failed before tests and two reported zero tests. They produced 35,398 testcase observations. The 16 transfer builds produced 8,901. These are original owning-module and reactor builds under the recorded JDKs. Hosted CI matrices and extra platform jobs are reported separately when available. [Original CI receipts](../../verification/external-upgrades/corpus-runs/original-ci) · [Per-case CI and verifier decisions](../../verification/external-upgrades/scorecard.json)
+
+WhatJDK's original Maven runs reported zero tests on both sides. Its finite caller check covers the declarations in four ordinary class files on both ASM pins. The JVM profiler's original assertion already reported its tagged interval changing from 9001 to 9000. In the spreadsheet and ordering cases, original CI found a linkage error while opening the workbook and a Spring startup error respectively. Those failures preceded the historical style and purchase assertions.
+
+
+Focused developer tests ran separately for all 16 historical cases. Ten passed before and failed after. Four produced no named testcase on either side, Apollo produced one only after the upgrade, and QRGen passed on both. The receipts retain the exact testcase XML, failure type and original Maven diagnostics. [Focused CI on both revisions](../../verification/external-upgrades/corpus-runs/focused-ci)
+
+CompCheck supplied nine registered call sites across four of the 32 clients. Full knowledge matched all three ReflectASM sites, all three Jupiter sites and one profiler site. At one ReflectASM site the generated suite recorded two failures in four tests before the upgrade and three afterwards. Removing the matching prior incident removed all three ReflectASM matches. At one Jupiter site CompCheck recorded five tests and three failures after the upgrade. The old log had no comparable aggregate. The remaining generated runs did not establish the specific caller observations. Apollo had no match. The other 28 corpus pairs lacked a registered site at the pinned revision. [Stock runs and leave-original-incident-out controls](../../verification/external-upgrades/compcheck-runs)
 
 The stock CompSuite wrapper printed success on both H2 tags when an offline build extension was missing and no tests ran. With the original dependencies, CPython 3.11.14, Maven 3.6.3 and JDK 8, its separate old and new runs each produced one fresh named testcase. The new test failed on the returned list even though the wrapper exited zero. The original Maven suite reproduced all 454 reported tests per pin, two skips per pin and three upgraded-side assertion failures. All 105 independently built production classes matched the published release. [Cold wrapper](../../examples/348-rxjava-jdbc-generated-keys/records/compsuite-cli.json) · [Stock CLI with resolved dependencies](../../examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/result.json) · [Whole Maven suite](../../examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/result.json)
 
