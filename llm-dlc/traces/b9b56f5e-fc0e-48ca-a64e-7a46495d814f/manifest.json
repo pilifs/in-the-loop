@@ -12,36 +12,39 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T21:09:16.220Z",
-  "duration_seconds": 15114,
+  "ended": "2026-11-21T21:40:08.458Z",
+  "duration_seconds": 16966,
   "stats": {
     "turns": 15,
-    "api_calls": 728,
-    "tool_calls": 823,
+    "api_calls": 776,
+    "tool_calls": 872,
     "tool_errors": 13,
     "compactions": 4,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 1458,
-      "output_tokens": 971828,
-      "cache_read_input_tokens": 204382216,
-      "cache_creation_input_tokens": 2081822
+      "input_tokens": 1554,
+      "output_tokens": 1066741,
+      "cache_read_input_tokens": 227010866,
+      "cache_creation_input_tokens": 2214879
     }
   },
   "tools": {
-    "Bash": 715,
+    "Bash": 761,
     "Read": 49,
     "Edit": 37,
-    "Write": 22
+    "Write": 25
   },
   "files_touched": [
     ".claude/settings.json",
     "examples/tools/targets/case_pack.py",
+    "examples/tools/targets/class_binding.py",
     "examples/tools/targets/test_case_pack.py",
+    "examples/tools/targets/test_class_binding.py",
     "examples/tools/targets/test_proof_output.py",
     "lib/python/jvmcontract_io.py",
     "lib/python/test_jvmcontract_io.py",
     "lib/src/proof_wire.rs",
+    "lib/tests/class_bindings.rs",
     "llm-dlc/loops/llm-dlc-process-plumbing-results.md",
     "llm-dlc/operating-notes.md",
     "llm-dlc/specification.md",
@@ -123,24 +126,24 @@
     {
       "index": 4,
       "started": "2026-11-21T20:25:03.278Z",
-      "ended": "2026-11-21T21:09:16.220Z",
+      "ended": "2026-11-21T21:40:08.458Z",
       "turns": 5,
-      "api_calls": 120,
+      "api_calls": 168,
       "usage": {
-        "input_tokens": 242,
-        "output_tokens": 149451,
-        "cache_read_input_tokens": 29704584,
-        "cache_creation_input_tokens": 380191
+        "input_tokens": 338,
+        "output_tokens": 244364,
+        "cache_read_input_tokens": 52333234,
+        "cache_creation_input_tokens": 513248
       },
-      "peak_context_tokens": 395096
+      "peak_context_tokens": 528153
     }
   ],
   "log": {
-    "sha256": "401419cb31e97b5150cf80242cff47b9095a615a3b3a81313171d1bd8155b3fc",
-    "bytes": 17760979,
-    "lines": 6398,
-    "gzip_bytes": 2850369,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/401419cb31e97b5150cf80242cff47b9095a615a3b3a81313171d1bd8155b3fc.jsonl.gz"
+    "sha256": "ae4c3a89124b5be9ba6d758c906cee0b3e92450031f189975458437e3a3eabfb",
+    "bytes": 18894258,
+    "lines": 6826,
+    "gzip_bytes": 2981390,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/ae4c3a89124b5be9ba6d758c906cee0b3e92450031f189975458437e3a3eabfb.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -319,6 +322,14 @@
       "summary": "Give proof output one reader: a Rust contract module, a shared Python reader, and helper decisions as data",
       "body": "Part 1 of llm-dlc/loops/lib-architecture-fast-follow.md. Three readers of the checker's --json output answered differently for the same bytes: for the first established row of example 359's selector record with only wire_version changed to 999, the ordinary decoder refused it while the native-selector check read it as established and the benchmark scored it correct; a stated.bounds.complete of the string \"false\" was established through Python's truthiness; and a process that exited with 2 beside a verified payload was scored correct. lib/src/proof_wire.rs now owns what prove --json and equivalence --json print (the wire version, the envelope, the exit as the maximum over a run's rows), with the command line as its caller. lib/python/jvmcontract_io.py is the one Python reader, standard library only, and keeps three questions apart: whether the bytes decode, whether the process ended as the command ends, and (the consumer's own) whether the evidence qualifies, for which it offers typed access where a missing or mistyped field is unknown.\n\nSwitched to it: ordinary ingestion (checker_output.py keeps its names and reads through it; an unreadable outcome's reason now names what the reader refused), the live native-selector check, the validation of archived selector records, and lib/benchmark/run.py, which the solver comparison reads through. A benchmark case must print its one row; a kill, an unknown version, a mistyped decision field, exit 2 and an exit that contradicts the verdict earn no score, and a valid refutation is still correct at exit 1. A new selector row records its wire version and a new record names both rule files.\n\nA regression check under --cache now says what it did with each changed helper as data (the outcome's helpers: callee, action, the proof's claim key and whether it was found in the cache, a summary's reads and facts, a reason code). The notes in the output are rendered from the decision, word for word what they were, and the proof cache stores the decisions with a result. build.py and economics.py read the data and fall back to the notes for an outcome from before the field; their patterns never matched the two notes a summary writes. sharedHelpers still means a helper proved equal on every input.",
       "log_sha256": "401419cb31e97b5150cf80242cff47b9095a615a3b3a81313171d1bd8155b3fc"
+    },
+    {
+      "change_id": "pnnnrmpzyvqtqtmnprqwkzyopvpytoko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind a proof to the class file a JVM loads: one selection in the checker, observed by a JVM, compared at launch",
+      "body": "Part 2 of llm-dlc/loops/lib-architecture-fast-follow.md. Two JARs that differ only in how the manifest spells Multi-Release's value (one line, or folded over two) load different classes on JDK 17, 21 and 25: the versioned entry of the first, the base entry of the second. The preparation took the base class of both; the Python launch guard and the Rust checker bound to release 21 took the versioned class of both, so on the folded JAR the checker refuted a property the JVM satisfies. Three parties each had a rule; now there is one selection, and it is held to a JVM.\n\nlib/src/classpath.rs: ClassPath::bind says which class file stands for a class name on an ordered class path and the bound runtime (provider, JAR entry, SHA-256, how it was selected, every candidate, later holders), or a typed refusal with the candidates' digests and origins; every reader of class bytes in the checker goes through it. The manifest is read as the JDK's reader reads it, measured with fifteen spellings: a spelling on which that reading and the JAR specification's differ is ambiguous, and a class with a versioned entry in such a JAR is refused unless JVMCONTRACT_CLASS_OBSERVATIONS says which class file a JVM of the bound release loaded; an observation of other bytes than the rule's is a refusal with both digests. jvmcontract class-bindings answers for every side and class of a launch in one process, with whether the bound class file declares a method asked about and which entry stands for each logical name of a JAR.\n\nexamples/tools/targets/class_binding.py: the Python tools select nothing by rule. A class with one class file is read as before, and its prepared record is unchanged. A class the original artifact holds several class files of is bound at preparation by LoadedClasses on each JDK the artifact runs on (classSha256, jarEntry, classObservation); JDKs that load different bytes, another code source, or bytes no class file has are refused with both digests. Parameter lookup and every reader of a prepared entry class take the bound entry (runtime.bound_class). The native launch guard asks the checker for its bindings, one process whatever the sides and classes, and compares provider and digest with the prepared ones; the equivalence route extracts a JAR by the checker's own logical entries. A native-selector task asks once, whatever its number of selectors. runtime_jar.effective_entries stays as an inventory view for the upgrade review's tools, with the measured rule.",
+      "log_sha256": "ae4c3a89124b5be9ba6d758c906cee0b3e92450031f189975458437e3a3eabfb"
     }
   ],
   "logs": {
@@ -404,6 +415,12 @@
       "bytes": 12213277,
       "lines": 4398,
       "gzip_bytes": 1931120,
+      "url": null
+    },
+    "ae4c3a89124b5be9ba6d758c906cee0b3e92450031f189975458437e3a3eabfb": {
+      "bytes": 18894258,
+      "lines": 6826,
+      "gzip_bytes": 2981390,
       "url": null
     },
     "b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a": {

@@ -281,9 +281,9 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
             raise ValueError(problem)
     controls_seconds = time.monotonic() - started - prep_seconds
     sides, names = {}, {}
-    for rev, (where, _, _) in built.items():
+    for rev, (where, bound_revision, _) in built.items():
         cp = invocation.classpaths[rev]
-        data = runtime_jar.read_class(where / cp[0]["path"], runtime_jar.internal(owner))
+        data = runtime.bound_class(where, bound_revision, cp[0]["path"], owner)
         if not runtime_jar.method_flags(data, method, desc) & 0x0008:
             raise ValueError("the checked entry is not static")
         [name], _ = runtime_jar.parameter_names(data, method, desc)

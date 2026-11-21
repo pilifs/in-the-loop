@@ -400,6 +400,17 @@ enum Command {
         #[arg(long)]
         rank: Option<u32>,
     },
+    /// Say which exact class file the checker inspects for each class asked about, on an ordered class path and
+    /// the bound runtime (JAVA_HOME, JVMCONTRACT_JAR_RELEASE, JVMCONTRACT_CLASS_OBSERVATIONS): the provider, the
+    /// JAR entry and its SHA-256, or a typed refusal with both digests where two readers would differ; whether it
+    /// declares a method asked about; and which entry stands for each logical name of a JAR. One process answers
+    /// for every side and class of a request (`lib/src/class_bindings.rs` has its JSON). Prints JSON; exits 0
+    /// whether or not a class is refused, and 2 when the request cannot be read.
+    ClassBindings {
+        /// The request file, or `-` for standard input.
+        #[arg(long, default_value = "-")]
+        request: String,
+    },
     /// Print the structure of a class file: constant pool size, members, attributes and bytecode.
     Inspect {
         class_file: PathBuf,
@@ -1328,6 +1339,12 @@ fn run(cli: Cli) -> Result<i32, Error> {
             let (updated, approved) = jvmcontract::alignment::questions::approve(jvmcontract::alignment::read_hints(&hints)?, &kind, &subject, rank)?;
             jvmcontract::alignment::write_hints(&hints, &updated)?;
             println!("approved  {subject} ({kind}{}): intent approved; evidence {}", rank.map(|r| format!(", rank {r}")).unwrap_or_default(), jvmcontract::alignment::questions::describe(&approved.evidence));
+            Ok(0)
+        }
+        Command::ClassBindings { request } => {
+            let text = if request == "-" { std::io::read_to_string(std::io::stdin())? } else { std::fs::read_to_string(&request).map_err(|e| Error::new(format!("{request}: {e}")))? };
+            let request: jvmcontract::class_bindings::Request = serde_json::from_str(&text).map_err(|e| Error::new(format!("not a class-bindings request: {e}")))?;
+            println!("{}", serde_json::to_string_pretty(&jvmcontract::class_bindings::answer(&request)?).map_err(|e| Error::new(e.to_string()))?);
             Ok(0)
         }
         Command::Inspect { class_file, code } => {

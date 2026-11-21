@@ -21,19 +21,79 @@ enum Entry {
     Dir(PathBuf),
     /// A jar, and the class files it holds for a release of Java of their own where its manifest says it is a
     /// multi-release JAR ([`versioned_entries`]).
-    Jar(crate::zip::ZipArchive, PathBuf, BTreeMap<String, Vec<u32>>),
+    Jar(crate::zip::ZipArchive, PathBuf, JarVersions),
+}
+
+/// How a JAR's main manifest enables multi-release lookup, read as the JDK's own reader reads it
+/// (`java.util.jar.JarFile`). Measured on Temurin 17.0.21, 21.0.13 and 25.0.5 with fifteen spellings
+/// (`lib/tests/class_bindings.rs`): a JAR is multi-release there when its manifest's bytes hold `Multi-Release: true`
+/// literally (letters in either case, one space) and the main section's attribute, with continuation lines joined
+/// and the last value taken, is `true` on a line that is ended. The JAR specification's reading, joining
+/// continuation lines first, calls a value folded over two lines `true` as well; those runtimes load the base
+/// entries of such a JAR.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum MultiRelease {
+    /// The main section has no `Multi-Release: true`: versioned entries are never consulted.
+    Disabled,
+    /// Enabled, in a spelling every reader agrees on.
+    Enabled,
+    /// The attribute reads `true` once continuation lines are joined, but the bytes hold no literal
+    /// `Multi-Release: true`: the runtimes measured load the base entries, and a reader that joins lines first the
+    /// versioned ones. A class with a versioned entry in such a JAR is refused unless a JVM said which it loaded
+    /// ([`ClassPath::refused`]).
+    Ambiguous,
+}
+
+/// What a JAR says of multi-release lookup, and the versioned entries it then holds: each logical name with the
+/// releases it has an entry for. Empty when the manifest does not enable the lookup.
+pub struct JarVersions {
+    mode: MultiRelease,
+    entries: BTreeMap<String, Vec<u32>>,
+}
+
+impl JarVersions {
+    /// The entry that stands for `name` on a JVM of `feature`: the highest versioned one not above it where the
+    /// manifest enables the lookup in a spelling every reader agrees on, else the base entry.
+    fn entry_for(&self, name: &str, feature: Option<u32>) -> String {
+        if let (MultiRelease::Enabled, Some(feature), Some(available)) = (self.mode, feature, self.entries.get(name)) {
+            if let Some(selected) = available.iter().copied().filter(|&v| v <= feature).max() {
+                return format!("META-INF/versions/{selected}/{name}");
+            }
+        }
+        name.to_string()
+    }
+}
+
+/// [`MultiRelease`] of a manifest's bytes.
+pub fn multi_release(manifest: &[u8]) -> MultiRelease {
+    const LITERAL: &[u8] = b"multi-release: true";
+    let literal = manifest.windows(LITERAL.len()).any(|w| w.eq_ignore_ascii_case(LITERAL));
+    let text = String::from_utf8_lossy(manifest).replace("\r\n", "\n").replace('\r', "\n");
+    // The main section ends at the first empty line; a last line with no line break is not read.
+    let main = match text.split_once("\n\n") {
+        Some((main, _)) => main.to_string(),
+        None => text.rsplit_once('\n').map(|(ended, _)| ended.to_string()).unwrap_or_default(),
+    };
+    let main = main.replace("\n ", "");
+    let attribute = main.lines().filter_map(|line| line.split_once(": "))
+        .filter(|(key, _)| key.eq_ignore_ascii_case("Multi-Release")).next_back()
+        .is_some_and(|(_, value)| value.eq_ignore_ascii_case("true"));
+    match (attribute, literal) {
+        (false, _) => MultiRelease::Disabled,
+        (true, true) => MultiRelease::Enabled,
+        (true, false) => MultiRelease::Ambiguous,
+    }
 }
 
 /// The versioned entries of a JAR whose main manifest enables multi-release lookup (JAR specification).
-fn versioned_entries(zip: &crate::zip::ZipArchive) -> Result<BTreeMap<String, Vec<u32>>, Error> {
+fn versioned_entries(zip: &crate::zip::ZipArchive) -> Result<JarVersions, Error> {
     let mut out: BTreeMap<String, Vec<u32>> = BTreeMap::new();
-    let Some(manifest) = zip.read("META-INF/MANIFEST.MF")? else { return Ok(out) };
-    let manifest = String::from_utf8_lossy(&manifest).replace("\r\n", "\n").replace('\r', "\n");
-    let main = manifest.split("\n\n").next().unwrap_or("").replace("\n ", "");
-    let enabled = main.lines().filter_map(|line| line.split_once(": "))
-        .filter(|(key, _)| key.eq_ignore_ascii_case("Multi-Release")).next_back()
-        .is_some_and(|(_, value)| value.eq_ignore_ascii_case("true"));
-    if !enabled { return Ok(out) }
+    let mode = match zip.read("META-INF/MANIFEST.MF")? {
+        Some(manifest) => multi_release(&manifest),
+        None => MultiRelease::Disabled,
+    };
+    if mode == MultiRelease::Disabled { return Ok(JarVersions { mode, entries: out }) }
     for name in zip.names() {
         let Some((release, entry)) = name.strip_prefix("META-INF/versions/").and_then(|rest| rest.split_once('/')) else { continue };
         if release.starts_with('0') || !release.bytes().all(|b| b.is_ascii_digit()) || entry.starts_with("META-INF/") { continue }
@@ -41,7 +101,7 @@ fn versioned_entries(zip: &crate::zip::ZipArchive) -> Result<BTreeMap<String, Ve
             out.entry(entry.to_owned()).or_default().push(release);
         }
     }
-    Ok(out)
+    Ok(JarVersions { mode, entries: out })
 }
 
 /// An explicitly bound release for a native check, checked against the actual JDK installation.
@@ -59,7 +119,159 @@ pub(crate) fn configured_jar_release() -> Option<u32> {
     (requested == feature).then_some(requested)
 }
 
+/// What a JVM was seen to load, for the classes whose selection a rule alone does not settle: `JVMCONTRACT_CLASS_OBSERVATIONS`
+/// names a JSON file `{"feature": 21, "classes": {"fixture.Gate": "<sha256>"}}`, written by whoever ran the JVM (the
+/// target workflow's `LoadedClasses` probe). It counts only for the release it was made on, and only while that
+/// release is the bound one.
+#[derive(Default)]
+struct ClassObservations {
+    feature: Option<u32>,
+    /// By internal name: the SHA-256 of the class file the JVM loaded.
+    classes: HashMap<String, String>,
+    /// Why the file named could not be used. Then no application class is read: an observation that was meant to
+    /// bind a class and silently did not would be the disagreement this exists to catch.
+    problem: Option<String>,
+}
+
+fn configured_observations() -> ClassObservations {
+    let Some(path) = std::env::var_os("JVMCONTRACT_CLASS_OBSERVATIONS").filter(|p| !p.is_empty()) else { return ClassObservations::default() };
+    let read = || -> Result<ClassObservations, String> {
+        let text = std::fs::read_to_string(&path).map_err(|e| e.to_string())?;
+        let value: serde_json::Value = serde_json::from_str(&text).map_err(|e| e.to_string())?;
+        let feature = value["feature"].as_u64().and_then(|f| u32::try_from(f).ok()).ok_or("it names no feature release")?;
+        let mut classes = HashMap::new();
+        for (name, digest) in value["classes"].as_object().ok_or("it lists no classes")? {
+            let digest = digest.as_str().filter(|d| d.len() == 64 && d.bytes().all(|b| b.is_ascii_hexdigit())).ok_or_else(|| format!("{name} has no SHA-256"))?;
+            classes.insert(name.replace('.', "/"), digest.to_ascii_lowercase());
+        }
+        Ok(ClassObservations { feature: Some(feature), classes, problem: None })
+    };
+    read().unwrap_or_else(|why| ClassObservations { problem: Some(format!("the class observations in {} cannot be used: {why}", PathBuf::from(&path).display())), ..Default::default() })
+}
+
+/// One class file an entry holds for a name: where it is, and its digest.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct Candidate {
+    /// The class path entry, as it was given.
+    pub provider: String,
+    /// The entry inside a JAR (`fixture/Gate.class`, `META-INF/versions/17/fixture/Gate.class`), or the file under
+    /// a directory.
+    pub entry: String,
+    pub sha256: String,
+    /// The release a versioned entry is for; none for a base entry.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub release: Option<u32>,
+}
+
+/// How a binding's class file was chosen.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum SelectedBy {
+    /// By the class path's order and the bound release alone.
+    Rule,
+    /// By the rule, and a JVM was seen to load the same bytes.
+    RuleAndObservation,
+    /// By what a JVM was seen to load, where the manifest's spelling leaves the rule without an answer.
+    Observation,
+}
+
+/// The exact class file the checker inspects for a binary class name, on this ordered class path and bound runtime:
+/// the one answer every reader of the class takes ([`ClassPath::bind`]).
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ClassBinding {
+    /// The class, dotted.
+    pub class: String,
+    /// The provider's position among the class path's entries, from 0.
+    pub index: usize,
+    #[serde(flatten)]
+    pub selected: Candidate,
+    pub selected_by: SelectedBy,
+    /// The release multi-release lookup is bound to (`JVMCONTRACT_JAR_RELEASE`, checked against the JDK); none
+    /// when no runtime is bound.
+    pub bound_release: Option<u32>,
+    /// What the provider's manifest says of multi-release lookup; none for a directory.
+    pub manifest: Option<MultiRelease>,
+    /// Every class file the provider holds for the name, the selected one among them.
+    pub candidates: Vec<Candidate>,
+    /// Later entries that hold the class too, shadowed here. Whether a shadowed class is acceptable is the caller's
+    /// policy; this only says so.
+    pub shadowed: Vec<Candidate>,
+}
+
+/// Why no class file stands for a name: the two digests where two readers would differ, and where each is from.
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct BindingRefusal {
+    pub code: RefusalCode,
+    /// The class, dotted.
+    pub class: String,
+    pub reason: String,
+    /// What the rule selects, when it selects.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected: Option<Candidate>,
+    /// The SHA-256 a JVM was seen to load, when one was given.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub observed: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub candidates: Vec<Candidate>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum RefusalCode {
+    /// No entry holds the class.
+    MissingClass,
+    /// The provider is a multi-release JAR with a versioned class file of it, and no runtime release is bound.
+    UnboundRelease,
+    /// The provider's manifest spells `Multi-Release` so that readers differ ([`MultiRelease::Ambiguous`]), it
+    /// holds a versioned class file of the class, and no JVM said which it loads.
+    AmbiguousManifest,
+    /// A JVM was seen to load other bytes than the rule selects.
+    ObservationDiffers,
+    /// A JVM was seen to load bytes that no class file of the provider has.
+    ObservationUnmatched,
+    /// The class is on the class path in a package of a JDK module, which a JVM loads from the module.
+    ShadowsJdk,
+    /// The observations file named could not be used, or an entry could not be read.
+    Unreadable,
+}
+
 impl Entry {
+    /// Every class file this entry holds for `file`, the base one first and then the versioned ones by release,
+    /// whatever its manifest says: the physical inventory, apart from which of them is selected.
+    fn candidates(&self, file: &str) -> Result<Vec<Candidate>, Error> {
+        let provider = self.display();
+        let candidate = |entry: String, bytes: &[u8], release| Candidate { provider: provider.clone(), entry, sha256: crate::digest::sha256_hex(bytes), release };
+        match self {
+            Entry::Dir(_) => Ok(self.resource(file, None)?.map(|bytes| candidate(file.to_string(), &bytes, None)).into_iter().collect()),
+            Entry::Jar(zip, _, _) => {
+                let mut out = Vec::new();
+                if let Some(bytes) = zip.read(file)? {
+                    out.push(candidate(file.to_string(), &bytes, None));
+                }
+                let mut versioned: Vec<(u32, &str)> = zip.names().filter_map(|name| {
+                    let (release, entry) = name.strip_prefix("META-INF/versions/")?.split_once('/')?;
+                    (entry == file && !release.starts_with('0') && release.bytes().all(|b| b.is_ascii_digit())).then(|| release.parse::<u32>().ok().map(|r| (r, name)))?
+                }).collect();
+                versioned.sort();
+                for (release, name) in versioned {
+                    if let Some(bytes) = zip.read(name)? {
+                        out.push(candidate(name.to_string(), &bytes, Some(release)));
+                    }
+                }
+                Ok(out)
+            }
+        }
+    }
+
+    /// Whether a JVM could load `file` from this entry: its base entry, or a versioned one where the manifest
+    /// enables the lookup.
+    fn holds(&self, file: &str) -> bool {
+        match self {
+            Entry::Dir(dir) => dir.join(file).is_file(),
+            Entry::Jar(zip, _, versions) => zip.contains(file) || versions.entries.contains_key(file),
+        }
+    }
+
     fn resource(&self, name: &str, feature: Option<u32>) -> Result<Option<Vec<u8>>, Error> {
         match self {
             Entry::Dir(dir) => {
@@ -71,14 +283,7 @@ impl Entry {
                     Err(e) => Err(Error::new(format!("cannot read {}: {e}", file.display()))),
                 }
             }
-            Entry::Jar(zip, _, versions) => {
-                if let (Some(feature), Some(available)) = (feature, versions.get(name)) {
-                    if let Some(selected) = available.iter().copied().filter(|&v| v <= feature).max() {
-                        return zip.read(&format!("META-INF/versions/{selected}/{name}"));
-                    }
-                }
-                zip.read(name)
-            }
+            Entry::Jar(zip, _, versions) => zip.read(&versions.entry_for(name, feature)),
         }
     }
 
@@ -97,8 +302,8 @@ impl Entry {
             Entry::Jar(zip, _, versions) => {
                 let mut names: std::collections::BTreeSet<_> = zip.names()
                     .filter(|n| !n.starts_with("META-INF/")).filter_map(|n| n.strip_suffix(".class")).collect();
-                if let Some(feature) = feature {
-                    names.extend(versions.iter().filter(|(_, v)| v.iter().any(|&n| n <= feature))
+                if let (MultiRelease::Enabled, Some(feature)) = (versions.mode, feature) {
+                    names.extend(versions.entries.iter().filter(|(_, v)| v.iter().any(|&n| n <= feature))
                         .filter_map(|(name, _)| name.strip_suffix(".class")));
                 }
                 Ok(names.into_iter().map(str::to_owned).collect())
@@ -160,6 +365,8 @@ pub struct Loaded {
 pub struct ClassPath {
     entries: Vec<Entry>,
     jar_release: Option<u32>,
+    /// What a JVM was seen to load ([`ClassObservations`]).
+    observations: ClassObservations,
     jdk: Option<JImage>,
     /// Bootstrap bytecode for String range checks on a selected pre-module JDK.
     legacy_boot: Option<crate::zip::ZipArchive>,
@@ -196,7 +403,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -341,7 +548,7 @@ impl ClassPath {
             return Err(Error::new(refused));
         }
         for entry in &self.entries {
-            if let Some(bytes) = entry.read(name, self.jar_release)? {
+            if let Some(bytes) = self.read_class(entry, name)? {
                 return Ok(Some(bytes));
             }
         }
@@ -399,38 +606,146 @@ impl ClassPath {
         if let Some(known) = self.refusals.borrow().get(name) {
             return known.clone();
         }
-        let refused = self.versioned(name).or_else(|| self.shadows_the_jdk(name));
+        let refused = self.binding_refusal(name).map(|r| r.reason);
         self.refusals.borrow_mut().insert(name.to_string(), refused.clone());
         refused
     }
 
-    /// [`ClassPath::refused`]'s first case.
-    fn versioned(&self, name: &str) -> Option<String> {
+    /// The SHA-256 a JVM of the bound release was seen to load for `name`, when one was given.
+    fn observation(&self, name: &str) -> Option<&str> {
+        (self.jar_release.is_some() && self.observations.feature == self.jar_release).then(|| self.observations.classes.get(name).map(String::as_str)).flatten()
+    }
+
+    /// [`ClassPath::refused`], as data. A class with one class file in its provider and no observation takes the
+    /// short way: nothing about it can differ between readers but the JDK's own packages.
+    fn binding_refusal(&self, name: &str) -> Option<BindingRefusal> {
         let file = format!("{name}.class");
-        if self.jar_release.is_some() || !self.entries.iter().any(|e| matches!(e, Entry::Jar(_, _, versioned) if versioned.contains_key(&file))) {
-            return None;
+        let first = self.entries.iter().find(|e| e.holds(&file));
+        let versioned = matches!(first, Some(Entry::Jar(_, _, versions)) if versions.entries.contains_key(&file));
+        if first.is_some() && (versioned || self.observation(name).is_some() || self.observations.problem.is_some()) {
+            return self.bind(name).err().filter(|r| r.code != RefusalCode::MissingClass);
         }
-        for entry in &self.entries {
-            match entry {
-                Entry::Jar(zip, path, versioned) if zip.contains(&file) || versioned.contains_key(&file) => {
-                    let releases = versioned.get(&file)?;
-                    let releases: Vec<String> = releases.iter().map(u32::to_string).collect();
-                    return Some(format!(
-                        "{} is a class of a multi-release JAR ({}) that holds a class file of it for Java {} (META-INF/versions/), which a JVM of that release or later loads in place of the base class file; the tool reads only the base, so the class is refused (lib/src/classpath.rs)",
-                        name.replace('/', "."),
-                        path.display(),
-                        releases.join(", ")
-                    ));
-                }
-                Entry::Jar(..) => {}
-                Entry::Dir(dir) => {
-                    if dir.join(format!("{name}.class")).is_file() {
-                        return None;
-                    }
+        self.shadows_the_jdk(name).map(|reason| BindingRefusal { code: RefusalCode::ShadowsJdk, class: name.replace('/', "."), reason, selected: None, observed: None, candidates: Vec::new() })
+    }
+
+    /// The class file that stands for `name` (internal form) on this class path and bound runtime, or why none
+    /// does. The first entry that holds the class provides it. In a multi-release JAR the bound release selects
+    /// among its class files; with no release bound, or a manifest whose spelling readers differ on, nothing
+    /// selects and the class is refused. Where a JVM was seen to load the class
+    /// ([`ClassObservations`]), its bytes must be the rule's, and they settle a manifest the rule cannot.
+    pub fn bind(&self, name: &str) -> Result<ClassBinding, BindingRefusal> {
+        let class = name.replace('/', ".");
+        let file = format!("{name}.class");
+        let refusal = |code, reason: String, selected: Option<Candidate>, observed: Option<&str>, candidates: &[Candidate]| BindingRefusal { code, class: class.clone(), reason, selected, observed: observed.map(str::to_string), candidates: candidates.to_vec() };
+        if let Some(problem) = &self.observations.problem {
+            return Err(refusal(RefusalCode::Unreadable, problem.clone(), None, None, &[]));
+        }
+        let unreadable = |e: Error| refusal(RefusalCode::Unreadable, e.to_string(), None, None, &[]);
+        let Some((index, first)) = self.entries.iter().enumerate().find(|(_, e)| e.holds(&file)) else {
+            return Err(refusal(RefusalCode::MissingClass, format!("no entry of the class path holds {class}"), None, None, &[]));
+        };
+        let candidates = first.candidates(&file).map_err(unreadable)?;
+        let observed = self.observation(name);
+        let (manifest, releases) = match first {
+            Entry::Jar(_, _, versions) => (Some(versions.mode), versions.entries.get(&file)),
+            Entry::Dir(_) => (None, None),
+        };
+        let by_entry = |entry: &str| candidates.iter().find(|c| c.entry == entry).cloned();
+        let rule = match (first, releases, self.jar_release) {
+            (Entry::Jar(_, path, _), Some(releases), None) => {
+                let releases: Vec<String> = releases.iter().map(u32::to_string).collect();
+                return Err(refusal(RefusalCode::UnboundRelease, format!(
+                    "{class} is a class of a multi-release JAR ({}) that holds a class file of it for Java {} (META-INF/versions/), which a JVM of that release or later loads in place of the base class file; the tool reads only the base, so the class is refused (lib/src/classpath.rs)",
+                    path.display(), releases.join(", ")), by_entry(&file), None, &candidates));
+            }
+            (Entry::Jar(_, _, versions), Some(_), Some(_)) if versions.mode == MultiRelease::Ambiguous => None,
+            (Entry::Jar(_, _, versions), _, release) => by_entry(&versions.entry_for(&file, release)),
+            (Entry::Dir(_), _, _) => by_entry(&file),
+        };
+        let listed = || candidates.iter().map(|c| format!("{} ({})", c.entry, &c.sha256[..12])).collect::<Vec<_>>().join(", ");
+        let (selected, selected_by) = match (rule, observed) {
+            (Some(selected), None) => (selected, SelectedBy::Rule),
+            (Some(selected), Some(seen)) if selected.sha256 == seen => (selected, SelectedBy::RuleAndObservation),
+            (Some(selected), Some(seen)) => {
+                return Err(refusal(RefusalCode::ObservationDiffers, format!(
+                    "{class}: the class path and the bound release select {} of {} (sha256 {}), and a JVM of that release was seen to load other bytes (sha256 {seen}); the class is refused until both are the same bytes (lib/src/classpath.rs)",
+                    selected.entry, selected.provider, selected.sha256), Some(selected), Some(seen), &candidates));
+            }
+            (None, Some(seen)) => match candidates.iter().find(|c| c.sha256 == seen) {
+                Some(selected) => (selected.clone(), SelectedBy::Observation),
+                None => return Err(refusal(RefusalCode::ObservationUnmatched, format!(
+                    "{class}: a JVM was seen to load bytes (sha256 {seen}) that no class file of {} has: {}; the class is refused (lib/src/classpath.rs)",
+                    first.display(), listed()), None, Some(seen), &candidates)),
+            },
+            (None, None) if manifest == Some(MultiRelease::Ambiguous) => {
+                return Err(refusal(RefusalCode::AmbiguousManifest, format!(
+                    "{class} is a class of a JAR ({}) whose manifest spells Multi-Release so that readers differ: the attribute reads true once its continuation lines are joined, and the bytes hold no literal `Multi-Release: true`, which is what the JDK's own reader looks for. The JAR holds {}; which a JVM loads was not observed, so the class is refused (lib/src/classpath.rs)",
+                    first.display(), listed()), None, None, &candidates));
+            }
+            (None, None) => return Err(refusal(RefusalCode::MissingClass, format!("{} holds no class file of {class} for the bound release", first.display()), None, None, &candidates)),
+        };
+        if let Some(reason) = self.shadows_the_jdk(name) {
+            return Err(refusal(RefusalCode::ShadowsJdk, reason, Some(selected), observed, &candidates));
+        }
+        let mut shadowed = Vec::new();
+        for later in self.entries.iter().skip(index + 1).filter(|e| e.holds(&file)) {
+            shadowed.extend(later.candidates(&file).map_err(unreadable)?);
+        }
+        Ok(ClassBinding { class, index, selected, selected_by, bound_release: self.jar_release, manifest, candidates, shadowed })
+    }
+
+    /// The bytes of `name` in `entry`: the selected class file's ([`ClassPath::bind`]). Where the manifest leaves
+    /// the rule without an answer and a JVM was seen to load one of the entry's class files, that one.
+    fn read_class(&self, entry: &Entry, name: &str) -> Result<Option<Vec<u8>>, Error> {
+        if let (Entry::Jar(zip, _, versions), Some(seen)) = (entry, self.observation(name)) {
+            let file = format!("{name}.class");
+            if versions.mode == MultiRelease::Ambiguous && versions.entries.contains_key(&file) {
+                if let Some(selected) = entry.candidates(&file)?.into_iter().find(|c| c.sha256 == seen) {
+                    return zip.read(&selected.entry);
                 }
             }
         }
-        None
+        entry.read(name, self.jar_release)
+    }
+
+    /// For each logical name of the JAR at `index`, the entry that stands for it under the bound release: what a
+    /// copy of the JAR as a JVM of that release sees it is made of. `META-INF/versions/` itself is left out.
+    pub fn logical_entries(&self, index: usize) -> Option<(MultiRelease, BTreeMap<String, String>)> {
+        let Some(Entry::Jar(zip, _, versions)) = self.entries.get(index) else { return None };
+        let mut out: BTreeMap<String, String> = zip.names().filter(|n| !n.starts_with("META-INF/versions/") && !n.ends_with('/'))
+            .map(|n| (n.to_string(), versions.entry_for(n, self.jar_release))).collect();
+        if versions.mode == MultiRelease::Enabled {
+            for name in versions.entries.keys() {
+                let entry = versions.entry_for(name, self.jar_release);
+                if entry != *name {
+                    out.insert(name.clone(), entry);
+                }
+            }
+        }
+        Some((versions.mode, out))
+    }
+
+    /// The bytes a binding names, read from where it says they are.
+    pub fn bound_bytes(&self, binding: &ClassBinding) -> Result<Vec<u8>, Error> {
+        let missing = || Error::new(format!("{} is no longer in {}", binding.selected.entry, binding.selected.provider));
+        match self.entries.get(binding.index).ok_or_else(missing)? {
+            Entry::Dir(dir) => std::fs::read(dir.join(&binding.selected.entry)).map_err(|e| Error::new(format!("cannot read {}: {e}", dir.join(&binding.selected.entry).display()))),
+            Entry::Jar(zip, _, _) => zip.read(&binding.selected.entry)?.ok_or_else(missing),
+        }
+    }
+
+    /// This class path with multi-release lookup bound to `release`, as given: for a caller that has checked the
+    /// runtime itself. The command line binds through `JVMCONTRACT_JAR_RELEASE`, which is checked against the JDK
+    /// ([`configured_jar_release`]); adding a JDK afterwards ([`ClassPath::with_jdk`]) checks it again.
+    pub fn bound_to(mut self, release: Option<u32>) -> ClassPath {
+        self.jar_release = release;
+        self.reset_runtime_caches();
+        self
+    }
+
+    /// The release multi-release lookup is bound to, when a runtime is bound.
+    pub fn bound_release(&self) -> Option<u32> {
+        self.jar_release
     }
 
     /// [`ClassPath::refused`]'s second case.
@@ -446,7 +761,7 @@ impl ClassPath {
         if !packages.contains(package) {
             return None;
         }
-        let (entry, bytes) = self.entries.iter().find_map(|e| e.read(name, self.jar_release).ok().flatten().map(|b| (e, b)))?;
+        let (entry, bytes) = self.entries.iter().find_map(|e| self.read_class(e, name).ok().flatten().map(|b| (e, b)))?;
         // The JDK's own class file, put on a class path so that its bytecode is run (`contract_proving`, JBMC's
         // class path), is the class a JVM loads.
         if jdk.read_class(name).ok().flatten().is_some_and(|own| own == bytes) {
@@ -484,7 +799,7 @@ impl ClassPath {
 
     fn load_uncached(&self, name: &str) -> Result<Option<Loaded>, Error> {
         for entry in &self.entries {
-            if let Some(bytes) = entry.read(name, self.jar_release)? {
+            if let Some(bytes) = self.read_class(entry, name)? {
                 let class = ClassFile::parse(&bytes).map_err(|e| Error::new(format!("{name} in {}: {e}", entry.display())))?;
                 return Ok(Some(Loaded { class: Rc::new(class), origin: Origin::Application }));
             }

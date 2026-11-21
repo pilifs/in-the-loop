@@ -83,7 +83,7 @@ from pathlib import Path
 
 from checker_output import decode as _outcomes
 from targets import recipes
-from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream, sidecar, upstream_artifact
+from targets import class_binding, interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream, sidecar, upstream_artifact
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
@@ -662,10 +662,42 @@ class _Build:
         return name
 
 
-def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=()):
+def _loaded_classes(build, source, workdir, classpath, names, step="loaded-classes"):
+    """What each JDK the artifact runs on loads for the classes `names` (dotted) on this ordered class path, as
+    java/LoadedClasses.java prints it from inside that JVM: {feature: {name: (code source relative to the work
+    directory, sha256)}} and each JDK's release. The independent observation a class binding is held to."""
+    if getattr(build, "origin_probe", None) is None:
+        build.origin_probe = build.compile("class-origins", [HERE / "java/LoadedClasses.java"], [],
+                                           compiler=(build.home, ["--release", "8", "-proc:none"]))
+    cp = os.pathsep.join([str(build.origin_probe), *(str(workdir / path) for path in classpath)])
+    seen, releases = {}, []
+    for feature in source["jdks"] or [runtime_jdk.identity(build.home)["feature"]]:
+        home = runtime_jdk.home(feature)
+        if not home:
+            raise Refused("toolchain", f"the ordered classpath requires its original JDK {feature}")
+        try:
+            output = build.run(f"{step}-jdk{feature}", [str(Path(home) / "bin/java"),
+                               *CONTROL_FLAGS, "-cp", cp, "LoadedClasses", str(workdir), *names])
+        except Refused as e:
+            raise Refused("classpath", f"JDK {feature} could not load {', '.join(names)} from this class path, so no class "
+                                       f"file is bound: {e.diagnostic}", command=e.command) from None
+        lines = [line.split("\t") for line in output.splitlines()]
+        if [line[0] for line in lines if len(line) == 3] != list(names):
+            raise Refused("classpath", f"JDK {feature} did not report the classes it was asked to load: {output.strip()[-300:]}")
+        seen[str(feature)] = {name: (jar, digest) for name, jar, digest in lines}
+        releases.append(runtime_jdk.identity(home)["release"])
+    return seen, releases
+
+
+def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=(), observe=None):
     """The loaded target's origin, after refusing shadowed classes and a missing target method; and the original
     methods the adapter calls. A replay task's adapter must reference the target. The prepared record carries this
-    reference check for the verifier and the JVM controls."""
+    reference check for the verifier and the JVM controls.
+
+    The target's class file is its selected binding (class_binding.py): the one class file the original artifact
+    holds for it, or, where it holds several (a multi-release JAR's versioned entries), the one the JVMs were seen
+    to load, through `observe(names)`. Without an observation such a class is refused: which entry a JVM takes is
+    not computed here."""
     declared = {runtime_jar.internal(name) for name in ordered_classes}
     resolution = {}
     shadowed = []
@@ -682,14 +714,37 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
                                    f"depends on order: {listed}")
     cls, method, descriptor = runtime_jar.parse_target(plan.target)
     name = runtime_jar.internal(cls)
-    data = runtime_jar.read_class(workdir / original, name)
-    if data is None:
+    held = class_binding.candidates(workdir / original, name)
+    if not held:
         raise Refused("target", f"the original artifact {original} holds no class {cls}")
+    observation = None
+    if len(held) > 1 or held[0]["release"] is not None:
+        try:
+            if observe is None:
+                raise class_binding.Unbound(class_binding.refusal(
+                    "unobserved-class", cls, f"{cls} has more than one class file in {original} "
+                    f"({class_binding.listed(held, original)}), and this preparation runs no JVM to see which it loads",
+                    held=held, provider=original))
+            seen, releases = observe([cls])
+            observation = class_binding.observed(cls, original, held, {f: by_name[cls] for f, by_name in seen.items()})
+            observation["jdkReleases"] = releases
+        except class_binding.Unbound as unbound:
+            raise Refused("classpath", f"no class file is bound for the target ({unbound.refusal['code']}): {unbound}") from None
+    data = class_binding.entry_bytes(workdir / original, observation["entry"] if observation else held[0]["entry"])
     declared = runtime_jar.methods(data)
     if not any(n == method and (descriptor is None or d == descriptor) for n, d in declared):
-        raise Refused("target", f"{cls} in {original} declares no method {method}{descriptor or ''}")
+        overloads = sorted(d for n, d in declared if n == method)
+        raise Refused("target", f"{cls} in {original} declares no method {method}{descriptor or ''}"
+                                + (f" (it declares {method}{', '.join(overloads)})" if overloads else ""))
     found = {"class": cls, "method": method, "descriptor": descriptor, "loadedFrom": original,
              "classSha256": hashlib.sha256(data).hexdigest()}
+    if observation:
+        # The bytes a JVM loaded, where the artifact holds several class files of the class: the entry, and what
+        # was seen. An ordinary class has neither key, so its prepared record is what it always was.
+        found["jarEntry"] = observation["entry"]
+        found["classObservation"] = {"by": "LoadedClasses on each JDK the artifact runs on", "jdks": observation["jdks"],
+                                     "jdkReleases": observation["jdkReleases"], "sha256": observation["sha256"],
+                                     "candidates": observation["candidates"]}
     if set(ordered_classes) != set(resolution):
         raise Refused("classpath", "a declared ordered class does not have multiple dependency providers")
     if resolution:
@@ -739,29 +794,24 @@ def _ordered_target(plan, build, source, classpath, original, adapter, dependenc
     """Verify explicitly named collisions between dependency JARs against each subject JVM."""
     workdir = build.workdir
     target = _check_classpath(plan, workdir, classpath, original, adapter,
-                              ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies)
+                              ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies,
+                              observe=_observer(build, source, workdir, classpath))
     selected = target.get("orderedClasses")
     if not selected:
         return target
-    probe = build.compile("class-origins", [HERE / "java/LoadedClasses.java"], [],
-                          compiler=(build.home, ["--release", "8", "-proc:none"]))
     names = sorted(selected)
-    expected = [f"{name}\t{selected[name][0]['path']}\t{selected[name][0]['classSha256']}" for name in names]
-    cp = os.pathsep.join([str(probe), *(str(workdir / path) for path in classpath)])
-    runtimes = []
-    features = source["jdks"] or [runtime_jdk.identity(build.home)["feature"]]
-    for feature in features:
-        home = runtime_jdk.home(feature)
-        if not home:
-            raise Refused("toolchain", f"the ordered classpath requires its original JDK {feature}")
-        output = build.run(f"loaded-classes-jdk{feature}", [str(Path(home) / "bin/java"),
-                           *CONTROL_FLAGS, "-cp", cp, "LoadedClasses", str(workdir), *names])
-        if output.splitlines() != expected:
-            raise Refused("classpath", "the JVM code source or class digest differs from the first dependency provider")
-        runtimes.append(runtime_jdk.identity(home)["release"])
+    expected = {name: (selected[name][0]["path"], selected[name][0]["classSha256"]) for name in names}
+    seen, runtimes = _loaded_classes(build, source, workdir, classpath, names)
+    if any(by_name != expected for by_name in seen.values()):
+        raise Refused("classpath", "the JVM code source or class digest differs from the first dependency provider")
     target["jvmClassOrigins"] = {name: selected[name][0] for name in names}
     target["jvmClassOriginJdks"] = runtimes
     return target
+
+
+def _observer(build, source, workdir, classpath):
+    """What `_check_classpath` asks when a class has several class files: the JVMs' own answer."""
+    return lambda names: _loaded_classes(build, source, workdir, classpath, names, step="bound-class")
 
 
 def _builder(source, workdir):
@@ -970,7 +1020,8 @@ def _prepare_published(plan, revision, locked, workdir):
         if "mutant" in source:
             acquired[0] = _published_mutant(plan, source, folder, workdir, build, toolchain, acquired)
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, acquired)
-        source["target"] = _check_classpath(plan, workdir, classpath, acquired[0], adapter)
+        source["target"] = _check_classpath(plan, workdir, classpath, acquired[0], adapter,
+                                            observe=_observer(build, source, workdir, classpath))
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
@@ -1287,7 +1338,8 @@ def _prepare_slice(plan, revision, locked, workdir):
         source["slice"] = {**recipe, "compiled": compiled, "jar": name, **({"matched": matched} if matched else {}),
                            **({"companionSources": origins} if origins else {})}
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *acquired])
-        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
+        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter,
+                                            observe=_observer(build, source, workdir, classpath))
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
@@ -1721,7 +1773,11 @@ def _parameters(plan, where, prepared):
     """The target's parameter names as its loaded class records them, which are the names a claim's expressions can
     use: from MethodParameters or the LocalVariableTable, else the verifier's arg0, arg1, ..."""
     cls, name, desc = runtime_jar.parse_target(plan.target)
-    data = runtime_jar.read_class(where / prepared.source["target"]["loadedFrom"], runtime_jar.internal(cls))
+    bound = prepared.source["target"]
+    try:  # the class file the preparation bound: its one class file, or the entry a JVM was seen to load
+        data = class_binding.read(where / bound["loadedFrom"], runtime_jar.internal(cls), bound.get("jarEntry"))
+    except class_binding.Unbound:
+        data = None
     found = runtime_jar.parameter_names(data, name, desc) if data and desc else None
     if found is None:
         return None
@@ -1731,12 +1787,80 @@ def _parameters(plan, where, prepared):
                                                        "is not well-formed for these bytes"}
 
 
+def bound_class(where, prepared, path, cls):
+    """The class file that stands for `cls` (dotted) in the prepared artifact `path`: the entry the preparation
+    bound, where `cls` is the target's class in the JAR it is loaded from, else the class's one class file. None
+    when the artifact holds none. A class with several class files and no bound entry raises class_binding.Unbound
+    (a ValueError): no reader takes the base entry of a multi-release class on its own authority."""
+    bound = prepared.source.get("target") or {}
+    entry = bound.get("jarEntry") if bound.get("class") == cls and bound.get("loadedFrom") == path else None
+    return class_binding.read(Path(where) / path, runtime_jar.internal(cls), entry, provider=path)
+
+
 CLASSES = "classes"  # under the verifier's work directory: each side's original JAR, extracted for equivalence
 
 
-def _class_dirs(sides, workdir, attempt, paths=None, feature=None, entry_bindings=None):
+def _launch_guard(plan, exe, env, sides, invocation, jdk, workdir, attempt):
+    """Before the native checker is launched: the class file it will inspect for the checked entry and for the
+    subject of each side must be the one the preparation bound, by provider and by digest. The checker says which it
+    binds itself (`jvmcontract class-bindings`, lib/src/classpath.rs), in one process for every side, under the
+    environment of the launch. Where the preparation bound a class by what the JVMs loaded, that observation is
+    handed to the checker too (JVMCONTRACT_CLASS_OBSERVATIONS, written beside the verifier's files), so it reads
+    those bytes or refuses. A disagreement stops the launch and names both digests and their origins.
+
+    Returns, for an equivalence, each side's logical entries of its original JAR as the checker sees them under the
+    bound release (`_class_dirs` extracts by them); None for a property proof."""
+    seen = {}
+    for _, (_, side_prepared, _) in sides.items():
+        bound = side_prepared.source["target"]
+        if bound.get("classObservation"):
+            if str(jdk["feature"]) not in bound["classObservation"]["jdks"]:
+                raise Refused("verifier", f"{bound['class']} was bound by what JDK {', '.join(bound['classObservation']['jdks'])} "
+                                          f"loaded, and the verifier runs on JDK {jdk['feature']}, which was not observed")
+            if seen.setdefault(bound["class"], bound["classSha256"]) != bound["classSha256"]:
+                # One observations file serves the launch, and the two sides' subjects are one class name.
+                raise Refused("verifier", f"{bound['class']} was seen loaded as different bytes on the two sides, and one "
+                                          "launch binds one observation for a class name")
+    if seen:
+        observations = workdir / "class-observations.json"
+        observations.write_text(json.dumps({"feature": int(jdk["feature"]), "classes": seen}, indent=2, sort_keys=True) + "\n")
+        env["JVMCONTRACT_CLASS_OBSERVATIONS"] = observations.relative_to(attempt).as_posix()
+    request, checks = {}, {}
+    for side, (where, side_prepared, _) in sides.items():
+        binding = invocation.entries[side]
+        original = side_prepared.source["target"]["loadedFrom"]
+        checks[side] = list(dict.fromkeys(((binding["entry"], binding["loadedFrom"], binding["classSha256"]),
+                                           (plan.target, original, binding["subjectClassSha256"]))))
+        # Each class is asked of the JAR the preparation says holds it, first on the path, then the side's own
+        # ordered class path: the provider must be that JAR.
+        request[side] = {"classpath": [str(where / a["path"]) for a in invocation.classpaths[side]],
+                         "classes": [dict(zip(("class", "method", "descriptor"), runtime_jar.parse_target(entry)))
+                                     for entry, _, _ in checks[side]],
+                         "listEntries": [0] if plan.kind == "equivalence" else []}
+    try:
+        answer, _ = class_binding.ask(exe, env, attempt, request)
+    except (OSError, ValueError, subprocess.SubprocessError) as e:
+        raise Refused("verifier", f"the checker's class bindings could not be read: {e}") from None
+    for side, wanted in checks.items():
+        for (entry, jar, expected), bound in zip(wanted, answer[side]["bindings"]):
+            cls = runtime_jar.parse_target(entry)[0]
+            problem = class_binding.disagreement(cls, bound, str(sides[side][0] / jar), expected)
+            if problem is None and bound.get("method") and not bound["method"]["declared"]:
+                problem = (f"{cls}: the class file the checker binds ({bound['provider']}!{bound['entry']}) declares no "
+                           f"{bound['method']['name']}{bound['method'].get('descriptor') or ''} (it declares "
+                           f"{', '.join(bound['method']['overloads']) or 'no method of that name'})")
+            if problem:
+                raise Refused("verifier", "the effective JAR entry for the selected JVM differs from the prepared caller: "
+                                          + problem)
+    return {side: answer[side]["entries"]["0"] for side in sides} if plan.kind == "equivalence" else None
+
+
+def _class_dirs(sides, workdir, attempt, paths=None, logical=None, entry_bindings=None):
     """Each side's original JAR extracted into workdir/classes/<revision> (jvmcontract equivalence takes directories
-    of classes), every entry's bytes as the checked JAR holds them; the record of what was extracted, by revision."""
+    of classes), every entry's bytes as the checked JAR holds them; the record of what was extracted, by revision.
+    For the native checker, `logical` is each side's {logical name: entry} as the checker's own resolver selects
+    them under the bound release (`_launch_guard`): the directory then holds what a JVM of that release sees in the
+    JAR. Without it (JBMC) every entry is extracted as it is."""
     import zipfile
     out = {}
     for r, (where, p, arts) in sides.items():
@@ -1746,14 +1870,21 @@ def _class_dirs(sides, workdir, attempt, paths=None, feature=None, entry_binding
         into.mkdir(parents=True)
         count = 0
         with zipfile.ZipFile(where / jar.path) as z:
-            selected = (runtime_jar.effective_entries(z, feature) if feature is not None else
-                        {i.filename: i for i in z.infolist() if not i.is_dir()})
-            for name, info in selected.items():
+            if logical is not None:
+                selected = dict(logical[r]["entries"])
+                versioned = [n for n in z.namelist() if n.startswith("META-INF/versions/") and not n.endswith("/")]
+                if logical[r]["manifest"] == "ambiguous" and versioned:
+                    raise Refused("verifier", f"revision {r}'s {jar.path} spells Multi-Release so that readers differ, and "
+                                              f"holds versioned entries ({', '.join(versioned[:3])}): which of its classes a "
+                                              "JVM loads was not observed for the whole JAR, so it is not extracted")
+            else:
+                selected = {i.filename: i.filename for i in z.infolist() if not i.is_dir()}
+            for name, entry in selected.items():
                 if name.startswith("/") or ".." in Path(name).parts:
                     raise Refused("verifier", f"revision {r}'s {jar.path} has an entry outside its root: {name!r}")
                 target = into / name
                 target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(z.read(info))
+                target.write_bytes(z.read(entry))
                 count += 1
         if entry_bindings:
             bound = entry_bindings[r]
@@ -1877,21 +2008,10 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             argv = (*argv[:at], rel(local_lemmas), *argv[at+1:])
             identities["checkedLemmas"] = dict(plan.checkedLemmas)
         env = _verifier_env(jdk)
+        logical = None
         if plan.engine == "native":
             env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
-            feature = int(jdk["feature"])
-            for side, (where, side_prepared, _) in sides.items():
-                binding = invocation.entries[side]
-                original = side_prepared.source["target"]["loadedFrom"]
-                checks = ((binding["entry"], binding["loadedFrom"], binding["classSha256"]),
-                          (plan.target, original, binding["subjectClassSha256"]))
-                for entry, jar, expected in dict.fromkeys(checks):
-                    owner = runtime_jar.internal(runtime_jar.parse_target(entry)[0])
-                    selected = runtime_jar.effective_class(where / jar, owner, feature)
-                    if selected is None or hashlib.sha256(selected).hexdigest() != expected:
-                        raise Refused("verifier", "the effective JAR entry for the selected JVM differs from the prepared caller")
-        if plan.engine == "native":
-            env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
+            logical = _launch_guard(plan, exe, env, sides, invocation, jdk, workdir, attempt)
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
             "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
@@ -1901,9 +2021,8 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             "commits": {r: p.commit for r, (_, p, _) in sides.items()},
             "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
         if plan.kind == "equivalence":
-            feature = int(jdk["feature"]) if plan.engine == "native" else None
-            identities["classes"] = _class_dirs(sides, workdir, attempt, invocation.classpaths, feature,
-                                                 invocation.entries if feature is not None else None)
+            identities["classes"] = _class_dirs(sides, workdir, attempt, invocation.classpaths, logical,
+                                                 invocation.entries if logical is not None else None)
         if recipe.correspondence:
             identities["scope"].update(label="adapter", adapter=recipe.correspondence)
             identities["scope"]["meaning"] = recipe.correspondence["mapping"]

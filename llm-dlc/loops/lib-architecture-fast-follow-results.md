@@ -10,9 +10,9 @@ holds the process-plumbing run (`develop` at `86ce57af` when it started, 2026-11
 |---|---|
 | Baseline: both disagreements reproduced, callers listed | done (below) |
 | 1. Proof output as a library contract | done: Rust module, Python reader, four consumers switched, typed helper decisions |
-| 2. Bind the proof to the class that ran | not started; the disagreement and the JVM's manifest rule are measured, and the design is below |
+| 2. Bind the proof to the class that ran | done: one binding in `lib/src/classpath.rs`, asked in one process for a launch; the preparation binds by what the JVMs load; the launch guard compares the two |
 | 3. Array induction into `lib` | not started |
-| Ownership map in `lib/README.md` | written; its rows for class selection and proof methods name today's owners and move with parts 2 and 3 |
+| Ownership map in `lib/README.md` | written; the row for class selection moved with part 2, and the one for proof methods moves with part 3 |
 
 ## Baseline (before any change)
 
@@ -131,3 +131,75 @@ action. With every note reworded and the reasons' texts changed, the structured 
 
 **Not done in part 1, on purpose.** `equivalence::Search` and `Replay` stay where they are: nothing needed them moved.
 The wire version stays 1: `helpers` is a field an older reader may ignore.
+
+## Part 2 · Bind the proof to the class that ran
+
+Three parties can each say which bytes a class name means: the checker, a JVM, and the Python tools. Before, each
+had a rule of its own, and two of them were wrong in the same way. Now:
+
+- **The checker's selection is said once**, `ClassPath::bind` in `lib/src/classpath.rs`: the first class path
+  entry that holds the class provides it, and in a multi-release JAR the bound release selects among its class
+  files. Everything in the checker that reads a class's bytes goes through it. It returns the provider, the JAR
+  entry, the SHA-256, how it was selected, every candidate class file, and later entries that hold the class too;
+  or a typed refusal (`unbound-release`, `ambiguous-manifest`, `observation-differs`, `observation-unmatched`,
+  `shadows-jdk`, `missing-class`, `unreadable`) with the candidates' digests and origins.
+- **The manifest is read as the JDK's reader reads it** (the table above). A spelling the JAR specification's
+  reading and the JDK's differ on is `ambiguous`: a class with a versioned entry in such a JAR is refused unless a
+  JVM said which it loads.
+- **A JVM's selection is observed, never computed.** `JVMCONTRACT_CLASS_OBSERVATIONS` names what a JVM of the bound
+  release was seen to load. The rule's bytes must be those bytes, and where the rule has no answer the observed
+  class file is the one read.
+- **The Python tools select nothing by rule.** `examples/tools/targets/class_binding.py` lists a class's class
+  files (the physical inventory, whatever the manifest says) and hands out bytes only where there is one. A class
+  with several is bound at preparation by `LoadedClasses` on each JDK the artifact runs on: the prepared target
+  then records the loaded bytes (`classSha256`, with `jarEntry` and `classObservation`). JDKs that load different
+  bytes, bytes from another entry, or bytes no class file has are a refusal that names both digests and where each
+  is. Parameter lookup and every reader of a prepared entry class take the bound entry (`runtime.bound_class`).
+- **The launch guard asks the checker, in one process.** Before a native launch, `jvmcontract class-bindings`
+  answers for every side's entry and subject class under the launch's own environment, and for an equivalence it
+  also says which entry stands for each logical name of the JAR that is extracted. The guard compares provider and
+  digest with the prepared binding. Before, the guard compared the prepared digest with a second Python reading of
+  the manifest, so two Python readers could agree on the wrong class.
+
+`runtime_jar.effective_entries` stays for the tools that list a whole JAR (the upgrade review's), with the measured
+rule, held to the same fifteen spellings as the checker's; a JAR whose manifest readers differ on is listed by its
+base entries, as those runtimes read it.
+
+### The table, after
+
+| Manifest value | Preparation (`_check_classpath`, JDK 21 and 25) | Checker bound to 21, with the preparation's observation | Checker bound to 21, alone | JVM 21 |
+|---|---|---|---|---|
+| `Multi-Release: true` on one line | versioned entry, `a859291a3844`, seen loaded | the same, by rule and observation: `result == 17` verified, `result == 1` refuted | the same, by rule | versioned, returns 17 |
+| the same value folded | base entry, `97f456237790`, seen loaded | the same, by observation: `result == 1` verified, `result == 17` refuted | refused, `ambiguous-manifest`, naming both digests (it read the versioned class and refuted `result == 1`) | base, returns 1 |
+
+Also shown, each a test: an ordinary JAR is prepared to the same record as before, with no JVM run and no new key;
+the class path's first holder provides the class in either order and the other is named as shadowed (the
+preparation's refusal of an undeclared duplicate is unchanged); no bound release is `unbound-release`, as before; a
+descriptor the bound class file does not declare is said with the overloads it has; a class that JDK 8 and JDK 21
+load as different bytes is refused with both; and Guava 33.4.8's `Ints`, example 336's subject, binds through the
+inventory, the old reader and the checker to the digest that example recorded. One real task of example 336
+(`first-8-release`) run through the changed workflow with the real checker ends established as expected, with the
+verifier's environment as it was.
+
+### What it costs
+
+| | Before | After |
+|---|---|---|
+| Processes for one native verifier launch (property or equivalence, any number of sides and classes) | the probe and the proof | one more: `class-bindings`, 18 ms for two sides of Guava's 2.9 MB JAR with its logical entries, 29 ms with 50 classes asked on each side |
+| Processes for one native-selector task | one a selector | one more for the task, whatever the number of selectors (2,865 for example 359's) |
+| Processes at preparation, ordinary JAR | none for binding | none |
+| Processes at preparation, a class with several class files | none (the base class was taken) | `javac` once for the probe, and one JVM for each JDK the artifact runs on |
+| Reading example 359's archived selectors (7 records, 2,871 cases) | 0.53 s | 0.57 s, within what three runs vary by; no process is started |
+
+Every archived selector record validates to the same line as at the baseline.
+
+Tests: `lib/tests/class_bindings.rs` (8, one of them the fifteen spellings against the JVM on the PATH),
+`examples/tools/targets/test_class_binding.py` (10, the table through preparation, JVMs and the real checker, and the
+real target), `test_runtime.py` (77: the folded-manifest test that pinned the old reading now pins the measured one,
+and the stand-in checker answers `class-bindings`).
+
+**Scope kept explicit.** The observation is `LoadedClasses` through the application class loader, with an ordinary
+call as cross-check in the tests: a custom loader or a bytecode transformation is outside it. The manifest rule is
+what Temurin 17.0.21, 21.0.13 and 25.0.5 do; `lib/tests/class_bindings.rs` asks the JVM at hand again on every run.
+An equivalence over a JAR with an ambiguous manifest and versioned entries is refused whole: which of its other
+classes a JVM loads was not observed.

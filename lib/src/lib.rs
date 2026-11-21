@@ -31,6 +31,8 @@ pub mod capabilities;
 pub mod classfile;
 pub mod claim;
 pub mod summary;
+/// The class bindings of a prepared revision, answered in one process.
+pub mod class_bindings;
 pub mod classpath;
 pub mod closure;
 pub mod compare;

@@ -13,7 +13,7 @@ import tempfile
 import time
 
 import checker_output
-from targets import case_pack, executions, finite_check, interfaces, qualification, recipes
+from targets import case_pack, class_binding, executions, finite_check, interfaces, qualification, recipes
 from targets import replay_candidate, route, runtime, runtime_jar, sidecar, workflow, workflow_ingest
 
 PACKAGE = "verificationselectors"
@@ -299,7 +299,7 @@ def check(plan, prepared, shared, work, out, exe, seconds, first, max_cases, tas
     invocation = recipe.bind(plan, exe, built, "native-selectors", seconds)
     cp_info = invocation.classpaths[rev]
     cp = [where / x["path"] for x in cp_info]
-    data = runtime_jar.read_class(cp[0], runtime_jar.internal(owner))
+    data = runtime.bound_class(where, p, cp_info[0]["path"], owner)
     if not data or not runtime_jar.method_flags(data, method, desc) & 8:
         raise ValueError("the selected entry is not the prepared static method")
     if any(runtime_jar.read_class(j, PACKAGE + "/Calls") is not None for j in cp):
@@ -308,6 +308,13 @@ def check(plan, prepared, shared, work, out, exe, seconds, first, max_cases, tas
     low, high = finite_check.envelope(claim["assume"], parameter, max_cases)
     jdk = runtime._verifier_jdk(plan, prepared)
     home = Path(jdk["home"])
+    # The class file the checker itself binds for the entry must be the prepared one (class_binding.py): asked once
+    # for the task, under the environment every case of it runs in, whatever the number of selectors.
+    answer, _ = class_binding.ask(exe, runtime._verifier_env(jdk), where, {
+        rev: {"classpath": [str(x) for x in cp], "classes": [{"class": owner, "method": method, "descriptor": desc}]}})
+    differs = class_binding.disagreement(owner, answer[rev]["bindings"][0], str(cp[0]), hashlib.sha256(data).hexdigest())
+    if differs:
+        raise ValueError("the checker binds another class file than the prepared entry: " + differs)
     bindings = workflow_ingest.bound_revisions(plan, prepared)
     if "controls" not in shared:
         shared["controls"] = runtime.run_controls(plan, prepared, work / "controls")
