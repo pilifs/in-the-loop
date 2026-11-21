@@ -167,6 +167,23 @@ class Checkpoint(Sandbox):
         self.assertIn("nothing left this machine", err)
 
     @cost("tool")
+    def test_a_fixture_the_remote_already_holds_is_not_exposed_again_by_an_edit_and_a_new_value_is(self):
+        self.commit("A redaction test with a made-up token", {"lib/test_fixture.py": f"TOKEN = '{TOKEN}'\n"})
+        self.jj("bookmark", "set", "main", "-r", "@-")
+        self.jj("git", "push", "--bookmark", "main", "--remote", "origin")  # as main came to hold such tests
+        self.bootstrapped()
+        head = self.commit("Edit the test elsewhere", {"lib/test_fixture.py": f"TOKEN = '{TOKEN}'\n\ndef test():\n    pass\n"})
+        status, out, err = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (0, head), out + err)
+        self.assertEqual(json.loads(checkpoint.receipt_path(sync, head).read_text())["scan"]["carried"], 1)
+        other = "gh" + "p_" + "Qw7" * 12
+        self.commit("Add a second token", {"lib/test_fixture.py": f"TOKEN = '{TOKEN}'\nOTHER = '{other}'\n"})
+        status, out, _ = self.run_checkpoint("--rev", "@-")
+        self.assertEqual((status, self.remote_ref()), (1, head))
+        self.assertIn("lib/test_fixture.py: holds github-token ×2", out)
+        self.assertNotIn(other, out)
+
+    @cost("tool")
     def test_an_unsafe_message_a_raw_payload_an_oversized_blob_and_a_bad_name_are_refused(self):
         develop = self.bootstrapped()
         self.commit(f"Use {TOKEN} in the deploy step", {"lib/b.txt": "two\n"})

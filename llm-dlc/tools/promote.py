@@ -34,6 +34,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -56,6 +57,7 @@ WORKSPACE = "promote"
 RECORDS = ("llm-dlc/traces/", "llm-dlc/index.json", ARTIFACTS + "/", "llm-dlc/decisions/", "llm-dlc/README.md")
 # Paths a reviewer of the source diff does not page through: records of what ran.
 GENERATED = RECORDS + ("verification/results/", "verification/jobs/")
+EXAMPLE_RECORDS = re.compile(r"examples/[^/]+/records/")  # an example's replay records: evidence, not source
 VERIFIED = ("remote_verified", "missing_input")
 
 
@@ -89,7 +91,7 @@ def is_record(path: str) -> bool:
 
 
 def is_generated(path: str) -> bool:
-    return any(path.startswith(r) if r.endswith("/") else path == r for r in GENERATED)
+    return any(path.startswith(r) if r.endswith("/") else path == r for r in GENERATED) or bool(EXAMPLE_RECORDS.match(path))
 
 
 # --------------------------------------------------------------------------- the frozen set
@@ -137,7 +139,8 @@ def trace_plan(s, commits: list[dict], manifests: dict[str, dict], stored) -> di
             info = ((manifests.get(sid) or {}).get("logs") or {}).get(sha)
             if info is None:
                 plan["missing"].append(f"{name}: commit {c['commit'][:12]} points at it, and " + (
-                    "its session's manifest does not list it" if sid in manifests else "the tree has no manifest of its session"))
+                    "its session's manifest in this tree does not list it" if sid in manifests else "this tree has no manifest of its session")
+                    + " (the workspace that ran the session holds a newer one: land it, checkpoint, and promote that commit)")
             elif info.get("withdrawn"):
                 plan["withdrawn"].append(name)
             elif info.get("url"):
@@ -255,10 +258,10 @@ def review(s, state: dict, commits: list[dict], plan: dict, orig: dict, develop:
         lines.append(f"- ... and {len(source) - 200} more, in the inventory")
     only_records = sum(1 for c in commits if not c["files"] and not c["merge"])
     merges = sum(1 for c in commits if c["merge"])
-    exclude = [f":(exclude){p.rstrip('/')}" for p in GENERATED if p != "llm-dlc/README.md"]
+    exclude = [f":(exclude){p.rstrip('/')}" for p in GENERATED if p != "llm-dlc/README.md"] + [":(exclude,glob)examples/*/records/**"]
     total = git(s, "diff", "--shortstat", base, head, "--", ".", *exclude).stdout.decode().strip()
     lines += ["", f"Together: {total or 'no source file changed'}. {only_records} commit(s) change generated records only "
-              f"(traces, job specifications and results), and {merges} are merges.",
+              f"(traces, job specifications and results, examples' replay records); {merges} merge(s).",
               f"The whole diff: `git diff {base[:12]} {head[:12]} -- . {' '.join(repr(e) for e in exclude[:2])} ...`; one change: `jj show CHANGE`.",
               "", "## Default test run", ""]
     record = covering(s, tree_of(s, head))

@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 178, plus 29 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-21 18:24 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-21 18:30 UTC |
 | Prompts | 4,640 |
-| Model calls | 46,579 |
-| Tool calls | 57,965 (1,255 failed) |
+| Model calls | 46,585 |
+| Tool calls | 57,972 (1,255 failed) |
 | Compactions | 550 |
 | Subagents | 21 |
-| Tokens written | 39,972,813 |
-| Tokens read | 9,067,729,373 (98.4% from cache) |
-| Commits with a trace | 1,539 |
-| Log snapshots | 2,111 (10635.9 MB gzipped, 2,076 uploaded) |
+| Tokens written | 39,988,290 |
+| Tokens read | 9,069,421,933 (98.4% from cache) |
+| Commits with a trace | 1,540 |
+| Log snapshots | 2,112 (10637.1 MB gzipped, 2,076 uploaded) |
 
 ## Sessions
 
@@ -205,7 +205,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-21 11:30 UTC | [01a1fddf-742a-73d1-b3b4-0521cf9483e6](01a1fddf-742a-73d1-b3b4-0521cf9483e6/summary.md) | ended | 1 h 5 min | `codex-auto-review` | 15 | 22 | 0 | 0 | 0 | 166,457 | 4 |
 | 2026-11-21 12:43 UTC | [01a1fe21-e306-7652-88cf-564d0978419e](01a1fe21-e306-7652-88cf-564d0978419e/summary.md) | ended | 1 h 30 min | `codex-auto-review` | 18 | 28 | 0 | 0 | 0 | 189,841 | 5 |
 | 2026-11-21 14:43 UTC | [01a1fe8f-ef20-7173-90fb-4f5e2745ef13](01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) | open | 1 h 46 min | `codex-auto-review` | 13 | 21 | 0 | 0 | 0 | 202,538 | 5 |
-| 2026-11-21 16:57 UTC | [b9b56f5e-fc0e-48ca-a64e-7a46495d814f](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | open | 1 h 27 min | `claude-fable-5-2` | 5 | 181 | 216 | 7 | 1 | 521,446 | 8 |
+| 2026-11-21 16:57 UTC | [b9b56f5e-fc0e-48ca-a64e-7a46495d814f](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | open | 1 h 33 min | `claude-fable-5-2` | 5 | 187 | 223 | 7 | 1 | 521,446 | 9 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md), [`01a1f62e`](01a1f62e-f24f-7342-99e8-22a7a7fc5f13/summary.md), [`01a1f66a`](01a1f66a-0b6c-7510-a56c-c6baf75e9623/summary.md), [`01a1f6a8`](01a1f6a8-4655-7232-a3fc-00d65712c59d/summary.md), [`01a1f6a9`](01a1f6a9-c683-75d3-b798-35527ad2b8bf/summary.md), [`01a1f746`](01a1f746-d708-7b30-a967-6cea2026945f/summary.md), [`01a1f78b`](01a1f78b-c6a9-7be1-956d-9da9b51640a5/summary.md), [`01a1f7d7`](01a1f7d7-6eb1-7742-b379-36bfc2906bec/summary.md), [`01a1f830`](01a1f830-d4fd-7131-b180-8a5b611363f6/summary.md), [`01a1f8a1`](01a1f8a1-1bc5-75d2-8d27-ee1be35dfcd9/summary.md), [`01a1f8a2`](01a1f8a2-8992-7030-a6ae-946623bc63f9/summary.md), [`01a1fb23`](01a1fb23-fa6b-7441-ba2b-d4e2ea4dcde6/summary.md), [`01a1fb25`](01a1fb25-0c27-7140-91b3-df7c9c4b3ef0/summary.md), [`01a1fb30`](01a1fb30-73ce-7ac0-98ae-14a53e020270/summary.md), [`01a1fb31`](01a1fb31-b3eb-7231-b464-c3233fd02921/summary.md), [`01a1fb31`](01a1fb31-d64c-78a3-8007-dfadb7fff401/summary.md), [`01a1fb32`](01a1fb32-004f-74c3-a26b-3d9588e0df8f/summary.md), [`01a1fb71`](01a1fb71-6111-7651-9080-802ed92f6e9d/summary.md), [`01a1fb32`](01a1fb32-005f-7a33-acd6-73253b1ba3c3/summary.md), [`01a1fbe2`](01a1fbe2-d1f8-79c0-be8c-cd06311ac522/summary.md), [`01a1fbeb`](01a1fbeb-2e66-75e2-b4a6-31fdb21225b6/summary.md), [`01a1fcc4`](01a1fcc4-0efc-7bb3-9ab6-f4eadea9b952/summary.md), [`01a1fd0a`](01a1fd0a-a952-7b91-a479-372ec1f5a747/summary.md), [`01a1fd3f`](01a1fd3f-9cb4-7b13-b449-3e318ed71076/summary.md), [`01a1fd40`](01a1fd40-a4b6-7312-ab11-bd4799bfcbec/summary.md), [`01a1fdde`](01a1fdde-5a09-7992-9175-a0ed560793ee/summary.md), [`01a1fe20`](01a1fe20-c5a1-7e60-920f-9f9b82cb1a1b/summary.md), [`01a1fe7e`](01a1fe7e-bafb-7370-afae-905f50dfe335/summary.md), [`01a1fe7f`](01a1fe7f-af92-7ac2-8c0e-9086c066840b/summary.md).
 
@@ -392,15 +392,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`01a1fddf`](01a1fddf-742a-73d1-b3b4-0521cf9483e6/summary.md) | 1,999 | 292,967 | 0 | 1,954,560 | 87.0% | 1,124 |
 | [`01a1fe21`](01a1fe21-e306-7652-88cf-564d0978419e/summary.md) | 2,577 | 337,965 | 0 | 3,057,152 | 90.0% | 1,317 |
 | [`01a1fe8f`](01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) | 2,045 | 281,560 | 0 | 2,208,768 | 88.7% | 1,218 |
-| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 360,323 | 362 | 766,993 | 54,605,937 | 98.6% | 154 |
+| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 375,800 | 374 | 793,526 | 56,271,952 | 98.6% | 152 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 45,484 | 78.5% | 144 |
+| `Bash` | 45,489 | 78.5% | 144 |
 | `exec` | 7,230 | 12.5% | 3 |
-| `Read` | 1,498 | 2.6% | 62 |
+| `Read` | 1,500 | 2.6% | 62 |
 | `Edit` | 1,185 | 2.0% | 60 |
 | `apply_patch` | 769 | 1.3% | 2 |
 | `Write` | 755 | 1.3% | 59 |
@@ -1966,14 +1966,15 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1529 | change `yqkptkvs` | Record the public Avro factory proofs and the common eight-PR confirmation | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1b7c4f3ad9cdbc87dd578b73e7006db003b217f2d525d98fbfbe40bb29a5953.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/7b59aad03b126881b01cc4678f352abb20554321dbadcc64585e552a0ada97ce.jsonl.gz)), [`01a1fe8f`](01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1fe8f-ef20-7173-90fb-4f5e2745ef13/83e171ad48ac00ecfd25bcaa0f15863f1aea6570392e0e67d73954a8e34391d0.jsonl.gz)) |
 | 1530 | change `kursyoyw` | Merge the single-agent run organic-java-pr-campaign into the line | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1b7c4f3ad9cdbc87dd578b73e7006db003b217f2d525d98fbfbe40bb29a5953.jsonl.gz)) |
 | 1531 | change `rqsswoxx` | Record that Avro #3878's seven universal results hold only under a recorded startup (VF-054) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/fd42e63911e530940c335ef1630fd1a12aa4ededfe81771e518c75e7f471167f.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)) |
-| 1532 | change `wvpwtwyo` | Add the private archive of original outputs: spool, journal, verified upload, list and fetch | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d.jsonl.gz)) |
-| 1533 | change `pktuwmqt` | Seal each verification run's originals before the pipeline cuts or removes them (shadow mode) | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f.jsonl.gz)) |
-| 1534 | change `vmvnyrxr` | Inventory and protect what exists only on this VM; upload sealed originals in parallel | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c.jsonl.gz)) |
-| 1535 | change `srwzpppx` | Add sync.py checkpoint: one committed revision to origin's develop, forward only, with outgoing-object checks | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9.jsonl.gz)) |
-| 1536 | change `tuskxpzm` | Seal source transcripts at each sync; reproduce example 359's native-selector route from hydrated evidence | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad.jsonl.gz)) |
-| 1537 | change `potlswkp` | Cut the entry points over to checkpoints: the default run belongs to a promotion, not to a landing | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1.jsonl.gz)) |
-| 1538 | change `wovmywvw` | Record the design of sync.py promote for the next cycle | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38.jsonl.gz)) |
+| 1532 | [`b5540696`](https://github.com/pilifs/in-the-loop/commit/b5540696c6d776e35d0aac96a01a74db9b2eb35b) | Add the private archive of original outputs: spool, journal, verified upload, list and fetch | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d.jsonl.gz)) |
+| 1533 | [`402b9551`](https://github.com/pilifs/in-the-loop/commit/402b9551a5519c0422f04a28678ff68c4a52e8dd) | Seal each verification run's originals before the pipeline cuts or removes them (shadow mode) | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f.jsonl.gz)) |
+| 1534 | [`d9349c15`](https://github.com/pilifs/in-the-loop/commit/d9349c15316280f5ec8dcb72a3b3b786b8d1d736) | Inventory and protect what exists only on this VM; upload sealed originals in parallel | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c.jsonl.gz)) |
+| 1535 | [`023568b3`](https://github.com/pilifs/in-the-loop/commit/023568b39eb54cb02e114ceff969a266977dbb98) | Add sync.py checkpoint: one committed revision to origin's develop, forward only, with outgoing-object checks | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9.jsonl.gz)) |
+| 1536 | [`0f2612e3`](https://github.com/pilifs/in-the-loop/commit/0f2612e3e8e62793361cf5fd02f5b5b68d0b9fe3) | Seal source transcripts at each sync; reproduce example 359's native-selector route from hydrated evidence | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad.jsonl.gz)) |
+| 1537 | [`978c8b11`](https://github.com/pilifs/in-the-loop/commit/978c8b1116230b1c121cc922e9c28d3b50156ba9) | Cut the entry points over to checkpoints: the default run belongs to a promotion, not to a landing | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1.jsonl.gz)) |
+| 1538 | [`40458bf9`](https://github.com/pilifs/in-the-loop/commit/40458bf94738418165ad9bf727656a496d611c60) | Record the design of sync.py promote for the next cycle | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38.jsonl.gz)) |
 | 1539 | change `xuumpxym` | Add sync.py promote: a frozen part of develop becomes main, with its logs, originals and test receipt accounted for | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/b41a9df5f7f6ea692511239f0c0ec3e28488e9db1db909a06a0d4d06fe0fe00a.jsonl.gz)) |
+| 1540 | change `pztonlvu` | Checkpoint: a credential fixture the remote already holds is not refused again when its file is edited | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) ([log](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5.jsonl.gz)) |
 
 ## Logs
 
@@ -2158,7 +2159,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`01a1fddf`](01a1fddf-742a-73d1-b3b4-0521cf9483e6/summary.md) | 5 | 5 | 1.7 MB | [`77c53ff75e3e`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/77c53ff75e3e8081a5f3b841f339517a18e78d4bb6a1fba0bfb3c484dfac0a1a.jsonl.gz) |
 | [`01a1fe21`](01a1fe21-e306-7652-88cf-564d0978419e/summary.md) | 6 | 5 | 2.0 MB | `1e47b737ab66`, not uploaded |
 | [`01a1fe8f`](01a1fe8f-ef20-7173-90fb-4f5e2745ef13/summary.md) | 5 | 0 | 1.8 MB | `83e171ad48ac`, not uploaded |
-| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 8 | 0 | 5.4 MB | `b41a9df5f7f6`, not uploaded |
+| [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 9 | 0 | 6.5 MB | `f03571c4e241`, not uploaded |
 
 ## Session notes
 
