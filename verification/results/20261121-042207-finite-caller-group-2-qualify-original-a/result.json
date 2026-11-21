@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-042207-finite-caller-group-2-qualify-original-a",
+  "title": "Finite caller group 2 qualify original application observations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 26.5s, peak 147.6 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-042207-finite-caller-group-2-qualify-original-a.json",
+    "sha256": "b92999c00f48129ebf97dcdcf2ac51a48f1721b78f2c36e02a4df8f2cf2f1340",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-042207-finite-caller-group-2-qualify-original-a",
+      "title": "Finite caller group 2 qualify original application observations",
+      "description": "Run the reviewed application observer against each original client and upgraded artifact. Require the exact consumer invocation, actual JVM class origins, independent old expectations and agreement between fresh JVM repeats. Cases: commons-configuration-565, commons-configuration-601, commons-csv-8993be87.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Each case records a qualified finite result or the first unavailable operation. Only caller outcomes on both original artifacts count.",
+      "submitted": {
+        "at": "2026-11-21T04:22:07+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Replay original caller scenarios",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/02 --case commons-configuration-565 --case commons-configuration-601 --case commons-csv-8993be87",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/finite-callers/02"
+      ]
+    }
+  },
+  "sourceCommit": "90060227f35895614dcfbdb7713548b648bb6b6a",
+  "startedAt": "2026-11-21T04:39:20+00:00",
+  "finishedAt": "2026-11-21T04:39:55+00:00",
+  "wallSeconds": 35.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3438935,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 154791936,
+    "wallSeconds": 26.5,
+    "cpuSeconds": 32.1,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay original caller scenarios",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/02 --case commons-configuration-565 --case commons-configuration-601 --case commons-csv-8993be87",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 26.459,
+      "cpuSeconds": 32.111,
+      "cpuThrottledSeconds": 5.068,
+      "peakMemoryBytes": 154791936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-original-caller-scenari.log",
+        "lines": 6,
+        "bytes": 305,
+        "sha256": "bea14732906a33c97fed41cf37a798225d8fa6bd13aeb7f07e4bf0672790a35a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "open exception occurred outside the declared original caller",
+        "commons-configuration-565 open",
+        "open exception occurred outside the declared original caller",
+        "commons-configuration-601 open",
+        "preserved org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+        "commons-csv-8993be87 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 353,
+      "sha256": "8483d4d0cbefd28952547615fba4ca2c91d6bc3451c18597d20ae66d05d5c18a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 353,
+      "sha256": "ce04bab5893d642906e6c3f2722cdf1e458d3d7cbd22940bae6874b4c418c56c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/02/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 8585,
+      "sha256": "5475d9dfa2ce13849582d0e40149a045426c4abb51e334b296d93ddcdc51a7f7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:40:00+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-565.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/02/commons-configuration-601.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/02/commons-csv-8993be87.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

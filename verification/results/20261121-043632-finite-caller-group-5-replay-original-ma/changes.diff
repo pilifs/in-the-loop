@@ -1,0 +1,584 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/05/commons-fileupload-377.json
+@@ -0,0 +1,247 @@
++{
++  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
++  "observer": "Exact bytes and byte count from a single ordinary MIME part, including empty, binary and multiline bodies.",
++  "domainBasis": "The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless.",
++  "cases": [
++    {
++      "args": [
++        ""
++      ],
++      "expected": {
++        "return": "0:"
++      }
++    },
++    {
++      "args": [
++        "aGVsbG8="
++      ],
++      "expected": {
++        "return": "5:aGVsbG8="
++      }
++    },
++    {
++      "args": [
++        "bGluZTENCmxpbmUy"
++      ],
++      "expected": {
++        "return": "12:bGluZTENCmxpbmUy"
++      }
++    },
++    {
++      "args": [
++        "AP8NCgE="
++      ],
++      "expected": {
++        "return": "5:AP8NCgE="
++      }
++    }
++  ],
++  "probeSha256": "9f6de3d93cdb33bf38a5394aff4698342312446d9ef5a98077c58c05d16ca898",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "classpath": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "dependency": "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "0:"
++            },
++            {
++              "return": "0:"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:aGVsbG8="
++            },
++            {
++              "return": "5:aGVsbG8="
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            },
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:AP8NCgE="
++            },
++            {
++              "return": "5:AP8NCgE="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.io.Charsets",
++        "org.apache.commons.io.CloseableURLConnection",
++        "org.apache.commons.io.IOUtils",
++        "org.apache.commons.io.StandardLineSeparator",
++        "org.apache.commons.io.build.AbstractOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
++        "org.apache.commons.io.build.AbstractOriginSupplier",
++        "org.apache.commons.io.build.AbstractStreamBuilder",
++        "org.apache.commons.io.build.AbstractSupplier",
++        "org.apache.commons.io.file.DeleteOption",
++        "org.apache.commons.io.file.PathUtils",
++        "org.apache.commons.io.function.IOSupplier",
++        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
++        "org.apache.commons.io.output.AppendableWriter",
++        "org.apache.commons.io.output.ByteArrayOutputStream",
++        "org.apache.commons.io.output.NullOutputStream",
++        "org.apache.commons.io.output.NullWriter",
++        "org.apache.commons.io.output.QueueOutputStream",
++        "org.apache.commons.io.output.StringBuilderWriter",
++        "org.apache.commons.io.output.ThresholdingOutputStream",
++        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
++      ]
++    },
++    "new": {
++      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "classpath": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "0:"
++            },
++            {
++              "return": "0:"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:aGVsbG8="
++            },
++            {
++              "return": "5:aGVsbG8="
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            },
++            {
++              "return": "12:bGluZTENCmxpbmUy"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5:AP8NCgE="
++            },
++            {
++              "return": "5:AP8NCgE="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.io.Charsets",
++        "org.apache.commons.io.CloseableURLConnection",
++        "org.apache.commons.io.IOUtils",
++        "org.apache.commons.io.StandardLineSeparator",
++        "org.apache.commons.io.build.AbstractOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
++        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
++        "org.apache.commons.io.build.AbstractOriginSupplier",
++        "org.apache.commons.io.build.AbstractStreamBuilder",
++        "org.apache.commons.io.build.AbstractSupplier",
++        "org.apache.commons.io.file.DeleteOption",
++        "org.apache.commons.io.file.PathUtils",
++        "org.apache.commons.io.function.IOSupplier",
++        "org.apache.commons.io.input.CharSequenceReader",
++        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
++        "org.apache.commons.io.output.AppendableWriter",
++        "org.apache.commons.io.output.ByteArrayOutputStream",
++        "org.apache.commons.io.output.NullOutputStream",
++        "org.apache.commons.io.output.NullWriter",
++        "org.apache.commons.io.output.QueueOutputStream",
++        "org.apache.commons.io.output.StringBuilderWriter",
++        "org.apache.commons.io.output.ThresholdingOutputStream",
++        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalInvocation": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
++  "probeClasses": {
++    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
++    "UpgradeProbe": "afd54c7ed179e8fc6721d5cb242348a31c510182995d5a7f7378e6153bc9f909",
++    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 9.265
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-36.json
+@@ -0,0 +1,174 @@
++{
++  "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
++  "observer": "Resolve and invoke an overloaded method for a boxed integer paired with a StringBuilder or a String.",
++  "domainBasis": "The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type.",
++  "cases": [
++    {
++      "args": [
++        "builder"
++      ],
++      "expected": {
++        "return": "Integer/CharSequence"
++      }
++    },
++    {
++      "args": [
++        "string"
++      ],
++      "expected": {
++        "return": "Integer/String"
++      }
++    }
++  ],
++  "probeSha256": "3ccb46f10d338e79e21a0b680c926a06ffec1a551839b43fd21a0e7d67351d6c",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
++      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
++      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
++      "classpath": [
++        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
++        "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
++      ],
++      "dependency": "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Integer/CharSequence"
++            },
++            {
++              "return": "Integer/CharSequence"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Integer/String"
++            },
++            {
++              "return": "Integer/String"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.CurrentFrame",
++        "org.objectweb.asm.Edge",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Item",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.ModuleVisitor",
++        "org.objectweb.asm.ModuleWriter",
++        "org.objectweb.asm.Type"
++      ]
++    },
++    "new": {
++      "commit": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
++      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
++      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
++      "classpath": [
++        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
++      ],
++      "dependency": "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "throws": "java.lang.IllegalArgumentException"
++            },
++            {
++              "throws": "java.lang.IllegalArgumentException"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "throws": "java.lang.IllegalArgumentException"
++            },
++            {
++              "throws": "java.lang.IllegalArgumentException"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassTooLargeException",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.CurrentFrame",
++        "org.objectweb.asm.Edge",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodTooLargeException",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.ModuleVisitor",
++        "org.objectweb.asm.ModuleWriter",
++        "org.objectweb.asm.Symbol",
++        "org.objectweb.asm.SymbolTable",
++        "org.objectweb.asm.SymbolTable$Entry",
++        "org.objectweb.asm.Type"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalInvocation": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
++  "probeClasses": {
++    "UpgradeObservation": "5824a9938269d5aa5d005789678cbb5ce8d067b3cbf20327a06546bdd521a681",
++    "UpgradeProbe$Impl": "37d8c0c73cd3ca011af528eb7d59ec77ae9b59658d19dbc45eb9e9b2332fda74",
++    "UpgradeProbe$Service": "bd5245f2da25c67e689ac3b0052d6abdac040dd853eea6351627ef3320fd32e6",
++    "UpgradeProbe": "f2d8258ee6f042456223d7225a168d5d01a536c1f3604550c9c253d3183b8a3d",
++    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e"
++  },
++  "differences": [
++    0,
++    1
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 4.853
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-80.json
+@@ -0,0 +1,154 @@
++{
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "observer": "Observe the logger name behind the INFO output stream for a caller-relative short name and for an explicit full name.",
++  "domainBasis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger.",
++  "cases": [
++    {
++      "args": [
++        "MyLogger"
++      ],
++      "expected": {
++        "return": "UpgradeProbe.MyLogger"
++      }
++    },
++    {
++      "args": [
++        "example.full.name"
++      ],
++      "expected": {
++        "return": "example.full.name"
++      }
++    }
++  ],
++  "probeSha256": "6fc25fee9e5643ede0b9e3908a61807d4a0563b8d7a0a0b1aa5ed171e305bed4",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052"
++      ],
++      "dependency": "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.helpers.MarkerIgnoringBase",
++        "org.slf4j.helpers.NOPLogger",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.NamedLoggerBase",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.helpers.Util"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5"
++      ],
++      "dependency": "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.IMarkerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.Marker",
++        "org.slf4j.event.LoggingEvent",
++        "org.slf4j.helpers.BasicMDCAdapter",
++        "org.slf4j.helpers.BasicMDCAdapter$1",
++        "org.slf4j.helpers.BasicMarkerFactory",
++        "org.slf4j.helpers.MarkerIgnoringBase",
++        "org.slf4j.helpers.NOPLogger",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.NOPMDCAdapter",
++        "org.slf4j.helpers.NOPServiceProvider",
++        "org.slf4j.helpers.NamedLoggerBase",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.helpers.SubstituteServiceProvider",
++        "org.slf4j.helpers.Util",
++        "org.slf4j.spi.LoggingEventBuilder",
++        "org.slf4j.spi.MDCAdapter",
++        "org.slf4j.spi.SLF4JServiceProvider"
++      ]
++    }
++  },
++  "status": "open",
++  "originalInvocation": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "probeClasses": {
++    "UpgradeObservation": "5824a9938269d5aa5d005789678cbb5ce8d067b3cbf20327a06546bdd521a681",
++    "UpgradeProbe": "5998336ad04eddf16db692500cb64b2af4d27499c36ac8bd0d869cfeec53f718",
++    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [
++    0,
++    1
++  ],
++  "elapsedSeconds": 4.528
++}

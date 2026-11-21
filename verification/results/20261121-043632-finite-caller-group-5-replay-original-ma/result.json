@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-043632-finite-caller-group-5-replay-original-ma",
+  "title": "Finite caller group 5 replay original main and transfer applications",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.4s, peak 117.4 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-043632-finite-caller-group-5-replay-original-ma.json",
+    "sha256": "e8f85dd7ce61efc0206b4f915c76168b60fbe64bd87fc282e5fbefd620d83ac0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-043632-finite-caller-group-5-replay-original-ma",
+      "title": "Finite caller group 5 replay original main and transfer applications",
+      "description": "Qualify the exact original caller entry with JDI and verify the loaded original dependency in fresh JVMs before comparing each reviewed finite observation. Inputs and independent expectations are committed with the case. Cases: commons-fileupload-377, compsuite-i-36, compsuite-i-80.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Each finite scope gets its true changed, preserved or open result. An early or unreachable observation earns no decision.",
+      "submitted": {
+        "at": "2026-11-21T04:36:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Compare original caller observations",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/05 --case commons-fileupload-377 --case compsuite-i-36 --case compsuite-i-80",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/finite-callers/05"
+      ]
+    }
+  },
+  "sourceCommit": "90060227f35895614dcfbdb7713548b648bb6b6a",
+  "startedAt": "2026-11-21T04:39:20+00:00",
+  "finishedAt": "2026-11-21T04:39:48+00:00",
+  "wallSeconds": 28.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3438935,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 123056128,
+    "wallSeconds": 19.4,
+    "cpuSeconds": 16.9,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare original caller observations",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/05 --case commons-fileupload-377 --case compsuite-i-36 --case compsuite-i-80",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 19.425,
+      "cpuSeconds": 16.865,
+      "cpuThrottledSeconds": 0.626,
+      "peakMemoryBytes": 123056128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-caller-observ.log",
+        "lines": 6,
+        "bytes": 447,
+        "sha256": "1ab0c6ea59d17d641fdf1a16157b851e0c3288756c3793ecc962299d78742529",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+        "commons-fileupload-377 preserved",
+        "changed org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+        "compsuite-i-36 changed",
+        "open org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
+        "compsuite-i-80 open"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/05/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 8943,
+      "sha256": "ce120c220d41f7efbec77901b610ebaa8b26f82dadfaf1deeaa9c920e675fd0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 6719,
+      "sha256": "4a64f9cd97332ca8d40a722e17b654f57b453787353de6aa5dde30c840f9924b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-80.json",
+      "change": "added",
+      "bytes": 5240,
+      "sha256": "82647c226cc1d46b7fd9eac75bd84a009b9ea1b38056952c88723f679f26ace0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:40:00+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/finite-callers/05/commons-fileupload-377.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-36.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/05/compsuite-i-80.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

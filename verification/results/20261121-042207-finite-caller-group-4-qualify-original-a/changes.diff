@@ -1,0 +1,238 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/04/cucumber-reporting-1198.json
+@@ -0,0 +1,235 @@
++{
++  "entry": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++  "observer": "The exact escaped and highlighted text returned for empty, ordinary and HTML-sensitive step arguments.",
++  "domainBasis": "Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks.",
++  "cases": [
++    {
++      "args": [
++        "a & b",
++        "[]"
++      ],
++      "expected": {
++        "return": "a &amp; b"
++      }
++    },
++    {
++      "args": [
++        "eat red now",
++        "[{\"val\":\"red\",\"offset\":4}]"
++      ],
++      "expected": {
++        "return": "eat <b>red</b> now"
++      }
++    },
++    {
++      "args": [
++        "a<b",
++        "[{\"val\":\"<\",\"offset\":1}]"
++      ],
++      "expected": {
++        "return": "a<b>&lt;</b>b"
++      }
++    },
++    {
++      "args": [
++        "",
++        "[]"
++      ],
++      "expected": {
++        "return": ""
++      }
++    }
++  ],
++  "probeSha256": "e4958c2f8aa4e3b085a2c62fa43f65d82833b2164ad0303ee606b2df07aab768",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d",
++      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
++      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
++      "classpath": [
++        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "dependency": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a &amp; b"
++            },
++            {
++              "return": "a &amp; b"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "eat <b>red</b> now"
++            },
++            {
++              "return": "eat <b>red</b> now"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a<b>&lt;</b>b"
++            },
++            {
++              "return": "a<b>&lt;</b>b"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.Range",
++        "org.apache.commons.lang3.Range$ComparableComparator",
++        "org.apache.commons.lang3.StringUtils",
++        "org.apache.commons.lang3.Validate",
++        "org.apache.commons.lang3.stream.LangCollectors",
++        "org.apache.commons.lang3.stream.LangCollectors$SimpleCollector",
++        "org.apache.commons.lang3.stream.Streams"
++      ]
++    },
++    "new": {
++      "commit": "bf97b9ef1d60f9959a61379c3b3a682350e8e583",
++      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
++      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
++      "classpath": [
++        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "dependency": "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a &amp; b"
++            },
++            {
++              "return": "a &amp; b"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "eat <b>red</b> now"
++            },
++            {
++              "return": "eat <b>red</b> now"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "a<b>&lt;</b>b"
++            },
++            {
++              "return": "a<b>&lt;</b>b"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.Range",
++        "org.apache.commons.lang3.Range$ComparableComparator",
++        "org.apache.commons.lang3.StringUtils",
++        "org.apache.commons.lang3.Validate",
++        "org.apache.commons.lang3.stream.LangCollectors",
++        "org.apache.commons.lang3.stream.LangCollectors$SimpleCollector",
++        "org.apache.commons.lang3.stream.Streams"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalInvocation": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
++  "probeClasses": {
++    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
++    "UpgradeProbe": "63a87dfa181cacb80de7cbc9a395d65c1fc7d6094308bc4c58fb1959b993a4b3",
++    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 14.084
++}
