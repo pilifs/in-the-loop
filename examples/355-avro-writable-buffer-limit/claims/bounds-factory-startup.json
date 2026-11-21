@@ -1,0 +1,40 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "bounds",
+  "statement": "The factory result starts at position zero, has the logical length as limit and remaining, and retains the physical capacity.",
+  "assume": "code >= 0 && code < 21",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.WritableBuffer#bounds(I)I",
+    "mapping": "The factory result starts at position zero, has the logical length as limit and remaining, and retains the physical capacity. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 21
+  },
+  "observedInitializers": {
+    "org.apache.avro.Schema": "11f4ae845761a347264d1d4451fb998cbba603e195c473b6fa7e602e0ea135f3",
+    "org.apache.hadoop.io.BytesWritable": "11f4ae845761a347264d1d4451fb998cbba603e195c473b6fa7e602e0ea135f3",
+    "org.apache.hadoop.mapred.JobConf": "11f4ae845761a347264d1d4451fb998cbba603e195c473b6fa7e602e0ea135f3"
+  },
+  "observedRuntime": {
+    "emptyEnvironment": true,
+    "preinitializeTogether": true,
+    "processors": 2,
+    "rootWorkingDirectory": true
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  },
+  "notes": [
+    "Before the unchanged JobConf(false) factory call the subject JVM initializes Schema, BytesWritable and JobConf in that order on the original fixed classpath. Both processors, the empty environment and the Unix root File base are bound. This separate diagnostic uses the same 21 admitted inputs and factory observations."
+  ]
+}

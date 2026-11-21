@@ -171,6 +171,7 @@ pub struct ClassPath {
     /// Whether the own checker runs each class initializer asked about ([`crate::bmc::gaps::runs_initializer`]): a
     /// function of the class path alone.
     pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
+    plain_buffer_formatter: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
     pub(crate) observed_initializers: RefCell<std::collections::BTreeSet<String>>,
@@ -194,7 +195,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -273,6 +274,7 @@ impl ClassPath {
     }
 
     fn reset_runtime_caches(&mut self) {
+        self.plain_buffer_formatter.take();
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
         self.refusals.borrow_mut().clear();
@@ -767,6 +769,7 @@ impl ClassPath {
             | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
             | ("java/util/Arrays", "checkLength", "(II)V")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
+            | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
             | ("java/nio/CharBuffer", "wrap", "([CII)Ljava/nio/CharBuffer;" | "([C)Ljava/nio/CharBuffer;")
             | ("java/lang/String", "decodeASCII", "([BI[CII)I")
             | ("java/lang/String", "rangeCheck", "([CII)Ljava/lang/Void;")
@@ -789,6 +792,7 @@ impl ClassPath {
             | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
             | ("java/util/Objects", "hashCode", "(Ljava/lang/Object;)I")
             | ("java/util/Objects", "checkFromIndexSize", "(III)I")
+            | ("jdk/internal/util/Preconditions", "checkIndex", "(IILjava/util/function/BiFunction;)I")
             | ("jdk/internal/util/Preconditions", "checkFromIndexSize", "(IIILjava/util/function/BiFunction;)I")
             | ("jdk/internal/util/ArraysSupport", "hashCode", "([Ljava/lang/Object;III)I")
             | ("java/util/Arrays", "equals", "([Ljava/lang/Object;[Ljava/lang/Object;)Z")
@@ -819,6 +823,24 @@ impl ClassPath {
                 && class.pool.member(*m).is_ok_and(|ctor| (ctor.owner.as_str(), ctor.name.as_str(), ctor.descriptor.as_str()) == (class_name, "<init>", "()V"))))
     }
 
+    /// These images install Buffer$1 through Preconditions$4. The fixed checkIndex formatter
+    /// converts two plain Integers with "%s". Buffer$1.apply(String) ignores both the message
+    /// and its receiver and constructs a fresh, no-argument IndexOutOfBoundsException.
+    /// Bind the complete classes for the skipped formatting path. Other images run as written.
+    pub(crate) fn plain_buffer_formatter(&self) -> bool {
+        *self.plain_buffer_formatter.get_or_init(|| {
+            let Some(image) = self.jdk() else { return false };
+            let mut code = Vec::new();
+            for owner in ["java/nio/Buffer", "java/nio/Buffer$1", "jdk/internal/util/Preconditions", "jdk/internal/util/Preconditions$4"] {
+                let Ok(Some(bytes)) = image.read_class(owner) else { return false };
+                code.extend(bytes);
+            }
+            matches!(crate::digest::sha256_hex(&code).as_str(),
+                "42e15de022f96d5073fabe25d5528a97bade2de31a6ff39681e0665ba67bfebe" // Temurin 21.0.13
+                | "50d5a86221a41a6b52d2bb0e43cf79432d32d8c4855c11c5969f8b38751cc2a0") // Temurin 25.0.5
+        })
+    }
+
     pub(crate) fn heap_buffer_owner(name: &str) -> bool {
         matches!(name, "java/nio/Buffer" | "java/nio/ByteBuffer" | "java/nio/CharBuffer"
             | "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
@@ -830,7 +852,7 @@ impl ClassPath {
         if !Self::heap_buffer_owner(owner) || !matches!(name, "<init>" | "position" | "limit" | "capacity" | "remaining"
             | "hasRemaining" | "flip" | "rewind" | "clear" | "compact" | "discardMark" | "checkScope"
             | "array" | "hasArray" | "arrayOffset" | "ix" | "isReadOnly" | "isDirect" | "nextGetIndex" | "nextPutIndex"
-            | "get" | "put" | "mark" | "reset") { return None; }
+            | "get" | "put" | "checkIndex" | "createLimitException" | "createPositionException" | "mark" | "reset") { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
         let method = class.method(name, desc)?.clone();
         if method.is_static() || method.code.is_none() { return None; }

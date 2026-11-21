@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-133632-measure-every-avro-factory-obligation-wi",
+  "title": "Measure every Avro factory obligation with captured startup",
+  "description": "Run the factory bounds, rejected byte, readable prefix and preserved full-length control on the original parent and fix over the 21-input grid. Also check the fixed factory with JobConf explicitly initialized in the same physical JVM as Schema and BytesWritable. All startup scopes and classpath checksums remain distinct from the ambient claims.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T13:36:32+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check all factory obligations and the additional JobConf scope",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage factory-startup --tasks bounds-parent-writable-startup,bounds-fix-writable-startup,rejected-parent-writable-startup,rejected-fix-writable-startup,prefix-parent-writable-startup,prefix-fix-writable-startup,full-length-parent-writable-startup,full-length-fix-writable-startup,bounds-fix-factory-startup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/factory-startup-native"
+  ]
+}

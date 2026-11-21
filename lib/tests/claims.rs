@@ -1411,3 +1411,14 @@ fn enum_tables_and_sequential_collectors_use_the_actual_iterator() {
     let wrong = run(&options(classes, "claims.IteratorCollection#wrong", 4, "iterator-bulk-override"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
 }
+
+#[test]
+fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.WrappedBuffers").output().unwrap();
+    assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
+    for name in ["window", "whole", "invalid"] {
+        proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
+    }
+}

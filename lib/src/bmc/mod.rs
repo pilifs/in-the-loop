@@ -4043,6 +4043,21 @@ impl<'a> Engine<'a> {
                         return Ok(None);
                     }
                 }
+                if declaring == "java/nio/Buffer" && member.name == "IOOBE_FORMATTER" && member.descriptor == "Ljava/util/function/BiFunction;"
+                    && class.name == declaring && path.frames.last().is_some_and(|f| f.method == "checkIndex") && self.cp.plain_buffer_formatter() {
+                    let key = (declaring, member.name);
+                    let formatter = match path.statics.get(&key) {
+                        Some(v) => v.clone(),
+                        None => {
+                            let v = Val::R(Some(self.alloc(path, "jdk/internal/util/Preconditions$4")));
+                            path.statics.insert(key, v.clone());
+                            v
+                        }
+                    };
+                    self.push(path, formatter);
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if self.cp.numeric_assertion_flag(&declaring, &member.name, &member.descriptor) {
                     let key = (declaring, member.name);
                     let flag = path.statics.entry(key).or_insert_with(|| {
@@ -4930,6 +4945,21 @@ impl<'a> Engine<'a> {
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
         let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
+        if caller == "jdk/internal/util/Preconditions" && member.owner == caller && member.name == "outOfBoundsCheckIndex"
+            && member.descriptor == "(Ljava/util/function/BiFunction;II)Ljava/lang/RuntimeException;" {
+            let stack = &path.frames.last().expect("a frame").stack;
+            let bound = path.statics.get(&("java/nio/Buffer".into(), "IOOBE_FORMATTER".into()));
+            if matches!((stack.as_slice(), bound), ([.., Val::R(Some(actual)), Val::I(_), Val::I(_)], Some(Val::R(Some(known)))) if actual == known)
+                && self.cp.plain_buffer_formatter() {
+                // The image-qualified adapter discards the formatting result. Execute its real exception constructor.
+                let loaded = self.cp.load("java/nio/Buffer$1").ok().flatten().filter(|l| l.origin == crate::classpath::Origin::Jdk).ok_or_else(|| Stop::Unsupported("missing NIO index formatter".into()))?;
+                let body = loaded.class.method("apply", "(Ljava/lang/String;)Ljava/lang/IndexOutOfBoundsException;").cloned()
+                    .ok_or_else(|| Stop::Unsupported("missing NIO index exception factory".into()))?;
+                self.pop_args(path, 3)?;
+                let r = self.alloc(path, &loaded.class.name);
+                return self.enter_method(path, "java/nio/Buffer$1", loaded.class, body, vec![Val::R(Some(r)), Val::R(None)]);
+            }
+        }
         // Where a version of a pair begins ([`crate::pairing`]): it starts as if it ran alone. What a run can leave
         // for a later one is the static fields, the classes' initialization and the default locale, which the
         // engine holds in the path's statics; every other object is reached through them or through the call's

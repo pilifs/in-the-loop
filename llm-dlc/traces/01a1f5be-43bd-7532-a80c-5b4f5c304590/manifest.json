@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T13:32:17.571Z",
-  "duration_seconds": 143688,
+  "ended": "2026-11-21T13:42:34.605Z",
+  "duration_seconds": 144305,
   "stats": {
     "turns": 21,
-    "api_calls": 6862,
-    "tool_calls": 17185,
-    "tool_errors": 516,
+    "api_calls": 6901,
+    "tool_calls": 17265,
+    "tool_errors": 519,
     "compactions": 22,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 11459364,
-      "output_tokens": 3627833,
-      "cache_read_input_tokens": 2069847552,
+      "input_tokens": 11496034,
+      "output_tokens": 3647718,
+      "cache_read_input_tokens": 2082429312,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 9840,
-    "exec": 6341,
-    "apply_patch": 660,
+    "Bash": 9879,
+    "exec": 6380,
+    "apply_patch": 662,
     "send_message": 148,
     "sleep": 76,
     "wait": 75,
@@ -240,6 +240,7 @@
     "lib/tests/fixtures/claims/claims/T.java",
     "lib/tests/fixtures/claims/claims/Tables.java",
     "lib/tests/fixtures/claims/claims/UnicodePoints.java",
+    "lib/tests/fixtures/claims/claims/WrappedBuffers.java",
     "lib/tests/fixtures/floating/FloatingChecks.java",
     "lib/tests/fixtures/identitymap/IdentityKeys.java",
     "lib/tests/fixtures/observed-countermodels/app/oc/CalendarAmounts.java",
@@ -659,24 +660,24 @@
     {
       "index": 22,
       "started": "2026-11-21T12:43:15.016Z",
-      "ended": "2026-11-21T13:32:17.571Z",
+      "ended": "2026-11-21T13:42:34.605Z",
       "turns": 1,
-      "api_calls": 193,
+      "api_calls": 232,
       "usage": {
-        "input_tokens": 307421,
-        "output_tokens": 91977,
-        "cache_read_input_tokens": 40767872,
+        "input_tokens": 344091,
+        "output_tokens": 111862,
+        "cache_read_input_tokens": 53349632,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 306398
+      "peak_context_tokens": 340158
     }
   ],
   "log": {
-    "sha256": "d5b537034daa29cfbcefa570c161aad5c8106eb21fd82653eccf4e390361d002",
-    "bytes": 156731444,
-    "lines": 54057,
-    "gzip_bytes": 62157342,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/d5b537034daa29cfbcefa570c161aad5c8106eb21fd82653eccf4e390361d002.jsonl.gz"
+    "sha256": "da41651bfd84875a9fa58c97f6b45d81a7667dee2ff203a3a9c686a17e8b1ab7",
+    "bytes": 157431154,
+    "lines": 54348,
+    "gzip_bytes": 62473136,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/da41651bfd84875a9fa58c97f6b45d81a7667dee2ff203a3a9c686a17e8b1ab7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3151,6 +3152,14 @@
       "summary": "Bind ordered JVM startup roots on one heap (verification pending)",
       "body": "Initialize all requested application roots in order in the same subject JVM. Class digests and ordered roots qualify a common state digest, and both sides of a pair retain their own class identities. A Unix-root working-directory option measures the process and JVM bases and binds lexical File resolution. Canonical paths still require filesystem evidence. Independent witness JVMs use the requested directory and initialization order.\n\nThe original Avro parent and fix independently produced the same 197-class, 696-object startup state for Schema followed by BytesWritable. Ten separate claims retain the original inputs and public entry points under that condition. A capped native run reached ByteBuffer.wrap in the fixed converter and a separate factory run reached JobConf startup. Job 20261121-132242-bind-avro-and-hadoop-startup-before-the repeats three registered claims. JVM/native regressions covered root ordering, digest changes, lexical paths and canonical-path refusal. Example 355 replayed all 21 inputs on both revisions. 46 of 47 selected groups passed together. The trace-index group that compared concurrent jj views then passed all 105 tests alone.",
       "log_sha256": "d5b537034daa29cfbcefa570c161aad5c8106eb21fd82653eccf4e390361d002"
+    },
+    {
+      "change_id": "zpwzmkoqstlsxzpplxsyuwstwpuootpv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify absolute bounds on wrapped byte buffers (verification pending)",
+      "body": "Run the original ByteBuffer.wrap overloads and real heap-buffer accessors. The selected JDK performs the signed index check. For the known Temurin 21 and 25 bounds formatters, four image class hashes bind the formatting path and the checker runs the actual no-argument exception factory. Buffer position, backing-array aliases, capacity and the constructor's invalid-range behavior remain visible.\n\nPhysical JVM and native tests passed on JDK 21.0.13 and 25.0.5, including negative and excluded indices, null exception messages, invalid slices and writes shared with the original array. The 28 selected groups and the Avro example validator passed. On the original 124-entry closures the capped checker proved the fixed nested converter for all 21 admitted inputs and found the parent at code=1. Job 20261121-133632-prove-avro-buffer-bounds-and-replay-the repeats both and submits that native candidate to an ambient original JVM. Job 20261121-133632-measure-every-avro-factory-obligation-wi records every factory companion and the additional three-root JobConf scope.",
+      "log_sha256": "da41651bfd84875a9fa58c97f6b45d81a7667dee2ff203a3a9c686a17e8b1ab7"
     }
   ],
   "logs": {
@@ -3956,6 +3965,12 @@
       "bytes": 101904320,
       "lines": 35221,
       "gzip_bytes": 39883358,
+      "url": null
+    },
+    "da41651bfd84875a9fa58c97f6b45d81a7667dee2ff203a3a9c686a17e8b1ab7": {
+      "bytes": 157431154,
+      "lines": 54348,
+      "gzip_bytes": 62473136,
       "url": null
     },
     "dae3bbd49f4c11ded661f3067ea2177a9551cc9d284523e06e9b37bed22e7e13": {
