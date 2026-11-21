@@ -6,6 +6,17 @@ The curator keeps the candidate docket, original source, tests, repeat observati
 
 `python3 registry_overlap.py SUITE_JSON KNOWLEDGE_JSON` checks the two file digests and prints aggregate counts. The full pinned CompSuite registry has 123 entries and CompCheck has 24 knowledge records. Thirteen CompSuite entries match on client, Maven coordinate, old version, new version and exact developer test. Each old version in a CompCheck record's `versions` array contributes a possible match.
 
+## Keep private command output out of session traces
+
+Use opaque filenames and arguments in the shell command. Pipe both streams from the start of every private analysis through the local capture filter. It writes the full stream inside an owner-only directory outside the checkout. The public output is a random capture ID, byte count and SHA-256. Source paths in a traceback or JSON object keys stay private.
+
+```sh
+set -o pipefail
+python3 -I "$OPAQUE_PRIVATE_STEP" 2>&1 | python3 -I lib/benchmark/external-upgrades/curation/private_output.py "$PRIVATE_CAPTURE_DIR"
+```
+
+For progress, a private script can emit a final JSON line with exactly `schema` (`external-upgrade-private-progress/v1`), `status` (`ok`, `partial`, `unavailable`, or `needs-review`), integer `counts`, boolean `flags`, and `digests` containing previously computed evidence hashes. The three lists can be empty. The filter checks the complete shape before exposing any value. Use `--require-progress` when a missing or rejected record should fail the command. Permission for fetching, building or executing the original step is determined independently of this output filter.
+
 ## Record the private docket
 
 Store a stable ID, discovery source, prior client/library exposure, disposition and supporting evidence for every candidate. Keep source retrieval, build failures, attempted replays and successful admissions distinguishable. A case can acquire several attempted reproductions as archived inputs become available. Record an earlier exclusion or deferred build in its history before resuming it.

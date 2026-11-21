@@ -47,6 +47,10 @@ artifact of identical source. Only then a narrower slice of the example. Credent
 
 **Why:** a reader of the published history must be able to reproduce the build without the user's accounts.
 
+## Blinded studies on a repository that publishes transcripts
+
+In an evaluation with sequestered references, keep case-specific shell input, stdout and stderr inside the curator workspace. A failed command and a JSON map's keys each exposed an original module path during the 2026-11-21 external upgrade run. Use opaque command arguments and capture both streams before the private command starts. Only explicitly shaped progress counts, booleans, fixed dispositions and evidence digests should reach the session. Record any prior exposure on the candidate and tell the user before publishing. The evaluation's [private capture filter](../lib/benchmark/external-upgrades/curation/README.md#keep-private-command-output-out-of-session-traces) includes a process-start example.
+
 ## Reading the web: the headless browser is for reading
 
 Since 2026-11-19 the machine has a browser for pages a plain fetch cannot read, such as pages rendered by

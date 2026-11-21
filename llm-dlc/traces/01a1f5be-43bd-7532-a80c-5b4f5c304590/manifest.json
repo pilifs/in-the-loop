@@ -12,31 +12,31 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T02:32:13.957Z",
-  "duration_seconds": 104084,
+  "ended": "2026-11-21T02:42:27.566Z",
+  "duration_seconds": 104698,
   "stats": {
     "turns": 15,
-    "api_calls": 4613,
-    "tool_calls": 11798,
-    "tool_errors": 359,
+    "api_calls": 4650,
+    "tool_calls": 11856,
+    "tool_errors": 360,
     "compactions": 14,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 7747310,
-      "output_tokens": 2368838,
-      "cache_read_input_tokens": 1442506496,
+      "input_tokens": 7771737,
+      "output_tokens": 2385642,
+      "cache_read_input_tokens": 1460379136,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 6847,
-    "exec": 4217,
-    "apply_patch": 482,
-    "send_message": 126,
+    "Bash": 6870,
+    "exec": 4240,
+    "apply_patch": 485,
+    "send_message": 132,
     "wait": 53,
-    "sleep": 49,
+    "sleep": 51,
     "followup_task": 8,
-    "send_message_to_user_async": 6,
+    "send_message_to_user_async": 7,
     "spawn_agent": 5,
     "request_user_input_async": 3,
     "list_agents": 2
@@ -140,6 +140,7 @@
     "lib/benchmark/external-upgrades/baselines/public_ci.py",
     "lib/benchmark/external-upgrades/curation/README.md",
     "lib/benchmark/external-upgrades/curation/allocate.py",
+    "lib/benchmark/external-upgrades/curation/private_output.py",
     "lib/benchmark/external-upgrades/curation/queued_bump.py",
     "lib/benchmark/external-upgrades/curation/test_allocate.py",
     "lib/benchmark/external-upgrades/curation/test_queued_bump.py",
@@ -214,6 +215,7 @@
     "lib/tests/values.rs",
     "llm-dlc/loops/external-upgrade-evaluation-results.md",
     "llm-dlc/loops/foundation-and-python-results.md",
+    "llm-dlc/operating-notes.md",
     "llm-dlc/session-notes/01a1f5be-43bd-7532-a80c-5b4f5c304590.md",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
@@ -497,24 +499,24 @@
     {
       "index": 14,
       "started": "2026-11-21T00:47:03.288Z",
-      "ended": "2026-11-21T02:32:13.957Z",
+      "ended": "2026-11-21T02:42:27.566Z",
       "turns": 0,
-      "api_calls": 462,
+      "api_calls": 499,
       "usage": {
-        "input_tokens": 491304,
-        "output_tokens": 215210,
-        "cache_read_input_tokens": 134910336,
+        "input_tokens": 515731,
+        "output_tokens": 232014,
+        "cache_read_input_tokens": 152782976,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 471970
+      "peak_context_tokens": 494075
     }
   ],
   "log": {
-    "sha256": "8a8bb8e5b91f2b600b600d19b0f294537834bccf16a9d87b9202040845412a06",
-    "bytes": 104741913,
-    "lines": 36517,
-    "gzip_bytes": 41220810,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/8a8bb8e5b91f2b600b600d19b0f294537834bccf16a9d87b9202040845412a06.jsonl.gz"
+    "sha256": "c0a28a4df9a6ca477d60abee982ff8cc33b90d28c65d4523441c27462980214b",
+    "bytes": 105285154,
+    "lines": 36782,
+    "gzip_bytes": 41485368,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/c0a28a4df9a6ca477d60abee982ff8cc33b90d28c65d4523441c27462980214b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1941,6 +1943,14 @@
       "summary": "Reconcile native session costs and collect comparison evidence",
       "body": "The client reports a cumulative dollar estimate when a native session resumes. Use the final reading of each independent conversation and retain each stateless request separately. The scorecard now publishes this derived amount alongside newly sealed reports and can calculate it for existing immutable seals. The case ledger and report correct prior sums. The final Commons Text treatment cost an estimated 1.3339372 dollars; its raw sum of 7.2377754 double-counted earlier turns. All 64 individual request increments matched the frozen token price table within one billionth of a dollar.\n\nOn the original Commons Text PR, the corrected native-result meter restored the prior result and call ID through fourteen planner requests. With 66253 charged tokens and 183747 remaining, its next 175744-byte context needed a conservative reservation of 185984 tokens. No claim was approved. Preserve the terminal predicate evidence, acknowledgements of the metering correction and both earlier first reports. A separate public AWS comparison compiled 576 original production sources per treatment, recovered the real call site with both knowledge sets, and produced no JUnit finding in either.\n\nThe first opaque BUMP reference job returned four fresh exact original testcase records after 92 seconds. Its private receipt is digest-bound and requires independent caller adjudication. The user-only custody checkpoint, outstanding artifact access and one possible module-path trace exposure are recorded without disclosing the candidate. All affected test groups, five scorecard regressions, inventory lint, pinned tool digests and recorded evidence hashes verified.",
       "log_sha256": "8a8bb8e5b91f2b600b600d19b0f294537834bccf16a9d87b9202040845412a06"
+    },
+    {
+      "change_id": "nkounlltlnxnznqpvuponrntsumlskkp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Protect private screening output and retain independent opening grades",
+      "body": "Two separate private diagnostics exposed a module-relative path from unslotted leads. The custodian recorded both before selection, flagged the second for possible association with a scoped observation and notified the owner before publication. The new stream filter captures merged stdout and stderr from process start in owner-only files. It emits only an opaque capture receipt and explicitly typed scalar progress. Regex matches on arbitrary output are not a substitute for this schema.\n\nSynthetic tracebacks, both dynamic-key patterns, long streams and malformed summaries retained every original private byte and emitted zero marker bytes. The real process- and unit-level controls passed. The affected selection passed all three groups including 58 Rust binaries. The independent reviewer verified all four native-history first-report seals, both original reference signatures and the complete finite CSV domain. None established an application result, contradicted an assurance or added actionable evidence to CI.\n\nThe latest signed docket checkpoint records 20 excluded, three unavailable and four pending nearer PRs; the original-production reference counts remain one change and one preservation. Four private BUMP builds reproduced all 118 historical compiler outputs and reached the exact named test. Their caller observation still awaits separate adjudication.",
+      "log_sha256": "c0a28a4df9a6ca477d60abee982ff8cc33b90d28c65d4523441c27462980214b"
     }
   ],
   "logs": {
@@ -2399,6 +2409,12 @@
       "lines": 5912,
       "gzip_bytes": 6922993,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/bb1c5d731ed81cebfbb3a2fe5a6071ce9054546e9838ec5a5e933efdf6c5086f.jsonl.gz"
+    },
+    "c0a28a4df9a6ca477d60abee982ff8cc33b90d28c65d4523441c27462980214b": {
+      "bytes": 105285154,
+      "lines": 36782,
+      "gzip_bytes": 41485368,
+      "url": null
     },
     "c50e2b5d3dc7c1b47f1d3d44f5a36ccc72da26dd6a333238209edae2a60feed7": {
       "bytes": 83194969,
