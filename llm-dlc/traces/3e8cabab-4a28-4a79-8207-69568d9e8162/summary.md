@@ -2952,6 +2952,12 @@ change `zpqqyqqlpslp` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 2 of the 2 job(s). 20261121-044031-original-ci-group-2-run-unmodified-maven: passed: 1 passed step(s) in 5m23s, peak 1.4 GiB (estimated 25m00s, 3.0 GiB); 18 output file(s) changed Applied 18 output(s). 20261121-044031-original-ci-group-5-run-unmodified-maven: passed: 1 passed step(s) in 3m42s, peak 5.2 GiB (estimated 25m00s, 3.0 GiB); 16 output file(s) changed Applied 16 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
+### Record verification results for 2 job(s)
+
+change `zqopmrvltzuo` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-044738-349-exhaust-actual-csv-fields-with-lossl: passed: 1 passed step(s) in 8.6s, peak 183.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-044738-352-exhaust-actual-duration-strings-with: passed: 1 passed step(s) in 9.0s, peak 246.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -1,0 +1,4638 @@
+--- /dev/null
++++ b/examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/batch.json
+@@ -0,0 +1,35 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261121T045926Z-6851c0bf",
++  "retryOf": null,
++  "order": [
++    "preservation"
++  ],
++  "claims": {
++    "preservation": {
++      "sourceClaim": "b1da2b80a378e67c",
++      "inputsKey": "33f754b2ce7da95055d3f5d3f2d7f5da107ccd1cd5e967b3e4b1fc5f3028a31c",
++      "revisions": [
++        "old",
++        "new"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "old": "37285b892967aa0e3bd4a7882e258c1697c9fbb70219bea34b2a83d7274d7100",
++        "new": "addd13d0191c9455a8fd7e401274a35f0a06277532e542aff1be68eb91047612"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "preservation",
++      "status": "established",
++      "sha256": "d32b1c0149ea27b1b654f6a081755147a4885a5e173613777478000f6affcbf0"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "Each input starts with fresh application classes on its pinned classpath. Boolean selections also start a fresh JVM for each value. Integer intervals above 4096 use consecutive JVM batches on one total deadline."
++}
+--- /dev/null
++++ b/examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/preservation.json
+@@ -0,0 +1,4597 @@
++{
++  "status": "established",
++  "entry": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
++  "inputs": 156,
++  "differences": 0,
++  "sides": {
++    "old": {
++      "commit": "c252787dca5fe36e1f1f6c131061bbf016b1e1b6",
++      "entry": {
++        "entry": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
++        "classSha256": "715a3b3a6402b0e10f1ff21f008a6303a4f73004a3db9dc70f1b5776f3986e6a",
++        "loadedFrom": "slice/old.jar",
++        "subject": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
++        "subjectClassSha256": "715a3b3a6402b0e10f1ff21f008a6303a4f73004a3db9dc70f1b5776f3986e6a"
++      },
++      "classpath": [
++        {
++          "path": "slice/old.jar",
++          "sha256": "e6d25208ca49fcd8b69782af7e68f078315af09276e65221dc0c46362c11ac86",
++          "role": "original"
++        },
++        {
++          "path": "lib/org.apache.commons/commons-lang3-3.16.0.jar",
++          "sha256": "08709dd74d602b705ce4017d26544210056a4ba583d5b20c09373406fe7a00f8",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "input",
++      "program": "class CandidateReplay { public static void main(String[] args) {\njava.lang.String input = inputString(Integer.parseInt(args[0]));\nif (!((input.length() < 1 || input.charAt(0) == 97 || input.charAt(0) == 44 || input.charAt(0) == 34 || input.charAt(0) == 13 || input.charAt(0) == 10) && (input.length() < 2 || input.charAt(1) == 97 || input.charAt(1) == 44 || input.charAt(1) == 34 || input.charAt(1) == 13 || input.charAt(1) == 10) && (input.length() < 3 || input.charAt(2) == 97 || input.charAt(2) == 44 || input.charAt(2) == 34 || input.charAt(2) == 13 || input.charAt(2) == 10))) { System.out.println(\"outside\"); return; }\njava.lang.String result = null;\nThrowable failure = null;\ntry { result = org.apache.commons.text.StringEscapeUtils.escapeCsv(input); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? result == null ? \"null\" : java.util.Arrays.toString(result.chars().toArray()) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} static String inputString(int index) {\n        int[][] alphabets = new int[][]{{10,13,34,44,97},{10,13,34,44,97},{10,13,34,44,97}};\n        if (index == 0) return \"\";\n        index--;\n        long width = 1;\n        for (int length = 1; length <= alphabets.length; length++) {\n            width *= alphabets[length-1].length;\n            if (index < width) {\n                char[] units = new char[length];\n                for (int p = length-1; p >= 0; p--) {\n                    units[p] = (char) alphabets[p][index % alphabets[p].length];\n                    index /= alphabets[p].length;\n                }\n                return new String(units);\n            }\n            index -= width;\n        }\n        throw new IllegalArgumentException(\"string selector\");\n    } }\n",
++      "probeClassSha256": "85b99c681c19fa2a9d86d5d698315fd453e7804ab1ae92c0cf68e78cb73da8e6",
++      "stdoutSha256": "5d75870fdc6d400fbe1fc3efaa7c9b8056e3115abdd8e8a4677e2a10a1d77544",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
++      ],
++      "interval": [
++        0,
++        155
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            [],
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "observations": [
++            [
++              97
++            ],
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 15,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 21,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 24,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 25,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 26,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 27,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 28,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 29,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 30,
++          "admitted": true,
++          "observations": [
++            [
++              97,
++              97
++            ],
++            null
++          ]
++        },
++        {
++          "value": 31,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 32,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 33,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 34,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 35,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 36,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 37,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 38,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 39,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 40,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 41,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 42,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 43,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 44,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 45,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 46,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 47,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 48,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 49,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 50,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 51,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 52,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 53,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 54,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 55,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 56,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 57,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 58,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 59,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 60,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 61,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 62,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 63,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 64,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 65,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 66,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 67,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 68,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 69,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 70,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 71,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 72,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 73,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 74,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 75,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 76,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 77,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 78,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 79,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 80,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 81,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 82,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 83,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 84,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 85,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 86,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 87,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 88,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 89,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 90,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 91,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 92,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 93,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 94,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 95,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 96,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 97,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 98,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 99,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 100,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 101,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 102,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 103,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 104,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 105,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 106,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 107,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 108,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 109,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 110,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 111,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 112,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 113,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 114,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 115,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 116,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 117,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 118,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 119,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 120,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 121,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 122,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 123,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 124,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 125,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 126,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 127,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 128,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 129,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 130,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 131,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 132,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 133,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 134,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 135,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 136,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 137,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 138,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 139,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 140,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 141,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 142,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 143,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 144,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 145,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 146,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 147,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 148,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 149,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 150,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 151,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 152,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 153,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 154,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 155,
++          "admitted": true,
++          "observations": [
++            [
++              97,
++              97,
++              97
++            ],
++            null
++          ]
++        }
++      ],
++      "seconds": 1.317,
++      "cpuSeconds": 2.2147,
++      "peakRssBytes": 150667264,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    },
++    "new": {
++      "commit": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
++      "entry": {
++        "entry": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
++        "classSha256": "715a3b3a6402b0e10f1ff21f008a6303a4f73004a3db9dc70f1b5776f3986e6a",
++        "loadedFrom": "slice/new.jar",
++        "subject": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
++        "subjectClassSha256": "715a3b3a6402b0e10f1ff21f008a6303a4f73004a3db9dc70f1b5776f3986e6a"
++      },
++      "classpath": [
++        {
++          "path": "slice/new.jar",
++          "sha256": "e6d25208ca49fcd8b69782af7e68f078315af09276e65221dc0c46362c11ac86",
++          "role": "original"
++        },
++        {
++          "path": "lib/org.apache.commons/commons-lang3-3.17.0.jar",
++          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "input",
++      "program": "class CandidateReplay { public static void main(String[] args) {\njava.lang.String input = inputString(Integer.parseInt(args[0]));\nif (!((input.length() < 1 || input.charAt(0) == 97 || input.charAt(0) == 44 || input.charAt(0) == 34 || input.charAt(0) == 13 || input.charAt(0) == 10) && (input.length() < 2 || input.charAt(1) == 97 || input.charAt(1) == 44 || input.charAt(1) == 34 || input.charAt(1) == 13 || input.charAt(1) == 10) && (input.length() < 3 || input.charAt(2) == 97 || input.charAt(2) == 44 || input.charAt(2) == 34 || input.charAt(2) == 13 || input.charAt(2) == 10))) { System.out.println(\"outside\"); return; }\njava.lang.String result = null;\nThrowable failure = null;\ntry { result = org.apache.commons.text.StringEscapeUtils.escapeCsv(input); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? result == null ? \"null\" : java.util.Arrays.toString(result.chars().toArray()) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} static String inputString(int index) {\n        int[][] alphabets = new int[][]{{10,13,34,44,97},{10,13,34,44,97},{10,13,34,44,97}};\n        if (index == 0) return \"\";\n        index--;\n        long width = 1;\n        for (int length = 1; length <= alphabets.length; length++) {\n            width *= alphabets[length-1].length;\n            if (index < width) {\n                char[] units = new char[length];\n                for (int p = length-1; p >= 0; p--) {\n                    units[p] = (char) alphabets[p][index % alphabets[p].length];\n                    index /= alphabets[p].length;\n                }\n                return new String(units);\n            }\n            index -= width;\n        }\n        throw new IllegalArgumentException(\"string selector\");\n    } }\n",
++      "probeClassSha256": "85b99c681c19fa2a9d86d5d698315fd453e7804ab1ae92c0cf68e78cb73da8e6",
++      "stdoutSha256": "5d75870fdc6d400fbe1fc3efaa7c9b8056e3115abdd8e8a4677e2a10a1d77544",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
++      ],
++      "interval": [
++        0,
++        155
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            [],
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "observations": [
++            [
++              97
++            ],
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 13,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 14,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 15,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 16,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 17,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 18,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 19,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 20,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 21,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 22,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 23,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 24,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 25,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 26,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 27,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 28,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 29,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 30,
++          "admitted": true,
++          "observations": [
++            [
++              97,
++              97
++            ],
++            null
++          ]
++        },
++        {
++          "value": 31,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 32,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 33,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 34,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 35,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 36,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 37,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 38,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 39,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 40,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 41,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 42,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 43,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 44,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 45,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 46,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 47,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 48,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 49,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 50,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 51,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 52,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 53,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 54,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 55,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              10,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 56,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 57,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 58,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 59,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 60,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 61,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 62,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 63,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 64,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 65,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 66,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 67,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 68,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 69,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 70,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 71,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 72,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 73,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 74,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 75,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 76,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 77,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 78,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 79,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 80,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              13,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 81,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 82,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 83,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 84,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 85,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 86,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 87,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 88,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 89,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 90,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 91,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 92,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 93,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 94,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 95,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 96,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 97,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 98,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 99,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 100,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 101,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 102,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 103,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 104,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 105,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              34,
++              34,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 106,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 107,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 108,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 109,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 110,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 111,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 112,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 113,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 114,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 115,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 116,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 117,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 118,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 119,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 120,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 121,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 122,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 123,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 124,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 125,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 126,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 127,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 128,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 129,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 130,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              44,
++              97,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 131,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 132,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 133,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 134,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 135,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              10,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 136,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 137,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 138,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 139,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 140,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              13,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 141,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 142,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 143,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 144,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 145,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              34,
++              34,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 146,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 147,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 148,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 149,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 150,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              44,
++              97,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 151,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              10,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 152,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              13,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 153,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              34,
++              34,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 154,
++          "admitted": true,
++          "observations": [
++            [
++              34,
++              97,
++              97,
++              44,
++              34
++            ],
++            null
++          ]
++        },
++        {
++          "value": 155,
++          "admitted": true,
++          "observations": [
++            [
++              97,
++              97,
++              97
++            ],
++            null
++          ]
++        }
++      ],
++      "seconds": 1.327,
++      "cpuSeconds": 2.2269,
++      "peakRssBytes": 149200896,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [],
++  "prepareSeconds": 3.8596,
++  "controlSeconds": 0.2511,
++  "returnEncoding": "ordered UTF-16 code units or null",
++  "inputDomain": {
++    "type": "java.lang.String",
++    "unitsByPosition": [
++      [
++        10,
++        13,
++        34,
++        44,
++        97
++      ],
++      [
++        10,
++        13,
++        34,
++        44,
++        97
++      ],
++      [
++        10,
++        13,
++        34,
++        44,
++        97
++      ]
++    ],
++    "candidateStrings": 156
++  },
++  "wallSeconds": 7.7968,
++  "task": "preservation",
++  "sourceClaim": "b1da2b80a378e67c",
++  "inputsKey": "33f754b2ce7da95055d3f5d3f2d7f5da107ccd1cd5e967b3e4b1fc5f3028a31c",
++  "revisions": [
++    "old",
++    "new"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "old": "37285b892967aa0e3bd4a7882e258c1697c9fbb70219bea34b2a83d7274d7100",
++    "new": "addd13d0191c9455a8fd7e401274a35f0a06277532e542aff1be68eb91047612"
++  }
++}

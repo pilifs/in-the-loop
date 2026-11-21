@@ -1,0 +1,173 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-044738-349-exhaust-actual-csv-fields-with-lossl",
+  "title": "349 exhaust actual CSV fields with lossless JVM string observations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.6s, peak 183.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-044738-349-exhaust-actual-csv-fields-with-lossl.json",
+    "sha256": "5f1b3cbdf20fe6849515092cc12b36123f0f518ee2f00d33e7a3bc4a942c3105",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-044738-349-exhaust-actual-csv-fields-with-lossl",
+      "title": "349 exhaust actual CSV fields with lossless JVM string observations",
+      "description": "Exhaust the exact five-unit alphabet at each of the three bounded UTF-16 positions through the original Commons Text escapeCsv method and both Commons Lang artifacts. Check each original Java return as its ordered UTF-16 units and bind the complete domain to the frozen guard.",
+      "kind": "real-world",
+      "capabilities": [
+        "finite-jvm",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "349"
+        ]
+      },
+      "expected": "156 distinct admitted fields, no difference and agreement with the independently qualified public CSV controls.",
+      "submitted": {
+        "at": "2026-11-21T04:47:38+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Exhaust and qualify the original string claim",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 349 --finite-domain --tasks preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/349-commons-text-csv-upgrade/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "ea05acfcf353f6073df188139b75c0cf1ccbc509",
+  "startedAt": "2026-11-21T04:59:22+00:00",
+  "finishedAt": "2026-11-21T04:59:34+00:00",
+  "wallSeconds": 12.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3548250,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 192151552,
+    "wallSeconds": 8.6,
+    "cpuSeconds": 13.9,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exhaust and qualify the original string claim",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 349 --finite-domain --tasks preservation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 8.623,
+      "cpuSeconds": 13.907,
+      "cpuThrottledSeconds": 1.106,
+      "peakMemoryBytes": 192151552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exhaust-and-qualify-the-origin.log",
+        "lines": 1,
+        "bytes": 43,
+        "sha256": "36648e69b344c628f87d0002a86b5cd57b9cf7e8baf4dd4ea956f6ff6df71c66",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "349 preservation established 156 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/batch.json",
+      "change": "added",
+      "bytes": 1152,
+      "sha256": "ad8efc3b37810c07bee0e27981e5bb05192150106065cc11ab9e65bf6ccf591f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/preservation.json",
+      "change": "added",
+      "bytes": 87140,
+      "sha256": "d32b1c0149ea27b1b654f6a081755147a4885a5e173613777478000f6affcbf0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:00:02+00:00",
+    "applied": [
+      "examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/batch.json",
+      "examples/349-commons-text-csv-upgrade/records/finite-proofs/20261121T045926Z-6851c0bf/preservation.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
