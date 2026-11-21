@@ -4400,15 +4400,17 @@ change `vkxvrmmtsmqx` · [log `4864f7bb126c`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 1 job(s). 20261121-133632-prove-avro-buffer-bounds-and-replay-the: passed: 2 passed step(s) in 23.9s, peak 1.2 GiB (estimated 3m00s, 3.0 GiB); 69 output file(s) changed Applied 69 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
-### (in progress)
-
-change `qropspupwsvn`, not yet described
-
 ### Record verification results for 1 job(s)
 
 change `onxtqomxpunq` · [log `9942325ff2cd`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9942325ff2cd091d660cc75bb96c62bcb740c865af020bdda9193485a0651f6d.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-133632-measure-every-avro-factory-obligation-wi: failed: 1 failed step(s) in 1m13s, peak 488.3 MiB (estimated 4m00s, 3.0 GiB); 137 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
+
+### Allow list: approve 511 values
+
+change `movnruuvqxxx` · [log `9942325ff2cd`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9942325ff2cd091d660cc75bb96c62bcb740c865af020bdda9193485a0651f6d.jsonl.gz)
+
+Codex encrypted-reasoning blobs and the watcher's decision ids, approved at the terminal; the tool's own commit failed on the argument limit.
 
 ## Conversation
 
