@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a1fb31-d64c-78a3-8007-dfadb7fff401",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": null,
   "client": {
@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-20T23:01:49.787Z",
-  "ended": "2026-11-21T00:25:06.626Z",
-  "duration_seconds": 4997,
+  "ended": "2026-11-21T01:49:16.035Z",
+  "duration_seconds": 10046,
   "stats": {
     "turns": 0,
-    "api_calls": 270,
-    "tool_calls": 549,
+    "api_calls": 274,
+    "tool_calls": 557,
     "tool_errors": 13,
     "compactions": 0,
-    "peak_context_tokens": 393249,
+    "peak_context_tokens": 409576,
     "usage": {
-      "input_tokens": 390498,
-      "output_tokens": 152305,
-      "cache_read_input_tokens": 70439424,
+      "input_tokens": 407187,
+      "output_tokens": 156249,
+      "cache_read_input_tokens": 72036352,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 280,
-    "exec": 196,
-    "send_message": 44,
+    "Bash": 285,
+    "exec": 198,
+    "send_message": 45,
     "wait_agent": 21,
     "apply_patch": 7,
     "list_agents": 1
@@ -51,24 +51,24 @@
     {
       "index": 0,
       "started": "2026-11-20T23:01:49.787Z",
-      "ended": "2026-11-21T00:25:06.626Z",
+      "ended": "2026-11-21T01:49:16.035Z",
       "turns": 0,
-      "api_calls": 270,
+      "api_calls": 274,
       "usage": {
-        "input_tokens": 390498,
-        "output_tokens": 152305,
-        "cache_read_input_tokens": 70439424,
+        "input_tokens": 407187,
+        "output_tokens": 156249,
+        "cache_read_input_tokens": 72036352,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 393249
+      "peak_context_tokens": 409576
     }
   ],
   "log": {
-    "sha256": "05113ce899e2deee5f203729c8077e9e8015aa4158e85135de011bae750fe9af",
-    "bytes": 5531678,
-    "lines": 2014,
-    "gzip_bytes": 2075629,
-    "path": "llm-dlc/traces/01a1fb31-d64c-78a3-8007-dfadb7fff401/logs/05113ce899e2deee5f203729c8077e9e8015aa4158e85135de011bae750fe9af.jsonl.gz"
+    "sha256": "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493",
+    "bytes": 5722543,
+    "lines": 2056,
+    "gzip_bytes": 2160785,
+    "path": "llm-dlc/traces/01a1fb31-d64c-78a3-8007-dfadb7fff401/logs/68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -127,15 +127,57 @@
       "summary": "Compare real upgrade baselines and retain historical CI evidence (verification pending)",
       "body": "Two BUMP image pairs give different maintainer decisions. FSCrawler's old ordinary DOCX produced extracted text and the upgrade yielded null. The AssertJ upgrade failed Maven Enforcer before tests; the old suite passed 355 tests. Check image digests, original POM-only diffs, archived CI, bytecode linkage and a networkless replay. Recover 529 original Maven JARs and 845 POMs for warm offline builds. The first FSCrawler repeat stopped at conflicting heap flags before launching Maven; remove the added heap maximum and preserve the original failure.\n\nThe V0 paired JBMC frontend refused distinct dependency closures for rxjava-jdbc and AWS. The actual evidence binds identical application targets, observers, classpaths, deadline and bounds to the native attempts. Add a standalone engine comparison using byte-identical harnesses on both sides. The unchanged JVM validated both input arms on both revisions before the standalone jobs were queued. Original-scope scoring now checks the ordered artifact digests against the signed roster. All four scorecard tests, cost-tier lint and the verification queue validator passed. The new trace allow-list proposal is for the published Jackson Databind version in the AWS POM, which the scanner classified as an IP address.\n\nVerification jobs: 20261121-001305-replay-fscrawler-ordinary-docx-across-th, 20261121-001750-348-run-standalone-jbmc-on-both-original and 20261121-001750-351-run-standalone-jbmc-on-both-original. The separate JBMC checks retain exception and unwinding evidence and cannot earn a blinded product decision.",
       "log_sha256": "b8ed494b01218c766dd1e43dbf9275d78cbd48cf21de1d3470af87df5081138c"
+    },
+    {
+      "change_id": "wurynlzvuwptxqrtqpoyrlmuyksvtmux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Collect the historical DOCX replay and matched standalone JBMC results",
+      "body": "The corrected FSCrawler container reproduced the original DOCX failure and preserving text companion. Standalone JBMC ran on the same original H2 and AWS artifacts as the native checks. H2 hit incomplete unwinding and its isolated caller property even passed on an input the JVM refutes. Both AWS processes exhausted their share of the 600-second engine deadline. Preserve the full per-side outputs and the limits on the comparison.\n\nThe runner collected all three jobs and both independently reconstructed FSCrawler payloads agree. The Cucumber PR record pins the actual merge and head. Both Joda pins passed the 18-input replay again. All Cucumber form, plan, router and cross-example checks passed, as did 36 of 36 changed-test groups.",
+      "log_sha256": "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493"
+    },
+    {
+      "change_id": "ktxtxoktymqunruyypwxkmvvlxsxwwmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Select matched upgrade cohorts and bind first reports to their operator",
+      "body": "Jointly select all 16 change and routine pairs with the frozen matching and diversity rules. The local Z3 allocator skips a nearer match when it would exhaust a reserve category, requires audited signed references, and reports aggregate shortfalls while keeping names in custody. The scorecard binds the separate operator profile and records actual client overlap, cross-run exposure and whether an untouched client exercised an improvement.\n\nRelease audited review-time trees and ordered production classpaths separately. Two independently generated rxjava-jdbc and Commons Text packets were byte-identical. The original GitHub source intake accepted the disclosed genuine locator and refused the local neutral form. The signed custody snapshot covers one original-scope preservation reference. Neither cohort was locked.\n\nFive allocation and four scoring regressions passed, including nearest-match traps, signed packet substitution, insufficient evidence and exposure on a paired gain. A 96-change synthetic allocation completed in 0.23 seconds. The cost lint passed, the affected run passed all 36 groups, and the immutable product lock verified 12 tool and JDK digests.",
+      "log_sha256": "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493"
+    },
+    {
+      "change_id": "pzvqxourtvnuusosnlpovkvromtutwop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify an isolated upgrade operator and run Commons Text (verification pending)",
+      "body": "Two actual first-party Claude roles returned the synthetic original JVM observations with only the neutral case tool. The controller freezes the role, prompt, toolchain, isolation checks and request-level budget. The independent reviewer receives a clean copy of the packet and proposed plan. Each PR retains the first report through intake failure, interruption, timeout or success. Its measured one-request scheduler differs from an uninterrupted stock role and is identified separately.\n\nThe first fresh disclosed H2 run verified the source and both 10-JAR classpaths, stopped at the original GitHub-only source requirement and sealed its unavailable report in 23.3 seconds with no model calls. Job 20261121-010347-349-run-a-fresh-operator-on-the-original takes the genuine Commons Text source pair through the same measured operator starting from the neutral request. Both calibrations stay outside the cohorts.\n\nThe two authenticated synthetic trials took 10.4 seconds at an estimated total of $0.089. The synthetic lifecycle reproduced independent stages, 900-second checkpoint, exhausted budgets and first-report preservation. All six execution pins and five original qualification receipts verified, and the changed suite passed all 10 groups. The signed private custody checkpoint now records one full production change and one full production preservation. Neither roster is locked.",
+      "log_sha256": "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493"
+    },
+    {
+      "change_id": "suxvplotslrlvxlkqstutqzzuuuonvlr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Run original public Maven CI in isolation (verification pending)",
+      "body": "Run both complete upstream checkouts of Commons Text 586 and Cucumber Reporting 1156 on one configured Linux JDK for each project. Preserve their Maven goals, XML results, failure counts, clocks and logs. A networkless build can fetch only Maven Central artifact paths through a read-through mirror, serialized against the shared local cache. Jobs 20261121-011924-349-run-the-original-commons-text-linux and 20261121-011925-352-run-the-original-cucumber-reporting now have the original Git objects and the prescribed JVM scratch directory.\n\nA real isolated Maven 3.10.0 on JDK 11 read the expected cached JUnit JAR. The mirror fetched the disclosed JUnit 5.10.1 POM, verified its independent checksum and served a byte-identical cached read. Two release paths were accepted, six invalid paths refused. Both affected test groups passed.\n\nThe first neutral Commons Text operator run on the case-file continuation scheduler made 42 planning requests and produced no approved claim. Its immutable unavailable report records 207114 charged tokens, an estimated 3.59 dollars and 7 minutes 31 seconds including queue time. The separately adjudicated 156-input finite JVM result remains available. The full default suite passed all 63 groups on the preceding operator commit.",
+      "log_sha256": "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493"
+    },
+    {
+      "change_id": "ouptkpqnyopwsvtwkmpxyyrqqwnowqxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Measure original Maven suites and rerun stock CI (verification pending)",
+      "body": "Both Cucumber JDK 11 builds passed all 665 reported tests including 27 skips, and a direct replay from nine original source-built classes reproduced the historic 0.007 fixture. Both Commons Text JDK 21 builds ran 1305 tests, including all 34 passing escape tests. The same 18 lookup errors occurred in the isolated machine on both revisions. Retain suite XML checksums, exact named reports, cache requests, and Maven logs. Two independently written grades found that the first two disclosed operator reports supported their availability limits and supplied zero new caller decisions.\n\nJob 20261121-013031-348-reproduce-stock-compsuite-and-the-en runs the unaltered CompSuite CLI with JDK 8, Maven 3.6.3 and CPython 3.11.14. Job 20261121-013031-349-repeat-original-commons-text-ci-with separates ordinary loopback hostname lookup from tests requiring an external site. The transfer scorer binds each product-specific launch independently of common operator and environment identity, and correctly labels V0 even if the arguments are reversed.\n\nVerified all named XML, compressed original logs, both first-report digests and source-built fixture class origins. The documented CompSuite runtime started and its unmodified info command found the expected test. All 41 affected test groups passed, as did all four scoring regressions. All example plans, oracle and repository integration checks passed. The Commons Text form still records the frozen importer failure to produce canonical artifact receipts.",
+      "log_sha256": "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493"
+    },
+    {
+      "change_id": "yrrxynxpszxtvkysrvvrturqnvpspqwp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve isolated operator history across requests (verification pending)",
+      "body": "Freeze a shared Claude operator before roster lock. Each role retains its own full native session across metered requests, the reviewer sees only approved case inputs, and a separate uncredentialed image estimates the next request size without product code. Bind each build to a separate launch lock and full tool-root digest while comparing the invariant machine and JDK environment. Stock H2 intake again sealed as unavailable without inference. Job 20261121-014525-349-run-the-history-preserving-operator starts an independent Commons Text calibration with the same original sources and budgets.\n\nBoth authenticated roles recalled their own prior case observation without another tool call in four real requests costing an estimated 0.0551 dollars. Product-only mutations preserved the measured environment digest, while environment changes invalidated it. Fresh Java and javac processes honored case-private JVM temp storage and the original Bitwuzla control proved its claim. All 13 execution pins, the distinct launch and both staged tool roots were verified. All nine affected test groups passed.\n\nThe grader also checks actual non-vacuous native receipts, checker digest, claim identity and status instead of awarding native credit from a tool name. The four scoring regressions passed, including a genuine native receipt and an otherwise identical receipt declaring JBMC. Existing opening reports and their independently authored grades remain immutable.",
+      "log_sha256": "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493"
     }
   ],
   "logs": {
-    "05113ce899e2deee5f203729c8077e9e8015aa4158e85135de011bae750fe9af": {
-      "bytes": 5531678,
-      "lines": 2014,
-      "gzip_bytes": 2075629,
-      "url": null
-    },
     "28faee9d21187593c56dcda5b6848ff92e1219ec6afb4e35773a87bcb80cf42f": {
       "bytes": 1722790,
       "lines": 366,
@@ -152,6 +194,12 @@
       "bytes": 3297533,
       "lines": 984,
       "gzip_bytes": 1110028,
+      "url": null
+    },
+    "68a8c4593a2e401dcec527e891f122c4af945f6b8b6016437adaa10d6247c493": {
+      "bytes": 5722543,
+      "lines": 2056,
+      "gzip_bytes": 2160785,
       "url": null
     },
     "7ecd7b4892ee09407d3dcf88b366e8b25bf0a341e4e4e2b1f1a7e4206d9cd50e": {

@@ -47,6 +47,8 @@ Every transfer roster row records `client_in_main`. Each transfer grade's `trans
 
 The signed JSON envelope has `payload` and `signatureHex`. Sign UTF-8 `upgrade-roster-v1` or `upgrade-adjudication-v1`, a NUL byte, then compact, sorted-key UTF-8 JSON of the payload with a final newline. The signer is the Ed25519 key in the pre-product seed commitment. Each adjudication binds a first-report hash and reference hash to two independently attributed reviews, their reasons, recommended actions and written resolution of any disagreement. The machine counts a validated transfer gain separately when the improved capability has supporting evidence.
 
+For a claimed native result, the adjudicators bind `decisive_receipt_sha256`, `decisive_claim_id` and `decisive_status` to the archived result for the relevant caller claim. The scorer reads the actual engine, claim ID, executable digest and vacuity flag from that receipt. An unsubstantiated native label keeps the PR in the denominator and earns no native credit. Review the original model wording in `raw_maintainer_report` when the controller has qualified an unsupported assurance, and record the reporting fault separately from the delivered decision.
+
 Human consent, pre-report CI and intended action, actual decisions and voluntary repeat requests are collected only in each participating team's agreed environment after the retrospective gate opens. A public calibration and a synthetic smoke test cannot establish those outcomes.
 
 ## Original CI for the two disclosed upstream PRs

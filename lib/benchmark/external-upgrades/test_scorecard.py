@@ -54,6 +54,19 @@ class UpgradeScoringTest(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "digest differs"):
                 read(doc["profile_sha256"])
 
+            receipt = json.loads((Path(__file__).parent / "operator/evidence/native/result.json").read_bytes())
+            for build, engine in [("native-check", "native"), ("other-engine", "jbmc")]:
+                receipt["attempt"]["engine"] = engine
+                payload = sc.canonical(receipt)
+                (root / "result.json").write_bytes(payload)
+                doc.update(build=build, route="native", checker_sha256=receipt["attempt"]["tools"]["jvmcontract"],
+                           evidence=[{"file": "result.json", "sha256": sc.sha(payload)}])
+                source.write_text(json.dumps(doc))
+                sc.seal_report(source, sealed)
+                inspected, *_ = sc.read_first(sealed, build, case, sc.timestamp(doc["intake_utc"]),
+                                              DIGEST, doc["profile_sha256"])
+                self.assertEqual(bool(inspected["_inspected_native_receipts"]), engine == "native")
+
     def test_signed_roster_has_fixed_denominators_and_cannot_be_used_as_a_grade(self):
         rows = [{"case_id": f"case{i}", "input_sha256": DIGEST, "reference_sha256": DIGEST, "artifacts": operator()["artifacts"],
                  "stratum": "change" if i < 12 else "preservation"} for i in range(24)]
@@ -119,6 +132,7 @@ class UpgradeScoringTest(unittest.TestCase):
                 grades = [{"reviewer": who, "reason": "covered the caller domain", "action": "keep original test",
                            "judgement": judgement} for who in ("curator", "second reviewer")]
                 result = {"case_id": cid, "report_sha256": DIGEST, "reference_sha256": DIGEST,
+                          "decisive_receipt_sha256": "9" * 64, "decisive_claim_id": "upstream", "decisive_status": "established",
                           "reference_signature_hex": key.sign(sc.SIGNATURE_CONTEXT + bytes.fromhex(DIGEST)).hex(),
                           "revealed_utc": "2020-01-01T01:01:00Z", "reviews": grades, "decision": judgement,
                           "ci_result": "observed", "action_grade": "appropriate", "primary_reason": "wrong observer"}
@@ -129,6 +143,11 @@ class UpgradeScoringTest(unittest.TestCase):
             self.assertEqual((scored["denominator"], scored["relevantChange"], scored["relevantPreservation"]),
                              (24, 8, 8))
             self.assertTrue(scored["pilotGate"])
+            reports["case12"][0].update(route="native")
+            no_native = sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())
+            self.assertEqual(no_native["relevantPreservation"], 7)
+            reports["case12"][0]["_inspected_native_receipts"] = {"9" * 64: {"claim": "upstream", "status": "established"}}
+            self.assertTrue(sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())["pilotGate"])
             reports["case0"][0]["assisted"] = True
             self.assertFalse(sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())["pilotGate"])
             reports["case0"][0]["assisted"] = False

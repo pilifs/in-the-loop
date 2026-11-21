@@ -181,8 +181,25 @@ def read_first(root, build, case, locked, product, profile, launch=None):
     require(timestamp(doc["intake_utc"]) >= locked, "operator saw case before cohort lock")
     require(seal["report_sha256"] == digest and timestamp(seal["sealed_utc"]) >= timestamp(doc["finished_utc"]),
             "invalid first report seal")
+    # A verifier-backed receipt can name jvmcontract even when a different engine was selected.
+    # Derive this index from the archived bytes instead of accepting an operator-supplied index.
+    native_receipts = {}
     for item in doc["evidence"]:
-        evidence_file(folder / "evidence", item)
+        file = evidence_file(folder / "evidence", item)
+        if file.name != "result.json" or doc["route"] != "native":
+            continue
+        try:
+            receipt = json.loads(file.read_bytes())
+            attempt, conclusion = receipt["attempt"], receipt["conclusion"]
+            claim = receipt["claim"]["id"]
+            if (attempt["engine"] == "native" and conclusion["vacuous"] is False and
+                    conclusion["claim"] == attempt["claim"] == claim and conclusion["attempt"] == attempt["id"] and
+                    attempt["tools"]["jvmcontract"] == hex_digest(doc["checker_sha256"]) and
+                    conclusion["status"] in {"established", "refuted"}):
+                native_receipts[item["sha256"]] = {"claim": claim, "status": conclusion["status"]}
+        except (KeyError, TypeError, ValueError, UnicodeError):
+            continue
+    doc["_inspected_native_receipts"] = native_receipts
     return doc, digest, seconds, timestamp(seal["sealed_utc"])
 
 
@@ -220,6 +237,15 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
                 require(type(integrity[field]) is bool, "record transfer exposure and runner independence")
         matched = doc.get("artifacts") == case["artifacts"]
         correct = matched and decision["relevant"] and decision["scope_supported"] and decision["original_domain"]
+        primary_reason = grade["primary_reason"]
+        native = None
+        if doc["route"] == "native":
+            decisive = doc.get("_inspected_native_receipts", {}).get(grade.get("decisive_receipt_sha256"))
+            native = bool(decisive and decisive["status"] == grade.get("decisive_status") and
+                          decisive["claim"] == grade.get("decisive_claim_id"))
+            if not native:
+                correct = False
+                primary_reason = primary_reason or "declared native route lacks a matching decisive native receipt"
         if case["stratum"] == "change":
             correct = correct and decision["replayed"] and doc["route"] not in {"open", "unavailable"}
         else:
@@ -229,10 +255,10 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
                   and seconds <= budget["wallSeconds"] and doc["human_minutes"] <= budget["humanReviewMinutes"]
                   and doc["uncached_input_tokens"] + doc["output_tokens"] <= budget["uncachedInputPlusOutputTokens"])
         credit = bool(correct and within and not doc["assisted"])
-        require(credit or grade["primary_reason"].strip(), "a miss needs a reason")
+        require(credit or primary_reason.strip(), "a miss needs a reason")
         outcomes.append({"case_id": cid, "stratum": case["stratum"], "family": case.get("family"),
                          "credit": credit, "technicalResult": correct, "assisted": doc["assisted"], "route": doc["route"],
-                         "originalArtifacts": matched,
+                         "originalArtifacts": matched, "nativeEvidenceConfirmed": native,
                          "seconds": seconds, "cache": doc["cache"], "environmentSha256": doc["environment_sha256"],
                          "cpuLimit": doc["cpu_limit"], "memoryGiB": doc["memory_gib"],
                          "profileSha256": doc["profile_sha256"], "clientInMain": case.get("client_in_main"),
@@ -243,7 +269,7 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
                          "cachedInputTokens": doc["cached_input_tokens"], "checkpoint15m": doc["checkpoint_15m"],
                          "computeUsd": doc["compute_usd"], "withinBudget": within, "decision": decision,
                          "improvedCapability": (grade.get("improved_capability") or {}).get("name"),
-                         "action": grade["action_grade"], "ci": grade["ci_result"], "primaryReason": grade["primary_reason"]})
+                         "action": grade["action_grade"], "ci": grade["ci_result"], "primaryReason": primary_reason})
     def count(stratum):
         return sum(row["credit"] for row in outcomes if row["stratum"] == stratum)
     contradictions = sum(row["decision"]["contradicted"] for row in outcomes)

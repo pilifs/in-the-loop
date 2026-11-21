@@ -1,0 +1,1 @@
+../../claude-alternate/qualification/subject_cmd.py

@@ -1,0 +1,119 @@
+{
+  "schema": "external-upgrade-shared-operator-profile/v1",
+  "name": "Claude-NativeResume",
+  "freezePurpose": "Prospective shared execution profile for independently frozen builds, including disclosed paired calibration.",
+  "client": {
+    "version": "2.1.327 (Claude Code)",
+    "sha256": "343c744baa14bfd38286a7cb90871051f04379956da6c5b803a9e66019a76ac9",
+    "authentication": "ordinary first-party Claude client on the control side",
+    "workingDirectory": "/srv (empty)",
+    "effort": "high",
+    "builtinTools": [],
+    "mcpTool": "mcp__neutral_case__case_command",
+    "restricted": true,
+    "bare": false,
+    "safeMode": false,
+    "strictMcpConfig": true,
+    "slashCommands": false,
+    "sessionPersistence": true,
+    "toolSearch": false,
+    "roleStorage": "Fresh exclusive private CLAUDE_CONFIG_DIR per role (including each independent reviewer), fixed native --session-id followed by --resume for that UUID. Default first-party secure storage selected independently."
+  },
+  "roles": {
+    "plan": {
+      "model": "claude-fable-5-2",
+      "effort": "high",
+      "conversationalIdentity": "fable-planner"
+    },
+    "review": {
+      "model": "claude-fable-5-2",
+      "effort": "high",
+      "conversationalIdentity": "independent-fable-reviewer-per-revision"
+    },
+    "setup": {
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "conversationalIdentity": "opus-preparation"
+    },
+    "proof": {
+      "model": "claude-fable-5-2",
+      "effort": "high",
+      "conversationalIdentity": "fable-proof"
+    }
+  },
+  "independentReviewer": "Separate case view and role-state directory for each reviewer. A reviewer receives the original released inputs and proposed claim but no other conversation or planner notes.",
+  "explicitSettings": {
+    "claudeMdExcludes": [
+      "**/CLAUDE.md",
+      "**/CLAUDE.local.md",
+      "**/AGENTS.md",
+      "**/.claude/rules/**"
+    ],
+    "autoMemoryEnabled": false,
+    "disableAllHooks": true
+  },
+  "oneRequest": {
+    "maxTurns": 1,
+    "maxOutputTokens": 2048,
+    "metadataFramingAllowance": 8192,
+    "reservation": "Before every payable request, reserve the complete measured uncompressed native request bytes, 8192 additional framing tokens and the absolute maximum generated tokens. The old role transcript is copied into the credentialless shadow only when needed; case-only spent and reserved usage spans all stages."
+  },
+  "budget": {
+    "cpus": 4,
+    "memoryGiB": 16,
+    "swapBytes": 0,
+    "wallSeconds": 7200,
+    "checkpointSeconds": 900,
+    "humanReviewMinutes": 15,
+    "uncachedInputPlusOutputTokens": 250000
+  },
+  "tokenAccounting": "input_tokens + cache_creation_input_tokens + output_tokens (reasoning included), across every role; cache reads and actual estimator dollars separate",
+  "neutralPrompt": "Identify which behavior of this application could change for its caller. Check the most consequential preservation or change claim you can justify with the pinned verifier. Record the result as open at the first unsupported operation.",
+  "stagePromptsSha256": "55f7eb259aff48334f3b62ebb1e6d0b5078d05600bc73e6dcc89714cabc4ce39",
+  "estimatedListPrices": {
+    "claude-fable-5-2": {
+      "input": 8,
+      "output": 40,
+      "cache_read": 0.2,
+      "cache_write_5m": 10,
+      "cache_write_1h": 16
+    },
+    "claude-opus-5-5": {
+      "input": 4,
+      "output": 20,
+      "cache_read": 0.2,
+      "cache_write_5m": 5,
+      "cache_write_1h": 8
+    }
+  },
+  "priceTableSha256": "d8e309588a1c4bdba66a328df899193a7eeba43b514e6f26adbc0354c99596e5",
+  "normalIntake": "unchanged GitHub-only original route; retain unsupported releases as first reports",
+  "assistedIntake": "separate, explicitly requested local-source diagnostic reaching no original score",
+  "operationalDifference": "Normal client and full within-role native conversation are preserved across exact UUID resumes. Processes and MCP connections restart once per request, automatic compaction is disabled, the four stage roles have independent histories and shadow preauthorization can stop short of the numeric allowance. This is not one uninterrupted multi-turn process.",
+  "runnerSha256": {
+    "run_case.py": "bfb688718a30a03265d3dd50f685d45f239b65254066356c074963a2303bd663",
+    "runner_core.py": "a56de36d09a64f663111b8a5efe182ad8c9ddd930a63fa98cdc9afb1c2a12ff5",
+    "resume_meter.py": "eeef67d6f278f395d7e156398ef0a092b173128dcc69b261f2c8157ea2526e5a",
+    "native_transport.py": "6ddb92bc319b43c97a46018e7813e8c974016782a43df2463b75f216fd9fef77",
+    "reporting.py": "6add38340a17e941cc40cf27176660056001eebb8ded5827925a660aad14fb79",
+    "stages.json": "55f7eb259aff48334f3b62ebb1e6d0b5078d05600bc73e6dcc89714cabc4ce39",
+    "freeze_evidence.py": "cf75bb68f329a3ab8393283fedc9ce25001f3973a0b92888db5e7df7ca2cc46a",
+    "broker.py": "d6db7176e9930ee05aa17d3358baed041d9cac3e30ef753b07507b6cf5a0f909",
+    "identity.py": "a8917cc5f8dd135ffcaedd66e89334b6d68f7ab41e80f73355316ddea5262dad",
+    "signals.py": "1bd98604abfa0123599b27e4cbed3d41a468a81ac02597dfbfb5b20556fb99bd",
+    "shadow_guest.py": "0258ef2eb6d3555257f32bfde8b97cec2217f992df6a1f7ae65ee5685e7aea2a",
+    "prepare_shadow.py": "9b0195bb8077eac99f69589bfe35901f72452a82e4012515bfbb136eef3c221e",
+    "prepare_case_root.py": "2aa695c238835255db757fa39f78ab0f18beb69768b5d8106a75f16a3a0834f1"
+  },
+  "shadow": {
+    "toolRootSha256": "161ddbd496af09a97b70bc4b7fe210eef42219ded2217df7058196ab14486bbb",
+    "policy": "Private network namespace, loopback synthetic Messages receiver, fabricated API key, empty secure store, snapshot of only the current conversation. Does not modify originals. No real inference. The previous visible native result must be restored on resume.",
+    "contents": "Control-only OS, common JDK and public first-party transport. All product workflows, product lock, checker and solver bytes are omitted."
+  },
+  "historicalGateSources": {
+    "caseBoundarySha256": "256fc44bb026b1bdb9994846c9c5fa57e9089116446540ae9ad212d4b01f0869",
+    "caseCommandSha256": "49ed006a57229fcab2d5d9c35159de0fd9d683f17a8ca6512f1ca05823147c3c",
+    "mcpSha256": "e72579934bec54a642909a159878a9bf397e3decfe87d9d86eb97269d77be370"
+  },
+  "pairedIdentity": "The operator profile is shared across independently frozen builds. Every separate launch binds this profile, a product lock, the full staged product tree, and a measured OS/JDK/capsule projection. Each original first report carries all four digests plus the build-specific launch digest."
+}
