@@ -95,7 +95,11 @@ pub fn models(used: bool) -> String {
 /// The tool identity of a check with the models `used` or not, by the checker `checker` (its engine and every
 /// setting that can change a verdict, worded by the caller).
 pub fn tools(models_used: bool, checker: &str) -> ToolIdentity {
-    ToolIdentity { models: models(models_used), jdk: jdk(), checker: checker.to_string(), binary: binary() }
+    let checker = match crate::classpath::configured_jar_release() {
+        Some(feature) => format!("{checker}, multi-release JARs on Java {feature}"),
+        None => checker.to_string(),
+    };
+    ToolIdentity { models: models(models_used), jdk: jdk(), checker, binary: binary() }
 }
 
 /// What a reused result is shown with, as the check would show its own: the domain as the proof line writes it, the

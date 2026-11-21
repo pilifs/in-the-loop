@@ -151,6 +151,19 @@ fn a_class_a_multi_release_jar_holds_for_its_own_release_of_java_is_refused_not_
         let said = cp.load("org/xml/sax/helpers/AttributesImpl").map(|_| ()).unwrap_err().to_string();
         assert!(said.contains("in the package org.xml.sax.helpers of the JDK's module java.xml, which a JVM loads from the module"), "{said}");
     }
+    if let Some(home) = jvmcontract::jimage::JImage::find_java_home() {
+        let release = std::fs::read_to_string(home.join("release")).unwrap();
+        let feature = release.lines().find_map(|line| line.strip_prefix("JAVA_VERSION=")).unwrap()
+            .trim_matches('"').split('.').next().unwrap();
+        let bound = |claim: &str, dir: &str| Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .env("JVMCONTRACT_JAR_RELEASE", feature).env("JAVA_HOME", &home)
+            .args(["prove", "oc.M#released", "--assert", claim, "--engine", "native", "--jbmc", NO_JBMC, "--classes"])
+            .arg(&c.app).arg("--classpath").arg(&c.jar).arg("--work").arg(work(dir)).output().unwrap();
+        let actual = bound("result == 20", "pinned-release");
+        assert!(actual.status.success(), "{}", String::from_utf8_lossy(&actual.stdout));
+        let base = bound("result == 1", "pinned-base-control");
+        assert!(!base.status.success(), "the pinned JVM loads the Java 17 implementation");
+    }
 }
 
 /// A class path copy of a class of a package of the JDK's modules (`org.xml.sax.helpers.AttributesImpl`, as

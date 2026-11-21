@@ -1712,7 +1712,7 @@ def _parameters(plan, where, prepared):
 CLASSES = "classes"  # under the verifier's work directory: each side's original JAR, extracted for equivalence
 
 
-def _class_dirs(sides, workdir, attempt, paths=None):
+def _class_dirs(sides, workdir, attempt, paths=None, feature=None, entry_bindings=None):
     """Each side's original JAR extracted into workdir/classes/<revision> (jvmcontract equivalence takes directories
     of classes), every entry's bytes as the checked JAR holds them; the record of what was extracted, by revision."""
     import zipfile
@@ -1724,16 +1724,21 @@ def _class_dirs(sides, workdir, attempt, paths=None):
         into.mkdir(parents=True)
         count = 0
         with zipfile.ZipFile(where / jar.path) as z:
-            for info in z.infolist():
-                name = info.filename
-                if info.is_dir():
-                    continue
+            selected = (runtime_jar.effective_entries(z, feature) if feature is not None else
+                        {i.filename: i for i in z.infolist() if not i.is_dir()})
+            for name, info in selected.items():
                 if name.startswith("/") or ".." in Path(name).parts:
                     raise Refused("verifier", f"revision {r}'s {jar.path} has an entry outside its root: {name!r}")
                 target = into / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(z.read(info))
                 count += 1
+        if entry_bindings:
+            bound = entry_bindings[r]
+            owner = runtime_jar.internal(runtime_jar.parse_target(bound["entry"])[0])
+            caller = into / (owner + ".class")
+            if not caller.is_file() or sha256(caller) != bound["classSha256"]:
+                raise Refused("verifier", "the effective JAR entry for the selected JVM differs from the prepared caller")
         out[r] = {"dir": into.relative_to(attempt).as_posix(), "from": f"prepare/{r}/{jar.path}", "sha256": jar.sha256,
                   "entries": count}
     return out
@@ -1850,6 +1855,21 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             argv = (*argv[:at], rel(local_lemmas), *argv[at+1:])
             identities["checkedLemmas"] = dict(plan.checkedLemmas)
         env = _verifier_env(jdk)
+        if plan.engine == "native":
+            env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
+            feature = int(jdk["feature"])
+            for side, (where, side_prepared, _) in sides.items():
+                binding = invocation.entries[side]
+                original = side_prepared.source["target"]["loadedFrom"]
+                checks = ((binding["entry"], binding["loadedFrom"], binding["classSha256"]),
+                          (plan.target, original, binding["subjectClassSha256"]))
+                for entry, jar, expected in dict.fromkeys(checks):
+                    owner = runtime_jar.internal(runtime_jar.parse_target(entry)[0])
+                    selected = runtime_jar.effective_class(where / jar, owner, feature)
+                    if selected is None or hashlib.sha256(selected).hexdigest() != expected:
+                        raise Refused("verifier", "the effective JAR entry for the selected JVM differs from the prepared caller")
+        if plan.engine == "native":
+            env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
             "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
@@ -1859,7 +1879,9 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             "commits": {r: p.commit for r, (_, p, _) in sides.items()},
             "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
         if plan.kind == "equivalence":
-            identities["classes"] = _class_dirs(sides, workdir, attempt, invocation.classpaths)
+            feature = int(jdk["feature"]) if plan.engine == "native" else None
+            identities["classes"] = _class_dirs(sides, workdir, attempt, invocation.classpaths, feature,
+                                                 invocation.entries if feature is not None else None)
         if recipe.correspondence:
             identities["scope"].update(label="adapter", adapter=recipe.correspondence)
             identities["scope"]["meaning"] = recipe.correspondence["mapping"]

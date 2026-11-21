@@ -51,10 +51,12 @@ def dependency_file(case, side):
 
 
 def failure(output):
-    lines = [s.strip() for s in output.splitlines() if s.strip()]
-    relevant = [s for s in lines if re.search(r"\[ERROR\]|error:|Exception|unverifiable|unsupported", s, re.I)
-                and not re.search(r"Re-run Maven|full stack trace|For more information|Help 1|abstract class Abstract", s)]
-    return (relevant or lines or ["no diagnostic was emitted"])[:5]
+    clean = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", output)
+    lines = [line.strip() for line in clean.splitlines() if line.strip()]
+    lines = [line for line in lines if line not in ("[ERROR]", "[WARNING]", "[INFO]")
+             and not re.search(r"Re-run Maven|full stack trace|For more information|Help [0-9]|Picked up JAVA_TOOL_OPTIONS", line)]
+    causes = [line for line in lines if re.search(r"non-resolvable|could not|cannot|not found|failed to|error:|exception|unsupported|unverifiable|fatal", line, re.I)]
+    return (causes or lines or ["no diagnostic was emitted"])[:5]
 
 
 def run(cmd, cwd, env, seconds):
@@ -211,12 +213,18 @@ def screen(case, inputs, build, checker, args):
                JAVA_TOOL_OPTIONS="-Djava.io.tmpdir=" + str(args.work),
                JVMCONTRACT_BITWUZLA=str(Path.home() / "tools/bitwuzla/current/lib/x86_64-linux-gnu/libbitwuzla.so.0"),
                JVMCONTRACT_SOLVER=V0["native"]["solver"], PATH=str(args.verifier_jdk / "bin") + os.pathsep + os.environ["PATH"])
+    if build != "V0":
+        env["JVMCONTRACT_JAR_RELEASE"] = runtime.runtime_jdk.identity(args.verifier_jdk)["feature"]
     with tempfile.TemporaryDirectory(dir=args.work, prefix="checker-") as td:
         work = Path(td)
         originals = {s: [SimpleNamespace(path=cp[0].name, sha256=inputs[s]["classpath"][0]["sha256"])]
                      for s, cp in paths.items()}
         sides = {s: (cp[0].parent, None, originals[s]) for s, cp in paths.items()}
-        directories = runtime._class_dirs(sides, work, work, {s: [{"path": a[0].path}] for s,a in originals.items()})
+        feature = int(env["JVMCONTRACT_JAR_RELEASE"]) if build != "V0" else None
+        bindings = {side: {"entry": case["entry"], "classSha256": row["callerClassSha256"]}
+                    for side, row in report["sides"].items()}
+        directories = runtime._class_dirs(sides, work, work, {s: [{"path": a[0].path}] for s,a in originals.items()},
+                                          feature, bindings if feature is not None else None)
         cmd = [str(checker), "equivalence", "--before", str(work / directories["old"]["dir"]),
                "--after", str(work / directories["new"]["dir"]),
                "--engine", "native", "--gaps", "strict", "--target", case.get("checkerTarget", case["entry"]),

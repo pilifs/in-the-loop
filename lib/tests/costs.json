@@ -195,7 +195,7 @@
    "examples/tools/targets/test_receipt_streams.py": {"unit": 5, "tool": 0, "proof": 0, "estimated": 5, "retier pending": 0},
    "examples/tools/targets/test_recipes.py": {"unit": 10, "tool": 0, "proof": 0, "estimated": 8, "retier pending": 0},
    "examples/tools/targets/test_route.py": {"unit": 13, "tool": 0, "proof": 0, "estimated": 0, "retier pending": 0},
-   "examples/tools/targets/test_runtime.py": {"unit": 71, "tool": 4, "proof": 0, "estimated": 70, "retier pending": 0},
+   "examples/tools/targets/test_runtime.py": {"unit": 72, "tool": 4, "proof": 0, "estimated": 70, "retier pending": 0},
    "examples/tools/targets/test_runtime_upstream.py": {"unit": 16, "tool": 15, "proof": 0, "estimated": 15, "retier pending": 0},
    "examples/tools/targets/test_sidecar.py": {"unit": 19, "tool": 0, "proof": 0, "estimated": 0, "retier pending": 0},
    "examples/tools/targets/test_without_jbmc.py": {"unit": 0, "tool": 3, "proof": 0, "estimated": 3, "retier pending": 0},
@@ -239,8 +239,7 @@
    "llm-dlc/tools/test_verification_loop.py": {"unit": 0, "tool": 2, "proof": 0, "estimated": 2, "retier pending": 0},
    "llm-dlc/tools/test_watch.py": {"unit": 37, "tool": 3, "proof": 0, "estimated": 40, "retier pending": 0},
    "llm-dlc/tools/test_workspaces.py": {"unit": 14, "tool": 0, "proof": 0, "estimated": 14, "retier pending": 0},
-   "verification/test_pipeline.py": {"unit": 36, "tool": 4, "proof": 0, "estimated": 40, "retier pending": 0},
-   "examples/tools/targets/test_upgrade_review.py": {"unit": 2, "tool": 0, "proof": 0, "estimated": 0, "retier pending": 0}
+   "verification/test_pipeline.py": {"unit": 36, "tool": 4, "proof": 0, "estimated": 40, "retier pending": 0}
   }
  },
  "rust": [
@@ -924,7 +923,7 @@
   {"file": "lib/tests/observations.rs", "name": "box_office_specs_say_what_its_source_does", "tier": "tool", "calls": ["java", "jvmcontract", "process"], "cost": {"seconds": 5.83, "kind": "at most", "sources": ["log:4742b15c6bca1452"]}, "why": "spawns java, jvmcontract, process"},
   {"file": "lib/tests/observations.rs", "name": "box_office_examples_compare_as_their_boundary_diffs_say", "tier": "proof", "calls": ["java", "javac", "jvmcontract", "process"], "cost": {"seconds": 42.56, "kind": "run alone", "runs": 3, "max_seconds": 42.56, "sources": ["job:20261117-152112-the-rust-proof-tier-after-the-domain-adv", "job:20261117-013604-the-seven-tests-moved-to-the-proof-tier", "log:b38cb00ee8e399df"]}, "why": "spawns java, javac, jvmcontract, process; over the tool tier's 10 s", "ignored": "cost:proof: Box Office's ten example patches, each applied to a copy, compiled with javac and walked against its Spring class path, ~26 s; a smaller fixture can't show that the examples' own boundary diffs still hold; proxy: two_builds_of_the_joint_example_compare_into_accounted_obligations, every_box_office_entry_point_has_a_spec_that_matches_its_golden_text"},
   {"file": "lib/tests/observed_countermodels.rs", "name": "each_entry_point_is_what_a_jvm_says_it_is", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 2.32, "kind": "at most", "sources": ["log:48d54253e8843aec"]}, "why": "spawns java, javac, process"},
-  {"file": "lib/tests/observed_countermodels.rs", "name": "a_class_a_multi_release_jar_holds_for_its_own_release_of_java_is_refused_not_read_as_its_base", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 2.32, "kind": "at most", "sources": ["log:48d54253e8843aec"]}, "why": "spawns java, javac, process"},
+  {"file": "lib/tests/observed_countermodels.rs", "name": "a_class_a_multi_release_jar_holds_for_its_own_release_of_java_is_refused_not_read_as_its_base", "tier": "tool", "calls": ["java", "javac", "jvmcontract", "process"], "cost": {"seconds": 2.89, "kind": "run alone", "runs": 1, "max_seconds": 2.89, "sources": ["log:630fbe121bdd2685"]}, "why": "spawns java, javac, jvmcontract, process"},
   {"file": "lib/tests/observed_countermodels.rs", "name": "a_class_path_copy_of_a_class_of_the_jdks_modules_is_refused_not_read", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 2.32, "kind": "at most", "sources": ["log:48d54253e8843aec"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/observed_countermodels.rs", "name": "an_observed_initializer_is_bound_to_what_it_was_observed_on", "tier": "tool", "calls": ["java", "javac", "jvmcontract", "process"], "cost": {"seconds": 2.32, "kind": "at most", "sources": ["log:48d54253e8843aec"]}, "why": "spawns java, javac, jvmcontract, process"},
   {"file": "lib/tests/observed_countermodels.rs", "name": "an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read", "tier": "tool", "calls": ["java", "javac", "jvmcontract", "process"], "cost": {"seconds": 4.31, "kind": "run alone", "runs": 1, "max_seconds": 4.31, "sources": ["log:b38cb00ee8e399df"]}, "why": "spawns java, javac, jvmcontract, process"},
@@ -1087,9 +1086,8 @@
   {"file": "lib/tests/values.rs", "name": "a_claims_value_domains_are_resolved_before_its_key_and_its_checks", "tier": "unit", "calls": [], "cost": {"seconds": 0.06, "kind": "run alone", "runs": 1, "max_seconds": 0.06, "sources": ["log:7fa887ec7a80e4ed"]}, "why": "nothing outside the process"}
  ],
  "python": [
+  {"file": "examples/tools/targets/test_runtime.py", "name": "JarTest.test_effective_jar_uses_the_highest_eligible_release_and_the_main_manifest", "tier": "unit", "calls": [], "cost": {"seconds": 46.92, "kind": "at most", "sources": ["log:bf89acfc115a523f"], "estimated": "past runs bound it only at 46.92 s: the tier is from what it calls"}, "why": "nothing outside the process"},
   {"file": "examples/tools/targets/test_runtime_upstream.py", "name": "LocalPairTest.test_named_pair_checks_out_exact_bytes_without_a_remote", "tier": "unit", "calls": [], "cost": {"seconds": 38.97, "kind": "at most", "sources": ["log:070361a72260ac6a"], "estimated": "past runs bound it only at 38.97 s: the tier is from what it calls"}, "why": "nothing outside the process"},
-  {"file": "examples/tools/targets/test_upgrade_review.py", "name": "UpgradeReviewTest.test_only_instructions_from_the_selected_overload_supply_call_evidence", "tier": "unit", "calls": [], "cost": {"seconds": 0.0, "kind": "at most", "sources": ["log:630fbe121bdd2685"]}, "why": "nothing outside the process"},
-  {"file": "examples/tools/targets/test_upgrade_review.py", "name": "UpgradeReviewTest.test_observations_require_the_original_caller_and_preserve_utf16_and_null", "tier": "unit", "calls": [], "cost": {"seconds": 0.0, "kind": "at most", "sources": ["log:630fbe121bdd2685"]}, "why": "nothing outside the process"},
   {"file": "examples/tools/test_accept.py", "name": "Accepted.test_an_answer_its_evidence_gives_is_accepted_and_says_what_it_rests_on", "tier": "unit", "calls": [], "cost": {"seconds": 0.12, "kind": "at most", "sources": ["log:b38cb00ee8e399df"]}, "why": "nothing outside the process"},
   {"file": "examples/tools/test_accept.py", "name": "Accepted.test_a_task_with_no_answer_beside_the_route_has_nothing_to_accept", "tier": "unit", "calls": [], "cost": {"seconds": 0.12, "kind": "at most", "sources": ["log:b38cb00ee8e399df"]}, "why": "nothing outside the process"},
   {"file": "examples/tools/test_accept.py", "name": "Accepted.test_the_command_lists_each_answer_and_fails_when_one_is_refused", "tier": "unit", "calls": [], "cost": {"seconds": 0.12, "kind": "at most", "sources": ["log:b38cb00ee8e399df"]}, "why": "nothing outside the process"},

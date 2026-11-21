@@ -43,6 +43,38 @@ def read_class(jar, name):
             return None
 
 
+def effective_entries(archive, feature):
+    """The logical entries a JVM of the specified feature sees in its original JAR."""
+    entries = {item.filename: item for item in archive.infolist() if not item.is_dir()}
+    manifest = entries.get("META-INF/MANIFEST.MF")
+    if not manifest:
+        return entries
+    text = archive.read(manifest).replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    main = text.partition(b"\n\n")[0].replace(b"\n ", b"")
+    attributes = dict((k.lower(), v) for line in main.splitlines() for k, sep, v in [line.partition(b": ")] if sep)
+    if attributes.get(b"multi-release", b"").lower() != b"true":
+        return entries
+    ranks = {}
+    for name, item in list(entries.items()):
+        if not name.startswith("META-INF/versions/"):
+            continue
+        del entries[name]
+        version, _, logical = name[len("META-INF/versions/"):].partition("/")
+        if (not logical or logical.startswith("META-INF/") or not re.fullmatch(r"[1-9][0-9]{0,8}", version)):
+            continue
+        release = int(version)
+        if 9 <= release <= feature and release > ranks.get(logical, 0):
+            ranks[logical] = release
+            entries[logical] = item
+    return entries
+
+
+def effective_class(jar, name, feature):
+    with zipfile.ZipFile(jar) as archive:
+        selected = effective_entries(archive, feature).get(name + ".class")
+        return archive.read(selected) if selected is not None else None
+
+
 def resolve(classpath, root="."):
     """{class: [classpath entry, ...]} in classpath order, for JAR entries (a directory entry is listed by its class
     files): the first holder is the one the JVM loads."""
