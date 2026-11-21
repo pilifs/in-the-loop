@@ -36,6 +36,15 @@ public final class UpgradeObservation {
         } catch (InvocationTargetException exception) {
             Throwable thrown = exception.getCause();
             System.out.println("UPGRADE-OBSERVATION throw " + thrown.getClass().getName());
+            StringBuilder detail = new StringBuilder();
+            Throwable cause = thrown;
+            for (int depth=0; cause!=null && depth<4; depth++, cause=cause.getCause()) {
+                if (depth>0) detail.append(" caused by ");
+                detail.append(cause.getClass().getName()).append(": ").append(cause.getMessage());
+                if (cause.getStackTrace().length != 0)
+                    detail.append(" at ").append(cause.getStackTrace()[0]);
+            }
+            System.out.println("UPGRADE-DETAIL " + encode(detail.toString()));
             for (StackTraceElement frame : thrown.getStackTrace()) {
                 System.out.println("UPGRADE-FRAME " + frame.getClassName() + "#" + frame.getMethodName());
             }

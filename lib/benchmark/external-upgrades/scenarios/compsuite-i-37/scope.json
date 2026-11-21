@@ -1,0 +1,32 @@
+{
+  "entry": "net.glxn.qrgen.javase.QRCode#file()Ljava/io/File;",
+  "probeClass": "UpgradeProbe",
+  "observer": "The ordinary Java SE caller returns an ImageIO-readable QR file whose decoded text is the original ASCII input.",
+  "basis": "The submitted text is its own independent round-trip expectation. Each image is read through Java ImageIO and decoded with its corresponding ZXing runtime. The historical test only asserted that the returned file was non-null.",
+  "cases": [
+    {
+      "args": [
+        "Hello World"
+      ],
+      "expected": {
+        "return": "Hello World"
+      }
+    },
+    {
+      "args": [
+        "12345"
+      ],
+      "expected": {
+        "return": "12345"
+      }
+    },
+    {
+      "args": [
+        "Across versions"
+      ],
+      "expected": {
+        "return": "Across versions"
+      }
+    }
+  ]
+}

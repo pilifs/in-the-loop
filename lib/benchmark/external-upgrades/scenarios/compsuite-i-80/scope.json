@@ -2,7 +2,7 @@
   "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
   "probeClass": "UpgradeProbe",
   "observer": "Observe the logger name behind the INFO output stream for a caller-relative short name and for an explicit full name.",
-  "basis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger.",
+  "basis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP.",
   "cases": [
     {
       "args": [
@@ -19,6 +19,16 @@
       "expected": {
         "return": "example.full.name"
       }
+    }
+  ],
+  "runtimeCompanions": [
+    {
+      "mavenPath": "ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar",
+      "sha256": "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22"
+    },
+    {
+      "mavenPath": "ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar",
+      "sha256": "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
     }
   ]
 }

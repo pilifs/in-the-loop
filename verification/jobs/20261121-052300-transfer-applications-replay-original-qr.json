@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-052300-transfer-applications-replay-original-qr",
+  "title": "Transfer applications replay original QR files, reflection adapters and FTP file types",
+  "description": "Prepare full original Maven modules and use real application receivers and inputs. Read a QR file through ImageIO and decode it, generate a real constructor adapter, and classify an actual file, folder and missing path through the VFS client and a loopback Apache FTPServer. The server libraries are those declared by the original project tests. Both releases see identical fixtures.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "expected": "All three cases record their qualified observation or precise unresolved step, including original old expectation and actual method entry.",
+  "submitted": {
+    "at": "2026-11-21T05:23:00+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "memoryLimit": "6G",
+    "timeout": "100m"
+  },
+  "steps": [
+    {
+      "name": "Prepare original modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/transfer-modules/01 --case compsuite-i-37 --case reflector-35 --case commons-vfs-55c96cfd",
+      "cwd": "."
+    },
+    {
+      "name": "Run typed original callers",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-recovery/04 --case compsuite-i-37 --case reflector-35 --case commons-vfs-55c96cfd",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/transfer-modules/01",
+    "verification/external-upgrades/corpus-runs/finite-recovery/04"
+  ]
+}

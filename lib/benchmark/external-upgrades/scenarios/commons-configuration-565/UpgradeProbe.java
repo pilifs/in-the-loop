@@ -5,6 +5,7 @@ public final class UpgradeProbe {
     public static String observe(String[] args) throws Exception {
         JSONConfiguration config = new JSONConfiguration();
         config.read(new StringReader(args[0]));
-        return config.getList(String.class, args[1]).toString();
+        java.util.List<String> values = config.getList(String.class, args[1]);
+        return values == null ? null : values.toString();
     }
 }

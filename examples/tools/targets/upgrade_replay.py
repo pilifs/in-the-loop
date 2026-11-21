@@ -75,7 +75,7 @@ def parse_output(text, caller, original, dependency):
     return observation, operands
 
 
-def evaluate(specfile, before, after, probe, jdk, dependencies, timeout):
+def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None):
     spec = json.loads(specfile.read_text())
     domain = spec["cases"]
     if (not domain or len({tuple(c["args"]) for c in domain}) != len(domain)
@@ -92,9 +92,10 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout):
         raise ValueError("the selected caller source differs between dependency revisions")
     if dependencies[0] == dependencies[1]:
         raise ValueError("the dependency digests identify the same bytes")
-    report = {"entry":caller,"observer":spec["observer"],"domainBasis":spec["basis"],"cases":domain,
+    report = {} if progress is None else progress
+    report.update({"entry":caller,"observer":spec["observer"],"domainBasis":spec["basis"],"cases":domain,
               "probeSha256":sha(probe),"launcherSha256":sha(LAUNCHER),"tracerSha256":sha(TRACER),"jdk":runtime_jdk.identity(jdk)["release"],
-              "sides":{s:v[2] for s,v in prepared.items()},"status":"open"}
+              "sides":{s:v[2] for s,v in prepared.items()},"status":"open"})
     owner, method, descriptor = runtime_jar.parse_target(caller)
     start=time.monotonic()
     with tempfile.TemporaryDirectory(prefix="upgrade-case-") as t:
@@ -103,9 +104,31 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout):
         cp=lambda files:os.pathsep.join(str(x) for x in files)
         output = temp / "probe"
         output.mkdir()
+        supplied = []
+        fixture_classes = set()
+        resources = []
+        for item in spec.get("fixtures", []):
+            if fixtures is None:
+                raise ValueError("the original caller fixture directory is missing")
+            root = Path(fixtures).resolve()
+            file = (root / item["file"]).resolve()
+            if not file.is_relative_to(root) or not file.is_file() or sha(file) != item["sha256"]:
+                raise ValueError("the fixture differs from its original input: " + item["file"])
+            if item["kind"] == "java" and re.fullmatch(r"[\w$]+(?:\.[\w$]+)*", item["class"]):
+                supplied.append(file)
+                fixture_classes.add(item["class"].replace(".", "/"))
+            elif item["kind"] == "resource":
+                resources.append((file, Path(item["file"])))
+            else:
+                raise ValueError("unsupported caller fixture kind")
+        report["originalFixtures"] = spec.get("fixtures", [])
+        report["runtimeCompanions"] = spec.get("runtimeCompanions", [])
+        for side, (_, _, bound) in prepared.items():
+            if any(c["sha256"] not in bound["classpath"] for c in report["runtimeCompanions"]):
+                raise ValueError(f"{side} is missing a declared runtime companion")
         tools = [jdk/"lib/tools.jar"] if (jdk/"lib/tools.jar").is_file() else []
         proc=subprocess.run([str(jdk/"bin/javac"),"-J-Djava.io.tmpdir="+t,"-proc:none","-g","-encoding","UTF-8",
-                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(probe)],
+                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(probe),*map(str,supplied)],
                              cwd=temp,env=env,capture_output=True,text=True,timeout=timeout)
         if proc.returncode:
             raise ValueError("observer compilation: "+proc.stderr[-1800:])
@@ -118,7 +141,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout):
             raise ValueError("the observer must declare public static String observe(String[] args)")
         helper_class=lambda f:f.relative_to(output).as_posix()[:-6]
         compiled=sorted(output.rglob("*.class"))
-        if any(helper_class(f) not in ("UpgradeObservation", "UpgradeTrace") and helper_class(f).split("$")[0] != main.replace(".","/") for f in compiled):
+        if any(helper_class(f) not in ("UpgradeObservation", "UpgradeTrace") and helper_class(f).split("$")[0] not in {main.replace(".","/"), *fixture_classes} for f in compiled):
             raise ValueError("the observer compiler produced an unrelated class")
         refs=set().union(*(runtime_jar.references(f.read_bytes()) for f in compiled if helper_class(f) not in ("UpgradeObservation", "UpgradeTrace")))
         if (runtime_jar.internal(owner),method,descriptor) not in refs:
@@ -133,13 +156,21 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout):
             if any(runtime_jar.read_class(jar,name) is not None for jar in files for name in report["probeClasses"]):
                 raise ValueError("observer classes shadow an input artifact")
             records=[]
+            side_record["trials"] = records
             operand_classes=set()
             for index,case in enumerate(domain):
                 trials=[]
+                trial_record = {"input": index, "qualifiedMethodEntries": 0, "observations": trials}
+                records.append(trial_record)
                 for trial in range(2):
                     run_dir = temp / f"{side}-{index}-{trial}"
                     run_dir.mkdir()
                     enc=["-" if x is None else base64.b64encode(x.encode("utf-16-be","surrogatepass")).decode() for x in case["args"]]
+                    report["stoppedAt"] = {"side": side, "input": index, "repetition": trial+1}
+                    for original, relative_file in resources:
+                        destination = run_dir / "fixtures" / relative_file
+                        destination.parent.mkdir(parents=True, exist_ok=True)
+                        destination.write_bytes(original.read_bytes())
                     cmd=[str(jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+str(run_dir), "-cp",
                          cp([output,*tools]), "UpgradeTrace", caller, str(jdk), str(run_dir), cp([output,*files]), main,*enc]
                     with subprocess.Popen(cmd, cwd=run_dir, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -152,17 +183,25 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout):
                             raise
                     if child.returncode:
                         raise ValueError(f"{side} input {index}: JVM exit {child.returncode}: {stderr.decode(errors='replace')[-500:]}")
+                    child_output = stdout.decode(errors="replace")
+                    detail = next((line[len("UPGRADE-DETAIL "):] for line in child_output.splitlines()
+                                   if line.startswith("UPGRADE-DETAIL ")), "")
+                    if detail:
+                        detail = base64.b64decode(detail, validate=True).decode("utf-16-be", "surrogatepass")
+                        report["stoppedAt"]["exception"] = detail[:750]
                     if "UPGRADE-HIT " + caller not in stderr.decode(errors="replace").splitlines():
-                        raise ValueError(f"{side} input {index}: the original caller method was never entered")
-                    observation,classes=parse_output(stdout.decode(errors="replace"),caller,files[0],dependency)
+                        raise ValueError(f"{side} input {index}: the original caller method was never entered. {detail}")
+                    trial_record["qualifiedMethodEntries"] += 1
+                    observation,classes=parse_output(child_output,caller,files[0],dependency)
                     trials.append(observation)
                     operand_classes.update(classes)
                 if trials[0]!=trials[1]:
                     raise ValueError(f"{side} input {index} gave different observations in fresh JVMs")
-                records.append({"input":index,"qualifiedMethodEntries":len(trials),"observations":trials})
+
             if not operand_classes:
                 raise ValueError(f"{side} did not load any class from the upgraded artifact")
             side_record.update(trials=records,loadedDependencyClasses=sorted(operand_classes))
+        report.pop("stoppedAt", None)
         old,new=(report["sides"][k]["trials"] for k in ("old","new"))
         differences=[i for i,(a,b) in enumerate(zip(old,new)) if a["observations"][0]!=b["observations"][0]]
         disagreements=[i for i,(a,c) in enumerate(zip(old,domain)) if a["observations"][0]!=c["expected"]]
@@ -179,12 +218,17 @@ def main(argv=None):
     ap.add_argument("--old-dependency",required=True)
     ap.add_argument("--new-dependency",required=True)
     ap.add_argument("--seconds",type=int,default=120)
+    ap.add_argument("--fixtures", type=Path)
     a=ap.parse_args(argv)
+    result = {}
     try:
-        result=evaluate(a.spec,a.before,a.after,a.probe,a.jdk,(a.old_dependency,a.new_dependency),a.seconds)
+        result=evaluate(a.spec,a.before,a.after,a.probe,a.jdk,(a.old_dependency,a.new_dependency),a.seconds,
+                        fixtures=a.fixtures, progress=result)
     except (OSError,ValueError,KeyError,subprocess.SubprocessError) as e:
-        result={"status":"open","reason":str(e),"entry":json.loads(a.spec.read_text()).get("entry"),
-                "specSha256":sha(a.spec),"probeSha256":sha(a.probe)}
+        detail = result.get("stoppedAt",{}).get("exception")
+        reason = str(e) + (". " + detail if detail and detail not in str(e) else "")
+        result.update(status="open",reason=reason,entry=json.loads(a.spec.read_text()).get("entry"),
+                      specSha256=sha(a.spec),probeSha256=sha(a.probe))
     a.output.parent.mkdir(parents=True,exist_ok=True)
     with a.output.open("x") as stream:
         json.dump(result, stream, indent=2)

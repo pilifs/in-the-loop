@@ -1,0 +1,24 @@
+{
+  "entry": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Retrieve the registered original factory from the Guice-backed client registry for two namespaces.",
+  "basis": "Registration associates the supplied namespace with a specific factory. The factory manager publicly checks that registry first. Each test uses a fresh JVM and the real client injector.",
+  "cases": [
+    {
+      "args": [
+        "application"
+      ],
+      "expected": {
+        "return": "true"
+      }
+    },
+    {
+      "args": [
+        "custom.namespace"
+      ],
+      "expected": {
+        "return": "true"
+      }
+    }
+  ]
+}

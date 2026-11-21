@@ -4,9 +4,11 @@ import argparse
 import json
 from pathlib import Path
 import subprocess
+import tempfile
+import hashlib
 import sys
 
-from engineering import HERE, ROOT, dependency_file, digest, read
+from engineering import HERE, ROOT, resolved_operand, digest, read, git
 
 
 def main():
@@ -14,6 +16,8 @@ def main():
     ap.add_argument("--case", action="append", required=True)
     ap.add_argument("--preparations", required=True, type=Path)
     ap.add_argument("--maven-cache", required=True, type=Path)
+    ap.add_argument("--repositories", type=Path, help="original Git repositories for source-derived fixtures")
+    ap.add_argument("--complete", type=Path, help="prefer complete original Maven module inputs when available for both sides")
     ap.add_argument("--output", required=True, type=Path)
     args = ap.parse_args()
     cases = {c["id"]: c for c in read(HERE / "corpus.json")["cases"]}
@@ -29,14 +33,57 @@ def main():
         cmd = [sys.executable, str(ROOT / "examples/tools/build.py"), "--review-upgrade",
                "--spec", str(directory / "scope.json"), "--probe", str(directory / "UpgradeProbe.java"),
                "--jdk", str(Path.home() / ".sdkman/candidates/java" / jdk), "--output", str(out)]
+        prep = args.preparations
+        if args.complete and all((args.complete/key/side/"prepared.json").is_file() for side in ("old","new")):
+            prep = args.complete
         try:
+            for side in ("old", "new"):
+                manifest = prep/key/side/"prepared.json"
+                if manifest.is_file():
+                    value = read(manifest).get("subjectJdk")
+                    if value in ("Temurin 8", "8.0.512.0+9-tem"):
+                        jdk = "8.0.512.0+9-tem"
+                    elif value == "21.0.13.0+9-tem":
+                        jdk = value
+                    break
+            cmd[cmd.index("--jdk")+1] = str(Path.home()/".sdkman/candidates/java"/jdk)
             for side, flag in (("old", "--before"), ("new", "--after")):
-                cmd += [flag, str(args.preparations / key / side / "prepared.json"),
-                        "--" + side + "-dependency", digest(args.maven_cache / dependency_file(original, side))]
-            proc = subprocess.run(cmd, cwd=ROOT, check=False)
+                cmd += [flag, str(prep / key / side / "prepared.json"),
+                        "--" + side + "-dependency", digest(resolved_operand(args.maven_cache, original, side)[0])]
+            with tempfile.TemporaryDirectory(prefix="upstream-fixtures-") as temp:
+                scope = read(directory / "scope.json")
+                companions = scope.get("runtimeCompanions", [])
+                if companions:
+                    for side, flag in (("old","--before"), ("new","--after")):
+                        position = cmd.index(flag)+1
+                        document = read(cmd[position])
+                        for companion in companions:
+                            path = (args.maven_cache/companion["mavenPath"]).resolve()
+                            if not path.is_relative_to(args.maven_cache.resolve()) or digest(path)!=companion["sha256"]:
+                                raise ValueError("the original runtime companion differs from its registered digest")
+                            if not any(row["sha256"]==companion["sha256"] for row in document["classpath"]):
+                                document["classpath"].append({"file":str(path),"sha256":companion["sha256"]})
+                        qualified = Path(temp)/(side+"-prepared.json")
+                        qualified.write_text(json.dumps(document))
+                        cmd[position] = str(qualified)
+                fixtures = scope.get("fixtures", [])
+                if fixtures:
+                    repos = read(args.repositories or (args.preparations.parent / "repos.json"))
+                    for fixture in fixtures:
+                        source = fixture["source"]
+                        old, new = (git(repos[key], "show", original["revisions"][side]+":"+source) for side in ("old","new"))
+                        if old != new or hashlib.sha256(old).hexdigest() != fixture["sha256"]:
+                            raise ValueError("the original paired fixture bytes differ from the input lock")
+                        dest = Path(temp) / fixture["file"]
+                        if not dest.resolve().is_relative_to(Path(temp).resolve()):
+                            raise ValueError("fixture path leaves the supplied input directory")
+                        dest.parent.mkdir(parents=True, exist_ok=True)
+                        dest.write_bytes(old)
+                    cmd += ["--fixtures", temp]
+                proc = subprocess.run(cmd, cwd=ROOT, check=False)
             if proc.returncode and not out.is_file():
                 raise ValueError(f"workflow exited {proc.returncode} before writing a case report")
-        except (ValueError, OSError) as exc:
+        except (ValueError, OSError, subprocess.SubprocessError) as exc:
             out.write_text(json.dumps({"status": "open", "reason": str(exc)}, indent=2) + "\n")
         print(key, read(out)["status"], flush=True)
 

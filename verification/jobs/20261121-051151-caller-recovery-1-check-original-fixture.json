@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-051151-caller-recovery-1-check-original-fixture",
+  "title": "Caller recovery 1 check original fixture and environment evidence",
+  "description": "Recheck corrected finite scopes with an explicit null observation, verified SourceFile metadata, original generated protobuf fixture or the deployed logging backend as appropriate. Preserve intermediate JVM evidence on every open case. Cases: commons-configuration-565, commons-configuration-601, incremental-analysis-28.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "expected": "Record both original revisions, the precise unverified stage when unavailable and the true result on each qualified finite caller.",
+  "submitted": {
+    "at": "2026-11-21T05:11:51+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "memoryLimit": "6G",
+    "timeout": "100m"
+  },
+  "steps": [
+    {
+      "name": "Check original callers",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-recovery/01 --case commons-configuration-565 --case commons-configuration-601 --case incremental-analysis-28",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/finite-recovery/01"
+  ]
+}

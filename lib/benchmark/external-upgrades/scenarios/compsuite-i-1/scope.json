@@ -1,0 +1,33 @@
+{
+  "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
+  "probeClass": "retrofit2.converter.wire.UpgradeProbe",
+  "observer": "The original Wire response converter decodes the developer fixture and returns the phone-number field.",
+  "basis": "The checked-in generated Phone message has a length-delimited string in protobuf field 1. The first body is byte-for-byte the historical developer test. The short-string companion uses the same wire rule.",
+  "cases": [
+    {
+      "args": [
+        "Cg4oNTE5KSA4NjctNTMwOQ=="
+      ],
+      "expected": {
+        "return": "(519) 867-5309"
+      }
+    },
+    {
+      "args": [
+        "CgMxMjM="
+      ],
+      "expected": {
+        "return": "123"
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "java",
+      "file": "Phone.java",
+      "source": "retrofit-converters/wire/src/test/java/retrofit2/converter/wire/Phone.java",
+      "sha256": "1666f5317a58c0507f121d65da1469efe33df538157ed79fe3da9aaba5dd416e",
+      "class": "retrofit2.converter.wire.Phone"
+    }
+  ]
+}

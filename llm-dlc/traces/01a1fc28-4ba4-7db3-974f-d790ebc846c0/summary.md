@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a1fc28-4ba4-7db3-974f-d790ebc846c0` (open) |
+| Session | `01a1fc28-4ba4-7db3-974f-d790ebc846c0` (ended) |
 | When | 2026-11-21 03:31 UTC to 2026-11-21 05:18 UTC (107 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -101,10 +101,6 @@ The 16 scoped caller replays establish eight main-set finite preservations and r
 change `sslyzsppxvsn` · [log `cff0f071e654`](https://terminalvalue.net/raw-traces/01a1fc28-4ba4-7db3-974f-d790ebc846c0/cff0f071e654456c3f345d22522a35b670932c4529d283e48686deb3945159a5.jsonl.gz)
 
 Check one finite alphabet at every UTF-16 position against a mandatory conjunct of the original guard. Save the alphabets and total candidate cardinality, and distinguish null, empty strings and isolated UTF-16 surrogates on return and witness replay. The core decoding and enumeration changes landed in the preceding CI-baseline change while its scoped snapshot was being assembled. This change records the domain binding, regression controls and public jobs. A capped original Commons Text run established the unchanged claim over all 156 strings. All 25 affected Python groups passed. Jobs 20261121-044738-349-exhaust-actual-csv-fields-with-lossl, 20261121-044738-352-exhaust-actual-duration-strings-with qualify the originals for Commons Text and Cucumber Reporting.
-
-### (in progress)
-
-change `otqkvoknkqvt`, not yet described
 
 ### Resolve original Maven relocations and compare the registered upstream tests (verification pending)
 
