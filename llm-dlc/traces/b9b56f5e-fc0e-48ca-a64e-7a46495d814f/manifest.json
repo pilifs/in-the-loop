@@ -12,55 +12,60 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T17:34:33.913Z",
-  "duration_seconds": 2231,
+  "ended": "2026-11-21T17:44:01.688Z",
+  "duration_seconds": 2799,
   "stats": {
     "turns": 1,
-    "api_calls": 77,
-    "tool_calls": 90,
-    "tool_errors": 3,
+    "api_calls": 97,
+    "tool_calls": 113,
+    "tool_errors": 4,
     "compactions": 0,
-    "peak_context_tokens": 378058,
+    "peak_context_tokens": 444005,
     "usage": {
-      "input_tokens": 154,
-      "output_tokens": 172690,
-      "cache_read_input_tokens": 19224773,
-      "cache_creation_input_tokens": 366441
+      "input_tokens": 194,
+      "output_tokens": 218992,
+      "cache_read_input_tokens": 27470799,
+      "cache_creation_input_tokens": 432388
     }
   },
   "tools": {
-    "Bash": 67,
+    "Bash": 84,
     "Read": 19,
-    "Write": 4
+    "Write": 7,
+    "Edit": 3
   },
   "files_touched": [
     "llm-dlc/tools/artifacts.py",
+    "llm-dlc/tools/checkpoint.py",
+    "llm-dlc/tools/sync.py",
     "llm-dlc/tools/test_artifacts.py",
+    "llm-dlc/tools/test_checkpoint.py",
     "llm-dlc/tools/vm_inventory.py",
-    "verification/capture.py"
+    "verification/capture.py",
+    "~/.cache/in-the-loop/tmp/plumbing/rehearse.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-21T16:57:22.471Z",
-      "ended": "2026-11-21T17:34:33.913Z",
+      "ended": "2026-11-21T17:44:01.688Z",
       "turns": 1,
-      "api_calls": 77,
+      "api_calls": 97,
       "usage": {
-        "input_tokens": 154,
-        "output_tokens": 172690,
-        "cache_read_input_tokens": 19224773,
-        "cache_creation_input_tokens": 366441
+        "input_tokens": 194,
+        "output_tokens": 218992,
+        "cache_read_input_tokens": 27470799,
+        "cache_creation_input_tokens": 432388
       },
-      "peak_context_tokens": 378058
+      "peak_context_tokens": 444005
     }
   ],
   "log": {
-    "sha256": "3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c",
-    "bytes": 2869473,
-    "lines": 668,
-    "gzip_bytes": 562430,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c.jsonl.gz"
+    "sha256": "5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9",
+    "bytes": 3406144,
+    "lines": 833,
+    "gzip_bytes": 623592,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -87,6 +92,14 @@
       "summary": "Inventory and protect what exists only on this VM; upload sealed originals in parallel",
       "body": "llm-dlc/tools/vm_inventory.py is the brief's first step. measure prints numbers fit to publish (heads, unpushed commits, git and jj sizes, tracked files and the widest directories, the runner's state, transcripts, run records, what a push would send, the archive's custody), to be compared before and after each change to the plumbing. pin writes a git ref under refs/itl/pins/ for every local head origin lacks, a namespace jj neither imports nor moves. protect seals into the private archive the runner's run directories and kept work directories, the loops' private run records, the project's source transcripts (Claude Code's and Codex's, as append-only streams, with their side files) and the records of examples 340 to 359, and does not seal twice what has not changed. It names only this repository's folders: no other project's sessions, credential store or dependency cache is read.\n\nOn 2026-11-21 it sealed 1,182 occurrences on this VM in two minutes: 3.21 GB of originals as 541 MB in 2,522 objects, among them 910 run directories and the 23,000 record files of runs 5 to 7, whole, before any trim (VF-053). All 8 local heads are pinned. llm-dlc/loops/llm-dlc-process-plumbing-results.md has the measurements, what was left unsealed and why, and the known historical gaps.\n\nThe uploader now works on up to 8 threads, each with its own journal connection, writes an intent for each new occurrence first, and reads back every object and every receipt; upload --drain runs passes until nothing is left to do now, as the spool's one uploader (a lock), and artifacts.kick starts one in the background when a run or a collect seals something, so the transfer off the machine starts then. Verified by three new tests in test_artifacts.py (12 occurrences on 4 threads, each object put once; the lock; the kick's switches), test_vm_inventory.py (sealed once, again only on change; a dry run seals nothing; only this repository's transcript folders are named), and the tests the change selects (5 files, test_pipeline.py among them).",
       "log_sha256": "3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c"
+    },
+    {
+      "change_id": "srwzpppxzsxnlknuykmvsxnlnzprumzu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add sync.py checkpoint: one committed revision to origin's develop, forward only, with outgoing-object checks",
+      "body": "llm-dlc/tools/checkpoint.py gives code checkpoints a job of their own, apart from promotion (the brief, section 1). sync.py checkpoint --rev REV resolves REV once to one committed revision, reads the remote's develop and main, and pushes exactly SHA:refs/heads/develop to origin when develop can move forward to it, carrying the commit develop was read at so the push cannot land on a branch that moved. It runs no test, renders no trace file, uploads no log and waits for no job or uploader, and every jj call it makes ignores the working copy, so another session's uncommitted files are neither snapshotted nor moved. --bootstrap creates develop where main is. Any other ref, remote, pattern or force is refused as an argument.\n\nBefore anything leaves the machine it reads every git object and commit message the push would expose for the first time, through every outgoing commit and merge parent, and refuses an unresolved conflict, a raw payload path, an unsafe file name, a blob over 16 MiB, a message-less or set-aside commit, a recognisable credential or one of this machine's own secrets or account identifiers anywhere, anything the redactor would still change in a trace file, and a redaction decision no person is recorded as having taken. A scan of the 18 commits then unpushed showed why the context-shaped kinds are refused in trace files only: the home path and the user name occur in 5,153 result and receipt files of the kind main already publishes, and KEY=value in 109 ordinary fixtures. A blob's verdict is kept by its git id under the policy, rules and decisions in force. A push whose answer is lost is settled by reading the remote. The receipt, outside the tree and sealed into the private archive, says which trace logs are public and which pending and what the archive holds on this machine only. After a push, develop@origin counts among jj's immutable heads.\n\nThe redactor now also treats the private archive's three R2 tokens as this machine's secrets. Verified by llm-dlc/tools/test_checkpoint.py, 12 tests on real jj repositories with a bare remote: a dirty workspace is checkpointed at its last commit with the foreign files' hashes and the working-copy commit unchanged, a fresh clone reads the code at develop, and the test gate, the session sync and the log upload are each patched to fail if called; a credential in a parent commit is refused though the tip deleted it; an unsafe message, a run record, an environment file, an oversized blob, a bad name, a conflict and a forged allow-list approval are refused with the remote unchanged; --all, --bookmark, --force, --remote, a refspec and a pattern exit 2; a develop that moved elsewhere is never forced; a lost answer is one push. The tests the change selects passed (22 files). llm-dlc/specification.md, Checkpoints, is the contract. The first push to the real develop is the watcher's, at this cycle's end (the user's decision); a rehearsal on the real history against a bare remote follows. The allow list gains one proposal (a82875ef, a made-up home directory in test_vm_inventory.py), for the user to approve.",
+      "log_sha256": "5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9"
     }
   ],
   "logs": {
@@ -100,6 +113,12 @@
       "bytes": 2869473,
       "lines": 668,
       "gzip_bytes": 562430,
+      "url": null
+    },
+    "5ce35f7c96910fff53d2472c707a6e927ca2e3e9b21085fc2eb4480a067903e9": {
+      "bytes": 3406144,
+      "lines": 833,
+      "gzip_bytes": 623592,
       "url": null
     },
     "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f": {

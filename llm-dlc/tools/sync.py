@@ -55,6 +55,12 @@ Commands:
                                 It first requires a passed default test run covering @- (lib/tools/
                                 default_run.py gate --run: one is run inline when none is recorded);
                                 --skip-tests REASON is the user's word to push without
+  sync.py checkpoint --rev REV [--dry-run]
+                                put one committed revision on origin's `develop`, forward only, for others to
+                                read while work goes on: it reads no working copy, runs no test, uploads no
+                                log and waits for nothing; it refuses if what the push would expose holds a
+                                conflict, a raw payload, a credential or an undecided redaction decision
+                                (checkpoint.py). --bootstrap creates `develop` where origin's `main` is
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -166,6 +172,9 @@ PURGE_TOKEN = Path.home() / ".config" / "llm-traces" / "cloudflare-token"
 # An R2 API token for the llm-traces bucket (Object Read & Write): account_id=, access_key_id= and
 # secret_access_key= lines. With it, puts and deletes go to R2's S3 API (R2Client); without it, wrangler.
 R2_CREDENTIALS = Path.home() / ".config" / "llm-traces" / "r2-credentials"
+# Where the private archive of original outputs keeps its R2 tokens (llm-dlc/tools/artifacts.py): secrets of this
+# machine like the one above, so the redactor removes them from every log.
+ORIGINALS_CREDENTIALS = Path.home() / ".config" / "in-the-loop"
 SCHEMA = "llm-trace-manifest/v1"
 # Wrangler keeps its OAuth tokens here; the spec forbids printing them, redaction removes them anyway.
 WRANGLER_CONFIGS = (Path.home() / ".config" / ".wrangler" / "config" / "default.toml",
@@ -330,6 +339,9 @@ def personal_literals() -> tuple[list[tuple[str, str, int, str]], str]:
         secrets.append(PURGE_TOKEN.read_text().strip())
     # Both keys; the account id is not a secret (it is in every R2 endpoint) and is left alone.
     secrets += [v for k, v in read_r2_credentials().items() if k in ("access_key_id", "secret_access_key")]
+    # The private archive's tokens (artifacts.py): the writer's and each reader's.
+    for credential in sorted(ORIGINALS_CREDENTIALS.glob("r2-originals-*")) if ORIGINALS_CREDENTIALS.is_dir() else []:
+        secrets += [v for k, v in read_r2_credentials(credential).items() if k in ("access_key_id", "secret_access_key")]
     for cfg in WRANGLER_CONFIGS:
         if cfg.exists():
             secrets += re.findall(r'^(?:oauth_token|refresh_token)\s*=\s*"([^"]+)"', cfg.read_text(), re.M)
@@ -4218,6 +4230,9 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_commit(args)
     elif cmd == "push":
         return cmd_push(args)
+    elif cmd == "checkpoint":
+        import checkpoint  # llm-dlc/tools/checkpoint.py; it is handed this module, which runs as __main__
+        return checkpoint.cmd_checkpoint(sys.modules[__name__], args)
     elif cmd == "upload":
         return cmd_upload()
     elif cmd == "unpublish":

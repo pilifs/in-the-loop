@@ -95,7 +95,7 @@ CREDENTIAL_FILES = {"writer": "r2-originals-writer", "ordinary": "r2-originals-r
 # unclassified bytes are received into restricted custody, never into ordinary.
 ORDINARY_KINDS = frozenset({
     "job-logs", "job-outputs", "job-diff", "job-result", "job-workdir", "job-run", "example-records",
-    "selector-cases", "trace-log", "decisions", "canary",
+    "selector-cases", "trace-log", "decisions", "checkpoint-receipt", "promotion-receipt", "canary",
 })
 RESTRICTED_KINDS = frozenset({"session-transcript", "run-record", "watcher-record", "canary-restricted"})
 STATES = ("expected", "locally_sealed", "transferring", "remote_verified", "retryable_error", "missing_input",
