@@ -1,0 +1,394 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/declared-modules/01/compsuite-i-4.json
+@@ -0,0 +1,50 @@
++{
++  "old": {
++    "commit": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
++    "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
++    "scope": "complete original Maven production module",
++    "module": "apollo-client/pom.xml",
++    "subjectJdk": "8.0.512.0+9-tem",
++    "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++    "goals": [
++      "-pl",
++      "apollo-client",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=target/upgrade-runtime.cp",
++      "package",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++    ],
++    "declaredReleaseRepositories": [],
++    "stage": "artifacts ready",
++    "compiledClasses": 117,
++    "resources": 7,
++    "seconds": 23.82,
++    "orderedClasspathSha256": [
++      "028ccd3ad36f4d54c64b75cb60ec8ff0bea7c7130dcc5375182ce51732a5265d",
++      "49507a59cb46489061acf61bfd8fcc832d1529a47cc8a9bfef153cd42baf0a0d",
++      "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
++      "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++      "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
++      "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++      "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++      "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
++      "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
++      "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
++      "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
++      "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
++      "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
++      "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++      "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
++      "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
++      "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
++    ]
++  },
++  "new": {
++    "stage": "original Maven build unavailable",
++    "diagnostic": [
++      "[Errno 98] Address already in use"
++    ]
++  }
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-recovery-2/01/compsuite-i-4.json
+@@ -0,0 +1,115 @@
++{
++  "entry": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;",
++  "observer": "Retrieve the registered original factory from the Guice-backed client registry for two namespaces.",
++  "domainBasis": "Registration associates the supplied namespace with a specific factory. The factory manager publicly checks that registry first. Each test uses a fresh JVM and the real client injector.",
++  "cases": [
++    {
++      "args": [
++        "application"
++      ],
++      "expected": {
++        "return": "true"
++      }
++    },
++    {
++      "args": [
++        "custom.namespace"
++      ],
++      "expected": {
++        "return": "true"
++      }
++    }
++  ],
++  "probeSha256": "0291ccc423cb4d1cbb9ade56e67fc727c6fccae446fcff38159774b198b9895a",
++  "launcherSha256": "807dfe7c538df322ab8d36aa13b60fedfe4a27f5577d7c2fcb032d6b0c5b3ebc",
++  "tracerSha256": "df39feab8ae0e9f741e3c85df006ad18897afba826fa8853b79f56d47a54f276",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
++      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
++      "callerClassSha256": "96820d55b1c3570f156a3bf3176a7f9e9e1e5b6e8607b49ab0f5c5d279e0124a",
++      "classpath": [
++        "4594c682eea12f22876e03a3ca813bfcda180af15f8cfc1bfd3283fa3ea5657e",
++        "48c5c6b91a200ebecae3c3cdd66de1863d1346bf8ce89e6871b08e4ac10718bc",
++        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
++        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
++        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
++        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
++        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
++        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
++        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
++        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
++      ],
++      "dependency": "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 16,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 0,
++          "observations": []
++        }
++      ]
++    },
++    "new": {
++      "commit": "b494d596132961f8f6dc7f229a1d0e4919da151b",
++      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
++      "callerClassSha256": "96820d55b1c3570f156a3bf3176a7f9e9e1e5b6e8607b49ab0f5c5d279e0124a",
++      "classpath": [
++        "4594c682eea12f22876e03a3ca813bfcda180af15f8cfc1bfd3283fa3ea5657e",
++        "48c5c6b91a200ebecae3c3cdd66de1863d1346bf8ce89e6871b08e4ac10718bc",
++        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "d258ff1bd9b8b527872f8402648226658ad3149f1f40e74b0566d69e7e042fbc",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
++        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
++        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
++        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
++        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
++        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
++        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
++        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
++      ],
++      "dependency": "d258ff1bd9b8b527872f8402648226658ad3149f1f40e74b0566d69e7e042fbc",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 16,
++      "resources": null
++    }
++  },
++  "status": "open",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "1256d91e4c0016731af534c5a9f816c7ddf526a82c2b90a6d30cd316bbbd63a6",
++    "UpgradeProbe": "e38c195911ee946a885a2d00daa3d9074aa36df99a2d8a4d4fe9a96384476558",
++    "UpgradeTrace": "e3989345cc5fade07c7584ac542d301d1e358bb81c5cbcf9e3c3b8edbeeddbd1"
++  },
++  "stoppedAt": {
++    "side": "old",
++    "input": 0,
++    "repetition": 1,
++    "exception": "com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)"
++  },
++  "reason": "old input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused by com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Apollo Injector! at com.ctrip.framework.apollo.build.ApolloInjector.getInjector(ApolloInjector.java:22) caused by java.lang.IllegalStateException: No implementation defined in /META-INF/services/com.ctrip.framework.apollo.internals.Injector, please check whether the file exists and has the right implementation class! at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadFirst(ServiceBootstrap.java:10)",
++  "specSha256": "6ffb9e20b7e92618bb8525741b139eccb04aefa89d9bb999a065af0a8d953970",
++  "elapsedSeconds": 1.031
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/01/compsuite-i-4/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.406 sec <<< FAILURE! - in com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
++testGetFactoryFromRegistry(com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest)  Time elapsed: 0.378 sec  <<< ERROR!
++java.lang.ExceptionInInitializerError
++	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
++Caused by: com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Guice Injector!
++	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
++Caused by: java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
++	at com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest.setUp(DefaultConfigFactoryManagerTest.java:24)
++
++
++Results :
++
++Tests in error: 
++  DefaultConfigFactoryManagerTest.setUp:24 ExceptionInInitializer
++
++Tests run: 1, Failures: 0, Errors: 1, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Apollo 1.4.0:
++[INFO] 
++[INFO] Apollo ............................................. SUCCESS [  1.076 s]
++[INFO] Apollo Core ........................................ SUCCESS [  4.198 s]
++[INFO] Apollo Client ...................................... FAILURE [  4.965 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  11.356 s
++[INFO] Finished at: 2026-11-21T05:50:30Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.19.1:test (default-test) on project apollo-client: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/apollo-client/target/surefire-reports for the individual test results.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :apollo-client
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/01/compsuite-i-4/new/summary.json
+@@ -0,0 +1,68 @@
++{
++  "revision": "b494d596132961f8f6dc7f229a1d0e4919da151b",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "4db9f6f0c2ab47c0196581e3f0cdf073fab0bd6e700b2de8a83b5b8d52b5217a",
++      "mavenCommandLines": [
++        "- mvn clean test jacoco:report coveralls:report"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "apollo-client",
++  "goals": [
++    "-pl",
++    "apollo-client",
++    "-am",
++    "-Dtest=DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [],
++  "resolver": {
++    "cachedRequests": 1132
++  },
++  "exit": 1,
++  "seconds": 12.93,
++  "logSha256": "4fecc9bbaeeb23bbeb5a8d4bb24ab63371e27017d820db379217a26465c5abe7",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
++        "method": "testGetFactoryFromRegistry",
++        "outcome": "error",
++        "type": "java.lang.ExceptionInInitializerError",
++        "message": ""
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
++        "method": "testGetFactoryFromRegistry",
++        "outcome": "error",
++        "type": "java.lang.ExceptionInInitializerError",
++        "message": ""
++      }
++    ],
++    "reportCount": 1,
++    "reportsSha256": "2094b80016b32332d9b0dea3ef8a4f278a3b802511a1e837246c5eb32e366f91"
++  },
++  "diagnostic": [
++    "java.lang.ExceptionInInitializerError",
++    "Caused by: com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to initialize Guice Injector!",
++    "Caused by: java.lang.NoSuchMethodError: com.google.common.base.Preconditions.checkArgument(ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V",
++    "Tests in error:",
++    "DefaultConfigFactoryManagerTest.setUp:24 ExceptionInInitializer"
++  ],
++  "namedTest": "DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-recovery/01/compsuite-i-4/new/testcases/2fceb64ece36.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/01/compsuite-i-4/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] skip non existing resourceDirectory /project/apollo-client/src/main/config
++[INFO] skip non existing resourceDirectory /project/apollo-client/src/main/config
++[INFO] 
++[INFO] --- maven-compiler-plugin:3.6.0:compile (default-compile) @ apollo-client ---
++[INFO] Changes detected - recompiling the module!
++[INFO] Compiling 79 source files to /project/apollo-client/target/classes
++[INFO] 
++[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ apollo-client ---
++[INFO] Using 'UTF-8' encoding to copy filtered resources.
++[INFO] Copying 42 resources
++[INFO] 
++[INFO] --- maven-compiler-plugin:3.6.0:testCompile (default-testCompile) @ apollo-client ---
++[INFO] Changes detected - recompiling the module!
++[INFO] Compiling 37 source files to /project/apollo-client/target/test-classes
++[INFO] /project/apollo-client/src/test/java/com/ctrip/framework/apollo/internals/RemoteConfigRepositoryTest.java: Some input files use unchecked or unsafe operations.
++[INFO] /project/apollo-client/src/test/java/com/ctrip/framework/apollo/internals/RemoteConfigRepositoryTest.java: Recompile with -Xlint:unchecked for details.
++[INFO] 
++[INFO] --- maven-surefire-plugin:2.19.1:test (default-test) @ apollo-client ---
++                    
++                    
++                   
++
++-------------------------------------------------------
++ T E S T S
++-------------------------------------------------------
++Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/scratch/jvm -Duser.home=/work/home
++Running com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.207 sec - in com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest
++
++Results :
++
++Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
++
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for Apollo 1.4.0:
++[INFO] 
++[INFO] Apollo ............................................. SUCCESS [  1.066 s]
++[INFO] Apollo Core ........................................ SUCCESS [  3.917 s]
++[INFO] Apollo Client ...................................... SUCCESS [  4.415 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  11.490 s
++[INFO] Finished at: 2026-11-21T05:50:18Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/focused-recovery/01/compsuite-i-4/old/summary.json
+@@ -0,0 +1,51 @@
++{
++  "revision": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "4db9f6f0c2ab47c0196581e3f0cdf073fab0bd6e700b2de8a83b5b8d52b5217a",
++      "mavenCommandLines": [
++        "- mvn clean test jacoco:report coveralls:report"
++      ]
++    }
++  },
++  "selectedLifecycle": "original Maven test lifecycle focused on the registered developer testcase",
++  "module": "apollo-client",
++  "goals": [
++    "-pl",
++    "apollo-client",
++    "-am",
++    "-Dtest=DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++    "-DfailIfNoTests=false",
++    "-Dsurefire.failIfNoSpecifiedTests=false",
++    "test"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [],
++  "resolver": {
++    "cachedRequests": 1132
++  },
++  "exit": 0,
++  "seconds": 12.75,
++  "logSha256": "6bec42fb799f3b8471ad025d74d78cc8b4ce8d59b9ffd4a592178df00cc914ce",
++  "freshReports": {
++    "tests": 1,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 0,
++    "named": [
++      {
++        "class": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManagerTest",
++        "method": "testGetFactoryFromRegistry",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 1,
++    "reportsSha256": "746297e8ae83c7fdef4635e55ff0b6da2bec6970cce31a2b3478214fa87cd044"
++  },
++  "namedTest": "DefaultConfigFactoryManagerTest#testGetFactoryFromRegistry",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/focused-recovery/01/compsuite-i-4/old/testcases/2fceb64ece36.xml.gz changed

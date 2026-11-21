@@ -1,0 +1,308 @@
+{
+  "wire_version": 1,
+  "verdict": "unverifiable",
+  "target": "calibration.Projection#format(int)",
+  "domain": "code: int",
+  "counterexample": null,
+  "proof": null,
+  "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "statement": "verifier/work/pair/RegressionPair.java",
+  "findings": [
+    {
+      "rule_id": "unverifiable",
+      "message": "RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "uri": null,
+      "line": 47
+    }
+  ],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verifier/work/pair/RegressionPair.java) calls the previous version's calibration.Projection#format(int), relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, outside the inputs the change is meant to affect (`false`, read on the new version), each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✗ calibration.Projection#format(int) cannot be verified as a property of the pair of versions (below)\n✗ RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+  "work": "verifier/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 0.083618527,
+    "properties": 1,
+    "unwind": 32,
+    "max_array_length": 96,
+    "stage": null,
+    "native": {
+      "paths": 11,
+      "merges": 0,
+      "solver_calls": 12,
+      "solving_seconds": 0.005405907,
+      "gates_evaluated": 402,
+      "evaluating_seconds": 0.000034954,
+      "divisions": 2,
+      "divisions_built": 2,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 12847,
+      "clauses": 44370,
+      "seconds": 0.073663512,
+      "loading_seconds": 0.026953402,
+      "decoding_seconds": 0.000139169,
+      "encoding_seconds": 0.010680541,
+      "witness_seconds": 0.0
+    },
+    "gap_mode": "strict",
+    "gaps": [
+      {
+        "id": "jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13",
+        "kind": "jdk-static-method",
+        "call": "java.lang.Class.forName(java.lang.String)",
+        "sites": [
+          "before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23"
+        ],
+        "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+        "treatment": "refused"
+      }
+    ],
+    "deadline_seconds": 600.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 600.0,
+        "seconds": 0.074,
+        "ended": "no-verdict",
+        "ending": "no-verdict",
+        "phases": {
+          "loading": 0.027,
+          "lowering": 0.0,
+          "symbolic": 0.03,
+          "encoding": 0.011,
+          "solving": 0.005,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 12847,
+          "clauses": 44370
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "code",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        }
+      ],
+      "shared_arrays": false,
+      "text": "code: int"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "code >= 0 && code < 18",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 32,
+      "max_array_length": null,
+      "complete": false
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+      "classes": 40,
+      "jdk": "21.0.13"
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null
+  },
+  "pair": {
+    "verdict": "unverifiable",
+    "target": "RegressionPair#agree",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 18",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "uri": null,
+        "line": 47
+      }
+    ],
+    "output": "✗ RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+    "work": "verifier/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.083618527,
+      "properties": 1,
+      "unwind": 32,
+      "max_array_length": 96,
+      "stage": null,
+      "native": {
+        "paths": 11,
+        "merges": 0,
+        "solver_calls": 12,
+        "solving_seconds": 0.005405907,
+        "gates_evaluated": 402,
+        "evaluating_seconds": 0.000034954,
+        "divisions": 2,
+        "divisions_built": 2,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 12847,
+        "clauses": 44370,
+        "seconds": 0.073663512,
+        "loading_seconds": 0.026953402,
+        "decoding_seconds": 0.000139169,
+        "encoding_seconds": 0.010680541,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.lang.Class.forName(java.lang.String)",
+          "sites": [
+            "before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.074,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.027,
+            "lowering": 0.0,
+            "symbolic": 0.03,
+            "encoding": 0.011,
+            "solving": 0.005,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 12847,
+            "clauses": 44370
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.097,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.074,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.021
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 18",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 32,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+}

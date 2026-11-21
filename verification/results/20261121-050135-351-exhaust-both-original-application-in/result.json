@@ -1,0 +1,173 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-050135-351-exhaust-both-original-application-in",
+  "title": "351 exhaust both original application inputs on the real upgrade classpaths",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.8s, peak 130.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-050135-351-exhaust-both-original-application-in.json",
+    "sha256": "8ee52c90a62a73ae5ae1ed78d1ea10c63a21ca35f70a85b3b7fb61a2c7f067cb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-050135-351-exhaust-both-original-application-in",
+      "title": "351 exhaust both original application inputs on the real upgrade classpaths",
+      "description": "Compare both public SDK operations on the maximum instant and the ordinary-date companion, preserving the original public-workaround semantics. Every boolean runs in a separate JVM on each original classpath. Reconcile the adapter with the independent controls and run any differing input again.",
+      "kind": "real-world",
+      "capabilities": [
+        "finite-jvm",
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "351"
+        ]
+      },
+      "expected": "The unchanged finite-domain claim produces its expected disposition with both inputs and all original classpath bindings.",
+      "submitted": {
+        "at": "2026-11-21T05:01:35+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Exhaust the unchanged original case",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 351 --finite-domain --tasks roundtrip",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/351-aws-joda-instant/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "10e2b32c96e80ea82c8b819bfa10aa402a102ca7",
+  "startedAt": "2026-11-21T05:41:03+00:00",
+  "finishedAt": "2026-11-21T05:41:12+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4100540,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 136269824,
+    "wallSeconds": 4.8,
+    "cpuSeconds": 8.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exhaust the unchanged original case",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 351 --finite-domain --tasks roundtrip",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 4.81,
+      "cpuSeconds": 7.972,
+      "cpuThrottledSeconds": 0.438,
+      "peakMemoryBytes": 136269824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exhaust-the-unchanged-original.log",
+        "lines": 1,
+        "bytes": 38,
+        "sha256": "664d085b8a560db599f3a95570b433670108fc96a9b793861cbfc3015a294339",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "351 roundtrip established 2 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/351-aws-joda-instant/records/finite-proofs/20261121T054107Z-8c64b0da/batch.json",
+      "change": "added",
+      "bytes": 1143,
+      "sha256": "71cd6a4ee0210c38555468a5b40899382b619f3a3115976c513710ab56a23f36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/351-aws-joda-instant/records/finite-proofs/20261121T054107Z-8c64b0da/roundtrip.json",
+      "change": "added",
+      "bytes": 10154,
+      "sha256": "4f308d05dc9d8c1f5fb18d9765f0a3d6863a9e4eca211712f448b4789675fd53",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:41:31+00:00",
+    "applied": [
+      "examples/351-aws-joda-instant/records/finite-proofs/20261121T054107Z-8c64b0da/batch.json",
+      "examples/351-aws-joda-instant/records/finite-proofs/20261121T054107Z-8c64b0da/roundtrip.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

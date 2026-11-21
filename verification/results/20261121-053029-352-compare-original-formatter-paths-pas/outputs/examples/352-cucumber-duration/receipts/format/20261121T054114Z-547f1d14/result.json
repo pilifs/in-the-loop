@@ -1,0 +1,425 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "67a005f6475fcb1b",
+    "format": 1,
+    "example": "352",
+    "statement": {
+      "approach": "target",
+      "task": "format",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "net.masterthought.cucumber.json.Result#getFormattedDuration()Ljava/lang/String;",
+      "revisions": [
+        "old",
+        "new"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "format",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "net.masterthought.cucumber.json.Result#getFormattedDuration()Ljava/lang/String;",
+        "file": "claims/format.json",
+        "sha256": "082e8e79b2669f68053073cbfd9e66ffdd9f7d19b27bb398a6fa89a374906b1a",
+        "property": "format",
+        "claimKind": "preservation",
+        "statement": "Both sides of the upgrade return exactly the same duration string for 18 report values deserialized from JSON, in UTC and English.",
+        "assume": "code >= 0 && code < 18",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": "false",
+        "bounds": {
+          "unwind": 32,
+          "maxArrayLength": 96
+        },
+        "explicitBounds": {
+          "unwind": 32,
+          "maxArrayLength": 96
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "caller-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "ec949ed6837ae3a5e0cf9376f7d38abcceaeebd49688fcfc726e4290390f458b"
+          },
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/calibration/CaseDriver.java",
+            "sha256": "e48002ef29c055a5224f19943c0dfd9f08b84c8f744dd80765c423066f9aad0c"
+          }
+        ],
+        "adapter": {
+          "entry": "calibration.Projection#format(I)Ljava/lang/String;",
+          "mapping": "Each selector picks one of three seconds, three millisecond values and two remainders; Jackson builds the real Result and the actual Joda formatter supplies the returned text.",
+          "correspondence": "caller-oracle",
+          "cases": 18
+        },
+        "key": "84de348848248c23"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 96,
+      "intendedInputs": "false"
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "format",
+      "sidecar": "99e7ef1d461897f6bda28e1cc9b5317828ad51b11e018b8c2e7c9782e331ae2c",
+      "revisions": {
+        "old": "9e98993fbccbdd19a6be628fd9dcc4d8e2a4ff79",
+        "new": "29697966eacf46448a806ea03c6dd2d10e2665ec"
+      },
+      "dependencies": [
+        {
+          "revision": "old",
+          "position": 0,
+          "role": "driver",
+          "sha256": "75fb42c33b9b22fee2ca0f9aef415613c8d9b207cfac2c2880868f37ad5601f5"
+        },
+        {
+          "revision": "old",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "f243d3a2fececda0416d1432120e6828fa065b50f2df92662c4221af7a8876a0"
+        },
+        {
+          "revision": "old",
+          "position": 2,
+          "role": "original",
+          "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d",
+          "coordinates": "net.masterthought:cucumber-reporting:5.7.8"
+        },
+        {
+          "revision": "old",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "10628411ecb40c4634196c544f34681abdeef826f377096357433d1f9a135bc6",
+          "coordinates": "joda-time:joda-time:2.12.5"
+        },
+        {
+          "revision": "old",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+          "coordinates": "org.apache.commons:commons-lang3:3.14.0"
+        },
+        {
+          "revision": "old",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b",
+          "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.16.0"
+        },
+        {
+          "revision": "old",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a",
+          "coordinates": "com.fasterxml.jackson.core:jackson-core:2.16.0"
+        },
+        {
+          "revision": "old",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6",
+          "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.16.0"
+        },
+        {
+          "revision": "new",
+          "position": 0,
+          "role": "driver",
+          "sha256": "75fb42c33b9b22fee2ca0f9aef415613c8d9b207cfac2c2880868f37ad5601f5"
+        },
+        {
+          "revision": "new",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "f243d3a2fececda0416d1432120e6828fa065b50f2df92662c4221af7a8876a0"
+        },
+        {
+          "revision": "new",
+          "position": 2,
+          "role": "original",
+          "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d",
+          "coordinates": "net.masterthought:cucumber-reporting:5.7.8"
+        },
+        {
+          "revision": "new",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "f095506881f99d70cfddefd535c8ca0261b44f2ab53530d3adc89a92db9022f9",
+          "coordinates": "joda-time:joda-time:2.12.6"
+        },
+        {
+          "revision": "new",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+          "coordinates": "org.apache.commons:commons-lang3:3.14.0"
+        },
+        {
+          "revision": "new",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b",
+          "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.16.0"
+        },
+        {
+          "revision": "new",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a",
+          "coordinates": "com.fasterxml.jackson.core:jackson-core:2.16.0"
+        },
+        {
+          "revision": "new",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6",
+          "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.16.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/calibration/Projection.java": "ce817644f557a963d3299447ce4b0b3e060a73931ffb851b050a90f8357cf900",
+        "claims/format.json": "082e8e79b2669f68053073cbfd9e66ffdd9f7d19b27bb398a6fa89a374906b1a",
+        "controls/oracle.py": "ec949ed6837ae3a5e0cf9376f7d38abcceaeebd49688fcfc726e4290390f458b",
+        "driver/calibration/CaseDriver.java": "e48002ef29c055a5224f19943c0dfd9f08b84c8f744dd80765c423066f9aad0c"
+      },
+      "claimKey": "84de348848248c23"
+    }
+  },
+  "attempt": {
+    "id": "20261121T054114Z-547f1d14",
+    "claim": "67a005f6475fcb1b",
+    "startedAt": "2026-11-21T05:41:14+00:00",
+    "seconds": 1.5,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/old",
+      "--after",
+      "verifier/classes/new",
+      "--target",
+      "calibration.Projection#format(int)",
+      "--classpath",
+      "prepare/new/lib/net.masterthought/cucumber-reporting-5.7.8.jar",
+      "--classpath",
+      "prepare/new/lib/joda-time/joda-time-2.12.6.jar",
+      "--classpath",
+      "prepare/new/lib/org.apache.commons/commons-lang3-3.14.0.jar",
+      "--classpath",
+      "prepare/new/lib/com.fasterxml.jackson.core/jackson-databind-2.16.0.jar",
+      "--classpath",
+      "prepare/new/lib/com.fasterxml.jackson.core/jackson-core-2.16.0.jar",
+      "--classpath",
+      "prepare/new/lib/com.fasterxml.jackson.core/jackson-annotations-2.16.0.jar",
+      "--before-classpath",
+      "prepare/old/lib/net.masterthought/cucumber-reporting-5.7.8.jar",
+      "--before-classpath",
+      "prepare/old/lib/joda-time/joda-time-2.12.5.jar",
+      "--before-classpath",
+      "prepare/old/lib/org.apache.commons/commons-lang3-3.14.0.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.fasterxml.jackson.core/jackson-databind-2.16.0.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.fasterxml.jackson.core/jackson-core-2.16.0.jar",
+      "--before-classpath",
+      "prepare/old/lib/com.fasterxml.jackson.core/jackson-annotations-2.16.0.jar",
+      "--unchanged-unless",
+      "false",
+      "--assume",
+      "code >= 0 && code < 18",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "96",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "c404331bbfe6d930e265837090c1a19cea2432ef78c24c4ae92f5057227a9771"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "b42d4efbee94ed3cf6435ebf52a71b728c20ebca47d6ebadd13149d926f8ef07",
+        "files": 1
+      },
+      "after": {
+        "sha256": "b42d4efbee94ed3cf6435ebf52a71b728c20ebca47d6ebadd13149d926f8ef07",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261121-053029-352-compare-original-formatter-paths-pas",
+      "sourceCommit": "624434867e65914442263751eb4aeb670818a068",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-053029-352-compare-original-formatter-paths-pas"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control old on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.265,
+        "stdout": "records/control-old-jdk21.stdout",
+        "stderr": "records/control-old-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control new on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.265,
+        "stdout": "records/control-new-jdk21.stdout",
+        "stderr": "records/control-new-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.943,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 32,
+      "maxArrayLength": 96,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "67a005f6475fcb1b",
+    "attempt": "20261121T054114Z-547f1d14",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"old\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"new\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at before.com.fasterxml.jackson.databind.ext.Java7Support.<clinit>:23). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "3c13cacf25f054284ca5fc4a59f1e8949b05ca706ae973924f5ef55779779429",
+        "bytes": 889217
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "13bf4c2e970cf7dcd9e7a2162843e3af90819fec92c79f8a54e57ac8deed5881",
+        "bytes": 1451
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "624988b22e0543dc1b08aa4fdbd8fb09e26bd236c12a9059197bd2eaa7861191",
+        "bytes": 2622
+      },
+      {
+        "path": "records/control-old-jdk21.stdout",
+        "sha256": "1a2655cafe1a0d5b8154a0f96c2b06e1814c3a7667ae49b6930053d505f05343",
+        "bytes": 944
+      },
+      {
+        "path": "records/control-old-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "c8ca888568f9c3021d351d1ff27acb2e099da1ca0e91e7a8af05cc7c36d37e52",
+        "bytes": 13090
+      },
+      {
+        "path": "records/control-new-jdk21.stdout",
+        "sha256": "1a2655cafe1a0d5b8154a0f96c2b06e1814c3a7667ae49b6930053d505f05343",
+        "bytes": 944
+      },
+      {
+        "path": "records/control-new-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "2fbf45c34b7fd98bfddc5895e584641f6bfe812aa1434f3ae4e6981750c007fe",
+        "bytes": 12667
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "b0787fe5c90066ea902b1a3e94dfe3fba6f1f19ef61ad1a3910479b809223471",
+        "bytes": 524288
+      }
+    ]
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-054619-separate-outbound-wire-serialization-and",
+  "title": "Separate outbound Wire serialization and workbook opening from later client operations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.4s, peak 149.5 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-054619-separate-outbound-wire-serialization-and.json",
+    "sha256": "ec47796c15768f8ca2fd4f2ad79c958e3c4e89febb9ed572b509b4521e655e84",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-054619-separate-outbound-wire-serialization-and",
+      "title": "Separate outbound Wire serialization and workbook opening from later client operations",
+      "description": "Determine whether the regression in the original Retrofit test happens while writing or reading its phone message and whether the original spreadsheet can be opened before a cell style can be read. These additional observations have their own source, descriptor, old expectation and runtime receipt.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Record each exact original run, the checked observation when available and the first unsupported step otherwise.",
+      "submitted": {
+        "at": "2026-11-21T05:46:19+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Replay both original prerequisites",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --variant operational --case compsuite-i-1 --case compsuite-i-70 --output verification/external-upgrades/corpus-runs/operational/01",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/operational/01"
+      ]
+    }
+  },
+  "sourceCommit": "37fee54ee1af9625ebce32678aab28252a2a5340",
+  "startedAt": "2026-11-21T05:49:34+00:00",
+  "finishedAt": "2026-11-21T05:49:48+00:00",
+  "wallSeconds": 14.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 58078,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 156807168,
+    "wallSeconds": 9.4,
+    "cpuSeconds": 10.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay both original prerequisites",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --variant operational --case compsuite-i-1 --case compsuite-i-70 --output verification/external-upgrades/corpus-runs/operational/01",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 9.422,
+      "cpuSeconds": 9.988,
+      "cpuThrottledSeconds": 1.001,
+      "peakMemoryBytes": 156807168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-both-original-prerequis.log",
+        "lines": 4,
+        "bytes": 279,
+        "sha256": "19bcd352887eec23b61c0702f79817fe0ff0f2f9ec1fc4f5f00bdc8489eeda20",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "changed retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
+        "compsuite-i-1 changed",
+        "changed com.monitorjbl.xlsx.StreamingReader$Builder#open(Ljava/io/InputStream;)Lorg/apache/poi/ss/usermodel/Workbook;",
+        "compsuite-i-70 changed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/operational/01/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 8230,
+      "sha256": "b2c040109992ade3d759efbb18696f2b1eef29222b426e86d6fc2709153e6a90",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/operational/01/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 14251,
+      "sha256": "791d0f3a13439e68adf2a77a767c5884d7f68cc7c106396a02bd8dff87e1a0e7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:50:14+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/operational/01/compsuite-i-1.json",
+      "verification/external-upgrades/corpus-runs/operational/01/compsuite-i-70.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

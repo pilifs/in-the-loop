@@ -1,0 +1,173 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-054619-observe-spring-configuration-callbacks-a",
+  "title": "Observe Spring configuration callbacks and real Commons VFS file types",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.8s, peak 144.2 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-054619-observe-spring-configuration-callbacks-a.json",
+    "sha256": "a622ca4c834f9d2e30e0ac4cbb9cd7862653642f749e237723564351920dc738",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-054619-observe-spring-configuration-callbacks-a",
+      "title": "Observe Spring configuration callbacks and real Commons VFS file types",
+      "description": "Run the original Nacos property source registration through Spring refresh and the original FTP file type checks through a loopback FTPServer. Preserve each caller, input and underlying implementation when registration fails early.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Record each exact original run, the checked observation when available and the first unsupported step otherwise.",
+      "submitted": {
+        "at": "2026-11-21T05:46:19+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Replay the original clients",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --case compsuite-i-103 --case commons-vfs-55c96cfd --output verification/external-upgrades/corpus-runs/finite-recovery-2/03",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/finite-recovery-2/03"
+      ]
+    }
+  },
+  "sourceCommit": "37fee54ee1af9625ebce32678aab28252a2a5340",
+  "startedAt": "2026-11-21T05:49:34+00:00",
+  "finishedAt": "2026-11-21T05:49:56+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 58078,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 151191552,
+    "wallSeconds": 16.8,
+    "cpuSeconds": 21.2,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay the original clients",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --case compsuite-i-103 --case commons-vfs-55c96cfd --output verification/external-upgrades/corpus-runs/finite-recovery-2/03",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 16.838,
+      "cpuSeconds": 21.195,
+      "cpuThrottledSeconds": 5.456,
+      "peakMemoryBytes": 151191552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-the-original-clients.log",
+        "lines": 4,
+        "bytes": 192,
+        "sha256": "b82c3038a474409c59ce0ff1fbfd3acd7029261be20e548570719f022c3b2e46",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "open Only base64 data is allowed",
+        "compsuite-i-103 open",
+        "preserved org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
+        "commons-vfs-55c96cfd preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-recovery-2/03/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 12902,
+      "sha256": "308ddf899566ee0d97c1eb0d724ed39ae08eb3f4e2518f2b9b93d092393d613b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-recovery-2/03/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 9016,
+      "sha256": "ba5b834944424211aa1b44ddc1e31bd4d35895297bd41a0dda5788b669e4ebb8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T05:50:14+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/finite-recovery-2/03/commons-vfs-55c96cfd.json",
+      "verification/external-upgrades/corpus-runs/finite-recovery-2/03/compsuite-i-103.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,307 @@
+--- /dev/null
++++ b/examples/351-aws-joda-instant/records/finite-proofs/20261121T054107Z-8c64b0da/batch.json
+@@ -0,0 +1,35 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261121T054107Z-8c64b0da",
++  "retryOf": null,
++  "order": [
++    "roundtrip"
++  ],
++  "claims": {
++    "roundtrip": {
++      "sourceClaim": "636fd8e9f73b016f",
++      "inputsKey": "6efd5179bedec8c11d31545ebc6185fb3e7a488aaa81c43e003dec812a75c012",
++      "revisions": [
++        "old",
++        "new"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "old": "c07d5bc1a411c0017bf6096e234d8738ff54d982de737feac86ab1fee3a9adb0",
++        "new": "004555da9fbb0925c68083717ad32a4aa835f199ca107105aac6877bd79c2b4a"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "roundtrip",
++      "status": "established",
++      "sha256": "4f308d05dc9d8c1f5fb18d9765f0a3d6863a9e4eca211712f448b4789675fd53"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "Each input starts with fresh application classes on its pinned classpath. Boolean selections also start a fresh JVM for each value. Integer intervals above 4096 use consecutive JVM batches on one total deadline."
++}
+--- /dev/null
++++ b/examples/351-aws-joda-instant/records/finite-proofs/20261121T054107Z-8c64b0da/roundtrip.json
+@@ -0,0 +1,266 @@
++{
++  "status": "established",
++  "entry": "calibration.Projection#roundtrip(Z)J",
++  "inputs": 2,
++  "differences": 0,
++  "sides": {
++    "old": {
++      "commit": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
++      "entry": {
++        "entry": "calibration.Projection#roundtrip(Z)J",
++        "classSha256": "86bff6b180c0382de7c3623dee5328ebc5d3da1501bb9e6a4335053f546d1890",
++        "loadedFrom": "adapter-old.jar",
++        "subject": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
++        "subjectClassSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055"
++      },
++      "classpath": [
++        {
++          "path": "adapter-old.jar",
++          "sha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496",
++          "role": "adapter"
++        },
++        {
++          "path": "lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++          "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
++          "role": "original"
++        },
++        {
++          "path": "lib/joda-time/joda-time-2.8.1.jar",
++          "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "ordinary",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nboolean ordinary = args[0].equals(\"1\");\nif (!((true) && !(false))) { System.out.println(\"outside\"); return; }\nlong result = 0;\nThrowable failure = null;\ntry { result = calibration.Projection.roundtrip(ordinary); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "47203f7feae0109eb37374c28bb85a3b8f2efa04da23a6aa84a56383b3386f7b",
++      "stdoutSha256": "eb9aa37daadf98ba0a407d25a269a4fd792984b46d6101bcebf98f7131efa28d",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
++      ],
++      "interval": [
++        0,
++        1
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            9223372036854775807,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "observations": [
++            946684800123,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.163,
++      "cpuSeconds": 0.2348,
++      "peakRssBytes": 63586304,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children",
++      "chunks": [
++        {
++          "interval": [
++            0,
++            0
++          ],
++          "seconds": 0.082,
++          "cpuSeconds": 0.1177,
++          "peakRssBytes": 63586304,
++          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++        },
++        {
++          "interval": [
++            1,
++            1
++          ],
++          "seconds": 0.081,
++          "cpuSeconds": 0.1171,
++          "peakRssBytes": 63586304,
++          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++        }
++      ]
++    },
++    "new": {
++      "commit": "985a81b554e02742036fd158e6494c61a367f980",
++      "entry": {
++        "entry": "calibration.Projection#roundtrip(Z)J",
++        "classSha256": "86bff6b180c0382de7c3623dee5328ebc5d3da1501bb9e6a4335053f546d1890",
++        "loadedFrom": "adapter-new.jar",
++        "subject": "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
++        "subjectClassSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055"
++      },
++      "classpath": [
++        {
++          "path": "adapter-new.jar",
++          "sha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496",
++          "role": "adapter"
++        },
++        {
++          "path": "lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++          "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
++          "role": "original"
++        },
++        {
++          "path": "lib/joda-time/joda-time-2.10.5.jar",
++          "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e",
++          "role": "dependency"
++        }
++      ],
++      "parameter": "ordinary",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nboolean ordinary = args[0].equals(\"1\");\nif (!((true) && !(false))) { System.out.println(\"outside\"); return; }\nlong result = 0;\nThrowable failure = null;\ntry { result = calibration.Projection.roundtrip(ordinary); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "47203f7feae0109eb37374c28bb85a3b8f2efa04da23a6aa84a56383b3386f7b",
++      "stdoutSha256": "eb9aa37daadf98ba0a407d25a269a4fd792984b46d6101bcebf98f7131efa28d",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
++      ],
++      "interval": [
++        0,
++        1
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "observations": [
++            9223372036854775807,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "observations": [
++            946684800123,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.174,
++      "cpuSeconds": 0.239,
++      "peakRssBytes": 63586304,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children",
++      "chunks": [
++        {
++          "interval": [
++            0,
++            0
++          ],
++          "seconds": 0.092,
++          "cpuSeconds": 0.1256,
++          "peakRssBytes": 63586304,
++          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++        },
++        {
++          "interval": [
++            1,
++            1
++          ],
++          "seconds": 0.082,
++          "cpuSeconds": 0.1134,
++          "peakRssBytes": 63586304,
++          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++        }
++      ]
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "old",
++      "entry": "calibration.Projection#roundtrip(Z)J",
++      "adapterSha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496",
++      "adapterClassSha256": "86bff6b180c0382de7c3623dee5328ebc5d3da1501bb9e6a4335053f546d1890",
++      "subject": {
++        "class": "com.amazonaws.util.DateUtils",
++        "method": "parseISO8601Date",
++        "descriptor": "(Ljava/lang/String;)Ljava/util/Date;",
++        "loadedFrom": "lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++        "classSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055",
++        "adapterCalls": [
++          "com.amazonaws.util.DateUtils#formatISO8601Date(Ljava/util/Date;)Ljava/lang/String;",
++          "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 2,
++      "disagreements": 0
++    },
++    {
++      "revision": "new",
++      "entry": "calibration.Projection#roundtrip(Z)J",
++      "adapterSha256": "a6b4c604f41bc5dcda6273d51c6882badf5d85b9b8c9f32a355fbc2d6c28a496",
++      "adapterClassSha256": "86bff6b180c0382de7c3623dee5328ebc5d3da1501bb9e6a4335053f546d1890",
++      "subject": {
++        "class": "com.amazonaws.util.DateUtils",
++        "method": "parseISO8601Date",
++        "descriptor": "(Ljava/lang/String;)Ljava/util/Date;",
++        "loadedFrom": "lib/com.amazonaws/aws-java-sdk-core-1.11.664.jar",
++        "classSha256": "328d5964abe28852e2f085e626893291f365da139b9b42fc6651c298ac2d9055",
++        "adapterCalls": [
++          "com.amazonaws.util.DateUtils#formatISO8601Date(Ljava/util/Date;)Ljava/lang/String;",
++          "com.amazonaws.util.DateUtils#parseISO8601Date(Ljava/lang/String;)Ljava/util/Date;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 2,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 2.3796,
++  "controlSeconds": 0.3058,
++  "wallSeconds": 3.8934,
++  "task": "roundtrip",
++  "sourceClaim": "636fd8e9f73b016f",
++  "inputsKey": "6efd5179bedec8c11d31545ebc6185fb3e7a488aaa81c43e003dec812a75c012",
++  "revisions": [
++    "old",
++    "new"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "old": "c07d5bc1a411c0017bf6096e234d8738ff54d982de737feac86ab1fee3a9adb0",
++    "new": "004555da9fbb0925c68083717ad32a4aa835f199ca107105aac6877bd79c2b4a"
++  }
++}
