@@ -1,0 +1,303 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-043003-overload-recovery-group-2-compare-sixtee",
+  "title": "Overload recovery group 2 compare sixteen original upgrades",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 14.8s, peak 211.9 MiB (estimated 10m00s, 2.0 GiB); 16 output file(s) changed",
+  "attention": [
+    "step 1 (Run the exact-overload workflow) was held back 10.9s by its 2-CPU quota in 14.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-043003-overload-recovery-group-2-compare-sixtee.json",
+    "sha256": "c3d6aeb4991af1813dc4009710e053900ebe1cb4e7ae7c727e429e2ff1d9a566",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-043003-overload-recovery-group-2-compare-sixtee",
+      "title": "Overload recovery group 2 compare sixteen original upgrades",
+      "description": "Run each common original overload at its exact JVM parameter types. The attempts share the case deadline. Preserve newly exposed receiver, parameter, dependency and proof diagnostics. Cases: compsuite-i-103, compsuite-i-37, compsuite-i-80, commons-text-775, commons-compress-767, commons-compress-822, commons-configuration-565, commons-configuration-601, cucumber-reporting-1220, cucumber-reporting-1198, commons-beanutils-440, commons-csv-8993be87, reflector-35, commons-fileupload-377, commons-vfs-55c96cfd, commons-validator-86e32931.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "external-upgrade-evaluation"
+      ],
+      "links": {},
+      "expected": "Every upgrade has a report. For an overloaded caller, the report records each prepared common signature and every checker outcome.",
+      "submitted": {
+        "at": "2026-11-21T04:30:03+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Run the exact-overload workflow",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/overloads/02 --case compsuite-i-103 --case compsuite-i-37 --case compsuite-i-80 --case commons-text-775 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601 --case cucumber-reporting-1220 --case cucumber-reporting-1198 --case commons-beanutils-440 --case commons-csv-8993be87 --case reflector-35 --case commons-fileupload-377 --case commons-vfs-55c96cfd --case commons-validator-86e32931",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/overloads/02"
+      ]
+    }
+  },
+  "sourceCommit": "90060227f35895614dcfbdb7713548b648bb6b6a",
+  "startedAt": "2026-11-21T04:39:20+00:00",
+  "finishedAt": "2026-11-21T04:43:23+00:00",
+  "wallSeconds": 243.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3438935,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 222232576,
+    "wallSeconds": 14.8,
+    "cpuSeconds": 26.1,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the exact-overload workflow",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/overloads/02 --case compsuite-i-103 --case compsuite-i-37 --case compsuite-i-80 --case commons-text-775 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601 --case cucumber-reporting-1220 --case cucumber-reporting-1198 --case commons-beanutils-440 --case commons-csv-8993be87 --case reflector-35 --case commons-fileupload-377 --case commons-vfs-55c96cfd --case commons-validator-86e32931",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 14.841,
+      "cpuSeconds": 26.07,
+      "cpuThrottledSeconds": 10.941,
+      "peakMemoryBytes": 222232576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-exact-overload-workflo.log",
+        "lines": 16,
+        "bytes": 3760,
+        "sha256": "b98d2e250d18a2827a9b234ea45d58aa13f008de13a3249b2622f40df185e35b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-103 current open postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibab",
+        "compsuite-i-37 current open original Maven classpath",
+        "compsuite-i-80 current open review the recorded exact overloads",
+        "commons-text-775 current open review the recorded exact overloads",
+        "commons-compress-767 current open review the recorded exact overloads",
+        "commons-compress-822 current open review the recorded exact overloads",
+        "commons-configuration-565 current open review the recorded exact overloads",
+        "commons-configuration-601 current open review the recorded exact overloads",
+        "cucumber-reporting-1220 current open generateReports is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of net.masterthought.cucumber.ReportBuilder made by its constructor, whose the argument jsonFiles of net.masterthought.cucumber.",
+        "cucumber-reporting-1198 current open parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their c",
+        "commons-beanutils-440 current open parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans",
+        "commons-csv-8993be87 current open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of sever",
+        "reflector-35 current open original source compilation",
+        "commons-fileupload-377 current open readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no con",
+        "commons-vfs-55c96cfd current open doGetType is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor: org.apache.commons.vfs2.provider.ftp.FtpFileObject extends org.apa",
+        "commons-validator-86e32931 current open parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, boo"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 6179,
+      "sha256": "9e76931abbd3bfdc8a76d02b0f51423aa96326917cfc0f8aa3df76eacb8a36e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-compress-767.json",
+      "change": "added",
+      "bytes": 12545,
+      "sha256": "8a519d4b0fed6b0bfbdb819aed8a8919421796f5ea2bd36e924b294bd1f43886",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-compress-822.json",
+      "change": "added",
+      "bytes": 12857,
+      "sha256": "e488d2625ff59d6eb84ac8dbe5bef3c658d32def7675e2794ae9eb11170a716d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 17144,
+      "sha256": "4ccede960466e4a0b7c90bc035abb5cf3a035ee22a903ed0dd01dd48ea9b9288",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 22911,
+      "sha256": "2c3b1f0a65e19eb74e2b95d155c169ae3882a6a6af7c841ab5c6116631c159a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 5325,
+      "sha256": "af5bc25908ea9ed36d3e0d3db1b02065f2bb80797d3a26fb8a0f81ab3302313f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 5169,
+      "sha256": "82972eba33ebd53d032fe4841138411980219e109a6ab0720be8fbb04429f1aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-text-775.json",
+      "change": "added",
+      "bytes": 38606,
+      "sha256": "3afebb989d8972e09bf68f656b75f49f626c36889387e0b5cc34841ee0414cad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-validator-86e32931.json",
+      "change": "added",
+      "bytes": 7701,
+      "sha256": "b77e30a632c7c96d4a206a4961676ab950463abda73f457e310f5daa54ea3044",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 9454,
+      "sha256": "9012d6399bb60198d7d2649116a0b3ac2ad1af0c2013850636de6bd6a70e614c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 13233,
+      "sha256": "6741844994110db6d7877033970740164db21cdb700f797b2b6dfa042e290626",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 1435,
+      "sha256": "c96c380e2761efacc33a6d2f923640ef32c5dd35b499186c3dad69dc97811d96",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/compsuite-i-80.json",
+      "change": "added",
+      "bytes": 29789,
+      "sha256": "79b99952d7702a89a716859745ea4b79b34bc176d1efd1137acd333e5a55d750",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 10600,
+      "sha256": "0ce4af86c8431c6b11739aac186b481df8f70533f804495782de748a2ea8c0a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 11112,
+      "sha256": "e8729ed6c2d9c10ed78bbd7ee8b34d106da5dba5097f8872d30c2d7f018cefa4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/02/current/reflector-35.json",
+      "change": "added",
+      "bytes": 4341,
+      "sha256": "ac116ca228d99572473e5746ea977fa4c62af70f709270151fc70879775f521b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:43:56+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-beanutils-440.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-compress-767.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-compress-822.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-configuration-565.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-configuration-601.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-csv-8993be87.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-fileupload-377.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-text-775.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-validator-86e32931.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/commons-vfs-55c96cfd.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/compsuite-i-103.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/compsuite-i-37.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/compsuite-i-80.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/cucumber-reporting-1198.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/cucumber-reporting-1220.json",
+      "verification/external-upgrades/corpus-runs/overloads/02/current/reflector-35.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3498044563ab24615aa42468438e8b7bec7d9a76",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3498044563ab24615aa42468438e8b7bec7d9a76/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

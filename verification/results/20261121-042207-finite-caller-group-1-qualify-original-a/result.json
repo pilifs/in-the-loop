@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-042207-finite-caller-group-1-qualify-original-a",
+  "title": "Finite caller group 1 qualify original application observations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 32.1s, peak 117.9 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-042207-finite-caller-group-1-qualify-original-a.json",
+    "sha256": "c721e40e0745039209827962b29603960df552d00558d964cdf60e49ca3cfd4c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-042207-finite-caller-group-1-qualify-original-a",
+      "title": "Finite caller group 1 qualify original application observations",
+      "description": "Run the reviewed application observer against each original client and upgraded artifact. Require the exact consumer invocation, actual JVM class origins, independent old expectations and agreement between fresh JVM repeats. Cases: commons-beanutils-440, commons-compress-767, commons-compress-822.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Each case records a qualified finite result or the first unavailable operation. Only caller outcomes on both original artifacts count.",
+      "submitted": {
+        "at": "2026-11-21T04:22:07+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Replay original caller scenarios",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/01 --case commons-beanutils-440 --case commons-compress-767 --case commons-compress-822",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/finite-callers/01"
+      ]
+    }
+  },
+  "sourceCommit": "90060227f35895614dcfbdb7713548b648bb6b6a",
+  "startedAt": "2026-11-21T04:39:20+00:00",
+  "finishedAt": "2026-11-21T04:40:01+00:00",
+  "wallSeconds": 41.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3438935,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 123576320,
+    "wallSeconds": 32.1,
+    "cpuSeconds": 29.5,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay original caller scenarios",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/01 --case commons-beanutils-440 --case commons-compress-767 --case commons-compress-822",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 32.063,
+      "cpuSeconds": 29.519,
+      "cpuThrottledSeconds": 3.773,
+      "peakMemoryBytes": 123576320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-original-caller-scenari.log",
+        "lines": 6,
+        "bytes": 433,
+        "sha256": "5a0eefa8d2909321c08407b6f7359419335a984919ea4304ad5cf2ecec763fd9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
+        "commons-beanutils-440 preserved",
+        "preserved org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
+        "commons-compress-767 preserved",
+        "preserved org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
+        "commons-compress-822 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 6967,
+      "sha256": "389a0c9affb47572770015754e125d6e889cd1305edb22a13519155812f1195e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-767.json",
+      "change": "added",
+      "bytes": 9285,
+      "sha256": "8adb76f37f08e403531f027cb6a137a8af3ad9ebff07b3582d9a31e72303bf43",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-822.json",
+      "change": "added",
+      "bytes": 6239,
+      "sha256": "d750bbf07e91a411ef131def1e56b211a6940b6bfb481ac591585dd5c9cfaddb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:43:56+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/finite-callers/01/commons-beanutils-440.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-767.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-822.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

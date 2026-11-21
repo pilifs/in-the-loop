@@ -1,0 +1,709 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/01/commons-beanutils-440.json
+@@ -0,0 +1,234 @@
++{
++  "entry": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
++  "observer": "The formal parameter type of the accessible overload selected for five distinct real Java argument types.",
++  "domainBasis": "An exact public overload wins. Short is assignable only to Number. Boolean matches none of the three reference parameters.",
++  "cases": [
++    {
++      "args": [
++        "Integer"
++      ],
++      "expected": {
++        "return": "java.lang.Integer"
++      }
++    },
++    {
++      "args": [
++        "Short"
++      ],
++      "expected": {
++        "return": "java.lang.Number"
++      }
++    },
++    {
++      "args": [
++        "Number"
++      ],
++      "expected": {
++        "return": "java.lang.Number"
++      }
++    },
++    {
++      "args": [
++        "String"
++      ],
++      "expected": {
++        "return": "java.lang.String"
++      }
++    },
++    {
++      "args": [
++        "Boolean"
++      ],
++      "expected": {
++        "return": null
++      }
++    }
++  ],
++  "probeSha256": "305ce195312f3be8afc75c8daf2f6e90a26b1f4f45dee5f6e17a20c29afeb211",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "389264ff96c9e361ecb830a9813eae3f86f38d3a",
++      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
++      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
++      "classpath": [
++        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "dependency": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Integer"
++            },
++            {
++              "return": "java.lang.Integer"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.String"
++            },
++            {
++              "return": "java.lang.String"
++            }
++          ]
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.ClassUtils",
++        "org.apache.commons.lang3.reflect.AccessibleObjects",
++        "org.apache.commons.lang3.reflect.MemberUtils",
++        "org.apache.commons.lang3.reflect.MemberUtils$Executable",
++        "org.apache.commons.lang3.reflect.MethodUtils"
++      ]
++    },
++    "new": {
++      "commit": "5dc228566038283964a4f665c147282d462babdd",
++      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
++      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
++      "classpath": [
++        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "dependency": "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Integer"
++            },
++            {
++              "return": "java.lang.Integer"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.Number"
++            },
++            {
++              "return": "java.lang.Number"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "java.lang.String"
++            },
++            {
++              "return": "java.lang.String"
++            }
++          ]
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.ArrayUtils",
++        "org.apache.commons.lang3.ClassUtils",
++        "org.apache.commons.lang3.reflect.AccessibleObjects",
++        "org.apache.commons.lang3.reflect.MemberUtils",
++        "org.apache.commons.lang3.reflect.MemberUtils$Executable",
++        "org.apache.commons.lang3.reflect.MethodUtils"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalInvocation": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
++  "probeClasses": {
++    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
++    "UpgradeProbe$Choices": "593caf9a9710453e14e99bdc147c55e9c381e33ab93579424736a6f439999283",
++    "UpgradeProbe": "8c36fae6c827c05cb33e3178d10656876bf627ef681b55f49596be914e7c0047",
++    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 12.24
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-767.json
+@@ -0,0 +1,267 @@
++{
++  "entry": "org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
++  "observer": "The exact bytes delivered by the real decompression stream up to EOF on four valid frames.",
++  "domainBasis": "The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum.",
++  "cases": [
++    {
++      "args": [
++        "/Td6WFoAAATm1rRGAAAAABzfRCEftvN9AQAAAAAEWVo="
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        "/Td6WFoAAATm1rRGAgAhARYAAAB0L+WjAQAFaGVsbG8KAAAApWCX8ZT2/eAAAR4GwS+kHR+2830BAAAAAARZWg=="
++      ],
++      "expected": {
++        "return": "aGVsbG8K"
++      }
++    },
++    {
++      "args": [
++        "/Td6WFoAAATm1rRGAgAhARYAAAB0L+WjAQADAP8AgADIEQ/o8TwglQABHARvLJzBH7bzfQEAAAAABFla"
++      ],
++      "expected": {
++        "return": "AP8AgA=="
++      }
++    },
++    {
++      "args": [
++        "/Td6WFoAAATm1rRGAgAhARYAAAB0L+WjAQAPAAECAwQFBgcICQoLDA0ODwBWU5i2IeRkegABKBDlC2xgH7bzfQEAAAAABFla"
++      ],
++      "expected": {
++        "return": "AAECAwQFBgcICQoLDA0ODw=="
++      }
++    }
++  ],
++  "probeSha256": "6a67aeaedef8e570cb5f208ee059ca92ee49e99c003cb2b7d3b00a5379c165b9",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "f3dfc34f01616abaf75cb255d59769d660428b83",
++      "sourceSha256": "3fe4c08e2cf19f16271020a82180c74125481238827f810560c764376b8d4f9d",
++      "callerClassSha256": "ef33a16cd6b0c3a2113b7aac1bd1e2453795124603b254f743cf439625051f81",
++      "classpath": [
++        "305a7e87f16269991957d538cdc5c61ffda733c811b091e7fe7e227797208c03",
++        "8d6feb1da335f3ab13c584c613e23c7b3c61b392e37956872057baf8f0ca1d6f",
++        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
++        "0a4077f6aeae2865532a564807af8d30c26acc6f63b7928d93bd7ab1f2190449",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "6f3828a215c920059a5efa2fb55c233d6c54ec5cadca99ce1b1bdd10077c7ddd",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
++      ],
++      "dependency": "0a4077f6aeae2865532a564807af8d30c26acc6f63b7928d93bd7ab1f2190449",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "aGVsbG8K"
++            },
++            {
++              "return": "aGVsbG8K"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AP8AgA=="
++            },
++            {
++              "return": "AP8AgA=="
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            },
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.tukaani.xz.ArrayCache",
++        "org.tukaani.xz.BasicArrayCache",
++        "org.tukaani.xz.BlockInputStream",
++        "org.tukaani.xz.CloseIgnoringInputStream",
++        "org.tukaani.xz.CorruptedInputException",
++        "org.tukaani.xz.CountingInputStream",
++        "org.tukaani.xz.FilterCoder",
++        "org.tukaani.xz.FilterDecoder",
++        "org.tukaani.xz.IndexIndicatorException",
++        "org.tukaani.xz.LZMA2Coder",
++        "org.tukaani.xz.LZMA2Decoder",
++        "org.tukaani.xz.LZMA2InputStream",
++        "org.tukaani.xz.MemoryLimitException",
++        "org.tukaani.xz.RawCoder",
++        "org.tukaani.xz.SingleXZInputStream",
++        "org.tukaani.xz.UnsupportedOptionsException",
++        "org.tukaani.xz.XZ",
++        "org.tukaani.xz.XZFormatException",
++        "org.tukaani.xz.XZIOException",
++        "org.tukaani.xz.XZInputStream",
++        "org.tukaani.xz.check.CRC32",
++        "org.tukaani.xz.check.CRC64",
++        "org.tukaani.xz.check.Check",
++        "org.tukaani.xz.check.None",
++        "org.tukaani.xz.check.SHA256",
++        "org.tukaani.xz.common.ByteArrayView",
++        "org.tukaani.xz.common.DecoderUtil",
++        "org.tukaani.xz.common.StreamFlags",
++        "org.tukaani.xz.common.Util",
++        "org.tukaani.xz.index.IndexBase",
++        "org.tukaani.xz.index.IndexHash",
++        "org.tukaani.xz.lz.LZDecoder",
++        "org.tukaani.xz.rangecoder.RangeCoder",
++        "org.tukaani.xz.rangecoder.RangeDecoder",
++        "org.tukaani.xz.rangecoder.RangeDecoderFromBuffer"
++      ]
++    },
++    "new": {
++      "commit": "b0757903222468a7a6b5e80a305ca749585129d5",
++      "sourceSha256": "3fe4c08e2cf19f16271020a82180c74125481238827f810560c764376b8d4f9d",
++      "callerClassSha256": "ef33a16cd6b0c3a2113b7aac1bd1e2453795124603b254f743cf439625051f81",
++      "classpath": [
++        "305a7e87f16269991957d538cdc5c61ffda733c811b091e7fe7e227797208c03",
++        "8d6feb1da335f3ab13c584c613e23c7b3c61b392e37956872057baf8f0ca1d6f",
++        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
++        "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "6f3828a215c920059a5efa2fb55c233d6c54ec5cadca99ce1b1bdd10077c7ddd",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
++      ],
++      "dependency": "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "aGVsbG8K"
++            },
++            {
++              "return": "aGVsbG8K"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AP8AgA=="
++            },
++            {
++              "return": "AP8AgA=="
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            },
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.tukaani.xz.ArrayCache",
++        "org.tukaani.xz.BasicArrayCache",
++        "org.tukaani.xz.BlockInputStream",
++        "org.tukaani.xz.CloseIgnoringInputStream",
++        "org.tukaani.xz.CorruptedInputException",
++        "org.tukaani.xz.CountingInputStream",
++        "org.tukaani.xz.FilterCoder",
++        "org.tukaani.xz.FilterDecoder",
++        "org.tukaani.xz.IndexIndicatorException",
++        "org.tukaani.xz.LZMA2Coder",
++        "org.tukaani.xz.LZMA2Decoder",
++        "org.tukaani.xz.LZMA2InputStream",
++        "org.tukaani.xz.MemoryLimitException",
++        "org.tukaani.xz.RawCoder",
++        "org.tukaani.xz.SingleXZInputStream",
++        "org.tukaani.xz.UnsupportedOptionsException",
++        "org.tukaani.xz.XZ",
++        "org.tukaani.xz.XZFormatException",
++        "org.tukaani.xz.XZIOException",
++        "org.tukaani.xz.XZInputStream",
++        "org.tukaani.xz.check.CRC32",
++        "org.tukaani.xz.check.CRC64",
++        "org.tukaani.xz.check.Check",
++        "org.tukaani.xz.check.None",
++        "org.tukaani.xz.check.SHA256",
++        "org.tukaani.xz.common.ByteArrayView",
++        "org.tukaani.xz.common.DecoderUtil",
++        "org.tukaani.xz.common.StreamFlags",
++        "org.tukaani.xz.common.Util",
++        "org.tukaani.xz.index.IndexBase",
++        "org.tukaani.xz.index.IndexHash",
++        "org.tukaani.xz.lz.LZDecoder",
++        "org.tukaani.xz.rangecoder.RangeCoder",
++        "org.tukaani.xz.rangecoder.RangeDecoder",
++        "org.tukaani.xz.rangecoder.RangeDecoderFromBuffer"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalInvocation": "org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
++  "probeClasses": {
++    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
++    "UpgradeProbe": "a1bef45c618e728001bef535cab741dde367f9c1c1e5695f0cd7339bea14ca7e",
++    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 9.889
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/01/commons-compress-822.json
+@@ -0,0 +1,199 @@
++{
++  "entry": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
++  "observer": "The exact bytes delivered by the real decompression stream up to EOF on four valid frames.",
++  "domainBasis": "The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum.",
++  "cases": [
++    {
++      "args": [
++        "BCJNGGRApwAAAAAFXcwC"
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        "BCJNGGRApwYAAIBoZWxsbwoAAAAA+VtrlA=="
++      ],
++      "expected": {
++        "return": "aGVsbG8K"
++      }
++    },
++    {
++      "args": [
++        "BCJNGGRApwQAAIAA/wCAAAAAAO1tWiE="
++      ],
++      "expected": {
++        "return": "AP8AgA=="
++      }
++    },
++    {
++      "args": [
++        "BCJNGGRApxAAAIAAAQIDBAUGBwgJCgsMDQ4PAAAAAPQ3KLc="
++      ],
++      "expected": {
++        "return": "AAECAwQFBgcICQoLDA0ODw=="
++      }
++    }
++  ],
++  "probeSha256": "df6b35a7cffd5a6ce6d35d67eff9719abceb5412543ddb18679c9a95aac0a54a",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "8a79b1fd5fd993e94f3487f8acd2cd3ee9d4f15d",
++      "sourceSha256": "2ea4c1a10d8773c40c396a3903a14338f455d6596a31e5c079c525127e7f4a98",
++      "callerClassSha256": "ea5e4ac8b72a5047a1a0a26102197450020db532821c2fcd334f0877e15984b2",
++      "classpath": [
++        "032192ed928455a1057d5a6d75457dab716df6bd8730eb1b6764a99dffd5a790",
++        "c9043e2da8a16c13b6cd7661a5cb56685a573c3546ef4bd0ead67b0b67c2e107",
++        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
++        "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
++        "78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f",
++        "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
++        "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe"
++      ],
++      "dependency": "78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "aGVsbG8K"
++            },
++            {
++              "return": "aGVsbG8K"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AP8AgA=="
++            },
++            {
++              "return": "AP8AgA=="
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            },
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.codec.digest.XXHash32"
++      ]
++    },
++    "new": {
++      "commit": "2cdf39ce4b191ac6c25a2e69905f82942872e587",
++      "sourceSha256": "2ea4c1a10d8773c40c396a3903a14338f455d6596a31e5c079c525127e7f4a98",
++      "callerClassSha256": "ea5e4ac8b72a5047a1a0a26102197450020db532821c2fcd334f0877e15984b2",
++      "classpath": [
++        "032192ed928455a1057d5a6d75457dab716df6bd8730eb1b6764a99dffd5a790",
++        "c9043e2da8a16c13b6cd7661a5cb56685a573c3546ef4bd0ead67b0b67c2e107",
++        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
++        "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
++        "47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b",
++        "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
++        "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe"
++      ],
++      "dependency": "47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "aGVsbG8K"
++            },
++            {
++              "return": "aGVsbG8K"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AP8AgA=="
++            },
++            {
++              "return": "AP8AgA=="
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            },
++            {
++              "return": "AAECAwQFBgcICQoLDA0ODw=="
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.codec.digest.XXHash32"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalInvocation": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
++  "probeClasses": {
++    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
++    "UpgradeProbe": "cde936930b4c394c3aea7ecc173f4f5c659b12330a9be722ee12962b0112e31b",
++    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 9.192
++}

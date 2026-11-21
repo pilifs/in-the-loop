@@ -1,0 +1,182 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-043632-finite-caller-group-6-replay-original-ma",
+  "title": "Finite caller group 6 replay original main and transfer applications",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 37.7s, peak 120.5 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-043632-finite-caller-group-6-replay-original-ma.json",
+    "sha256": "a80368e64d585e0c9941fac898d50e6436788fb1a33c09bf2900619fce74506a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-043632-finite-caller-group-6-replay-original-ma",
+      "title": "Finite caller group 6 replay original main and transfer applications",
+      "description": "Qualify the exact original caller entry with JDI and verify the loaded original dependency in fresh JVMs before comparing each reviewed finite observation. Inputs and independent expectations are committed with the case. Cases: ea-async-27, incremental-analysis-28, whatjdk-12.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "expected": "Each finite scope gets its true changed, preserved or open result. An early or unreachable observation earns no decision.",
+      "submitted": {
+        "at": "2026-11-21T04:36:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Compare original caller observations",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/06 --case ea-async-27 --case incremental-analysis-28 --case whatjdk-12",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/finite-callers/06"
+      ]
+    }
+  },
+  "sourceCommit": "90060227f35895614dcfbdb7713548b648bb6b6a",
+  "startedAt": "2026-11-21T04:39:20+00:00",
+  "finishedAt": "2026-11-21T04:40:06+00:00",
+  "wallSeconds": 46.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3438935,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 126382080,
+    "wallSeconds": 37.7,
+    "cpuSeconds": 35.4,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare original caller observations",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/06 --case ea-async-27 --case incremental-analysis-28 --case whatjdk-12",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 37.68,
+      "cpuSeconds": 35.35,
+      "cpuThrottledSeconds": 3.726,
+      "peakMemoryBytes": 126382080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-caller-observ.log",
+        "lines": 6,
+        "bytes": 411,
+        "sha256": "acda9be4f8647289169cc8a2eac045ebacffc8e54fded3682da16cb7764fc938",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+        "ea-async-27 preserved",
+        "open com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
+        "incremental-analysis-28 open",
+        "preserved com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+        "whatjdk-12 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/06/ea-async-27.json",
+      "change": "added",
+      "bytes": 17112,
+      "sha256": "ab7c7649e5ec897d6dcefc05ad44c362f1d911f7784909acab7d016f83cc9c90",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/06/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 8920,
+      "sha256": "aec96165775e1d3a6a09ae1683218d5db7847fb8c3fbb7601de501b5ee1b212d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/finite-callers/06/whatjdk-12.json",
+      "change": "added",
+      "bytes": 9837,
+      "sha256": "9726206ca34c3e32fa815f7f174fbf5ef627af3ac99c77295a546fcf4e7e4d19",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:43:56+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/finite-callers/06/ea-async-27.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/06/incremental-analysis-28.json",
+      "verification/external-upgrades/corpus-runs/finite-callers/06/whatjdk-12.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

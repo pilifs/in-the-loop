@@ -1,0 +1,267 @@
+{
+  "entry": "org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
+  "observer": "The exact bytes delivered by the real decompression stream up to EOF on four valid frames.",
+  "domainBasis": "The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum.",
+  "cases": [
+    {
+      "args": [
+        "/Td6WFoAAATm1rRGAAAAABzfRCEftvN9AQAAAAAEWVo="
+      ],
+      "expected": {
+        "return": ""
+      }
+    },
+    {
+      "args": [
+        "/Td6WFoAAATm1rRGAgAhARYAAAB0L+WjAQAFaGVsbG8KAAAApWCX8ZT2/eAAAR4GwS+kHR+2830BAAAAAARZWg=="
+      ],
+      "expected": {
+        "return": "aGVsbG8K"
+      }
+    },
+    {
+      "args": [
+        "/Td6WFoAAATm1rRGAgAhARYAAAB0L+WjAQADAP8AgADIEQ/o8TwglQABHARvLJzBH7bzfQEAAAAABFla"
+      ],
+      "expected": {
+        "return": "AP8AgA=="
+      }
+    },
+    {
+      "args": [
+        "/Td6WFoAAATm1rRGAgAhARYAAAB0L+WjAQAPAAECAwQFBgcICQoLDA0ODwBWU5i2IeRkegABKBDlC2xgH7bzfQEAAAAABFla"
+      ],
+      "expected": {
+        "return": "AAECAwQFBgcICQoLDA0ODw=="
+      }
+    }
+  ],
+  "probeSha256": "6a67aeaedef8e570cb5f208ee059ca92ee49e99c003cb2b7d3b00a5379c165b9",
+  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
+  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "f3dfc34f01616abaf75cb255d59769d660428b83",
+      "sourceSha256": "3fe4c08e2cf19f16271020a82180c74125481238827f810560c764376b8d4f9d",
+      "callerClassSha256": "ef33a16cd6b0c3a2113b7aac1bd1e2453795124603b254f743cf439625051f81",
+      "classpath": [
+        "305a7e87f16269991957d538cdc5c61ffda733c811b091e7fe7e227797208c03",
+        "8d6feb1da335f3ab13c584c613e23c7b3c61b392e37956872057baf8f0ca1d6f",
+        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+        "0a4077f6aeae2865532a564807af8d30c26acc6f63b7928d93bd7ab1f2190449",
+        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
+        "6f3828a215c920059a5efa2fb55c233d6c54ec5cadca99ce1b1bdd10077c7ddd",
+        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
+      ],
+      "dependency": "0a4077f6aeae2865532a564807af8d30c26acc6f63b7928d93bd7ab1f2190449",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": ""
+            },
+            {
+              "return": ""
+            }
+          ]
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "aGVsbG8K"
+            },
+            {
+              "return": "aGVsbG8K"
+            }
+          ]
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AP8AgA=="
+            },
+            {
+              "return": "AP8AgA=="
+            }
+          ]
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            },
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            }
+          ]
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.tukaani.xz.ArrayCache",
+        "org.tukaani.xz.BasicArrayCache",
+        "org.tukaani.xz.BlockInputStream",
+        "org.tukaani.xz.CloseIgnoringInputStream",
+        "org.tukaani.xz.CorruptedInputException",
+        "org.tukaani.xz.CountingInputStream",
+        "org.tukaani.xz.FilterCoder",
+        "org.tukaani.xz.FilterDecoder",
+        "org.tukaani.xz.IndexIndicatorException",
+        "org.tukaani.xz.LZMA2Coder",
+        "org.tukaani.xz.LZMA2Decoder",
+        "org.tukaani.xz.LZMA2InputStream",
+        "org.tukaani.xz.MemoryLimitException",
+        "org.tukaani.xz.RawCoder",
+        "org.tukaani.xz.SingleXZInputStream",
+        "org.tukaani.xz.UnsupportedOptionsException",
+        "org.tukaani.xz.XZ",
+        "org.tukaani.xz.XZFormatException",
+        "org.tukaani.xz.XZIOException",
+        "org.tukaani.xz.XZInputStream",
+        "org.tukaani.xz.check.CRC32",
+        "org.tukaani.xz.check.CRC64",
+        "org.tukaani.xz.check.Check",
+        "org.tukaani.xz.check.None",
+        "org.tukaani.xz.check.SHA256",
+        "org.tukaani.xz.common.ByteArrayView",
+        "org.tukaani.xz.common.DecoderUtil",
+        "org.tukaani.xz.common.StreamFlags",
+        "org.tukaani.xz.common.Util",
+        "org.tukaani.xz.index.IndexBase",
+        "org.tukaani.xz.index.IndexHash",
+        "org.tukaani.xz.lz.LZDecoder",
+        "org.tukaani.xz.rangecoder.RangeCoder",
+        "org.tukaani.xz.rangecoder.RangeDecoder",
+        "org.tukaani.xz.rangecoder.RangeDecoderFromBuffer"
+      ]
+    },
+    "new": {
+      "commit": "b0757903222468a7a6b5e80a305ca749585129d5",
+      "sourceSha256": "3fe4c08e2cf19f16271020a82180c74125481238827f810560c764376b8d4f9d",
+      "callerClassSha256": "ef33a16cd6b0c3a2113b7aac1bd1e2453795124603b254f743cf439625051f81",
+      "classpath": [
+        "305a7e87f16269991957d538cdc5c61ffda733c811b091e7fe7e227797208c03",
+        "8d6feb1da335f3ab13c584c613e23c7b3c61b392e37956872057baf8f0ca1d6f",
+        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+        "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
+        "6f3828a215c920059a5efa2fb55c233d6c54ec5cadca99ce1b1bdd10077c7ddd",
+        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
+      ],
+      "dependency": "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": ""
+            },
+            {
+              "return": ""
+            }
+          ]
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "aGVsbG8K"
+            },
+            {
+              "return": "aGVsbG8K"
+            }
+          ]
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AP8AgA=="
+            },
+            {
+              "return": "AP8AgA=="
+            }
+          ]
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            },
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            }
+          ]
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.tukaani.xz.ArrayCache",
+        "org.tukaani.xz.BasicArrayCache",
+        "org.tukaani.xz.BlockInputStream",
+        "org.tukaani.xz.CloseIgnoringInputStream",
+        "org.tukaani.xz.CorruptedInputException",
+        "org.tukaani.xz.CountingInputStream",
+        "org.tukaani.xz.FilterCoder",
+        "org.tukaani.xz.FilterDecoder",
+        "org.tukaani.xz.IndexIndicatorException",
+        "org.tukaani.xz.LZMA2Coder",
+        "org.tukaani.xz.LZMA2Decoder",
+        "org.tukaani.xz.LZMA2InputStream",
+        "org.tukaani.xz.MemoryLimitException",
+        "org.tukaani.xz.RawCoder",
+        "org.tukaani.xz.SingleXZInputStream",
+        "org.tukaani.xz.UnsupportedOptionsException",
+        "org.tukaani.xz.XZ",
+        "org.tukaani.xz.XZFormatException",
+        "org.tukaani.xz.XZIOException",
+        "org.tukaani.xz.XZInputStream",
+        "org.tukaani.xz.check.CRC32",
+        "org.tukaani.xz.check.CRC64",
+        "org.tukaani.xz.check.Check",
+        "org.tukaani.xz.check.None",
+        "org.tukaani.xz.check.SHA256",
+        "org.tukaani.xz.common.ByteArrayView",
+        "org.tukaani.xz.common.DecoderUtil",
+        "org.tukaani.xz.common.StreamFlags",
+        "org.tukaani.xz.common.Util",
+        "org.tukaani.xz.index.IndexBase",
+        "org.tukaani.xz.index.IndexHash",
+        "org.tukaani.xz.lz.LZDecoder",
+        "org.tukaani.xz.rangecoder.RangeCoder",
+        "org.tukaani.xz.rangecoder.RangeDecoder",
+        "org.tukaani.xz.rangecoder.RangeDecoderFromBuffer"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalInvocation": "org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
+  "probeClasses": {
+    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
+    "UpgradeProbe": "a1bef45c618e728001bef535cab741dde367f9c1c1e5695f0cd7339bea14ca7e",
+    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 9.889
+}
