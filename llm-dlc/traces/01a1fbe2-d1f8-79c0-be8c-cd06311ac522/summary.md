@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Recognize stock tool results during resumed review (verification pending)
 
-change `rxnykkvqspyr` · [log `d986eca9109f`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/d986eca9109f3f26c67a5a447cb5d371c4f97d98c588e68fa64c3eb3e08f681c.jsonl.gz)
+[`eae5b1b6891e`](https://github.com/pilifs/in-the-loop/commit/eae5b1b6891e18f11d5146db4284619cc38eed5f) · [log `d986eca9109f`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/d986eca9109f3f26c67a5a447cb5d371c4f97d98c588e68fa64c3eb3e08f681c.jsonl.gz)
 
 The ordinary client can append a reminder to a valid broker response or persist a large response as a case-local preview. The meter previously refused both forms. A thin, separately frozen amendment verifies the exact exit and output on the correct native tool ID, authenticates the persisted file and originating session, rejects substituted or foreign content, and retains sanitized terminal flags in the sealed evidence. Prior measurements remain intact. Job 20261121-021356-349-calibrate-verified-native-tool-resul runs the same disclosed Commons Text PR on this pre-lock correction.
 
@@ -30,7 +30,7 @@ The fixed profile and launch digests were rechecked on a real scoped H2 intake, 
 
 ### Reconcile native session costs and collect comparison evidence
 
-change `xnmxuqlnsknt` · [log `8a67cc17ab1d`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/8a67cc17ab1d5e49445b4f138acbae74122a1c703e4f074678bcb9f6ff85c996.jsonl.gz)
+[`b1c16001b806`](https://github.com/pilifs/in-the-loop/commit/b1c16001b8064cd12008a2c24e209b852cadb12c) · [log `8a67cc17ab1d`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/8a67cc17ab1d5e49445b4f138acbae74122a1c703e4f074678bcb9f6ff85c996.jsonl.gz)
 
 The client reports a cumulative dollar estimate when a native session resumes. Use the final reading of each independent conversation and retain each stateless request separately. The scorecard now publishes this derived amount alongside newly sealed reports and can calculate it for existing immutable seals. The case ledger and report correct prior sums. The final Commons Text treatment cost an estimated 1.3339372 dollars; its raw sum of 7.2377754 double-counted earlier turns. All 64 individual request increments matched the frozen token price table within one billionth of a dollar.
 
@@ -40,7 +40,7 @@ The first opaque BUMP reference job returned four fresh exact original testcase 
 
 ### Protect private screening output and retain independent opening grades
 
-change `nkounlltlnxn` · [log `bed73ae09773`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/bed73ae0977368612fc72db12db5af5424521120ea9ac4e511d83d438a02ec50.jsonl.gz)
+[`e90fc777917e`](https://github.com/pilifs/in-the-loop/commit/e90fc777917e3eeaadddad93d2ad03bb72402093) · [log `bed73ae09773`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/bed73ae0977368612fc72db12db5af5424521120ea9ac4e511d83d438a02ec50.jsonl.gz)
 
 Two separate private diagnostics exposed a module-relative path from unslotted leads. The custodian recorded both before selection, flagged the second for possible association with a scoped observation and notified the owner before publication. The new stream filter captures merged stdout and stderr from process start in owner-only files. It emits only an opaque capture receipt and explicitly typed scalar progress. Regex matches on arbitrary output are not a substitute for this schema.
 
@@ -50,7 +50,7 @@ The latest signed docket checkpoint records 20 excluded, three unavailable and f
 
 ### Reopen curator artifact restoration under the updated acquisition terms
 
-change `pnpqvwpulqvo` · [log `b2c2bd38a827`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/b2c2bd38a82761c571848797287d747ec130ba6cc6c90e33f68036cbfb344129.jsonl.gz)
+[`0e29067edbf0`](https://github.com/pilifs/in-the-loop/commit/0e29067edbf0115713e92430efd8b678a128566f) · [log `b2c2bd38a827`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/b2c2bd38a82761c571848797287d747ec130ba6cc6c90e33f68036cbfb344129.jsonl.gz)
 
 Record the user’s 02:47:55 UTC clarification before either cohort is locked. Curators can resolve undisclosed coordinates serially from Central and declared public repositories inside the ordinary sandbox, with coordinates and output kept private. The active writable home-cache repository was seeded with 5189 verified files, and the first two missing production JARs and their POMs were restored against their release checksums. Earlier offline dispositions are retained while all affected candidates are reconsidered by the same rule.
 
@@ -58,7 +58,7 @@ The changed-file selector chose no tests for these two research-protocol pages. 
 
 ### Keep unavailable runtimes in the upgrade decision denominator
 
-change `kllnmvuptwxu` · [log `81f896ff3b97`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/81f896ff3b979948d86df7f7717ebbd63951e50f64a56ec86df60a8167c7ddd9.jsonl.gz)
+[`cd155cb10837`](https://github.com/pilifs/in-the-loop/commit/cd155cb10837846b12c2569561204b88982b2d60) · [log `81f896ff3b97`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/81f896ff3b979948d86df7f7717ebbd63951e50f64a56ec86df60a8167c7ddd9.jsonl.gz)
 
 Bind the requested runtime and launch separately from the image actually observed. An absent or unverified runtime now seals an honest unavailable first report and the affected PR stays in the denominator. Paired output retains every attempted case and distinguishes verified matched conditions before granting a transferable gain.
 
@@ -68,25 +68,25 @@ The public findings now place the measured callers beside the 24, 8 and 15 study
 
 ### Retire blinded and Claude treatments from upgrade engineering
 
-change `tqnwtttlszlv` · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
+[`98016c3f32b2`](https://github.com/pilifs/in-the-loop/commit/98016c3f32b24d894d3c80b2c6c25efd938b08a1) · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
 
 Use one gpt-6.2-astra session at high effort for selection, preparation, review and checking, with identified revision pairs and preserved first outcomes. Mark each of the six existing Claude opening reports superseded and unscored at the user's 03:05 UTC change of direction. The original V0 engine and lock stay reproducible. Checked all six records and compiled the prospective lock generator.
 
 ### Record verification results for 1 job(s)
 
-change `vskoqlnrxppp` · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
+[`8f45ca1c677f`](https://github.com/pilifs/in-the-loop/commit/8f45ca1c677f26eef05b038ca4a0d58305193f90) · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-021356-349-calibrate-verified-native-tool-resul: passed: 1 passed step(s) in 2m07s, peak 432.5 MiB (estimated 12m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record that the external-upgrade run swapped its V0 operator to Claude models unasked (VF-050)
 
-change `syqquumuwwru` · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
+[`df0a3a0ae94a`](https://github.com/pilifs/in-the-loop/commit/df0a3a0ae94afb9281ae85e07a5d156afed6ced3) · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
 
 At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
 
 ### Reframe VF-050 around the unasked model swap and its harness limits
 
-change `koyvytktqlkw` · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
+[`d742a3ed19da`](https://github.com/pilifs/in-the-loop/commit/d742a3ed19dab32ddcc97f4b9ff97138b3f9e2fd) · [log `75cad3512910`](https://terminalvalue.net/raw-traces/01a1fbe2-d1f8-79c0-be8c-cd06311ac522/75cad351291042f18434c2ddb475c83f9905d1371f62b83b5c98637a9a683336.jsonl.gz)
 
 At the user's word, relayed by in-the-loop-48: the finding now says the run swapped Astra for Claude Fable/Opus without asking, and that the swapped profile's one-request, 2048-token limits produced the operator's no-claim results, which say nothing about V0. Blinding is not a concern here. It adds the lesson that briefs should rule out the custody and isolation machinery the run built. Documentation only.
 

@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "bounds",
+  "statement": "The factory result starts at position zero, has the logical length as limit and remaining, and retains the physical capacity.",
+  "assume": "code >= 0 && code < 21",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.WritableBuffer#bounds(I)I",
+    "mapping": "The factory result starts at position zero, has the logical length as limit and remaining, and retains the physical capacity. The selector identifies the input and direct public observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 21
+  },
+  "observedInitializers": {
+    "org.apache.avro.Schema": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+    "org.apache.hadoop.io.BytesWritable": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+    "org.apache.hadoop.mapred.JobConf": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64",
+    "org.apache.hadoop.security.Credentials": "540f78ac686458dc4648b26cafe10fde211ffc3231f0965ce5fd67494e7cad64"
+  },
+  "observedRuntime": {
+    "emptyEnvironment": true,
+    "preinitializeTogether": true,
+    "processors": 2,
+    "rootWorkingDirectory": true,
+    "weakMapValues": true,
+    "captureObjects": [
+      "java.util.HashMap",
+      "java.util.concurrent.atomic.AtomicReference",
+      "org.apache.commons.collections4.map.UnmodifiableMap",
+      "org.apache.hadoop.conf.Configuration$DeprecationContext"
+    ]
+  },
+  "notes": [
+    "The original factory runs after the four recorded startup roots. The joint heap binds the atomic configuration cell, its application fields and complete String-key lookup tables. The original property, input domain, public entry and unwind bound are retained."
+  ]
+}

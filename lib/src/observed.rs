@@ -55,6 +55,13 @@
 //!   can pass through an application constructor into a field until such an operation. This scope includes any
 //!   cross-class registration the JVM made. It assumes that unrecorded external state and aliases do not affect
 //!   the checked call. The ordinary first-use observation still compares each transitive class independently.
+//!   `weakMapValues: true` additionally captures exact WeakHashMaps whose entries all have null values.
+//!   Their identities are shared. Reading a value and writing null with an identity key preserve the invariant
+//!   on qualified JDK images. Key membership, size, iteration and user callbacks require further evidence.
+//!   `captureObjects` names the exact application classes whose instance fields to capture, including
+//!   inherited fields. References share the joint object table. An unavailable child can be carried but
+//!   cannot be inspected. Naming AtomicReference captures its cell, and naming HashMap captures all
+//!   String or null keys for read-only lookups, including a present key whose value is null.
 //! - The default locale: one whose language is Turkish, Azeri or Lithuanian is refused, since the check takes the
 //!   JVM's default to be none of them ([`crate::bmc::strings::LOCALE_ASSUMPTION`]); any other is stated. The default
 //!   time zone (which the JDK reads from `user.timezone` or the machine, as `ob.Zoned`'s `TimeZone.getDefault()`
@@ -86,7 +93,7 @@
 //! they say, and identity: a class's object said alike after the initialization and alone may be one object shared
 //! with the observed class, which the check holds apart.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{Duration, Instant};
@@ -126,10 +133,33 @@ pub enum Object {
     Map(Vec<(Slot, Slot)>),
     /// An exact ConcurrentHashMap observed empty. Its references share the same object number.
     EmptyConcurrentMap,
+    /// An exact WeakHashMap whose existing values are all null. The keys and size are unknown.
+    NullValuedWeakMap,
+    /// An explicitly selected exact HashMap with complete String/null keys and possibly opaque values.
+    LookupMap(Vec<(Slot, Slot)>),
+    /// The shared value of an exact atomic cell.
+    AtomicReference(Slot),
+    /// Named application receiver with every instance field bound to its declaring class.
+    Instance(Vec<ValueClass>),
     /// Final application value, with every inherited instance field and its defining bytes.
     Value(Vec<ValueClass>),
     /// An array: its element type's descriptor and its cells.
     Array { element: String, cells: Vec<Slot> },
+}
+
+impl Object {
+    fn class_name(&self) -> std::borrow::Cow<'_, str> {
+        match self {
+            Self::Str { .. } => "java/lang/String".into(),
+            Self::Class(_) => "java/lang/Class".into(),
+            Self::Map(_) | Self::LookupMap(_) => "java/util/HashMap".into(),
+            Self::EmptyConcurrentMap => crate::models::CONCURRENT_MAP.into(),
+            Self::NullValuedWeakMap => "java/util/WeakHashMap".into(),
+            Self::AtomicReference(_) => "java/util/concurrent/atomic/AtomicReference".into(),
+            Self::Value(chain) | Self::Instance(chain) => chain[0].name.as_str().into(),
+            Self::Array { element, .. } => format!("[{element}").into(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -183,6 +213,8 @@ pub struct On {
     pub fixed_processors: Option<i32>,
     pub empty_environment: bool,
     pub root_working_directory: bool,
+    pub weak_map_values: bool,
+    pub capture_objects: BTreeSet<String>,
     /// Each system property the initialization read, in the order it first did, and the value it had.
     pub properties: Vec<(String, Option<String>)>,
     /// The first class of the class path that read the system properties as a whole, if one did.
@@ -207,13 +239,15 @@ pub struct Initialized {
 pub type Observations = BTreeMap<String, Observed>;
 
 /// Launch settings for a separately scoped initializer observation and its comparison JVMs.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, serde::Deserialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, serde::Deserialize)]
 #[serde(default, rename_all = "camelCase", deny_unknown_fields)]
 pub struct Runtime {
     pub processors: Option<std::num::NonZeroI32>,
     pub empty_environment: bool,
     pub preinitialize_together: bool,
     pub root_working_directory: bool,
+    pub weak_map_values: bool,
+    pub capture_objects: BTreeSet<String>,
 }
 
 impl std::str::FromStr for Runtime {
@@ -222,6 +256,12 @@ impl std::str::FromStr for Runtime {
         let r: Self = serde_json::from_str(text).map_err(|e| format!("invalid observed runtime: {e}"))?;
         if r == Self::default() || r.processors.is_some_and(|n| n.get() < 1) {
             return Err("provide a positive processor count or enable a supported startup setting".into());
+        }
+        if r.weak_map_values && !r.preinitialize_together {
+            return Err("weakMapValues requires preinitializeTogether so all aliases share one captured heap".into());
+        }
+        if !r.capture_objects.is_empty() && !r.preinitialize_together {
+            return Err("captureObjects requires preinitializeTogether".into());
         }
         Ok(r)
     }
@@ -235,6 +275,10 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
         None => "the check's class path".to_string(),
     };
     let bound = &observed.on;
+    let weak_maps = if bound.weak_map_values { ". Exact weak maps recorded with only null values retain that invariant while the collector may remove keys." } else { "" };
+    let captured = if bound.capture_objects.is_empty() { String::new() } else {
+        format!(" The joint heap includes requested objects of classes [{}].", bound.capture_objects.iter().cloned().collect::<Vec<_>>().join(", "))
+    };
     let processors = bound.fixed_processors.map(|n| format!("; Runtime.availableProcessors() was pinned to {n} (-XX:ActiveProcessorCount={n}) throughout initialization")).unwrap_or_default();
     let environment = if bound.empty_environment { ", with an empty process environment throughout initialization" } else { "" };
     let cwd = if bound.root_working_directory { ", with the process working directory and JVM absolute-path base both at the Unix root /" } else { "" };
@@ -256,7 +300,7 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
     };
     let ownership = if observed.joint_fields.is_some() { "its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call" } else { "the objects it leaves are held by no other class" };
     format!(
-        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the selected roots on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{cwd}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and {ownership})",
+        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the selected roots on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{processors}{environment}{cwd}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and {ownership}){weak_maps}{captured}",
         class.replace('/', "."),
         bound.vendor,
         short(&bound.sha256),
@@ -275,6 +319,9 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
 }
 
 fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: Runtime) -> Result<Observations, Error> {
+    if runtime.weak_map_values && !runtime.preinitialize_together {
+        return Err(Error::new("--observed-runtime weakMapValues requires preinitializeTogether"));
+    }
     if runtime.processors.is_some_and(|n| n.get() < 1) { return Err(Error::new("--observed-runtime requires a positive processor count")); }
     let mut out = Observations::new();
     if classes.is_empty() {
@@ -299,8 +346,14 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
     for entry in &entries[1..] {
         tool.add(entry)?;
     }
+    for name in &runtime.capture_objects {
+        if !runtime.preinitialize_together || name.is_empty() || name.contains([',', '/'])
+            || (!matches!(name.as_str(), "java.util.HashMap" | "java.util.concurrent.atomic.AtomicReference") && tool.application(&name.replace('.', "/"))?.is_none()) {
+            return Err(Error::new(format!("--observed-runtime captureObjects needs a jointly captured application class or a supported JDK container, got {name}")));
+        }
+    }
     let additional: Vec<String> = if runtime.preinitialize_together { classes.iter().skip(1).map(|c| c.replace('/', ".")).collect() } else { vec![] };
-    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime, additional };
+    let jvm = Jvm { java: home.join("bin").join("java"), class_path, dir: dir.clone(), runtime: runtime.clone(), additional };
     let mut alone: BTreeMap<String, serde_json::Value> = BTreeMap::new();
     for class in classes.iter().take(if runtime.preinitialize_together { 1 } else { classes.len() }) {
         let internal = class.replace('.', "/");
@@ -309,6 +362,8 @@ fn observe_on(classes: &[String], classpath: &[PathBuf], work: &Path, runtime: R
         let line = jvm.run(&binary, Some(&log))?;
         let observed = parse(&binary, &line)?;
         if runtime.preinitialize_together != observed.joint_fields.is_some()
+            || runtime.weak_map_values != observed.on.weak_map_values
+            || runtime.capture_objects != observed.on.capture_objects
             || !observed.additional_roots.iter().map(|(name, _)| name.replace('/', ".")).eq(jvm.additional.iter().cloned())
             || runtime.root_working_directory && !observed.on.root_working_directory
             || runtime.empty_environment && !observed.on.empty_environment
@@ -380,7 +435,12 @@ impl Jvm {
         command.arg("-cp").arg(&self.class_path).arg(CLASS).arg(binary);
         if let Some(log) = log {
             command.arg(log);
-            if self.runtime.preinitialize_together { command.arg("together").args(&self.additional); }
+            if self.runtime.preinitialize_together {
+                command.arg(if self.runtime.weak_map_values { "together-weak-map-values" } else { "together" }).args(&self.additional);
+                if !self.runtime.capture_objects.is_empty() {
+                    command.arg(format!("--capture-objects={}", self.runtime.capture_objects.iter().cloned().collect::<Vec<_>>().join(",")));
+                }
+            }
         }
         let mut child = command
             .current_dir(if self.runtime.root_working_directory { Path::new("/") } else { &self.dir })
@@ -443,12 +503,16 @@ fn bind_enum_base(observed: &Observed, base: &ValueClass, tool: &crate::classpat
 /// the verifier's selected bytes must agree, and no inherited field may be omitted.
 fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::ClassPath) -> Result<(), Error> {
     for object in &observed.objects {
-        let Object::Value(chain) = object else { continue };
+        let (chain, selected) = match object {
+            Object::Value(chain) => (chain, false),
+            Object::Instance(chain) => (chain, true),
+            _ => continue,
+        };
         for (i, part) in chain.iter().enumerate() {
             let mismatch = || Error::new(format!("--observed-initializer {binary}: immutable value {} does not match its selected application class bytes or complete field layout", part.name));
             if part.name == ENUM {
                 let owner = &chain[0].name;
-                if i != 1 || chain.len() != 2 || (*owner != binary.replace('.', "/") && !observed.joint_fields.as_ref().is_some_and(|m| m.contains_key(owner)))
+                if selected || i != 1 || chain.len() != 2 || (*owner != binary.replace('.', "/") && !observed.joint_fields.as_ref().is_some_and(|m| m.contains_key(owner)))
                     || !tool.application(&chain[0].name)?.is_some_and(|cf| cf.is_enum()) || !bind_enum_base(observed, part, tool)? {
                     return Err(mismatch());
                 }
@@ -456,7 +520,7 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
             }
             let cf = tool.application(&part.name)?.ok_or_else(mismatch)?;
             let parent = chain.get(i + 1).map_or("java/lang/Object", |c| &c.name);
-            if tool_sha256(tool, &part.name)?.as_deref() != Some(part.sha256.as_str()) || (i == 0 && !cf.is_final())
+            if tool_sha256(tool, &part.name)?.as_deref() != Some(part.sha256.as_str()) || (i == 0 && !selected && !cf.is_final())
                 || cf.super_class.as_deref() != Some(parent) { return Err(mismatch()); }
             let fields: Vec<_> = cf.fields.iter().filter(|f| !f.is_static()).collect();
             let names: std::collections::BTreeSet<_> = fields.iter().map(|f| &f.name).collect();
@@ -464,6 +528,14 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
             for f in fields {
                 let Some(slot) = part.fields.get(&(f.name.clone(), f.descriptor.clone())) else { return Err(mismatch()); };
                 let fits = match (f.descriptor.as_str(), slot) {
+                    (d, value) if selected && (d.starts_with('L') || d.starts_with('[')) => match value {
+                        Slot::Null | Slot::Unheld(_) => true,
+                        Slot::Object(i) => observed.objects.get(*i).is_some_and(|o| {
+                            let expected = d.strip_prefix('L').and_then(|s| s.strip_suffix(';')).unwrap_or(d);
+                            tool.is_subtype(&o.class_name(), expected)
+                        }),
+                        Slot::Number(_) => false,
+                    },
                     ("Ljava/lang/String;", Slot::Null) | ("J", Slot::Number(_)) => true,
                     ("Ljava/lang/String;", Slot::Object(n)) => matches!(observed.objects.get(*n), Some(Object::Str { .. })),
                     ("Z", Slot::Number(n)) => matches!(n, 0 | 1),
@@ -473,7 +545,7 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
                     ("I", Slot::Number(n)) => i32::try_from(*n).is_ok(),
                     _ => false,
                 };
-                if !f.is_final() || !fits { return Err(mismatch()); }
+                if (!selected && !f.is_final()) || !fits { return Err(mismatch()); }
             }
         }
     }
@@ -691,12 +763,16 @@ pub(crate) fn observe_previous_on(classes: &[String], previous: &crate::relocate
             observed.joint_fields = Some(relocated);
         }
         for object in &mut observed.objects {
-            if let Object::Value(chain) = object {
+            if let Object::Value(chain) | Object::Instance(chain) = object {
                 for part in chain.iter_mut().filter(|p| p.name != ENUM) {
                     let Found::Class(held) = previous.find(&part.name) else {
                         return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the previous version's immutable value class {}", part.name)));
                     };
                     part.name = held;
+                    let fields = std::mem::take(&mut part.fields);
+                    for ((name, desc), value) in fields {
+                        part.fields.insert((name, crate::relocate::rename(&desc, &previous.relocated, &previous.prefix)), value);
+                    }
                 }
                 continue;
             }
@@ -747,6 +823,9 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         }
     };
     let slots = |v: Option<&serde_json::Value>| -> Result<Vec<Slot>, Error> { v.and_then(|c| c.as_array()).ok_or_else(|| bad("a list"))?.iter().map(&slot).collect() };
+    let captured: BTreeSet<String> = json["on"].get("captureObjects").map(|v| serde_json::from_value(v.clone()))
+        .transpose().map_err(|_| bad("captureObjects"))?.unwrap_or_default();
+    if !captured.is_empty() && json["on"]["preinitializeTogether"].as_bool() != Some(true) { return Err(bad("captureObjects without a joint heap")); }
     let mut objects = Vec::new();
     for o in json.get("objects").and_then(|o| o.as_array()).ok_or_else(|| bad("objects"))? {
         objects.push(match o.get("k").and_then(|k| k.as_str()) {
@@ -756,15 +835,23 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
             }
             Some("class") => Object::Class(o.get("name").and_then(|n| n.as_str()).ok_or_else(|| bad("a class"))?.to_string()),
             Some("concurrentMap") if o.get("entries").and_then(|v| v.as_array()).is_some_and(Vec::is_empty) => Object::EmptyConcurrentMap,
-            Some("map") => {
+            Some("weakMap") if o["allValuesNull"].as_bool() == Some(true)
+                && json["on"]["weakMapValues"].as_bool() == Some(true)
+                && json["on"]["preinitializeTogether"].as_bool() == Some(true) => Object::NullValuedWeakMap,
+            Some("atomicReference") if captured.contains("java.util.concurrent.atomic.AtomicReference") =>
+                Object::AtomicReference(slot(o.get("value").ok_or_else(|| bad("an atomic reference value"))?)?),
+            Some(kind @ ("map" | "lookupMap")) => {
                 let flat = slots(o.get("entries"))?;
                 if flat.len() % 2 != 0 {
                     return Err(bad("a map's entries"));
                 }
-                Object::Map(flat.chunks(2).map(|kv| (kv[0].clone(), kv[1].clone())).collect())
+                let entries = flat.chunks(2).map(|kv| (kv[0].clone(), kv[1].clone())).collect();
+                if kind == "map" { Object::Map(entries) }
+                else if captured.contains("java.util.HashMap") { Object::LookupMap(entries) }
+                else { return Err(bad("an unrequested lookup map")); }
             }
             Some("array") => Object::Array { element: o.get("element").and_then(|e| e.as_str()).ok_or_else(|| bad("an array"))?.to_string(), cells: slots(o.get("cells"))? },
-            Some("value") => {
+            Some(kind @ ("value" | "instance")) => {
                 let string = |v: &serde_json::Value, k: &str| v.get(k).and_then(|t| t.as_str()).map(str::to_owned).ok_or_else(|| bad("an immutable value field or class"));
                 let classes = o["classes"].as_array().filter(|v| !v.is_empty()).ok_or_else(|| bad("an immutable value hierarchy"))?;
                 let mut hierarchy = Vec::new();
@@ -777,7 +864,9 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
                     }
                     hierarchy.push(ValueClass { name: string(class, "name")?, sha256: string(class, "sha256")?, fields });
                 }
-                Object::Value(hierarchy)
+                if kind == "value" { Object::Value(hierarchy) }
+                else if captured.contains(&hierarchy[0].name.replace('/', ".")) { Object::Instance(hierarchy) }
+                else { return Err(bad("an unrequested application object")); }
             }
             _ => return Err(bad("an object")),
         });
@@ -832,6 +921,8 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         fixed_processors: fixed_processors(on)?,
         empty_environment: empty_environment(on)?,
         root_working_directory: root_directory(on)?,
+        weak_map_values: on.get("weakMapValues").map(|v| v.as_bool().ok_or_else(|| bad("weakMapValues"))).transpose()?.unwrap_or(false),
+        capture_objects: captured,
         properties: list("properties")?.iter().map(|p| Ok((text(p, "name")?, p.get("value").and_then(|v| v.as_str()).map(String::from)))).collect::<Result<_, Error>>()?,
         all_properties: match on.get("allProperties") {
             Some(serde_json::Value::Null) => None,
@@ -847,14 +938,37 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
     if let Some(n) = on.fixed_processors { state["fixedProcessors"] = n.into(); }
     if on.empty_environment { state["emptyEnvironment"] = true.into(); }
     if on.root_working_directory { state["rootWorkingDirectory"] = true.into(); }
+    if on.weak_map_values { state["weakMapValues"] = true.into(); }
+    if !on.capture_objects.is_empty() { state["captureObjects"] = serde_json::json!(on.capture_objects); }
     let state_sha256 = crate::digest::sha256_hex(state.to_string().as_bytes());
     let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, joint_fields, additional_roots, previous: None, on };
+    for object in &observed.objects {
+        match object {
+            Object::AtomicReference(Slot::Number(_)) => return Err(bad("a primitive in an atomic reference")),
+            Object::LookupMap(entries) => {
+                let mut keys = BTreeSet::new();
+                for (key, value) in entries {
+                    let units = match key {
+                        Slot::Null => None,
+                        Slot::Object(i) => match observed.objects.get(*i) {
+                            Some(Object::Str { units, .. }) => Some(units),
+                            _ => return Err(bad("a non-String lookup key")),
+                        },
+                        _ => return Err(bad("an unknown lookup key")),
+                    };
+                    if !keys.insert(units) || matches!(value, Slot::Number(_)) { return Err(bad("duplicate key or primitive lookup value")); }
+                }
+            }
+            _ => {}
+        }
+    }
     let within = |s: &Slot| !matches!(s, Slot::Object(i) if *i >= observed.objects.len());
     let joint_slots = observed.joint_fields.iter().flat_map(|m| m.values()).flat_map(|fields| fields.values());
     let all = observed.fields.values().chain(joint_slots).chain(observed.objects.iter().flat_map(|o| match o {
-        Object::Map(entries) => entries.iter().flat_map(|(k, v)| [k, v]).collect::<Vec<_>>(),
+        Object::Map(entries) | Object::LookupMap(entries) => entries.iter().flat_map(|(k, v)| [k, v]).collect::<Vec<_>>(),
+        Object::AtomicReference(value) => vec![value],
         Object::Array { cells, .. } => cells.iter().collect(),
-        Object::Value(chain) => chain.iter().flat_map(|c| c.fields.values()).collect(),
+        Object::Value(chain) | Object::Instance(chain) => chain.iter().flat_map(|c| c.fields.values()).collect(),
         _ => Vec::new(),
     }));
     if !all.into_iter().all(within) {

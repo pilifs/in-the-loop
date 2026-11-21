@@ -3379,6 +3379,23 @@ impl<'a> Engine<'a> {
                     pairs.push(self.b.and(*g, *h));
                 } else if let (Some(t), Some(u)) = (t, u) {
                     if !one && path.objects[*t].class == STRING && path.objects[*u].class == STRING
+                        && [t, u].into_iter().any(|o| path.objects[*o].limit.as_deref() == Some(strings::TRIM_IDENTITY)) {
+                        let a = path.objects[*t].content();
+                        let b = path.objects[*u].content();
+                        let guards = self.b.and(*g, *h);
+                        if guards != FALSE {
+                            let (Some(a), Some(b)) = (a, b) else { return unsupported(strings::TRIM_IDENTITY) };
+                            let lengths = self.b.eq(&a.length, &b.length);
+                            let units = self.units_agree(a, b, &a.length);
+                            let equal_contents = self.b.all(&[guards, lengths, units]);
+                            if equal_contents != FALSE {
+                                let mut possible = path.cond.clone();
+                                possible.push(equal_contents);
+                                if self.solve(&possible)? { return unsupported(strings::TRIM_IDENTITY); }
+                            }
+                        }
+                    }
+                    if !one && path.objects[*t].class == STRING && path.objects[*u].class == STRING
                         && [t, u].into_iter().any(|o| path.objects[*o].limit.as_deref() == Some(runtime::LINE_SEPARATOR))
                         && self.b.and(*g, *h) != FALSE { return unsupported(runtime::LINE_SEPARATOR); }
                     // Whether two Locales are one object is the JDK's cache's to say ([`locale`]).
@@ -3941,6 +3958,29 @@ impl<'a> Engine<'a> {
             // The class that declares the resolved field is initialized first (JVMS §5.5).
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                let frame = path.frames.last().expect("a frame");
+                if self.cp.properties_store_fence(&class, &member, frame.code.insns.get(frame.at + 1)) {
+                    path.frames.last_mut().expect("a frame").at += 2;
+                    return Ok(None);
+                }
+                if let Some(index) = self.cp.concurrent_size_cas(&class, &frame.method, &frame.code.insns[frame.at..]) {
+                    let (Some(Some(Val::R(Some(o)))), Some(Some(Val::I(expected)))) = (frame.locals.first(), frame.locals.get(index)) else {
+                        return unsupported("a ConcurrentHashMap presize without its receiver and expected sizeCtl");
+                    };
+                    let o = *o;
+                    if !path.objects[o].fields.contains_key(map_views::CONCURRENT_IMAGE) {
+                        return unsupported("a ConcurrentHashMap presize without its original fields");
+                    }
+                    self.keeps(path, Some(o), "updates the sizeCtl of a previously allocated concurrent map")?;
+                    let old = path.objects[o].fields.get("sizeCtl").cloned().unwrap_or_else(|| Val::I(self.b.constant(0, 32)));
+                    let Val::I(old) = old else { return unsupported("a non-integer sizeCtl"); };
+                    let matched = self.b.eq(&old, expected);
+                    let value = self.b.ite_bits(matched, &self.b.constant(-1, 32), &old);
+                    path.objects[o].fields.insert("sizeCtl".into(), Val::I(value));
+                    self.push(path, Val::I([vec![matched], vec![FALSE; 31]].concat()));
+                    path.frames.last_mut().expect("a frame").at += 6;
+                    return Ok(None);
+                }
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) ==
                     ("sun/nio/cs/UTF_8", "JLA", "Ljdk/internal/access/JavaLangAccess;") {
@@ -4859,6 +4899,16 @@ impl<'a> Engine<'a> {
     /// The key the instance field `owner.name:descriptor` has in object `o`: its name, unless a subclass along the
     /// object's class declares the name again ([`ClassPath::field_key`]), as the interpreter keys it.
     fn field_key(&mut self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<String, Stop> {
+        if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
+            return unsupported(format!("the observed WeakHashMap does not supply its internal field {name}"));
+        }
+        if path.objects[o].fields.contains_key(observed::LOOKUP_MAP) {
+            return unsupported(format!("the observed lookup table does not supply its internal field {name}"));
+        }
+        if path.objects[o].fields.contains_key(observed::ATOMIC_REF)
+            && (owner, name, descriptor) != ("java/util/concurrent/atomic/AtomicReference", "value", "Ljava/lang/Object;") {
+            return unsupported(format!("the observed atomic reference does not supply its internal field {name}"));
+        }
         if owner == throwables::THROWABLE && name == "suppressedExceptions" && descriptor == "Ljava/util/List;" {
             return Ok(throwables::SUPPRESSED.into());
         }
@@ -4944,6 +4994,19 @@ impl<'a> Engine<'a> {
     /// a model's is called, a JDK method the engine models is computed, and any other is a gap or refused. A
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
+        if self.cp.concurrent_table_read(&member.owner, &member.name, &member.descriptor) {
+            let stack = &path.frames.last().expect("a frame").stack;
+            if let [.., Val::R(Some(o)), Val::I(index)] = stack.as_slice() {
+                if path.objects[*o].class == "[Ljava/util/concurrent/ConcurrentHashMap$Node;" {
+                    if let Some(a) = path.objects[*o].as_array() {
+                        if matches!((self.b.constant_value(index), self.b.constant_value(&a.length)), (Some(i), Some(n)) if i >= 0 && i < n) {
+                            return self.array_insn(path, &Insn::ArrayLoad(ArrayKind::Ref));
+                        }
+                    }
+                }
+            }
+            return unsupported("ConcurrentHashMap.tabAt requires a known in-bounds index on a Node array");
+        }
         let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
         if caller == "jdk/internal/util/Preconditions" && member.owner == caller && member.name == "outOfBoundsCheckIndex"
             && member.descriptor == "(Ljava/util/function/BiFunction;II)Ljava/lang/RuntimeException;" {
@@ -5256,6 +5319,22 @@ impl<'a> Engine<'a> {
             Ok(o) => o.expect("checked"),
             Err(step) => return step,
         };
+        if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
+            return self.null_valued_weak_map_call(path, o, special, member, &args);
+        }
+        if path.objects[o].fields.contains_key(observed::LOOKUP_MAP) {
+            return self.captured_lookup(path, o, special, member, &args);
+        }
+        if path.objects[o].fields.contains_key(observed::ATOMIC_REF) {
+            if !special && self.cp.is_subtype(&path.objects[o].class, &member.owner) {
+                if let Some((cf, method)) = self.cp.atomic_reference_accessor(&member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
+            }
+            return unsupported(format!("AtomicReference.{}{} is outside the captured value accessors", member.name, member.descriptor));
+        }
         let special = special;
         // A virtual call on an object whose class the engine does not know: an override of that class may run.
         if !special && path.objects[o].assumed {
@@ -5546,7 +5625,7 @@ impl<'a> Engine<'a> {
         if m.is_abstract() {
             return unsupported(format!("{}.{name} is abstract", cf.name.replace('/', ".")));
         }
-        if cf.name == crate::models::CONCURRENT_MAP && matches!(name, "get" | "putIfAbsent") {
+        if cf.name == crate::models::CONCURRENT_MAP && self.cp.runs_model(&cf.name) && matches!(name, "get" | "putIfAbsent") {
             let keys = args.get(1).and_then(Val::options);
             if !keys.is_some_and(|keys| keys.iter().all(|(_, key)| key.is_none_or(|o| path.objects[o].class == STRING))) {
                 return unsupported(format!("ConcurrentHashMap.{name} with a key outside the single-threaded String-key model"));

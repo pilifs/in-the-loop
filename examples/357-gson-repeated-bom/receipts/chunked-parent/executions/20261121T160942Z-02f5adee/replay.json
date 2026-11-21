@@ -1,0 +1,67 @@
+[
+  {
+    "claimKey": "dc1fa015b7573258",
+    "entry": "organic.BomReader#chunked(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 6
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "6acbdf5304be047bfc66bbb066f96ce4fea87b6834f8e1ea3e90f58c161a4673",
+        "classpath": [
+          "49356ddc984de78a417c0ec224edc4371e74bef7731b7b292ea0a91da693ca9c",
+          "6dff7278b3b9777948151ea567614237c654aaa1db9c73cc761792c67682dbb5",
+          "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 6;\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.BomReader.chunked(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 6,
+      "input": {
+        "marks": 2,
+        "cap": 1
+      },
+      "field": "chunked",
+      "direct": {
+        "parent": {
+          "chunked": [
+            102,
+            111,
+            111
+          ],
+          "plain": [
+            65279,
+            102,
+            111,
+            111
+          ]
+        }
+      },
+      "tableSha256": "6bc7dfb25ff1d9e735d6fb3646b479b07cb7936eccb583b460b5f7ba887b17ef"
+    }
+  }
+]

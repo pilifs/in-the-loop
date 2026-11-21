@@ -1,0 +1,76 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-155348-repeat-organic-java-example-360-on-the-f",
+  "title": "Repeat organic Java example 360 on the factory verifier",
+  "description": "Run the original native and finite JVM contracts on the same checker revision as the Avro factory proof, retaining its successes, refutations and first refusals. Repeat all eight Node-startup comparisons and independently confirm both traversal witnesses without startup conditions.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T15:53:48+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Repeat the frozen native obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 360 --route native --stage factory-confirmation",
+      "cwd": "."
+    },
+    {
+      "name": "Repeat the exhaustive original JVM obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 360 --route finite --stage factory-confirmation",
+      "cwd": "."
+    },
+    {
+      "name": "Check the observed Node traversals",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 360 --route native --stage node-confirmation --tasks postorder-parent-node-startup,postorder-fix-node-startup,terminal-parent-node-startup,terminal-fix-node-startup,preorder-parent-node-startup,preorder-fix-node-startup,nonempty-parent-node-startup,nonempty-fix-node-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Replay postorder-parent at original scope",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 examples/tools/build.py 360 --original-witness postorder-parent --from-task postorder-parent-node-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Replay terminal-parent at original scope",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 examples/tools/build.py 360 --original-witness terminal-parent --from-task terminal-parent-node-startup",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/360-javaparser-postorder-root/records/factory-confirmation-native",
+    "examples/360-javaparser-postorder-root/records/factory-confirmation-finite",
+    "examples/360-javaparser-postorder-root/records/node-confirmation-native",
+    "examples/360-javaparser-postorder-root/records/original-witnesses",
+    "examples/360-javaparser-postorder-root/receipts/postorder-parent-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/postorder-fix-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/terminal-parent-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/terminal-fix-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/preorder-parent-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/preorder-fix-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/nonempty-parent-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/nonempty-fix-node-startup",
+    "examples/360-javaparser-postorder-root/receipts/postorder-parent/executions",
+    "examples/360-javaparser-postorder-root/receipts/terminal-parent/executions"
+  ]
+}

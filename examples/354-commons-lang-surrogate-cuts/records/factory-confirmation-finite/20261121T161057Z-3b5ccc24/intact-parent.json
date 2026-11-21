@@ -1,0 +1,138 @@
+{
+  "status": "established",
+  "entry": "organic.SurrogateCuts#fixedCut(I)I",
+  "inputs": 1,
+  "differences": 0,
+  "sides": {
+    "parent": {
+      "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+      "entry": {
+        "entry": "organic.SurrogateCuts#fixedCut(I)I",
+        "classSha256": "68f9e7122fe2a60f22dd458930f528c332defe2b686fe8d24203c61f70bd0cfb",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+        "subjectClassSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525"
+      },
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "fc50e33bc999cd3f10244dd2fef4324705732e7d49e611951cdf6d0f81520df4",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+          "role": "original"
+        },
+        {
+          "path": "lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+          "sha256": "71568c9f8396677219f650268fbf6493ded484edcdbdf2dae6129ca5be81e8db",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+          "sha256": "95488102feaf2e2858adf6b299353677dac6c15294006f8ed1c5556f8e3cd251",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+          "sha256": "ee52e1c299a632184fba274a9370993e09140429f5e516e6c5570fd6574b297f",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+          "sha256": "4b909690cab288c761eb94c0bf0e814496cf3921d8affac84cd87774530351e5",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+          "sha256": "3a70240de7cdcde04e7c504c2327d7035b9c25ae0206881e3bf4e6798a273ed8",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 8 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.SurrogateCuts.fixedCut(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "de70e9bb98149f15a9e2ebaa7b663194856378462d959f86b4a747478f57fbe3",
+      "stdoutSha256": "f5eec6816828c2b1564a3415683e6510bfdcdca6a6356c07ad4cd828e6ec3351",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+      ],
+      "interval": [
+        8,
+        8
+      ],
+      "rows": [
+        {
+          "value": 8,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.082,
+      "cpuSeconds": 0.1032,
+      "peakRssBytes": 69373952,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "organic.SurrogateCuts#fixedCut(I)I",
+      "adapterSha256": "fc50e33bc999cd3f10244dd2fef4324705732e7d49e611951cdf6d0f81520df4",
+      "adapterClassSha256": "68f9e7122fe2a60f22dd458930f528c332defe2b686fe8d24203c61f70bd0cfb",
+      "subject": {
+        "class": "org.apache.commons.lang3.StringUtils",
+        "method": "truncate",
+        "descriptor": "(Ljava/lang/String;II)Ljava/lang/String;",
+        "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+        "classSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525",
+        "adapterCalls": [
+          "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+          "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Cutting precisely around the surrogate pair retains both original UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 1515,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0073,
+  "controlSeconds": 0.0294,
+  "wallSeconds": 0.6994,
+  "task": "intact-parent",
+  "sourceClaim": "5e54115cef9cb111",
+  "inputsKey": "163f0512c7641393aca8d286e150355281350bbdc2adb5c390f98ed4249c0a73",
+  "revisions": [
+    "parent"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "parent": "cc08a4ac1a1073925dd519c21359843243ce45287323e0150d8c2f745c15d392"
+  }
+}

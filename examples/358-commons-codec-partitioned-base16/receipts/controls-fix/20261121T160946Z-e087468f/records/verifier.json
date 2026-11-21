@@ -1,0 +1,413 @@
+{
+  "task": "controls-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+      "prove",
+      "organic.HexWrites#bytes(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/commons-codec-1.16-SNAPSHOT.jar",
+      "--assume",
+      "code >= 2049 && code < 2051",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "8192",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.031,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "6b60043b7c651f33ec748bf0ae94068c3fa11f290fbb917196eb8de87582cdb9",
+      "commit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+      "libTree": "769ee78b99fbe616d0c990908e09569f9c454508",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 8192
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The one-write and 2+4+4 companion schedules return ABCDE. The selector identifies the input and direct public observation in controls/table.json.",
+        "method": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+        "revisions": {
+          "fix": {
+            "commit": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
+            "loadedFrom": "built/commons-codec-1.16-SNAPSHOT.jar",
+            "classSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb",
+            "origin": "built by maven from https://github.com/apache/commons-codec at 7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb: target/commons-codec-1.16-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "out",
+                "doEncode"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "organic.HexWrites#bytes(I)I",
+          "mapping": "The one-write and 2+4+4 companion schedules return ABCDE. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2051
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-codec-1.16-SNAPSHOT.jar",
+            "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "organic.HexWrites#bytes(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "organic.HexWrites#bytes(I)I",
+          "classSha256": "d8e5adb0751742996c74b162467987628ba6d6860f15cade63ef800744b4cdbc",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+          "subjectClassSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+        "checkedEntry": "organic.HexWrites#bytes(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 2049 && code < 2051"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "8192"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "organic.HexWrites#bytes(I)I",
+          "mapping": "The one-write and 2+4+4 companion schedules return ABCDE. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2051
+        }
+      },
+      "commits": {
+        "fix": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+            "gaps",
+            "--target",
+            "organic.HexWrites#bytes(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/built/commons-codec-1.16-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+              "sites": [
+                "organic.HexWrites.decode:36"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0211,
+        "peakRssBytes": 88801280,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "organic.HexWrites#bytes(int)",
+        "domain": "code: int",
+        "assume": "code >= 2049 && code < 2051",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 96 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ organic.HexWrites#bytes(int) satisfies `result == 1` on every input where code >= 2049 && code < 2051 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: bytes(code=2049) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006364618,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 8192,
+          "stage": null,
+          "native": {
+            "paths": 4,
+            "merges": 0,
+            "solver_calls": 7,
+            "solving_seconds": 5.2748e-05,
+            "gates_evaluated": 252,
+            "evaluating_seconds": 6.842e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 333,
+            "clauses": 982,
+            "seconds": 0.005514727,
+            "loading_seconds": 0.000791441,
+            "decoding_seconds": 0.000321159,
+            "encoding_seconds": 0.000624144,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.006,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 333,
+                "clauses": 982
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.994,
+              "seconds": 0.002,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 403,
+                "clauses": 1257
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.018,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.008,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.009
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 2049 && code < 2051",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found bytes(code=2049).",
+            "witness": "bytes(code=2049)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261121-155348-repeat-organic-java-example-358-on-the-f/.build-py/examples-0s6p617k/targets/358/controls-fix/20261121T160946Z-e087468f",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261121-155348-repeat-organic-java-example-358-on-the-f/.build-py/examples-0s6p617k/targets/358/controls-fix/20261121T160946Z-e087468f"
+  }
+}

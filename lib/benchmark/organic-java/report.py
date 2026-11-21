@@ -151,6 +151,7 @@ def finite(folder, task, plan, stages):
 def startup_companions(folder, example, target, frozen_tasks):
     """Recount conditional tasks independently of the obligations registered at baseline."""
     results = {}
+    stages = [p.name.removesuffix("-native") for p in sorted((folder / "records").glob("*-native")) if p.is_dir()]
     for task in target["tasks"]:
         if task["id"] in frozen_tasks or task["kind"] == "replay":
             continue
@@ -160,7 +161,7 @@ def startup_companions(folder, example, target, frozen_tasks):
             continue
         attempts = []
         seen = set()
-        for stage in ("enum-snapshot", "traversal-boundaries", "observed-process", "joint-startup", "constructor-transport", "writable-startup", "buffer-wrap", "factory-startup", "workflow"):
+        for stage in [*stages, "workflow"]:
             result = native(folder, task, [stage], plan)
             if not result.get("receipt"):
                 continue
@@ -171,8 +172,11 @@ def startup_companions(folder, example, target, frozen_tasks):
         if attempts:
             results[task["id"]] = {"claimKey": plan.claim["key"], "guard": plan.claim["assume"], "expected": task["expected"],
                                    "observedInitializers": initializers, "observedRuntime": plan.claim.get("observedRuntime", {}),
-                                   "attempts": attempts}
+                                   "attempts": sorted(attempts, key=lambda a: Path(a["receipt"]).parent.name)}
     return results
+
+
+CONFIRMATIONS = ("factory-confirmation", "confirmation", "final")
 
 
 def score(number, case, stages):
@@ -181,7 +185,7 @@ def score(number, case, stages):
     target = sidecar.load(folder, ex)
     results = {}
     product_runs = (folder / "records" / (stage + "-native") / "run.json"
-                    for stage in stages if stage in ("confirmation", "final", "reserve"))
+                    for stage in stages if stage in (*CONFIRMATIONS, "reserve"))
     pinned = next((read(path) for path in product_runs if path.is_file()), None)
     frozen_tasks = read(folder / "records/baseline-native/run.json")["tasks"]
     registered = {task["id"]: task for task in target["tasks"]}
@@ -193,7 +197,7 @@ def score(number, case, stages):
         original = native(folder, task, ["baseline"], plan)
         current = native(folder, task, stages, plan)
         boundary = folder / "records/traversal-boundaries-native" / task["id"]
-        if "startup" in stages and boundary.is_dir():
+        if "startup" in stages and current.get("stage") != "factory-confirmation" and boundary.is_dir():
             current = native(folder, task, ["traversal-boundaries"], plan)
         if not current["qualified"]:
             for proof in native_selectors.evidence(folder, plan):
@@ -309,7 +313,7 @@ def score(number, case, stages):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--stages", default="startup,confirmation,final,reserve,ordered,streams,utf16,baseline", help="most recent first")
+    ap.add_argument("--stages", default="factory-confirmation,startup,confirmation,final,reserve,ordered,streams,utf16,baseline", help="most recent first")
     ap.add_argument("--output", type=Path, default=ROOT / "verification/organic-java-pr-campaign.json")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
@@ -324,7 +328,7 @@ def main():
         summary[v] = {"completeCases": sum(c["caseDecided"][v] for c in rows.values()),
                       "qualifiedObligations": sum(outcomes.values()), "established": outcomes["established"],
                       "refuted": outcomes["refuted"], "open": len(obligations) - sum(outcomes.values())}
-    stage = next((s for s in args.stages.split(",") if s in ("confirmation", "final") and
+    stage = next((s for s in args.stages.split(",") if s in CONFIRMATIONS and
                   all(all(s + "-" + route in r["runs"] for route in ("native", "finite")) for r in rows.values())), None)
     pins = {(run["verifierCommit"], run["checkerSha256"]) for r in rows.values() for name, run in r["runs"].items()
             if stage and name in (stage + "-native", stage + "-finite")}

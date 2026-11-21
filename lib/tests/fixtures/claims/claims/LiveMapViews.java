@@ -1,13 +1,16 @@
 package claims;
 
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class LiveMapViews {
     public static boolean remove(boolean entry) {
@@ -82,8 +85,52 @@ public final class LiveMapViews {
         return "B".equals(map.keySet().iterator().next());
     }
 
+    public static boolean backedSets() {
+        Map<String, Boolean> map = new HashMap<>();
+        Set<String> set = Collections.newSetFromMap(map);
+        if (!set.add("k") || set.add("k") || map.get("k") != Boolean.TRUE) return false;
+        try { Collections.newSetFromMap(map); return false; } catch (IllegalArgumentException expected) { }
+        map.put("other", Boolean.FALSE);
+        if (!set.contains("other") || !set.remove("k") || set.size() != 1) return false;
+        try { Collections.newSetFromMap(null); return false; } catch (NullPointerException expected) { }
+        return !map.containsKey("k") && set.iterator().next().equals("other");
+    }
+
+    public static boolean concurrentViews() {
+        ConcurrentHashMap<String, Boolean> map = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, Boolean> separate = new ConcurrentHashMap<>();
+        Set<String> set = Collections.newSetFromMap(map);
+        ConcurrentHashMap.KeySetView<String, Boolean> keys = map.keySet();
+        return set.isEmpty() && set.size() == 0 && keys == map.keySet() && keys.getMap() == map
+                && keys != separate.keySet() && keys.isEmpty() && keys.getMappedValue() == null;
+    }
+
+    static final class ThrowingHash {
+        @Override public int hashCode() { throw new IllegalStateException(); }
+    }
+
+    public static boolean initialProperties() {
+        Properties defaults = new Properties(4);
+        Properties values = new Properties(defaults);
+        values.putAll(defaults);
+        values.putAll(values);
+        if (!values.isEmpty() || defaults.size() != 0 || values.getProperty("absent") != null
+                || !"fallback".equals(values.getProperty("absent", "fallback")) || values.containsKey("absent")
+                || values.entrySet().iterator().hasNext()) return false;
+        try { new Properties(-1); return false; } catch (IllegalArgumentException expected) { }
+        try { values.getProperty(null); return false; } catch (NullPointerException expected) { }
+        try { values.get(new ThrowingHash()); return false; } catch (IllegalStateException expected) { return true; }
+    }
+
+    public static boolean losesNonEmptyProperties() {
+        Properties values = new Properties();
+        values.putAll(Collections.singletonMap("k", "value"));
+        return values.isEmpty();
+    }
+
     public static void main(String[] args) {
         if (!remove(true) || !remove(false) || !collisions() || !mixed() || !copies() || insertionOrder()
-                || !packedValue(false) || !packedValue(true)) throw new AssertionError();
+                || !packedValue(false) || !packedValue(true) || !backedSets() || !concurrentViews() || !initialProperties()
+                || losesNonEmptyProperties()) throw new AssertionError();
     }
 }

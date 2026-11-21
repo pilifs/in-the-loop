@@ -1340,7 +1340,10 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     }
     assert_eq!(machine.call_static("claims/LiveMapViews", "collisions", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     assert_eq!(machine.call_static("claims/LiveMapViews", "copies", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
-    for name in ["remove", "collisions", "mixed", "packedValue"] {
+    for name in ["backedSets", "concurrentViews", "initialProperties"] {
+        assert_eq!(machine.call_static("claims/LiveMapViews", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    }
+    for name in ["remove", "collisions", "mixed", "packedValue", "backedSets", "concurrentViews", "initialProperties"] {
         let mut options = options(classes, &format!("claims.LiveMapViews#{name}"), 3, name);
         options.unwind = 30;
         let o = run(&options);
@@ -1348,6 +1351,8 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     }
     let o = run(&options(classes, "claims.LiveMapViews#insertionOrder", 3, "unordered-hashmap"));
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let o = run(&options(classes, "claims.LiveMapViews#losesNonEmptyProperties", 4, "populated-properties-copy"));
+    assert_ne!(o.verdict, Verdict::Verified, "{}", o.output);
 }
 
 #[test]
@@ -1410,6 +1415,22 @@ fn enum_tables_and_sequential_collectors_use_the_actual_iterator() {
     }
     let wrong = run(&options(classes, "claims.IteratorCollection#wrong", 4, "iterator-bulk-override"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+}
+
+#[test]
+fn trim_keeps_utf16_units_and_the_original_unchanged_receiver() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.Trimmed").status().unwrap().success());
+    proved(classes, "claims.Trimmed#edges", 4);
+    proved(classes, "claims.Trimmed#samples", 4);
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    assert_eq!(machine.call_static("claims/Trimmed", "samples", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    assert!(machine.call_static("claims/Trimmed", "changedIdentity", "()Z", vec![]).is_err());
+    let unknown = run(&options(classes, "claims.Trimmed#changedIdentity", 4, "trim-identity"));
+    assert_eq!(unknown.verdict, Verdict::Unverifiable, "{}", unknown.output);
 }
 
 #[test]

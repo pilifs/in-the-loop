@@ -4662,6 +4662,50 @@ change `mnrnmqvmmrnu` · [log `10dd462d8e85`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-155348-repeat-organic-java-example-359-on-the-f: failed: 1 failed, 3 passed step(s) in 5m59s, peak 842.9 MiB (estimated 10m00s, 3.0 GiB); 5896 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
+### Execute JDK map-backed sets and fresh concurrent key views (verification pending)
+
+change `nmyusuwoxrvq` · [log `3da5026b9974`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4.jsonl.gz)
+
+The verifier and interpreter execute Collections.newSetFromMap on the selected JDK. Its backing map controls mutation, validation and iteration. A freshly constructed exact ConcurrentHashMap runs the JDK count and key-view methods with its own fields and cached view identity. Explicitly modeled or uninitialized maps cannot borrow that representation.
+
+The physical JVM, interpreter and strict checker passed the shared-map mutation, nonempty and null rejection, and concurrent view identity controls on Temurin 21.0.13 and 25.0.5. The changed selection passed all 58 Rust test binaries. The original bounded Avro factory progressed through its map-backed set to Hadoop Configuration.REGISTRY with the previous three-root startup digest. Job 20261121-145625-follow-the-original-avro-factory-through repeats the claim on the original 124-entry closure.
+
+### Verify null-valued weak registries across JVM startup (verification pending)
+
+change `rnwoytzkzkwy` · [log `3da5026b9974`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4.jsonl.gz)
+
+An opt-in joint snapshot retains the identity of exact WeakHashMaps whose current values are all null. Collection can remove keys while preserving that invariant. On qualified JDK images the checker can read or register a null value with a key that inherits Object.equals and hashCode. It still refuses membership, iteration, callbacks and a non-null write. Earlier startup digests remain reproducible. The campaign recount now discovers each recorded native stage.
+
+Physical and native controls on Temurin 21 and 25 checked shared aliases, a nonempty registry, repeated registration, a deliberately false result and unsupported operations. All 46 changed test groups passed, the cost inventory lint passed and example 355 replayed both revisions on all 21 inputs. The original factory progressed through Configuration.REGISTRY to Credentials startup. Explicitly initializing Credentials as a fourth root reached Configuration.deprecationContext in the actual property lookup. Job 20261121-151148-verify-the-real-avro-factory-with-its-ob repeats both newly registered scopes.
+
+### Bind selected startup receivers and their configuration lookup tables (verification pending)
+
+change `uxpllquntups` · [log `3da5026b9974`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4.jsonl.gz)
+
+A joint JVM observation can bind explicitly named application objects, their complete inherited field layouts, references back to themselves, and their aliases. An exact atomic reference retains its shared cell. An exact HashMap captures all String and null keys for read-only lookups, including a present key with a null or opaque value. An unsupported mutation or inspection stops the proof. The previous side of a pair retains its own relocated object and field types.
+
+Physical JVM and native controls on Temurin 21 and 25 covered cycles, field hiding, mutation through receiver aliases, atomic cell updates, colliding strings, an isolated surrogate and present-null versus absent entries. All 34 selected test groups passed and the Avro example validated with a fresh two-revision replay. Both original Avro closures independently produced the same 220-class, 1079-object state. The factory passed the deprecation context cell and reached String.trim. Job 20261121-153140-check-avro-factory-lookups-using-the-cap repeats both frozen factory claims.
+
+### Verify the original Hadoop properties path and Avro factory (verification pending)
+
+change `snonotymzrsr` · [log `3da5026b9974`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4.jsonl.gz)
+
+The native checker trims bounded UTF-16 strings at code units up to U+0020 and preserves the unchanged receiver. It refuses an identity comparison for equal changed text when the JVM can choose the returned object. The values-conformance inventory and String model identity cover the new operation. Exact fresh Properties objects run the selected JDK constructors, defaults, key lookups, entry iteration and bulk copy. On qualified Temurin builds a single-thread constructor fence, a compare-and-set on the map's own sizeCtl and an in-bounds read of the typed node array preserve the actual JDK allocation and iteration.
+
+The fixed public Avro factory proved the bounds contract on all 21 admitted inputs after the registered startup. The native parent check found code=1 on the original artifact. JVM, interpreter and native controls checked trimming, source identity, default properties, key exceptions, empty and self copies, and rejection of a lost nonempty input. Both Temurin 21 and 25 passed the focused tests. All 18 values-conformance tests, all 308 library tests, the cost inventory, job validation and all seven changed-test groups passed after updating the string operation count.
+
+Job 20261121-155347-prove-the-original-avro-factory-and-repl checks all eight factory and both nested converter obligations and independently replays the three parent violations at their original ambient entries. Jobs 20261121-155347-repeat-organic-java-example-353-on-the-f through 20261121-155348-repeat-organic-java-example-360-on-the-f recheck all eight upstream pairs on one verifier, including the finite domains, Lang and Eclipse native selectors and JavaParser startup scopes. Job 20261121-155808-check-proof-reuse-after-adding-utf-16-tr runs the integrated proof-cache regression.
+
+### Record the public Avro factory proofs and the common eight-PR confirmation
+
+change `yqkptkvsvvsv` · [log `3da5026b9974`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4.jsonl.gz)
+
+The original JobConf(false) factory now has native decisions for all eight obligations under its registered four-root JVM startup. Six properties held and both expected parent violations were found. At capacity one and logical length zero the parent exposed its byte. Independent original JVMs reproduced the bounds and rejected-index witnesses without early initialization. The nested converter and its original parent witness also repeated. The factory proof and its two ambient replays took 100.0 seconds at 1380.1 MiB peak.
+
+All eight upstream pairs repeated their native and finite checks on verifier 35ba19a31d97. The six primary PRs advanced from 17/46 at baseline and 37/46 in the preceding campaign to 39/46 original-scope native decisions, with 26 establishments and all 13 refutations. Seven Avro universal results retain startup conditions. All 46 primary finite obligations and all 16 transfer finite obligations qualified. The Commons Lang 1515-window and Eclipse Collections 2865-input selector proofs are available through their collector archives. The ambient startup refusals and single-query time limits remain visible.
+
+Checked the 13 collected jobs and all 10599 output hashes against their committed sources. Recounted the original JVM streams on both revisions of all eight PRs, all ten conditional Avro receipts, the original classpaths and the three fresh ambient witnesses. The proof-cache job passed. All eight examples validated, the normal handoffs found both archived selector batches, all 37 documentation links resolved, and the changed test selection passed all 42 groups. The result index covers all 986 collected jobs.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4.jsonl.gz) has every step in between: reasoning, tool calls and their results.

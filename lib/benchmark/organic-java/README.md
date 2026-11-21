@@ -15,7 +15,15 @@ The `records` folder in each example contains original Maven build and Surefire 
 
 A receipt retains the size and SHA-256 of a large JVM stream plus its first 512 KiB. For a public finite grid that exceeds it, `public_observations.py NNN` repeats the same original JVM controls, checks every byte against that receipt and retains whole JSON rows in small text files. The scorecard joins and validates these files before counting a grid.
 
+The scorecard links the latest fixed-side Commons Lang and Eclipse selector proofs directly to the collector archives. The normal selector evidence reader checks the archive manifest and the raw results for all 1,515 windows and 2,865 insertions.
+
 Avro has separate tasks for ambient startup and JVM-preinitialized state. The `*-writable-startup` tasks initialize `org.apache.avro.Schema` and `org.apache.hadoop.io.BytesWritable` in one JVM, in that order. The `bounds-fix-factory-startup` task adds `org.apache.hadoop.mapred.JobConf` as the third root. Each claim pins the common state digest and sets `observedRuntime` to `{"processors":2,"emptyEnvironment":true,"rootWorkingDirectory":true,"preinitializeTogether":true}`. The subject JVM checks the process settings, while the native checker binds the original classes and shared static fields before running the public entry. The earlier single-class observations are retained under their own task names.
+
+The `bounds-fix-registry-startup` claim enables `weakMapValues` on the same three roots. The JVM checks that every existing value of the exact weak map is null. Collection can remove keys while preserving this fact. The `bounds-fix-credentials-startup` claim also initializes Hadoop's `Credentials` as a fourth root before running the same factory. Each observation has its own state digest.
+
+The eight `*-lookup-startup` tasks use those four roots and request the atomic deprecation context, its application receiver, the Commons Collections map wrappers, and the backing String-key tables. The checker binds each application's class bytes and field layout. Lookup preserves collisions, missing keys and present null values. Both original classpaths produced the same 220-class, 1,079-object state.
+
+To reproduce the public factory run, queue the registered job steps on the pinned verifier. The first step checks bounds, excluded absolute reads, prefix contents and the full-length control on both revisions. The next two steps independently replay the factory counterexamples at their original entries. The final two check the nested converter and its original witness. [Job specification](../../../verification/jobs/20261121-155347-prove-the-original-avro-factory-and-repl.json)
 
 To repeat the direct converter comparison, queue the first command below as a verification job. Run the witness review after the normal workflow has produced a matching native refutation.
 

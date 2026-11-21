@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-151148-verify-the-real-avro-factory-with-its-ob",
+  "title": "Verify the real Avro factory with its observed weak registry",
+  "description": "Check the fixed public factory over all 21 original inputs after a fresh subject JVM has observed the weak registry's null values. Repeat with Credentials initialized after Hadoop JobConf. Each claim uses its own state digest, the original 124-entry classpath and the actual configuration constructor.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T15:11:48+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check the three-root and four-root factory states",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage weak-registry --tasks bounds-fix-registry-startup,bounds-fix-credentials-startup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/weak-registry-native"
+  ]
+}

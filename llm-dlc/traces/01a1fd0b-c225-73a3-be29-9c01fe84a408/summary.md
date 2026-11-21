@@ -20,61 +20,61 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Propose two decision-id long-token findings for the allow list
 
-change `rlmknzomsxtr` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`b9f654027894`](https://github.com/pilifs/in-the-loop/commit/b9f6540278945a30bcd0e7560278b81b4268a1a9) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 aac03ee3 and 9b8e2591 are the watcher's decision ids (single-external-upgrade-evaluation-D001/D002) with a leading '+', which the decision-id exception in redaction_rules.py does not cover. Proposed for the user's approval; nothing decided.
 
 ### Record verification results for 1 job(s)
 
-change `vwqvqymyuzxu` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`74c906b7196b`](https://github.com/pilifs/in-the-loop/commit/74c906b7196b7a1977253de9373d3d57252e651e) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-074404-v3-prep-group-06-original-java-upgrade-c: passed: 3 passed step(s) in 1m26s, peak 1.1 GiB (estimated 12m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 6 job(s)
 
-change `rnwzmzsoswrn` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`6b4e9df8be7c`](https://github.com/pilifs/in-the-loop/commit/6b4e9df8be7cf372a7ef500cef50dcc2d305dc2d) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 6 of the 6 job(s). 20261121-074403-v3-prep-group-01-original-java-upgrade-c: passed: 5 passed step(s) in 5m16s, peak 1.4 GiB (estimated 12m00s, 2.0 GiB); 15 output file(s) changed Applied 15 output(s). 20261121-074403-v3-prep-group-02-original-java-upgrade-c: passed: 4 passed step(s) in 5m48s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261121-074403-v3-prep-group-03-original-java-upgrade-c: passed: 4 passed step(s) in 3m02s, peak 759.8 MiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074403-v3-prep-group-04-original-java-upgrade-c: passed: 4 passed step(s) in 3m18s, peak 709.0 MiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074404-v3-prep-group-05-original-java-upgrade-c: passed: 4 passed step(s) in 4m28s, peak 1.1 GiB (estimated 12m00s, 2.0 GiB); 14 output file(s) changed Applied 14 output(s). 20261121-074404-v3-prep-group-07-original-java-upgrade-c: passed: 3 passed step(s) in 3m12s, peak 2.7 GiB (estimated 12m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `otszsynmlyuk` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`5003b2a86e03`](https://github.com/pilifs/in-the-loop/commit/5003b2a86e037153baebaa280c881632fb472287) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261121-075424-v3-dispatch-group-06-original-java-upgra: passed: 2 passed step(s) in 25.5s, peak 132.6 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-075424-v3-dispatch-group-07-original-java-upgra: passed: 2 passed step(s) in 16.7s, peak 644.2 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 5 job(s)
 
-change `kmrontwtmlww` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`0a3b3f9ae92c`](https://github.com/pilifs/in-the-loop/commit/0a3b3f9ae92c73d5c8fcad18a7917407086ef0aa) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261121-075423-v3-dispatch-group-01-original-java-upgra: passed: 2 passed step(s) in 33.3s, peak 157.4 MiB (estimated 4m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261121-075423-v3-dispatch-group-02-original-java-upgra: passed: 2 passed step(s) in 57.1s, peak 312.0 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-075424-v3-dispatch-group-03-original-java-upgra: passed: 2 passed step(s) in 1m20s, peak 212.3 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-075424-v3-dispatch-group-04-original-java-upgra: passed: 2 passed step(s) in 1m33s, peak 321.3 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-075424-v3-dispatch-group-05-original-java-upgra: passed: 2 passed step(s) in 1m27s, peak 277.9 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `mwmwxqnzkvwp` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`7daba349c051`](https://github.com/pilifs/in-the-loop/commit/7daba349c0510c875c57c01b6dc11a292f1a3674) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261121-080529-v3-cause-group-06-original-java-upgrade: passed: 2 passed step(s) in 25.7s, peak 132.7 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-080529-v3-cause-group-07-original-java-upgrade: passed: 2 passed step(s) in 18.2s, peak 644.2 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 5 job(s)
 
-change `nvmpmosmroml` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`a1c016f99e8b`](https://github.com/pilifs/in-the-loop/commit/a1c016f99e8b80e1a228342f5244f94335cd346f) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261121-080528-v3-cause-group-01-original-java-upgrade: passed: 2 passed step(s) in 34.3s, peak 156.8 MiB (estimated 4m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261121-080528-v3-cause-group-02-original-java-upgrade: passed: 2 passed step(s) in 1m19s, peak 311.6 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-03-original-java-upgrade: passed: 2 passed step(s) in 3m12s, peak 221.1 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-04-original-java-upgrade: passed: 2 passed step(s) in 1m44s, peak 322.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-05-original-java-upgrade: passed: 2 passed step(s) in 1m34s, peak 274.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `lvursrrrmson` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`ca926beee72b`](https://github.com/pilifs/in-the-loop/commit/ca926beee72b4ff8049661b20cefa3cb930f0294) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261121-081222-v3-final-group-06-original-java-upgrade: passed: 2 passed step(s) in 25.7s, peak 135.7 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-081222-v3-final-group-07-original-java-upgrade: passed: 2 passed step(s) in 17.4s, peak 644.1 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-081222-v3-h2-original-jdbc-driver-selection-and: passed: 1 passed step(s) in 3.8s, peak 92.4 MiB (estimated 1m00s, 512.0 MiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 5 job(s)
 
-change `zvwvxxmuvvpn` · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
+[`3aec340ffbf4`](https://github.com/pilifs/in-the-loop/commit/3aec340ffbf48fafb614e5d954353ad6adc31e84) · [log `9d9b349d1af6`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/9d9b349d1af677697415fd61336eb57fdbbc81737ad4e2633619ccba56b9e70a.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261121-081221-v3-final-group-01-original-java-upgrade: passed: 2 passed step(s) in 34.3s, peak 156.9 MiB (estimated 4m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261121-081221-v3-final-group-02-original-java-upgrade: passed: 2 passed step(s) in 57.8s, peak 311.4 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-081221-v3-final-group-03-original-java-upgrade: passed: 2 passed step(s) in 1m20s, peak 212.9 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-081221-v3-final-group-04-original-java-upgrade: passed: 2 passed step(s) in 1m35s, peak 323.7 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-081222-v3-final-group-05-original-java-upgrade: passed: 2 passed step(s) in 1m28s, peak 270.7 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Prepare original framework fixtures behind the Java runtime (verification pending)
 
-change `znyylzwoppxk` · [log `2356614cd834`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/2356614cd83457310b4dec2ac0ae52c22101338c13b4da97932a6869296f7fd8.jsonl.gz)
+[`c2f35d43955a`](https://github.com/pilifs/in-the-loop/commit/c2f35d43955a289ee2fa27d82a6e1d86700c5970) · [log `2356614cd834`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/2356614cd83457310b4dec2ac0ae52c22101338c13b4da97932a6869296f7fd8.jsonl.gz)
 
 Compile and retain the upstream Maven test classes, resources and additional companions needed to construct real Spring receivers. Preserve the complete production classpath first and check that the upgraded dependency is already on it independently of any tests. Record the fixture digest and require an explicit match between the observer scope and its prepared classpath. Keep discoverable package directories for component scans.
 
@@ -82,7 +82,7 @@ All 28 changed test groups passed, including 58 Rust test binaries. The five ori
 
 ### Trace Java interface dispatch and exceptions through original framework calls (verification pending)
 
-change `kxnnqqkwxyxz` · [log `de7db575fc56`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/de7db575fc5609fd4ca3451e73c895708d9db94f9baa78176393c5a62e9f9633.jsonl.gz)
+[`797227c61c43`](https://github.com/pilifs/in-the-loop/commit/797227c61c432223e427aaf82df5e60dc4a7c99d) · [log `de7db575fc56`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/de7db575fc5609fd4ca3451e73c895708d9db94f9baa78176393c5a62e9f9633.jsonl.gz)
 
 At an original method breakpoint, match the observer’s real bytecode offset against its exact invoke instruction and record the runtime dispatch frame. This qualifies calls through Spring proxies. Match an escaping exception by JVM object identity and a throw that crosses the selected invocation, including when the application cleared its Java stack trace. Add original-scope order confirmation, car validation and servlet date-field observations. Each old framework exercised its real business operation and matched the developer expectation in the capped probes.
 
@@ -90,7 +90,7 @@ All 28 affected test groups passed, including 58 Rust binaries. Six upgrade-revi
 
 ### Resolve the member that failed in the original Java runtime (verification pending)
 
-change `uloqumqzozso` · [log `a58fcea45e10`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/a58fcea45e102774b8152ad9ce1cb8fe28732def2b903985e04fc256dc8a353d.jsonl.gz)
+[`3dc7fe0f4bdd`](https://github.com/pilifs/in-the-loop/commit/3dc7fe0f4bdde94079340cda0e0a331ebf5d7f48) · [log `a58fcea45e10`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/a58fcea45e102774b8152ad9ce1cb8fe28732def2b903985e04fc256dc8a353d.jsonl.gz)
 
 Track the innermost exception object when a framework wraps a startup failure. Bind the actual throwing location, live method code and constant pool to its original JAR. Resolve the referenced member on each release with fresh JVM lookups, including a class used where bytecode requires an interface. Identify a root cause thrown from a newly introduced production dependency even when a framework wraps it outside the selected caller.
 
@@ -98,7 +98,7 @@ All 27 affected test groups passed. A mixed-binary control required two independ
 
 ### Diagnose JDBC driver selection on the original subject JDK (verification pending)
 
-change `mrxxqrpkrutr` · [log `1cb71db5cd9d`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/1cb71db5cd9d5a979b3f584ac321be8a91b21b60b380225b3ce2405efc0c6bcd.jsonl.gz)
+[`8bb451aec630`](https://github.com/pilifs/in-the-loop/commit/8bb451aec630713e1b1881fc04aaf7838c06e56b) · [log `1cb71db5cd9d`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/1cb71db5cd9d5a979b3f584ac321be8a91b21b60b380225b3ce2405efc0c6bcd.jsonl.gz)
 
 Expose a driver-selection check for a locked original classpath and invoke it automatically when the JDK throws a no-driver exception before the selected caller. Compare the selected old driver, service declaration, actual provider bytes and class-version error in fresh JVMs. Derby’s new provider requires classfile 53 on a JVM that accepts through 52. Both original H2 releases selected their pinned driver for the calibration URL and rejected the unmatched control. Root-cause attribution now requires the actual throwing instruction in the changed runtime JAR.
 
@@ -106,7 +106,7 @@ All 30 affected test groups passed, including 58 Rust binaries. Eight focused wo
 
 ### Report the pinned Java framework and JDBC results on all 32 upgrades
 
-change `qlnltrloqzvo` · [log `b313e625c313`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/b313e625c3134767d844c6410539e2a8d72339a7bdd47d7851e2a89ba58bc794.jsonl.gz)
+[`506508759a88`](https://github.com/pilifs/in-the-loop/commit/506508759a883fd46c7d19595fe476c9c62b3c8e) · [log `b313e625c313`](https://terminalvalue.net/raw-traces/01a1fd0b-c225-73a3-be29-9c01fe84a408/b313e625c3134767d844c6410539e2a8d72339a7bdd47d7851e2a89ba58bc794.jsonl.gz)
 
 V3 at 83ae65d6afb1 repeated three of twelve registered historical changes, twelve of twelve scoped routine preservations and five of eight transfer decisions. All twenty V2 primary decisions held. All 32 cases now have reviewed original JVM observations. Thirty-one old applications matched the full requested domain. Seven main and one transfer upgrade have a separate verified explanation before the registered business result. Receiver construction stopped the first automatic native attempt on 23 pairs.
 

@@ -1052,7 +1052,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.writes = declaration.writes.clone();
                 options.lemmas = args.lemmas.clone();
                 options.observed_initializers = args.observed_initializer.clone();
-                options.observed_runtime = args.observed_runtime.unwrap_or_default();
+                options.observed_runtime = args.observed_runtime.clone().unwrap_or_default();
                 options.requested_models = args.model.clone();
                 options.stand_ins = args.stand_in.clone();
                 let outcome = property::run(&options)?;

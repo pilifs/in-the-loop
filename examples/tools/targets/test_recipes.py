@@ -262,6 +262,11 @@ class RecipesTest(unittest.TestCase):
                       [(a.flag, a.value) for a in recipes.translate(scoped).arguments])
         eager = {"observedInitializers": plan.claim["observedInitializers"],
                  "observedRuntime": {**settings, "preinitializeTogether": True}}
+        weak = {**plan.claim, "observedRuntime": {**settings, "weakMapValues": True}}
+        self.assertIsInstance(recipes.translate(replace(plan, claim=weak)), interfaces.Unsupported)
+        weak["observedRuntime"]["preinitializeTogether"] = True
+        self.assertIn("weakMapValues", next(a.value for a in recipes.translate(replace(plan, claim=weak)).arguments
+                                            if a.flag == "--observed-runtime"))
         src = replay_candidate.source("p.C#check(I)I", eager, [{"name": "n", "type": "int", "value": 1}], ["n"])
         self.assertLess(src.index("Class.forName("), src.index("p.C.check("))
         self.assertIn("availableProcessors() != 2", src)

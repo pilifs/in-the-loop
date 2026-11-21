@@ -19,7 +19,7 @@ pub mod natives;
 pub mod render;
 pub mod value;
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::rc::Rc;
 
 use crate::classfile::{flags, ArithOp, ArrayKind, ClassFile, Cond, ExceptionHandler, Insn, Kind, Method, Narrow, Type};
@@ -93,6 +93,7 @@ pub struct Machine<'a> {
     statics: HashMap<String, BTreeMap<String, Value>>,
     init: HashMap<String, InitState>,
     interned: HashMap<Vec<u16>, Ref>,
+    trimmed: HashSet<Ref>,
     class_objects: HashMap<Type, Ref>,
     boxes: HashMap<(String, i64), Ref>,
     codes: HashMap<(String, String, String), Rc<Code>>,
@@ -133,6 +134,7 @@ impl<'a> Machine<'a> {
             statics: HashMap::new(),
             init: HashMap::new(),
             interned: HashMap::new(),
+            trimmed: HashSet::new(),
             class_objects: HashMap::new(),
             boxes: HashMap::new(),
             codes: HashMap::new(),
@@ -484,7 +486,12 @@ impl<'a> Machine<'a> {
         let mut base = Base::Object;
         let mut current = Some(class.to_string());
         while let Some(c) = current {
-            match self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))? {
+            let mut layout = self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))?;
+            if layout.is_none() && matches!(class, crate::models::CONCURRENT_MAP | "java/util/Properties") {
+                layout = self.cp.load(&c).map_err(|e| Fault::Unsupported(e.to_string()))?
+                    .filter(|l| l.origin == crate::classpath::Origin::Jdk).map(|l| l.class);
+            }
+            match layout {
                 Some(cf) => {
                     // A field a subclass declares again is a second field, kept under its declaring class's
                     // name ([`ClassPath::field_key`]).
@@ -640,6 +647,16 @@ impl<'a> Machine<'a> {
     /// A static call into the JDK: the model's bytecode when the tool has a model that defines the method, else
     /// the interpreter's natives. The model is the definition both engines share, so it comes first.
     fn call_static_jdk(&mut self, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+        if self.cp.concurrent_table_read(owner, name, descriptor) {
+            if let [Value::Ref(r), Value::Int(index)] = args.as_slice() {
+                if let Object::Array { element: Type::Object(class), data } = self.heap.get(*r) {
+                    if class == "java/util/concurrent/ConcurrentHashMap$Node" {
+                        if let Some(value) = usize::try_from(*index).ok().and_then(|i| data.get(i)) { return Ok(Some(*value)); }
+                    }
+                }
+            }
+            return Err(Fault::Unsupported("ConcurrentHashMap.tabAt requires a known in-bounds index on a Node array".into()));
+        }
         if crate::bmc::runtime::property_call(owner, name, descriptor) {
             return self.system_property(name, &args, false);
         }
@@ -687,7 +704,7 @@ impl<'a> Machine<'a> {
     pub fn call_virtual(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
         let class = self.class_of(r);
-        if let Some((cf, method)) = self.cp.linked_queue_method(&class, owner, name, descriptor, false) {
+        if let Some((cf, method)) = self.collection_receiver_method(&class, owner, name, descriptor, false) {
             let mut full = vec![receiver];
             full.extend(args);
             return self.invoke(&cf, &method, full);
@@ -1026,7 +1043,15 @@ impl<'a> Machine<'a> {
                 let a = pop!();
                 let same = match (a, b) {
                     (Value::Null, Value::Null) => true,
-                    (Value::Ref(x), Value::Ref(y)) => x == y,
+                    (Value::Ref(x), Value::Ref(y)) => {
+                        if x != y && (self.trimmed.contains(&x) || self.trimmed.contains(&y)) {
+                            if matches!((self.heap.get(x), self.heap.get(y)),
+                                (Object::Native(Native::String(a)), Object::Native(Native::String(b))) if a == b) {
+                                return Err(Fault::Unsupported(crate::bmc::strings::TRIM_IDENTITY.into()));
+                            }
+                        }
+                        x == y
+                    }
                     _ => false,
                 };
                 if same == *equal {
@@ -1076,6 +1101,19 @@ impl<'a> Machine<'a> {
             }
             Insn::GetStatic(index) => {
                 let field = pool.member(*index).map_err(|e| Fault::Unsupported(e.to_string()))?;
+                if self.cp.properties_store_fence(class, &field, code.insns.get(*i + 1)) {
+                    *i += 2;
+                    return Ok(Flow::Next);
+                }
+                if let Some(index) = self.cp.concurrent_size_cas(class, &method.name, &code.insns[*i..]) {
+                    let receiver = locals[0];
+                    let old = self.get_field(receiver, "sizeCtl")?.as_int();
+                    let matched = old == locals[index].as_int();
+                    if matched { self.put_field(receiver, "sizeCtl", Value::Int(-1))?; }
+                    stack.push(Value::bool(matched));
+                    *i += 6;
+                    return Ok(Flow::Next);
+                }
                 let v = self.get_static(&field.owner, &field.name)?;
                 stack.push(v);
             }
@@ -1243,10 +1281,20 @@ impl<'a> Machine<'a> {
         Ok(self.new_array_of((**element).clone(), data))
     }
 
+    fn collection_receiver_method(&self, class: &str, owner: &str, name: &str, descriptor: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        if class == crate::models::CONCURRENT_MAP && (!special || class == owner) {
+            self.cp.concurrent_map_method(name, descriptor)
+        } else if class == "java/util/Properties" {
+            self.cp.properties_method(class, owner, name, descriptor, special)
+        } else {
+            self.cp.linked_queue_method(class, owner, name, descriptor, special)
+        }
+    }
+
     /// `invokespecial`: constructors, private methods and `super.` calls go to the named class, not the receiver's.
     fn call_special(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
-        if let Some((cf, method)) = self.cp.linked_queue_method(&self.class_of(r), owner, name, descriptor, true) {
+        if let Some((cf, method)) = self.collection_receiver_method(&self.class_of(r), owner, name, descriptor, true) {
             let mut full = vec![receiver];
             full.extend(args);
             return self.invoke(&cf, &method, full);

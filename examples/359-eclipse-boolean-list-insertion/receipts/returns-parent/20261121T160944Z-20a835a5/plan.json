@@ -1,0 +1,238 @@
+{
+  "plan": {
+    "example": "359",
+    "task": "returns-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "returns-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "file": "claims/returns.json",
+      "sha256": "075e5c7822c6bf19263f91be14035343b96cea5a4722b49741f4753cb434db3d",
+      "property": "returns",
+      "claimKind": "property",
+      "statement": "Every valid insertion reports its change and every invalid index is rejected.",
+      "assume": "code >= 0 && code < 2865",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "b874ed5a092c0f8cf566636f6e5ee6a6089c12a351e8c437bcd7c27e864f866c"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "5dde4d874924fb52bd10bbf7ee53e5578c41cd378a89b28c7f74cc6d4314d303"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.InsertBits#returns(I)I",
+        "mapping": "Every valid insertion reports its change and every invalid index is rejected. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2865
+      },
+      "key": "466c06144aecd2b8"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/eclipse-collections/eclipse-collections",
+        "commit": "8a34cc65bd5449e4f45c9c39e75d7d92ec2717e6",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "eclipse-collections/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "17"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-parent.json",
+          "sha256": "7be8b2a660fc6b5ef208f0ad361239dc14749853cd146975e0c009ed119e3b07"
+        },
+        "adapters": [
+          "adapter/organic/InsertBits.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/returns-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-155348-repeat-organic-java-example-359-on-the-f/examples/359-eclipse-boolean-list-insertion",
+    "network": true
+  },
+  "inputs": {
+    "example": "359",
+    "task": "returns-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "returns-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "file": "claims/returns.json",
+      "sha256": "075e5c7822c6bf19263f91be14035343b96cea5a4722b49741f4753cb434db3d",
+      "property": "returns",
+      "claimKind": "property",
+      "statement": "Every valid insertion reports its change and every invalid index is rejected.",
+      "assume": "code >= 0 && code < 2865",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "b874ed5a092c0f8cf566636f6e5ee6a6089c12a351e8c437bcd7c27e864f866c"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "5dde4d874924fb52bd10bbf7ee53e5578c41cd378a89b28c7f74cc6d4314d303"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.InsertBits#returns(I)I",
+        "mapping": "Every valid insertion reports its change and every invalid index is rejected. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2865
+      },
+      "key": "466c06144aecd2b8"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/eclipse-collections/eclipse-collections",
+        "commit": "8a34cc65bd5449e4f45c9c39e75d7d92ec2717e6",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "eclipse-collections/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "17"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-parent.json",
+          "sha256": "7be8b2a660fc6b5ef208f0ad361239dc14749853cd146975e0c009ed119e3b07"
+        },
+        "adapters": [
+          "adapter/organic/InsertBits.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/InsertBits.java",
+        "sha256": "909546422a25f06531060807632d9a7e61a90877bf9a773c0806eca713891ee3"
+      }
+    ]
+  },
+  "key": "9b864d3b96cc81e238033ef411b6c51f17dfd8cb83928de5a1d53189fbb78072"
+}

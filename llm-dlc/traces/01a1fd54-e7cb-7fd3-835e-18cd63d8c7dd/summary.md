@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Pin six organic Java repairs and run their original upstream tests (verification pending)
 
-change `muqquuwntukq` · [log `cfbc8d1349f8`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/cfbc8d1349f85396f21f8f36eb573f710d03664906cfa7c5f6680a5bf079873c.jsonl.gz)
+[`e987cc07458f`](https://github.com/pilifs/in-the-loop/commit/e987cc07458f73eb966e9e2fd50f69c04f00cc13) · [log `cfbc8d1349f8`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/cfbc8d1349f85396f21f8f36eb573f710d03664906cfa7c5f6680a5bf079873c.jsonl.gz)
 
 Record six landed changes with their genuine first parents and the common verifier baseline 5e41cd71. Build the owning module on JDK 21, bind the exact class to its ordered dependency closure, and transplant only the landed test sources onto the parent. Each named Surefire testcase must execute and show the expected old and new dispositions.
 
@@ -28,7 +28,7 @@ Verified all twelve source identities, all eight named test methods and their ab
 
 ### Freeze six original Java PR contracts and measure the common baseline (verification pending)
 
-change `xpstllztrlmt` · [log `9a55e8ce11b1`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/9a55e8ce11b1a0b20e18ddb6999abe6417f03ecc7418851f17b80bf1582e3837.jsonl.gz)
+[`d86e83c8260c`](https://github.com/pilifs/in-the-loop/commit/d86e83c8260c620b6b5463c980671f3744efb6d9) · [log `9a55e8ce11b1`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/9a55e8ce11b1a0b20e18ddb6999abe6417f03ecc7418851f17b80bf1582e3837.jsonl.gz)
 
 Register examples 353–358 with independent UTF-16, count, buffer, parser and byte-stream oracles. The six tables contain 49, 1515, 21, 13, 9 and 2051 inputs. Seventeen deliberately wrong observations are rejected. Every claim uses a public production call and separate parent and fix obligations. Pin the actual native executable and 224 source files at 5e41cd71 before changing the engine.
 
@@ -38,7 +38,7 @@ VF-052 came from a duplicate archived H2 calibration receipt reintroduced during
 
 ### Record the first four native and finite baselines and recover the original reactors (verification pending)
 
-change `vtzwkvznzlqv` · [log `b34ef1f750fb`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/b34ef1f750fb97c4468bc6a58af0786984a729a84f1e6b191155b2c340b2179f.jsonl.gz)
+[`5fa70bd9589a`](https://github.com/pilifs/in-the-loop/commit/5fa70bd9589a2714c451a974d9f5c96667d8dd49) · [log `b34ef1f750fb`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/b34ef1f750fb97c4468bc6a58af0786984a729a84f1e6b191155b2c340b2179f.jsonl.gz)
 
 All 26 finite obligations on Commons Lang, both Gson changes and Commons Codec reached their expected disposition. Seven native obligations did so. The original scanner already classifies the overflowing decimal, while two distinct Gson call paths stop when a char-array slice constructs a String. The complete native and finite attempts, including each first refusal, come from the same executable and 224-file product fingerprint.
 
@@ -48,7 +48,7 @@ Matched collected job specifications and all applied artifact digests. Confirmed
 
 ### Prove UTF-16 array slices and code-point reads on original Java callers (verification pending)
 
-change `ttkuyqzwnzmt` · [log `843cc71f67b9`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/843cc71f67b9f83bd600ec285468d14023c6bd50193261c4a420bca3bbf80c74.jsonl.gz)
+[`78a751b8a095`](https://github.com/pilifs/in-the-loop/commit/78a751b8a0955ad6aa2ffe0dca1a509baf1e7afa) · [log `843cc71f67b9`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/843cc71f67b9f83bd600ec285468d14023c6bd50193261c4a420bca3bbf80c74.jsonl.gz)
 
 The native checker now snapshots exactly the requested char-array range into a distinct String. It preserves isolated UTF-16 units, checks offset and count without overflow, and retains the original null and bounds exceptions. String.codePointAt handles a valid pair, isolated surrogates and invalid indices. Character tests and charCount execute from the selected JDK image.
 
@@ -58,7 +58,7 @@ Both fresh Guava builds now run the two real JRE regression tests and reproduce 
 
 ### Execute the real JDK output sink across partitioned Java writes (verification pending)
 
-change `lkwkwqkoppnx` · [log `e15752cd3a32`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/e15752cd3a3284c890caddbf45f5da508f950d1786e65e0eb9738c2150a37262.jsonl.gz)
+[`ba8b90377ccc`](https://github.com/pilifs/in-the-loop/commit/ba8b90377cccd0c5f423eca6eb4dacedcaaab13a) · [log `e15752cd3a32`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/e15752cd3a3284c890caddbf45f5da508f950d1786e65e0eb9738c2150a37262.jsonl.gz)
 
 The native checker and concrete interpreter now execute OutputStream, FilterOutputStream, ByteArrayOutputStream and the JDK array-growth helpers from the selected image. The caller can reuse the same array at changing offsets, read a copy of the sink, grow it, close the wrapper, and reset it without changing an earlier snapshot.
 
@@ -66,7 +66,7 @@ A direct JDK control passed both offsets, tested growth and reset, and refuted a
 
 ### Verify ordered upstream class providers on the original subject JVM (verification pending)
 
-change `wllkxpnwnoum` · [log `998c7809d8d4`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/998c7809d8d4b1f80f57fc60b4a5886b49e214c01eed454f8dcd923371f57863.jsonl.gz)
+[`691322bfa57b`](https://github.com/pilifs/in-the-loop/commit/691322bfa57b4ba18f66a981e9544cdf45ff9510) · [log `998c7809d8d4`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/998c7809d8d4b1f80f57fc60b4a5886b49e214c01eed454f8dcd923371f57863.jsonl.gz)
 
 Both complete Avro builds and their historical regression now reproduce on the declared Hadoop 3.4.3 host. The baseline refused seven package-info duplicates among the 124 original JARs. Upstream preparations can now explicitly declare individual duplicate dependency classes, including package metadata. Every original contender and SHA is retained, and an independent subject JVM must load the first provider with exactly those bytes. Shadowing the original application or adapter is still rejected.
 
@@ -78,7 +78,7 @@ Open the two conditional transfers outside the primary totals. Guava already pre
 
 ### Preserve the selected JDK's String exception order and register the two transfer cases (verification pending)
 
-change `rxxmtrzsvwsk` · [log `7ccebcd0eb8f`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/7ccebcd0eb8f02d93ae066b5ff52e9951432b730058ce6621052a3ea61a78d39.jsonl.gz)
+[`e07af0c64e60`](https://github.com/pilifs/in-the-loop/commit/e07af0c64e60d2863b0cbece8b0a3a262f8007c7) · [log `7ccebcd0eb8f`](https://terminalvalue.net/raw-traces/01a1fd54-e7cb-7fd3-835e-18cd63d8c7dd/7ccebcd0eb8f02d93ae066b5ff52e9951432b730058ce6621052a3ea61a78d39.jsonl.gz)
 
 A null array and a negative offset or count can have two different Java exceptions. Both native engines now consult the selected bootstrap constructor, including the exception's own bytecode in Java 8. A check without runtime bytes refuses the ambiguous case. Five real JVMs and five strict native probes agreed: Java 8 reported bounds, bounds, null while Java 11, 17, 21 and 25 reported null three times. All 18 values tests and the 43 changed-test suites passed.
 

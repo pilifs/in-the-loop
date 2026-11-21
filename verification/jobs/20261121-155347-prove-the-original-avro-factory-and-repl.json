@@ -1,0 +1,78 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-155347-prove-the-original-avro-factory-and-repl",
+  "title": "Prove the original Avro factory and replay its parent witnesses",
+  "description": "Run the real JobConf(false) constructor, Avro factory selection, conversion and absolute reads over the registered capacity and length grid. Independently replay the parent bounds and rejected-index candidates on the original artifact with ambient startup. Repeat the nested converter outcomes on this same checker.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T15:53:47+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Check all eight real factory claims",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 355 --route native --stage public-factory --tasks bounds-parent-lookup-startup,bounds-fix-lookup-startup,rejected-parent-lookup-startup,rejected-fix-lookup-startup,prefix-parent-lookup-startup,prefix-fix-lookup-startup,full-length-parent-lookup-startup,full-length-fix-lookup-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the original bounds-parent candidate",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 examples/tools/build.py 355 --original-witness bounds-parent --from-task bounds-parent-lookup-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the original rejected-parent candidate",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 examples/tools/build.py 355 --original-witness rejected-parent --from-task rejected-parent-lookup-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Repeat the two public nested converter claims",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 355 --route native --stage public-direct --tasks direct-limit-parent-writable-startup,direct-limit-fix-writable-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the original nested converter candidate",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 examples/tools/build.py 355 --original-witness direct-limit-parent --from-task direct-limit-parent-writable-startup",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/public-factory-native",
+    "examples/355-avro-writable-buffer-limit/records/public-direct-native",
+    "examples/355-avro-writable-buffer-limit/records/original-witnesses",
+    "examples/355-avro-writable-buffer-limit/receipts/bounds-parent-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/bounds-fix-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/rejected-parent-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/rejected-fix-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/prefix-parent-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/prefix-fix-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/full-length-parent-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/full-length-fix-lookup-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup",
+    "examples/355-avro-writable-buffer-limit/receipts/bounds-parent/executions",
+    "examples/355-avro-writable-buffer-limit/receipts/rejected-parent/executions",
+    "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions"
+  ]
+}

@@ -28,7 +28,7 @@ All eight long-array and 16 Unicode-importer holdout obligations met expectation
 
 ### Record the completed Java proof campaign and both holdouts
 
-change `nmttmskrvkxp` · [log `c479e1c61fee`](https://terminalvalue.net/raw-traces/01a1fb18-0892-7712-a71d-f57061d8c4ad/c479e1c61feeef02240dc9fa54cfeba430bc1f0de1c93a87aec536b5b06fd145.jsonl.gz)
+[`f195a059816a`](https://github.com/pilifs/in-the-loop/commit/f195a059816a6971b4d8919dacda4907a73e6200) · [log `c479e1c61fee`](https://terminalvalue.net/raw-traces/01a1fb18-0892-7712-a71d-f57061d8c4ad/c479e1c61feeef02240dc9fa54cfeba430bc1f0de1c93a87aec536b5b06fd145.jsonl.gz)
 
 Across 14 examples, 70 of 99 frozen claim and subject pairs were established and 29 refuted. All 12 primary importer obligations and four controls have strict native decisions on unchanged client bytecode. Both Guava array widths have arbitrary-length certificates. Five previously conditional startup witnesses reproduce at original scope, and the compiled ticket and synchronized-map histories explain both split-lock failures.
 

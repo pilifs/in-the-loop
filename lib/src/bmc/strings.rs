@@ -55,6 +55,7 @@ const CHARACTER: &str = "java/lang/Character";
 
 /// The most code units a builder the engine holds the content of has a cell for.
 pub const MOST_BUILDER_CONTENT: usize = 1024;
+pub(crate) const TRIM_IDENTITY: &str = "the identity of a changed String.trim result with the same contents as another String";
 
 /// What a run that lowered a String's case under the JVM's own default locale took for granted about it: a run
 /// that set the default itself before it lowered anything assumes nothing ([`super::locale`]).
@@ -64,7 +65,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("trim", "()Ljava/lang/String;") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -134,6 +135,10 @@ impl Engine<'_> {
     /// literal `""` when the range is empty; `itself` is the String the range is taken of, returned for its whole
     /// range, and absent for a builder's.
     pub(super) fn range(&mut self, path: &mut Path, s: &Array, begin: &Bits, end: &Bits, itself: Option<usize>) -> Val {
+        self.range_result(path, s, begin, end, itself, true)
+    }
+
+    fn range_result(&mut self, path: &mut Path, s: &Array, begin: &Bits, end: &Bits, itself: Option<usize>, canonical_empty: bool) -> Val {
         let zero = self.b.constant(0, 32);
         let whole = match itself {
             Some(_) => {
@@ -165,11 +170,13 @@ impl Engine<'_> {
         if let Some(o) = itself {
             same.push((whole, o));
         }
-        if empty != FALSE {
+        if canonical_empty && empty != FALSE {
             let literal = self.empty_literal(path);
             same.push((empty, literal));
         }
-        Val::R(Some(self.new_string(path, length, cells, same)))
+        let made = self.new_string(path, length, cells, same);
+        if !canonical_empty { path.objects[made].limit = Some(TRIM_IDENTITY.into()); }
+        Val::R(Some(made))
     }
 
     /// Whether `begin..end` is no range of a sequence of `length` units: the JDK's `checkBoundsBeginEnd`.
@@ -419,6 +426,25 @@ impl Engine<'_> {
     /// The String methods of this module on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
         match (name, descriptor, args) {
+            ("trim", "()Ljava/lang/String;", []) => {
+                let mut begin = s.length.clone();
+                let mut end = s.length.clone();
+                let mut seen = FALSE;
+                for (i, unit) in s.cells.iter().enumerate() {
+                    let index = self.b.constant(i as i64, 32);
+                    let live = self.b.ult(&index, &s.length);
+                    let above_space = self.b.ult(&self.b.constant(0x20, 16), unit);
+                    let keep = self.b.and(live, above_space);
+                    let first = self.b.and(keep, -seen);
+                    begin = self.b.ite_bits(first, &index, &begin);
+                    end = self.b.ite_bits(keep, &self.b.constant(i as i64 + 1, 32), &end);
+                    seen = self.b.or(seen, keep);
+                }
+                let result = self.range_result(path, s, &begin, &end, Some(o), false);
+                self.push(path, result);
+                self.advance(path);
+                Ok(None)
+            }
             ("codePointAt", "(I)I", [Val::I(index)]) => {
                 let first = self.unit_at(s, index);
                 let next = self.b.add(index, &self.b.constant(1, 32));

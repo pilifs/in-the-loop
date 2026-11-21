@@ -1,0 +1,60 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-155347-repeat-organic-java-example-354-on-the-f",
+  "title": "Repeat organic Java example 354 on the factory verifier",
+  "description": "Run the original native and finite JVM contracts on the same checker revision as the Avro factory proof, retaining its successes, refutations and first refusals. Check each admitted selector against the original bytecode and repeat the parent witness so all applicable obligations can be recounted at this exact checker.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "354"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T15:53:47+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Repeat the frozen native obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 354 --route native --stage factory-confirmation",
+      "cwd": "."
+    },
+    {
+      "name": "Repeat the exhaustive original JVM obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 354 --route finite --stage factory-confirmation",
+      "cwd": "."
+    },
+    {
+      "name": "Check the bytecode-certified inputs for truncate-fix",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 examples/tools/build.py 354 --native-selectors truncate-fix --checker-seconds 30",
+      "cwd": "."
+    },
+    {
+      "name": "Check the bytecode-certified inputs for truncate-parent",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 examples/tools/build.py 354 --native-selectors truncate-parent --checker-seconds 30 --first 14",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/354-commons-lang-surrogate-cuts/records/factory-confirmation-native",
+    "examples/354-commons-lang-surrogate-cuts/records/factory-confirmation-finite",
+    "examples/354-commons-lang-surrogate-cuts/records/native-selectors/parent",
+    "examples/354-commons-lang-surrogate-cuts/records/native-selectors/fix"
+  ]
+}

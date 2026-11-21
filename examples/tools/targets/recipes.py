@@ -123,6 +123,11 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
         return refused("engine", "named models and JVM-observed initializer states require the native checker")
     if claim.get("observedRuntime") and not claim.get("observedInitializers"):
         return refused("observedRuntime", "startup settings require a named observed initializer")
+    settings = claim.get("observedRuntime", {})
+    if settings.get("weakMapValues") and not settings.get("preinitializeTogether"):
+        return refused("observedRuntime", "weakMapValues requires a shared pre-entry heap")
+    if settings.get("captureObjects") and not settings.get("preinitializeTogether"):
+        return refused("observedRuntime", "captureObjects requires a shared pre-entry heap")
     arguments = []
     def add(field, flag, values):
         arguments.extend(Argument(field, flag, str(value)) for value in values)

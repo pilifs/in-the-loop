@@ -8,6 +8,17 @@ use crate::observed::{Object, Observed, Slot};
 /// The classes of the `HashMap` model an observed map is made of, and the fields the model keeps it in.
 const MAP: &str = "java/util/HashMap";
 const NODE: &str = "java/util/HashMap$Node";
+pub(super) const WEAK_NULLS: &str = "<observed.WeakHashMap.nullValues>";
+pub(super) const LOOKUP_MAP: &str = "<observed/HashMap>";
+pub(super) const ATOMIC_REF: &str = "<observed/AtomicReference>";
+
+fn lookup_key(units: Option<&[u16]>) -> String {
+    use std::fmt::Write;
+    let Some(units) = units else { return "<key/null>".into() };
+    let mut field = String::from("<key/string>");
+    for u in units { write!(field, "{u:04x}").expect("writing to a String"); }
+    field
+}
 
 impl Engine<'_> {
     /// Whether `class`'s initializer is one the check was given the observed state of.
@@ -149,17 +160,62 @@ impl Engine<'_> {
             Object::Str { units, interned: true } => self.literal(path, Literal::Str(units.clone()), STRING),
             Object::Str { units, interned: false } => self.string(path, units),
             Object::Class(name) => self.literal(path, Literal::Class(name.clone()), "java/lang/Class"),
-            Object::Value(chain) => {
+            Object::Value(chain) | Object::Instance(chain) => {
                 let class = &chain.first().ok_or("an immutable value without a runtime class")?.name;
                 let o = self.alloc(path, class);
+                made.insert(i, o);
                 for part in chain {
                     for ((name, ty), value) in &part.fields {
                         let key = self.cp.field_key(class, &part.name, name);
-                        let v = self.observed_value(path, observed, value, Some(ty), made)?;
+                        let v = if matches!(&observed.objects[i], Object::Instance(_)) && (ty.starts_with('L') || ty.starts_with('[')) {
+                            self.captured_reference(path, observed, value, made)
+                        } else {
+                            self.observed_value(path, observed, value, Some(ty), made)?
+                        };
                         path.objects[o].fields.insert(key, v);
                     }
                 }
                 o
+            }
+            Object::AtomicReference(value) => {
+                if self.cp.atomic_reference_accessor("get", "()Ljava/lang/Object;").is_none() {
+                    return Err("an AtomicReference whose JDK getter does not read the captured value field".into());
+                }
+                let o = self.alloc(path, "java/util/concurrent/atomic/AtomicReference");
+                made.insert(i, o);
+                let v = self.captured_reference(path, observed, value, made);
+                path.objects[o].fields.insert("value".into(), v);
+                path.objects[o].fields.insert(ATOMIC_REF.into(), Val::Unobserved("uncaptured atomic operations".into()));
+                o
+            }
+            Object::LookupMap(entries) => {
+                let o = self.alloc(path, MAP);
+                made.insert(i, o);
+                for (key, value) in entries {
+                    let key = match key {
+                        Slot::Null => lookup_key(None),
+                        Slot::Object(k) => match &observed.objects[*k] {
+                            Object::Str { units, .. } => lookup_key(Some(units)),
+                            _ => return Err("an observed lookup table has a non-String key".into()),
+                        },
+                        _ => return Err("an observed lookup table has an unknown key".into()),
+                    };
+                    let v = self.captured_reference(path, observed, value, made);
+                    if path.objects[o].fields.insert(key, v).is_some() { return Err("duplicate observed String key".into()); }
+                }
+                let count = self.b.constant(entries.len() as i64, 32);
+                path.objects[o].fields.insert("<observed/size>".into(), Val::I(count));
+                path.objects[o].fields.insert(LOOKUP_MAP.into(), Val::Unobserved("unobserved HashMap bucket order".into()));
+                o
+            }
+            Object::NullValuedWeakMap => {
+                if !self.cp.weak_map_null_operations() {
+                    return Err("an observed WeakHashMap on a JDK whose key callbacks have not been qualified".into());
+                }
+                let map = self.alloc(path, "java/util/WeakHashMap");
+                // A pair's cached-call key cannot identify the unobserved entries of two maps.
+                path.objects[map].fields.insert(WEAK_NULLS.into(), Val::Unobserved("the GC-sensitive keys of the observed WeakHashMap".into()));
+                map
             }
             Object::EmptyConcurrentMap => {
                 let class = crate::models::CONCURRENT_MAP;
@@ -230,5 +286,77 @@ impl Engine<'_> {
         };
         made.insert(i, o);
         Ok(Val::R(Some(o)))
+    }
+
+    /// A missing child must not erase the class, aliases, or other fields of its captured parent.
+    fn captured_reference(&mut self, path: &mut Path, observed: &Observed, slot: &Slot, made: &mut BTreeMap<usize, usize>) -> Val {
+        let start = path.objects.len();
+        let value = match observed.unheld(slot) {
+            Some(why) => Err(why),
+            None => self.observed_value(path, observed, slot, None, made),
+        };
+        value.unwrap_or_else(|why| {
+            made.retain(|_, object| *object < start);
+            Val::Unobserved(format!("uncaptured reference in the observed heap: {why}").into())
+        })
+    }
+
+    pub(super) fn captured_lookup(&mut self, path: &mut Path, o: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Step {
+        if special || !self.cp.is_subtype(MAP, &member.owner) { return unsupported("incompatible dispatch on an observed lookup table"); }
+        let fields = &path.objects[o].fields;
+        let result = match (member.name.as_str(), member.descriptor.as_str(), args) {
+            ("size", "()I", []) => fields["<observed/size>"].clone(),
+            ("isEmpty", "()Z", []) => {
+                let Val::I(count) = &fields["<observed/size>"] else { return unsupported("an invalid observed map size"); };
+                Val::I(self.b.constant(i64::from(self.b.constant_value(count) == Some(0)), 32))
+            }
+            (name @ ("get" | "containsKey"), desc, [key]) if (name == "get" && desc == "(Ljava/lang/Object;)Ljava/lang/Object;")
+                || (name == "containsKey" && desc == "(Ljava/lang/Object;)Z") => {
+                let key = match key {
+                    Val::R(None) => lookup_key(None),
+                    Val::R(Some(k)) if path.objects[*k].class == STRING => {
+                        let Some(units) = self.constant_units(path, *k) else { return unsupported("a symbolic String key on the observed lookup table"); };
+                        lookup_key(Some(&units))
+                    }
+                    _ => return unsupported("an observed lookup table needs a concrete String or null key"),
+                };
+                let entry = fields.get(&key);
+                if name == "get" { entry.cloned().unwrap_or(Val::R(None)) } else { Val::I(self.b.constant(i64::from(entry.is_some()), 32)) }
+            }
+            _ => return unsupported(format!("HashMap.{}{} is outside the captured read-only lookup table", member.name, member.descriptor)),
+        };
+        if self.there_before(path, o) { self.reads(path, || "reads entries from a previously allocated HashMap".into())?; }
+        self.push(path, result);
+        self.advance(path);
+        Ok(None)
+    }
+}
+
+impl Engine<'_> {
+    /// The exact JDK map has only null values. Both absent and present keys therefore return
+    /// null, and writing null preserves the invariant through every alias. The collector may
+    /// remove any dead key. No size, membership, traversal or weak-key liveness is inferred.
+    pub(super) fn null_valued_weak_map_call(&mut self, path: &mut Path, map: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Step {
+        match (special, member.name.as_str(), member.descriptor.as_str(), args) {
+            (false, "get", "(Ljava/lang/Object;)Ljava/lang/Object;", [key])
+            | (false, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", [key, Val::R(None)]) => {
+                if !self.cp.is_subtype("java/util/WeakHashMap", &member.owner) {
+                    return unsupported("an incompatible owner for an observed WeakHashMap operation");
+                }
+                match key {
+                    Val::R(None) => {}
+                    Val::R(Some(k)) if !path.objects[*k].unknown && !path.objects[*k].assumed && !path.objects[*k].given
+                        && [("hashCode", "()I"), ("equals", "(Ljava/lang/Object;)Z")].into_iter().all(|(n, d)|
+                            self.cp.find_method(&path.objects[*k].class, n, d).is_some_and(|(cf, _)| cf.name == "java/lang/Object")) => {}
+                    _ => return unsupported("an observed WeakHashMap key whose hashCode or equals may run application code"),
+                }
+                // Even get may expunge stale mappings from the queue.
+                self.keeps(path, Some(map), "updates a WeakHashMap that existed before the call")?;
+                self.push(path, Val::R(None));
+                self.advance(path);
+                Ok(None)
+            }
+            _ => unsupported(format!("WeakHashMap.{}{} is outside the observed null-value invariant", member.name, member.descriptor)),
+        }
     }
 }

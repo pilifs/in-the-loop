@@ -303,7 +303,14 @@ public final class ObservedInitializer {
         String display = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
         String zone = java.util.TimeZone.getDefault().getID();
         Path log = args.length > 1 ? Path.of(args[1]) : null;
-        boolean together = args.length >= 3 && args[2].equals("together");
+        boolean weakMapValues = args.length >= 3 && args[2].equals("together-weak-map-values");
+        boolean together = weakMapValues || args.length >= 3 && args[2].equals("together");
+        int rootsEnd = args.length;
+        java.util.Set<String> captured = java.util.Set.of();
+        if (together && args[rootsEnd - 1].startsWith("--capture-objects=")) {
+            String list = args[--rootsEnd].substring("--capture-objects=".length());
+            captured = new java.util.TreeSet<>(java.util.Arrays.asList(list.split(",", -1)));
+        }
         boolean atRoot = unixRoot();
         boolean emptyEnvironment = emptyEnvironment();
         Properties original = System.getProperties();
@@ -315,7 +322,7 @@ public final class ObservedInitializer {
         try {
             c = Class.forName(args[0], true, app);
             if (together) {
-                for (int i = 3; i < args.length; i++) Class.forName(args[i], true, app);
+                for (int i = 3; i < rootsEnd; i++) Class.forName(args[i], true, app);
             }
         }
         catch (Throwable t) {
@@ -351,6 +358,8 @@ public final class ObservedInitializer {
         }
         // The classes the initialization initialized: what the JVM logged after the mark, of the class path.
         Dump dump = new Dump(false);
+        dump.weakMapValues = weakMapValues;
+        dump.captureObjects = captured;
         String fields = together ? null : dump.fieldsOf(c);
         if (!together) logged = Files.readAllBytes(log);
         String after = new String(logged, (int) Math.min(mark, logged.length), (int) Math.max(0, logged.length - mark), StandardCharsets.UTF_8);
@@ -389,7 +398,7 @@ public final class ObservedInitializer {
             fields = dump.fieldsOf(c);
         }
         List<String> additionalRoots = new ArrayList<>();
-        for (int i = 3; together && i < args.length; i++) {
+        for (int i = 3; together && i < rootsEnd; i++) {
             String internal = args[i].replace('.', '/');
             if (!members.containsKey(internal))
                 throw new IllegalStateException("additional root missing from the application initialization log: " + internal);
@@ -423,6 +432,8 @@ public final class ObservedInitializer {
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
                 + text(display) + "},\"zone\":" + text(zone) + ",\"preinitializeTogether\":" + together
+                + ",\"weakMapValues\":" + weakMapValues
+                + ",\"captureObjects\":[" + String.join(",", captured.stream().map(ObservedInitializer::text).toList()) + "]"
                 + ",\"additionalRoots\":[" + String.join(",", additionalRoots) + "],\"rootWorkingDirectory\":" + (atRoot && unixRoot())
                 + ",\"fixedProcessors\":" + fixedProcessors() + ",\"emptyEnvironment\":" + (emptyEnvironment && emptyEnvironment())
                 + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
@@ -524,6 +535,8 @@ public final class ObservedInitializer {
         private final List<String> objects = new ArrayList<>();
         private final java.util.Set<Class<?>> owners = new java.util.HashSet<>();
         private final boolean describe;
+        private boolean weakMapValues;
+        private java.util.Set<String> captureObjects = java.util.Set.of();
         private Class<?> owner;
 
         Dump(boolean describe) {
@@ -627,7 +640,7 @@ public final class ObservedInitializer {
             return hasField ? hierarchy : null;
         }
 
-        private String frozenValue(List<Class<?>> hierarchy, Object instance) throws Exception {
+        private String objectFields(List<Class<?>> hierarchy, Object instance, String kind) throws Exception {
             List<String> classes = new ArrayList<>();
             for (Class<?> c : hierarchy) {
                 String name = c.getName().replace('.', '/');
@@ -651,7 +664,22 @@ public final class ObservedInitializer {
                         + "{\"name\":\"name\",\"type\":\"Ljava/lang/String;\",\"value\":" + value(constant.name()) + "},"
                         + "{\"name\":\"ordinal\",\"type\":\"I\",\"value\":" + primitive(int.class, constant.ordinal()) + "}]}");
             }
-            return "{\"k\":\"value\",\"classes\":[" + String.join(",", classes) + "]}";
+            return "{\"k\":" + text(kind) + ",\"classes\":[" + String.join(",", classes) + "]}";
+        }
+
+        /** These instance fields belong to application class files the checker can bind independently. */
+        private List<Class<?>> capturedHierarchy(Class<?> type) {
+            if (type.isEnum() || type.isHidden() || type.getClassLoader() != ClassLoader.getSystemClassLoader()) return null;
+            List<Class<?>> result = new ArrayList<>();
+            for (Class<?> c = type; c != Object.class; c = c.getSuperclass()) {
+                if (c == null || c.getClassLoader() != ClassLoader.getSystemClassLoader()) return null;
+                for (Field f : c.getDeclaredFields()) {
+                    if (Modifier.isStatic(f.getModifiers())) continue;
+                    if (f.getType() == float.class || f.getType() == double.class || !f.trySetAccessible()) return null;
+                }
+                result.add(c);
+            }
+            return result;
         }
 
         private String value(Object v) {
@@ -663,8 +691,31 @@ public final class ObservedInitializer {
                 return "{\"o\":" + known + "}";
             }
             Class<?> type = v.getClass();
+            boolean requested = captureObjects.contains(type.getName());
+            boolean atomic = requested && type == java.util.concurrent.atomic.AtomicReference.class;
+            List<Class<?>> captured = requested ? capturedHierarchy(type) : null;
+            if (atomic || captured != null) {
+                // Number the receiver before visiting its fields. An atomic cell and an application
+                // object may share a child, or refer back to one another.
+                int id = objects.size();
+                ids.put(v, id);
+                objects.add(null);
+                try {
+                    String body = atomic
+                            ? "{\"k\":\"atomicReference\",\"value\":" + value(((java.util.concurrent.atomic.AtomicReference<?>) v).get()) + "}"
+                            : objectFields(captured, v, "instance");
+                    objects.set(id, body);
+                    return "{\"o\":" + id + "}";
+                } catch (Exception e) {
+                    throw new IllegalStateException("cannot capture requested instance of " + type.getName(), e);
+                }
+            }
             boolean map = type == HashMap.class;
             boolean emptyConcurrentMap = type == java.util.concurrent.ConcurrentHashMap.class && ((Map<?, ?>) v).isEmpty();
+            // GC can remove mappings, which preserves the all-null value invariant. Keep the
+            // map's identity but neither its cardinality nor strong references to its keys.
+            boolean nullValues = weakMapValues && type == java.util.WeakHashMap.class
+                    && ((Map<?, ?>) v).values().stream().allMatch(java.util.Objects::isNull);
             if (map) {
                 for (Object key : ((Map<?, ?>) v).keySet()) {
                     if (key != null && !(key instanceof String)) {
@@ -678,7 +729,7 @@ public final class ObservedInitializer {
             List<Class<?>> hierarchy = valueHierarchy(type);
             if (hierarchy != null) {
                 try {
-                    String held = frozenValue(hierarchy, v);
+                    String held = objectFields(hierarchy, v, "value");
                     int id = objects.size();
                     ids.put(v, id);
                     objects.add(held);
@@ -686,7 +737,7 @@ public final class ObservedInitializer {
                 }
                 catch (Exception e) { return unheld("an unreadable value of " + nameOf(type), v); }
             }
-            if (!(v instanceof String) && !(v instanceof Class) && !map && !emptyConcurrentMap && !type.isArray()) {
+            if (!(v instanceof String) && !(v instanceof Class) && !map && !emptyConcurrentMap && !nullValues && !type.isArray()) {
                 return unheld("an object of " + nameOf(type), v);
             }
             // Numbered before what it holds is, so that an object that reaches itself ends.
@@ -710,8 +761,11 @@ public final class ObservedInitializer {
             else if (emptyConcurrentMap) {
                 o.append("{\"k\":\"concurrentMap\",\"entries\":[]}");
             }
+            else if (nullValues) {
+                o.append("{\"k\":\"weakMap\",\"allValuesNull\":true}");
+            }
             else if (map) {
-                o.append("{\"k\":\"map\",\"entries\":[");
+                o.append("{\"k\":").append(text(requested ? "lookupMap" : "map")).append(",\"entries\":[");
                 boolean first = true;
                 for (Map.Entry<?, ?> e : ((Map<?, ?>) v).entrySet()) {
                     o.append(first ? "" : ",").append(value(e.getKey())).append(',').append(value(e.getValue()));

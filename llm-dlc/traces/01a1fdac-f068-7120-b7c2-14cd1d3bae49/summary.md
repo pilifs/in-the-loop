@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Preserve the selected JDK's String exception order and register the two transfer cases (verification pending)
 
-change `rxxmtrzsvwsk` · [log `3ec069a5df46`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/3ec069a5df46047c37b269c8a724635f79b06b3822576bf77047af9ac72a36c5.jsonl.gz)
+[`e07af0c64e60`](https://github.com/pilifs/in-the-loop/commit/e07af0c64e60d2863b0cbece8b0a3a262f8007c7) · [log `3ec069a5df46`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/3ec069a5df46047c37b269c8a724635f79b06b3822576bf77047af9ac72a36c5.jsonl.gz)
 
 A null array and a negative offset or count can have two different Java exceptions. Both native engines now consult the selected bootstrap constructor, including the exception's own bytecode in Java 8. A check without runtime bytes refuses the ambiguous case. Five real JVMs and five strict native probes agreed: Java 8 reported bounds, bounds, null while Java 11, 17, 21 and 25 reported null three times. All 18 values tests and the 43 changed-test suites passed.
 
@@ -30,7 +30,7 @@ Recount actual test XML and original bytecode receipts, including Surefire's nam
 
 ### Execute the selected JDK BitSet on real Eclipse list mutations (verification pending)
 
-change `mswlntqznvzy` · [log `801856575075`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/80185657507556106b45996e4a9820ea9262fb0d50537820d806936fa2661aae.jsonl.gz)
+[`bea8200dbc6e`](https://github.com/pilifs/in-the-loop/commit/bea8200dbc6e91083dc9e748f36143962f16a181) · [log `801856575075`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/80185657507556106b45996e4a9820ea9262fb0d50537820d806936fa2661aae.jsonl.gz)
 
 The first strict check of Eclipse Collections stopped in BitSet(int). Execute its selected runtime bytecode with the existing heap and class initializer support. A non-vacuous symbolic check now establishes the insertion-return contract over all 2,865 inputs. An additional control crosses bits 63 and 64 through the original map entry alias, clears the other bit and checks a negative read on the JVM, interpreter and native checker. A single unsplit exact-content run reached the 60-second limit. Jobs 20261121-105825 retain the original parent witness and run every fixed constant selector against the actual list.
 
@@ -42,7 +42,7 @@ The reserve examples passed validation. All 41 changed-test suites passed, with 
 
 ### Replay native selector candidates against the original JVM before grading them (verification pending)
 
-change `tvvyzvqsqroz` · [log `ca0e2e5d1630`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/ca0e2e5d1630a62ed34f9b10f685c63e9e0cc886771c613a44674ea4734609f7.jsonl.gz)
+[`75a5eacdc180`](https://github.com/pilifs/in-the-loop/commit/75a5eacdc180b1819f8ede86bf98e0a5ca0559c0) · [log `ca0e2e5d1630`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/ca0e2e5d1630a62ed34f9b10f685c63e9e0cc886771c613a44674ea4734609f7.jsonl.gz)
 
 Eclipse Collections' original insertion at selector 940 returned the wrong result in the native checker. Replaying that constant wrapper in the interpreter was enough to find the candidate, but the selector workflow stopped before invoking its own independent JVM checker. It now sends a reproduced interpreter candidate to the public original entry and requires the exact selector, bytecode, classpath, claim and JDK to match. A missing or different JVM replay cannot qualify a refutation.
 
@@ -50,7 +50,7 @@ All 11 recipe tests passed, including a damaged or missing original replay, and 
 
 ### Publish the original Java PR scorecard and its independently replayable evidence
 
-change `mxzwylkpkxwl` · [log `a13006517217`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/a130065172174dbd0dbaaa86d86574588c5b63e5aed2b58eca8c7fab35d4ebf7.jsonl.gz)
+[`611388be6b98`](https://github.com/pilifs/in-the-loop/commit/611388be6b98a5b8a2f9bd7c177815706b0edbc9) · [log `a13006517217`](https://terminalvalue.net/raw-traces/01a1fdac-f068-7120-b7c2-14cd1d3bae49/a130065172174dbd0dbaaa86d86574588c5b63e5aed2b58eca8c7fab35d4ebf7.jsonl.gz)
 
 On the six primary upstream PRs, strict native verification advanced from 17/46 obligations to 36/46, including ten parent refutations replayed on the original JVM. Five complete PRs now close natively instead of one. Finite execution advanced from 36/46 to 46/46, with all eight named historical tests failing on the parent and passing on the fix and all 3,658 fixed input rows matching their independent oracles. Avro remains open natively at Hadoop or Avro startup, with both factory and direct results retained.
 

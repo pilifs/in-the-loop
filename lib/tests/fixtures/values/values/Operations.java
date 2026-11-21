@@ -152,6 +152,10 @@ public final class Operations {
                 && (m == 0 || joined.charAt(n) == (char) last);
     }
 
+    static int trimmedUnits(int n, int a, int b, int c, int m, int d, int e, int f) {
+        return of(n, a, b, c).trim().equals(of(m, d, e, f)) ? 1 : 0;
+    }
+
     static int substringFrom(int n, int a, int b, int c, int from, int m, int d, int e, int f) {
         String s = of(n, a, b, c);
         return made(s, s.substring(from), of(m, d, e, f));
