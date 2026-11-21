@@ -1,0 +1,193 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-081222-v3-h2-original-jdbc-driver-selection-and",
+  "title": "V3 H2 original JDBC driver selection and unmatched URL",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 92.4 MiB (estimated 1m00s, 512.0 MiB); 4 output file(s) changed",
+  "attention": [
+    "step 1 (Check four fresh H2 driver selections) was held back 2.6s by its 1-CPU quota in 3.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-081222-v3-h2-original-jdbc-driver-selection-and.json",
+    "sha256": "8723ce922124e0d3b1fe96e8eb840aade90ce3ace3306d68dfaaada4553da26f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-081222-v3-h2-original-jdbc-driver-selection-and",
+      "title": "V3 H2 original JDBC driver selection and unmatched URL",
+      "description": "Use the public driver preflight on both original rxjava-jdbc classpaths. Check that its calibration URL selects the H2 driver from the pinned artifact and that both releases reject a different JDBC subprotocol. Driver selection does not open the database or establish generated-key behavior.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "examples": [
+          "348"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T08:12:22+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "512M",
+        "duration": "1m",
+        "memoryLimit": "1G",
+        "timeout": "5m"
+      },
+      "steps": [
+        {
+          "name": "Check four fresh H2 driver selections",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/jdbc_selection.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/v3-h2-driver",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/v3-h2-driver"
+      ]
+    }
+  },
+  "sourceCommit": "83ae65d6afb1beec8e1a9237787df69693c7968d",
+  "startedAt": "2026-11-21T08:21:45+00:00",
+  "finishedAt": "2026-11-21T08:21:57+00:00",
+  "wallSeconds": 12.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2618191,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1073741824,
+    "timeoutSeconds": 300.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 536870912,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 96862208,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 3.7,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check four fresh H2 driver selections",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/jdbc_selection.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/v3-h2-driver",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 3.807,
+      "cpuSeconds": 3.669,
+      "cpuThrottledSeconds": 2.573,
+      "peakMemoryBytes": 96862208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-four-fresh-h2-driver-sel.log",
+        "lines": 4,
+        "bytes": 60,
+        "sha256": "4530ac6693644a6a272e8e9080b18dce36bcb2d9c6ce55a808369bf1e2bd7390",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "checked selected",
+        "checked none",
+        "checked selected",
+        "checked none"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-h2-driver/new/original.json",
+      "change": "added",
+      "bytes": 2158,
+      "sha256": "cc85519f80f6d54d95967ba27b1491c48c89dab31d4e956923446e01634ac858",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-h2-driver/new/unmatched.json",
+      "change": "added",
+      "bytes": 2036,
+      "sha256": "2443608ffef3ac2eede1b4d668b697461eede9c6a801c1cb0d17e73f3496b331",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-h2-driver/old/original.json",
+      "change": "added",
+      "bytes": 2158,
+      "sha256": "fc6358645a605d8ec3d151b4fedb7de7fc1102e938adbe271cbfe14317804e2b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/v3-h2-driver/old/unmatched.json",
+      "change": "added",
+      "bytes": 2036,
+      "sha256": "ade986515462f8365b1f88831ccc20fbc0330d7a6193ea3b6daafe139195efc7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T08:22:26+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/v3-h2-driver/new/original.json",
+      "verification/external-upgrades/corpus-runs/v3-h2-driver/new/unmatched.json",
+      "verification/external-upgrades/corpus-runs/v3-h2-driver/old/original.json",
+      "verification/external-upgrades/corpus-runs/v3-h2-driver/old/unmatched.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

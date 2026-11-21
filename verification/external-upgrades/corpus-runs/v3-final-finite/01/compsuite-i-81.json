@@ -1,0 +1,280 @@
+{
+  "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+  "observer": "Read the effective activation of FEATURE_ONE through the original Togglz strategy and DeltaSpike provider discovery.",
+  "domainBasis": "Use the exact upstream test provider and service registration. Set the provider to each boolean and initialize the feature state to its opposite as in the developer test.",
+  "cases": [
+    {
+      "args": [
+        "true"
+      ],
+      "expected": {
+        "return": "true"
+      }
+    },
+    {
+      "args": [
+        "false"
+      ],
+      "expected": {
+        "return": "false"
+      }
+    }
+  ],
+  "operandScope": "provided",
+  "probeSha256": "6868ed02d1ba570cc051d5f7a9587ae9da1e81c0adb7855f3e01218361f8ee8b",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "97c84e20fb87602237e7e9fcbfb3389300f87c34b2bb03cd7e8dcd7521b13b65",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "3418531ea79f1c858f008d5ec4fa83d0251601db",
+      "sourceSha256": "1c9b4b626b3f6cb02384d0bc8f5c5ae64208331d655ed3cedd75dd396f4ea740",
+      "callerClassSha256": "e5c534e88abfeeeeceba82b5b8e78f1886b81d81d6117dce42bd0acb3733c8b3",
+      "classpath": [
+        "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
+        "d48a78f769fc776487a240a62043f17e2230b551768e7e15a6eed44beb9e001c",
+        "4b1081fe2682263b73561c543da1c83e308850060bb48649dc3370f9fb6795d5"
+      ],
+      "dependency": "4b1081fe2682263b73561c543da1c83e308850060bb48649dc3370f9fb6795d5",
+      "preparation": "original production module and runtime with the declared container-provided artifacts",
+      "compiledClasses": 2,
+      "resources": 2,
+      "operandScope": "provided",
+      "declaredDependencyScope": "provided",
+      "modulePomSha256": "db0fd1df9e2512e3bf64666911c61b20d1867586a3059d5c5ecb82eaf89fd0bd",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true"
+            },
+            {
+              "return": "true"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            },
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false"
+            },
+            {
+              "return": "false"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            },
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.deltaspike.core.api.config.ConfigResolver",
+        "org.apache.deltaspike.core.api.config.ConfigResolver$1",
+        "org.apache.deltaspike.core.api.config.ConfigResolver$TypedResolver",
+        "org.apache.deltaspike.core.api.config.ConfigResolver$UntypedResolver",
+        "org.apache.deltaspike.core.api.config.ConfigResolverContext",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStage",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStage$Development",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStage$IntegrationTest",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStage$Production",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStage$Staging",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStage$SystemTest",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStage$UnitTest",
+        "org.apache.deltaspike.core.api.projectstage.ProjectStageHolder",
+        "org.apache.deltaspike.core.api.projectstage.TestStage",
+        "org.apache.deltaspike.core.spi.activation.Deactivatable",
+        "org.apache.deltaspike.core.spi.config.ConfigFilter",
+        "org.apache.deltaspike.core.spi.config.ConfigSource",
+        "org.apache.deltaspike.core.spi.config.ConfigSourceProvider",
+        "org.apache.deltaspike.core.util.ClassUtils",
+        "org.apache.deltaspike.core.util.ProjectStageProducer",
+        "org.apache.deltaspike.core.util.ServiceUtils"
+      ]
+    },
+    "new": {
+      "commit": "f74b56a98f000d3ab3913e90f3f47b2746809356",
+      "sourceSha256": "1c9b4b626b3f6cb02384d0bc8f5c5ae64208331d655ed3cedd75dd396f4ea740",
+      "callerClassSha256": "e5c534e88abfeeeeceba82b5b8e78f1886b81d81d6117dce42bd0acb3733c8b3",
+      "classpath": [
+        "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
+        "d48a78f769fc776487a240a62043f17e2230b551768e7e15a6eed44beb9e001c",
+        "5a0076a79a742c5b919610e266bd0ac43eb664f3f0cf9e6e4699ea369622ea76"
+      ],
+      "dependency": "5a0076a79a742c5b919610e266bd0ac43eb664f3f0cf9e6e4699ea369622ea76",
+      "preparation": "original production module and runtime with the declared container-provided artifacts",
+      "compiledClasses": 2,
+      "resources": 2,
+      "operandScope": "provided",
+      "declaredDependencyScope": "provided",
+      "modulePomSha256": "abb5991a5bcfda0f2089b48d3acc9f7bdfea8252a373490951a8ed41588eb64e",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "throws": "java.lang.RuntimeException"
+            },
+            {
+              "throws": "java.lang.RuntimeException"
+            }
+          ],
+          "escapingExceptions": [
+            {
+              "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+              "codeIndex": 1,
+              "sourceLine": 37,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
+              "observerCodeIndex": 46,
+              "throws": "java.lang.RuntimeException"
+            },
+            {
+              "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+              "codeIndex": 1,
+              "sourceLine": 37,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
+              "observerCodeIndex": 46,
+              "throws": "java.lang.RuntimeException"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            },
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "throws": "java.lang.RuntimeException"
+            },
+            {
+              "throws": "java.lang.RuntimeException"
+            }
+          ],
+          "escapingExceptions": [
+            {
+              "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+              "codeIndex": 1,
+              "sourceLine": 37,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
+              "observerCodeIndex": 46,
+              "throws": "java.lang.RuntimeException"
+            },
+            {
+              "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+              "codeIndex": 1,
+              "sourceLine": 37,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
+              "observerCodeIndex": 46,
+              "throws": "java.lang.RuntimeException"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            },
+            {
+              "observerCodeIndex": 46,
+              "dispatchedTo": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.deltaspike.core.api.config.ConfigResolver",
+        "org.apache.deltaspike.core.api.config.ConfigResolver$ConfigProvider",
+        "org.apache.deltaspike.core.spi.config.ConfigSource",
+        "org.apache.deltaspike.core.spi.config.ConfigSourceProvider"
+      ]
+    }
+  },
+  "status": "changed",
+  "originalFixtures": [
+    {
+      "kind": "java",
+      "file": "TestConfigSourceProvider.java",
+      "source": "deltaspike/src/test/java/org/togglz/deltaspike/TestConfigSourceProvider.java",
+      "sha256": "da225885c5d81e75fbe6e5480cb365943b8630d4fb820e09191da5b8865185c9",
+      "class": "org.togglz.deltaspike.TestConfigSourceProvider"
+    },
+    {
+      "kind": "service",
+      "file": "META-INF/services/org.apache.deltaspike.core.spi.config.ConfigSourceProvider",
+      "source": "deltaspike/src/test/resources/META-INF/services/org.apache.deltaspike.core.spi.config.ConfigSourceProvider",
+      "sha256": "e237a03d7eead2261d106b3bb868706afb8b7dc3102643c0545af3dc65a6ad37"
+    }
+  ],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z",
+    "codeIndices": [
+      46
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+  "invocationVia": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z",
+  "probeClasses": {
+    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe$Flag": "21b02968ddbb4a6a2a0799b5741fdd072f341f47317fc4dbc577e17833542ec2",
+    "UpgradeProbe": "59929f7c17622fbd5a2306942438bba3ad745c584c58cbfe5443ddd1e58cc27a",
+    "UpgradeTrace": "5aa19a293f77c1a06fc0a85e5533a8b762466d666e57935a4c306f21ef599184",
+    "org/togglz/deltaspike/TestConfigSourceProvider$1": "c4b90ceacbff983a7dfd1aa05963618a4a23bbb37b6147bb2ec37187d8c65322",
+    "org/togglz/deltaspike/TestConfigSourceProvider": "0961cec4f2ec64873cd114677b36081ad7213ade694911e9ce6ba6edf53b812f"
+  },
+  "differences": [
+    0,
+    1
+  ],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 6.268,
+  "specSha256": "6f70d62a7bffe8bf404244cfd258958946981823bfac2d757c23e75b0c6ff3fb"
+}

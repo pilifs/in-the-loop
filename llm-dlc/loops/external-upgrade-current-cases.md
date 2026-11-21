@@ -8,9 +8,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.esotericsoftware.reflectasm.MethodAccess#get`. Construct an interface method accessor and invoke replace on a populated concurrent map.
 
-**Result** Changed. 1 of 2 inputs changed. Input 0 produced {"return": "one/2"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/01/compsuite-i-38.json)
+**Result** Changed. 1 of 2 inputs changed. Input 0 produced {"return": "one/2"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/01/compsuite-i-38.json)
 
-**Scope** The original developer test expects the previous map value and two entries. Object declares no exported accessor methods in this adapter. The complete-module reference records both outcomes. The check uses the original runtime dependencies. V0 was open and V1 was changed.
+**Scope** The original developer test expects the previous map value and two entries. Object declares no exported accessor methods in this adapter. The complete-module reference records both outcomes. The check uses the original runtime dependencies. V0 was open and V2 was changed. Original CI recorded `failed before tests` before and `failed before tests` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-38/new/summary.json)
 
 **Review action** Review the changed return or exception before adopting the new pin.
 
@@ -20,9 +20,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `retrofit2.converter.wire.WireResponseBodyConverter#convert`. Deserialize a serialized phone response and read the phone number.
 
-**Result** Preserved. Both versions matched the independent expectations on all 2 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/01/compsuite-i-1.json)
+**Result** Preserved. Both versions matched the independent expectations on all 2 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/01/compsuite-i-1.json)
 
-**Scope** The checked-in generated Phone message has a length-delimited string in protobuf field 1. The first body is byte-for-byte the historical developer test. The short-string companion uses the same wire rule. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The checked-in generated Phone message has a length-delimited string in protobuf field 1. The first body is byte-for-byte the historical developer test. The short-string companion uses the same wire rule. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-1/new/summary.json)
 
 **Review action** Keep the historical change open on this input domain.
 
@@ -32,11 +32,11 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle`. Read the style of an unformatted cell from the original spreadsheet.
 
-**Result** Open. The old observer produced {"return": "1/NUMERIC/true"}. On the upgrade it stopped before the selected method. The JVM traced the escaping java.lang.IncompatibleClassChangeError to `org.apache.poi.openxml4j.opc.PackageRelationshipCollection#parseRelationshipsPart(Lorg/apache/poi/openxml4j/opc/PackagePart;)V` at line 303. The recorded cause ends in `java.lang.IncompatibleClassChangeError`. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/01/compsuite-i-70.json)
+**Result** Open. The old observer produced {"return": "1/NUMERIC/true"}. On the upgrade it stopped before the selected method. The JVM traced the escaping java.lang.IncompatibleClassChangeError to `org.apache.poi.openxml4j.opc.PackageRelationshipCollection#parseRelationshipsPart(Lorg/apache/poi/openxml4j/opc/PackagePart;)V` at line 303. The recorded cause ends in `java.lang.IncompatibleClassChangeError`. The upgraded `invokeinterface` instruction requires `org.apache.poi.util.POILogger` to be an interface. Both JVMs resolved it as a class. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/01/compsuite-i-70.json)
 
-**Scope** The original developer test requires exactly one worksheet, a numeric first cell and a non-null style. The input spreadsheet is unchanged in both Git revisions. The check uses the original runtime dependencies. V0 was open and V1 was open.
+**Scope** The original developer test requires exactly one worksheet, a numeric first cell and a non-null style. The input spreadsheet is unchanged in both Git revisions. The check uses the original runtime dependencies. V0 was open and V2 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/01/compsuite-i-70/new/summary.json)
 
-**Review action** Resolve the earlier failure and rerun the downstream operation.
+**Review action** Align the dependency supplying `org.apache.poi.util.POILogger` with the calling library and replay the original input.
 
 ## languagetool · compsuite-i-10
 
@@ -44,9 +44,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.languagetool.languagemodel.LuceneLanguageModel#getCount`. Look up a unigram and an adjacent token pair in the original language index.
 
-**Result** Open. The old observer produced {"return": "55"}. On the upgrade it stopped before the selected method. The JVM traced the escaping java.lang.NoClassDefFoundError to `org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V` at line 242. The recorded cause ends in `java.lang.ClassNotFoundException`. Both JVMs lacked `org.apache.lucene.codecs.PointsFormat`. The upgraded JAR introduced a symbolic reference to it. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/02/compsuite-i-10.json)
+**Result** Open. The old observer produced {"return": "55"}. On the upgrade it stopped before the selected method. The JVM traced the escaping java.lang.NoClassDefFoundError to `org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V` at line 242. The recorded cause ends in `java.lang.ClassNotFoundException`. Both JVMs lacked `org.apache.lucene.codecs.PointsFormat`. The upgraded JAR introduced a symbolic reference to it. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-10.json)
 
-**Scope** The upstream LuceneSingleIndexLanguageModelTest.testLanguageModel gives the counts for the unigram, bigram, trigram and missing token. All three index directories come byte-for-byte from both original commits. The check uses the original runtime dependencies. V0 was open and V1 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/restored-legacy-maven/compsuite-i-10/original-test/compsuite-i-10/new/summary.json)
+**Scope** The upstream LuceneSingleIndexLanguageModelTest.testLanguageModel gives the counts for the unigram, bigram, trigram and missing token. All three index directories come byte-for-byte from both original commits. The check uses the original runtime dependencies. V0 was open and V2 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/restored-legacy-maven/compsuite-i-10/original-test/compsuite-i-10/new/summary.json)
 
 **Review action** Review the dependency providing `org.apache.lucene.codecs.PointsFormat` and rerun the caller with compatible versions.
 
@@ -56,11 +56,11 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `pl.com.bottega.ecommerce.sales.application.impl.OrderingServiceImpl#confirm`. Confirm a previously calculated offer after changing the order quantity.
 
-**Result** Open. parameter orderId has type pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId, which is outside the objects a regression check makes: pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId has 2 constructors; an object made by one of several is not supported yet [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-native/04/current/compsuite-i-85.json)
+**Result** Open. The upgraded JVM stopped before the selected method. Its escaping exception was `org.springframework.beans.factory.BeanCreationException`. The innermost recorded cause was `org.hibernate.NotYetImplementedFor6Exception` (org.hibernate.persister.entity.AbstractEntityPersister). The debugger matched the escaping root `org.hibernate.NotYetImplementedFor6Exception` to `org.hibernate.persister.entity.AbstractEntityPersister#generateVersionMapping(Lorg/hibernate/persister/entity/EntityPersister;Lorg/hibernate/metamodel/mapping/internal/MappingModelCreationProcess;)Lorg/hibernate/metamodel/mapping/EntityVersionMapping;` in a production JAR introduced by the upgrade. The old framework returned {"return": "offer-changed"}, {"return": "confirmed"} in input order. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/04/compsuite-i-85.json)
 
-**Scope** The native attempt used the registered original module and caller. The check uses the original runtime dependencies. V0 was open and V1 was open.
+**Scope** The unchanged OrderingTest expects confirmation to succeed for its current offer and to reject its stale offer with OfferChangedExcpetion. Both inputs use the original test profile, persistence mapping and request/session scopes. The check uses the original runtime dependencies. The original Maven test classes and resources follow the production classpath. V0 was open and V2 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-85/new/summary.json)
 
-**Review action** Use the recorded original CI and address the first unresolved step.
+**Review action** Restore a compatible runtime closure and repeat the original business operation.
 
 ## languagetool · compsuite-i-9
 
@@ -68,11 +68,11 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.languagetool.dev.wikipedia.atom.MatchDatabase#add`. Store, list and update spelling matches using the database-backed caller.
 
-**Result** Open. The upgraded JVM stopped before the selected method. Its escaping exception was `java.lang.RuntimeException`. The innermost recorded cause was `java.sql.SQLException` (No suitable driver found for jdbc:derby:atomFeedChecksDB;create=true). [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/07/compsuite-i-9.json)
+**Result** Open. The upgraded JVM stopped before the selected method. Its escaping exception was `java.lang.RuntimeException`. The innermost recorded cause was `java.sql.SQLException` (No suitable driver found for jdbc:derby:atomFeedChecksDB;create=true). The old JVM selected `org.apache.derby.jdbc.AutoloadedDriver40`. The new service provider requires classfile version 53. The subject JVM supports through 52. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/07/compsuite-i-9.json)
 
-**Scope** The original MatchDatabaseTest.test expects the inserted rule ID and diff 123, and an update to diff 124 on the matching rule. The original SQL predicate also requires the rule ID to match. Both POMs declare Derby in test scope. This environment does not supply a production-upgrade decision. The check uses Maven's original test classpath. V0 was open and V1 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/restored-legacy-maven/compsuite-i-9/original-test/compsuite-i-9/new/summary.json)
+**Scope** The original MatchDatabaseTest.test expects the inserted rule ID and diff 123, and an update to diff 124 on the matching rule. The original SQL predicate also requires the rule ID to match. Both POMs declare Derby in test scope. This environment does not supply a production-upgrade decision. The check uses Maven's original test classpath. V0 was open and V2 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/restored-legacy-maven/compsuite-i-9/original-test/compsuite-i-9/new/summary.json)
 
-**Review action** Review this as a developer-test dependency. A production decision requires a production use.
+**Review action** Use a driver compatible with the subject JDK or rerun on a supported JDK and check the stored rows.
 
 ## apollo · compsuite-i-4
 
@@ -80,11 +80,11 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory`. Resolve the factory for an explicitly registered configuration namespace.
 
-**Result** Open. The old observer produced {"return": "true"}. On the upgrade it stopped before the selected method. The JVM traced the escaping com.ctrip.framework.apollo.exceptions.ApolloConfigException to `com.ctrip.framework.apollo.build.ApolloInjector#getInstance(Ljava/lang/Class;)Ljava/lang/Object;` at line 38. The recorded cause ends in `java.lang.NoSuchMethodError`. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/01/compsuite-i-4.json)
+**Result** Open. The old observer produced {"return": "true"}. On the upgrade it stopped before the selected method. The JVM traced the escaping com.ctrip.framework.apollo.exceptions.ApolloConfigException to `com.ctrip.framework.apollo.build.ApolloInjector#getInstance(Ljava/lang/Class;)Ljava/lang/Object;` at line 38. The recorded cause ends in `java.lang.NoSuchMethodError`. The debugger matched the escaping root `java.lang.NoSuchMethodError` to `com.google.inject.TypeLiteral#getParameterTypes(Ljava/lang/reflect/Member;)Ljava/util/List;` in a production JAR introduced by the upgrade. Fresh JVM lookups found the `invokestatic` operand `com.google.common.base.Preconditions#checkArgument(ZLjava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V` missing on both original classpaths. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/01/compsuite-i-4.json)
 
-**Scope** Registration associates the supplied namespace with a specific factory. The factory manager publicly checks that registry first. Each test uses a fresh JVM and the real client injector. The check uses the original runtime dependencies. V0 was open and V1 was open.
+**Scope** Registration associates the supplied namespace with a specific factory. The factory manager publicly checks that registry first. Each test uses a fresh JVM and the real client injector. The check uses the original runtime dependencies. V0 was open and V2 was open. Original CI recorded `failed before tests` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-4/new/summary.json)
 
-**Review action** Resolve the earlier failure and rerun the downstream operation.
+**Review action** Align the dependency supplying `com.google.common.base.Preconditions` with the calling library and replay the original input.
 
 ## fluent-validator · compsuite-i-62
 
@@ -92,11 +92,11 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke`. Invoke the validated service with an excluded group and observe its validation outcome.
 
-**Result** Open. the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:219). With --gaps assume it assumes instead that java.util.LinkedHashSet.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its ar [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-native/03/current/compsuite-i-62.json)
+**Result** Open. The upgraded JVM stopped before the selected method. Its escaping exception was `org.springframework.beans.factory.BeanCreationException`. The innermost recorded cause was `java.lang.ClassNotFoundException` (javax.el.ELManager). Both JVMs lacked `javax.el.ELManager`. The upgraded JAR introduced a symbolic reference to it. The old framework returned {"return": "3/BEIJING"}, {"return": "3/LA1234"} in input order. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/03/compsuite-i-62.json)
 
-**Scope** The native attempt used the registered original module and caller. The check uses the original runtime dependencies. V0 was open and V1 was open.
+**Scope** The unchanged service returns its validated argument. The named upstream test expects an otherwise invalid registration to pass with Add excluded. An ordinary valid registration supplies a companion. The original service fixture, annotations, callback and Spring AOP configuration are compiled on both revisions. The check uses the original runtime dependencies. The original Maven test classes and resources follow the production classpath. V0 was open and V2 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/02/compsuite-i-62/new/summary.json)
 
-**Review action** Use the recorded original CI and address the first unresolved step.
+**Review action** Review the dependency providing `javax.el.ELManager` and rerun the caller with compatible versions.
 
 ## citrus · compsuite-i-94
 
@@ -104,11 +104,11 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.alibaba.citrus.service.form.impl.validation.DateValidator#validate`. Validate dates on either side of the configured minimum and read the field state.
 
-**Result** Open. validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: com.alibaba.citrus.service.form.impl.validation.DateValidator extends com.alibaba.citrus.service.form.support.AbstractOptionalValidator; a class made by its constructor must extend Object directly [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-native/05/current/compsuite-i-94.json)
+**Result** Open. The old observer produced {"return": "true|null"}. On the upgrade it stopped before the selected method. The JVM traced the escaping java.lang.NoSuchFieldError to `org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V` at line 57. The recorded cause ends in `java.lang.NoSuchFieldError`. Fresh JVM lookups found the `getstatic` operand `org.springframework.util.NumberUtils#STANDARD_NUMBER_TYPESLjava/util/Set;` missing on both original classpaths. The old framework returned {"return": "true|null"}, {"return": "true|null"}, {"return": "false|field3 should be after 1911-10-10"} in input order. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/05/compsuite-i-94.json)
 
-**Scope** The native attempt used the registered original module and caller. The check uses the original runtime dependencies. V0 was open and V1 was open.
+**Scope** The configured minimum is 1911-10-10. The original developer assertions accept the minimum and following day and require the preceding date to return the field-specific validation message. The request traverses the original form service and validator. The check uses the original runtime dependencies. The original Maven test classes and resources follow the production classpath. V0 was open and V2 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-94/new/summary.json)
 
-**Review action** Use the recorded original CI and address the first unresolved step.
+**Review action** Align the dependency supplying `org.springframework.util.NumberUtils` with the calling library and replay the original input.
 
 ## togglz · compsuite-i-81
 
@@ -116,9 +116,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue`. Read a configured feature flag and observe whether the caller activates the feature.
 
-**Result** Changed. 2 of 2 inputs changed. Input 0 produced {"return": "true"} before and {"throws": "java.lang.RuntimeException"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/01/compsuite-i-81.json)
+**Result** Changed. 2 of 2 inputs changed. Input 0 produced {"return": "true"} before and {"throws": "java.lang.RuntimeException"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/01/compsuite-i-81.json)
 
-**Scope** Use the exact upstream test provider and service registration. Set the provider to each boolean and initialize the feature state to its opposite as in the developer test. The host supplies the original declared API. V0 was open and V1 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/v2-final-focused-ci/compsuite-i-81/new/summary.json)
+**Scope** Use the exact upstream test provider and service registration. Set the provider to each boolean and initialize the feature state to its opposite as in the developer test. The host supplies the original declared API. V0 was open and V2 was changed. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/v2-final-focused-ci/compsuite-i-81/new/summary.json)
 
 **Review action** Review the changed return or exception before adopting the new pin.
 
@@ -128,9 +128,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.ea.async.instrumentation.Transformer#transform`. Transform and execute an asynchronous method and read its eventual result.
 
-**Result** Preserved. Both versions matched the independent expectations on all 2 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/02/compsuite-i-39.json)
+**Result** Preserved. Both versions matched the independent expectations on all 2 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-39.json)
 
-**Scope** The input bytecode awaits and returns its completed Task argument. Its class bytes are fixed on the original ASM version. The upstream test expects hello; the second input verifies that the returned value follows its own argument. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The input bytecode awaits and returns its completed Task argument. Its class bytes are fixed on the original ASM version. The upstream test expects hello; the second input verifies that the returned value follows its own argument. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-39/new/summary.json)
 
 **Review action** Keep the historical change open on this input domain.
 
@@ -140,9 +140,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.uber.profiling.Arguments#runConfigProvider`. Apply a configuration provider and read the resulting interval and tag.
 
-**Result** Changed. 1 of 2 inputs changed. Input 0 produced {"return": "tag1/9001/false"} before and {"return": "tag1/9000/true"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/02/compsuite-i-29.json)
+**Result** Changed. 1 of 2 inputs changed. Input 0 produced {"return": "tag1/9001/false"} before and {"return": "tag1/9000/true"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-29.json)
 
-**Scope** The declared provider supplies input settings only. An exact tag1 has an explicit override, while a different tag uses root values. Both expectations follow the original configuration contract and historical test. The check uses the original runtime dependencies. V0 was open and V1 was changed.
+**Scope** The declared provider supplies input settings only. An exact tag1 has an explicit override, while a different tag uses root values. Both expectations follow the original configuration contract and historical test. The check uses the original runtime dependencies. V0 was open and V2 was changed. Original CI recorded `passed` before and `failure` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/03/compsuite-i-29/new/summary.json)
 
 **Review action** Review the changed return or exception before adopting the new pin.
 
@@ -152,9 +152,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.jupiter.common.util.Reflects#fastInvoke`. Choose and invoke an overloaded service method on the supplied arguments.
 
-**Result** Changed. 2 of 2 inputs changed. Input 0 produced {"return": "Integer/CharSequence"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/02/compsuite-i-36.json)
+**Result** Changed. 2 of 2 inputs changed. Input 0 produced {"return": "Integer/CharSequence"} before and {"throws": "java.lang.IllegalArgumentException"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-36.json)
 
-**Scope** The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type. The check uses the original runtime dependencies. V0 was open and V1 was changed.
+**Scope** The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type. The check uses the original runtime dependencies. V0 was open and V2 was changed. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-36/new/summary.json)
 
 **Review action** Review the changed return or exception before adopting the new pin.
 
@@ -164,9 +164,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory`. Register a property source and inspect its precedence and returned property.
 
-**Result** Open. The upgraded JVM stopped before the selected method. Its escaping exception was `java.lang.NoClassDefFoundError`. The innermost recorded cause was `java.lang.ClassNotFoundException` (org.springframework.core.ErrorCoded). Fresh JVM lookups found `org.springframework.core.ErrorCoded` in the old upgraded JAR and absent from every new input JAR. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/02/compsuite-i-103.json)
+**Result** Open. The upgraded JVM stopped before the selected method. Its escaping exception was `java.lang.NoClassDefFoundError`. The innermost recorded cause was `java.lang.ClassNotFoundException` (org.springframework.core.ErrorCoded). Fresh JVM lookups found `org.springframework.core.ErrorCoded` in the old upgraded JAR and absent from every new input JAR. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-103.json)
 
-**Scope** The original developer test requires the source named first to head the environment and override user.name. The original Nacos HTTP handler supplies the input property on loopback. Two distinct returned values test precedence as well as source registration. The check uses the original runtime dependencies. V0 was open and V1 was open.
+**Scope** The original developer test requires the source named first to head the environment and override user.name. The original Nacos HTTP handler supplies the input property on loopback. Two distinct returned values test precedence as well as source registration. The check uses the original runtime dependencies. V0 was open and V2 was open. Original CI recorded `passed` before and `error` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-103/new/summary.json)
 
 **Review action** Review the dependency providing `org.springframework.core.ErrorCoded` and rerun the caller with compatible versions.
 
@@ -176,9 +176,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `net.glxn.qrgen.javase.QRCode#file`. Produce a QR image file from ordinary text with the default Java SE encoder.
 
-**Result** Preserved. Both versions matched the independent expectations on all 3 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/02/compsuite-i-37.json)
+**Result** Preserved. Both versions matched the independent expectations on all 3 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/02/compsuite-i-37.json)
 
-**Scope** The submitted text is its own independent round-trip expectation. Each image is read through Java ImageIO and decoded with its corresponding ZXing runtime. The historical test only asserted that the returned file was non-null. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The submitted text is its own independent round-trip expectation. Each image is read through Java ImageIO and decoded with its corresponding ZXing runtime. The historical test only asserted that the returned file was non-null. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-37/new/summary.json)
 
 **Review action** Keep the historical change open on this input domain.
 
@@ -188,9 +188,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of`. Construct a stream with a short logger name and observe its fully qualified name.
 
-**Result** Changed. 2 of 2 inputs changed. Input 0 produced {"return": "UpgradeProbe.MyLogger"} before and {"return": "NOP"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/03/compsuite-i-80.json)
+**Result** Changed. 2 of 2 inputs changed. Input 0 produced {"return": "UpgradeProbe.MyLogger"} before and {"return": "NOP"} after. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/03/compsuite-i-80.json)
 
-**Scope** The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP. The check uses the original runtime dependencies. V0 was open and V1 was changed.
+**Scope** The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP. The check uses the original runtime dependencies. V0 was open and V2 was changed. Original CI recorded `passed` before and `failure` after. [Original CI](../../verification/external-upgrades/corpus-runs/focused-ci/04/compsuite-i-80/new/summary.json)
 
 **Review action** Review the changed return or exception before adopting the new pin.
 
@@ -200,9 +200,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.ea.async.instrumentation.Transformer#transform`. Transform an async method holding an uninitialized value across await and read completion and result.
 
-**Result** Preserved. Both versions matched the independent expectations on all 8 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/03/ea-async-27.json)
+**Result** Preserved. Both versions matched the independent expectations on all 8 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/03/ea-async-27.json)
 
-**Scope** Each class has zero through three extra uninitialized stack copies across await. The already resolved input completes synchronously. The pending input completes after the argument is supplied. The generated function constructs the integer represented by that argument. The same original class bytes are passed on both releases. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** Each class has zero through three extra uninitialized stack copies across await. The already resolved input completes synchronously. The pending input completes after the argument is supplied. The generated function constructs the integer represented by that argument. The same original class bytes are passed on both releases. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/03/ea-async-27/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -212,9 +212,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.iodesystems.whatjdk.ClassEntryExtractor#next`. Read an ordinary Java class and observe its class entry and referenced types.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/03/whatjdk-12.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/03/whatjdk-12.json)
 
-**Scope** The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `zero tests` before and `zero tests` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/03/whatjdk-12/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -224,9 +224,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search`. Inspect the original class selection and the referenced class names in a small build.
 
-**Result** Preserved. Both versions matched the independent expectations on all 5 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/03/incremental-analysis-28.json)
+**Result** Preserved. Both versions matched the independent expectations on all 5 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/03/incremental-analysis-28.json)
 
-**Scope** Two independently inspected classfiles carry SourceFile values Empty.java and Numbers.java. A matching changed source selects its class, and an unrelated source selects none. The two earlier input files have no SourceFile attribute and supply explicit negative controls. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** Two independently inspected classfiles carry SourceFile values Empty.java and Numbers.java. A matching changed source selects its class, and an unrelated source selects none. The two earlier input files have no SourceFile attribute and supply explicit negative controls. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `tests or lifecycle failed` before and `tests or lifecycle failed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/03/incremental-analysis-28/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -236,9 +236,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.text.WordUtils#capitalizeFully`. Capitalize words with two delimiters and preserve their separators.
 
-**Result** Preserved. Both versions matched the independent expectations on all 5 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/03/commons-text-775.json)
+**Result** Preserved. Both versions matched the independent expectations on all 5 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/03/commons-text-775.json)
 
-**Scope** Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `tests or lifecycle failed` before and `tests or lifecycle failed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/03/commons-text-775/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -248,9 +248,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read`. Decode an XZ stream and observe the exact decompressed bytes.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/04/commons-compress-767.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/04/commons-compress-767.json)
 
-**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `tests or lifecycle failed` before and `tests or lifecycle failed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/03/commons-compress-767/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -260,9 +260,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read`. Decode a framed LZ4 stream including its checksum and read the exact payload.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/04/commons-compress-822.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/04/commons-compress-822.json)
 
-**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `tests or lifecycle failed` before and `tests or lifecycle failed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/03/commons-compress-822/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -272,9 +272,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.configuration2.JSONConfiguration#read`. Read a JSON configuration and observe nested scalar and list values.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/04/commons-configuration-565.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/04/commons-configuration-565.json)
 
-**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/04/commons-configuration-565/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -284,9 +284,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.configuration2.YAMLConfiguration#read`. Read a YAML configuration and observe scalar and sequence values.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/04/commons-configuration-601.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/04/commons-configuration-601.json)
 
-**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/04/commons-configuration-601/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -296,9 +296,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `net.masterthought.cucumber.ReportBuilder#generateReports`. Generate report files from a small valid report and inspect the output resources.
 
-**Result** Preserved. Both versions matched the independent expectations on all 1 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/04/cucumber-reporting-1220.json)
+**Result** Preserved. Both versions matched the independent expectations on all 1 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/04/cucumber-reporting-1220.json)
 
-**Scope** The upstream input contains one feature with one passed step. The report API exposes those counts and writes its overview-features.html page under the default report directory. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The upstream input contains one feature with one passed step. The report API exposes those counts and writes its overview-features.html page under the default report directory. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/04/cucumber-reporting-1220/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -308,9 +308,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `net.masterthought.cucumber.util.StepNameFormatter#format`. Render argument spans in a step name and preserve surrounding characters.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/05/cucumber-reporting-1198.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/05/cucumber-reporting-1198.json)
 
-**Scope** Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/04/cucumber-reporting-1198/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -320,9 +320,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod`. Resolve an overloaded public method and observe the selected declaration.
 
-**Result** Preserved. Both versions matched the independent expectations on all 5 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/05/commons-beanutils-440.json)
+**Result** Preserved. Both versions matched the independent expectations on all 5 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/05/commons-beanutils-440.json)
 
-**Scope** An exact public overload wins. Short is assignable only to Number. Boolean matches none of the three reference parameters. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** An exact public overload wins. Short is assignable only to Number. Boolean matches none of the three reference parameters. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/04/commons-beanutils-440/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -332,9 +332,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.csv.CSVParser#nextRecord`. Read CSV records containing quoted separators and embedded line endings.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/05/commons-csv-8993be87.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/05/commons-csv-8993be87.json)
 
-**Scope** The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/04/commons-csv-8993be87/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -344,9 +344,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator`. Generate the original reflection adapter and inspect the resulting callable class.
 
-**Result** Open. Both revisions stopped before the selected method on 2 inputs. The innermost recorded cause was `java.lang.NullPointerException` (value is marked @NonNull but is null). [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/05/reflector-35.json)
+**Result** Open. Both revisions stopped before the selected method on 2 inputs. The innermost recorded cause was `java.lang.NullPointerException` (value is marked @NonNull but is null). [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/05/reflector-35.json)
 
-**Scope** Both selected classes have accessible argument-free constructors. A working public generator should produce a fresh instance with each requested class identity. An original runtime that cannot create the adapter remains open. The check uses the original runtime dependencies. V0 was open and V1 was open.
+**Scope** Both selected classes have accessible argument-free constructors. A working public generator should produce a fresh instance with each requested class identity. An original runtime that cannot create the adapter remains open. The check uses the original runtime dependencies. V0 was open and V2 was open. Original CI recorded `zero tests` before and `zero tests` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/06/reflector-35/new/summary.json)
 
 **Review action** Use the recorded original CI and address the first unresolved step.
 
@@ -356,9 +356,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.fileupload2.core.MultipartInput#readBodyData`. Read a multipart body up to its boundary and observe the exact payload.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/05/commons-fileupload-377.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/05/commons-fileupload-377.json)
 
-**Scope** The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/06/commons-fileupload-377/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -368,9 +368,9 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType`. Classify the remote entry from its parsed FTP file type.
 
-**Result** Preserved. Both versions matched the independent expectations on all 3 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/06/commons-vfs-55c96cfd.json)
+**Result** Preserved. Both versions matched the independent expectations on all 3 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/06/commons-vfs-55c96cfd.json)
 
-**Scope** The server root contains one actual file and one actual directory. The Apache FTPServer and MINA versions come from the original project test environment and are held fixed on both sides. Each observation has its own temporary root and listener. The FTPServer parent POM specifies SLF4J API 1.7.36. It is supplied on both sides. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** The server root contains one actual file and one actual directory. The Apache FTPServer and MINA versions come from the original project test environment and are held fixed on both sides. Each observation has its own temporary root and listener. The FTPServer parent POM specifies SLF4J API 1.7.36. It is supplied on both sides. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `tests or lifecycle failed` before and `tests or lifecycle failed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/06/commons-vfs-55c96cfd/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
 
@@ -380,8 +380,8 @@ These reports cover all 32 registered callers. Each finite result applies to its
 
 **Caller-visible behavior** `org.apache.commons.validator.util.ValidatorUtils#getValueAsString`. Read a named property from a bean and observe the exact string or missing-value result.
 
-**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v2-final-finite/06/commons-validator-86e32931.json)
+**Result** Preserved. Both versions matched the independent expectations on all 4 inputs. [Receipt](../../verification/external-upgrades/corpus-runs/v3-final-finite/06/commons-validator-86e32931.json)
 
-**Scope** Two public bean getters return the supplied string and integer 7. String conversion preserves the exact string or null and renders the integer in decimal. The check uses the original runtime dependencies. V0 was open and V1 was preserved.
+**Scope** Two public bean getters return the supplied string and integer 7. String conversion preserves the exact string or null and renders the integer in decimal. The check uses the original runtime dependencies. V0 was open and V2 was preserved. Original CI recorded `passed` before and `passed` after. [Original CI](../../verification/external-upgrades/corpus-runs/original-ci/06/commons-validator-86e32931/new/summary.json)
 
 **Review action** Retain this specific caller expectation when reviewing the upgrade.
