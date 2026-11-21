@@ -1,0 +1,233 @@
+--- /dev/null
++++ b/examples/355-avro-writable-buffer-limit/records/upstream/fix-upstream.json
+@@ -0,0 +1,111 @@
++{
++  "revision": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
++  "side": "fix",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "lang/java/pom.xml",
++      "-pl",
++      "mapred",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 1,
++    "seconds": 10.89,
++    "logSha256": "250b7f2af19143254c422c2e5cdede3e2f8424b353ea8409b4436b343329dd73",
++    "errors": [
++      "[ERROR] Apache Avro Java ................................... FAILURE [  2.320 s]",
++      "[ERROR] BUILD FAILURE",
++      "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++      "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++      "[ERROR] -> [Help 1]",
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++    ],
++    "tail": [
++      "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++      "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++      "[ERROR] -> [Help 1]",
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++    ]
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "lang/java/pom.xml",
++        "-pl",
++        "mapred",
++        "-am",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 5.42,
++      "logSha256": "64d10c7843d8c665b32fdebe744cae2ca67ce37dfbd4e805e13749dc40e39ce8",
++      "errors": [
++        "[ERROR] Apache Avro Java ................................... FAILURE [  0.556 s]",
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++        "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ],
++      "tail": [
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++        "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ]
++    },
++    "testSourceSha256": {
++      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java": "42314e365583fe4fe30c9f1d1ce6ff0017bada3b8a5add89d964320ea468b5bb"
++    },
++    "transplant": [],
++    "named": {
++      "TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength": []
++    }
++  },
++  "mirror": {
++    "cachedRequests": 916
++  }
++}
+--- /dev/null
++++ b/examples/355-avro-writable-buffer-limit/records/upstream/parent-upstream.json
+@@ -0,0 +1,116 @@
++{
++  "revision": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
++  "side": "parent",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "lang/java/pom.xml",
++      "-pl",
++      "mapred",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 1,
++    "seconds": 30.68,
++    "logSha256": "0628973c28e7fb80e565268a611af05d1e5a63b1df30f6a82ae36a5a525acd94",
++    "errors": [
++      "[ERROR] Apache Avro Java ................................... FAILURE [  7.649 s]",
++      "[ERROR] BUILD FAILURE",
++      "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++      "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++      "[ERROR] -> [Help 1]",
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++    ],
++    "tail": [
++      "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++      "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++      "[ERROR] -> [Help 1]",
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++    ]
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "lang/java/pom.xml",
++        "-pl",
++        "mapred",
++        "-am",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 5.32,
++      "logSha256": "c39cf893ba3f45793b0dce15d2f94944090828c4a797ea34858a3a6cda6905d0",
++      "errors": [
++        "[ERROR] Apache Avro Java ................................... FAILURE [  0.578 s]",
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++        "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ],
++      "tail": [
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-toolchains-plugin:3.2.0:select-jdk-toolchain (Ensure ToolChain for JDK 11 is available) on project avro-parent: Cannot find matching toolchain definitions for the following toolchain types:{version=[11,12)}",
++        "[ERROR] Define the required toolchains in your ~/.m2/toolchains.xml file.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ]
++    },
++    "testSourceSha256": {
++      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java": "42314e365583fe4fe30c9f1d1ce6ff0017bada3b8a5add89d964320ea468b5bb"
++    },
++    "transplant": [
++      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java"
++    ],
++    "named": {
++      "TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength": []
++    }
++  },
++  "mirror": {
++    "from https://repo.maven.apache.org/maven2/": 155,
++    "downloadedBytes": 40110593,
++    "downloadedFiles": 155,
++    "cachedRequests": 761
++  }
++}

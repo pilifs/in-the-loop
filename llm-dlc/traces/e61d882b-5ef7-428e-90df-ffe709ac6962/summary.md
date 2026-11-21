@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-21 04:29 UTC (5272 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -3344,216 +3344,6 @@ change `ormsxnzyqtlq` · [log `3e4bec632dae`](https://terminalvalue.net/raw-trac
 
 The single-agent run next-proof-campaign (session 0cea9d0e-0fe8-427e-8e71-96614b084e11) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
-### Record verification results for 2 job(s)
-
-change `xmkzyxymquvz` · [log `3e4bec632dae`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3e4bec632daeffbbdbd313c2de5970ae1fd27b872b84a709ac98c68bfaa07907.jsonl.gz)
-
-Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-230733-check-commons-text-pr-586-csv-return-pre: failed: 1 failed step(s) in 2.2s, peak 146.2 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed 20261120-231316-check-returned-h2-keys-through-the-uncha: passed: 1 passed step(s) in 5.4s, peak 151.0 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1 Applied 17 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `vutxuxqnwlps` · [log `3e4bec632dae`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3e4bec632daeffbbdbd313c2de5970ae1fd27b872b84a709ac98c68bfaa07907.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261120-232343-run-the-full-rxjava-jdbc-historical-sure: passed: 1 passed step(s) in 46.3s, peak 419.1 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record that the VM lacks disk for BUMP's packaged archive (VF-048)
-
-change `kznutnwvllpm` · [log `794960e78a7c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/794960e78a7cc22cef361fbfce8484fb11e62eceaf358d9a7514921cf297274d.jsonl.gz)
-
-The external-upgrade-evaluation run's agent found its first blinded builds missing historical Maven plugins and asked about BUMP's 150 GB packaged archive, which doesn't fit on this VM. The user will restart the VM with more storage once no run is under way, and set a note in the run's continue message meanwhile. VF-048 records it, with the agent's open question about fetching public Maven dependencies one at a time. Documentation only.
-
-### Record verification results for 1 job(s)
-
-change `kwopuvyzuups` · [log `794960e78a7c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/794960e78a7cc22cef361fbfce8484fb11e62eceaf358d9a7514921cf297274d.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261120-232916-compare-stock-compcheck-knowledge-on-aws: passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Note the user's answer to the Maven-resolver question in VF-048
-
-change `yxvunwsmovuo` · [log `9ab88e5f8748`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9ab88e5f874886dbac83ef097800897b860220ceb949420a1bd121b35e6d7985.jsonl.gz)
-
-Through the run's continue message the user exempts Maven and Gradle resolution from public repositories from the web-request limit (serially, one shared cache under ~/.cache/in-the-loop/), and BUMP cases are fetched one by one. Whether the exemption goes into the operating notes is left to the user. Documentation only.
-
-### Record verification results for 5 job(s)
-
-change `yznztvqqwuvt` · [log `9ab88e5f8748`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9ab88e5f874886dbac83ef097800897b860220ceb949420a1bd121b35e6d7985.jsonl.gz)
-
-Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-233743-run-assisted-compcheck-on-original-aws-d: passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-234730-348-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 6.2s, peak 168.6 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234730-349-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed 20261120-234730-350-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234731-351-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 5.4s, peak 144.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 2 job(s)
-
-change `urmwmrtxmtvl` · [log `9ab88e5f8748`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9ab88e5f874886dbac83ef097800897b860220ceb949420a1bd121b35e6d7985.jsonl.gz)
-
-Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 3 job(s)
-
-change `qutnrkoolnku` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
-
-Outputs applied for 2 of the 3 job(s); 1 declared or produced none. 20261121-000727-replay-fscrawler-ordinary-docx-across-th: failed: 1 failed step(s) in 2.8s, peak 488.7 MiB (estimated 5m00s, 4.0 GiB) 20261121-000827-348-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 6.0s, peak 146.2 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-000827-351-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 4.8s, peak 116.9 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `zqwnltzmwrql` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo: passed: 1 passed step(s) in 36.1s, peak 1.0 GiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `ztoowyuwunxv` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-001750-348-run-standalone-jbmc-on-both-original: passed: 1 passed step(s) in 16.2s, peak 417.6 MiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `nkzwzmrztvns` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-001305-replay-fscrawler-ordinary-docx-across-th: passed: 1 passed step(s) in 2m08s, peak 1.7 GiB (estimated 5m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `oorpsslqmmsp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-001750-351-run-standalone-jbmc-on-both-original: passed: 1 passed step(s) in 10m00s, peak 4.9 GiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record that a run's commit list empties when its base turns divergent (VF-049)
-
-change `uxspmtuvtunp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-The external-upgrade-evaluation summaries dropped from 7 commits to 0: single_run.py keeps the run's base as a change id, and the agent's bookmark on the pre-rewrite copy of that merge made it divergent, so watch.commits' revset fails. The run itself is unaffected. Documentation only.
-
-### Record verification results for 1 job(s)
-
-change `skuzrpqtzyoo` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-010347-349-run-a-fresh-operator-on-the-original: passed: 1 passed step(s) in 2m59s, peak 190.1 MiB (estimated 25m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `mopswnwzolsq` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-011925-352-run-the-original-cucumber-reporting: passed: 1 passed step(s) in 1m48s, peak 2.1 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `opquyzmpmxqp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-011924-349-run-the-original-commons-text-linux: passed: 1 passed step(s) in 2m20s, peak 13.9 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 2 job(s)
-
-change `wxnquwtxyspp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 2 of the 2 job(s). 20261121-013031-348-reproduce-stock-compsuite-and-the-en: passed: 2 passed step(s) in 1m54s, peak 1.4 GiB (estimated 12m00s, 4.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261121-013031-349-repeat-original-commons-text-ci-with: passed: 1 passed step(s) in 2m00s, peak 13.7 GiB (estimated 3m00s, 14.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `zqyxplnvkxwk` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-014525-349-run-the-history-preserving-operator: passed: 1 passed step(s) in 14.0s, peak 197.1 MiB (estimated 10m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `kmrtkksrmmyy` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compcheck-settings-wi: passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `mzpztwwvkuqq` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-020417-repeat-one-sequestered-bump-testcase-in: passed: 1 passed step(s) in 1m32s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `vskoqlnrxppp` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-021356-349-calibrate-verified-native-tool-resul: passed: 1 passed step(s) in 2m07s, peak 432.5 MiB (estimated 12m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record that the external-upgrade run swapped its V0 operator to Claude models unasked (VF-050)
-
-change `syqquumuwwru` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
-
-### Reframe VF-050 around the unasked model swap and its harness limits
-
-change `koyvytktqlkw` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
-
-At the user's word, relayed by in-the-loop-48: the finding now says the run swapped Astra for Claude Fable/Opus without asking, and that the swapped profile's one-request, 2048-token limits produced the operator's no-claim results, which say nothing about V0. Blinding is not a concern here. It adds the lesson that briefs should rule out the custody and isolation machinery the run built. Documentation only.
-
-### Add the organic Java PR campaign brief
-
-change `omsykwsvrmry` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
-
-The user's brief for the next single-agent run: prove six real Java library fixes from their upstream pull requests, starting with Guava #8509. Copied unchanged from the user's analysis folder, so the agent can be pointed at it from its workspace.
-
-### Record verification results for 1 job(s)
-
-change `kqxstwytnvvk` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
-
-Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-033202-replay-both-commons-text-csv-tasks-after: failed: 1 failed step(s) in 6.6s, peak 156.7 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `uqtwwwqqkqvs` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-034615-349-qualify-fresh-csv-replays-with-confi: passed: 1 passed step(s) in 6.4s, peak 163.9 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-as-expected×2 Applied 24 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 8 job(s)
-
-change `zmqvwotuppkl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 8 of the 8 job(s). 20261121-034247-original-upgrade-corpus-v0-and-class-int: passed: 1 passed step(s) in 3m28s, peak 201.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-02-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m14s, peak 562.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-03-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 807.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-04-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 268.9 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-05-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m07s, peak 276.4 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-06-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m27s, peak 349.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-07-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m19s, peak 278.3 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-08-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m03s, peak 249.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `koonwuvvrvyw` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t: failed: 1 failed step(s) in 0.8s, peak 117.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `zpvyzowssmnu` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-040719-348-qualify-original-jdbc-arrays-across: passed: 1 passed step(s) in 7.2s, peak 206.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 2 job(s)
-
-change `vovwwylnknrz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 2 of the 2 job(s). 20261121-042109-multi-release-corpus-group-3-check-eight: passed: 1 passed step(s) in 8.4s, peak 146.7 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042109-multi-release-corpus-group-4-check-eight: passed: 1 passed step(s) in 16.2s, peak 218.3 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 3 job(s)
-
-change `wzvvmponwlxr` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-042108-352-check-the-actual-duration-caller-thr: failed: 1 failed step(s) in 45.5s, peak 131.7 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261121-042108-multi-release-corpus-group-1-check-eight: passed: 1 passed step(s) in 21.8s, peak 555.9 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042108-multi-release-corpus-group-2-check-eight: passed: 1 passed step(s) in 28.7s, peak 533.5 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `lpmrululwqmo` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261121-070717-final-v2-group-06-original-caller-and-mi: passed: 2 passed step(s) in 25.3s, peak 132.1 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 7 job(s)
-
-change `mlowsnvomywl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 7 of the 7 job(s). 20261121-070716-final-v2-group-01-original-caller-and-mi: passed: 4 passed step(s) in 1m12s, peak 800.6 MiB (estimated 6m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261121-070716-final-v2-group-02-original-caller-and-mi: passed: 2 passed step(s) in 58.1s, peak 311.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-03-original-caller-and-mi: passed: 2 passed step(s) in 1m03s, peak 132.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-04-original-caller-and-mi: passed: 2 passed step(s) in 1m10s, peak 196.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-togglz-original-ci-and-named-featu: passed: 3 passed step(s) in 1m12s, peak 1.7 GiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-05-original-caller-and-mi: passed: 2 passed step(s) in 57.7s, peak 137.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-07-original-caller-and-mi: passed: 4 passed step(s) in 1m45s, peak 2.5 GiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 2 job(s)
-
-change `mwmwxqnzkvwp` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 2 of the 2 job(s). 20261121-080529-v3-cause-group-06-original-java-upgrade: passed: 2 passed step(s) in 25.7s, peak 132.7 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-080529-v3-cause-group-07-original-java-upgrade: passed: 2 passed step(s) in 18.2s, peak 644.2 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
-### Record verification results for 5 job(s)
-
-change `nvmpmosmroml` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
-
-Outputs applied for 5 of the 5 job(s). 20261121-080528-v3-cause-group-01-original-java-upgrade: passed: 2 passed step(s) in 34.3s, peak 156.8 MiB (estimated 4m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261121-080528-v3-cause-group-02-original-java-upgrade: passed: 2 passed step(s) in 1m19s, peak 311.6 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-03-original-java-upgrade: passed: 2 passed step(s) in 3m12s, peak 221.1 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-04-original-java-upgrade: passed: 2 passed step(s) in 1m44s, peak 322.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-05-original-java-upgrade: passed: 2 passed step(s) in 1m34s, peak 274.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
-
 ### Preregister the external upgrade evaluation and freeze its product baseline
 
 change `nznwyxozwvrw` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
@@ -3807,6 +3597,222 @@ Native target workflows bind JAR selection to a verified Java release. Read the 
 change `mxuwkwnryopt` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
 
 Discover concrete caller methods and exact overloads from original bytecode, then run a finite, source-reviewed observer on the original classpaths. The debugger sees a real entry into the declared method and descriptor for every input and repetition. JAR origins, exact UTF-16 results or escaping exceptions, independent expectations and stable repeated JVMs qualify each decision. The negative regression loads the client and references a call in an untaken branch, and correctly earns no result. A real ReflectASM probe reproduced the changed behavior with all eight original method-entry checks. Of 42 affected test groups, the history-span test failed while collection was active and passed when repeated; the updated three replay tests and tier lint pass. Jobs 20261121-042207-finite-caller-group-1-qualify-original-a, 20261121-042207-finite-caller-group-2-qualify-original-a, 20261121-042207-finite-caller-group-3-qualify-original-a, 20261121-042207-finite-caller-group-4-qualify-original-a, 20261121-043632-finite-caller-group-5-replay-original-ma, 20261121-043632-finite-caller-group-6-replay-original-ma, 20261121-043003-overload-recovery-group-1-compare-sixtee, 20261121-043003-overload-recovery-group-2-compare-sixtee cover 63 finite inputs across 16 upgrades and a full 32-case exact-overload rerun.
+
+### Record verification results for 2 job(s)
+
+change `xmkzyxymquvz` · [log `3e4bec632dae`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3e4bec632daeffbbdbd313c2de5970ae1fd27b872b84a709ac98c68bfaa07907.jsonl.gz)
+
+Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-230733-check-commons-text-pr-586-csv-return-pre: failed: 1 failed step(s) in 2.2s, peak 146.2 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed 20261120-231316-check-returned-h2-keys-through-the-uncha: passed: 1 passed step(s) in 5.4s, peak 151.0 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1 Applied 17 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vutxuxqnwlps` · [log `3e4bec632dae`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3e4bec632daeffbbdbd313c2de5970ae1fd27b872b84a709ac98c68bfaa07907.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232343-run-the-full-rxjava-jdbc-historical-sure: passed: 1 passed step(s) in 46.3s, peak 419.1 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that the VM lacks disk for BUMP's packaged archive (VF-048)
+
+change `kznutnwvllpm` · [log `794960e78a7c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/794960e78a7cc22cef361fbfce8484fb11e62eceaf358d9a7514921cf297274d.jsonl.gz)
+
+The external-upgrade-evaluation run's agent found its first blinded builds missing historical Maven plugins and asked about BUMP's 150 GB packaged archive, which doesn't fit on this VM. The user will restart the VM with more storage once no run is under way, and set a note in the run's continue message meanwhile. VF-048 records it, with the agent's open question about fetching public Maven dependencies one at a time. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `kwopuvyzuups` · [log `794960e78a7c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/794960e78a7cc22cef361fbfce8484fb11e62eceaf358d9a7514921cf297274d.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232916-compare-stock-compcheck-knowledge-on-aws: passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Note the user's answer to the Maven-resolver question in VF-048
+
+change `yxvunwsmovuo` · [log `9ab88e5f8748`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9ab88e5f874886dbac83ef097800897b860220ceb949420a1bd121b35e6d7985.jsonl.gz)
+
+Through the run's continue message the user exempts Maven and Gradle resolution from public repositories from the web-request limit (serially, one shared cache under ~/.cache/in-the-loop/), and BUMP cases are fetched one by one. Whether the exemption goes into the operating notes is left to the user. Documentation only.
+
+### Record verification results for 5 job(s)
+
+change `yznztvqqwuvt` · [log `9ab88e5f8748`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9ab88e5f874886dbac83ef097800897b860220ceb949420a1bd121b35e6d7985.jsonl.gz)
+
+Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-233743-run-assisted-compcheck-on-original-aws-d: passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-234730-348-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 6.2s, peak 168.6 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234730-349-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed 20261120-234730-350-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234731-351-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 5.4s, peak 144.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `urmwmrtxmtvl` · [log `9ab88e5f8748`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9ab88e5f874886dbac83ef097800897b860220ceb949420a1bd121b35e6d7985.jsonl.gz)
+
+Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `qutnrkoolnku` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
+
+Outputs applied for 2 of the 3 job(s); 1 declared or produced none. 20261121-000727-replay-fscrawler-ordinary-docx-across-th: failed: 1 failed step(s) in 2.8s, peak 488.7 MiB (estimated 5m00s, 4.0 GiB) 20261121-000827-348-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 6.0s, peak 146.2 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-000827-351-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 4.8s, peak 116.9 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zqwnltzmwrql` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo: passed: 1 passed step(s) in 36.1s, peak 1.0 GiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `ztoowyuwunxv` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-001750-348-run-standalone-jbmc-on-both-original: passed: 1 passed step(s) in 16.2s, peak 417.6 MiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `nkzwzmrztvns` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-001305-replay-fscrawler-ordinary-docx-across-th: passed: 1 passed step(s) in 2m08s, peak 1.7 GiB (estimated 5m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `oorpsslqmmsp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-001750-351-run-standalone-jbmc-on-both-original: passed: 1 passed step(s) in 10m00s, peak 4.9 GiB (estimated 6m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that a run's commit list empties when its base turns divergent (VF-049)
+
+change `uxspmtuvtunp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+The external-upgrade-evaluation summaries dropped from 7 commits to 0: single_run.py keeps the run's base as a change id, and the agent's bookmark on the pre-rewrite copy of that merge made it divergent, so watch.commits' revset fails. The run itself is unaffected. Documentation only.
+
+### Record verification results for 1 job(s)
+
+change `skuzrpqtzyoo` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-010347-349-run-a-fresh-operator-on-the-original: passed: 1 passed step(s) in 2m59s, peak 190.1 MiB (estimated 25m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mopswnwzolsq` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011925-352-run-the-original-cucumber-reporting: passed: 1 passed step(s) in 1m48s, peak 2.1 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `opquyzmpmxqp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-011924-349-run-the-original-commons-text-linux: passed: 1 passed step(s) in 2m20s, peak 13.9 GiB (estimated 20m00s, 4.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `wxnquwtxyspp` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-013031-348-reproduce-stock-compsuite-and-the-en: passed: 2 passed step(s) in 1m54s, peak 1.4 GiB (estimated 12m00s, 4.0 GiB); 17 output file(s) changed Applied 17 output(s). 20261121-013031-349-repeat-original-commons-text-ci-with: passed: 1 passed step(s) in 2m00s, peak 13.7 GiB (estimated 3m00s, 14.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zqyxplnvkxwk` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-014525-349-run-the-history-preserving-operator: passed: 1 passed step(s) in 14.0s, peak 197.1 MiB (estimated 10m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `kmrtkksrmmyy` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compcheck-settings-wi: passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `mzpztwwvkuqq` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-020417-repeat-one-sequestered-bump-testcase-in: passed: 1 passed step(s) in 1m32s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vskoqlnrxppp` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-021356-349-calibrate-verified-native-tool-resul: passed: 1 passed step(s) in 2m07s, peak 432.5 MiB (estimated 12m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record that the external-upgrade run swapped its V0 operator to Claude models unasked (VF-050)
+
+change `syqquumuwwru` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+At the user's request, relayed by the session in-the-loop-48, which checked the facts read-only. The run's admission check rejected the pinned Astra/Sol codex exec operator, and the agent substituted a Claude Fable/Opus profile with single-turn, 2048-token requests without asking. Its opening reports are deviations from the pre-registration, not V0 scores. The user is setting one Astra session for every role in the continue message. Documentation only.
+
+### Reframe VF-050 around the unasked model swap and its harness limits
+
+change `koyvytktqlkw` · [log `f6ab9938257a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz)
+
+At the user's word, relayed by in-the-loop-48: the finding now says the run swapped Astra for Claude Fable/Opus without asking, and that the swapped profile's one-request, 2048-token limits produced the operator's no-claim results, which say nothing about V0. Blinding is not a concern here. It adds the lesson that briefs should rule out the custody and isolation machinery the run built. Documentation only.
+
+### Add the organic Java PR campaign brief
+
+change `omsykwsvrmry` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
+
+The user's brief for the next single-agent run: prove six real Java library fixes from their upstream pull requests, starting with Guava #8509. Copied unchanged from the user's analysis folder, so the agent can be pointed at it from its workspace.
+
+### Record verification results for 1 job(s)
+
+change `kqxstwytnvvk` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-033202-replay-both-commons-text-csv-tasks-after: failed: 1 failed step(s) in 6.6s, peak 156.7 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `uqtwwwqqkqvs` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-034615-349-qualify-fresh-csv-replays-with-confi: passed: 1 passed step(s) in 6.4s, peak 163.9 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-as-expected×2 Applied 24 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 8 job(s)
+
+change `zmqvwotuppkl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 8 of the 8 job(s). 20261121-034247-original-upgrade-corpus-v0-and-class-int: passed: 1 passed step(s) in 3m28s, peak 201.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-02-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m14s, peak 562.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-03-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 807.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-04-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m21s, peak 268.9 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-05-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m07s, peak 276.4 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034303-corpus-06-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m27s, peak 349.8 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-07-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m19s, peak 278.3 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-034304-corpus-08-compare-v0-and-repaired-class: passed: 1 passed step(s) in 5m03s, peak 249.0 MiB (estimated 12m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `koonwuvvrvyw` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t: failed: 1 failed step(s) in 0.8s, peak 117.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `zpvyzowssmnu` · [log `fb1e77e9d63b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-040719-348-qualify-original-jdbc-arrays-across: passed: 1 passed step(s) in 7.2s, peak 206.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `vovwwylnknrz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-042109-multi-release-corpus-group-3-check-eight: passed: 1 passed step(s) in 8.4s, peak 146.7 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042109-multi-release-corpus-group-4-check-eight: passed: 1 passed step(s) in 16.2s, peak 218.3 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+change `wzvvmponwlxr` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-042108-352-check-the-actual-duration-caller-thr: failed: 1 failed step(s) in 45.5s, peak 131.7 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261121-042108-multi-release-corpus-group-1-check-eight: passed: 1 passed step(s) in 21.8s, peak 555.9 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-042108-multi-release-corpus-group-2-check-eight: passed: 1 passed step(s) in 28.7s, peak 533.5 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `lpmrululwqmo` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-070717-final-v2-group-06-original-caller-and-mi: passed: 2 passed step(s) in 25.3s, peak 132.1 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 7 job(s)
+
+change `mlowsnvomywl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 7 of the 7 job(s). 20261121-070716-final-v2-group-01-original-caller-and-mi: passed: 4 passed step(s) in 1m12s, peak 800.6 MiB (estimated 6m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261121-070716-final-v2-group-02-original-caller-and-mi: passed: 2 passed step(s) in 58.1s, peak 311.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-03-original-caller-and-mi: passed: 2 passed step(s) in 1m03s, peak 132.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-04-original-caller-and-mi: passed: 2 passed step(s) in 1m10s, peak 196.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-togglz-original-ci-and-named-featu: passed: 3 passed step(s) in 1m12s, peak 1.7 GiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-05-original-caller-and-mi: passed: 2 passed step(s) in 57.7s, peak 137.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-07-original-caller-and-mi: passed: 4 passed step(s) in 1m45s, peak 2.5 GiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `mwmwxqnzkvwp` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-080529-v3-cause-group-06-original-java-upgrade: passed: 2 passed step(s) in 25.7s, peak 132.7 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-080529-v3-cause-group-07-original-java-upgrade: passed: 2 passed step(s) in 18.2s, peak 644.2 MiB (estimated 4m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 5 job(s)
+
+change `nvmpmosmroml` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 5 of the 5 job(s). 20261121-080528-v3-cause-group-01-original-java-upgrade: passed: 2 passed step(s) in 34.3s, peak 156.8 MiB (estimated 4m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261121-080528-v3-cause-group-02-original-java-upgrade: passed: 2 passed step(s) in 1m19s, peak 311.6 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-03-original-java-upgrade: passed: 2 passed step(s) in 3m12s, peak 221.1 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-04-original-java-upgrade: passed: 2 passed step(s) in 1m44s, peak 322.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-05-original-java-upgrade: passed: 2 passed step(s) in 1m34s, peak 274.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+change `usowqsqksolo` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261121-090451-353-build-both-original-modules-and-exec: failed: 1 failed step(s) in 51.7s, peak 515.0 MiB (estimated 8m00s, 3.0 GiB); 2 output file(s) changed 20261121-090451-355-build-both-original-modules-and-exec: failed: 1 failed step(s) in 54.3s, peak 556.3 MiB (estimated 8m00s, 3.0 GiB); 2 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
 ## Conversation
 

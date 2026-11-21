@@ -1,0 +1,119 @@
+{
+  "revision": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
+  "side": "parent",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "guava",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 1,
+    "seconds": 31.09,
+    "logSha256": "9fc3538a8d683f8d2ddeb82c51c498670c0c5c7b66b2795e93527541c21917c7",
+    "errors": [
+      "[ERROR] Failed to download and install JDK",
+      "[ERROR] No toolchain found for toolchainType jdk",
+      "[ERROR] Failed to download and install JDK",
+      "[ERROR] No toolchain found for toolchainType jdk",
+      "[ERROR] Cannot find matching toolchain definitions for the following toolchain types:",
+      "[ERROR] Guava: Google Core Libraries for Java .............. FAILURE [ 13.028 s]",
+      "[ERROR] BUILD FAILURE",
+      "[ERROR] Failed to execute goal org.mvnsearch:toolchains-maven-plugin:4.5.0:toolchain (download-26-and-surefire-version) on project guava: Cannot find matching toolchain definitions for the following toolchain types:",
+      "[ERROR] jdk [ vendor='temurin' version='26' ]",
+      "[ERROR] testJdk [ vendor='temurin' version='21' ]",
+      "[ERROR] Please make sure you define the required toolchains in your ~/.m2/toolchains.xml file.",
+      "[ERROR] -> [Help 1]"
+    ],
+    "tail": [
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+      "[ERROR] ",
+      "[ERROR] After correcting the problems, you can resume the build with the command",
+      "[ERROR]   mvn <args> -rf :guava"
+    ]
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "guava-tests",
+        "-am",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=MultisetsTest#testSumCountOverflow,MultisetsTest#testSumEntryIteratorOverflow",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 4.97,
+      "logSha256": "6065f15cf1984f564a0906f09ec2071ab00927210326656792d6300610773fee",
+      "errors": [
+        "[ERROR] Failed to download and install JDK",
+        "[ERROR] No toolchain found for toolchainType jdk",
+        "[ERROR] Failed to download and install JDK",
+        "[ERROR] No toolchain found for toolchainType jdk",
+        "[ERROR] Cannot find matching toolchain definitions for the following toolchain types:",
+        "[ERROR] Guava: Google Core Libraries for Java .............. FAILURE [  1.285 s]",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.mvnsearch:toolchains-maven-plugin:4.5.0:toolchain (download-26-and-surefire-version) on project guava: Cannot find matching toolchain definitions for the following toolchain types:",
+        "[ERROR] jdk [ vendor='temurin' version='26' ]",
+        "[ERROR] testJdk [ vendor='temurin' version='21' ]",
+        "[ERROR] Please make sure you define the required toolchains in your ~/.m2/toolchains.xml file.",
+        "[ERROR] -> [Help 1]"
+      ],
+      "tail": [
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :guava"
+      ]
+    },
+    "testSourceSha256": {
+      "guava-tests/test/com/google/common/collect/MultisetsTest.java": "7d5872a7f7f27ee360a916a14580c9daf4ad437d0e6afece43306745985c21cf"
+    },
+    "transplant": [
+      "guava-tests/test/com/google/common/collect/MultisetsTest.java"
+    ],
+    "named": {
+      "MultisetsTest#testSumCountOverflow": [],
+      "MultisetsTest#testSumEntryIteratorOverflow": []
+    }
+  },
+  "mirror": {
+    "cachedRequests": 795,
+    "from https://repo.maven.apache.org/maven2/": 133,
+    "downloadedBytes": 13856001,
+    "downloadedFiles": 133
+  }
+}
