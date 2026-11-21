@@ -1,0 +1,195 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "organic.TreeOrder#postorder(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 2",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "postorder(code=0)",
+      "outcome": "0",
+      "values": [
+        "0"
+      ],
+      "shrink_runs": 0,
+      "inputs": [
+        {
+          "name": "code",
+          "type": "int",
+          "value": 0
+        }
+      ],
+      "call": {
+        "class": "organic.TreeOrder",
+        "class_file": "organic/TreeOrder.class",
+        "classes": "after",
+        "method": "postorder",
+        "descriptor": "(I)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "code",
+            "type": "int",
+            "value": 0,
+            "from": "code"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 2.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of organic.TreeOrder#postorder(int) violated: `result == 1` where code >= 0 && code < 2:\n  postorder(code=0)\n    outcome: 0",
+        "uri": null,
+        "line": 33
+      }
+    ],
+    "output": "✗ Property of organic.TreeOrder#postorder(int) violated: `result == 1` where code >= 0 && code < 2:\n  postorder(code=0)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 2.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 1.9868717980000001,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 64,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 2,
+        "merges": 0,
+        "solver_calls": 9,
+        "solving_seconds": 0.000044845,
+        "gates_evaluated": 122,
+        "evaluating_seconds": 4.377e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 218,
+        "clauses": 617,
+        "seconds": 0.013308927,
+        "loading_seconds": 0.002832008,
+        "decoding_seconds": 0.000593802,
+        "encoding_seconds": 0.000242223,
+        "witness_seconds": 7.734e-6,
+        "assumed": [
+          "the class initializer of com.github.javaparser.ast.Node was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 f32a7828ec7e), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; it initialized com.github.javaparser.HasParentNode, com.github.javaparser.ast.nodeTypes.NodeWithRange, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration, com.github.javaparser.printer.configuration.DefaultConfigurationOption, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration$ConfigOption, com.github.javaparser.utils.LineSeparator, com.github.javaparser.printer.configuration.Indentation, com.github.javaparser.printer.configuration.Indentation$IndentType, com.github.javaparser.utils.Utils, com.github.javaparser.ast.DataKey, com.github.javaparser.ast.Node$1, com.github.javaparser.ast.Node$2, com.github.javaparser.ast.Node$3, com.github.javaparser.ast.Node$4 besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 58.028,
+          "seconds": 0.013,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.003,
+            "lowering": 0.001,
+            "symbolic": 0.01,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 218,
+            "clauses": 617
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 2.123,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.013,
+        "replay": 0.003,
+        "jvm": 0.118,
+        "other": 1.988
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of com.github.javaparser.ast.Node was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 f32a7828ec7e), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; it initialized com.github.javaparser.HasParentNode, com.github.javaparser.ast.nodeTypes.NodeWithRange, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration, com.github.javaparser.printer.configuration.DefaultConfigurationOption, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration$ConfigOption, com.github.javaparser.utils.LineSeparator, com.github.javaparser.printer.configuration.Indentation, com.github.javaparser.printer.configuration.Indentation$IndentType, com.github.javaparser.utils.Utils, com.github.javaparser.ast.DataKey, com.github.javaparser.ast.Node$1, com.github.javaparser.ast.Node$2, com.github.javaparser.ast.Node$3, com.github.javaparser.ast.Node$4 besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:com.github.javaparser.ast.Node:f32a7828ec7e1bdecbf5a0f8d5c18f2b14de26e6720d17940c97c569846f3b5b:a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
