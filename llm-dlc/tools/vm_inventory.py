@@ -36,6 +36,15 @@ import artifacts
 import codex_rollout
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+def result_rel(root: Path, job_id: str) -> str:
+    """A job's result folder as a repository path, wherever the job is kept (verification/layout.py)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", REPO / "verification" / "layout.py")
+    layout = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(layout)
+    return layout.new_result(root, job_id).relative_to(root).as_posix()
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state")) / "llm-traces"
 ARCHIVED = Path.home() / ".cache/in-the-loop/workspace-archive"  # run records of workspaces that were removed
 # The examples whose records the runs of 2026-11-19 to 21 wrote (runs 5 to 7, VF-053): sealed before any trim.
@@ -305,13 +314,13 @@ class Protector:
                     self.tally["runs sealed by the runner"] += run_dir.is_dir()
                     continue
                 source = None
-                for result in (root / "verification/results" / run_dir.name / "result.json", state / "results" / run_dir.name / "result.json"):
+                for result in (root / result_rel(root, run_dir.name) / "result.json", state / "results" / run_dir.name / "result.json"):
                     try:
                         source = json.loads(result.read_text()).get("sourceCommit")
                         break
                     except (OSError, ValueError):
                         pass
-                self.tree("runs", f"runs:{root.name}:{run_dir.name}", run_dir, "job-run", f"verification/results/{run_dir.name}",
+                self.tree("runs", f"runs:{root.name}:{run_dir.name}", run_dir, "job-run", result_rel(root, run_dir.name),
                           job=run_dir.name, source={"commit": source} if source else None, exclude=lambda rel, is_dir: rel == SEALED_MARK,
                           notes={"stage": "sealed at the VM inventory: the run directory as the runner left it, before capture "
                                           "was wired into the runner; the attempt's number is not known", "workspace": root.name})
@@ -326,7 +335,7 @@ class Protector:
             state = root / "verification/.state"
             for work in sorted((state / "work").iterdir()) if (state / "work").is_dir() else []:
                 source = None
-                for result in (root / "verification/results" / work.name / "result.json", state / "results" / work.name / "result.json"):
+                for result in (root / result_rel(root, work.name) / "result.json", state / "results" / work.name / "result.json"):
                     try:
                         source = json.loads(result.read_text()).get("sourceCommit")
                         break
@@ -342,7 +351,7 @@ class Protector:
                 if self.dry:
                     self.tally["workdirs to seal"] += 1
                     continue
-                record = self.archive.capture(work, "job-workdir", f"verification/results/{work.name}/workdir", job=work.name,
+                record = self.archive.capture(work, "job-workdir", f"{result_rel(root, work.name)}/workdir", job=work.name,
                                               source={"commit": source}, sparse=True, exclude=capture.beyond_commit(REPO, work, source),
                                               notes={"stage": "sealed at the VM inventory", "workspace": root.name,
                                                      "rule": "files identical to the source commit are left out, and folders that hold none of the rest"})

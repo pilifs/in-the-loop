@@ -1312,14 +1312,18 @@ def verification_jobs() -> list[dict]:
     """Each verification job (verification/jobs/ID.json) with what its result, if it has one, says
     it took (verification/results/ID/result.json), as loop_stats reads them. A file that is not
     JSON, or not a job, is left out: the pipeline's own `validate` is what reports it."""
-    out, root = [], REPO / "verification"
-    for path in sorted((root / "jobs").glob("*.json")):
+    import importlib.util  # verification/layout.py: a job and its result by id, flat or under the day it was submitted
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    layout = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(layout)
+    out = []
+    for path in layout.jobs(REPO).values():
         try:
             job = json.loads(path.read_text())
             submitted, links = job.get("submitted") or {}, job.get("links") or {}
             row = {"id": job["id"], "at": submitted.get("at"), "session": submitted.get("session"),
                    "supersedes": job.get("supersedes"), "examples": links.get("examples") or []}
-            result = root / "results" / job["id"] / "result.json"
+            result = (layout.find_result(REPO, job["id"]) or REPO / layout.result_rel(job["id"])) / "result.json"
             if result.exists():
                 r = json.loads(result.read_text())
                 usage = r.get("usage") or {}
@@ -3615,14 +3619,24 @@ def set_aside(only: list[str]) -> tuple[str | None, list[str]]:
     share a working copy, as a loop and the result collector do), and goes into a change of its own below @, where
     the commit does not take it. Returns that change and the files; (None, []) when there are none. The files on
     disk don't change. What the trace tools write is never set aside: the commit regenerates it."""
-    mine = lambda p: any(p == o or p.startswith(o + "/") for o in only) or trace_owned(p)
-    theirs = [p for p in jj("diff", "--name-only").stdout.splitlines() if not mine(p)]
+    named = lambda p: any(p == o or p.startswith(o + "/") for o in only)
+    changed = jj("diff", "--name-only").stdout.splitlines()
+    theirs = [p for p in changed if not named(p) and not trace_owned(p)]
     if not theirs:
         return None, []
-    r = jj("split", "-r", "@", "-m", "wip: another session's files", "--", *theirs)
+    # Named by what stays, not by what goes: the files set aside may be thousands (an example's records, packed or
+    # deleted), and that many paths are more than one command line holds.
+    kept = [*only, *(p for p in changed if trace_owned(p) and not named(p))]
+    quoted = " | ".join('root:"' + p.replace("\\", "\\\\").replace('"', '\\"') + '"' for p in kept)
+    r = jj("split", "-r", "@", "-m", "wip: another session's files", "--", f"~({quoted})")
     if r.returncode:
         raise RuntimeError(f"could not set aside the files outside --only: {r.stderr.strip()}")
     return jj("log", "--no-graph", "-r", "@-", "-T", "change_id").stdout.strip(), theirs
+
+
+def listed(paths: list[str], most: int = 40) -> str:
+    """Paths for a line of output: all of a few, the first of many with the count of the rest."""
+    return " ".join(paths) if len(paths) <= most else f"{' '.join(paths[:most])} and {len(paths) - most:,} more"
 
 
 def put_back(other: str | None, committed: str) -> None:
@@ -3667,7 +3681,7 @@ def cmd_commit(args: list[str]) -> int:
         return 2
     other, theirs = set_aside(only) if only else (None, [])
     if theirs:
-        print(f"left uncommitted, as outside --only: {' '.join(theirs)}")
+        print(f"left uncommitted, as outside --only: {listed(theirs)}")
     # Describe first: the sync then stamps the trailer onto this message and writes a manifest
     # that lists @ under its real summary, before `jj new` freezes both into the commit.
     with journaled("describe", summary=message.split("\n", 1)[0]):
@@ -4304,6 +4318,21 @@ def check_global_files(manifests: dict[str, dict], redact: Redactor, rendered: b
     return errors
 
 
+def records_budget() -> tuple[list[str], list[str]]:
+    """(errors, warnings) for the examples' records against their budget (examples/tools/targets/case_pack.py).
+    Per-case output left loose in thousands of files is an error, which one command settles; a record that is
+    simply large is for a person to judge. A checkout without the tool has nothing to say."""
+    tool = REPO / "examples/tools/targets/case_pack.py"
+    if not tool.is_file():
+        return [], []
+    import importlib.util
+    with perf.phase("check: records budget"):
+        spec = importlib.util.spec_from_file_location("case_pack", tool)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.over_budget(REPO / "examples")
+
+
 def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed: bool = True) -> int:
     """Everything published or about to be, checked. Logs already scanned with these rules and
     tools are not scanned again (ScanCache), and .gz bytes already verified are not decompressed
@@ -4344,6 +4373,9 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
                         + " ".join(sid for sid, _ in unsent))
     import delegation
     warnings += delegation.open_escalations(sys.modules[__name__])
+    over, large = records_budget()
+    errors += over
+    warnings += large
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():
@@ -4420,7 +4452,7 @@ def runtime_commit(args: list[str]) -> int:
         return 2
     other, theirs = set_aside(only) if only else (None, [])
     if theirs:
-        print(f"left uncommitted, as outside --only: {' '.join(theirs)}")
+        print(f"left uncommitted, as outside --only: {listed(theirs)}")
     if jj("describe", "-r", "@", "-m", set_runtime_trailer(message)).returncode:
         print("jj describe failed", file=sys.stderr)
         return 1

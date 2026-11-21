@@ -61,6 +61,18 @@ EXAMPLE_RECORDS = re.compile(r"examples/[^/]+/records/")  # an example's replay 
 VERIFIED = ("remote_verified", "missing_input")
 
 
+def _verification_layout():
+    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+layout = _verification_layout()
+
+
 class Blocked(Exception):
     """The promotion cannot go on, and why. `main` is where it was."""
 
@@ -111,8 +123,8 @@ def frozen(s, base: str, head: str) -> list[dict]:
         jobs = set()
         for line in stat.strip().splitlines():
             a, d, path = line.split("\t", 2)
-            if path.startswith("verification/results/") and path.endswith("/result.json"):
-                jobs.add(path.split("/")[2])
+            if (found := layout.result_id_of(path)) and found[1] == "result.json":
+                jobs.add(found[0])
             if is_generated(path):
                 records += 1
                 continue
@@ -201,10 +213,10 @@ def originals(s, commits: list[dict], rev: str, settle: bool = False) -> dict:
         archive.close()
     known = {r["id"]: r for r in rows}
     held = {r.get("job") for r in rows}
-    results = s.tree_files([(rev, f"verification/results/{j}/result.json") for j in jobs]) if jobs else {}
+    results = s.tree_files([(rev, f"{layout.result_rel(j, how)}/result.json") for j in jobs for how in ("flat", "shards")]) if jobs else {}
     reader = None
     for job in jobs:
-        raw = results.get((rev, f"verification/results/{job}/result.json"))
+        raw = next((r for how in ("flat", "shards") if (r := results.get((rev, f"{layout.result_rel(job, how)}/result.json")))), None)
         try:
             named = ((json.loads(raw) if raw else {}).get("originals") or {}).get("occurrences") or []
         except ValueError:

@@ -93,6 +93,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+
+
+def _verification_layout():
+    """verification/layout.py: where a job and its result are kept, by id (flat, or under the day it was submitted)."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 EVENTS = "events.jsonl"
 COMMANDS = "commands"
 MERGE_QUEUE = "merge-queue"
@@ -369,12 +380,13 @@ def unfinished_jobs(root: Path = REPO) -> dict[str, list[str]]:
     rows = [row for key in ("pending", "running", "finished, not collected") for row in status.get(key, [])
             if "; cannot run here:" not in row]
     found: dict[str, list[str]] = {}
+    layout = _verification_layout() if rows else None  # only this question needs it; the others must not depend on it
     for row in rows:
         m = JOB_ID.search(row)
         if not m:
             continue
         try:
-            job = json.loads((root / "verification/jobs" / f"{m[0]}.json").read_text())
+            job = json.loads((layout.find_job(root, m[0]) or root / layout.job_rel(m[0])).read_text())
             examples = {o.split("/")[1][:3] for o in job.get("outputs") or []
                         if isinstance(o, str) and re.match(r"examples/\d{3}-", o)}
         except (OSError, ValueError):

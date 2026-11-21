@@ -93,6 +93,7 @@ class ProveLoopTest(unittest.TestCase):
         (self.root / ".gitignore").write_text("llm-dlc/loop-summaries/\n")
         # The queue, as conductor.py reads it: the jobs not in yet are the lines of a file the test writes.
         (self.root / "verification").mkdir()
+        shutil.copy(REPO / "verification/layout.py", self.root / "verification/layout.py")  # where conductor.py finds a job's file
         (self.root / "verification/pipeline.py").write_text(
             "import json, os\nrows = open(os.environ['STANDIN_JOBS']).read().split('\\n') if os.path.exists(os.environ['STANDIN_JOBS']) else []\n"
             "print(json.dumps({'pending': [r for r in rows if r], 'running': [], 'finished, not collected': []}))\n")

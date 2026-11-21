@@ -38,6 +38,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
 | [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill; [`llm-dlc/tools/verification-loop.sh`](../llm-dlc/tools/verification-loop.sh) runs it unattended | |
 | [`capture.py`](capture.py) | hands each run's originals to the private archive before they are cut or removed (see [Originals](#originals-the-whole-logs-and-outputs)); [`test_capture.py`](test_capture.py) tests it | |
+| [`layout.py`](layout.py) | where a job and its result are kept, by id: flat, or under the day the job was submitted (see [Two layouts](#two-layouts-flat-and-by-day)); every reader goes through it; [`test_layout.py`](test_layout.py) tests it | |
 | [`schema/job.schema.json`](schema/job.schema.json) | the job format | |
 | [`schema/result.schema.json`](schema/result.schema.json) | the result format | |
 | `jobs/ID.json` | one job, committed with the change it verifies | the submitting agent, with `submit` |
@@ -57,6 +58,30 @@ committed yet is not run: the runner reads jobs from the latest commit (jj's `@-
 also reads them from `@-` in every other jj workspace of the repository, so a job committed on a branch that another
 workspace works on (a stream of a feature loop run in parallel) runs at its own commit without being merged first. Its
 result is collected here, in the runner's workspace, and reaches that branch when the branches are merged.
+
+### Two layouts: flat, and by day
+
+Every job so far is kept flat, `jobs/ID.json` and `results/ID/`: about a thousand entries in each folder by
+2026-11-21, a few hundred more a day, against the 3,000 a forge recommends as a folder's width. A job can instead be
+kept under the UTC day it was submitted, which its id begins with: `jobs/YYYY/MM/DD/ID.json` and
+`results/YYYY/MM/DD/ID/`, with one overflow folder, `undated/`, for an id that begins with no date.
+
+- **Nothing moves.** A job is written once. The runner tests the commit that last touched a job's file when the job
+  names no revision, so moving a pending job would change the code it tests; and the flat paths are linked from
+  commits, findings and notes. A result goes beside its job: flat for a flat job, in the shard for a sharded one.
+- **Readers take both**, through [`layout.py`](layout.py) and nothing else: `pipeline.py` (the queue, `status`,
+  `collect`, `commit-paths`, `report`, `resubmit`, `prioritize`, `validate`, results recorded on other heads), the
+  loops' statistics in `sync.py`, the test cost inventory, the conductor and the brief's watcher, example acceptance
+  and claim history, the capture of originals, and a promotion's inventory. `results/index.json` gives each result's
+  path under `results/`, whichever layout it has.
+- **One id, two records.** Identical copies resolve to the flat one, always. Copies that differ are a problem
+  `pipeline.py validate` names, and readers still get the flat one.
+- **Where new jobs go** is `WRITE` in `layout.py`: `"flat"` today. Switching it to `"shards"` is one line, for the
+  user to decide once a real batch has been promoted with the readers above (the brief's order: readers first, then
+  writers); `VERIFY_LAYOUT=shards` does it for one command. A sharded job's `$schema` and its result's are written
+  relative to their own depth.
+- **Not through the resolver:** the scripts under `lib/benchmark/external-upgrades/` name particular results of
+  November 2026 by their flat paths, which stay where they are.
 
 ## For agents making changes: submitting a job
 

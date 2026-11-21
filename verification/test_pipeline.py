@@ -8,6 +8,7 @@ The systemd tests (hard memory cap, cgroup measurements) run only where `systemd
 
 import json
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -36,6 +37,7 @@ class Repo:
         self.dir = Path(tempfile.mkdtemp(prefix="pipeline-test-"))
         (self.dir / "verification").mkdir()
         shutil.copy(HERE / "pipeline.py", self.dir / "verification/pipeline.py")
+        shutil.copy(HERE / "layout.py", self.dir / "verification/layout.py")  # where jobs and results are, by id
         shutil.copytree(HERE / "schema", self.dir / "verification/schema")
         settings = {"isolation": "none", "workers": 2, "cpus": 4, "memory": "2G", "job_memory_max": "1G", "link": [],
                     "after_collect": [], "keep_workdirs": "never", **runner}
@@ -155,6 +157,56 @@ class PipelineTest(unittest.TestCase):
         status = self.repo.pipeline("status", "--rev", "HEAD").stdout
         self.assertIn("recorded on another head: 1", status)
         self.assertIn("pending: 0", status)
+
+    def test_a_flat_job_and_a_sharded_job_run_collect_and_report_side_by_side(self):
+        shards = {"VERIFY_LAYOUT": "shards"}
+        flat = self.repo.submit("Kept flat", "--output", "a.txt", "--run", "echo a > a.txt")
+        out = self.repo.pipeline("submit", "--title", "Kept by its day", "--description", "A stub job, for testing the pipeline itself.",
+                                 "--capability", "test", "--output", "b.txt", "--run", "echo b > b.txt", env=shards).stdout
+        sharded = re.search(r"verification/jobs/\d{4}/\d{2}/\d{2}/([^/\s]+)\.json", out)[1]
+        day = f"{sharded[:4]}/{sharded[4:6]}/{sharded[6:8]}"
+        job_file = self.repo.dir / f"verification/jobs/{day}/{sharded}.json"
+        job = json.loads(job_file.read_text())
+        self.assertEqual(pipeline.validate(job, "job.schema.json"), [])
+        self.assertTrue((job_file.parent / job["$schema"]).resolve().samefile(self.repo.dir / "verification/schema/job.schema.json"))
+        source = self.repo.commit("two jobs (verification pending)")
+        self.repo.pipeline("run", "--rev", "HEAD")          # the runner finds both, whatever new jobs take now
+        self.assertIn("applied", self.repo.pipeline("collect").stdout)
+        self.assertEqual((self.repo.dir / "a.txt").read_text() + (self.repo.dir / "b.txt").read_text(), "a\nb\n")
+        kept = self.repo.dir / f"verification/results/{day}/{sharded}"
+        result = json.loads((kept / "result.json").read_text())   # beside its job, with the schema at that depth
+        self.assertEqual((result["status"], result["sourceCommit"]), ("passed", source))
+        self.assertTrue((kept / result["$schema"]).resolve().samefile(self.repo.dir / "verification/schema/result.schema.json"))
+        self.assertEqual(self.repo.result(flat)["status"], "passed")
+        self.assertFalse((self.repo.dir / "verification/results" / sharded).exists())
+        index = json.loads((self.repo.dir / "verification/results/index.json").read_text())["results"]
+        self.assertEqual({e["id"]: e["result"] for e in index}, {flat: f"{flat}/result.json", sharded: f"{day}/{sharded}/result.json"})
+        status = self.repo.pipeline("status", "--rev", "HEAD").stdout
+        self.assertIn("collected: 2", status)
+        self.assertIn("pending: 0", status)
+        self.assertIn(f"verification/results/{day}/{sharded}/result.json", self.repo.pipeline("report", "--format", "json", sharded).stdout)
+        paths = self.repo.pipeline("commit-paths").stdout.split()
+        self.assertTrue({"a.txt", "b.txt"} <= set(paths), paths)
+        self.assertIn("0 file(s) with problems", self.repo.pipeline("validate").stdout)
+        # A result recorded on another head is recognised in its shard too: neither job runs a second time.
+        self.repo.commit("Record verification results")
+        self.repo.git("branch", "results-left-behind", "HEAD")
+        self.repo.git("update-ref", "HEAD", source)
+        self.repo.git("reset", "-q", "--hard", source)
+        self.assertFalse(kept.exists())
+        out = self.repo.pipeline("run", "--rev", "HEAD").stdout
+        for job_id in (flat, sharded):
+            self.assertIn(f"note  {job_id}: its result is recorded in commit", out)
+        self.assertIn("recorded on another head: 2", self.repo.pipeline("status", "--rev", "HEAD").stdout)
+        # A resubmitted job is a new job: it goes where new jobs go, and the one it supersedes stays where it is.
+        again = self.repo.pipeline("resubmit", sharded).stdout.split("wrote ")[1].split(",")[0]
+        self.assertRegex(again, r"^verification/jobs/[^/]+\.json$")
+        self.assertTrue(job_file.exists())
+        # One id recorded twice and differently is a problem `validate` names.
+        (self.repo.dir / f"verification/jobs/{sharded}.json").write_text(json.dumps({**job, "title": "Another job by the same id"}))
+        clash = self.repo.pipeline("validate", check=False)
+        self.assertIn(f"job {sharded}:", clash.stdout)
+        self.assertIn("differ", clash.stdout)
 
     def test_an_uncommitted_job_is_not_run(self):
         job_id = self.repo.submit("Not committed yet", "--run", "true")
