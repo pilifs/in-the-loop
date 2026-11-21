@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -3047,6 +3047,12 @@ At the user's request when run 7 (organic-java-pr-campaign) stopped: 39/46 prima
 [`6de23ad6358b`](https://github.com/pilifs/in-the-loop/commit/6de23ad6358b7a34dc27fe5b3c17db2219437b66) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The user's brief, copied unchanged from their analysis folder, for a single-agent run that continues the dlc-process-plumbing Fable session once that run ends: one shared Rust/Python contract for proof output, binding preparation and checking to the class bytes the JVM loads, and moving array induction into lib. Documentation only.
+
+### Record the watcher's continue after cycle 2 of dlc-process-plumbing
+
+change `qywlynvkllrs` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+single-dlc-process-plumbing-D002: continue. Cycle 2 built promote, delegated redaction (off), deferred trace rendering, the job-id resolver and packed per-case records, and fixed the checkpoint scan's gzip hole; a false pass it caught itself has a replacement job running. Bounded session metrics, receipt arrays and local measurements remain. Decision record only.
 
 ## Conversation
 
