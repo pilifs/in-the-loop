@@ -65,6 +65,14 @@ class UpgradeScoringTest(unittest.TestCase):
                 read("5" * 64)
             with self.assertRaisesRegex(ValueError, "per-build launch"):
                 read(doc["profile_sha256"], {"launch_lock_sha256": DIGEST, "staged_root_sha256": DIGEST})
+            unavailable = {**doc, "build": "no-runtime", "route": "unavailable", "first_blocker": "image missing",
+                           "launch_lock_sha256": DIGEST, "expected_staged_root_sha256": DIGEST,
+                           "staged_root_sha256": None, "environment_verified": False, "evidence": []}
+            source.write_text(json.dumps(unavailable))
+            sc.seal_report(source, sealed)
+            missing, *_ = sc.read_first(sealed, "no-runtime", case, sc.timestamp(doc["intake_utc"]), DIGEST,
+                                        doc["profile_sha256"], {"launch_lock_sha256": DIGEST, "staged_root_sha256": DIGEST})
+            self.assertFalse(missing["_runtime_verified"])
             (sealed / "V0/u01/evidence/proof.txt").write_bytes(b"unrelated")
             with self.assertRaisesRegex(ValueError, "digest differs"):
                 read(doc["profile_sha256"])
@@ -119,6 +127,15 @@ class UpgradeScoringTest(unittest.TestCase):
         self.assertEqual(retired["heldOutMatchedCases"], 0)
         self.assertEqual(retired["heldOutByFamily"]["new"]["v1Only"], 0)
         self.assertIsNone(retired["cases"][0]["transferableRepair"])
+        current["transferIntegrity"] = blind
+        before["cases"][0].update(runtimeVerified=False, environmentSha256="8" * 64)
+        incomplete = sc.paired([before, after])
+        self.assertEqual((incomplete["attemptedCases"], incomplete["matchedCases"], incomplete["heldOutMatchedCases"]),
+                         (1, 0, 0))
+        unverified = incomplete["cases"][0]
+        self.assertFalse(unverified["conditionsVerified"])
+        self.assertIsNone(unverified["transferableRepair"])
+        before["cases"][0].update(runtimeVerified=True, environmentSha256=DIGEST)
         after["cases"][0]["cache"] = "warm"
         with self.assertRaisesRegex(ValueError, "conditions differ"):
             sc.paired([before, after])
@@ -158,6 +175,10 @@ class UpgradeScoringTest(unittest.TestCase):
             self.assertEqual((scored["denominator"], scored["relevantChange"], scored["relevantPreservation"]),
                              (24, 8, 8))
             self.assertTrue(scored["pilotGate"])
+            reports["case0"][0]["_runtime_verified"] = False
+            unavailable = sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())
+            self.assertEqual((unavailable["denominator"], unavailable["relevantChange"]), (24, 7))
+            reports["case0"][0]["_runtime_verified"] = True
             reports["case12"][0].update(route="native")
             no_native = sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())
             self.assertEqual(no_native["relevantPreservation"], 7)

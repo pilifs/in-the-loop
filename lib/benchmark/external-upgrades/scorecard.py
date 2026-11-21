@@ -117,9 +117,13 @@ def check_operator(doc):
     identifier(doc["build"])
     for key in ("input_sha256", "product_sha256", "profile_sha256", "environment_sha256"):
         hex_digest(doc[key])
-    for key in ("launch_lock_sha256", "staged_root_sha256"):
+    for key in ("launch_lock_sha256", "expected_staged_root_sha256"):
         if key in doc:
             hex_digest(doc[key])
+    if doc.get("staged_root_sha256") is not None:
+        hex_digest(doc["staged_root_sha256"])
+    if "environment_verified" in doc:
+        require(type(doc["environment_verified"]) is bool, "invalid runtime inspection record")
     require(doc["route"] in ROUTES, "unknown evidence route")
     require(isinstance(doc["evidence"], list), "missing evidence list")
     require(doc["route"] in {"open", "unavailable"} or doc["evidence"], "a verdict needs evidence")
@@ -217,8 +221,12 @@ def read_first(root, build, case, locked, product, profile, launch=None):
             (case["case_id"], build, case["input_sha256"], product), "case, artifact pair or product identity differs")
     require(doc["profile_sha256"] == profile, "operator profile differs from the signed roster")
     if launch is not None:
-        for field in ("launch_lock_sha256", "staged_root_sha256"):
-            require(doc.get(field) == hex_digest(launch[field]), "per-build launch or staged product root differs")
+        require(doc.get("launch_lock_sha256") == hex_digest(launch["launch_lock_sha256"]),
+                "per-build launch differs from the signed roster")
+        intended = doc.get("expected_staged_root_sha256", doc.get("staged_root_sha256"))
+        require(intended == hex_digest(launch["staged_root_sha256"]), "intended staged product root differs")
+        # A missing image is an availability outcome for this case. Bind the intended release and retain what was seen.
+        doc["_runtime_verified"] = doc.get("staged_root_sha256") == intended and doc.get("environment_verified") is True
     require(timestamp(doc["intake_utc"]) >= locked, "operator saw case before cohort lock")
     require(seal["report_sha256"] == digest and timestamp(seal["sealed_utc"]) >= timestamp(doc["finished_utc"]),
             "invalid first report seal")
@@ -279,6 +287,10 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
         matched = doc.get("artifacts") == case["artifacts"]
         correct = matched and decision["relevant"] and decision["scope_supported"] and decision["original_domain"]
         primary_reason = grade["primary_reason"]
+        inspected = doc.get("_runtime_verified", True)
+        if not inspected:
+            correct = False
+            primary_reason = primary_reason or "requested runtime image was missing, different or unverified"
         native = None
         if doc["route"] == "native":
             decisive = doc.get("_inspected_native_receipts", {}).get(grade.get("decisive_receipt_sha256"))
@@ -299,7 +311,7 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
         require(credit or primary_reason.strip(), "a miss needs a reason")
         outcomes.append({"case_id": cid, "stratum": case["stratum"], "family": case.get("family"),
                          "credit": credit, "technicalResult": correct, "assisted": doc["assisted"], "route": doc["route"],
-                         "originalArtifacts": matched, "nativeEvidenceConfirmed": native,
+                         "originalArtifacts": matched, "runtimeVerified": inspected, "nativeEvidenceConfirmed": native,
                          "seconds": seconds, "cache": doc["cache"], "environmentSha256": doc["environment_sha256"],
                          "cpuLimit": doc["cpu_limit"], "memoryGiB": doc["memory_gib"],
                          "profileSha256": doc["profile_sha256"], "clientInMain": case.get("client_in_main"),
@@ -342,24 +354,28 @@ def paired(reports):
         require((prior["stratum"], prior["family"], prior["clientInMain"]) ==
                 (current["stratum"], current["family"], current["clientInMain"]),
                 "transfer reference mismatch")
-        for field in ("cache", "environmentSha256", "cpuLimit", "memoryGiB", "profileSha256"):
-            require(prior[field] == current[field], f"transfer conditions differ: {field}")
+        require(prior["profileSha256"] == current["profileSha256"], "transfer conditions differ: profile")
+        inspected = prior.get("runtimeVerified", True) and current.get("runtimeVerified", True)
+        for field in ("cache", "environmentSha256", "cpuLimit", "memoryGiB"):
+            if inspected:
+                require(prior[field] == current[field], f"transfer conditions differ: {field}")
         result = {(True, True): "both", (True, False): "v0Only", (False, True): "v1Only",
                   (False, False): "neither"}[prior["credit"], current["credit"]]
         counts[prior["family"]][result] += 1
         integrity = [r["transferIntegrity"] for r in (prior, current)]
         retired = any(i["engineering_saw_reference"] or i["other_first_report_seen"] for i in integrity)
         untouched_client = not prior["clientInMain"] and not any(i["client_used_for_engineering"] for i in integrity)
-        if not retired:
+        if not retired and inspected:
             held_out[prior["family"]][result] += 1
         changes.append({"case_id": prior["case_id"], "family": prior["family"], "stratum": prior["stratum"],
                         "result": result, "v0Seconds": prior["seconds"], "v1Seconds": current["seconds"],
-                        "retiredFromHeldOut": retired, "untouchedClient": untouched_client,
+                        "retiredFromHeldOut": retired, "untouchedClient": untouched_client, "conditionsVerified": inspected,
                         "transferableRepair": current["improvedCapability"]
-                        if result == "v1Only" and untouched_client and not retired else None})
+                        if result == "v1Only" and untouched_client and inspected and not retired else None})
     def by_family(groups):
         return {family: {k: v[k] for k in ("both", "v0Only", "v1Only", "neither")} for family, v in groups.items()}
-    return {"matchedCases": len(changes), "heldOutMatchedCases": sum(not r["retiredFromHeldOut"] for r in changes),
+    return {"attemptedCases": len(changes), "matchedCases": sum(r["conditionsVerified"] for r in changes),
+            "heldOutMatchedCases": sum(r["conditionsVerified"] and not r["retiredFromHeldOut"] for r in changes),
             "byFamily": by_family(counts), "heldOutByFamily": by_family(held_out), "cases": changes}
 
 

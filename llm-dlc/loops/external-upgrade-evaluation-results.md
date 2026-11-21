@@ -4,9 +4,21 @@ On the disclosed rxjava-jdbc change, existing CI already detected a different li
 
 | Evaluation | Population | Current result |
 |---|---:|---|
-| V0 retrospective | 12 changes and 12 scoped preservations | Cohort selection in progress. No scored first reports have been opened. |
-| V0 and V1 transfer | 8 untouched upgrades | Reserve selection in progress. No paired scores. |
-| Prospective advisory pilot | First 5 eligible PRs from each of 3 consenting teams | No team decisions collected. The retrospective investment gate has yet to be evaluated. |
+| V0 retrospective | 12 changes and 12 scoped preservations | 0 of 24 first reports sealed. Cohort selection is in progress. |
+| V0 and V1 transfer | 8 untouched upgrades | 0 of 8 paired decisions. Reserve selection is in progress. |
+| Prospective advisory pilot | First 5 eligible PRs from each of 3 consenting teams | 0 of 15 maintainer decisions collected. The retrospective gate has yet to be evaluated. |
+
+## What the disclosed clients do
+
+| Client | Independent result | First step V0 could not check |
+|---|---|---|
+| [rxjava-jdbc / H2](../../examples/348-rxjava-jdbc-generated-keys/README.md) | One two-row insert returned `[2]` before and `[1,2]` after. Two separate inserts returned `[1,2]` on both. All four fresh databases held both rows. Three of the 454 original tests failed on the upgrade, all through the same inherited assertion. | Opening the JDBC connection. The H2 POM entry has test scope, which excludes the case from the production cohort. |
+| [Commons Text / Commons Lang](../../examples/349-commons-text-csv-upgrade/README.md) | All 156 short CSV fields returned the exact expected characters on both pins. Removing quote doubling broke 71, including a field consisting of one quote. All 34 original string-escape tests passed on each release. | Artifact intake rejected a legal modified UTF-8 NUL in the original class file before invoking the checker. |
+| [Rocker / ANTLR](../../examples/350-rocker-with-declaration/README.md) | Both builds rejected the trailing comma at line 1, column 18 and accepted the valid declaration. Changing just the runtime reproduced the new diagnostic. Both the generated parser sources and the runtime changed in the original pair. | `WeakHashMap` construction in ANTLR initialization on the runtime-only control. |
+| [AWS SDK / Joda-Time](../../examples/351-aws-joda-instant/README.md) | The protected formatter newly parsed the maximum signed instant. The public SDK still round-tripped both that instant and the ordinary-date companion under both versions. | Constructing `java.util.Date(long)` for the public-method claim. |
+| [Cucumber Reporting / Joda-Time](../../examples/352-cucumber-duration/README.md) | Jackson deserialized 18 durations on each side. All displayed exactly three digits of truncated milliseconds. The six compiled client classes matched their published binaries. | Selecting Jackson's release-specific class in a multi-release JAR. |
+
+The pinned native workflow left all five disclosed claims open. The JDBC, time, initialization and class-file limitations arose at different stages. The next product repair is to be selected from the number of distinct blinded PR decisions it could change. [Per-case runtime, qualification and original first blockers](../../verification/external-upgrade-calibrations.json)
 
 ## Cohort selection and custody
 
@@ -16,7 +28,7 @@ One nearer routine PR matched a precommitted four-input oracle in 16 original-re
 
 Twelve earlier historical attempts on three other candidates reached zero named testcases against an offline snapshot of 715 JARs and 1,148 POMs. Nine exact releases were missing. Automatic approval review initially declined case-specific lookups and a selected PR's Maven restoration because the requests could identify a candidate. At 02:47 UTC on 21 November the user expressly authorized these curator lookups to public artifact repositories. The seven earlier availability deferrals are being reconsidered under the updated conditions. A single protected sandbox cache began this pass with 5,189 files verified against the preceding shared cache. The first two required nonoptional production JARs and their POMs have been restored and checked against their published checksums. [Dated acquisition conditions](../../lib/benchmark/external-upgrades/protocol.md)
 
-**Before publishing traces**, review two private helper diagnostics. Each printed an original module-relative path from an unassigned lead. Neither printed a PR number, revision, version, hidden test or input. The second path appeared near a discussion of a scoped result and can be more identifying in context. The custodian recorded both exposures and flagged the affected leads before selection. Private commands now capture stdout and stderr from startup, and only explicitly shaped scalar progress can enter the trace. [Signed exposure counts](../../lib/benchmark/external-upgrades/curation/status/20261121T023611Z.json) · [Capture control](../../lib/benchmark/external-upgrades/curation/README.md#keep-private-command-output-out-of-session-traces)
+**Before publishing traces**, review three private helper events. Two diagnostics printed module-relative paths from unassigned leads. One of the paths appeared near a scoped observation. A subsequent local audit found one exact registered test-method name from a third unassigned lead, without a result or another protected marker in that block. The custodian retired that lead from untouched-oracle claims and retained the precise events privately. The audit checked 2,414 tool-output entries from three locally available redacted streams against 271 withheld markers. Its aggregate digest is `8b022e4285f74f2d2843c081ba1e9e55017dbc4d951d24f6d066fc751689a584`. Private commands now capture stdout and stderr from startup and release only explicitly shaped scalars. [Earlier signed path-exposure counts](../../lib/benchmark/external-upgrades/curation/status/20261121T023611Z.json) · [Capture control](../../lib/benchmark/external-upgrades/curation/README.md#keep-private-command-output-out-of-session-traces)
 
 The local, user-only checkpoint at `~/.local/state/in-the-loop/custody/external-upgrades/` preserves the sealed references, original evidence and selection ledger across sessions. `CURRENT` names the snapshot and its private `RECOVERY.md` explains how to authenticate and restore it. The custodian verified all 5,967 archived files in the 97 MiB encrypted snapshot with ciphertext SHA-256 `24360ec38cda52db99b41595c0500507a3cbae89a686dfd0ca91c36227d8d98d`.
 
@@ -37,18 +49,6 @@ In a separate public diagnostic, the stock client appended a reminder to an inta
 The client estimate for the 14-request run was **$1.33**. The raw report had summed cumulative native-session totals to $7.24. Taking the final estimate of each native session fixes the reporting error. A separate calculation from all 64 request records in the opening reports, live history qualification and bounded diagnostic matched the individual increments to within $0.000000001. The original seals and token measurements are preserved. A separate reviewer checked all four native-history first reports and agreed that none established a caller result or added an actionable finding beyond CI. [Independent opening grades](../../lib/benchmark/external-upgrades/adjudication/native-openings-independent.json) · [Cost audit](../../lib/benchmark/external-upgrades/adjudication/operator-cost-audit.json)
 
 V0 is the accepted importer and array merge at `e7cdfb6a6edea96c8653ee87a7c1e2ef3f602665`. The five disclosed checks used the same executable, Temurin 21.0.13+9 and word-level Bitwuzla configuration. All 459 protected files verified before and after each public workflow invocation. Supplied observers and replay evidence belong to the calibration results. [Product lock](../../lib/benchmark/external-upgrades/v0.json) · [Selection, blinding and grading rules](../../lib/benchmark/external-upgrades/protocol.md) · [Measured opening costs and matched budgets](../../lib/benchmark/external-upgrades/budget.json)
-
-## What the disclosed clients do
-
-| Client | Independent result | First step V0 could not check |
-|---|---|---|
-| [rxjava-jdbc / H2](../../examples/348-rxjava-jdbc-generated-keys/README.md) | One two-row insert returned `[2]` before and `[1,2]` after. Two separate inserts returned `[1,2]` on both. All four fresh databases held both rows. Three of the 454 original tests failed on the upgrade, all through the same inherited assertion. | Opening the JDBC connection. The H2 POM entry has test scope, which excludes the case from the production cohort. |
-| [Commons Text / Commons Lang](../../examples/349-commons-text-csv-upgrade/README.md) | All 156 short CSV fields returned the exact expected characters on both pins. Removing quote doubling broke 71, including a field consisting of one quote. All 34 original string-escape tests passed on each release. | Artifact intake rejected a legal modified UTF-8 NUL in the original class file before invoking the checker. |
-| [Rocker / ANTLR](../../examples/350-rocker-with-declaration/README.md) | Both builds rejected the trailing comma at line 1, column 18 and accepted the valid declaration. Changing just the runtime reproduced the new diagnostic. Both the generated parser sources and the runtime changed in the original pair. | `WeakHashMap` construction in ANTLR initialization on the runtime-only control. |
-| [AWS SDK / Joda-Time](../../examples/351-aws-joda-instant/README.md) | The protected formatter newly parsed the maximum signed instant. The public SDK still round-tripped both that instant and the ordinary-date companion under both versions. | Constructing `java.util.Date(long)` for the public-method claim. |
-| [Cucumber Reporting / Joda-Time](../../examples/352-cucumber-duration/README.md) | Jackson deserialized 18 durations on each side. All displayed exactly three digits of truncated milliseconds. The six compiled client classes matched their published binaries. | Selecting Jackson's release-specific class in a multi-release JAR. |
-
-The pinned native workflow left all five disclosed claims open. The JDBC, time, initialization and class-file limitations arose at different stages. The next product repair is to be selected from the number of distinct blinded PR decisions it could change. [Per-case runtime, qualification and original first blockers](../../verification/external-upgrade-calibrations.json)
 
 ## CI and CompCheck
 
