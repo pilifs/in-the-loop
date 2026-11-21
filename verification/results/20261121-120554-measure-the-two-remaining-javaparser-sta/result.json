@@ -1,0 +1,423 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-120554-measure-the-two-remaining-javaparser-sta",
+  "title": "Measure the two remaining JavaParser startup boundaries on the corrected revision",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 6.0s, peak 165.6 MiB (estimated 2m00s, 2.0 GiB); 32 output file(s) changed",
+  "attention": [
+    "step 1 (Run the two less constrained JavaParser claims) exited 1, expected 0",
+    "step 1 (Run the two less constrained JavaParser claims) was held back 5.2s by its 1-CPU quota in 6.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-120554-measure-the-two-remaining-javaparser-sta.json",
+    "sha256": "f8b82649af819fbc83cc24620f46ecb6692130a66043f027326cbe575c7f6e71",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-120554-measure-the-two-remaining-javaparser-sta",
+      "title": "Measure the two remaining JavaParser startup boundaries on the corrected revision",
+      "description": "Keep the remaining startup boundaries independently reproducible on the same verifier as the traversal proofs. Recheck the fixed original without assumptions, then the same public call with only the observed LineSeparator state, retaining the first refusal in each ordinary strict run. Replaces the earlier attempt stopped by an incomplete verifier build.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T12:05:54+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "7dc35cf64662150aeaee63ba50f45757639fc067",
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Run the two less constrained JavaParser claims",
+          "run": "python3 lib/benchmark/organic-java/run.py 360 --route native --stage traversal-boundaries --tasks postorder-fix,postorder-fix-observed",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/traversal-boundaries-native"
+      ]
+    }
+  },
+  "sourceCommit": "7dc35cf64662150aeaee63ba50f45757639fc067",
+  "startedAt": "2026-11-21T12:19:04+00:00",
+  "finishedAt": "2026-11-21T12:25:17+00:00",
+  "wallSeconds": 373.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2466630,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 173592576,
+    "wallSeconds": 6.0,
+    "cpuSeconds": 5.8,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the two less constrained JavaParser claims",
+      "run": "python3 lib/benchmark/organic-java/run.py 360 --route native --stage traversal-boundaries --tasks postorder-fix,postorder-fix-observed",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.016,
+      "cpuSeconds": 5.829,
+      "cpuThrottledSeconds": 5.228,
+      "peakMemoryBytes": 173592576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-two-less-constrained-j.log",
+        "lines": 1,
+        "bytes": 505,
+        "sha256": "93e71896848514c9d72dbecec53e35449eb1120be2348b427a6021da05193541",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"360\", \"route\": \"native\", \"stage\": \"traversal-boundaries\", \"workflowExit\": 1, \"seconds\": 5.842, \"checkerSeconds\": 60, \"tasks\": [\"postorder-fix\", \"postorder-fix-observed\"], \"verifierCommit\": \"7dc35cf64662150aeaee63ba50f45757639fc067\", \"checkerSha256\": \"1f2729ac1f473ed27a8efad162839f0f719b"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "86bbc6b35e63e05168ea78022da8d4650673c91d763a07f2f788c894ff20e935",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/plan.json",
+      "change": "added",
+      "bytes": 7668,
+      "sha256": "eb9aa5a1a605f6f25b6d52c2d9b1ada4fc7cd275ed5c2cb42eec073cdb6f6c72",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/controls.json",
+      "change": "added",
+      "bytes": 4309,
+      "sha256": "7717e54fb56ae0382284235d2a6ec0ec966dfe8b070de9f65f2b95ce2b05f86a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/execution.json",
+      "change": "added",
+      "bytes": 34520,
+      "sha256": "00dbc03dc33bc911c97e781e5ae03ba274e8861587543018a4a50a16ef7b6c3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "c3d83214094a1028d9b56a473f13c86515d4bf64e8f4679d67532b6a66700702",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier.json",
+      "change": "added",
+      "bytes": 29521,
+      "sha256": "6e06b58c5c4fc3f357a3e34f31a1bf470ea85f0c2410e95dc389f6b8a0860cf9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6186,
+      "sha256": "571d8317e4b56f16f4558018dd8f7bd06bb3bc13d0705d6755c417e3be3ea83f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/result.json",
+      "change": "added",
+      "bytes": 14817,
+      "sha256": "b0c5ed0ee945f8d7f8a9bdc3fa9aded34a9a4dc5a01213c1057ae97500bc3545",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/executions/20261121T122511Z-2d7bbef5/attempt.json",
+      "change": "added",
+      "bytes": 25735,
+      "sha256": "05d0900292c91e851921d90d47cc3ccb26afb78bcaeea4ed49b76c962b13e824",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/executions/20261121T122511Z-2d7bbef5/checker.json",
+      "change": "added",
+      "bytes": 7503,
+      "sha256": "4a9a91a7d3ed7812f3efc4c6b705ee3a3240f5d4d9188552c707cd37bdf6ed72",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/executions/20261121T122511Z-2d7bbef5/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "319631f5ad1cfe58c472e73f7c37f8af60313753c57731dcc82a786a0c8fe289",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/plan.json",
+      "change": "added",
+      "bytes": 8053,
+      "sha256": "af71f395cbe2c63dfbeb7c2cf06e8554832410445a687ca6d85860b4d0cb4e7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/controls.json",
+      "change": "added",
+      "bytes": 4327,
+      "sha256": "df6d260f1fb56906a330fd17ff339772c59e956be001847a906a6b84fcd69182",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/execution.json",
+      "change": "added",
+      "bytes": 37160,
+      "sha256": "576e88c30385627edcb89c424781ce8ba74e7267de98a9ca032bf04e9fe76ea2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "e41a1e935b82ec7044544cd316c1a0764e1c22a6919f113c5caf7d9e314097ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "3a069906bfcf7c316d965d908077cd07c35091f5f93e44a7416220c3649c0458",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier.json",
+      "change": "added",
+      "bytes": 32135,
+      "sha256": "e75e1a0e853299b944815b84afa8c5b5db3e0daf22650480c0a9ff26397e6e2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8129,
+      "sha256": "ec60dd00f28b56698b2572813fe4f67dd8bba9b4b942304e091839bd15e5583d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/result.json",
+      "change": "added",
+      "bytes": 16992,
+      "sha256": "13bac0f6ef50fab364ed7f8ab89550bffeffb94634b44c79c1963cf1d99914fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/executions/20261121T122514Z-806410a3/attempt.json",
+      "change": "added",
+      "bytes": 26444,
+      "sha256": "ba2b4443c74fe7c5f905a71167effe5915ac5532864e4105044c3ff4c9fe12e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/executions/20261121T122514Z-806410a3/checker.json",
+      "change": "added",
+      "bytes": 9543,
+      "sha256": "94dd1daafda0c08f7ca0b74ab1de4bae527b8450afb8dc09ab7b04e36616a047",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/executions/20261121T122514Z-806410a3/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/run.json",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "9a077e3fdd840d1b261f342ab2f08424a5a187de1e529736593f7c5bbc7d00b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/workflow.log",
+      "change": "added",
+      "bytes": 523,
+      "sha256": "981278e5671f71e9a7cb4a916753741a63e4581cde889ecec05b8479f5244592",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T12:26:47+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/completion.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/plan.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/20261121T122511Z-2d7bbef5/result.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/executions/20261121T122511Z-2d7bbef5/attempt.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/executions/20261121T122511Z-2d7bbef5/checker.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix/executions/20261121T122511Z-2d7bbef5/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/completion.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/plan.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/20261121T122514Z-806410a3/result.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/executions/20261121T122514Z-806410a3/attempt.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/executions/20261121T122514Z-806410a3/checker.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/postorder-fix-observed/executions/20261121T122514Z-806410a3/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/run.json",
+      "examples/360-javaparser-postorder-root/records/traversal-boundaries-native/workflow.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "71bb18fc207bfb71de138f12cd33e37667149be5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/71bb18fc207bfb71de138f12cd33e37667149be5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

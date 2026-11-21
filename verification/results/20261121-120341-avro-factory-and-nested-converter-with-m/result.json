@@ -1,0 +1,459 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-120341-avro-factory-and-nested-converter-with-m",
+  "title": "Avro factory and nested converter with measured process settings",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 19.6s, peak 464.0 MiB (estimated 3m00s, 3.0 GiB); 32 output file(s) changed",
+  "attention": [
+    "step 1 (Run the fixed original Avro factory and converter) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-120341-avro-factory-and-nested-converter-with-m.json",
+    "sha256": "5b8d9e662894face6b569ae59f96f1869b13caf74b3782c44cddc621fe28405d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-120341-avro-factory-and-nested-converter-with-m",
+      "title": "Avro factory and nested converter with measured process settings",
+      "description": "Recheck the fixed original factory and direct nested converter over all 21 capacity/logical-length pairs on their original 124-entry closure. Bind both observer and comparison JVMs to two processors and run the Hadoop factory observer with an empty environment. Preserve the next refusal if startup writes another class or needs other external settings.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T12:03:41+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Run the fixed original Avro factory and converter",
+          "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage observed-process --tasks bounds-fix-process-startup,direct-limit-fix-process-startup",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/observed-process-native"
+      ]
+    }
+  },
+  "sourceCommit": "3a462fddbcbc6a8b478d015ec360de714caacdbe",
+  "startedAt": "2026-11-21T12:19:04+00:00",
+  "finishedAt": "2026-11-21T12:25:30+00:00",
+  "wallSeconds": 386.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2466630,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 486510592,
+    "wallSeconds": 19.6,
+    "cpuSeconds": 26.5,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 182.44,
+      "cpuSeconds": 182.847,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2178174976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "e0f1fcff8d777514cb61a3cfe1a77e66c59a597bf36ec1a63e21213651a99259",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-120341-avro-factory-and-nested-converter-with-m/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 02s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run the fixed original Avro factory and converter",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage observed-process --tasks bounds-fix-process-startup,direct-limit-fix-process-startup",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 19.642,
+      "cpuSeconds": 26.506,
+      "cpuThrottledSeconds": 2.039,
+      "peakMemoryBytes": 486510592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-fixed-original-avro-fa.log",
+        "lines": 1,
+        "bytes": 525,
+        "sha256": "edb611888fd878748b12d3ea2d2703bae9881b33de01e652af6c69f28586be25",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"native\", \"stage\": \"observed-process\", \"workflowExit\": 1, \"seconds\": 19.444, \"checkerSeconds\": 60, \"tasks\": [\"bounds-fix-process-startup\", \"direct-limit-fix-process-startup\"], \"verifierCommit\": \"3a462fddbcbc6a8b478d015ec360de714caacdbe\", \"checkerSha256\": \"a858444b5947c0ec"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "10b01765ee18dc67a1eeb0ab1e64d49ba0b3a0f0e8d324feda80aba4499a3708",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/plan.json",
+      "change": "added",
+      "bytes": 9483,
+      "sha256": "da7d8782324271b77e857d6aa72c733930435a171b6d42505cf351b9b5d66866",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 727,
+      "sha256": "c1ed0503393b70c342c5e2b0d597b35dc438fabca547de2ab2a964e71cd675b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/controls.json",
+      "change": "added",
+      "bytes": 61884,
+      "sha256": "d606208aebc065b47272e0c3cd0c13b0e53f134bfd0d8cbaf89fed44e000d3c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/execution.json",
+      "change": "added",
+      "bytes": 371181,
+      "sha256": "27ef3b52c350fb0117932a81ddf34c9e89e8c396cee143dbfd1a30f6cd452b47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "0cc27e746749517556e78f0d3d6ffa00e61a34134521a88cd2d944b72166ffab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier.json",
+      "change": "added",
+      "bytes": 298766,
+      "sha256": "95eac8ecad94d29235120c8c62309d4d4f370cefe375bb8cda54f6ed51dd935c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier.stderr",
+      "change": "added",
+      "bytes": 181,
+      "sha256": "6afcb56a3ea687f844c9a7d4f1419bcd0121f76b95f30e09ed589542bcf97d1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/result.json",
+      "change": "added",
+      "bytes": 56863,
+      "sha256": "3f953f1bb20c31ef2740e7dd68f4de2b5bd59d3103baffb3a12cc01b51cfb2fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/executions/20261121T122511Z-2a14f226/attempt.json",
+      "change": "added",
+      "bytes": 348053,
+      "sha256": "d8e952fce43964293c8dba3a96656e1e8475aa3c3820092f537ce3b29a65164a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/executions/20261121T122511Z-2a14f226/checker.json",
+      "change": "added",
+      "bytes": 15647,
+      "sha256": "633ce05f3c2736cfc39e43dc7633994eb87fcc86cba32c3a57a34341c07f9679",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/executions/20261121T122511Z-2a14f226/correspondence.json",
+      "change": "added",
+      "bytes": 7447,
+      "sha256": "59558d95d9e4d691dccf312e416fa5576f4e4304d0c45c2bf2bb9fa2049cc1ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7db7d564f965236a0c6e4e1758321015e3c6d17303e3289932bf5389a529da2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/plan.json",
+      "change": "added",
+      "bytes": 9523,
+      "sha256": "84c9d439d0b0f482808354fef63d3d9672604974cd78eb89abdf6763af30ebdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 733,
+      "sha256": "c779d82429f3246baaa344396093537c278219c68ff25b795430dd3dc093df23",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/controls.json",
+      "change": "added",
+      "bytes": 61902,
+      "sha256": "82c1081dfb17c8557b4117aba334c7ed29e85306b29e3dbb84e66e613628f1de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/execution.json",
+      "change": "added",
+      "bytes": 137766,
+      "sha256": "9807daf9e5fa17bb82d06cfe592019d07728b446fd85276388c913bf7591dd72",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "6cd9f27b8563914e2501983039da0dbf0ec212ff5fa2c4e0748308eaa7500ac7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier.json",
+      "change": "added",
+      "bytes": 73935,
+      "sha256": "d82c247c5a62d73193e74489d73a51ed46cd3878bd8eb46c0a14808ae9f66a3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 546,
+      "sha256": "cedbe570efc9f7b1ba5196d4779305cd3b0c43bf47762146ea7aa967ade0c435",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/result.json",
+      "change": "added",
+      "bytes": 56854,
+      "sha256": "123e1c378177abe74ea36a321617645704c38e7e2e2a1035bdfbac58a7c9635a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/executions/20261121T122522Z-aa73eef0/attempt.json",
+      "change": "added",
+      "bytes": 131805,
+      "sha256": "226e3719acefbe9f8b52a0f92eb22405be9527b2304971002cd7c03124245d1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/executions/20261121T122522Z-aa73eef0/checker.json",
+      "change": "added",
+      "bytes": 15977,
+      "sha256": "032631f7ac3def808a38e1eafe4f06c7b8c47bee0b50018aa87a0efaa1b676c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/executions/20261121T122522Z-aa73eef0/correspondence.json",
+      "change": "added",
+      "bytes": 7470,
+      "sha256": "d630a9530fe4b5a4aa3004ff0f852c1aeaf280a88049bb083f3540061000d3a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/run.json",
+      "change": "added",
+      "bytes": 571,
+      "sha256": "49c1415381b64412c785fdad8d35c337551139330a2d5bbf355764cfc323dd9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/observed-process-native/workflow.log",
+      "change": "added",
+      "bytes": 586,
+      "sha256": "d91aaf22f9e81006ca6199c4ab8ea8654437f09195d6c57a5f23a6bf8258c491",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T12:26:47+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/20261121T122511Z-2a14f226/result.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/executions/20261121T122511Z-2a14f226/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/executions/20261121T122511Z-2a14f226/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/bounds-fix-process-startup/executions/20261121T122511Z-2a14f226/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/20261121T122522Z-aa73eef0/result.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/executions/20261121T122522Z-aa73eef0/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/executions/20261121T122522Z-aa73eef0/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/direct-limit-fix-process-startup/executions/20261121T122522Z-aa73eef0/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/run.json",
+      "examples/355-avro-writable-buffer-limit/records/observed-process-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1725106,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "18435d1f9282f60672e6ac4252c4ce362142296d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/18435d1f9282f60672e6ac4252c4ce362142296d/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}
