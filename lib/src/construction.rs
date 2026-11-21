@@ -677,7 +677,7 @@ pub(crate) fn side_effect(cp: &crate::classpath::ClassPath, class: &str, name: &
 /// so in turn, and dependencies of application interfaces passed null, observed by its fields after the call. Asked
 /// where a regression or property check meets an instance method of a class that is not a record of primitive
 /// components. A class outside that is refused by name: a constructor argument not made yet (a String) says so,
-/// and what no plan of this wave makes (several constructors without a choice, a superclass, a cycle) is a boundary
+/// and what no plan of this wave makes (several constructors without a choice, an unbound superclass, a cycle) is a boundary
 /// of its own.
 pub fn receiver(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::harness::RecordType, Unsupported> {
     receiver_in(cp, class, false)

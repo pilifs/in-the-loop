@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T23:56:34.893Z",
-  "duration_seconds": 181145,
+  "ended": "2026-11-22T00:08:26.089Z",
+  "duration_seconds": 181856,
   "stats": {
     "turns": 25,
-    "api_calls": 7545,
-    "tool_calls": 18900,
-    "tool_errors": 566,
+    "api_calls": 7600,
+    "tool_calls": 19023,
+    "tool_errors": 570,
     "compactions": 25,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 13082424,
-      "output_tokens": 4025156,
-      "cache_read_input_tokens": 2296790528,
+      "input_tokens": 13140687,
+      "output_tokens": 4050304,
+      "cache_read_input_tokens": 2316471808,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 10836,
-    "exec": 7003,
-    "apply_patch": 703,
+    "Bash": 10902,
+    "exec": 7058,
+    "apply_patch": 705,
     "send_message": 148,
     "wait": 83,
     "sleep": 82,
@@ -218,6 +218,7 @@
     "lib/src/interp/mod.rs",
     "lib/src/interp/natives.rs",
     "lib/src/interp/value.rs",
+    "lib/src/jvm_witness.rs",
     "lib/src/models.rs",
     "lib/src/observed.rs",
     "lib/src/observed/ObservedInitializer.java",
@@ -711,24 +712,24 @@
     {
       "index": 25,
       "started": "2026-11-21T16:41:23.003Z",
-      "ended": "2026-11-21T23:56:34.893Z",
+      "ended": "2026-11-22T00:08:26.089Z",
       "turns": 2,
-      "api_calls": 141,
+      "api_calls": 196,
       "usage": {
-        "input_tokens": 369297,
-        "output_tokens": 93583,
-        "cache_read_input_tokens": 30148608,
+        "input_tokens": 427560,
+        "output_tokens": 118731,
+        "cache_read_input_tokens": 49829888,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 330549
+      "peak_context_tokens": 385106
     }
   ],
   "log": {
-    "sha256": "12d48dbf67f9f46fd18a6b2c23a297f36e62e4573771f9a4d82136a80eb3850b",
-    "bytes": 173609422,
-    "lines": 59571,
-    "gzip_bytes": 69129362,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/12d48dbf67f9f46fd18a6b2c23a297f36e62e4573771f9a4d82136a80eb3850b.jsonl.gz"
+    "sha256": "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107",
+    "bytes": 174697103,
+    "lines": 59981,
+    "gzip_bytes": 69561448,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3309,20 +3310,28 @@
       "log_sha256": "142623adec2ef066cfd69e4ae973297bf97e09fd11be06f476938d2cce0f82a4"
     },
     {
-      "change_id": "qsknloukkvqkyklmllxyornzsxozpzwt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "12d48dbf67f9f46fd18a6b2c23a297f36e62e4573771f9a4d82136a80eb3850b"
-    },
-    {
       "change_id": "vmvtypuyykqkmmqukqmwmylxwsyyznqz",
       "commit_id": null,
       "immutable": false,
       "summary": "Rebuild the original receiver classpaths (verification pending)",
       "body": "All 32 original source pairs were recovered across 28 repositories. Hash-checked the collector receipt and all selected caller blobs. Reuse the historical build phase and dependency scopes for the 18 complete-module callers, with the shared serial Maven cache. The remaining 14 use their original source slice recipes. The seven groups have disjoint case sets and all job files validated.\n\nJobs 20261121-235615-rebuild-receiver-cohort-group-01-on-its through 20261121-235615-rebuild-receiver-cohort-group-07-on-its reproduce the original complete-module operands before the native receiver rescore.",
       "log_sha256": "12d48dbf67f9f46fd18a6b2c23a297f36e62e4573771f9a4d82136a80eb3850b"
+    },
+    {
+      "change_id": "ymuxosvrmmluotowvrzlzxnuzlrsqrpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107"
+    },
+    {
+      "change_id": "nruuunkupqkqkrylqvrwqmomstsqlqzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Construct bounded receivers through application superclasses (verification pending)",
+      "body": "Construct the actual concrete receiver, run its original superconstructor chain and observe inherited fields by the JVM field lookup. Refuse a hidden or ambiguous field, an unavailable superclass and a constructor with an external static effect. The JVM witness harness now includes the declaring owner of an inherited field read. A private parent field mutation thereby reproduces on the JVM with the same virtual dispatch during construction.\n\nAll 23 object construction tests passed, including wrong inherited state, constructor failure, hidden fields and the external registration control. The changed suite passed all four groups and the cost inventory lint passed. All 36 original complete-module preparations returned artifacts ready. Jobs 20261122-000446-rescore-receiver-group-01-with-inherited through 20261122-000447-rescore-receiver-group-07-with-inherited recheck all 32 pairs and repeat the six preselected real caller paths.",
+      "log_sha256": "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107"
     }
   ],
   "logs": {
@@ -3672,6 +3681,12 @@
       "bytes": 171540758,
       "lines": 58967,
       "gzip_bytes": 68351010,
+      "url": null
+    },
+    "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107": {
+      "bytes": 174697103,
+      "lines": 59981,
+      "gzip_bytes": 69561448,
       "url": null
     },
     "56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56": {
