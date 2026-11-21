@@ -417,6 +417,8 @@ class Sync(unittest.TestCase):
                     mock.patch.object(sync, "process", side_effect=fake), \
                     mock.patch.object(sync, "write_index") as index, \
                     mock.patch.object(sync, "refresh_metrics", return_value=0) as elsewhere, \
+                    mock.patch.object(sync, "render_elsewhere", return_value=0), \
+                    mock.patch.object(sync, "bound_metrics", return_value=0) as bound, \
                     mock.patch.object(sync, "commit_index", return_value=None), \
                     mock.patch.object(sync, "repo_web_url", return_value=None), \
                     mock.patch.object(sync, "Redactor", return_value=mock.Mock(fingerprint=lambda: "f")), \
@@ -427,6 +429,7 @@ class Sync(unittest.TestCase):
                 sync.cmd_sync([])
         index.assert_called_once_with()
         self.assertEqual(elsewhere.call_args.args[0], {"a", "b", "c"})  # the transcripts here are processed instead
+        bound.assert_called_once_with()  # and a file still holding its per-call tables is rewritten at this rendering
 
     def test_the_exporter_stops_at_the_first_failure(self):
         # Langfuse configured and no transcript on this machine, whatever this machine has: the stored log is sent.
@@ -892,6 +895,57 @@ class Checks(unittest.TestCase):
             sync.metrics_path("s1").write_text("kept\n")
             self.assertEqual(sync.refresh_metrics(set(), self.r, redactor.LocalCache(None, "a third")), 0)
             self.assertEqual(sync.metrics_path("s1").read_text(), "kept\n")
+
+    def test_a_file_that_holds_its_per_call_tables_is_rewritten_without_them_and_the_rows_are_built_again(self):
+        import metrics
+        from test_metrics import at, prompt, reply, usage
+        entries = [prompt(at(0), "go"), reply(at(0, 1), "a", usage(output=10)), reply(at(0, 5), "b", usage(read=700, output=20))]
+        data = "".join(json.dumps(e) + "\n" for e in entries).encode()
+        sha = sync.store_log("s1", data)["sha256"]
+        m = {"schema": sync.SCHEMA, "session_id": "s1", "log": {"sha256": sha}, "subagents": [], "commits": [], "logs": {sha: {}}}
+        whole = sync.whole_metrics("s1", m, sync.log_entries(data), self.r)
+        m["stats"] = {"usage": {"input_tokens": whole["totals"]["input_tokens"], "output_tokens": whole["totals"]["output_tokens"],
+                                "cache_read_input_tokens": whole["totals"]["cache_read_tokens"],
+                                "cache_creation_input_tokens": whole["totals"]["cache_write_tokens"]}}
+        sync.manifest_path("s1").write_text(json.dumps(m))
+        sync.metrics_path("s1").write_text(metrics.dumps(whole))  # as every session's file was until 2026-11-21
+        problems = lambda rendered: sync.metrics_problems("s1", m, data, self.r, rendered=rendered)[0]
+        self.assertEqual(problems(False), [])                     # between two renderings it is read as it is
+        self.assertIn("s1: metrics.json still holds its per-call tables (run sync)", problems(True))
+        with mock.patch("sys.stdout", io.StringIO()):
+            self.assertEqual((sync.bound_metrics(), sync.bound_metrics()), (1, 0))  # no log is read for it
+        self.assertEqual(sync.metrics_path("s1").read_text(), sync.session_metrics("s1", m, sync.log_entries(data), self.r))
+        self.assertEqual(problems(True), [])
+        file = json.loads(sync.metrics_path("s1").read_text())
+        self.assertEqual((file["schema"], file["events"]["calls"], "calls" in file), (metrics.SCHEMA, 2, False))
+
+        def events(*args):
+            with mock.patch.object(sync, "Redactor", return_value=self.r), mock.patch("sys.stdout", io.StringIO()) as out, \
+                    mock.patch("sys.stderr", out):
+                return sync.cmd_events(["s1", *args]), out.getvalue()
+        rows = Path(self.tmp.name) / "rows.json"
+        code, said = events("--to", str(rows))
+        self.assertEqual((code, "the text metrics.json names" in said, "NOT" in said), (0, True, False))
+        self.assertEqual(hashlib.sha256(rows.read_bytes()).hexdigest(), file["events"]["sha256"])
+        self.assertEqual(json.loads(rows.read_text())["calls"], whole["calls"])
+        stored = sync.log_path("s1", sha).read_bytes()            # the log is not here: nothing to build from, said so
+        sync.log_path("s1", sha).unlink()
+        code, said = events()
+        self.assertEqual((code, "has no public URL yet" in said), (1, True))
+        m["logs"][sha]["url"] = "https://made-up.example/raw-traces/s1/log.jsonl.gz"  # published: read there, and checked
+        sync.manifest_path("s1").write_text(json.dumps(m))
+        with mock.patch.object(sync, "fetch_log", return_value=data) as fetched:
+            self.assertEqual(events()[0], 0)
+        self.assertEqual(fetched.call_args[0], (m["logs"][sha]["url"],))
+        with mock.patch.object(sync, "fetch_log", return_value=data + b"{}\n"):
+            code, said = events()
+        self.assertEqual((code, "is not the content its name says" in said), (1, True))
+        sync.log_path("s1", sha).write_bytes(stored)
+        sync.PRICING.write_text(json.dumps({"models": {"m-a": {"input": 10, "output": 50, "cache_read": 1, "cache_write_5m": 12.5,
+                                                               "cache_write_1h": 20}}}))  # another price list: other rows
+        code, said = events()
+        self.assertEqual((code, "NOT the text metrics.json names" in said), (1, True))
+        self.assertEqual(events("--to")[0], 2)
 
     def test_metrics_are_compared_again_when_an_input_changes(self):
         m, shas = self.session()

@@ -37,7 +37,8 @@ llm-dlc/
   traces/<session-id>/
     summary.md                      what was asked, what was done, what was committed (generated)
     manifest.json                   detailed metadata: stats, models, tokens, commits, logs (generated)
-    metrics.json                    every prompt, model call and tool call as tables, with costs and causes (generated)
+    metrics.json                    every prompt, commit and context window as tables, with costs and causes (generated);
+                                    the rows for single model and tool calls: python3 llm-dlc/tools/sync.py events SESSION
     runs/<record>.md                each feature-loop.sh run the session worked in: its record, redacted (generated)
     logs/<sha256>.jsonl.gz          redacted transcript snapshots (gitignored, published on the CDN)
   tools/sync.py                     the hook and commands that capture, redact, publish and check traces;

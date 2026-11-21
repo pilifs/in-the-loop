@@ -9,14 +9,18 @@ Standard library only.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from bisect import bisect_left, bisect_right
 from datetime import datetime
 from typing import Callable, Iterable
 
-SCHEMA = "llm-trace-metrics/v1"
-ROLLUP_SCHEMA = "llm-trace-metrics-rollup/v1"
+SCHEMA = "llm-trace-metrics/v2"           # a session's file: bounded() of the whole document
+WHOLE_SCHEMA = "llm-trace-metrics/v1"     # the whole document, as session() builds it and as the files were until 2026-11-21
+EVENTS_SCHEMA = "llm-trace-metrics-events/v1"
+EVENT_TABLES = ("calls", "tools")         # one row for each model call and each tool call: what a session's file leaves out
+ROLLUP_SCHEMA = "llm-trace-metrics-rollup/v2"
 PRICING_SCHEMA = "llm-trace-pricing/v1"
 
 TEXT_LIMIT = 200                  # free text is a label for a chart; the log has the rest
@@ -400,7 +404,8 @@ def _reported(found: tuple[int, dict] | None, calls: list[dict]) -> dict | None:
 
 def session(manifest: dict, entries: list[dict], subagents: list[tuple[str, list[dict]]], pricing: dict,
             clean: Clean) -> dict:
-    """Everything known about one session. `subagents` is (agent id, entries) for each subagent log."""
+    """Everything known about one session, with a row for every model call and tool call (the whole document).
+    `subagents` is (agent id, entries) for each subagent log. What is kept in Git is `bounded` of this."""
     main = read_transcript(entries, None, clean)
     prompts, compactions = main["prompts"], main["compactions"]
     streams = [main["calls"]]
@@ -451,7 +456,7 @@ def session(manifest: dict, entries: list[dict], subagents: list[tuple[str, list
     stamps = main["stamps"]
     agent_ms = sum(p["agent_ms"] for p in prompts)
     return {
-        "schema": SCHEMA,
+        "schema": WHOLE_SCHEMA,
         "session_id": manifest.get("session_id"),
         "source": {"log_sha256": (manifest.get("log") or {}).get("sha256"), "log_lines": len(entries),
                    "redaction_policy": manifest.get("redaction_policy")},
@@ -484,20 +489,83 @@ def session(manifest: dict, entries: list[dict], subagents: list[tuple[str, list
     }
 
 
+# --------------------------------------------------------------------------- what a session's file holds
+
+def events(doc: dict) -> str:
+    """The per-call tables of a whole document, as the text their digest is taken over. A session's file names
+    this text by its SHA-256 and does not hold it: it is a function of the same inputs as the file, so anyone with
+    the session's log (which is published) and this revision of the repository builds it again, byte for byte."""
+    return dumps({"schema": EVENTS_SCHEMA, "session_id": doc["session_id"], "source": doc["source"],
+                  "pricing_as_of": doc["pricing_as_of"], **{table: doc[table] for table in EVENT_TABLES}})
+
+
+def bounded(doc: dict) -> dict:
+    """A session's file, from the whole document: everything but the two per-call tables, which grow with every
+    model call (a two-day session's came to 9 MB of its 9.8). In their place are what the readers of those rows
+    took from them, so that the files over all sessions are still a function of the session files alone: the
+    calls by day, and for each prompt its peak context, its efforts and its spend by model; and `events`, the
+    tables' row counts and the digest of their text (`events`). A document that is already one is returned as it is."""
+    if doc.get("schema") != WHOLE_SCHEMA:
+        return doc
+    calls = doc["calls"]
+    days: dict[str, list[dict]] = {}
+    own: dict = {}
+    for c in calls:
+        days.setdefault(c["start"][:10], []).append(c)
+        own.setdefault(c["prompt"], []).append(c)
+    prompts = []
+    for p in doc["prompts"]:
+        mine = own.get(p["index"], [])
+        spend: dict = {}
+        for c in mine:
+            row = spend.setdefault(c["model"], {"model": c["model"], "api_calls": 0, "usd": 0.0})
+            row["api_calls"], row["usd"] = row["api_calls"] + 1, row["usd"] + (c["usd"] or 0)
+        prompts.append({**p, "peak_context_tokens": max((c["context_tokens"] or 0 for c in mine if c["agent"] is None), default=0),
+                        "efforts": sorted({c["effort"] for c in mine if c["effort"]}),
+                        "by_model": [{**row, "usd": round(row["usd"], 6)} for row in spend.values()]})
+    text = events(doc).encode()
+    out = {}
+    for key, value in doc.items():
+        if key == "schema":
+            out[key] = SCHEMA
+        elif key == "prompts":
+            out[key] = prompts
+        elif key == EVENT_TABLES[0]:
+            out["events"] = {"schema": EVENTS_SCHEMA, **{table: len(doc[table]) for table in EVENT_TABLES},
+                             "bytes": len(text), "sha256": hashlib.sha256(text).hexdigest()}
+        elif key not in EVENT_TABLES:
+            out[key] = value
+        if key == "by_cache_cause":
+            out["by_day"] = [{"date": day, **tally(rows)} for day, rows in sorted(days.items())]
+    return out
+
+
+def _tools_added(rows: list[dict], key: str) -> list[dict]:
+    """Sessions' tool rows added up. A median over all sessions cannot be had from each session's median, so the
+    row has none: each session's file has its own."""
+    groups: dict = {}
+    for r in rows:
+        groups.setdefault(r[key], []).append(r)
+    added = [{key: name, **{k: sum(r[k] for r in rs) for k in ("calls", "errors", "no_result", "total_ms")},
+              "max_ms": max((r["max_ms"] for r in rs if r["max_ms"] is not None), default=None),
+              "result_chars": sum(r["result_chars"] for r in rs)} for name, rs in groups.items()]
+    return sorted(added, key=lambda r: (-r["calls"], str(r[key])))
+
+
 # --------------------------------------------------------------------------- all sessions
 
 def rollup(sessions: list[tuple[dict, dict]], pricing: dict) -> dict:
     """All sessions added up. `sessions` is (manifest, metrics) in the order to list them. It reads
-    only those, so a sync rewrites it identically."""
-    sessions = [(m, s) for m, s in sessions if s["totals"]["api_calls"]]
-    calls = [c for _, s in sessions for c in s["calls"]]
-    tools = [t for _, s in sessions for t in s["tools"]]
+    only those, so a sync rewrites it identically. A sum here is the sum of the sessions' own figures, each
+    rounded where its file rounds it."""
+    sessions = [(m, bounded(s)) for m, s in sessions if s["totals"]["api_calls"]]
     prompts = [p for _, s in sessions for p in s["prompts"]]
     events = [e for _, s in sessions for e in s["cache_events"]]
 
     days: dict[str, list[dict]] = {}
-    for c in calls:
-        days.setdefault(c["start"][:10], []).append(c)
+    for _, s in sessions:
+        for d in s["by_day"]:
+            days.setdefault(d["date"], []).append(d)
     by_day = [{"date": day, "prompts": sum(p["kind"] == "human" and p["ts"][:10] == day for p in prompts),
                "agent_ms": sum(p["agent_ms"] for p in prompts if p["ts"][:10] == day), **tally(rows)}
               for day, rows in sorted(days.items())]
@@ -522,16 +590,16 @@ def rollup(sessions: list[tuple[dict, dict]], pricing: dict) -> dict:
         "pricing_as_of": pricing.get("as_of"),
         "totals": {"sessions": len(sessions), "prompts": sum(p["kind"] == "human" for p in prompts),
                    "commits": len(commits), "compactions": sum(s["totals"]["compactions"] for _, s in sessions),
-                   "tool_errors": sum(t["status"] == "error" for t in tools),
+                   "tool_errors": sum(s["totals"]["tool_errors"] for _, s in sessions),
                    "reported_usd": round(sum(r["usd"] for r in reported), 6),
                    "unattributed_usd": round(sum(r["unattributed_usd"] for r in reported), 6),
-                   **tally(calls)},
+                   **tally(s["totals"] for _, s in sessions)},
         "time": {k: sum(s["time"][k] for _, s in sessions) for k in
                  ("elapsed_ms", "agent_ms", "model_ms", "tool_ms", "busy_ms", "compaction_ms", "paused_ms")},
-        "by_model": _grouped(calls, "model"),
-        "by_effort": _grouped(calls, "effort"),
-        "by_tool": _tool_stats(tools, "name"),
-        "by_bash_family": _tool_stats(tools, "family"),
+        "by_model": _grouped([r for _, s in sessions for r in s["by_model"]], "model"),
+        "by_effort": _grouped([r for _, s in sessions for r in s["by_effort"]], "effort"),
+        "by_tool": _tools_added([r for _, s in sessions for r in s["by_tool"]], "name"),
+        "by_bash_family": _tools_added([r for _, s in sessions for r in s["by_bash_family"]], "family"),
         "by_cache_cause": _cache_stats(events),
         "by_day": by_day,
         "sessions": [{"session_id": m["session_id"], "title": m.get("title"), "started": m.get("started"),

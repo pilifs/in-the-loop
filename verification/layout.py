@@ -20,6 +20,13 @@ One id in both layouts: when the two copies are the same bytes the flat one is u
 the flat one is still what readers get, and `conflicts` reports the id, since two records of one job cannot both
 be right.
 
+A result's `result.json` is a receipt, and is held to a size (`heavy_receipts`, which `sync.py check` reports as
+warnings): it lists every output file with its digest, and six results of November 2026 listed 3,000 to 5,900 files
+each, 1.5 to 2.9 MB a receipt, because their jobs wrote two files a case. Those jobs' producer packs its cases now
+(`examples/tools/targets/case_pack.py`); the list itself is left whole, since the readers that verify kept
+outputs against it (`accept.py`, `claim_history.py`) need every row. The complete inventory of what a job wrote
+is in the private archive in any case (`python3 llm-dlc/tools/artifacts.py list --job ID`).
+
 `WRITE` says where a *new* job goes. It is "flat" until the readers that are not in this repository's tools have
 been checked against shards; `VERIFY_LAYOUT=shards` (or `flat`) overrides it for one command.
 
@@ -27,6 +34,7 @@ Standard library only.
 """
 from __future__ import annotations
 
+import json
 import os
 import re
 from pathlib import Path
@@ -35,6 +43,8 @@ JOBS = "verification/jobs"
 RESULTS = "verification/results"
 WRITE = "flat"
 UNDATED = "undated"
+RECEIPT_BYTES = 256 << 10     # a result.json over this is reported: a job that writes many small files packs them
+RECEIPT_RULE_FROM = "20261122"  # the UTC day the rule starts with: earlier results stay as they were collected
 _DAY = re.compile(r"^(\d{4})(\d{2})(\d{2})(?=-)")
 _SHARD = r"(?:(\d{4}/\d{2}/\d{2}|" + UNDATED + r")/)?"
 _JOB = re.compile(rf"^{JOBS}/{_SHARD}([^/]+)\.json$")
@@ -173,3 +183,24 @@ def conflicts(root: Path) -> list[str]:
                 problems.append(f"result {path.name}: {result_rel(path.name)} and {result_rel(path.name, 'shards')} differ; "
                                 "readers use the flat one")
     return problems
+
+
+def heavy_receipts(root: Path) -> list[str]:
+    """One line for each result submitted since RECEIPT_RULE_FROM whose result.json is over RECEIPT_BYTES, saying
+    what makes it so when that is the list of output files."""
+    found = []
+    for job_id, folder in results(root).items():
+        day = _DAY.match(job_id)
+        if not day or "".join(day.groups()) < RECEIPT_RULE_FROM:
+            continue
+        size = (folder / "result.json").stat().st_size
+        if size <= RECEIPT_BYTES:
+            continue
+        try:
+            listed = len(json.loads((folder / "result.json").read_text()).get("outputs") or [])
+        except (OSError, ValueError):
+            listed = 0
+        found.append(f"verification result {job_id}: result.json is {size:,} bytes (over {RECEIPT_BYTES:,})"
+                     + (f", listing {listed:,} output files: a job that writes many small files keeps them as one pack "
+                        f"(examples/tools/targets/case_pack.py)" if listed > 200 else ""))
+    return found

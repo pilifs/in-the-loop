@@ -110,6 +110,23 @@ class Tree(unittest.TestCase):
         self.assertIn(f"result {NEW}:", problems[1])
         self.assertEqual(layout.find_job(self.root, NEW), flat)  # still one answer, the same one every time
 
+    def test_a_new_result_whose_receipt_lists_thousands_of_files_is_reported_and_an_older_one_is_not(self):
+        import json
+        many = json.dumps({"outputs": [{"path": f"examples/901-made-up/records/cases/p{i}/native.json", "sha256": "0" * 64}
+                                       for i in range(3000)]})
+        self.assertGreater(len(many), layout.RECEIPT_BYTES)
+        self.result(NEW, text=many)                                             # collected before the rule: left alone
+        self.result("20261122-000001-a-small-made-up-job", text='{"outputs": []}')
+        self.assertEqual(layout.heavy_receipts(self.root), [])
+        self.result("20261122-000002-a-made-up-job-of-loose-cases", "shards", text=many)
+        self.result("20261203-000003-a-made-up-job-with-a-long-text", text=json.dumps({"summary": "x" * layout.RECEIPT_BYTES}))
+        self.result(ODD, "shards", text=many)                                   # no day in its id: no rule to hold it to
+        first, second = layout.heavy_receipts(self.root)
+        self.assertEqual(first, f"verification result 20261122-000002-a-made-up-job-of-loose-cases: result.json is {len(many):,} bytes "
+                                f"(over 262,144), listing 3,000 output files: a job that writes many small files keeps them as one "
+                                f"pack (examples/tools/targets/case_pack.py)")
+        self.assertRegex(second, r"^verification result 20261203-000003-a-made-up-job-with-a-long-text: result.json is [\d,]+ bytes \(over 262,144\)$")
+
 
 if __name__ == "__main__":
     unittest.main()

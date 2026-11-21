@@ -12,8 +12,10 @@
   python3 llm-dlc/tools/vm_inventory.py protect [--only WHAT ...] [--dry-run]
       Seal into the private archive (artifacts.py) what exists only on this machine: the runner's run directories
       (whole logs, outputs, whole diffs) and kept work directories, in every workspace; the loops' private run
-      records; the project's source transcripts, Claude Code's and Codex's, as append-only streams; and the
-      example records of the runs named in RECORD_RUNS. WHAT: runs, workdirs, run-records, transcripts, records.
+      records; the project's source transcripts, Claude Code's and Codex's, as append-only streams; the
+      example records of the runs named in RECORD_RUNS; and what a person set aside from the runner's state
+      (verification/.state/set-aside/), into restricted custody.
+      WHAT: runs, workdirs, set-aside, run-records, transcripts, records.
       It can be run again: what was sealed and has not changed is not sealed twice.
 
 `protect` reads transcripts and run records only to hash and seal them, into restricted custody; it prints
@@ -49,6 +51,7 @@ STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local" / "state"))
 ARCHIVED = Path.home() / ".cache/in-the-loop/workspace-archive"  # run records of workspaces that were removed
 # The examples whose records the runs of 2026-11-19 to 21 wrote (runs 5 to 7, VF-053): sealed before any trim.
 RECORD_RUNS = range(340, 360)
+BUILD_OUTPUT = ("lib/target",)  # in a work directory from before the runner had one cargo target for all: made again by a build
 SEALED_MARK = ".captured"  # verification/capture.py's mark in a run directory: its attempt was sealed
 
 
@@ -357,6 +360,48 @@ class Protector:
                                                      "rule": "files identical to the source commit are left out, and folders that hold none of the rest"})
                 self.sealed(key, "sealed", record, "workdirs")
 
+    def set_aside(self, roots: list[Path] | None = None) -> None:
+        """What a person moved out of the runner's state (verification/.state/set-aside/NAME/): run directories and
+        staged results that were not to be published as they were, and the work directories of their jobs. All of it
+        goes into restricted custody, since why it was set aside is not recorded in a form a tool can read: the
+        folder without `work/` as one tree, and each work directory as what it holds beyond the commit its own
+        result names, build output left out. One whose commit nothing names is counted and left where it is."""
+        sys.path.insert(0, str(REPO / "verification"))
+        import capture
+        for root in workspace_roots() if roots is None else roots:
+            base = root / "verification/.state/set-aside"
+            for folder in sorted(p for p in base.iterdir() if p.is_dir()) if base.is_dir() else []:
+                logical = f"verification/.state/set-aside/{folder.name}"
+                self.tree("set-aside folders", f"set-aside:{root.name}:{folder.name}", folder, "set-aside", logical, access="restricted",
+                          exclude=lambda rel, is_dir: rel == "work" or rel.startswith("work/"),
+                          notes={"stage": "sealed at the VM inventory: set aside from the runner's state by a person, as found",
+                                 "workspace": root.name, "rule": "the folder without work/, whose directories are sealed one by one"})
+                for work in sorted(p for p in (folder / "work").iterdir() if p.is_dir()) if (folder / "work").is_dir() else []:
+                    source = None
+                    for result in (folder / "results" / work.name / "result.json", folder / "runs" / work.name / "result.json"):
+                        try:
+                            source = json.loads(result.read_text()).get("sourceCommit")
+                            break
+                        except (OSError, ValueError):
+                            pass
+                    key = f"set-aside-work:{root.name}:{folder.name}:{work.name}"
+                    if not source:
+                        self.tally["set-aside workdirs with no result to name their commit (left, not sealed)"] += 1
+                    elif key in self.seen:
+                        self.tally["set-aside workdirs unchanged"] += 1
+                    elif self.dry:
+                        self.tally["set-aside workdirs to seal"] += 1
+                    else:
+                        same = capture.beyond_commit(REPO, work, source)
+                        built = lambda rel, is_dir: rel in BUILD_OUTPUT or rel.startswith(tuple(b + "/" for b in BUILD_OUTPUT))
+                        record = self.archive.capture(work, "job-workdir", f"{logical}/work/{work.name}", job=work.name,
+                                                      source={"commit": source}, sparse=True, access="restricted",
+                                                      exclude=lambda rel, is_dir: built(rel, is_dir) or same(rel, is_dir),
+                                                      notes={"stage": "sealed at the VM inventory, from a set-aside folder", "workspace": root.name,
+                                                             "rule": "files identical to the source commit are left out, build output "
+                                                                     f"({', '.join(BUILD_OUTPUT)}) too, and folders that hold none of the rest"})
+                        self.sealed(key, "sealed", record, "set-aside workdirs")
+
     def run_records(self) -> None:
         for root in workspace_roots():
             folder = root / "llm-dlc/loop-summaries"
@@ -399,7 +444,7 @@ class Protector:
 
 
 def cmd_protect(args) -> int:
-    kinds = {"runs": Protector.runs, "workdirs": Protector.workdirs, "run-records": Protector.run_records,
+    kinds = {"runs": Protector.runs, "workdirs": Protector.workdirs, "set-aside": Protector.set_aside, "run-records": Protector.run_records,
              "transcripts": Protector.transcripts, "records": Protector.records}
     if unknown := set(args.only or []) - set(kinds):
         print(f"unknown: {', '.join(sorted(unknown))}; the kinds are {', '.join(kinds)}", file=sys.stderr)

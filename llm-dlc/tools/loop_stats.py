@@ -268,6 +268,7 @@ class _Session:
     """One session's metrics, indexed the way the loops read them."""
 
     def __init__(self, manifest: dict, doc: dict):
+        doc = metrics.bounded(doc)
         self.sid = manifest.get("session_id") or doc.get("session_id")
         self.prompts = doc["prompts"]
         self.ts = [metrics._ms(p["ts"]) for p in self.prompts]
@@ -278,17 +279,10 @@ class _Session:
         messages = {c.get("change_id"): f"{c.get('summary') or ''}\n{c.get('body') or ''}" for c in manifest.get("commits", [])}
         self.commits = [(metrics._ms(c["ts"]), c, messages.get(c["change_id"], "")) for c in doc.get("commits", [])
                         if c.get("ts") and c.get("summary") and c["summary"] != BOOKKEEPING]
-        self.peak, self.models, self.efforts = {}, {}, {}
-        for c in doc.get("calls", []):
-            at = c.get("prompt")
-            if at is None:
-                continue
-            if c.get("agent") is None:
-                self.peak[at] = max(self.peak.get(at, 0), c.get("context_tokens") or 0)
-            spent = self.models.setdefault(at, {})
-            spent[c.get("model")] = spent.get(c.get("model"), 0) + (c.get("usd") or 0) + 1e-9
-            if c.get("effort"):
-                self.efforts.setdefault(at, set()).add(c["effort"])
+        # What a prompt's model calls came to: its row has had these since the per-call tables left the session files.
+        self.peak = {p["index"]: p["peak_context_tokens"] for p in self.prompts}
+        self.models = {p["index"]: {r["model"]: r["usd"] + 1e-9 * r["api_calls"] for r in p["by_model"]} for p in self.prompts}
+        self.efforts = {p["index"]: set(p["efforts"]) for p in self.prompts}
 
     def next_after(self, index: int) -> float:
         """When the prompt after this one was sent: nothing later belongs to this one's cycle."""

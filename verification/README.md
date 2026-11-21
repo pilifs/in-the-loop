@@ -76,6 +76,13 @@ kept under the UTC day it was submitted, which its id begins with: `jobs/YYYY/MM
   that has results; a day's own `index.json` lists those, so the first file stops growing once new jobs go by day
   and is then the complete index of everything collected before the switch. Every line gives its result's path
   under `results/`.
+- **A receipt is held to a size.** `result.json` lists every output file with its digest, and the readers that
+  verify kept outputs against it need every row, so the list is not cut. Six results of November 2026 listed 3,000
+  to 5,900 files each (1.5 to 2.9 MB a receipt), from jobs that wrote two files a case; such a producer packs its
+  cases now ([`examples/approaches.md`](../examples/approaches.md)). `sync.py check` warns about a result submitted
+  since 2026-11-22 whose `result.json` is over 256 KiB (`layout.heavy_receipts`), naming the job. The complete
+  inventory of what a job wrote is in the private archive whatever the receipt holds
+  (`python3 llm-dlc/tools/artifacts.py list --job ID`).
 - **One id, two records.** Identical copies resolve to the flat one, always. Copies that differ are a problem
   `pipeline.py validate` names, and readers still get the flat one.
 - **Where new jobs go** is `WRITE` in `layout.py`: `"flat"` today. Switching it to `"shards"` is one line, for the

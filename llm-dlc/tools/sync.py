@@ -7,7 +7,8 @@ Layout (llm-dlc/specification.md has the full spec, llm-dlc/README.md the proced
   llm-dlc/traces/README.md                           checked in: every session added up (llm-dlc/traces-readme-template.md)
   llm-dlc/traces/<session-id>/manifest.json          checked in: stats, log pointer, commits
   llm-dlc/traces/<session-id>/summary.md             checked in: readable summary (llm-dlc/summary-template.md)
-  llm-dlc/traces/<session-id>/metrics.json           checked in: per-call tables for charts (metrics.py)
+  llm-dlc/traces/<session-id>/metrics.json           checked in: tables for charts (metrics.py); the row for each
+                                                     model and tool call is built on demand (sync.py events)
   llm-dlc/traces/<session-id>/runs/<record>.md       checked in: a feature-loop.sh run of the session, redacted
   llm-dlc/traces/metrics.json                        checked in: those tables added up over all sessions
   llm-dlc/traces/loops.json, loops.md                checked in: the loops added up by category, loop, run, cycle
@@ -33,6 +34,9 @@ Commands:
   sync.py hook-commit           Claude Code PostToolUse hook: traces a plain `jj commit` or `git commit`
   sync.py trace [REV]           what a commit's LLM-Trace lines resolve to now: the session, its summary, and its
                                 log, public, withdrawn or pending and where it waits
+  sync.py events SESSION [--to FILE]
+                                the row for each model call and tool call of a session, which its metrics.json
+                                names by digest and does not hold: built again from the log, and compared
   sync.py sync [--all | ID...] [--full]
                                 snapshot sessions of this repo from ~/.claude/projects: those named, or
                                 else those whose transcript, commits, note or files changed since they
@@ -1274,10 +1278,18 @@ def metrics_path(sid: str) -> Path:
 def session_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor,
                     subagents: list[tuple[str, list[dict]]] | None = None) -> str:
     """metrics.json of a session, from its redacted logs and manifest and from the price list.
-    `subagents`: (agent, entries) of the manifest's subagent logs, when the caller has them."""
+    `subagents`: (agent, entries) of the manifest's subagent logs, when the caller has them.
+    The file leaves out the row for each model call and tool call and names their text by its digest
+    (metrics.bounded); `sync.py events SESSION` builds that text again."""
+    return metrics.dumps(metrics.bounded(whole_metrics(sid, m, entries, redact, subagents)))
+
+
+def whole_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor,
+                  subagents: list[tuple[str, list[dict]]] | None = None) -> dict:
+    """Everything metrics.py makes of a session's logs, the per-call tables included."""
     if subagents is None:
         subagents = [(s["agent"], log_entries(load_log(sid, s["log"]["sha256"]) or b"")) for s in m.get("subagents", [])]
-    return metrics.dumps(metrics.session(m, entries, subagents, json.loads(PRICING.read_text()), redact.string))
+    return metrics.session(m, entries, subagents, json.loads(PRICING.read_text()), redact.string)
 
 
 def metrics_files(manifests: dict[str, dict] | None = None) -> list[tuple[dict, dict]]:
@@ -1308,14 +1320,20 @@ def loops_page_path() -> Path:
     return TRACES / "loops.md"
 
 
+def verification_layout():
+    """verification/layout.py: a job and its result by id, flat or under the day it was submitted."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
+    layout = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(layout)
+    return layout
+
+
 def verification_jobs() -> list[dict]:
     """Each verification job (verification/jobs/ID.json) with what its result, if it has one, says
     it took (verification/results/ID/result.json), as loop_stats reads them. A file that is not
     JSON, or not a job, is left out: the pipeline's own `validate` is what reports it."""
-    import importlib.util  # verification/layout.py: a job and its result by id, flat or under the day it was submitted
-    spec = importlib.util.spec_from_file_location("verification_layout", Path(__file__).resolve().parents[2] / "verification" / "layout.py")
-    layout = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(layout)
+    layout = verification_layout()
     out = []
     for path in layout.jobs(REPO).values():
         try:
@@ -1375,8 +1393,10 @@ def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCac
     text = path.read_text()
     doc = json.loads(text)
     errors, warnings = [], []
-    if doc.get("schema") != metrics.SCHEMA:
+    if doc.get("schema") not in (metrics.SCHEMA, metrics.WHOLE_SCHEMA):  # the whole document until a rendering
         errors.append(f"{sid}: metrics.json has unknown schema {doc.get('schema')}")
+    elif rendered and doc.get("schema") != metrics.SCHEMA:
+        errors.append(f"{sid}: metrics.json still holds its per-call tables (run sync)")
     if not rendered:  # between two renderings the file describes an earlier log of the session (RENDERING)
         data = None
     if data is not None:
@@ -2647,6 +2667,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
             with perf.phase("metrics elsewhere"):
                 here = {sid_of(p) for p in session_transcripts()}
                 refresh_metrics(here, redact, states)
+                bound_metrics()
                 render_elsewhere(here, redact, states)
         publish_runs(redact)  # again, for a session whose trace the loop above started
         if render:
@@ -2710,6 +2731,85 @@ def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int
             print(f"{sid}  metrics.json recomputed from its stored log (transcript in another workspace's folder)")
         states.entries[f"metrics:{sid}"] = logs
     return changed
+
+
+def bound_metrics() -> int:
+    """Rewrite each metrics.json that still holds its per-call tables (every one written before 2026-11-21) as the
+    file without them. It needs no log: the file is metrics.bounded of what it held, which is what a rendering
+    from the same log gives. A session rendered just now is already so. Returns how many files changed."""
+    changed = 0
+    for sid in all_manifests():
+        path = metrics_path(sid)
+        if not path.exists():
+            continue
+        with path.open() as stream:
+            if metrics.WHOLE_SCHEMA not in stream.read(200):
+                continue
+        changed += write_if_changed(path, metrics.dumps(metrics.bounded(json.loads(path.read_text()))))
+    if changed:
+        print(f"{changed} session(s): metrics.json rewritten without its per-call tables (sync.py events SESSION builds them)")
+    return changed
+
+
+def cmd_events(args: list[str]) -> int:
+    """`sync.py events SESSION [--to FILE]`: the row for each model call and each tool call of a session, which its
+    metrics.json names by digest and does not hold. Built from the session's current log, its manifest and the
+    price list, as the file was: the log is read from this workspace, or from its public URL when it is not stored
+    here, and is checked against its name either way. Says whether the text is the one the file names (it is at the
+    revision that rendered the file; a later price list or metrics.py can give another). Changes nothing in the
+    checkout."""
+    to = None
+    if "--to" in args:
+        at = args.index("--to")
+        to, args = (args[at + 1] if at + 1 < len(args) else None), args[:at] + args[at + 2:]
+        if to is None:
+            args = []
+    if len(args) != 1:
+        print("usage: sync.py events SESSION [--to FILE]", file=sys.stderr)
+        return 2
+    sid = args[0]
+    m = load_manifest(sid)
+    if not m or not (m.get("log") or {}).get("sha256"):
+        print(f"no manifest with a log for session {sid} in this checkout", file=sys.stderr)
+        return 1
+
+    def log_of(sha: str) -> bytes | None:
+        if (data := load_log(sid, sha)) is None:
+            url = ((m.get("logs") or {}).get(sha) or {}).get("url")
+            if not url:
+                print(f"log {sha[:12]} is not stored in this workspace and has no public URL yet "
+                      f"(python3 llm-dlc/tools/sync.py adopt-logs takes it from the workspace that stores it)", file=sys.stderr)
+                return None
+            try:
+                data = fetch_log(url)
+            except (OSError, EOFError, gzip.BadGzipFile) as e:
+                print(f"log {sha[:12]} could not be read from {url}: {e}", file=sys.stderr)
+                return None
+        if hashlib.sha256(data).hexdigest() != sha:
+            print(f"log {sha[:12]} is not the content its name says", file=sys.stderr)
+            return None
+        return data
+
+    logs = [log_of(m["log"]["sha256"])] + [log_of(s["log"]["sha256"]) for s in m.get("subagents", [])]
+    if any(data is None for data in logs):
+        return 1
+    subagents = [(s["agent"], log_entries(data)) for s, data in zip(m.get("subagents", []), logs[1:])]
+    doc = whole_metrics(sid, m, log_entries(logs[0]), Redactor(), subagents)
+    text = metrics.events(doc)
+    digest = hashlib.sha256(text.encode()).hexdigest()
+    named = (json.loads(metrics_path(sid).read_text()).get("events") or {}) if metrics_path(sid).exists() else {}
+    print(f"{sid}: {len(doc['calls']):,} model calls, {len(doc['tools']):,} tool calls, {len(text.encode()):,} bytes, sha256:{digest}")
+    if not named:
+        print("  metrics.json here names no such text (it still holds the tables, or the session has no file yet)")
+    elif named.get("sha256") == digest:
+        print("  the text metrics.json names")
+    else:
+        print(f"  NOT the text metrics.json names (sha256:{named.get('sha256')}): the file was rendered from another log "
+              f"of the session, or under another price list or metrics.py; python3 llm-dlc/tools/sync.py sync {sid} renders it again")
+    if to:
+        Path(to).write_text(text)
+        print(f"  written to {to}")
+    return 0 if not named or named.get("sha256") == digest else 1
 
 
 def render_elsewhere(here: set[str], redact: Redactor, states: LocalCache) -> int:
@@ -4392,6 +4492,8 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     over, large = records_budget()
     errors += over
     warnings += large + unpublished_commits()
+    with perf.phase("check: result receipts"):  # a new result whose receipt lists thousands of files (verification/layout.py)
+        warnings += verification_layout().heavy_receipts(REPO) if (REPO / "verification").is_dir() else []
     if redact.skipped:
         notes.append(f"left out as reviewed false positives: {_skipped(redact)}")
     if redaction_rules.RULES_HASH != redaction_rules.source_hash():
@@ -4531,6 +4633,8 @@ def run(cmd: str, args: list[str]) -> int:
         return promote.cmd_promote(sys.modules[__name__], args)
     elif cmd == "trace":
         return cmd_trace(args)
+    elif cmd == "events":
+        return cmd_events(args)
     elif cmd == "upload":
         return cmd_upload()
     elif cmd == "unpublish":
