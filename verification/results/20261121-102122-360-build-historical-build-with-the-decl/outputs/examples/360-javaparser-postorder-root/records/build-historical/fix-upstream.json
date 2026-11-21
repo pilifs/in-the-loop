@@ -1,0 +1,144 @@
+{
+  "revision": "6529f264066e31bd9e78c71111ade3a20142d285",
+  "side": "fix",
+  "prerequisites": [],
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "javaparser-core",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 34.95,
+    "logSha256": "87d14ee08bc6b95a1dba214ae105dc7e5b3dd543cf05539d34580f1a95020eb8",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] javaparser-parent .................................. SUCCESS [  1.100 s]",
+      "[INFO] javaparser-core .................................... SUCCESS [ 31.233 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  32.703 s",
+      "[INFO] Finished at: 2026-11-21T10:48:28Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "javaparser-core/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/javaparser-core/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 6.09,
+    "logSha256": "688cd8d3f7195b32f8ee2513a7a3222e8f9105835fa610361cc84dd523b56dc8",
+    "errors": [],
+    "tail": [
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ javaparser-core ---",
+      "[INFO] No dependencies found.",
+      "[INFO] Wrote classpath file '/project/javaparser-core/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  3.903 s",
+      "[INFO] Finished at: 2026-11-21T10:48:34Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+        "sha256": "62cf2f2c4bb4be2ced24f7914b4d22ae9cc2a760a5ab11cd2cd867e68d69cd27",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "com/github/javaparser/ast/Node.class",
+    "selectedClassSha256": "989762f9d145f92a44433e771f7a92a8783ac9b1df4e635436c925a513c88544",
+    "sourceSha256": "b40d76533b7e202aca24b94b68d0f111597e18cb4b2281d093cc1848f70d6146"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "javaparser-core-testing",
+        "-am",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=NodeTest$PostOrderIteratorTest#rootHasNoChild",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 34.48,
+      "logSha256": "7aed1ff9522b6d70c645a9ee8dd3b6fa009121782daa36df0eea766d90063708",
+      "errors": [],
+      "tail": [
+        "[INFO] javaparser-parent .................................. SUCCESS [  0.002 s]",
+        "[INFO] javaparser-core .................................... SUCCESS [  5.568 s]",
+        "[INFO] javaparser-core-testing ............................ SUCCESS [ 26.195 s]",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  32.047 s",
+        "[INFO] Finished at: 2026-11-21T10:49:08Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testPrerequisites": [],
+    "testSourceSha256": {
+      "javaparser-core-testing/src/test/java/com/github/javaparser/ast/NodeTest.java": "78eba0d34a51d9c244e18e480df0999cd09d0af53391b1d7b5454c3e551846ab"
+    },
+    "transplant": [],
+    "named": {
+      "NodeTest$PostOrderIteratorTest#rootHasNoChild": [
+        {
+          "status": "passed",
+          "class": "com.github.javaparser.ast.NodeTest$PostOrderIteratorTest",
+          "method": "rootHasNoChild",
+          "xmlSha256": "6779366068170f7f2633389fdd1a28b00f2690f06ea569dd61d4a06040cd1399"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1238
+  }
+}

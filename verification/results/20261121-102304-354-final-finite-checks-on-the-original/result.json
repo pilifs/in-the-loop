@@ -1,0 +1,268 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-102304-354-final-finite-checks-on-the-original",
+  "title": "354 final finite checks on the original commons-lang public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 30.2s, peak 249.7 MiB (estimated 5m00s, 3.0 GiB); 13 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-102304-354-final-finite-checks-on-the-original.json",
+    "sha256": "d6322e3c14bdbce95a0b1c8b0d19ac71eef6b289b741a1cba4871df41f231fbb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-102304-354-final-finite-checks-on-the-original",
+      "title": "354 final finite checks on the original commons-lang public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/commons-lang#1719 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:finite"
+      ],
+      "links": {
+        "examples": [
+          "354"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T10:23:04+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 354 --route finite --stage final --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/354-commons-lang-surrogate-cuts/records/final-finite"
+      ]
+    }
+  },
+  "sourceCommit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+  "startedAt": "2026-11-21T10:43:40+00:00",
+  "finishedAt": "2026-11-21T10:47:04+00:00",
+  "wallSeconds": 204.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 757440,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 261808128,
+    "wallSeconds": 30.2,
+    "cpuSeconds": 45.3,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 354 --route finite --stage final --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 30.221,
+      "cpuSeconds": 45.3,
+      "cpuThrottledSeconds": 2.074,
+      "peakMemoryBytes": 261808128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 630,
+        "sha256": "c208ff89abe999d3cf88459a91ff73f50687992030becd1723f89920f0088386",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"354\", \"route\": \"finite\", \"stage\": \"final\", \"workflowExit\": 0, \"seconds\": 30.022, \"checkerSeconds\": 180, \"tasks\": [\"fixed-cut-parent\", \"fixed-cut-fix\", \"truncate-parent\", \"truncate-fix\", \"abbreviate-parent\", \"abbreviate-fix\", \"intact-parent\", \"intact-fix\", \"width-five-parent\", \"width-fiv"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/abbreviate-fix.json",
+      "change": "added",
+      "bytes": 5929,
+      "sha256": "62fa3796964b928bd25fc9874fcdeab6abd97f61319863abeb8bcae8111463de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/abbreviate-parent.json",
+      "change": "added",
+      "bytes": 8375,
+      "sha256": "c5e5b22ff46c3cd4ba2d10c550f77345a54baf978d63f839af7df70433fd3d34",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/batch.json",
+      "change": "added",
+      "bytes": 5839,
+      "sha256": "44371046f152b42153b2371b52db27fa8f923fd52550039b157734342d51b827",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/fixed-cut-fix.json",
+      "change": "added",
+      "bytes": 11796,
+      "sha256": "5ca90543c3c938f8629546647eec64918348ef5ed4ba0f589f0161b9e0ff78f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/fixed-cut-parent.json",
+      "change": "added",
+      "bytes": 14287,
+      "sha256": "3df3cd5f73a33bffd718b883e134312c8880b62daf6346e9894bacd959fa5c22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/intact-fix.json",
+      "change": "added",
+      "bytes": 5722,
+      "sha256": "8acb2066e08ef9e8eec6bc081f65f96b89eefe7b61b21c58c02a421c1e1ec855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/intact-parent.json",
+      "change": "added",
+      "bytes": 5742,
+      "sha256": "602c76230f2dae4c8c9dcbab5e7fdc5fb15f96110bb40edffd79a7a324394f23",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/truncate-fix.json",
+      "change": "added",
+      "bytes": 269610,
+      "sha256": "5f78163f04629830c12d5554a6fc046bd0a3e0f320b775c9de93123cf03aec33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/truncate-parent.json",
+      "change": "added",
+      "bytes": 272616,
+      "sha256": "fa334f0dceb983d329f60171b1f3b7730bbe414a67e8a0fa2c8e265a92db0086",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/width-five-fix.json",
+      "change": "added",
+      "bytes": 5713,
+      "sha256": "add8d1d292681ca7e3c3158f9985c5d2ee737fba37eff81bd301c3f8f7e6897a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/width-five-parent.json",
+      "change": "added",
+      "bytes": 5733,
+      "sha256": "c6a3a614c0e74524aa37dcfbfd13a1a9d7aaf7010aac4be4bc03d0f93a199293",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/run.json",
+      "change": "added",
+      "bytes": 708,
+      "sha256": "0c16d0841ed574cca2309efc3d32d68a27d3923563bb57ce3272ef8a1b94eb30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/final-finite/workflow.log",
+      "change": "added",
+      "bytes": 427,
+      "sha256": "5d8b9356eea7589bf130e044b61f7abab8d9efbdaf2c2ce9751c05be164ef2d1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:51:39+00:00",
+    "applied": [
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/abbreviate-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/abbreviate-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/batch.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/fixed-cut-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/fixed-cut-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/intact-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/intact-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/truncate-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/truncate-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/width-five-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/20261121T104634Z-be9dda81/width-five-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/run.json",
+      "examples/354-commons-lang-surrogate-cuts/records/final-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2d182dd1f729468156da6c7fb83da09a8c0e8d6f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

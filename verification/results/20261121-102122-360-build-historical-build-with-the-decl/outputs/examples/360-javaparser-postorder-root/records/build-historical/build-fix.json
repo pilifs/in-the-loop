@@ -1,0 +1,150 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/javaparser/javaparser",
+    "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+    "class": "com.github.javaparser.ast.Node",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "javaparser-core",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "17"
+    },
+    "parent": "e0eb16b8870fc05c03ab794e502dd76f97422e26"
+  },
+  "artifacts": [
+    {
+      "path": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+      "sha256": "62cf2f2c4bb4be2ced24f7914b4d22ae9cc2a760a5ab11cd2cd867e68d69cd27",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/javaparser/javaparser at 6529f264066e31bd9e78c71111ade3a20142d285: javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+      "tree": "41cfed9b1e7f60118bdc464e4b68ed19a331eda7",
+      "parents": [
+        "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+        "770f766589c690c9080a59f4538a1dc0c44b8d02"
+      ],
+      "fetchedFrom": "https://github.com/javaparser/javaparser",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+          "sha256": "62cf2f2c4bb4be2ced24f7914b4d22ae9cc2a760a5ab11cd2cd867e68d69cd27",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "com/github/javaparser/ast/Node.class",
+      "selectedClassSha256": "989762f9d145f92a44433e771f7a92a8783ac9b1df4e635436c925a513c88544",
+      "sourceSha256": "b40d76533b7e202aca24b94b68d0f111597e18cb4b2281d093cc1848f70d6146"
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "17",
+        "version": "openjdk version \"17.0.21\" 2026-10-20",
+        "home": "/home/filip/.sdkman/candidates/java/17.0.21.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "17.0.21",
+          "JAVA_RUNTIME_VERSION": "17.0.21+9",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-17.0.21+9",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "declaredCompilers": {}
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "-pl",
+          "javaparser-core",
+          "-am",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 34.95,
+        "logSha256": "87d14ee08bc6b95a1dba214ae105dc7e5b3dd543cf05539d34580f1a95020eb8",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] javaparser-parent .................................. SUCCESS [  1.100 s]",
+          "[INFO] javaparser-core .................................... SUCCESS [ 31.233 s]",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  32.703 s",
+          "[INFO] Finished at: 2026-11-21T10:48:28Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "javaparser-core/pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/javaparser-core/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 6.09,
+        "logSha256": "688cd8d3f7195b32f8ee2513a7a3222e8f9105835fa610361cc84dd523b56dc8",
+        "errors": [],
+        "tail": [
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ javaparser-core ---",
+          "[INFO] No dependencies found.",
+          "[INFO] Wrote classpath file '/project/javaparser-core/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  3.903 s",
+          "[INFO] Finished at: 2026-11-21T10:48:34Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}

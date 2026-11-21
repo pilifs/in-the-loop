@@ -1,0 +1,459 @@
+{
+  "task": "width-five-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+      "prove",
+      "organic.SurrogateCuts#abbreviate(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+      "--classpath",
+      "prepare/parent/lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+      "--classpath",
+      "prepare/parent/lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+      "--classpath",
+      "prepare/parent/lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+      "--classpath",
+      "prepare/parent/lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+      "--assume",
+      "code >= 1 && code < 2",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.072,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "15e32d8b0bb81586c2a4cd37b1aa8eb8b2382d8ed4ee938af3981f00ebf9bc9f",
+      "commit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+      "libTree": "2d182dd1f729468156da6c7fb83da09a8c0e8d6f",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "At width five the pair is preserved before the ellipsis. The selector identifies the input and direct public observation in controls/table.json.",
+        "method": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+        "revisions": {
+          "parent": {
+            "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+            "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "classSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525",
+            "origin": "built by maven from https://github.com/apache/commons-lang at 2c2ed9d80dac4b46e9426041c091ddcaadb4df2b: target/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "str",
+                "maxWidth"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "organic.SurrogateCuts#abbreviate(I)I",
+          "mapping": "At width five the pair is preserved before the ellipsis. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 1515
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "fc50e33bc999cd3f10244dd2fef4324705732e7d49e611951cdf6d0f81520df4",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "sha256": "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+            "role": "original"
+          },
+          {
+            "path": "lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+            "sha256": "71568c9f8396677219f650268fbf6493ded484edcdbdf2dae6129ca5be81e8db",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+            "sha256": "95488102feaf2e2858adf6b299353677dac6c15294006f8ed1c5556f8e3cd251",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+            "sha256": "ee52e1c299a632184fba274a9370993e09140429f5e516e6c5570fd6574b297f",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+            "sha256": "4b909690cab288c761eb94c0bf0e814496cf3921d8affac84cd87774530351e5",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+            "sha256": "3a70240de7cdcde04e7c504c2327d7035b9c25ae0206881e3bf4e6798a273ed8",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "organic.SurrogateCuts#abbreviate(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "organic.SurrogateCuts#abbreviate(I)I",
+          "classSha256": "68f9e7122fe2a60f22dd458930f528c332defe2b686fe8d24203c61f70bd0cfb",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+          "subjectClassSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+        "checkedEntry": "organic.SurrogateCuts#abbreviate(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 1 && code < 2"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "64"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "organic.SurrogateCuts#abbreviate(I)I",
+          "mapping": "At width five the pair is preserved before the ellipsis. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 1515
+        }
+      },
+      "commits": {
+        "parent": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "6656",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx4300m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+            "gaps",
+            "--target",
+            "organic.SurrogateCuts#abbreviate(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/parent/lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+            "--classpath",
+            "prepare/parent/lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+            "--classpath",
+            "prepare/parent/lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+            "--classpath",
+            "prepare/parent/lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+            "--classpath",
+            "prepare/parent/lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.033,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-primitive-method:java.lang.CharSequence.length()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.CharSequence.length()",
+              "sites": [
+                "org.apache.commons.lang3.StringUtils.isEmpty:3565"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+              "sites": [
+                "org.apache.commons.lang3.StringUtils.abbreviate:366",
+                "org.apache.commons.lang3.StringUtils.abbreviate:379"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0634,
+        "peakRssBytes": 97898496,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "organic.SurrogateCuts#abbreviate(int)",
+        "domain": "code: int",
+        "assume": "code >= 1 && code < 2",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 96 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ organic.SurrogateCuts#abbreviate(int) satisfies `result == 1` on every input where code >= 1 && code < 2 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: abbreviate(code=1) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.019261129,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 64,
+          "stage": null,
+          "native": {
+            "paths": 3,
+            "merges": 0,
+            "solver_calls": 8,
+            "solving_seconds": 0.000596858,
+            "gates_evaluated": 1287,
+            "evaluating_seconds": 3.4456e-05,
+            "divisions": 1,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 3978,
+            "clauses": 12889,
+            "seconds": 0.010036529,
+            "loading_seconds": 0.001524782,
+            "decoding_seconds": 7.1484e-05,
+            "encoding_seconds": 0.002673645,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.01,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.002,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.003,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 3978,
+                "clauses": 12889
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.981,
+              "seconds": 0.006,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 279,
+                "clauses": 830
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.061,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.016,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.044
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 1 && code < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found abbreviate(code=1).",
+            "witness": "abbreviate(code=1)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261121-102303-354-final-native-checks-on-the-original/.build-py/examples-xc8_xlyi/targets/354/width-five-parent/20261121T104754Z-cdbd94f1",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261121-102303-354-final-native-checks-on-the-original/.build-py/examples-xc8_xlyi/targets/354/width-five-parent/20261121T104754Z-cdbd94f1"
+  }
+}
