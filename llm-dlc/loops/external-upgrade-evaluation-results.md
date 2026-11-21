@@ -1,12 +1,14 @@
 # Can the verifier help review a dependency upgrade?
 
-On the disclosed rxjava-jdbc change, existing CI already detected a different list of generated keys. Replaying two call shapes and reading the table explained the consequence: the same two rows were inserted, and only the multi-row statement exposed a different list. On the AWS change, the historical test failed even though the SDK's public parser still round-tripped its caller's timestamp. These are independently reproduced calibration findings. The blinded product score and prospective impact are still unmeasured. [Public case ledger](../../verification/external-upgrade-calibrations.json)
+On the disclosed rxjava-jdbc change, existing CI already detected a different list of generated keys. Replaying two call shapes and reading the table explained the consequence: the same two rows were inserted, and only the multi-row statement exposed a different list. On the AWS change, the historical test failed even though the SDK's public parser still round-tripped its caller's timestamp. These are independently reproduced calibration findings. The engineering corpus measures product recovery on identified upgrades. Prospective impact is unmeasured. [Public case ledger](../../verification/external-upgrade-calibrations.json)
 
 | Evaluation | Population | Current result |
 |---|---:|---|
-| V0 retrospective | 12 changes and 12 scoped preservations | 0 of 24 first reports sealed. Cohort selection is in progress. |
-| V0 and V1 transfer | 8 untouched upgrades | 0 of 8 paired decisions. Reserve selection is in progress. |
+| V0 retrospective | 12 changes and 12 scoped preservations | First results are being recorded with the single-session Astra profile. |
+| V0 and V1 transfer | 8 engineering transfer upgrades | 0 of 8 paired decisions recorded. |
 | Prospective advisory pilot | First 5 eligible PRs from each of 3 consenting teams | 0 of 15 maintainer decisions collected. The retrospective gate has yet to be evaluated. |
+
+Since 03:05 UTC on 21 November, one gpt-6.2-astra session operates and reviews every case. The six Claude calibration reports and the earlier custody procedure are superseded. Public revision IDs and expected observations may be recorded directly. [Engineering protocol](../../lib/benchmark/external-upgrades/protocol.md#active-engineering-protocol-from-0305-utc-on-21-november)
 
 ## What the disclosed clients do
 
@@ -18,9 +20,9 @@ On the disclosed rxjava-jdbc change, existing CI already detected a different li
 | [AWS SDK / Joda-Time](../../examples/351-aws-joda-instant/README.md) | The protected formatter newly parsed the maximum signed instant. The public SDK still round-tripped both that instant and the ordinary-date companion under both versions. | Constructing `java.util.Date(long)` for the public-method claim. |
 | [Cucumber Reporting / Joda-Time](../../examples/352-cucumber-duration/README.md) | Jackson deserialized 18 durations on each side. All displayed exactly three digits of truncated milliseconds. The six compiled client classes matched their published binaries. | Selecting Jackson's release-specific class in a multi-release JAR. |
 
-The pinned native workflow left all five disclosed claims open. The JDBC, time, initialization and class-file limitations arose at different stages. The next product repair is to be selected from the number of distinct blinded PR decisions it could change. [Per-case runtime, qualification and original first blockers](../../verification/external-upgrade-calibrations.json)
+The pinned native workflow left all five disclosed claims open. The JDBC, time, initialization and class-file limitations arose at different stages. The engineering pass prioritizes shared blockers by affected client upgrades. [Per-case runtime, qualification and original first blockers](../../verification/external-upgrade-calibrations.json)
 
-## Cohort selection and custody
+## Historical selection work through 03:05 UTC (superseded)
 
 By 02:36 UTC on 21 November, the curator had signed one independently reproduced behavioral change and one scoped preservation on complete production classpaths. The first behavioral packet used a mixed test/production build. Its primary observation reproduced on production-only JARs, and an independent rebuild resolved a discrepancy in the companion through four environment controls. Both judgments were retained. The joint allocator verified both original-production references against 694 breakage leads and 94 routine PR leads and reported a shortfall. Of 27 nearer leads for the first routine match, 20 have documented exclusions, three are unavailable for this screening pass and four are still under review. Neither signed case has been assigned. [Signed custody status](../../lib/benchmark/external-upgrades/curation/status/20261121T023611Z.json) · [Earlier adjudication checkpoint](../../lib/benchmark/external-upgrades/curation/status/20261121T010318Z.json)
 
@@ -32,7 +34,7 @@ Twelve earlier historical attempts on three other candidates reached zero named 
 
 The local, user-only checkpoint at `~/.local/state/in-the-loop/custody/external-upgrades/` preserves the sealed references, original evidence and selection ledger across sessions. `CURRENT` names the snapshot and its private `RECOVERY.md` explains how to authenticate and restore it. The custodian verified all 5,967 archived files in the 97 MiB encrypted snapshot with ciphertext SHA-256 `24360ec38cda52db99b41595c0500507a3cbae89a686dfd0ca91c36227d8d98d`.
 
-## What the opening product runs returned
+## Superseded Claude opening reports (excluded from scores)
 
 The isolated command environment completed a native synthetic V0 proof. Both original JDK controls returned 42. In a separate authenticated trial, each official Claude role used only the released case tool and returned the expected values. The two calls took 10.4 seconds and the client estimated $0.089 in total. The same setup denied access to synthetic private references, earlier reports and sibling cases in the tool-catalogue trial. The team’s Claude workflow was selected before cohort lock for both V0 and V1. The original Codex profile still exposes file and cross-session tools whose isolation has yet to be demonstrated. [Admission tests](../../lib/benchmark/external-upgrades/operator/README.md) · [Live Claude evidence](../../lib/benchmark/external-upgrades/operator/claude-alternate/evidence/live.json) · [Dated profile decision](../../lib/benchmark/external-upgrades/protocol.md)
 

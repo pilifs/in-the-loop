@@ -18,6 +18,8 @@ PINNED_PATHS = (
     "llm-dlc/prove-plan-template.md", "llm-dlc/prove-plan.schema.json",
     ".agents/skills/prove-java-change", ".claude/skills/prove-java-change",
 )
+OPERATOR = {"model": "gpt-6.2-astra", "effort": "high"}
+HISTORICAL_V0 = "e7cdfb6a6edea96c8653ee87a7c1e2ef3f602665"
 PROMPT = (
     "Identify which behavior of this application could change for its caller. Check the most "
     "consequential preservation or change claim you can justify with the pinned verifier. "
@@ -47,7 +49,7 @@ def source_manifest(revision):
     return (json.dumps({"revision": revision, "files": entries}, separators=(",", ":")) + "\n").encode()
 
 
-def snapshot(args, revision):
+def snapshot(args, revision, *, historical=False):
     revision = output("git", "rev-parse", "--verify", f"{revision}^{{commit}}")
     changed = output("git", "diff", "--name-only", revision, "--", *PINNED_PATHS)
     extra = output("git", "ls-files", "--others", "--exclude-standard", "--", *PINNED_PATHS)
@@ -72,8 +74,9 @@ def snapshot(args, revision):
         "rustc": output("rustc", "--version"), "cargo": output("cargo", "--version"),
         "checkerVersion": output(str(args.checker), "--version"),
         "jbmcVersion": output("jbmc", "--version"), "z3Version": output("z3", "--version"),
-        "plannerAndProver": {"model": "gpt-6.2-astra", "effort": "high"},
-        "preparation": {"model": "gpt-6.2-sol", "effort": "high"},
+        "plannerAndProver": OPERATOR,
+        "preparation": ({"model": "gpt-6.2-sol", "effort": "high"}
+                        if historical and revision == HISTORICAL_V0 else OPERATOR),
         "neutralPrompt": PROMPT, "promptSha256": hashlib.sha256(PROMPT.encode()).hexdigest(),
         "native": {"engine": "native", "gaps": "strict", "solver": "bitwuzla-words"},
         "workflow": ["llm-dlc/runtime.md", "python3 examples/tools/build.py --plan NNN --task TASK",
@@ -95,7 +98,9 @@ def main():
     args = parser.parse_args()
     try:
         recorded = json.loads(args.check.read_text()) if args.check else None
-        actual = snapshot(args, recorded["revision"] if args.check else args.record)
+        actual = snapshot(args, recorded["revision"] if args.check else args.record,
+                          historical=bool(recorded and recorded["revision"] == HISTORICAL_V0 and
+                                          recorded.get("preparation", {}).get("model") == "gpt-6.2-sol"))
         if recorded is None:
             print(json.dumps(actual, indent=2))
         elif recorded != actual:

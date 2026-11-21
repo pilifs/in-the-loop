@@ -2,6 +2,8 @@
 
 [Maintainer findings and score status](../../../llm-dlc/loops/external-upgrade-evaluation-results.md) · [Per-case evidence](../../../verification/external-upgrade-calibrations.json) · [Preregistered protocol](protocol.md)
 
+The current campaign uses one gpt-6.2-astra session for all roles and keeps its upgrade pairs, expected observations and first results in the repository. The six earlier Claude opening reports are superseded. [Active protocol](protocol.md#active-engineering-protocol-from-0305-utc-on-21-november)
+
 ## Reproduce an open calibration
 
 Examples 348 and 349 include a source-build reproduction in their own folders. For 350, 351 or 352, obtain the two commits and the JARs in that example's `materials.json`. Give the script the local Git repository, directory of named JARs, recorded subject JDK and an empty output location. It checks every JAR digest, the parent relationship, the POM-only tracked diff, loaded class origins and the original caller's observations. For the two named JUnit 4 tests it requires the specified class and method to appear exactly once in fresh Surefire XML.
@@ -31,7 +33,7 @@ python3 lib/benchmark/external-upgrades/open_packets.py 349 \
 | rxjava-jdbc | 91 files, 10 ordered JARs. The named and companion tests, one identifying comment and an ignored duplicate were removed from the two test classes. | `ab9fe13149d401a4ea11f81021aa0ebf39e99286ea34c475bf0849303f17d5e1` | `0646ba9b94b7024076e22a79f9e15d12607dd194efb8f949c861aedbf3bc40d7` |
 | Commons Text | 242 files, 2 ordered JARs. Its independent oracle and mutant were created outside the upstream trees. | `6b6e62a785f4772b7fafaf48a97b13f9d6099573f2a87e8760bd3d9a83472acd` | `d40962103d922d794ab45bb333f7b420b802965d8f5446d2739744ff76e557b0` |
 
-## Sealing and reading scores
+## Historical sealed scorecards (superseded on 21 November)
 
 The curator keeps reference material outside the operator workspace. A first report is one JSON record with a neutral case ID, build and input identities, ordered old/new artifact digests, claim, observer, domain, scope, route, five-line maintainer report, review action, evidence paths and SHA-256 values. It includes intake, first actionable and completion times, the 15-minute observation, cache state, enforced resources, human minutes and measured token/compute use. Open and unavailable outcomes name their first blocker. [Curator procedure](curation/README.md) · [Scorecard implementation](scorecard.py)
 

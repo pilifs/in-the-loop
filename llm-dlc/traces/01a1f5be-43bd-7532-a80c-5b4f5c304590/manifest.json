@@ -12,33 +12,34 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T03:08:34.377Z",
-  "duration_seconds": 106265,
+  "ended": "2026-11-21T03:31:08.829Z",
+  "duration_seconds": 107619,
   "stats": {
     "turns": 15,
-    "api_calls": 4723,
-    "tool_calls": 11956,
-    "tool_errors": 361,
-    "compactions": 14,
+    "api_calls": 4774,
+    "tool_calls": 12107,
+    "tool_errors": 368,
+    "compactions": 15,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 7821425,
-      "output_tokens": 2421420,
-      "cache_read_input_tokens": 1498011392,
+      "input_tokens": 7979479,
+      "output_tokens": 2458373,
+      "cache_read_input_tokens": 1509775360,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 6905,
-    "exec": 4273,
-    "apply_patch": 490,
-    "send_message": 146,
-    "sleep": 54,
+    "Bash": 7006,
+    "exec": 4310,
+    "apply_patch": 491,
+    "send_message": 148,
+    "sleep": 55,
     "wait": 53,
+    "wait_agent": 14,
     "send_message_to_user_async": 9,
     "followup_task": 8,
-    "wait_agent": 8,
     "spawn_agent": 5,
+    "interrupt_agent": 3,
     "request_user_input_async": 3,
     "list_agents": 2
   },
@@ -96,6 +97,7 @@
     "examples/schema/target.schema.json",
     "examples/tools/build.py",
     "examples/tools/checker_output.py",
+    "examples/tools/impact_check.py",
     "examples/tools/targets/array_induction.py",
     "examples/tools/targets/bytecode_evidence.py",
     "examples/tools/targets/claim_history.py",
@@ -124,6 +126,7 @@
     "examples/tools/targets/test_claim_history.py",
     "examples/tools/targets/test_gap_inventory.py",
     "examples/tools/targets/test_recipes.py",
+    "examples/tools/targets/test_runtime.py",
     "examples/tools/targets/test_runtime_upstream.py",
     "examples/tools/targets/test_workflow_refusal.py",
     "examples/tools/targets/upstream_artifact.py",
@@ -500,24 +503,38 @@
     {
       "index": 14,
       "started": "2026-11-21T00:47:03.288Z",
-      "ended": "2026-11-21T03:08:34.377Z",
+      "ended": "2026-11-21T03:22:22.523Z",
       "turns": 0,
-      "api_calls": 572,
+      "api_calls": 587,
       "usage": {
-        "input_tokens": 565419,
-        "output_tokens": 267792,
-        "cache_read_input_tokens": 190415232,
+        "input_tokens": 577345,
+        "output_tokens": 284253,
+        "cache_read_input_tokens": 198576000,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 538755
+      "peak_context_tokens": 549814
+    },
+    {
+      "index": 15,
+      "started": "2026-11-21T03:22:22.532Z",
+      "ended": "2026-11-21T03:31:08.829Z",
+      "turns": 0,
+      "api_calls": 36,
+      "usage": {
+        "input_tokens": 146128,
+        "output_tokens": 20492,
+        "cache_read_input_tokens": 3603200,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 157042
     }
   ],
   "log": {
-    "sha256": "5240d56bca099d3041cf08073da05b06afc8552c481c4d16a84bb542005c4114",
-    "bytes": 106396249,
-    "lines": 37322,
-    "gzip_bytes": 42091931,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/5240d56bca099d3041cf08073da05b06afc8552c481c4d16a84bb542005c4114.jsonl.gz"
+    "sha256": "151ff3a01141a601c1c87a3efb02e1b074073ddb33dfca7a66cdd59b6f0ab649",
+    "bytes": 108603826,
+    "lines": 37780,
+    "gzip_bytes": 42972503,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/151ff3a01141a601c1c87a3efb02e1b074073ddb33dfca7a66cdd59b6f0ab649.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1968,6 +1985,22 @@
       "summary": "Keep unavailable runtimes in the upgrade decision denominator",
       "body": "Bind the requested runtime and launch separately from the image actually observed. An absent or unverified runtime now seals an honest unavailable first report and the affected PR stays in the denominator. Paired output retains every attempted case and distinguishes verified matched conditions before granting a transferable gain.\n\nAn end-to-end synthetic exercise brought the ordinary staged controller through a genuinely missing runtime, sealed its report and graded it with no inference. Five scorer regressions passed, including missing-image denominator and transfer checks. Both affected test groups, including 58 Cargo binaries, passed and the cost lint agreed.\n\nThe public findings now place the measured callers beside the 24, 8 and 15 study populations. A restricted three-stream scan of 2414 redacted tool-output entries against 271 markers confirmed the two earlier source path exposures and one additional test-method marker. The affected unassigned lead was retired from untouched-oracle claims; a human can review the exact private evidence before any publication.",
       "log_sha256": "5240d56bca099d3041cf08073da05b06afc8552c481c4d16a84bb542005c4114"
+    },
+    {
+      "change_id": "puksxxquwttqxmwnnxrklnpzuptopulm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "151ff3a01141a601c1c87a3efb02e1b074073ddb33dfca7a66cdd59b6f0ab649"
+    },
+    {
+      "change_id": "tqnwtttlszlvmnsqmxupwslutqnukpok",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Retire blinded and Claude treatments from upgrade engineering",
+      "body": "Use one gpt-6.2-astra session at high effort for selection, preparation, review and checking, with identified revision pairs and preserved first outcomes. Mark each of the six existing Claude opening reports superseded and unscored at the user's 03:05 UTC change of direction. The original V0 engine and lock stay reproducible. Checked all six records and compiled the prospective lock generator.",
+      "log_sha256": "151ff3a01141a601c1c87a3efb02e1b074073ddb33dfca7a66cdd59b6f0ab649"
     }
   ],
   "logs": {
@@ -2054,6 +2087,12 @@
       "lines": 18725,
       "gzip_bytes": 21557000,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/14f65b0b765d379a983d9ecb73a87bff12f742ffc510b48368eb6e87f18a6118.jsonl.gz"
+    },
+    "151ff3a01141a601c1c87a3efb02e1b074073ddb33dfca7a66cdd59b6f0ab649": {
+      "bytes": 108603826,
+      "lines": 37780,
+      "gzip_bytes": 42972503,
+      "url": null
     },
     "16a193a6adf6bbf011240c6b33213a49b1592cab900f20b31257427be7d12f13": {
       "bytes": 42074377,

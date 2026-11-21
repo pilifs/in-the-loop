@@ -1,5 +1,16 @@
 # External dependency upgrade evaluation
 
+## Active engineering protocol from 03:05 UTC on 21 November
+
+The user directed a single gpt-6.2-astra session at high effort to select, prepare, review and verify all cases. Use plain, identified original revision pairs and record expected outcomes with their evidence. Keep the first V0 result for each of 24 engineering cases, including setup failures and timeouts. Rerun those cases after each shared repair and compare V0 and the repaired verifier on eight transfer cases. A proposed claim, a reachable caller, a replayed difference, a scoped preservation and an unresolved claim each get their own disposition. Keep the pilot gate and obtain team consent before any advisory run.
+
+Candidate-specific Maven and Gradle resolution can use Maven Central and declared public repositories, serially against one cache under the user's home cache directory. Fetch BUMP cases individually. Set the JVM temporary directory below the session's TMPDIR and release completed build trees after their evidence is retained.
+
+## Superseded study design
+
+The dated protocol below documents the earlier calibration runs. Its selection, custody, model and grading instructions ended at 03:05 UTC. All six Claude opening reports are historical and excluded from the engineering comparison.
+
+
 The unit of measurement is one maintainer decision on one client dependency upgrade. The five disclosed calibrations, the two named BUMP examples, their duplicates and the project's existing fixtures are excluded from both scored sets. The curator committed the randomization seed before any product run. [Execution brief](../../../llm-dlc/loops/external-upgrade-evaluation.md) · [Public seed commitment](seed-commitment.json)
 
 ## Selection before the first product report
