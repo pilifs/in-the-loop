@@ -28,7 +28,10 @@ def checked_bytes(data, entry):
 
 
 def parts_directory(folder, entry):
-    return folder / "records/public-observations" / entry["sha256"]
+    checksum = entry["sha256"]
+    if len(checksum) != 64 or any(c not in "0123456789abcdef" for c in checksum):
+        raise ValueError("invalid observation stream digest")
+    return folder / "records/public-observations" / checksum
 
 
 def complete_stream(folder, receipt, side):

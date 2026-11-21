@@ -1,0 +1,1243 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-105255-360-confirmation-native-checks-on-the-or",
+  "title": "360 confirmation native checks on the original javaparser public calls",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 10.2s, peak 172.1 MiB (estimated 5m00s, 3.0 GiB); 134 output file(s) changed",
+  "attention": [
+    "step 1 (Run the public task plan) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-105255-360-confirmation-native-checks-on-the-or.json",
+    "sha256": "705b38c5163f98a16b1649ef2b5bf29d153aa96b2f93544fb06d3a4e51b555fc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-105255-360-confirmation-native-checks-on-the-or",
+      "title": "360 confirmation native checks on the original javaparser public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/javaparser/javaparser#4538 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T10:52:55+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage confirmation --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/confirmation-native"
+      ]
+    }
+  },
+  "sourceCommit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+  "startedAt": "2026-11-21T11:06:44+00:00",
+  "finishedAt": "2026-11-21T11:07:02+00:00",
+  "wallSeconds": 18.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1104093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 180461568,
+    "wallSeconds": 10.2,
+    "cpuSeconds": 15.2,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage confirmation --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 10.211,
+      "cpuSeconds": 15.194,
+      "cpuThrottledSeconds": 1.174,
+      "peakMemoryBytes": 180461568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 607,
+        "sha256": "3aa7384b89a6a09652d7f21e8daac26b3f5ed4e4a4e909f7dec3277d60ba2d1f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"360\", \"route\": \"native\", \"stage\": \"confirmation\", \"workflowExit\": 1, \"seconds\": 10.121, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"postorder-parent\", \"postorder-fix\", \"terminal-parent\", \"terminal-fix\", \"preorder-parent\", \"preorder-fix\", \"nonempty-parent\", \"nonempty-fix\"], \"verifierCommi"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e04f886941a62774cc40580d675db6a94a5fbc10235a35295845189a36240841",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/plan.json",
+      "change": "added",
+      "bytes": 7519,
+      "sha256": "7724b0b6dd9bd27b57570fa4916c26a2535a14e02dfb52bb254f0525e2900485",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/controls.json",
+      "change": "added",
+      "bytes": 4546,
+      "sha256": "b26a5aea2dcc710b29f8abd63e6777f1859a4fee0f1f6c97bf3dfb7603c0806c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/execution.json",
+      "change": "added",
+      "bytes": 34995,
+      "sha256": "1da57c5172f488e21a6bc322a69183b976c163d791d6129c094867d7b831c300",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "bc8197c9ae17bb235c26865a04b38de315655c0e076788a559f7c8b8390acd96",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier.json",
+      "change": "added",
+      "bytes": 29734,
+      "sha256": "1b4e38f4f76c75cd64f283527ef84dce32f224fb738c9563fc7c1a87ac0d511b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6185,
+      "sha256": "000eac5a3bc7f0ec5a9a1415f37df5d8749f6af0bb8e04958b2fe25870ded82c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/result.json",
+      "change": "added",
+      "bytes": 14741,
+      "sha256": "ecd4b4c3cfcf720e8b4d07c6f48191abeb8ed63f8257db9d97d651e4cbd28e26",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/executions/20261121T110701Z-84aace4d/attempt.json",
+      "change": "added",
+      "bytes": 25936,
+      "sha256": "519280d034c06af5f1e7fc5aa3dc06401c0dbdbee88a592821ee98ae483a50be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/executions/20261121T110701Z-84aace4d/checker.json",
+      "change": "added",
+      "bytes": 7502,
+      "sha256": "83b8eba74d68364bc2320a194c14e440bac0120274d299833a681e29c1fdd3be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/executions/20261121T110701Z-84aace4d/correspondence.json",
+      "change": "added",
+      "bytes": 1696,
+      "sha256": "a20e83f33d7d78b8612790f9f9a739fb4ef922630ad36ccbda3e0345a62c7e7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fbbe4785f6ef35727794a459b8f7f685abf7b83b4ecfddc2d34ae4a92b259104",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/plan.json",
+      "change": "added",
+      "bytes": 7428,
+      "sha256": "e418929121bd70bc12f9ecd4a3ad07f68c6b5a24bddb60e8418d567667987c80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/controls.json",
+      "change": "added",
+      "bytes": 4484,
+      "sha256": "d2e0454fef6a637823647c29e2f6df333a215c21bbb0553d38decef318abae41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/execution.json",
+      "change": "added",
+      "bytes": 35086,
+      "sha256": "75e6fd3d6777724b059ccb1f7c61bdad98b28e7e767f60df5eaedfc3ba46cedf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "38fffa13ff9df23390923270ad131dc28ae6a4a47cd02f19ac667f8e3b2a9c63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier.json",
+      "change": "added",
+      "bytes": 29906,
+      "sha256": "51f96dd72078fe81f231f61e16215cfd16f5c0ea462fb14c54637ad4b3ebcaeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6188,
+      "sha256": "495762987592863fa90afe1d081dea8040920c6bf749e22714afcc42c57a41ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/result.json",
+      "change": "added",
+      "bytes": 14798,
+      "sha256": "32fcfc489fb262fe8ad44e9b64e5202e4b7a9f68d59f489cf8d6fbe58151fe5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/executions/20261121T110701Z-1fa5db13/attempt.json",
+      "change": "added",
+      "bytes": 26111,
+      "sha256": "d105a3a0e132b67f20a5fbfb5eff51001b774db575552bb83e3c9fa82ff97767",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/executions/20261121T110701Z-1fa5db13/checker.json",
+      "change": "added",
+      "bytes": 7515,
+      "sha256": "4a6169e67f0fb6eadd81387341fc54e64cd278cdf6d27ee9ae44aaa5ec73d696",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/executions/20261121T110701Z-1fa5db13/correspondence.json",
+      "change": "added",
+      "bytes": 1699,
+      "sha256": "2875944eeed0214dfa1f9c72d74c67442cefedc9eac0150bcbee203f34d7b3cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c420d45359551ba5ea42feb52ee50e9982793c59595e9a5c68885e6f89c30196",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/plan.json",
+      "change": "added",
+      "bytes": 7668,
+      "sha256": "66211487a2b1b8aa88a3ffb6240f39cf34ff0fc545643ee05edd275667078670",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/controls.json",
+      "change": "added",
+      "bytes": 4548,
+      "sha256": "3ac2389599874c7005271c2f21f15a3b4030204fe195d1c3f99ac20d56ba308a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/execution.json",
+      "change": "added",
+      "bytes": 35102,
+      "sha256": "e4ae6ced42e037ca212719ab5abb7706f5a1e2f8b416e0edfc4120838e91fa96",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "3ea910d8f4f2d1b5a0f1d1b6672de34890becee53cbc8b9993890a7c49796a56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier.json",
+      "change": "added",
+      "bytes": 29843,
+      "sha256": "ba11f9623ef6289afe66539faa051311fa76bcdfdc47b5eae1da7ac14f60edcf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6187,
+      "sha256": "a05f6ca16a6a15b55ad0eaee4fa3a1759cafdd07103c8486b4e740c4f38ad9a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/result.json",
+      "change": "added",
+      "bytes": 14817,
+      "sha256": "71a5f3c6e50ce2214cee1b87a047b478978efcbbec28688e465d2ee06979973d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/executions/20261121T110655Z-f052e5a3/attempt.json",
+      "change": "added",
+      "bytes": 26039,
+      "sha256": "9c7851d7d080a4c286a0306245250d0f0e5275283df8a8bb6440e9a56f085ca9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/executions/20261121T110655Z-f052e5a3/checker.json",
+      "change": "added",
+      "bytes": 7504,
+      "sha256": "9fcb760b5c9539dc9a64818993f905c0f8d0c050278850a41c69dbd677660f67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/executions/20261121T110655Z-f052e5a3/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7132a5a7d1cd93422c4ad7500d5355574833e77e19dcae921043f9f2761ab5e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/plan.json",
+      "change": "added",
+      "bytes": 7573,
+      "sha256": "e9b155d7b07fbf2365573dc19f9ccbc23b7cf11ca82262fb0f148972e9e0dea1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/controls.json",
+      "change": "added",
+      "bytes": 4486,
+      "sha256": "d8a27fa38551a355989f56bdb0d5fac35e34366e4724e5235133fbaa9b86e1f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/execution.json",
+      "change": "added",
+      "bytes": 35190,
+      "sha256": "f0c42429d85fc6ec71bda9631139a22850473b63c8fa343ba24e69beaef2596c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "76d800bc0e537df7e32429487723fbc68cfdce37e8bcfa6d1dce602f42722be2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 505,
+      "sha256": "2182e9c61c58456046049043b071e7389bb14a6f4a8077b4f55117c4dd62f21e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier.json",
+      "change": "added",
+      "bytes": 30012,
+      "sha256": "a6da57c591bcd0121fadd0b90dde7c2f583e418fed627720511202512a281e33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6187,
+      "sha256": "17008c41a2288e8245e2decfd51ce7de76a87fc87408e166ab709230c5553750",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/result.json",
+      "change": "added",
+      "bytes": 14869,
+      "sha256": "f0979e62f909a8730bbc30456e2032190c372c5f22e80c69d5334a48a1688453",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/attempt.json",
+      "change": "added",
+      "bytes": 26218,
+      "sha256": "f3b928c1b3dddc7013257a74d554934c57900a2279bb825e689f48aafe5bacc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/checker.json",
+      "change": "added",
+      "bytes": 7513,
+      "sha256": "45bc7e8ebb2af22fabd42d2630e2c4edf8023e94de1e39f6650173f102215e1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/correspondence.json",
+      "change": "added",
+      "bytes": 1734,
+      "sha256": "1c2de98fbc9cb49cca2ba4258a84d0efdf7d8c57ce3e1cd33805ae59d28cb83c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ec915c5dc8e288541c9544afd8f45be38ed87e3ce701760e891d758994fc0a5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/plan.json",
+      "change": "added",
+      "bytes": 7565,
+      "sha256": "a4c915bbadcdd5219809c77c5a88924eeb84c8e23125e97cee8b98475cfb2b60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/controls.json",
+      "change": "added",
+      "bytes": 4546,
+      "sha256": "a275b3452ade8af30352e2e8c95f11a096a86f1843ba49168c74ecfaf20a55a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/execution.json",
+      "change": "added",
+      "bytes": 35024,
+      "sha256": "2356432127faa1968aee0bdee15d9a7f9f1a89abe8a93dadf31131bf49a56a08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "67d5c115a7e837f2c3482493ef9b8087c85254064d13bc633966f0e3bf080da1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 504,
+      "sha256": "abea86517f30fe30e71d07c269f56e79aa3eb9c66ced92d188d348848841779f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier.json",
+      "change": "added",
+      "bytes": 29763,
+      "sha256": "fb69e4a6118c8b7a4cf2f557f0135d716dca6d0442c301d8168c7fcd9e373b20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6185,
+      "sha256": "b8fce387411733056a90b5f2296a0ae059b453f98b533eda51d913d18c4fd42e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/result.json",
+      "change": "added",
+      "bytes": 14765,
+      "sha256": "27372e4e84b7f09e16fd4f9772254736736bb3300ae4183532fe7199102c9c0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/executions/20261121T110700Z-b983a720/attempt.json",
+      "change": "added",
+      "bytes": 25963,
+      "sha256": "9530d55c9043e6fa02525401aa080a1f878878c2e54f20e4512777118414a413",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/executions/20261121T110700Z-b983a720/checker.json",
+      "change": "added",
+      "bytes": 7501,
+      "sha256": "fe5bfbf1ff189213039c5189319fe21208158cefd64b7dfc6c14e5a980d3c44a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/executions/20261121T110700Z-b983a720/correspondence.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "84465a17769654ceba9dc25f4687c9ecc7d7a1a3ed50afd9edf827472915b6dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b0af459353cfc7d5643e201376aa3de306eac75075be6160b05727b364232e93",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/plan.json",
+      "change": "added",
+      "bytes": 7474,
+      "sha256": "2b271700f300c05e4208a5fb3ea8bae652143b4729f213f97c4e0af8601063fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/controls.json",
+      "change": "added",
+      "bytes": 4484,
+      "sha256": "463f0520afcde36a3d6355074548ba67a489eef0426447c2f5a7cd0b2e852181",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/execution.json",
+      "change": "added",
+      "bytes": 35109,
+      "sha256": "47f905b9b2a0a95fd412655cc2d1e7874b1a35fb8214dc5a27f0ae93acbf40e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "6f810425f89a14c6bcb423efb3f974d7b1b44b129832b8cc7c81a708dcc9f634",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 504,
+      "sha256": "abea86517f30fe30e71d07c269f56e79aa3eb9c66ced92d188d348848841779f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier.json",
+      "change": "added",
+      "bytes": 29929,
+      "sha256": "120d968db389ed98e73167ef5dfc589a54afca08bbac5ab23d9a63a7de16e9a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6183,
+      "sha256": "2c674733ef20429ba4ed7aef9d3eafbcb0bc0fa592f922b5ac3806fe9a93c2d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/result.json",
+      "change": "added",
+      "bytes": 14818,
+      "sha256": "493a45f53f9c93757141bd83f57414bec532ecc645b4408683c9c9040b2b6d7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/executions/20261121T110700Z-6b30ad20/attempt.json",
+      "change": "added",
+      "bytes": 26140,
+      "sha256": "411b23350b842de83038375be8c8461ec6825141962ec6424d75cb98d80413b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/executions/20261121T110700Z-6b30ad20/checker.json",
+      "change": "added",
+      "bytes": 7508,
+      "sha256": "f8bc54f5ef34b954d04565ff24f22b9fd8347b575570fcd179483f5149a9f2b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/executions/20261121T110700Z-6b30ad20/correspondence.json",
+      "change": "added",
+      "bytes": 1710,
+      "sha256": "505484d459527882396e1618c04f5500c36643e11dab271e54bcab0802e34d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fc2ea08ce06685e0ab33e1f9b6b2c7a4db59f58d3b93d5aa9f40d46f46b2cbf6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/plan.json",
+      "change": "added",
+      "bytes": 8303,
+      "sha256": "eeee2926a0a15ef031f4258275d63d59749c24460b2b5323e6617d55ea77dd10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/controls.json",
+      "change": "added",
+      "bytes": 8958,
+      "sha256": "be1754bd862e3c6a344eba82add905de0c432e819830fe3e0aa197b5124e3530",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/execution.json",
+      "change": "added",
+      "bytes": 8522,
+      "sha256": "c58143e9ffbe693f6c8e327619eb2c12b45a56fb5c3882aa383fb69155b2d1f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/streams.json",
+      "change": "added",
+      "bytes": 1701,
+      "sha256": "6000e8232c00223fd9038ebfb0e80639fe6765addb808471f499c737c85765eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/summary.txt",
+      "change": "added",
+      "bytes": 332,
+      "sha256": "d68f17cba8aeeb06f54024e7cdfe0c8eac19ce61fb64c5fff4bf7d80c78116ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/result.json",
+      "change": "added",
+      "bytes": 8158,
+      "sha256": "fd95b4d2af780128f6340b3523ebf0d3964c20eee9ae0b94be876fd8b9756317",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/replay/executions/20261121T110652Z-302041d0/attempt.json",
+      "change": "added",
+      "bytes": 6381,
+      "sha256": "82aa18dcd6ad894785b4e52302f76942944a815b8cf49dd3ff4c4899598d58a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/run.json",
+      "change": "added",
+      "bytes": 681,
+      "sha256": "984184b2df4d0fe9e07e861930943564dafcbf32ed553de05879d68e3afb7f4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c068d670c87d90a8c592e9ed8890b874ee7487008acb7a39c8d7d2779ec59022",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/plan.json",
+      "change": "added",
+      "bytes": 7493,
+      "sha256": "8043f7494acef583d1391573dfe06d82dda509bdfd94231bf56dd6e955c38d9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/controls.json",
+      "change": "added",
+      "bytes": 4552,
+      "sha256": "2b844d8038b66c8326d8b23a65686026d8dffe88c4f6e9a7d298c641c5ae0e7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/execution.json",
+      "change": "added",
+      "bytes": 29704,
+      "sha256": "761b441415049540e1ed8ba7092a6514c8c52d261b205893dc6c9120cd161d28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "9a7767174de239b0a49f8dc0c5dbd6a1522943ce4853d829e53ca14449b45e41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 504,
+      "sha256": "ee12187ced50e4ec6391c02f7e687181c82ef49d7e972de4c4dd48e8dedef8ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier.json",
+      "change": "added",
+      "bytes": 24659,
+      "sha256": "26c3cdedd28c6e36fa9455beed602364af70c00a64d11a5f2e2bcff844b5bfc7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6184,
+      "sha256": "1823fb638dbfa9842ba7f0e7180755df972de88bad7b94c5bd273a723265d3d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/result.json",
+      "change": "added",
+      "bytes": 14729,
+      "sha256": "3b26c1b4f179af1477e1c20864a4590c60e0013e01d6129c40e2bdf8b59cee6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/executions/20261121T110658Z-5d6272bb/attempt.json",
+      "change": "added",
+      "bytes": 21049,
+      "sha256": "fb8ca645b3f80da72354ea621312b3ffb909f2f142116a3773e4afe3e7883896",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/executions/20261121T110658Z-5d6272bb/checker.json",
+      "change": "added",
+      "bytes": 7500,
+      "sha256": "fc18b9b6e353ca226a5ea7243c4a18038fa7f08dc15a4145bb7dddf7e05cd04f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/executions/20261121T110658Z-5d6272bb/correspondence.json",
+      "change": "added",
+      "bytes": 1689,
+      "sha256": "c72aa4c98dc1fbbac2037174b1893ae6b7108d8106af11311bb2a99a7d5fc66e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dce0258bc389646bc82efbac0f7d710a4465d84889a32e8ecb58a06113e40284",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/plan.json",
+      "change": "added",
+      "bytes": 7398,
+      "sha256": "6c28e54c962e8a8dc60e19773467c84839b193acb255ff34bd802d9d5cafe764",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/controls.json",
+      "change": "added",
+      "bytes": 4493,
+      "sha256": "ac11e02742f5cb96f9c353aa4b7f43b832bbf52b7538b7d8ab4ebbc0c8192430",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/execution.json",
+      "change": "added",
+      "bytes": 29791,
+      "sha256": "23edd6cfacae22cca9dfc3f0636610b4c798aa70419138ba4063028daf161c6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "51002e0bee5172f98514b46d2175471ffe2e857f5cf2c83e5760384cd26fbecf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 504,
+      "sha256": "ee12187ced50e4ec6391c02f7e687181c82ef49d7e972de4c4dd48e8dedef8ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier.json",
+      "change": "added",
+      "bytes": 24827,
+      "sha256": "6a05feb8849aeb232fcd188f923686fef3baaac9f6edb7c04967ef9db6ef62d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6184,
+      "sha256": "b75c5b4895d11d38db6b2e4d819227c8a40a3ed428ed29dfe2fac02f5eaf43b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/result.json",
+      "change": "added",
+      "bytes": 14778,
+      "sha256": "55aca03970d4e5fbbde5c613e00e92c164f07db7b10de1c7c0f3f75bc69d808b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/attempt.json",
+      "change": "added",
+      "bytes": 21223,
+      "sha256": "79486ac3d19ae7c56e601179c4f0954eeaf928cca96bb3189407e09439f0c7e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/checker.json",
+      "change": "added",
+      "bytes": 7509,
+      "sha256": "2a7ec702d26b86c0d202dfb46dc2a5d9113a13ebdb1515ead10292ba5135ef29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/correspondence.json",
+      "change": "added",
+      "bytes": 1692,
+      "sha256": "d1891fd7a3c734b9c5a685154313e6d39e2b14c44c04216269f8a75c387059f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-native/workflow.log",
+      "change": "added",
+      "bytes": 2197,
+      "sha256": "6c3e7b7609d1e708626e96fd429eff41d90ce89e71278216c98eca7e6bd51c57",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T11:07:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/20261121T110701Z-84aace4d/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/executions/20261121T110701Z-84aace4d/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/executions/20261121T110701Z-84aace4d/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-fix/executions/20261121T110701Z-84aace4d/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/20261121T110701Z-1fa5db13/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/executions/20261121T110701Z-1fa5db13/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/executions/20261121T110701Z-1fa5db13/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/nonempty-parent/executions/20261121T110701Z-1fa5db13/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/20261121T110655Z-f052e5a3/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/executions/20261121T110655Z-f052e5a3/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/executions/20261121T110655Z-f052e5a3/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-fix/executions/20261121T110655Z-f052e5a3/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/20261121T110655Z-998cbd9f/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/postorder-parent/executions/20261121T110655Z-998cbd9f/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/20261121T110700Z-b983a720/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/executions/20261121T110700Z-b983a720/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/executions/20261121T110700Z-b983a720/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-fix/executions/20261121T110700Z-b983a720/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/20261121T110700Z-6b30ad20/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/executions/20261121T110700Z-6b30ad20/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/executions/20261121T110700Z-6b30ad20/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/preorder-parent/executions/20261121T110700Z-6b30ad20/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/records/summary.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/20261121T110652Z-302041d0/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/replay/executions/20261121T110652Z-302041d0/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/run.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/20261121T110658Z-5d6272bb/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/executions/20261121T110658Z-5d6272bb/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/executions/20261121T110658Z-5d6272bb/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-fix/executions/20261121T110658Z-5d6272bb/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/completion.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/plan.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/20261121T110656Z-59a398f0/result.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/attempt.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/checker.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/terminal-parent/executions/20261121T110656Z-59a398f0/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1153606,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/67294fff822a4ae0aa9062484ed0dffc00053f40/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

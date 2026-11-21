@@ -30,13 +30,15 @@
     "description": "Truncation copies exactly the complete UTF-16 tokens inside the original window. Abbreviation also keeps surrogate pairs intact."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen bounded proof obligations",
+  "verdictLabel": "Strict native 10/10, finite JVM 10/10",
   "source": {
     "kind": "pull-request",
     "repository": "https://github.com/apache/commons-lang",
     "url": "https://github.com/apache/commons-lang/pull/1719"
   },
   "notes": [
-    "The frozen independent observation table has 1515 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+    "The frozen independent observation table has 1515 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+    "An initial two-unit cut of a😀b left [0061,D83D] on the parent and [0061] on the fix. The opposite cut discarded a lone low surrogate on the fix. At abbreviation width four, the parent kept D83D before the three dots and the fix returned only the dots. An intact pair and width five are preserved.",
+    "Exact UTF-16 operations now follow complete code points and snapshot a selected char array range. The fixed mixed string is symbolic. The fixed full-domain result uses 1,515 separately checked native call sites. A single unsplit fixed-side proof reaches its 60-second deadline."
   ]
 }

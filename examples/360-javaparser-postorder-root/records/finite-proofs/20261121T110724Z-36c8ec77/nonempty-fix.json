@@ -1,0 +1,117 @@
+{
+  "status": "established",
+  "entry": "organic.TreeOrder#postorder(I)I",
+  "inputs": 1,
+  "differences": 0,
+  "sides": {
+    "fix": {
+      "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+      "entry": {
+        "entry": "organic.TreeOrder#postorder(I)I",
+        "classSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+        "subjectClassSha256": "989762f9d145f92a44433e771f7a92a8783ac9b1df4e635436c925a513c88544"
+      },
+      "classpath": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f",
+          "role": "adapter"
+        },
+        {
+          "path": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+          "sha256": "62cf2f2c4bb4be2ced24f7914b4d22ae9cc2a760a5ab11cd2cd867e68d69cd27",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 1 && code < 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.TreeOrder.postorder(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "8b5a19218b22ce55b2eb249b397a5378cc6b7421883a397db9d70272b3d048d8",
+      "stdoutSha256": "594a1a3e95eb97f4339ae8fd92c98085a707579ac19a85afea8609de8072256c",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr"
+      ],
+      "interval": [
+        1,
+        1
+      ],
+      "rows": [
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.092,
+      "cpuSeconds": 0.1317,
+      "peakRssBytes": 63979520,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "fix",
+      "entry": "organic.TreeOrder#postorder(I)I",
+      "adapterSha256": "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f",
+      "adapterClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
+      "subject": {
+        "class": "com.github.javaparser.ast.Node",
+        "method": "findAll",
+        "descriptor": "(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+        "loadedFrom": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+        "classSha256": "989762f9d145f92a44433e771f7a92a8783ac9b1df4e635436c925a513c88544",
+        "adapterCalls": [
+          "com.github.javaparser.ast.CompilationUnit#<init>()V",
+          "com.github.javaparser.ast.CompilationUnit#<init>(Ljava/lang/String;)V",
+          "com.github.javaparser.ast.CompilationUnit#getPackageDeclaration()Ljava/util/Optional;",
+          "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+          "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+          "com.github.javaparser.ast.PackageDeclaration#getName()Lcom/github/javaparser/ast/expr/Name;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The nonempty package tree preserves the original postorder identity sequence. Its original receiver and direct outcome are indexed in controls/table.json.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 2,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0024,
+  "controlSeconds": 0.0014,
+  "wallSeconds": 0.5949,
+  "task": "nonempty-fix",
+  "sourceClaim": "f7a35215eba5bf01",
+  "inputsKey": "2b7f8337d134072ed7de4cdf83c1f37a7a0319a4b9c3a86361e020b991589a79",
+  "revisions": [
+    "fix"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "fix": "b2e536084c0b0a32442e25e1112b31e4bb010fac4c6abb828fd5a31b28ab5759"
+  }
+}

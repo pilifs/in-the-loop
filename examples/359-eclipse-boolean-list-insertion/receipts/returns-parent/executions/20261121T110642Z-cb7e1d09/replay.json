@@ -1,0 +1,75 @@
+[
+  {
+    "claimKey": "466c06144aecd2b8",
+    "entry": "organic.InsertBits#returns(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 2782
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "cdb73de25194d5c18944fdc32edbe0bfc81b98278e21f671767fa030262fa64c",
+        "classpath": [
+          "61eb265a42c5a186ab435a1d8dc5d9bc35fac20c327ec51094b84009ad3679f7",
+          "c628b4efe382d596b0fd41960019640d2b2be6c63690e5ee7cd82de580b88a8b",
+          "5a95f8c6b49996fa0dfe81d930ea59ee13dc23b5bedf899988ee0446eafdf3ae"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 2782;\nif (!(code >= 0 && code < 2865)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.InsertBits.returns(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 2782,
+      "input": {
+        "source": [
+          true,
+          true,
+          true,
+          true
+        ],
+        "insert": [
+          false,
+          false
+        ],
+        "index": 0
+      },
+      "field": "returns",
+      "direct": {
+        "parent": {
+          "returns": "index-out-of-bounds",
+          "contents": {
+            "size": 4,
+            "values": [
+              true,
+              true,
+              true,
+              true
+            ]
+          }
+        }
+      },
+      "tableSha256": "5dde4d874924fb52bd10bbf7ee53e5578c41cd378a89b28c7f74cc6d4314d303"
+    }
+  }
+]

@@ -35,9 +35,11 @@
     "repository": "https://github.com/javaparser/javaparser",
     "url": "https://github.com/javaparser/javaparser/pull/4538"
   },
-  "verdictLabel": "Frozen bounded proof obligations",
+  "verdictLabel": "Strict native 0/8, finite JVM 8/8",
   "notes": [
     "This is a conditional transfer case outside the six primary PRs. Guava's entry iterator carried the backing count through its nested frames and exhausted normally.",
-    "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes."
+    "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes.",
+    "Postorder findAll on an empty root threw EmptyStackException on the parent and returned the original root once on the fix. Both revisions preserved Name, PackageDeclaration, CompilationUnit order for package com, with receiver identity and preorder as controls.",
+    "The input adapter now calls the declaring Node.findAll method on the same CompilationUnit, matching the upstream test. The strict run reaches System.getProperty(\"line.separator\") in LineSeparator.<clinit>. A separate observed-startup diagnostic reads the live SYSTEM enum instance, whose object state the verifier cannot bind. The original JDK replay and finite checks retain both tree shapes and preorder controls."
   ]
 }

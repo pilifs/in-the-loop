@@ -30,13 +30,15 @@
     "description": "A lenient reader consumes exactly the initial mark for zero, one or two marks across three distinct short-read schedules."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen bounded proof obligations",
+  "verdictLabel": "Strict native 4/4, finite JVM 4/4",
   "source": {
     "kind": "pull-request",
     "repository": "https://github.com/google/gson",
     "url": "https://github.com/google/gson/pull/3137"
   },
   "notes": [
-    "The frozen independent observation table has 9 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+    "The frozen independent observation table has 9 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+    "With two leading marks and cap one or two, the parent returned foo and the fix returned FEFF followed by foo. Cap 100 and a plain StringReader preserve the second mark on both revisions. Every read length is in the JVM control logs.",
+    "The same String snapshot repair used for Gson #3034 covers the second historical JsonReader unchanged. The real reader supplies its short-read schedule and its own buffer compaction."
   ]
 }

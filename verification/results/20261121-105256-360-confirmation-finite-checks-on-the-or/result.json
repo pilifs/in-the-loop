@@ -1,0 +1,252 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-105256-360-confirmation-finite-checks-on-the-or",
+  "title": "360 confirmation finite checks on the original javaparser public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 14.5s, peak 153.6 MiB (estimated 5m00s, 3.0 GiB); 11 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-105256-360-confirmation-finite-checks-on-the-or.json",
+    "sha256": "7243568b075492def37ec8d650ba7fababa9d64cff1bce25934d754a8f0e00fd",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-105256-360-confirmation-finite-checks-on-the-or",
+      "title": "360 confirmation finite checks on the original javaparser public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/javaparser/javaparser#4538 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:finite"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T10:52:56+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 360 --route finite --stage confirmation --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/confirmation-finite"
+      ]
+    }
+  },
+  "sourceCommit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+  "startedAt": "2026-11-21T11:07:16+00:00",
+  "finishedAt": "2026-11-21T11:07:38+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1104093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 161054720,
+    "wallSeconds": 14.5,
+    "cpuSeconds": 25.6,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 360 --route finite --stage confirmation --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 14.469,
+      "cpuSeconds": 25.596,
+      "cpuThrottledSeconds": 2.29,
+      "peakMemoryBytes": 161054720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 598,
+        "sha256": "6ba589c14fcb7c96fe1e9379b8789a26464fc56e8dcd4a72b75ae56f5923f014",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"360\", \"route\": \"finite\", \"stage\": \"confirmation\", \"workflowExit\": 0, \"seconds\": 14.321, \"checkerSeconds\": 180, \"tasks\": [\"postorder-parent\", \"postorder-fix\", \"terminal-parent\", \"terminal-fix\", \"preorder-parent\", \"preorder-fix\", \"nonempty-parent\", \"nonempty-fix\"], \"verifierCommit\": \"1222"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/batch.json",
+      "change": "added",
+      "bytes": 4772,
+      "sha256": "6c9f85ab97ce46c5240f8803a2c3f4ebd8da6ec030e2c037982ae3deade687be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/nonempty-fix.json",
+      "change": "added",
+      "bytes": 5049,
+      "sha256": "72a46cb09d5e93e176aa53b5ddb79d09018540d8620a3dc2f5a16cde4e53a685",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/nonempty-parent.json",
+      "change": "added",
+      "bytes": 5069,
+      "sha256": "b1513fba420e8f2d0d58d86110e8c44934ec953863a73a2f21ec85318cddf379",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/postorder-fix.json",
+      "change": "added",
+      "bytes": 5257,
+      "sha256": "b237e3389334448f3effa8fb408048578affa641379b99bb5529d53181a11cb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/postorder-parent.json",
+      "change": "added",
+      "bytes": 7273,
+      "sha256": "d16f5eb06fdf9aa4992257619992d3653ef50de01e994d7d647e18799ab04749",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/preorder-fix.json",
+      "change": "added",
+      "bytes": 5229,
+      "sha256": "f88f8dc66a8867f1a38cb303e60fda86fb5ab0273811abf17e80fe44faeb4be1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/preorder-parent.json",
+      "change": "added",
+      "bytes": 5250,
+      "sha256": "d69ef785f5014196eda4f5acde39ba9eefa4bce5bdeab6b03d895dc99284eda2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/terminal-fix.json",
+      "change": "added",
+      "bytes": 5182,
+      "sha256": "cd9d23a634121f1cf0850ecd0fb13980ac8d16a73e890dc5871a9afc01da54c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/terminal-parent.json",
+      "change": "added",
+      "bytes": 7195,
+      "sha256": "ab6bbd1598c5d8d079f98aacfa84d81b78053c77b632b0fd713eafc2d180bbdd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/run.json",
+      "change": "added",
+      "bytes": 668,
+      "sha256": "a831b37052043d20e209d3f1e73d60c745f111a36d93b34885b45f5b78b2b8b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/confirmation-finite/workflow.log",
+      "change": "added",
+      "bytes": 334,
+      "sha256": "b3cc88d133e5dcbc4b19941d86ff72b6633e7073974cda553e4aaf7295be3ea3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T11:11:32+00:00",
+    "applied": [
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/batch.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/nonempty-fix.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/nonempty-parent.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/postorder-fix.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/postorder-parent.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/preorder-fix.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/preorder-parent.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/terminal-fix.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/20261121T110724Z-36c8ec77/terminal-parent.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/run.json",
+      "examples/360-javaparser-postorder-root/records/confirmation-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/67294fff822a4ae0aa9062484ed0dffc00053f40/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

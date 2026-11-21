@@ -30,13 +30,15 @@
     "description": "The original converter factory must preserve the physical capacity and expose exactly the BytesWritable logical prefix."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen bounded proof obligations",
+  "verdictLabel": "Strict native 0/10, finite JVM 10/10",
   "source": {
     "kind": "pull-request",
     "repository": "https://github.com/apache/avro",
     "url": "https://github.com/apache/avro/pull/3878"
   },
   "notes": [
-    "The frozen independent observation table has 21 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+    "The frozen independent observation table has 21 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+    "With capacity five and logical length three, the parent had position/limit/capacity/remaining (0,5,5,5) and read 4 at index 3. The fix had (0,3,5,3) and threw IndexOutOfBoundsException. Both returned the prefix 1, 2, 3 with position zero. The nested converter is scored separately from the real JobConf(false) factory.",
+    "Class intake now checks the actual source and bytes selected by the subject JVM for declared dependency overlaps. Both historical closures contain 124 entries and seven differing package metadata classes. Native startup reaches Hadoop Configuration from the factory and Avro Schema from the direct route. Observing startup exposes System.getenv and Runtime.availableProcessors respectively."
   ]
 }

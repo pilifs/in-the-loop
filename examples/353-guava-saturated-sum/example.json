@@ -30,13 +30,15 @@
     "description": "Two independently populated backing multisets expose their capped mathematical sum through lookup, size and entry iteration."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen bounded proof obligations",
+  "verdictLabel": "Strict native 10/10, finite JVM 10/10",
   "source": {
     "kind": "pull-request",
     "repository": "https://github.com/google/guava",
     "url": "https://github.com/google/guava/pull/8509"
   },
   "notes": [
-    "The frozen independent observation table has 49 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+    "The frozen independent observation table has 49 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+    "Two counts of 2³⁰ yielded size 2³¹−1, lookup −2³¹ and an exception from the first entry on the parent. All three observers yield 2³¹−1 on the fix. An absent key stays at zero and mutating a backing count updates both observers of the same live view from six to seven.",
+    "The existing live-view and iterator support already covered the backing objects, saturated addition, empty iteration and exhaustion."
   ]
 }

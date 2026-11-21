@@ -1,0 +1,276 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-111009-359-replay-the-native-selector-witnesses",
+  "title": "359 replay the native selector witnesses on the original JVM",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.6s, peak 171.3 MiB (estimated 2m00s, 2.0 GiB); 14 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-111009-359-replay-the-native-selector-witnesses.json",
+    "sha256": "fa27f152666dce68b0c25ac24ebbea4e1c12e2f68e6b6a564ad26e23e7881af3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-111009-359-replay-the-native-selector-witnesses",
+      "title": "359 replay the native selector witnesses on the original JVM",
+      "description": "After the native checker found the original Eclipse Collections counterexample at selector 940, it replayed the specialized wrapper in its interpreter. Exercise the workflow which now sends that candidate to the original JDK, binds the exact classpath and guard, and accepts a refutation only when that JVM reproduces it. Check both the public return and the list contents.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "native-finite-selectors"
+      ],
+      "links": {
+        "examples": [
+          "359"
+        ]
+      },
+      "expected": "Parent input 940 violates the exact post-state. The fix establishes it over every one of the 2,865 inputs.",
+      "submitted": {
+        "at": "2026-11-21T11:10:09+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "5G",
+        "timeout": "90m"
+      },
+      "steps": [
+        {
+          "name": "Check each admitted call to the original packed-list insertion",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 examples/tools/build.py 359 --native-selectors contents-parent,returns-parent --checker-seconds 30 --first 940",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent"
+      ]
+    }
+  },
+  "sourceCommit": "b39bf642d33d01c933a638da1042293213cac2ff",
+  "startedAt": "2026-11-21T11:18:34+00:00",
+  "finishedAt": "2026-11-21T11:18:46+00:00",
+  "wallSeconds": 12.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1388351,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 5368709120,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 179634176,
+    "wallSeconds": 6.6,
+    "cpuSeconds": 11.2,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check each admitted call to the original packed-list insertion",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 examples/tools/build.py 359 --native-selectors contents-parent,returns-parent --checker-seconds 30 --first 940",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 6.614,
+      "cpuSeconds": 11.247,
+      "cpuThrottledSeconds": 1.507,
+      "peakMemoryBytes": 179634176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-each-admitted-call-to-th.log",
+        "lines": 2,
+        "bytes": 101,
+        "sha256": "8f8d2a240b5e69d5aabf32612d50d98f7d42af9ff2f507dd7d3284441d9fc88d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "contents-parent refuted, 1/2865 admitted selectors",
+        "returns-parent refuted, 1/2865 admitted selectors"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/Calls.java",
+      "change": "added",
+      "bytes": 252825,
+      "sha256": "f32775c9a3112146072de92fd89d7b2ad06f833efbd8d2c103edd7bb6fff1708",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 145109,
+      "sha256": "46fcef0c1b6ab5d3af57ccc799900e7bf59fb708d9d23ba8e14729e37a772981",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/cases/p940/native.json",
+      "change": "added",
+      "bytes": 5264,
+      "sha256": "891f136cff5921ae0d80676d04392d47c8cf5e4764343ee7ec701a98e131fed3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/cases/p940/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/Calls.java",
+      "change": "added",
+      "bytes": 249960,
+      "sha256": "4718c609df214c06ebb6b7c32440f1051ef58ff31a1404341c8a5b1791cf8527",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 145108,
+      "sha256": "b4ccea0517d887a6ada0fb34a1a9c8c347614935b606ed211ff90bac4ef9f968",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/cases/p940/native.json",
+      "change": "added",
+      "bytes": 5263,
+      "sha256": "f7cca0961a9bf8dec34403a8a29d5b18b80bd2d76466fd31956dcbc813053331",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/cases/p940/stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/contents-parent/Admission.java",
+      "change": "added",
+      "bytes": 217339,
+      "sha256": "ce50148af1f2cc67a07dee1d6dd62560fd1ec8e7cb84ef24ec4ad2bdc1f726e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/contents-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 102182,
+      "sha256": "5c333cf050de388ebac171c810dbc1e18bfd906793dcc977d14c959ec11f8607",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/contents-parent/result.json",
+      "change": "added",
+      "bytes": 33965,
+      "sha256": "91aeb8e6ecf00d512bb68fb3ee01dc3957424bde47a0416d5165179280ac5430",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/returns-parent/Admission.java",
+      "change": "added",
+      "bytes": 217339,
+      "sha256": "ce50148af1f2cc67a07dee1d6dd62560fd1ec8e7cb84ef24ec4ad2bdc1f726e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/returns-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 102182,
+      "sha256": "5c333cf050de388ebac171c810dbc1e18bfd906793dcc977d14c959ec11f8607",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/returns-parent/result.json",
+      "change": "added",
+      "bytes": 33918,
+      "sha256": "e23fccb67119c4efdc8af5c442499dc0e545597428262c2979cba0fffc64b914",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T11:19:14+00:00",
+    "applied": [
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/Calls.java",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/Calls.jvm-bytecode",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/cases/p940/native.json",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/0932e064a10616bbb1b0/cases/p940/stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/Calls.java",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/Calls.jvm-bytecode",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/cases/p940/native.json",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/calls/d80ca9ece7e1d6b11971/cases/p940/stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/contents-parent/Admission.java",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/contents-parent/Admission.jvm-bytecode",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/contents-parent/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/returns-parent/Admission.java",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/returns-parent/Admission.jvm-bytecode",
+      "examples/359-eclipse-boolean-list-insertion/records/native-selectors/parent/20261121T111840Z-63befd8a/tasks/returns-parent/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/67294fff822a4ae0aa9062484ed0dffc00053f40/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

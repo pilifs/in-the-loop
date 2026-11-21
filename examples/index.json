@@ -16466,12 +16466,14 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 10/10, finite JVM 10/10",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The frozen independent observation table has 49 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+        "The frozen independent observation table has 49 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+        "Two counts of 2³⁰ yielded size 2³¹−1, lookup −2³¹ and an exception from the first entry on the parent. All three observers yield 2³¹−1 on the fix. An absent key stays at zero and mutating a backing count updates both observers of the same live view from six to seven.",
+        "The existing live-view and iterator support already covered the backing objects, saturated addition, empty iteration and exhaustion."
       ],
       "source": "https://github.com/google/guava/pull/8509",
       "target": {
@@ -16491,19 +16493,19 @@
           "live-parent",
           "live-fix"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "lookup-parent": "scaffolded",
-          "lookup-fix": "scaffolded",
-          "entries-parent": "scaffolded",
-          "entries-fix": "scaffolded",
-          "size-parent": "scaffolded",
-          "size-fix": "scaffolded",
-          "absent-parent": "scaffolded",
-          "absent-fix": "scaffolded",
-          "live-parent": "scaffolded",
-          "live-fix": "scaffolded"
+          "lookup-parent": "executable",
+          "lookup-fix": "executable",
+          "entries-parent": "executable",
+          "entries-fix": "executable",
+          "size-parent": "executable",
+          "size-fix": "executable",
+          "absent-parent": "executable",
+          "absent-fix": "executable",
+          "live-parent": "executable",
+          "live-fix": "executable"
         },
         "expected": {
           "replay": null,
@@ -16519,23 +16521,103 @@
           "live-fix": "established"
         },
         "claims": {
-          "lookup-parent": null,
-          "lookup-fix": null,
-          "entries-parent": null,
-          "entries-fix": null,
-          "size-parent": null,
-          "size-fix": null,
-          "absent-parent": null,
-          "absent-fix": null,
-          "live-parent": null,
-          "live-fix": null
+          "lookup-parent": "refuted",
+          "lookup-fix": "established",
+          "entries-parent": "refuted",
+          "entries-fix": "established",
+          "size-parent": "established",
+          "size-fix": "established",
+          "absent-parent": "established",
+          "absent-fix": "established",
+          "live-parent": "established",
+          "live-fix": "established"
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T093149Z-9902ad84/result.json",
-            "attempt": "20261121T093149Z-9902ad84",
+            "path": "receipts/replay/20261121T111502Z-5d828a0a/result.json",
+            "attempt": "20261121T111502Z-5d828a0a",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          },
+          "lookup-parent": {
+            "path": "receipts/lookup-parent/20261121T110641Z-99647380/result.json",
+            "attempt": "20261121T110641Z-99647380",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lookup-fix": {
+            "path": "receipts/lookup-fix/20261121T110642Z-8f1a3dec/result.json",
+            "attempt": "20261121T110642Z-8f1a3dec",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "entries-parent": {
+            "path": "receipts/entries-parent/20261121T110643Z-1337c176/result.json",
+            "attempt": "20261121T110643Z-1337c176",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "entries-fix": {
+            "path": "receipts/entries-fix/20261121T110644Z-142e3745/result.json",
+            "attempt": "20261121T110644Z-142e3745",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "size-parent": {
+            "path": "receipts/size-parent/20261121T110644Z-8e6f5b24/result.json",
+            "attempt": "20261121T110644Z-8e6f5b24",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "size-fix": {
+            "path": "receipts/size-fix/20261121T110645Z-085661b4/result.json",
+            "attempt": "20261121T110645Z-085661b4",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "absent-parent": {
+            "path": "receipts/absent-parent/20261121T110645Z-6e45034f/result.json",
+            "attempt": "20261121T110645Z-6e45034f",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "absent-fix": {
+            "path": "receipts/absent-fix/20261121T110645Z-da1b5a28/result.json",
+            "attempt": "20261121T110645Z-da1b5a28",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "live-parent": {
+            "path": "receipts/live-parent/20261121T110646Z-5158abfc/result.json",
+            "attempt": "20261121T110646Z-5158abfc",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "live-fix": {
+            "path": "receipts/live-fix/20261121T110646Z-be10c2b3/result.json",
+            "attempt": "20261121T110646Z-be10c2b3",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -16547,7 +16629,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 10/10, finite JVM 10/10",
           "source": "https://github.com/google/guava/pull/8509",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
@@ -16584,12 +16666,14 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 10/10, finite JVM 10/10",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The frozen independent observation table has 1515 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+        "The frozen independent observation table has 1515 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+        "An initial two-unit cut of a😀b left [0061,D83D] on the parent and [0061] on the fix. The opposite cut discarded a lone low surrogate on the fix. At abbreviation width four, the parent kept D83D before the three dots and the fix returned only the dots. An intact pair and width five are preserved.",
+        "Exact UTF-16 operations now follow complete code points and snapshot a selected char array range. The fixed mixed string is symbolic. The fixed full-domain result uses 1,515 separately checked native call sites. A single unsplit fixed-side proof reaches its 60-second deadline."
       ],
       "source": "https://github.com/apache/commons-lang/pull/1719",
       "target": {
@@ -16612,16 +16696,16 @@
         "readiness": "scaffolded",
         "taskReadiness": {
           "replay": "scaffolded",
-          "fixed-cut-parent": "scaffolded",
-          "fixed-cut-fix": "scaffolded",
-          "truncate-parent": "scaffolded",
+          "fixed-cut-parent": "executable",
+          "fixed-cut-fix": "executable",
+          "truncate-parent": "executable",
           "truncate-fix": "scaffolded",
-          "abbreviate-parent": "scaffolded",
-          "abbreviate-fix": "scaffolded",
-          "intact-parent": "scaffolded",
-          "intact-fix": "scaffolded",
-          "width-five-parent": "scaffolded",
-          "width-five-fix": "scaffolded"
+          "abbreviate-parent": "executable",
+          "abbreviate-fix": "executable",
+          "intact-parent": "executable",
+          "intact-fix": "executable",
+          "width-five-parent": "executable",
+          "width-five-fix": "executable"
         },
         "expected": {
           "replay": null,
@@ -16637,23 +16721,95 @@
           "width-five-fix": "established"
         },
         "claims": {
-          "fixed-cut-parent": null,
-          "fixed-cut-fix": null,
-          "truncate-parent": null,
+          "fixed-cut-parent": "refuted",
+          "fixed-cut-fix": "established",
+          "truncate-parent": "refuted",
           "truncate-fix": null,
-          "abbreviate-parent": null,
-          "abbreviate-fix": null,
-          "intact-parent": null,
-          "intact-fix": null,
-          "width-five-parent": null,
-          "width-five-fix": null
+          "abbreviate-parent": "refuted",
+          "abbreviate-fix": "established",
+          "intact-parent": "established",
+          "intact-fix": "established",
+          "width-five-parent": "established",
+          "width-five-fix": "established"
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T091834Z-6a42a687/result.json",
-            "attempt": "20261121T091834Z-6a42a687",
+            "path": "receipts/replay/20261121T111506Z-69ef5c7c/result.json",
+            "attempt": "20261121T111506Z-69ef5c7c",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          },
+          "fixed-cut-parent": {
+            "path": "receipts/fixed-cut-parent/20261121T110642Z-75f2a5c5/result.json",
+            "attempt": "20261121T110642Z-75f2a5c5",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "fixed-cut-fix": {
+            "path": "receipts/fixed-cut-fix/20261121T110643Z-d0d0601d/result.json",
+            "attempt": "20261121T110643Z-d0d0601d",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "truncate-parent": {
+            "path": "receipts/truncate-parent/20261121T110644Z-9e97ea95/result.json",
+            "attempt": "20261121T110644Z-9e97ea95",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "abbreviate-parent": {
+            "path": "receipts/abbreviate-parent/20261121T110748Z-0323140c/result.json",
+            "attempt": "20261121T110748Z-0323140c",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "abbreviate-fix": {
+            "path": "receipts/abbreviate-fix/20261121T110751Z-524afceb/result.json",
+            "attempt": "20261121T110751Z-524afceb",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "intact-parent": {
+            "path": "receipts/intact-parent/20261121T110753Z-c0f39287/result.json",
+            "attempt": "20261121T110753Z-c0f39287",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "intact-fix": {
+            "path": "receipts/intact-fix/20261121T110754Z-6e819b46/result.json",
+            "attempt": "20261121T110754Z-6e819b46",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "width-five-parent": {
+            "path": "receipts/width-five-parent/20261121T110755Z-0c110cd2/result.json",
+            "attempt": "20261121T110755Z-0c110cd2",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "width-five-fix": {
+            "path": "receipts/width-five-fix/20261121T110755Z-ad8220fd/result.json",
+            "attempt": "20261121T110755Z-ad8220fd",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -16665,7 +16821,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 10/10, finite JVM 10/10",
           "source": "https://github.com/apache/commons-lang/pull/1719",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
@@ -16702,12 +16858,14 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 0/10, finite JVM 10/10",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The frozen independent observation table has 21 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+        "The frozen independent observation table has 21 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+        "With capacity five and logical length three, the parent had position/limit/capacity/remaining (0,5,5,5) and read 4 at index 3. The fix had (0,3,5,3) and threw IndexOutOfBoundsException. Both returned the prefix 1, 2, 3 with position zero. The nested converter is scored separately from the real JobConf(false) factory.",
+        "Class intake now checks the actual source and bytes selected by the subject JVM for declared dependency overlaps. Both historical closures contain 124 entries and seven differing package metadata classes. Native startup reaches Hadoop Configuration from the factory and Avro Schema from the direct route. Observing startup exposes System.getenv and Runtime.availableProcessors respectively."
       ],
       "source": "https://github.com/apache/avro/pull/3878",
       "target": {
@@ -16768,12 +16926,12 @@
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T100611Z-ce2bec6c/result.json",
-            "attempt": "20261121T100611Z-ce2bec6c",
+            "path": "receipts/replay/20261121T111510Z-de24886d/result.json",
+            "attempt": "20261121T111510Z-de24886d",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
-            "attempts": 1
+            "attempts": 2
           }
         },
         "staleReceipts": [],
@@ -16783,7 +16941,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 0/10, finite JVM 10/10",
           "source": "https://github.com/apache/avro/pull/3878",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
@@ -16820,12 +16978,14 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 6/6, finite JVM 6/6",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The frozen independent observation table has 13 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+        "The frozen independent observation table has 13 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+        "For every decimal suffix after 2⁶⁴, the parent threw MalformedJsonException at peek(). The fix returned NUMBER and the same reader returned all 21 original characters. Both revisions accept 10 and reject 00 and 01.",
+        "The selected char-array range now constructs an immutable String snapshot. The existing arithmetic and reader models handled the signed 64-bit wrap and the separate overflow flag."
       ],
       "source": "https://github.com/google/gson/pull/3034",
       "target": {
@@ -16841,15 +17001,15 @@
           "controls-parent",
           "controls-fix"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "token-parent": "scaffolded",
-          "token-fix": "scaffolded",
-          "lexeme-parent": "scaffolded",
-          "lexeme-fix": "scaffolded",
-          "controls-parent": "scaffolded",
-          "controls-fix": "scaffolded"
+          "token-parent": "executable",
+          "token-fix": "executable",
+          "lexeme-parent": "executable",
+          "lexeme-fix": "executable",
+          "controls-parent": "executable",
+          "controls-fix": "executable"
         },
         "expected": {
           "replay": null,
@@ -16861,19 +17021,67 @@
           "controls-fix": "established"
         },
         "claims": {
-          "token-parent": null,
-          "token-fix": null,
-          "lexeme-parent": null,
-          "lexeme-fix": null,
-          "controls-parent": null,
-          "controls-fix": null
+          "token-parent": "refuted",
+          "token-fix": "established",
+          "lexeme-parent": "refuted",
+          "lexeme-fix": "established",
+          "controls-parent": "established",
+          "controls-fix": "established"
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T091838Z-7f67ebc2/result.json",
-            "attempt": "20261121T091838Z-7f67ebc2",
+            "path": "receipts/replay/20261121T111522Z-758fc4be/result.json",
+            "attempt": "20261121T111522Z-758fc4be",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          },
+          "token-parent": {
+            "path": "receipts/token-parent/20261121T110640Z-cc414bd4/result.json",
+            "attempt": "20261121T110640Z-cc414bd4",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "token-fix": {
+            "path": "receipts/token-fix/20261121T110641Z-9e24b419/result.json",
+            "attempt": "20261121T110641Z-9e24b419",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lexeme-parent": {
+            "path": "receipts/lexeme-parent/20261121T110641Z-efa85815/result.json",
+            "attempt": "20261121T110641Z-efa85815",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lexeme-fix": {
+            "path": "receipts/lexeme-fix/20261121T110644Z-397cbb88/result.json",
+            "attempt": "20261121T110644Z-397cbb88",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "controls-parent": {
+            "path": "receipts/controls-parent/20261121T110645Z-dcde1fa2/result.json",
+            "attempt": "20261121T110645Z-dcde1fa2",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "controls-fix": {
+            "path": "receipts/controls-fix/20261121T110646Z-27b82d3f/result.json",
+            "attempt": "20261121T110646Z-27b82d3f",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -16885,7 +17093,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 6/6, finite JVM 6/6",
           "source": "https://github.com/google/gson/pull/3034",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
@@ -16922,12 +17130,14 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 4/4, finite JVM 4/4",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The frozen independent observation table has 9 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+        "The frozen independent observation table has 9 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+        "With two leading marks and cap one or two, the parent returned foo and the fix returned FEFF followed by foo. Cap 100 and a plain StringReader preserve the second mark on both revisions. Every read length is in the JVM control logs.",
+        "The same String snapshot repair used for Gson #3034 covers the second historical JsonReader unchanged. The real reader supplies its short-read schedule and its own buffer compaction."
       ],
       "source": "https://github.com/google/gson/pull/3137",
       "target": {
@@ -16941,13 +17151,13 @@
           "plain-parent",
           "plain-fix"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "chunked-parent": "scaffolded",
-          "chunked-fix": "scaffolded",
-          "plain-parent": "scaffolded",
-          "plain-fix": "scaffolded"
+          "chunked-parent": "executable",
+          "chunked-fix": "executable",
+          "plain-parent": "executable",
+          "plain-fix": "executable"
         },
         "expected": {
           "replay": null,
@@ -16957,17 +17167,49 @@
           "plain-fix": "established"
         },
         "claims": {
-          "chunked-parent": null,
-          "chunked-fix": null,
-          "plain-parent": null,
-          "plain-fix": null
+          "chunked-parent": "refuted",
+          "chunked-fix": "established",
+          "plain-parent": "established",
+          "plain-fix": "established"
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T091841Z-6ec26695/result.json",
-            "attempt": "20261121T091841Z-6ec26695",
+            "path": "receipts/replay/20261121T111525Z-905d557c/result.json",
+            "attempt": "20261121T111525Z-905d557c",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          },
+          "chunked-parent": {
+            "path": "receipts/chunked-parent/20261121T110641Z-22a8f04e/result.json",
+            "attempt": "20261121T110641Z-22a8f04e",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "chunked-fix": {
+            "path": "receipts/chunked-fix/20261121T110642Z-07c4ead8/result.json",
+            "attempt": "20261121T110642Z-07c4ead8",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "plain-parent": {
+            "path": "receipts/plain-parent/20261121T110642Z-5757fc81/result.json",
+            "attempt": "20261121T110642Z-5757fc81",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "plain-fix": {
+            "path": "receipts/plain-fix/20261121T110642Z-a5f83ab1/result.json",
+            "attempt": "20261121T110642Z-a5f83ab1",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -16979,7 +17221,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 4/4, finite JVM 4/4",
           "source": "https://github.com/google/gson/pull/3137",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
@@ -17016,12 +17258,14 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 6/6, finite JVM 6/6",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The frozen independent observation table has 2051 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13."
+        "The frozen independent observation table has 2051 rows. Each property identifies its own input range. The subject JDK is Temurin 21.0.13.",
+        "Decoding 4142434445 with writes at offsets 0, 3 and 7 yielded ABCD on the parent and ABCDE on the fix. A single write and a 2+4+4 schedule yielded ABCDE on both. The public stream receives the same source array for every write.",
+        "The same style of a stateful public caller and independent end observation transfers from the Gson reader. This case additionally needed the selected JDK output-stream and byte-array growth bytecode."
       ],
       "source": "https://github.com/apache/commons-codec/pull/135",
       "target": {
@@ -17037,15 +17281,15 @@
           "controls-parent",
           "controls-fix"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "bytes-parent": "scaffolded",
-          "bytes-fix": "scaffolded",
-          "ten-parent": "scaffolded",
-          "ten-fix": "scaffolded",
-          "controls-parent": "scaffolded",
-          "controls-fix": "scaffolded"
+          "bytes-parent": "executable",
+          "bytes-fix": "executable",
+          "ten-parent": "executable",
+          "ten-fix": "executable",
+          "controls-parent": "executable",
+          "controls-fix": "executable"
         },
         "expected": {
           "replay": null,
@@ -17057,19 +17301,67 @@
           "controls-fix": "established"
         },
         "claims": {
-          "bytes-parent": null,
-          "bytes-fix": null,
-          "ten-parent": null,
-          "ten-fix": null,
-          "controls-parent": null,
-          "controls-fix": null
+          "bytes-parent": "refuted",
+          "bytes-fix": "established",
+          "ten-parent": "refuted",
+          "ten-fix": "established",
+          "controls-parent": "established",
+          "controls-fix": "established"
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T091844Z-6cc99129/result.json",
-            "attempt": "20261121T091844Z-6cc99129",
+            "path": "receipts/replay/20261121T111528Z-d31000c0/result.json",
+            "attempt": "20261121T111528Z-d31000c0",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          },
+          "bytes-parent": {
+            "path": "receipts/bytes-parent/20261121T110641Z-1a5b8c3d/result.json",
+            "attempt": "20261121T110641Z-1a5b8c3d",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "bytes-fix": {
+            "path": "receipts/bytes-fix/20261121T110642Z-326858a4/result.json",
+            "attempt": "20261121T110642Z-326858a4",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ten-parent": {
+            "path": "receipts/ten-parent/20261121T110643Z-c58051cd/result.json",
+            "attempt": "20261121T110643Z-c58051cd",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ten-fix": {
+            "path": "receipts/ten-fix/20261121T110644Z-c2510599/result.json",
+            "attempt": "20261121T110644Z-c2510599",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "controls-parent": {
+            "path": "receipts/controls-parent/20261121T110645Z-3c52cfe5/result.json",
+            "attempt": "20261121T110645Z-3c52cfe5",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "controls-fix": {
+            "path": "receipts/controls-fix/20261121T110645Z-96f9ddaf/result.json",
+            "attempt": "20261121T110645Z-96f9ddaf",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -17081,7 +17373,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 6/6, finite JVM 6/6",
           "source": "https://github.com/apache/commons-codec/pull/135",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
@@ -17118,13 +17410,15 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 8/8, finite JVM 8/8",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
         "This is a conditional transfer case outside the six primary PRs. The Gson and Codec stream checks retained exact content across separate transfers and a later observation.",
-        "The independent original-scope grid has 2865 inputs. Both revisions use the same declared receiver shapes."
+        "The independent original-scope grid has 2865 inputs. Both revisions use the same declared receiver shapes.",
+        "Inserting [false,true] at index zero into [true,false,true] threw IndexOutOfBoundsException on the parent. The fix returned true and produced [false,true,true,false,true]. Indices two and three succeed, and four throws, on both revisions.",
+        "The baseline stopped in BitSet(int). Running the selected JDK BitSet bytecode proved the return over all 2,865 inputs and the preserved cases. The single symbolic content claim reached 60 seconds on both CaDiCaL and Bitwuzla. Checking the original fixed bytecode on every admitted selector established the exact size and complete list contents in 129.6 seconds, with about 90.6 MiB peak native RSS. Both parent properties have counterexamples replayed on the original JVM."
       ],
       "source": "https://github.com/eclipse-collections/eclipse-collections/pull/1434",
       "target": {
@@ -17145,14 +17439,14 @@
         "readiness": "scaffolded",
         "taskReadiness": {
           "replay": "scaffolded",
-          "returns-parent": "scaffolded",
-          "returns-fix": "scaffolded",
-          "contents-parent": "scaffolded",
+          "returns-parent": "executable",
+          "returns-fix": "executable",
+          "contents-parent": "executable",
           "contents-fix": "scaffolded",
-          "ordinary-outcomes-parent": "scaffolded",
-          "ordinary-outcomes-fix": "scaffolded",
-          "ordinary-contents-parent": "scaffolded",
-          "ordinary-contents-fix": "scaffolded"
+          "ordinary-outcomes-parent": "executable",
+          "ordinary-outcomes-fix": "executable",
+          "ordinary-contents-parent": "executable",
+          "ordinary-contents-fix": "executable"
         },
         "expected": {
           "replay": null,
@@ -17166,21 +17460,77 @@
           "ordinary-contents-fix": "established"
         },
         "claims": {
-          "returns-parent": null,
-          "returns-fix": null,
-          "contents-parent": null,
+          "returns-parent": "refuted",
+          "returns-fix": "established",
+          "contents-parent": "refuted",
           "contents-fix": null,
-          "ordinary-outcomes-parent": null,
-          "ordinary-outcomes-fix": null,
-          "ordinary-contents-parent": null,
-          "ordinary-contents-fix": null
+          "ordinary-outcomes-parent": "established",
+          "ordinary-outcomes-fix": "established",
+          "ordinary-contents-parent": "established",
+          "ordinary-contents-fix": "established"
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T105352Z-7dac0c1b/result.json",
-            "attempt": "20261121T105352Z-7dac0c1b",
+            "path": "receipts/replay/20261121T111532Z-13cce013/result.json",
+            "attempt": "20261121T111532Z-13cce013",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          },
+          "returns-parent": {
+            "path": "receipts/returns-parent/20261121T110642Z-cb7e1d09/result.json",
+            "attempt": "20261121T110642Z-cb7e1d09",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "returns-fix": {
+            "path": "receipts/returns-fix/20261121T110648Z-38b51174/result.json",
+            "attempt": "20261121T110648Z-38b51174",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "contents-parent": {
+            "path": "receipts/contents-parent/20261121T110719Z-6b0ff99e/result.json",
+            "attempt": "20261121T110719Z-6b0ff99e",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ordinary-outcomes-parent": {
+            "path": "receipts/ordinary-outcomes-parent/20261121T110838Z-c61fe0f5/result.json",
+            "attempt": "20261121T110838Z-c61fe0f5",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ordinary-outcomes-fix": {
+            "path": "receipts/ordinary-outcomes-fix/20261121T110839Z-94f6a830/result.json",
+            "attempt": "20261121T110839Z-94f6a830",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ordinary-contents-parent": {
+            "path": "receipts/ordinary-contents-parent/20261121T110840Z-6b8a2cfc/result.json",
+            "attempt": "20261121T110840Z-6b8a2cfc",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ordinary-contents-fix": {
+            "path": "receipts/ordinary-contents-fix/20261121T110841Z-9bd7445d/result.json",
+            "attempt": "20261121T110841Z-9bd7445d",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -17192,7 +17542,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 8/8, finite JVM 8/8",
           "source": "https://github.com/eclipse-collections/eclipse-collections/pull/1434",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
@@ -17229,13 +17579,15 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Frozen bounded proof obligations",
+      "verdictLabel": "Strict native 0/8, finite JVM 8/8",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
         "This is a conditional transfer case outside the six primary PRs. Guava's entry iterator carried the backing count through its nested frames and exhausted normally.",
-        "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes."
+        "The independent original-scope grid has 2 inputs. Both revisions use the same declared receiver shapes.",
+        "Postorder findAll on an empty root threw EmptyStackException on the parent and returned the original root once on the fix. Both revisions preserved Name, PackageDeclaration, CompilationUnit order for package com, with receiver identity and preorder as controls.",
+        "The input adapter now calls the declaring Node.findAll method on the same CompilationUnit, matching the upstream test. The strict run reaches System.getProperty(\"line.separator\") in LineSeparator.<clinit>. A separate observed-startup diagnostic reads the live SYSTEM enum instance, whose object state the verifier cannot bind. The original JDK replay and finite checks retain both tree shapes and preorder controls."
       ],
       "source": "https://github.com/javaparser/javaparser/pull/4538",
       "target": {
@@ -17288,12 +17640,12 @@
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261121T105207Z-71006d7b/result.json",
-            "attempt": "20261121T105207Z-71006d7b",
+            "path": "receipts/replay/20261121T111536Z-95e39e76/result.json",
+            "attempt": "20261121T111536Z-95e39e76",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
-            "attempts": 1
+            "attempts": 2
           }
         },
         "staleReceipts": [],
@@ -17303,7 +17655,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Frozen bounded proof obligations",
+          "verdictLabel": "Strict native 0/8, finite JVM 8/8",
           "source": "https://github.com/javaparser/javaparser/pull/4538",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },

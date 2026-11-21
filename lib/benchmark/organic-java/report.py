@@ -42,9 +42,11 @@ def digest(path):
 
 
 def original_observations(folder, table):
-    for receipt in sorted((folder / "receipts/replay").glob("*/result.json"), reverse=True):
+    for receipt in sorted((folder / "receipts/replay").glob("*/result.json")):
         d = read(receipt)
         if d["conclusion"]["expectation"] != "yes" or d["evidence"]["replay"] != {"by": "jvm", "reproduced": True}:
+            continue
+        if any(digest(folder / f) != checksum for f, checksum in d["claim"]["target"]["files"].items()):
             continue
         sources, rows = {}, {}
         for side in ("parent", "fix"):
@@ -141,7 +143,7 @@ def score(number, case, stages):
         original = native(folder, task, ["baseline"], plan)
         current = native(folder, task, stages, plan)
         if not current["qualified"]:
-            for proof in reversed(native_selectors.evidence(folder, plan)):
+            for proof in native_selectors.evidence(folder, plan):
                 if proof.get("status") == task["expected"]:
                     file = (folder / proof["record"]).resolve()
                     report = read(file)
@@ -218,7 +220,17 @@ def score(number, case, stages):
             if f.is_file():
                 r = read(f)
                 runs[group + "-" + kind] = {k: r[k] for k in ("seconds", "verifierCommit", "checkerSha256", "workflowExit")} | {"record": rel(f)}
-    return {"handwrittenAdapters": adapters, "wrongResultControlsRejected": len(wrong_results(number)),
+    original_replays = []
+    for path in sorted((folder / "records/native-selectors").glob("*/*/tasks/*/result.json")):
+        doc = read(path)
+        if doc["status"] != "refuted" or doc["checked"][-1]["status"] != "needs-jvm-replay":
+            continue
+        plan = route.resolve(folder, ex, target, doc["task"])
+        result = native_selectors.validate_result(folder, plan, path)
+        replay = doc["originalJVMReplay"]
+        original_replays.append({"task": plan.task, "status": result["status"], "inputs": replay["inputs"],
+                                 "publicEntry": replay["entry"], "jdk": replay["jdkRelease"], "checker": doc["checker"], "receipt": rel(path)})
+    return {"handwrittenAdapters": adapters, "wrongResultControlsRejected": len(wrong_results(number)), "nativeSelectorJVMReplays": original_replays,
             "runs": runs, "upstream": case["repository"] + "/pull/" + str(case["pullRequest"]), "history": target["history"]["revisions"],
             "inputs": len(table.cases), "builds": builds, "originals": original_observations(folder, table), "upstreamTests": upstream,
             "primary": PRIMARY[number], "preservation": PRESERVED[number], "caseDecided": formal, "tasks": results}
@@ -236,8 +248,11 @@ def main():
                 if (ROOT / "examples" / c["folder"] / "target.json").is_file()}
     summary = {}
     for v in ("baseline", "current", "finiteBaseline", "finite"):
+        obligations = [t[v] for c in rows.values() for t in c["tasks"].values()]
+        outcomes = Counter(t["status"] for t in obligations if t["qualified"])
         summary[v] = {"completeCases": sum(c["caseDecided"][v] for c in rows.values()),
-                      "qualifiedObligations": sum(t[v]["qualified"] for c in rows.values() for t in c["tasks"].values())}
+                      "qualifiedObligations": sum(outcomes.values()), "established": outcomes["established"],
+                      "refuted": outcomes["refuted"], "open": len(obligations) - sum(outcomes.values())}
     stage = next((s for s in args.stages.split(",") if s in ("confirmation", "final") and
                   all(all(s + "-" + route in r["runs"] for route in ("native", "finite")) for r in rows.values())), None)
     pins = {(run["verifierCommit"], run["checkerSha256"]) for r in rows.values() for name, run in r["runs"].items()

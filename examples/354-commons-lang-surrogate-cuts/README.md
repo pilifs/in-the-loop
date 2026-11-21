@@ -2,4 +2,4 @@
 
 Truncation copies exactly the complete UTF-16 tokens inside the original window. Abbreviation also keeps surrogate pairs intact. [Upstream pull request](https://github.com/apache/commons-lang/pull/1719)
 
-[Public observations](controls/table.json) · [Verification tasks](target.json)
+[Public observations](controls/table.json) · [Verification tasks](target.json) · [Campaign results](../../llm-dlc/loops/organic-java-pr-campaign-results.md)

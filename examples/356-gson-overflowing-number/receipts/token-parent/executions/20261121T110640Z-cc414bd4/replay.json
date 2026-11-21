@@ -1,0 +1,57 @@
+[
+  {
+    "claimKey": "ba4b15c3ccf9c518",
+    "entry": "organic.OverflowNumber#token(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "a2f9ea1046eb0c0a4574e90639825deec599ab5b6cb888c4645ef0331c9b1317",
+        "classpath": [
+          "cfcfa1d9743b181a0a1dd7eee9904120541b1855b52f115dde6b6098ece6c0a5",
+          "8878e0cef9943f813b0ae91bd74d226c5222a51fab7e9876c2e3b85b79fd655b",
+          "3b1003e51b8ae56fdbd7c71073e81d1683b97e6c4dff5a9151164d59b769d13c"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.OverflowNumber.token(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": {
+        "text": "184467440737095516160"
+      },
+      "field": "token",
+      "direct": {
+        "parent": {
+          "token": "peek:MalformedJsonException",
+          "lexeme": "peek:MalformedJsonException"
+        }
+      },
+      "tableSha256": "fc21f26f288ae1065bfa7230ce65e6f2e324f3bcfa70284a2c7a0e57ed61dedd"
+    }
+  }
+]

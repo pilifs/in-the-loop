@@ -2,4 +2,4 @@
 
 Two independently populated backing multisets expose their capped mathematical sum through lookup, size and entry iteration. [Upstream pull request](https://github.com/google/guava/pull/8509)
 
-[Public observations](controls/table.json) · [Verification tasks](target.json)
+[Public observations](controls/table.json) · [Verification tasks](target.json) · [Campaign results](../../llm-dlc/loops/organic-java-pr-campaign-results.md)

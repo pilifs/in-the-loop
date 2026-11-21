@@ -35,9 +35,11 @@
     "repository": "https://github.com/eclipse-collections/eclipse-collections",
     "url": "https://github.com/eclipse-collections/eclipse-collections/pull/1434"
   },
-  "verdictLabel": "Frozen bounded proof obligations",
+  "verdictLabel": "Strict native 8/8, finite JVM 8/8",
   "notes": [
     "This is a conditional transfer case outside the six primary PRs. The Gson and Codec stream checks retained exact content across separate transfers and a later observation.",
-    "The independent original-scope grid has 2865 inputs. Both revisions use the same declared receiver shapes."
+    "The independent original-scope grid has 2865 inputs. Both revisions use the same declared receiver shapes.",
+    "Inserting [false,true] at index zero into [true,false,true] threw IndexOutOfBoundsException on the parent. The fix returned true and produced [false,true,true,false,true]. Indices two and three succeed, and four throws, on both revisions.",
+    "The baseline stopped in BitSet(int). Running the selected JDK BitSet bytecode proved the return over all 2,865 inputs and the preserved cases. The single symbolic content claim reached 60 seconds on both CaDiCaL and Bitwuzla. Checking the original fixed bytecode on every admitted selector established the exact size and complete list contents in 129.6 seconds, with about 90.6 MiB peak native RSS. Both parent properties have counterexamples replayed on the original JVM."
   ]
 }

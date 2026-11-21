@@ -1,0 +1,382 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261121T110642Z-07c4ead8",
+  "task": "chunked-fix",
+  "claimKey": "dc1fa015b7573258",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-21T11:06:42.031822+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261121-105255-357-confirmation-native-checks-on-the-or",
+  "sourceCommit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0018
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.125
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.1267
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.175
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.2176
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.3116
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "fix": {
+      "revision": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
+      "target": {
+        "class": "com.google.gson.stream.JsonReader",
+        "method": "nextString",
+        "descriptor": "()Ljava/lang/String;",
+        "loadedFrom": "built/gson-2.14.1-SNAPSHOT.jar",
+        "classSha256": "763474506dafc04ab0fdf3c745ea39017c58d015e3fb9366e0b413f25e41c785",
+        "adapterCalls": [
+          "com.google.gson.stream.JsonReader#<init>(Ljava/io/Reader;)V",
+          "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+          "com.google.gson.stream.JsonReader#setStrictness(Lcom/google/gson/Strictness;)V"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "0b2e0892734dbabb98a0fd85c5940e3ca7a4bbd295798a03f8b498e525d6a247",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "49356ddc984de78a417c0ec224edc4371e74bef7731b7b292ea0a91da693ca9c",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/gson-2.14.1-SNAPSHOT.jar",
+          "sha256": "99b53ca06707602a957850200a88504717a570b17270a93ac84f1e0bd7c05767",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/google/gson at 845664ba1c307e6c1910d07cfed2f622e0ad8df1: gson/target/gson-2.14.1-SNAPSHOT.jar"
+        },
+        {
+          "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+          "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
+          "role": "dependency",
+          "coordinates": "com.google.errorprone:error_prone_annotations:2.50.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        }
+      ]
+    }
+  },
+  "bindingId": "13866b4235df5af088f206bac6ac5641a058c7ba9538fefaa48d179ebe943cfc",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/67294fff822a4ae0aa9062484ed0dffc00053f40/jvmcontract",
+    "prove",
+    "organic.BomReader#chunked(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/built/gson-2.14.1-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/fix/lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+    "--assume",
+    "code >= 0 && code < 9",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "1024",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "8a4891a9c50c7f2bd62410d871c3f3f7e7289c047b13c6a99a301cb241bd4563",
+    "commit": "12229ff68f95c60cd1b7e5f36f6d1a587937e89f",
+    "libTree": "67294fff822a4ae0aa9062484ed0dffc00053f40",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 96,
+      "maxArrayLength": 1024
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+      "method": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "revisions": {
+        "fix": {
+          "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
+          "loadedFrom": "built/gson-2.14.1-SNAPSHOT.jar",
+          "classSha256": "763474506dafc04ab0fdf3c745ea39017c58d015e3fb9366e0b413f25e41c785",
+          "origin": "built by maven from https://github.com/google/gson at 845664ba1c307e6c1910d07cfed2f622e0ad8df1: gson/target/gson-2.14.1-SNAPSHOT.jar",
+          "parameters": {
+            "names": [],
+            "recordedIn": "LocalVariableTable"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "organic.BomReader#chunked(I)I",
+        "mapping": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "fix": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "49356ddc984de78a417c0ec224edc4371e74bef7731b7b292ea0a91da693ca9c",
+          "role": "adapter"
+        },
+        {
+          "path": "built/gson-2.14.1-SNAPSHOT.jar",
+          "sha256": "99b53ca06707602a957850200a88504717a570b17270a93ac84f1e0bd7c05767",
+          "role": "original"
+        },
+        {
+          "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+          "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "organic.BomReader#chunked(I)I",
+    "entryBindings": {
+      "fix": {
+        "entry": "organic.BomReader#chunked(I)I",
+        "classSha256": "6acbdf5304be047bfc66bbb066f96ce4fea87b6834f8e1ea3e90f58c161a4673",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+        "subjectClassSha256": "763474506dafc04ab0fdf3c745ea39017c58d015e3fb9366e0b413f25e41c785"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "checkedEntry": "organic.BomReader#chunked(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 9"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "96"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "1024"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "organic.BomReader#chunked(I)I",
+        "mapping": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      }
+    },
+    "commits": {
+      "fix": "845664ba1c307e6c1910d07cfed2f622e0ad8df1"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "6656",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx4300m",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "fix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/67294fff822a4ae0aa9062484ed0dffc00053f40/jvmcontract",
+          "gaps",
+          "--target",
+          "organic.BomReader#chunked(int)",
+          "--classes",
+          "prepare/fix/adapter-fix.jar",
+          "--classpath",
+          "prepare/fix/built/gson-2.14.1-SNAPSHOT.jar",
+          "--classpath",
+          "prepare/fix/lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-fix.stdout",
+        "stderr": "verifier/probe-fix.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.lang.AssertionError.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.AssertionError.<init>(int)",
+            "sites": [
+              "com.google.gson.stream.JsonReader.doPeek:699"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+            "sites": [
+              "com.google.gson.stream.JsonReader.getPath:1810"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.StringBuilder.append([CII)Ljava/lang/StringBuilder;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.StringBuilder.append(char[], int, int)",
+            "sites": [
+              "com.google.gson.stream.JsonReader.nextQuotedValue:1231",
+              "com.google.gson.stream.JsonReader.nextQuotedValue:1241",
+              "com.google.gson.stream.JsonReader.nextQuotedValue:1256",
+              "com.google.gson.stream.JsonReader.nextUnquotedValue:1329",
+              "com.google.gson.stream.JsonReader.nextUnquotedValue:1338"
+            ]
+          },
+          {
+            "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+            "sites": [
+              "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0394,
+      "peakRssBytes": 82452480,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0394,
+    "peakRssBytes": 82452480,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.041,
+  "missing": [],
+  "receipt": "receipts/chunked-fix/20261121T110642Z-07c4ead8/result.json",
+  "preparedClaim": "e9f62e8a06f798be",
+  "firstBlocker": null,
+  "endedAt": "2026-11-21T11:06:42.343556+00:00"
+}

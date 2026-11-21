@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T11:16:10.328Z",
-  "duration_seconds": 135520,
+  "ended": "2026-11-21T11:21:02.370Z",
+  "duration_seconds": 135812,
   "stats": {
     "turns": 19,
-    "api_calls": 6324,
-    "tool_calls": 16011,
+    "api_calls": 6340,
+    "tool_calls": 16051,
     "tool_errors": 475,
     "compactions": 20,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 10707928,
-      "output_tokens": 3390363,
-      "cache_read_input_tokens": 1929708672,
+      "input_tokens": 10722238,
+      "output_tokens": 3400273,
+      "cache_read_input_tokens": 1934288256,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 9257,
-    "exec": 5831,
-    "apply_patch": 604,
+    "Bash": 9278,
+    "exec": 5847,
+    "apply_patch": 606,
     "send_message": 148,
-    "sleep": 68,
+    "sleep": 69,
     "wait": 59,
     "wait_agent": 14,
     "send_message_to_user_async": 9,
@@ -614,24 +614,24 @@
     {
       "index": 20,
       "started": "2026-11-21T10:33:05.381Z",
-      "ended": "2026-11-21T11:16:10.328Z",
+      "ended": "2026-11-21T11:21:02.370Z",
       "turns": 0,
-      "api_calls": 201,
+      "api_calls": 217,
       "usage": {
-        "input_tokens": 264288,
-        "output_tokens": 81640,
-        "cache_read_input_tokens": 35202688,
+        "input_tokens": 278598,
+        "output_tokens": 91550,
+        "cache_read_input_tokens": 39782272,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 263513
+      "peak_context_tokens": 276722
     }
   ],
   "log": {
-    "sha256": "82918bc50d220c7667191455a656ce997e6c5aa73b3ba51aa2bc9de42e601ff9",
-    "bytes": 144869096,
-    "lines": 50116,
-    "gzip_bytes": 57549431,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/82918bc50d220c7667191455a656ce997e6c5aa73b3ba51aa2bc9de42e601ff9.jsonl.gz"
+    "sha256": "6910e48dbe58e6025740622e32826fa79d806e6f9f09ac24a60ff22c6040655b",
+    "bytes": 145225132,
+    "lines": 50252,
+    "gzip_bytes": 57690438,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/6910e48dbe58e6025740622e32826fa79d806e6f9f09ac24a60ff22c6040655b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3036,20 +3036,20 @@
       "log_sha256": "925cef52ccd1565e00f92e479277398e7e7aa5e4b44057a54dbb758bcefcf50d"
     },
     {
-      "change_id": "xswmqktwnknpqwqryyqtsqpmprqmpzmk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "82918bc50d220c7667191455a656ce997e6c5aa73b3ba51aa2bc9de42e601ff9"
-    },
-    {
       "change_id": "tvvyzvqsqrozmklyumowzppzwlqqowyo",
       "commit_id": null,
       "immutable": false,
       "summary": "Replay native selector candidates against the original JVM before grading them (verification pending)",
       "body": "Eclipse Collections' original insertion at selector 940 returned the wrong result in the native checker. Replaying that constant wrapper in the interpreter was enough to find the candidate, but the selector workflow stopped before invoking its own independent JVM checker. It now sends a reproduced interpreter candidate to the public original entry and requires the exact selector, bytecode, classpath, claim and JDK to match. A missing or different JVM replay cannot qualify a refutation.\n\nAll 11 recipe tests passed, including a damaged or missing original replay, and all 42 changed-test suites passed. The original failed wrapper reports remain available. Job 20261121-111009-359-replay-the-native-selector-witnesses exercises both reported parent failures on the actual Eclipse Collections artifact.",
       "log_sha256": "82918bc50d220c7667191455a656ce997e6c5aa73b3ba51aa2bc9de42e601ff9"
+    },
+    {
+      "change_id": "mxzwylkpkxwlqrpksrwtprrymntvkmsx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Publish the original Java PR scorecard and its independently replayable evidence",
+      "body": "On the six primary upstream PRs, strict native verification advanced from 17/46 obligations to 36/46, including ten parent refutations replayed on the original JVM. Five complete PRs now close natively instead of one. Finite execution advanced from 36/46 to 46/46, with all eight named historical tests failing on the parent and passing on the fix and all 3,658 fixed input rows matching their independent oracles. Avro remains open natively at Hadoop or Avro startup, with both factory and direct results retained.\n\nThe two separately scored transfer cases add 16 complete finite obligations and eight strict native decisions. Eclipse Collections' full list contents held at all 2,865 original inputs. JavaParser reproduces the empty-root failure on the parent, and the original strict path still needs the process property and the initialized enum object's state. All 62 obligations have discoverable finite proofs and the strict results and execution journals are available from the normal handoff.\n\nThe Markdown report and machine scorecard bind revisions, original JAR and class hashes, domain sizes, original observations, dates and execution costs to their receipts. Both Eclipse selector-940 candidates qualified through a fresh JVM on their original artifact. The targeted proof-cache regression also passed. Recounted the scorecard twice, regenerated the router, validated all eight examples with a fresh replay and checked every handoff; all 42 changed-test suites passed. The queue reports zero pending or running jobs.",
+      "log_sha256": "6910e48dbe58e6025740622e32826fa79d806e6f9f09ac24a60ff22c6040655b"
     }
   ],
   "logs": {
@@ -3424,6 +3424,12 @@
       "lines": 15947,
       "gzip_bytes": 18480278,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/67f2fa9b3e92de959997e66858e2622f9e7722a0067603863c6c1e6585959f9b.jsonl.gz"
+    },
+    "6910e48dbe58e6025740622e32826fa79d806e6f9f09ac24a60ff22c6040655b": {
+      "bytes": 145225132,
+      "lines": 50252,
+      "gzip_bytes": 57690438,
+      "url": null
     },
     "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852": {
       "bytes": 22693886,
