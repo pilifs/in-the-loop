@@ -3268,6 +3268,12 @@ change `qutnrkoolnku` · [log `7b47c375e52a`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 2 of the 3 job(s); 1 declared or produced none. 20261121-000727-replay-fscrawler-ordinary-docx-across-th: failed: 1 failed step(s) in 2.8s, peak 488.7 MiB (estimated 5m00s, 4.0 GiB) 20261121-000827-348-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 6.0s, peak 146.2 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-000827-351-compare-jbmc-on-the-matched-external: passed: 1 passed step(s) in 4.8s, peak 116.9 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `zqwnltzmwrql` · [log `7b47c375e52a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo: passed: 1 passed step(s) in 36.1s, peak 1.0 GiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b47c375e52a1a2a680749b87454ad7aeae34a77f0fb8bae06380217392e503c.jsonl.gz) has every step in between: reasoning, tool calls and their results.
