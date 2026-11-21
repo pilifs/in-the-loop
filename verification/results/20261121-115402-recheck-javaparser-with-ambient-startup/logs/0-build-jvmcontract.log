@@ -1,0 +1,38 @@
+   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-115402-recheck-javaparser-with-ambient-startup/lib)
+error[E0425]: cannot find type `Runtime` in module `crate::observed`
+   --> src/equivalence.rs:131:44
+    |
+131 |     pub observed_runtime: crate::observed::Runtime,
+    |                                            ^^^^^^^ not found in `crate::observed`
+
+error[E0425]: cannot find type `Runtime` in module `crate::observed`
+   --> src/property.rs:124:44
+    |
+124 |     pub observed_runtime: crate::observed::Runtime,
+    |                                            ^^^^^^^ not found in `crate::observed`
+
+error[E0425]: cannot find function `observe_for_runtime` in module `crate::observed`
+    --> src/property.rs:1030:41
+     |
+1030 |     let mut observed = crate::observed::observe_for_runtime(&options.observed_initializers, &entries, &work, options.observed_runt...
+     |                                         ^^^^^^^^^^^^^^^^^^^ not found in `crate::observed`
+
+error[E0425]: cannot find function `observe_previous_on` in module `crate::observed`
+    --> src/property.rs:1032:42
+     |
+1032 |         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);
+     |                                          ^^^^^^^^^^^^^^^^^^^
+     |
+    ::: src/observed.rs:567:1
+     |
+ 567 | pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous, work: &Path) -> Result<Observations, Error> {
+     | ----------------------------------------------------------------------------------------------------------------------------- similarly named function `observe_previous` defined here
+     |
+help: a function with a similar name exists
+     |
+1032 -         observed.extend(crate::observed::observe_previous_on(classes, previous, &work, options.observed_runtime)?);
+1032 +         observed.extend(crate::observed::observe_previous(classes, previous, &work, options.observed_runtime)?);
+     |
+
+For more information about this error, try `rustc --explain E0425`.
+error: could not compile `jvmcontract` (lib) due to 4 previous errors
