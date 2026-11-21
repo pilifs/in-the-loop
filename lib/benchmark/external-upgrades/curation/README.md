@@ -66,6 +66,8 @@ Use a JSON object with `changes`, `routines`, `searches` and `audit`. Every evid
 
 The allocator pairs all sixteen changes, including the reserve, with distinct routine upgrades. It orders pairs by change source and seed rank, then by matching tier, absolute date distance and the PR's seed rank. It chooses the earliest main pair that still admits a full main and transfer allocation, repeating for the remaining main pairs and then the reserve. Both strata contribute to the set of clients and families represented in the 24.
 
+Long private BUMP replays can use `queued_bump.py` as a verification job. The queue receives an opaque packet ID, the submitting custody session and the digest of the frozen input manifest. The launcher checks the reviewed generic worker and public networkless runtime before starting four original Maven trials. It publishes only the number of complete attempts and fresh exact testcases, elapsed time and the hashes binding them to the private receipts. The original Maven commands, logs, XML, application observations and stratum remain with the curator. A completed queue job alone confers no eligibility or cohort assignment.
+
 Exit status 0 produces a private `ready-to-seal` allocation with separate main and transfer membership digests, verified reference receipts and the full input digest. The curator signs the rosters. Exit status 2 gives an aggregate shortfall or outstanding audit work and publishes no memberships. Its attainable counts describe one simultaneous allocation, maximizing main pairs first, then reserve pairs and then represented-family counts within each reserve stratum. Exit status 1 means the input, signature or local solver could not be validated.
 
 ## Release the review-time source pair
