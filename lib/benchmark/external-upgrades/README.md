@@ -14,6 +14,23 @@ python3 lib/benchmark/external-upgrades/replay_open.py 351 \
 
 Each numbered example also has the standard public plan, JVM replay, proof task and Markdown handoff. `pinned_task.py` runs that workflow at the configured Bitwuzla and JDK versions, checks the frozen source and executable before and after, and retains the actual workflow exit. The queue runs proof tasks. A missing binary has to be supplied with `--checker` or placed in `~/.cache/in-the-loop/external-upgrades/<binary-sha256>/jvmcontract`. The lock identifies it by content. [V0 toolchain](v0.json) · [Portable source manifest](v0-files.json.gz)
 
+### Reproduce a disclosed operator packet
+
+`open_packets.py` takes the original Git repository and the independently replayed JARs. For Commons Text, also supply the full-source reproduction directory with its two client archives. Use a fresh output directory outside the checkout. Only its `release/pair` and `release/dependencies` directories are operator inputs. The curator plan records original blob digests and exactly which bytes were withheld.
+
+```sh
+python3 lib/benchmark/external-upgrades/open_packets.py 348 \
+  --repo "$RXJAVA_REPO" --jars "$RXJAVA_JARS" --out "$TMPDIR/open-rxjava"
+python3 lib/benchmark/external-upgrades/open_packets.py 349 \
+  --repo "$COMMONS_TEXT_REPO" --jars "$TEXT_JARS" --text-run "$TEXT_FULL_SOURCE_RUN" \
+  --out "$TMPDIR/open-commons-text"
+```
+
+| Disclosed packet | Source files and runtime archives per side | SHA-256 of pair.json | SHA-256 of dependencies/manifest.json |
+|---|---|---|---|
+| rxjava-jdbc | 91 files, 10 ordered JARs. The named and companion tests, one identifying comment and an ignored duplicate were removed from the two test classes. | `ab9fe13149d401a4ea11f81021aa0ebf39e99286ea34c475bf0849303f17d5e1` | `0646ba9b94b7024076e22a79f9e15d12607dd194efb8f949c861aedbf3bc40d7` |
+| Commons Text | 242 files, 2 ordered JARs. Its independent oracle and mutant were created outside the upstream trees. | `6b6e62a785f4772b7fafaf48a97b13f9d6099573f2a87e8760bd3d9a83472acd` | `d40962103d922d794ab45bb333f7b420b802965d8f5446d2739744ff76e557b0` |
+
 ## Sealing and reading scores
 
 The curator keeps reference material outside the operator workspace. A first report is one JSON record with a neutral case ID, build and input identities, ordered old/new artifact digests, claim, observer, domain, scope, route, five-line maintainer report, review action, evidence paths and SHA-256 values. It includes intake, first actionable and completion times, the 15-minute observation, cache state, enforced resources, human minutes and measured token/compute use. Open and unavailable outcomes name their first blocker. [Curator procedure](curation/README.md) · [Scorecard implementation](scorecard.py)
@@ -24,7 +41,9 @@ python3 lib/benchmark/external-upgrades/scorecard.py score roster.json "$REPORTS
   --build V0 "$V0_LOCK_SHA256"
 ```
 
-Sealing copies and rehashes evidence, records the seal time and preserves the first report on a retry. On the grader machine, the roster carries the original cutoff, opaque packet and reference identities, and the privately frozen strata. The scorer requires all 24 first reports before reading a grade. For transfer, pass both V0 and V1 with their lock digests. It requires all sixteen seals before opening either set of grades and checks the matched environments and caches.
+Sealing copies and rehashes evidence, records the seal time and preserves the first report on a retry. On the grader machine, the roster carries the original cutoff, opaque packet and reference identities, and the privately frozen strata. Its `profile_sha256` binds every report to the same approved operator configuration. The scorer requires all 24 first reports before reading a grade. For transfer, pass both V0 and V1 with their lock digests. It requires all sixteen seals before opening either set of grades and checks the matched environments, caches and operator profiles.
+
+Every transfer roster row records `client_in_main`. Each transfer grade's `transfer_integrity` records whether engineering saw the reference, used the client during the repair or a runner saw the other first report. The paired output retains every observation and reports held-out counts separately. A repair earns transfer credit only on an untouched client with an independent pair of runs and evidence that the case exercised the improved capability.
 
 The signed JSON envelope has `payload` and `signatureHex`. Sign UTF-8 `upgrade-roster-v1` or `upgrade-adjudication-v1`, a NUL byte, then compact, sorted-key UTF-8 JSON of the payload with a final newline. The signer is the Ed25519 key in the pre-product seed commitment. Each adjudication binds a first-report hash and reference hash to two independently attributed reviews, their reasons, recommended actions and written resolution of any disagreement. The machine counts a validated transfer gain separately when the improved capability has supporting evidence.
 

@@ -80,10 +80,6 @@ The V0 paired JBMC frontend refused distinct dependency closures for rxjava-jdbc
 
 Verification jobs: 20261121-001305-replay-fscrawler-ordinary-docx-across-th, 20261121-001750-348-run-standalone-jbmc-on-both-original and 20261121-001750-351-run-standalone-jbmc-on-both-original. The separate JBMC checks retain exception and unwinding evidence and cannot earn a blinded product decision.
 
-### (in progress)
-
-change `lvuxwvulmvtp`, not yet described
-
 ### Collect the historical DOCX replay and matched standalone JBMC results
 
 change `wurynlzvuwpt` · [log `0531af863bfa`](https://terminalvalue.net/raw-traces/01a1fb30-73ce-7ac0-98ae-14a53e020270/0531af863bfa1390c3e1d70e774d58afcda0351c586e622b0f7d7f8378d70a28.jsonl.gz)

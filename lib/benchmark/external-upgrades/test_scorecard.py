@@ -16,7 +16,7 @@ DIGEST = "1" * 64
 
 def operator(case="u01", build="V0"):
     return {"case_id": case, "build": build, "input_sha256": DIGEST, "product_sha256": DIGEST,
-            "environment_sha256": DIGEST, "route": "exhaustive-jvm", "evidence": [],
+            "environment_sha256": DIGEST, "profile_sha256": "4" * 64, "route": "exhaustive-jvm", "evidence": [],
             "primary_claim": "returned sequence", "observer": "client return", "domain": "two calls", "scope": "UTC",
             "artifacts": {"old": ["2" * 64], "new": ["3" * 64]},
             "intake_utc": "2020-01-01T00:00:00Z", "finished_utc": "2020-01-01T00:01:00Z",
@@ -42,16 +42,20 @@ class UpgradeScoringTest(unittest.TestCase):
             first = sc.seal_report(source, sealed)
             with self.assertRaisesRegex(ValueError, "already sealed"):
                 sc.seal_report(source, sealed)
-            _, recorded, seconds, _ = sc.read_first(sealed, "V0", case, sc.timestamp(doc["intake_utc"]), DIGEST)
+            def read(profile):
+                return sc.read_first(sealed, "V0", case, sc.timestamp(doc["intake_utc"]), DIGEST, profile)
+            _, recorded, seconds, _ = read(doc["profile_sha256"])
             self.assertEqual((recorded, seconds), (first, 60))
+            with self.assertRaisesRegex(ValueError, "operator profile"):
+                read("5" * 64)
             (sealed / "V0/u01/evidence/proof.txt").write_bytes(b"unrelated")
             with self.assertRaisesRegex(ValueError, "digest differs"):
-                sc.read_first(sealed, "V0", case, sc.timestamp(doc["intake_utc"]), DIGEST)
+                read(doc["profile_sha256"])
 
     def test_signed_roster_has_fixed_denominators_and_cannot_be_used_as_a_grade(self):
         rows = [{"case_id": f"case{i}", "input_sha256": DIGEST, "reference_sha256": DIGEST, "artifacts": operator()["artifacts"],
                  "stratum": "change" if i < 12 else "preservation"} for i in range(24)]
-        roster = {"phase": "main", "cases": rows, "locked_utc": "2020-01-01T00:00:00Z"}
+        roster = {"phase": "main", "cases": rows, "locked_utc": "2020-01-01T00:00:00Z", "profile_sha256": "4" * 64}
         key = Ed25519PrivateKey.generate()
         signature = key.sign(b"upgrade-roster-v1\0" + sc.canonical(roster)).hex()
         with tempfile.TemporaryDirectory() as temp:
@@ -64,13 +68,26 @@ class UpgradeScoringTest(unittest.TestCase):
             sc.roster({**roster, "cases": rows[:-1]})
 
     def test_paired_gain_requires_matched_conditions_and_separate_capability_evidence(self):
+        blind = {"engineering_saw_reference": False, "other_first_report_seen": False, "client_used_for_engineering": False}
         row = {"case_id": "u01", "family": "new", "stratum": "change", "seconds": 12, "cache": "cold",
+               "transferIntegrity": blind, "clientInMain": False, "profileSha256": "4" * 64,
                "cpuLimit": 4, "memoryGiB": 16, "environmentSha256": DIGEST, "improvedCapability": None}
         before = {"phase": "transfer", "productSha256": DIGEST, "cases": [{**row, "credit": False}]}
         after = {"phase": "transfer", "productSha256": "2" * 64, "cases": [{**row, "credit": True}]}
         paired = sc.paired([before, after])
         self.assertEqual(paired["byFamily"]["new"]["v1Only"], 1)
         self.assertIsNone(paired["cases"][0]["transferableRepair"])
+        current = after["cases"][0]
+        current["improvedCapability"] = "consumer return observation"
+        self.assertEqual(sc.paired([before, after])["cases"][0]["transferableRepair"], current["improvedCapability"])
+        current["transferIntegrity"] = {**blind, "client_used_for_engineering": True}
+        self.assertIsNone(sc.paired([before, after])["cases"][0]["transferableRepair"])
+        current["transferIntegrity"] = {**blind, "engineering_saw_reference": True}
+        retired = sc.paired([before, after])
+        self.assertEqual(retired["byFamily"]["new"]["v1Only"], 1)
+        self.assertEqual(retired["heldOutMatchedCases"], 0)
+        self.assertEqual(retired["heldOutByFamily"]["new"]["v1Only"], 0)
+        self.assertIsNone(retired["cases"][0]["transferableRepair"])
         after["cases"][0]["cache"] = "warm"
         with self.assertRaisesRegex(ValueError, "conditions differ"):
             sc.paired([before, after])
@@ -104,7 +121,7 @@ class UpgradeScoringTest(unittest.TestCase):
                           "ci_result": "observed", "action_grade": "appropriate", "primary_reason": "wrong observer"}
                 signature = key.sign(b"upgrade-adjudication-v1\0" + sc.canonical(result)).hex()
                 (root / "V0" / (cid + ".json")).write_text(json.dumps({"payload": result, "signatureHex": signature}))
-            roster = {"phase": "main", "cases": cases, "locked_utc": "2019-12-31T00:00:00Z"}
+            roster = {"phase": "main", "cases": cases, "locked_utc": "2019-12-31T00:00:00Z", "profile_sha256": "4" * 64}
             scored = sc.score(roster, reports, root, "V0", DIGEST, budget, sealed_at, key.public_key())
             self.assertEqual((scored["denominator"], scored["relevantChange"], scored["relevantPreservation"]),
                              (24, 8, 8))

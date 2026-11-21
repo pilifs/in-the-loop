@@ -26,6 +26,16 @@ The corrected FSCrawler container reproduced the original DOCX failure and prese
 
 The runner collected all three jobs and both independently reconstructed FSCrawler payloads agree. The Cucumber PR record pins the actual merge and head. Both Joda pins passed the 18-input replay again. All Cucumber form, plan, router and cross-example checks passed, as did 36 of 36 changed-test groups.
 
+### Select matched upgrade cohorts and bind first reports to their operator
+
+change `ktxtxoktymqu` · [log `374a084aa8ec`](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/374a084aa8ec87994444c4e5339291707d88846c15f07d6781516b0a1ab38b07.jsonl.gz)
+
+Jointly select all 16 change and routine pairs with the frozen matching and diversity rules. The local Z3 allocator skips a nearer match when it would exhaust a reserve category, requires audited signed references, and reports aggregate shortfalls while keeping names in custody. The scorecard binds the separate operator profile and records actual client overlap, cross-run exposure and whether an untouched client exercised an improvement.
+
+Release audited review-time trees and ordered production classpaths separately. Two independently generated rxjava-jdbc and Commons Text packets were byte-identical. The original GitHub source intake accepted the disclosed genuine locator and refused the local neutral form. The signed custody snapshot covers one original-scope preservation reference. Neither cohort was locked.
+
+Five allocation and four scoring regressions passed, including nearest-match traps, signed packet substitution, insufficient evidence and exposure on a paired gain. A 96-change synthetic allocation completed in 0.23 seconds. The cost lint passed, the affected run passed all 36 groups, and the immutable product lock verified 12 tool and JDK digests.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1fb95-2205-7cd2-8048-b8207966b98d/374a084aa8ec87994444c4e5339291707d88846c15f07d6781516b0a1ab38b07.jsonl.gz) has every step in between: reasoning, tool calls and their results.

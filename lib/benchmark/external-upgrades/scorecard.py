@@ -78,7 +78,7 @@ def evidence_file(root, item):
 def check_operator(doc):
     identifier(doc["case_id"])
     identifier(doc["build"])
-    for key in ("input_sha256", "product_sha256", "environment_sha256"):
+    for key in ("input_sha256", "product_sha256", "profile_sha256", "environment_sha256"):
         hex_digest(doc[key])
     require(doc["route"] in ROUTES, "unknown evidence route")
     require(isinstance(doc["evidence"], list), "missing evidence list")
@@ -140,6 +140,7 @@ def seal_report(source, destination):
 
 def roster(doc):
     rows = doc["cases"]
+    hex_digest(doc["profile_sha256"])
     require(doc["phase"] in {"main", "transfer"}, "unknown evaluation phase")
     require(len({identifier(row["case_id"]) for row in rows}) == len(rows), "duplicate case")
     for row in rows:
@@ -153,11 +154,14 @@ def roster(doc):
         require(Counter((r["stratum"], r["family"]) for r in rows) ==
                 {(s, f): 2 for s in ("change", "preservation") for f in ("same", "new")},
                 "reserve needs two cases in each stratum/family combination")
+        require(all(type(r["client_in_main"]) is bool and
+                    (r["family"] != "same" or not r["client_in_main"]) for r in rows),
+                "record client overlap and require a new client for each represented family")
     timestamp(doc["locked_utc"])
     return rows
 
 
-def read_first(root, build, case, locked, product):
+def read_first(root, build, case, locked, product, profile):
     folder = root / build / case["case_id"]
     body = (folder / "operator.json").read_bytes()
     digest = (folder / "report.sha256").read_text().strip()
@@ -167,6 +171,7 @@ def read_first(root, build, case, locked, product):
     seconds = check_operator(doc)
     require((doc["case_id"], doc["build"], doc["input_sha256"], doc["product_sha256"]) ==
             (case["case_id"], build, case["input_sha256"], product), "case, artifact pair or product identity differs")
+    require(doc["profile_sha256"] == profile, "operator profile differs from the signed roster")
     require(timestamp(doc["intake_utc"]) >= locked, "operator saw case before cohort lock")
     require(seal["report_sha256"] == digest and timestamp(seal["sealed_utc"]) >= timestamp(doc["finished_utc"]),
             "invalid first report seal")
@@ -202,6 +207,11 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
         require(grade["ci_result"].strip() and grade["action_grade"].strip(), "CI and review action must be graded")
         if grade.get("improved_capability"):
             evidence_file(path.parent, grade["improved_capability"]["evidence"])
+        integrity = None
+        if roster_doc["phase"] == "transfer":
+            integrity = grade["transfer_integrity"]
+            for field in ("engineering_saw_reference", "client_used_for_engineering", "other_first_report_seen"):
+                require(type(integrity[field]) is bool, "record transfer exposure and runner independence")
         matched = doc.get("artifacts") == case["artifacts"]
         correct = matched and decision["relevant"] and decision["scope_supported"] and decision["original_domain"]
         if case["stratum"] == "change":
@@ -219,7 +229,11 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
                          "originalArtifacts": matched,
                          "seconds": seconds, "cache": doc["cache"], "environmentSha256": doc["environment_sha256"],
                          "cpuLimit": doc["cpu_limit"], "memoryGiB": doc["memory_gib"],
+                         "profileSha256": doc["profile_sha256"], "clientInMain": case.get("client_in_main"),
+                         "transferIntegrity": integrity,
                          "firstActionableUtc": doc["first_actionable_utc"], "humanMinutes": doc["human_minutes"],
+                         "uncachedInputTokens": doc["uncached_input_tokens"], "outputTokens": doc["output_tokens"],
+                         "cachedInputTokens": doc["cached_input_tokens"], "checkpoint15m": doc["checkpoint_15m"],
                          "computeUsd": doc["compute_usd"], "withinBudget": within, "decision": decision,
                          "improvedCapability": (grade.get("improved_capability") or {}).get("name"),
                          "action": grade["action_grade"], "ci": grade["ci_result"], "primaryReason": grade["primary_reason"]})
@@ -244,21 +258,32 @@ def paired(reports):
             "two distinct frozen products required")
     after = {r["case_id"]: r for r in new["cases"]}
     counts = {f: Counter() for f in ("same", "new")}
+    held_out = {f: Counter() for f in counts}
     changes = []
     for prior in old["cases"]:
         current = after[prior["case_id"]]
-        require((prior["stratum"], prior["family"]) == (current["stratum"], current["family"]),
+        require((prior["stratum"], prior["family"], prior["clientInMain"]) ==
+                (current["stratum"], current["family"], current["clientInMain"]),
                 "transfer reference mismatch")
-        for field in ("cache", "environmentSha256", "cpuLimit", "memoryGiB"):
+        for field in ("cache", "environmentSha256", "cpuLimit", "memoryGiB", "profileSha256"):
             require(prior[field] == current[field], f"transfer conditions differ: {field}")
         result = {(True, True): "both", (True, False): "v0Only", (False, True): "v1Only",
                   (False, False): "neither"}[prior["credit"], current["credit"]]
         counts[prior["family"]][result] += 1
+        integrity = [r["transferIntegrity"] for r in (prior, current)]
+        retired = any(i["engineering_saw_reference"] or i["other_first_report_seen"] for i in integrity)
+        untouched_client = not prior["clientInMain"] and not any(i["client_used_for_engineering"] for i in integrity)
+        if not retired:
+            held_out[prior["family"]][result] += 1
         changes.append({"case_id": prior["case_id"], "family": prior["family"], "stratum": prior["stratum"],
                         "result": result, "v0Seconds": prior["seconds"], "v1Seconds": current["seconds"],
-                        "transferableRepair": current["improvedCapability"] if result == "v1Only" else None})
-    return {"matchedCases": len(changes), "byFamily": {family: {k: v[k] for k in ("both", "v0Only", "v1Only", "neither")}
-                                                        for family, v in counts.items()}, "cases": changes}
+                        "retiredFromHeldOut": retired, "untouchedClient": untouched_client,
+                        "transferableRepair": current["improvedCapability"]
+                        if result == "v1Only" and untouched_client and not retired else None})
+    def by_family(groups):
+        return {family: {k: v[k] for k in ("both", "v0Only", "v1Only", "neither")} for family, v in groups.items()}
+    return {"matchedCases": len(changes), "heldOutMatchedCases": sum(not r["retiredFromHeldOut"] for r in changes),
+            "byFamily": by_family(counts), "heldOutByFamily": by_family(held_out), "cases": changes}
 
 
 def main():
@@ -298,7 +323,7 @@ def main():
             # Across both products on transfer, verify every seal before reading even one grade.
             release = timestamp(study.get("release_utc", study["locked_utc"]))
             require(release >= timestamp(study["locked_utc"]), "case released before cohort lock")
-            sealed[build] = {c["case_id"]: read_first(args.reports, build, c, release, lock)
+            sealed[build] = {c["case_id"]: read_first(args.reports, build, c, release, lock, study["profile_sha256"])
                              for c in cases}
         reveal_after = max(row[3] for group in sealed.values() for row in group.values())
         results = [score(study, sealed[build], args.grades, build, lock, budget, reveal_after, key)

@@ -156,6 +156,37 @@ def export_revision(side, dest, forbidden):
     return output
 
 
+def export_runtime(artifacts, dest, forbidden):
+    """Keep the supplied original runtime order and verify the full client archive."""
+    check(isinstance(artifacts, list) and bool(artifacts))
+    result = []
+    dest.mkdir(parents=True)
+    for i, artifact in enumerate(artifacts):
+        role = artifact["role"]
+        check(role == ("client" if i == 0 else "dependency"))
+        path = outside(Path(artifact["source"]))
+        body = path.read_bytes()
+        check(digest(body) == artifact["sha256"])
+        filename = f"{i:02d}-{role}.jar"
+        scan(filename, body, forbidden)
+        with zipfile.ZipFile(io.BytesIO(body)) as archive:
+            names = [m.filename for m in archive.infolist() if not m.is_dir()]
+            check(len(names) == len(set(names)))
+            if role == "client":
+                expected = artifact["production_members"]
+                check(isinstance(expected, dict) and set(names) == set(expected))
+                check(any(n.endswith(".class") for n in names))
+                for name in names:
+                    check(digest(archive.read(name)) == expected[name])
+        target = dest / filename
+        with target.open("xb") as file:
+            file.write(body)
+        target.chmod(0o444)
+        result.append({"side": dest.name, "path": (PurePosixPath(dest.name) / filename).as_posix(),
+                       "sha256": artifact["sha256"]})
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("plan", type=Path, help="complete private pre-reviewed file plan")
@@ -176,22 +207,42 @@ def main():
             pair = Path(temporary) / "pair"
             pair.mkdir(mode=0o700)
             receipt = {"case_id": case_id}
+            check(("runtime_artifacts" in plan["old"]) == ("runtime_artifacts" in plan["new"]))
+            dependencies = Path(temporary) / "dependencies"
+            released_artifacts = []
             for side in ("old", "new"):
                 side_path = pair / side
                 files = export_revision(plan[side], side_path, forbidden)
                 check(bool(files))
                 receipt[side] = {"tree_sha256": digest(canonical(files))}
+                if "runtime_artifacts" in plan[side]:
+                    released_artifacts.extend(export_runtime(
+                        plan[side]["runtime_artifacts"], dependencies / side, forbidden
+                    ))
             (pair / "pair.json").write_bytes(canonical(receipt) + b"\n")
             (pair / "pair.json").chmod(0o444)
+            if released_artifacts:
+                manifest = dependencies / "manifest.json"
+                manifest.write_bytes(canonical({"case_id": case_id, "artifacts": released_artifacts}) + b"\n")
+                manifest.chmod(0o444)
+                for directory in dependencies.iterdir():
+                    if directory.is_dir():
+                        directory.chmod(0o555)
             for directory in (item for item in pair.rglob("*") if item.is_dir() and not item.is_symlink()):
                 directory.chmod(0o555)
             destination.mkdir(mode=0o700, exist_ok=False)
             try:
+                if released_artifacts:
+                    dependencies.rename(destination / "dependencies")
                 pair.rename(destination / "pair")
-                (destination / "pair").chmod(0o555)
             except Exception:
+                if (destination / "dependencies").is_dir():
+                    (destination / "dependencies").rename(dependencies)
                 destination.rmdir()
                 raise
+            (destination / "pair").chmod(0o555)
+            if released_artifacts:
+                (destination / "dependencies").chmod(0o555)
         destination.chmod(0o555)
         print(json.dumps(receipt, sort_keys=True))
     except (OSError, KeyError, ValueError, TypeError, RuntimeError, EOFError,

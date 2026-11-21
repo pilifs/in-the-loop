@@ -46,6 +46,28 @@ python3 seal_reference.py open SEALED_FILE PRIVATE_ARCHIVE.tar.gz \
 
 The tool archives regular files, encrypts the archive with a fresh AES-GCM nonce and signs the header, ciphertext and tag using Ed25519 over a domain-separated SHA-256 digest. Verification needs only the pinned public key. Opening checks the signature and the authentication tag before publishing the decrypted archive. Each output is written once. Publish only neutral IDs, signed envelope receipts and aggregate counts during the blind phase. Seal the membership and exclusion records separately for the main and transfer sets.
 
+## Allocate the main and transfer sets together
+
+Run the allocator in the private curator workspace before opening any scored report. It needs local Z3 on the path. The input and output stay outside the evaluation checkout. Standard output gives aggregate counts and outstanding audit requirements.
+
+```sh
+python3 allocate.py PRIVATE_DOCKET.json NEW_PRIVATE_RESULT.json --seed PRIVATE_SEED --commitment PUBLIC_COMMITMENT.json
+```
+
+Use a JSON object with `changes`, `routines`, `searches` and `audit`. Every evidence pointer below is an object with a `file` relative to the docket and its `sha256`. The allocator checks the files against these digests.
+
+| Input | Required contents |
+|---|---|
+| Every candidate | Its `stable_id`, `review` of `qualified`, `pending`, `excluded` or `deferred`, and `evidence` for that decision. A pending candidate can already have a signed reference. |
+| A qualified candidate | `client`, `family`, `old_version`, `new_version`, `trigger`, `incident`, `version_step`, `build`, and `changed_at` for a change or `merged_at` for a PR, with a time zone. Normalize the upstream client and release-family identities across sources. Give duplicates from the same underlying incident the same incident identity. The fallback tier compares `major`, `minor`, or `patch` and `single` or `reactor`. |
+| Original-production reference | Set `reference_audited` after reviewing the original reference and supply its signed envelope as `reference`. The JSON decision named by `evidence` must bind `stable_id`, `stratum` of `change` or `preservation`, `packet_id` and `signed_envelope_sha256`. The allocator verifies the envelope signature against the pre-product public key. |
+| Each search | Its change `anchor`, distinct `routine_ids` from the frozen discovery frame, boolean `complete` and `evidence`. Include closer unresolved leads in the docket as pending. An exhausted search can have an empty list. |
+| Audit | Boolean `before_v0_scoring` and `ranked_review_complete`, and `ledger` covering the full candidate and exclusion record, prior exposure, aliases and discovery frame. Include all decisions that could affect the ranked selection in the allocator input. The ledger can record later unvisited entries outside that frontier. |
+
+The allocator pairs all sixteen changes, including the reserve, with distinct routine upgrades. It orders pairs by change source and seed rank, then by matching tier, absolute date distance and the PR's seed rank. It chooses the earliest main pair that still admits a full main and transfer allocation, repeating for the remaining main pairs and then the reserve. Both strata contribute to the set of clients and families represented in the 24.
+
+Exit status 0 produces a private `ready-to-seal` allocation with separate main and transfer membership digests, verified reference receipts and the full input digest. The curator signs the rosters. Exit status 2 gives an aggregate shortfall or outstanding audit work and publishes no memberships. Its attainable counts describe one simultaneous allocation, maximizing main pairs first, then reserve pairs and then represented-family counts within each reserve stratum. Exit status 1 means the input, signature or local solver could not be validated.
+
 ## Release the review-time source pair
 
 `python3 export_pair.py PRIVATE_PLAN FRESH_DESTINATION` emits `pair/old/`, `pair/new/` and `pair/pair.json`. The last contains the neutral case ID and hashes of the two exported trees. The private plan specifies `case_id`, `forbidden_literals`, and `old`/`new` objects. Each side identifies a local upstream `repository`, pinned commit `revision`, and a `files` object accounting for every tracked path in that Git tree. Submodules can supply a nested plan pinned at the gitlink. Retain this plan in the signed custody packet to tie every released source and dependency descriptor to its original blob.
@@ -53,3 +75,5 @@ The tool archives regular files, encrypts the archive with a fresh AES-GCM nonce
 For each file set `original_sha256`, `role` and `action`. Use `copy` for ordinary review-time files, including ordinary test methods and fixtures. `omit` requires a private reason. For a mixed test class, use `strip` with a private reason, ordered byte deletions (`start` inclusive, `end` exclusive and `sha256` for each removed span) and the resulting `retained_sha256`. Only the specified bytes are deleted. Production source and dependency descriptors are copied unchanged. The complete original code and the hidden triggers stay with the curator.
 
 Include specific trigger methods, fixtures, duplicates, provenance strings and their compiled spellings among the forbidden literals. The exporter also scans for both original revisions, history directories, test build outputs and test reports. It inspects names and uncompressed contents of nested JARs, ZIPs and tar archives. Supply a neutral read-only mount to the operator after reviewing the exported pair. Run the ordinary historical build and full original test suite separately on the unredacted checkout.
+
+To supply the measured production classpaths, add a `runtime_artifacts` array to each side of the private plan. Its first entry has `role` of `client`, the original build's `source` JAR path, its `sha256`, and `production_members` mapping every original production class or resource in that JAR to its SHA-256. The following entries have `role` of `dependency`, their original JAR path and digest, in the order used by the JVM. The exporter checks the complete client membership and scans each JAR for hidden fixtures. It writes the files and the ordered `side`, `path`, `sha256` rows under a separate `dependencies/` directory. Supply its `manifest.json` and trusted SHA-256 to operator intake alongside the neutral source pair and its trusted manifest digest. [Operator intake](../operator/README.md)
