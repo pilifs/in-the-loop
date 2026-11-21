@@ -473,5 +473,21 @@ class Excerpts(unittest.TestCase):
         self.assertEqual(reviewable["other-home-dir"][HOME_A], 2)
 
 
+class CommitAllowlist(unittest.TestCase):
+    def test_hundreds_of_approvals_commit_with_a_message_jj_can_take(self):
+        chosen = {f"{i:032x}": {"kind": "long-token", "masked": "gAA…" + "x" * 40, "reason": "made up " * 30}
+                  for i in range(600)}
+        calls = []
+        jj = lambda *args: calls.append(args) or mock.Mock(returncode=0, stderr="")
+        with mock.patch.object(sync, "jj", side_effect=jj), mock.patch.object(sync, "uncommitted_work", return_value=["other/file"]), \
+             mock.patch.object(sync, "jj_commits", return_value=[{"description": ""}]), mock.patch("sys.stdout", io.StringIO()):
+            self.assertEqual(sync.commit_allowlist(chosen, "Made Up"), 0)
+        [(command, _, flag, message)] = calls
+        self.assertEqual((command, flag), ("commit", "-m"))
+        self.assertLess(len(message.encode()), 128 * 1024)
+        self.assertIn("and 592 more", message.splitlines()[0])
+        self.assertIn("... and 550 more", message)
+
+
 if __name__ == "__main__":
     unittest.main()

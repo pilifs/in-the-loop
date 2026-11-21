@@ -3362,9 +3362,13 @@ def commit_allowlist(chosen: dict[str, dict], who: str) -> int:
     lines. A described @ is left alone: its message belongs to whoever wrote it."""
     path = str(ALLOWLIST.relative_to(REPO))
     lines = [f"{fid[:8]}  {e['kind']}  {e.get('masked') or _mask(e['value'])}: {e['reason']}" for fid, e in chosen.items()]
-    summary = f"Allow list: {who} approved {', '.join(fid[:8] for fid in chosen)}"
+    # A message is one argument to jj, which the OS caps (128 KiB on Linux): 511 values at once overflowed it on
+    # 2026-11-21. Name the first few in the summary and list the first 50 lines; the allow list holds them all.
+    ids = [fid[:8] for fid in chosen]
+    summary = f"Allow list: {who} approved {', '.join(ids[:8])}" + (f" and {len(ids) - 8} more" if len(ids) > 8 else "")
+    shown = lines[:50] + ([f"... and {len(lines) - 50} more, each in {ALLOWLIST.name}"] if len(lines) > 50 else [])
     body = (f"{who} approved {len(chosen)} value(s) at their terminal with sync.py allow; the command committed "
-            "the decision itself.\n\n" + "\n".join(lines))
+            "the decision itself.\n\n" + "\n".join(shown))
     others = [p for p in uncommitted_work() if p != path]
     if jj_commits("@")[0]["description"].strip():
         print("@ has a description of its own, so the decision is left there: commit it with `sync.py commit`")

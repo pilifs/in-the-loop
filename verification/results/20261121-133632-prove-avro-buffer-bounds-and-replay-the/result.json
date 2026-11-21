@@ -1,0 +1,798 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-133632-prove-avro-buffer-bounds-and-replay-the",
+  "title": "Prove Avro buffer bounds and replay the parent witness",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 23.9s, peak 1.2 GiB (estimated 3m00s, 3.0 GiB); 69 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-133632-prove-avro-buffer-bounds-and-replay-the.json",
+    "sha256": "6ae93f1eb2269da6086bdd19d04c540c3e5353a3befdd0a6752d64157673db7e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-133632-prove-avro-buffer-bounds-and-replay-the",
+      "title": "Prove Avro buffer bounds and replay the parent witness",
+      "description": "Run the fixed and parent nested BytesWritableConverter over every registered capacity and logical length after the same two-root JVM startup, with the original classes and pinned image. Confirm the physical fixed limit and capacity and the parent counterexample. Recheck the resulting native selector through the original parent entry without any startup condition.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T13:36:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check the original nested converter on both revisions",
+          "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage buffer-wrap --tasks direct-limit-parent-writable-startup,direct-limit-fix-writable-startup",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the native witness on the original parent",
+          "run": "python3 examples/tools/build.py 355 --original-witness direct-limit-parent --from-task direct-limit-parent-writable-startup",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native",
+        "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup",
+        "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup",
+        "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions",
+        "examples/355-avro-writable-buffer-limit/records/original-witnesses"
+      ]
+    }
+  },
+  "sourceCommit": "d17721692d44d6bbd633ad750bca925220f79770",
+  "startedAt": "2026-11-21T13:47:46+00:00",
+  "finishedAt": "2026-11-21T13:51:00+00:00",
+  "wallSeconds": 194.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3795040,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1339785216,
+    "wallSeconds": 23.9,
+    "cpuSeconds": 34.2,
+    "memoryOfEstimate": 0.42,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 162.803,
+      "cpuSeconds": 163.151,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2181181440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "357cf562bb7fcfef46a58b20d8a1d3225a8ef135a431b33c001779e6afe59f83",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-133632-prove-avro-buffer-bounds-and-replay-the/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 42s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the original nested converter on both revisions",
+      "run": "python3 lib/benchmark/organic-java/run.py 355 --route native --stage buffer-wrap --tasks direct-limit-parent-writable-startup,direct-limit-fix-writable-startup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 17.44,
+      "cpuSeconds": 24.907,
+      "cpuThrottledSeconds": 2.103,
+      "peakMemoryBytes": 1339785216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-nested-conv.log",
+        "lines": 1,
+        "bytes": 531,
+        "sha256": "176b9005aaf30e2e4684e2d511826d4f610d10e0c1073b24f5362f5ce977bfe8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"native\", \"stage\": \"buffer-wrap\", \"workflowExit\": 0, \"seconds\": 17.335, \"checkerSeconds\": 60, \"tasks\": [\"direct-limit-parent-writable-startup\", \"direct-limit-fix-writable-startup\"], \"verifierCommit\": \"d17721692d44d6bbd633ad750bca925220f79770\", \"checkerSha256\": \"4d7757ae37"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay the native witness on the original parent",
+      "run": "python3 examples/tools/build.py 355 --original-witness direct-limit-parent --from-task direct-limit-parent-writable-startup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 6.412,
+      "cpuSeconds": 9.303,
+      "cpuThrottledSeconds": 0.678,
+      "peakMemoryBytes": 275341312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-the-native-witness-on-t.log",
+        "lines": 1,
+        "bytes": 152,
+        "sha256": "2bdbbf78535d1b85cf4e25baf006154465407d541e484b9d1dd9077fa96a6658",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "direct-limit-parent refuted [{'name': 'code', 'type': 'int', 'value': 1}] receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d6e3bfc73ffb6b7000f39c83ae9382fe4c0464e41a2835681cf303e9dea5553a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/plan.json",
+      "change": "added",
+      "bytes": 9979,
+      "sha256": "ef53dd4edab3f770c617dbee60d24eab16fba427cb6e79ab9b3dbf2fb828039f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 733,
+      "sha256": "324e62f876a28822f7a4888af1daf40dadcc35a632c377febff6210e18f1b249",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/controls.json",
+      "change": "added",
+      "bytes": 61903,
+      "sha256": "bbad282d2bf949a1d0eec5bad27c70d8e140047e846c6193d0b5eb76cadcd0e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/execution.json",
+      "change": "added",
+      "bytes": 169255,
+      "sha256": "f2de892f38dd9dfe911be41eb3b43d170012d9a2951db4061ab1a2154a980779",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/streams.json",
+      "change": "added",
+      "bytes": 1953,
+      "sha256": "448060933fa424718f40844faa23d01d4242478f1ae6ca9029f384d79252f476",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 299,
+      "sha256": "b2cfe148478be9c25e20d78164944f38f4f553e026087ce8b8e95c39f9093e51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.json",
+      "change": "added",
+      "bytes": 104926,
+      "sha256": "de6c350d74ecc6246b391fd6c28649efe9ee9152c16f0c2a3711ca18825b6ae1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stdout",
+      "change": "added",
+      "bytes": 29695,
+      "sha256": "13c26845dde09311167b0d9843792a6d50a53e016eabdb39c3d2dbeddf320d52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/result.json",
+      "change": "added",
+      "bytes": 102131,
+      "sha256": "0335ec12fd8ff78f469f0a24d5e607b749ccb0b3746a6cbaf8e48dbcb3dd1683",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/attempt.json",
+      "change": "added",
+      "bytes": 132358,
+      "sha256": "1c558d84ed383ec224c1a834c274d3f9f2ab6d6de87f22cddb0c1273607b777e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/checker.json",
+      "change": "added",
+      "bytes": 45639,
+      "sha256": "98f8a941589500735bbbe23caaf7f8799d3e6eecc424dc0ae7a224721a5903f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/correspondence.json",
+      "change": "added",
+      "bytes": 7470,
+      "sha256": "d630a9530fe4b5a4aa3004ff0f852c1aeaf280a88049bb083f3540061000d3a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "af61df219406a8a568f5f4f5205aef250644481f0eb47cb2e0645246cbcd2dfc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/plan.json",
+      "change": "added",
+      "bytes": 9884,
+      "sha256": "c7c4f8746eaaff2ad1f9a2328fec10f8284bfd868680bae2e7f910fa8e7411a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 739,
+      "sha256": "388ba530133b5eca6ddd68e23714e07424de4bca3a90d2c1506fd9c4f4bcf864",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5804,
+      "sha256": "94d006f3abcd08f84eda9180f61c9f42344792f55e6a1e4c4e51c69c5aa10510",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/controls.json",
+      "change": "added",
+      "bytes": 60850,
+      "sha256": "6c98a41648b29844c41c99b2aef05de9c0c87b84a78c17f5ffa5fa93d2e30f9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/execution.json",
+      "change": "added",
+      "bytes": 183747,
+      "sha256": "83500eadc0f30c5a2eee53bb9bc66b3d22fcfc6b3ff650a06ba8a58f8296749f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/streams.json",
+      "change": "added",
+      "bytes": 1977,
+      "sha256": "d6bdec2db59263f20407749855d1ba02332462f3f50af36cd17d16dc6a049512",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 560,
+      "sha256": "5e941aef687e52d7abb03e132c67a3a0ffb16d9730f5463ee3eb633e4762ecca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.json",
+      "change": "added",
+      "bytes": 106262,
+      "sha256": "82a7d222f224660af907f04819788df61b9138b5c3f1807e1f586f3e59f5233c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 30183,
+      "sha256": "7778cd9251cc6b55366823eb2bbf7392b102959b69a0f27c3afd2084ba37cb86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/result.json",
+      "change": "added",
+      "bytes": 103713,
+      "sha256": "b5405d466f9be50c58c40c79ef8f64e7ed1daea22686bf04b7b92d2362f71963",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/attempt.json",
+      "change": "added",
+      "bytes": 133281,
+      "sha256": "70ba7846f9004f65c317bad5391400f13b71d7f0e3faa9b1ee9c871c41da6914",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/checker.json",
+      "change": "added",
+      "bytes": 46530,
+      "sha256": "60560cb1a64a38ce22ed3fbc2e5919ce71af9bca0b1186ead2adfff0f872c4ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/correspondence.json",
+      "change": "added",
+      "bytes": 7473,
+      "sha256": "02c836d29b6cee890b8cd1bec081e2da5156e4d47728aa0b2ed74dbfba2c1c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/replay.json",
+      "change": "added",
+      "bytes": 12571,
+      "sha256": "4ac101193daf258018c1bb31ac576d3317ac5e61a6623b97ad81d055ce26f515",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/run.json",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "3a6d56034c63cf391ae028112e603d23b81f09c71ba33c5628df333585d14797",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/workflow.log",
+      "change": "added",
+      "bytes": 591,
+      "sha256": "2fe88f8ec932d898c3b0501bec5d4a3f8a1a257997ad5f68b66e6c1dac979d9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "af61df219406a8a568f5f4f5205aef250644481f0eb47cb2e0645246cbcd2dfc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/plan.json",
+      "change": "added",
+      "bytes": 9884,
+      "sha256": "c7c4f8746eaaff2ad1f9a2328fec10f8284bfd868680bae2e7f910fa8e7411a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 739,
+      "sha256": "388ba530133b5eca6ddd68e23714e07424de4bca3a90d2c1506fd9c4f4bcf864",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5804,
+      "sha256": "94d006f3abcd08f84eda9180f61c9f42344792f55e6a1e4c4e51c69c5aa10510",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/controls.json",
+      "change": "added",
+      "bytes": 60850,
+      "sha256": "6c98a41648b29844c41c99b2aef05de9c0c87b84a78c17f5ffa5fa93d2e30f9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/execution.json",
+      "change": "added",
+      "bytes": 183747,
+      "sha256": "83500eadc0f30c5a2eee53bb9bc66b3d22fcfc6b3ff650a06ba8a58f8296749f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/streams.json",
+      "change": "added",
+      "bytes": 1977,
+      "sha256": "d6bdec2db59263f20407749855d1ba02332462f3f50af36cd17d16dc6a049512",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 560,
+      "sha256": "5e941aef687e52d7abb03e132c67a3a0ffb16d9730f5463ee3eb633e4762ecca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.json",
+      "change": "added",
+      "bytes": 106262,
+      "sha256": "82a7d222f224660af907f04819788df61b9138b5c3f1807e1f586f3e59f5233c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 30183,
+      "sha256": "7778cd9251cc6b55366823eb2bbf7392b102959b69a0f27c3afd2084ba37cb86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/result.json",
+      "change": "added",
+      "bytes": 103713,
+      "sha256": "b5405d466f9be50c58c40c79ef8f64e7ed1daea22686bf04b7b92d2362f71963",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/attempt.json",
+      "change": "added",
+      "bytes": 133281,
+      "sha256": "70ba7846f9004f65c317bad5391400f13b71d7f0e3faa9b1ee9c871c41da6914",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/checker.json",
+      "change": "added",
+      "bytes": 46530,
+      "sha256": "60560cb1a64a38ce22ed3fbc2e5919ce71af9bca0b1186ead2adfff0f872c4ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/correspondence.json",
+      "change": "added",
+      "bytes": 7473,
+      "sha256": "02c836d29b6cee890b8cd1bec081e2da5156e4d47728aa0b2ed74dbfba2c1c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/replay.json",
+      "change": "added",
+      "bytes": 12571,
+      "sha256": "4ac101193daf258018c1bb31ac576d3317ac5e61a6623b97ad81d055ce26f515",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d6e3bfc73ffb6b7000f39c83ae9382fe4c0464e41a2835681cf303e9dea5553a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/plan.json",
+      "change": "added",
+      "bytes": 9979,
+      "sha256": "ef53dd4edab3f770c617dbee60d24eab16fba427cb6e79ab9b3dbf2fb828039f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 733,
+      "sha256": "324e62f876a28822f7a4888af1daf40dadcc35a632c377febff6210e18f1b249",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 6884,
+      "sha256": "7faf736a535eedfbac287568dc15bc2377979a97670125a29c3064a9494acb37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/controls.json",
+      "change": "added",
+      "bytes": 61903,
+      "sha256": "bbad282d2bf949a1d0eec5bad27c70d8e140047e846c6193d0b5eb76cadcd0e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/execution.json",
+      "change": "added",
+      "bytes": 169255,
+      "sha256": "f2de892f38dd9dfe911be41eb3b43d170012d9a2951db4061ab1a2154a980779",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/streams.json",
+      "change": "added",
+      "bytes": 1953,
+      "sha256": "448060933fa424718f40844faa23d01d4242478f1ae6ca9029f384d79252f476",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 299,
+      "sha256": "b2cfe148478be9c25e20d78164944f38f4f553e026087ce8b8e95c39f9093e51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.json",
+      "change": "added",
+      "bytes": 104926,
+      "sha256": "de6c350d74ecc6246b391fd6c28649efe9ee9152c16f0c2a3711ca18825b6ae1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stdout",
+      "change": "added",
+      "bytes": 29695,
+      "sha256": "13c26845dde09311167b0d9843792a6d50a53e016eabdb39c3d2dbeddf320d52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/result.json",
+      "change": "added",
+      "bytes": 102131,
+      "sha256": "0335ec12fd8ff78f469f0a24d5e607b749ccb0b3746a6cbaf8e48dbcb3dd1683",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/attempt.json",
+      "change": "added",
+      "bytes": 132358,
+      "sha256": "1c558d84ed383ec224c1a834c274d3f9f2ab6d6de87f22cddb0c1273607b777e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/checker.json",
+      "change": "added",
+      "bytes": 45639,
+      "sha256": "98f8a941589500735bbbe23caaf7f8799d3e6eecc424dc0ae7a224721a5903f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/correspondence.json",
+      "change": "added",
+      "bytes": 7470,
+      "sha256": "d630a9530fe4b5a4aa3004ff0f852c1aeaf280a88049bb083f3540061000d3a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/attempt.json",
+      "change": "added",
+      "bytes": 61013,
+      "sha256": "2b5df9fe4b0c1ed2a92401212a21f88c9da089dc9c2eeda15d9d551879e0bdc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/candidate.json",
+      "change": "added",
+      "bytes": 187,
+      "sha256": "86c8c55846404abe539316c269da29048e02889beb71bfc6a91b29539c0efab2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/correspondence.json",
+      "change": "added",
+      "bytes": 7473,
+      "sha256": "02c836d29b6cee890b8cd1bec081e2da5156e4d47728aa0b2ed74dbfba2c1c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/replay.json",
+      "change": "added",
+      "bytes": 11416,
+      "sha256": "cf9522e6c38589ec037f0729235cb04d0ead4aedb13ad40bfc0e237c82c55c95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/original-witnesses/direct-limit-parent/20261121T135054Z-48d28626.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "fb2068c56465a00f194513f9f96b9780c8c66d89705ec822ad7e6fe5d77c2be9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T13:51:02+00:00",
+    "applied": [
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/result.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/completion.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/plan.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/result.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/checker.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/replay.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/run.json",
+      "examples/355-avro-writable-buffer-limit/records/buffer-wrap-native/workflow.log",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/completion.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/plan.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/control-parent-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/result.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/attempt.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/checker.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent-writable-startup/executions/20261121T135036Z-e929ff4a/replay.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/completion.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/plan.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stderr",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/control-fix-jdk21.stdout",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/controls.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/execution.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/streams.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier-output.txt",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stderr",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/records/verifier.stdout",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/20261121T135046Z-d7e1bfbf/result.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/attempt.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/checker.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-fix-writable-startup/executions/20261121T135046Z-d7e1bfbf/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/attempt.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/candidate.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/correspondence.json",
+      "examples/355-avro-writable-buffer-limit/receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/replay.json",
+      "examples/355-avro-writable-buffer-limit/records/original-witnesses/direct-limit-parent/20261121T135054Z-48d28626.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2898087,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "65560d5276ba3908d53d9de0ffae223793c7b6e1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/65560d5276ba3908d53d9de0ffae223793c7b6e1/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "original-jvm-counterexample/v1",
+  "status": "refuted",
+  "task": "direct-limit-parent",
+  "sourceKey": "afe1494678b03b7c",
+  "planKey": "605e19639c442181fcc5b8253ec7f5f15203aad119695abe89601b99f30653d9",
+  "subject": "org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter#convert(Lorg/apache/hadoop/io/BytesWritable;)Ljava/nio/ByteBuffer;",
+  "revisions": [
+    "parent"
+  ],
+  "entry": "organic.WritableBuffer#directLimit(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 1
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "nativeSource": {
+    "task": "direct-limit-parent-writable-startup",
+    "sourceKey": "90ed9b1fa5b6d6ed",
+    "receipt": "receipts/direct-limit-parent-writable-startup/20261121T135036Z-e929ff4a/result.json",
+    "receiptSha256": "b5405d466f9be50c58c40c79ef8f64e7ed1daea22686bf04b7b92d2362f71963",
+    "checkerSha256": "4d7757ae37ad2169d04bd9e540211fa3a7ea6a939f8e8cc3d655c628f23368be",
+    "observedInitializers": {
+      "org.apache.avro.Schema": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb",
+      "org.apache.hadoop.io.BytesWritable": "cf029b2245da586d4f1863ebbb7b117ec59433fccf3a4eee9eebdc70513413eb"
+    },
+    "bounds": {
+      "unwind": 64,
+      "maxArrayLength": 128
+    }
+  },
+  "original": {
+    "replay": "receipts/direct-limit-parent/executions/20261121T135054Z-48d28626/replay.json",
+    "sha256": "cf9522e6c38589ec037f0729235cb04d0ead4aedb13ad40bfc0e237c82c55c95",
+    "execution": "20261121T135054Z-48d28626",
+    "observedInitializers": [],
+    "bounds": {
+      "unwind": 64,
+      "maxArrayLength": 128
+    },
+    "values": {
+      "parent": [
+        0,
+        null
+      ]
+    }
+  },
+  "derivation": "An admitted input violates the original assertion on original JVM bytecode. The native companion supplied the candidate. Its startup assumptions are unnecessary for this existential refutation."
+}
