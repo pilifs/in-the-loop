@@ -1,0 +1,255 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-064106-replay-group-03-with-exact-jvm-early-fai",
+  "title": "Replay group 03 with exact JVM early failure evidence",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m20s, peak 625.3 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (Recover the original module before optional packaging) was held back 22.6s by its 2-CPU quota in 19.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-064106-replay-group-03-with-exact-jvm-early-fai.json",
+    "sha256": "4977024d3db1affb316e6be827127325b15ceda0aa0baa5483649a90d4e7a14e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-064106-replay-group-03-with-exact-jvm-early-fai",
+      "title": "Replay group 03 with exact JVM early failure evidence",
+      "description": "Exercise the unchanged registered observations. Record independently matched returns and errors. For failures before the selected method, match the escaping object to two live debugger stacks and keep the downstream question open. Cases commons-text-775, compsuite-i-80, ea-async-27, incremental-analysis-28, whatjdk-12.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T06:41:06+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "timeout": "70m"
+      },
+      "steps": [
+        {
+          "name": "Recover the original module before optional packaging",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase compile --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-03 --case ea-async-27",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the reviewed observer on each original classpath",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-replay/03 --case commons-text-775 --case compsuite-i-80 --case ea-async-27 --case incremental-analysis-28 --case whatjdk-12",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-03",
+        "verification/external-upgrades/corpus-runs/early-failure-replay/03"
+      ]
+    }
+  },
+  "sourceCommit": "b1cd677a86022e7b2a0ce0095c29dcd4bba3b024",
+  "startedAt": "2026-11-21T06:46:22+00:00",
+  "finishedAt": "2026-11-21T06:47:51+00:00",
+  "wallSeconds": 89.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 798292,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 655646720,
+    "wallSeconds": 80.6,
+    "cpuSeconds": 90.8,
+    "memoryOfEstimate": 0.31,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recover the original module before optional packaging",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase compile --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-03 --case ea-async-27",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4200.0,
+      "cancelled": false,
+      "wallSeconds": 19.427,
+      "cpuSeconds": 31.813,
+      "cpuThrottledSeconds": 22.552,
+      "peakMemoryBytes": 655646720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recover-the-original-module-be.log",
+        "lines": 2,
+        "bytes": 64,
+        "sha256": "34bf00c4ba01fcab947790c66f95bc63327a482208590bbcfbc20239ee18ca1a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ea-async-27 old artifacts ready",
+        "ea-async-27 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay the reviewed observer on each original classpath",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-replay/03 --case commons-text-775 --case compsuite-i-80 --case ea-async-27 --case incremental-analysis-28 --case whatjdk-12",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4200.0,
+      "cancelled": false,
+      "wallSeconds": 61.128,
+      "cpuSeconds": 58.98,
+      "cpuThrottledSeconds": 5.815,
+      "peakMemoryBytes": 137895936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-the-reviewed-observer-o.log",
+        "lines": 10,
+        "bytes": 701,
+        "sha256": "76b450465ca83f2f53d4fb55536838d63e84e626f24a859983ba2d17054ccb1e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
+        "commons-text-775 preserved",
+        "changed org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
+        "compsuite-i-80 changed",
+        "preserved com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+        "ea-async-27 preserved",
+        "preserved com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
+        "incremental-analysis-28 preserved",
+        "preserved com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+        "whatjdk-12 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-03/ea-async-27.json",
+      "change": "added",
+      "bytes": 2704,
+      "sha256": "1bbdd319f1c3adb0f499ef1123fd85498dc6b39e82728b65d1aede179c5bbdeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/03/commons-text-775.json",
+      "change": "added",
+      "bytes": 6836,
+      "sha256": "e705cc60a3394015b2c95e16e924700d4e49c4a1aa054baa223f42ac1e934d5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/03/compsuite-i-80.json",
+      "change": "added",
+      "bytes": 6730,
+      "sha256": "33c230c2b1a0411268e32236f0c0a715359f4ebb6de505e9785bc36e5f98fddf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/03/ea-async-27.json",
+      "change": "added",
+      "bytes": 18228,
+      "sha256": "998f5376452b160c336c08c56884eeb320ca4b749befbe4dc6fcf76a4e3215b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/03/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 12061,
+      "sha256": "7b49853d948e4a386ae22ed1a43958fb407e491f027663d5ce55d50746d2bd16",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/03/whatjdk-12.json",
+      "change": "added",
+      "bytes": 10628,
+      "sha256": "723f776d1d53fb7e5a03fe3917d354f9944e01b47c705cb0be2c00d95ae5c535",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T06:51:03+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-03/ea-async-27.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/03/commons-text-775.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/03/compsuite-i-80.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/03/ea-async-27.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/03/incremental-analysis-28.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/03/whatjdk-12.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

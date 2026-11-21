@@ -1,0 +1,255 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-064106-replay-group-04-with-exact-jvm-early-fai",
+  "title": "Replay group 04 with exact JVM early failure evidence",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m31s, peak 525.6 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (Recover the original module before optional packaging) was held back 57.5s by its 2-CPU quota in 24.9s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-064106-replay-group-04-with-exact-jvm-early-fai.json",
+    "sha256": "b324263e2417f74e0f70112c8362647a78612447813ae3f85d3a43565f395850",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-064106-replay-group-04-with-exact-jvm-early-fai",
+      "title": "Replay group 04 with exact JVM early failure evidence",
+      "description": "Exercise the unchanged registered observations. Record independently matched returns and errors. For failures before the selected method, match the escaping object to two live debugger stacks and keep the downstream question open. Cases commons-compress-767, commons-compress-822, commons-configuration-565, commons-configuration-601, cucumber-reporting-1220.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "finite-jvm"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T06:41:06+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "timeout": "70m"
+      },
+      "steps": [
+        {
+          "name": "Recover the original module before optional packaging",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase compile --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-04 --case cucumber-reporting-1220",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the reviewed observer on each original classpath",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-replay/04 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601 --case cucumber-reporting-1220",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-04",
+        "verification/external-upgrades/corpus-runs/early-failure-replay/04"
+      ]
+    }
+  },
+  "sourceCommit": "b1cd677a86022e7b2a0ce0095c29dcd4bba3b024",
+  "startedAt": "2026-11-21T06:46:22+00:00",
+  "finishedAt": "2026-11-21T06:48:02+00:00",
+  "wallSeconds": 100.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 798292,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 551153664,
+    "wallSeconds": 91.4,
+    "cpuSeconds": 130.4,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.3
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recover the original module before optional packaging",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase compile --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-04 --case cucumber-reporting-1220",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4200.0,
+      "cancelled": false,
+      "wallSeconds": 24.859,
+      "cpuSeconds": 44.703,
+      "cpuThrottledSeconds": 57.496,
+      "peakMemoryBytes": 551153664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recover-the-original-module-be.log",
+        "lines": 2,
+        "bytes": 88,
+        "sha256": "57ebb883f74f2b79ebed8bdbf0c3880ebf578bad7f6b0e4f7e2f4d2216f75760",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cucumber-reporting-1220 old artifacts ready",
+        "cucumber-reporting-1220 new artifacts ready"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay the reviewed observer on each original classpath",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-replay/04 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601 --case cucumber-reporting-1220",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4200.0,
+      "cancelled": false,
+      "wallSeconds": 66.54,
+      "cpuSeconds": 85.723,
+      "cpuThrottledSeconds": 17.375,
+      "peakMemoryBytes": 200138752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-the-reviewed-observer-o.log",
+        "lines": 10,
+        "bytes": 626,
+        "sha256": "761cc3486af6b27ec2e6b02189d8ca2c378fa0cc7710ef4f7bc5ffdc10abc6cf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
+        "commons-compress-767 preserved",
+        "preserved org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
+        "commons-compress-822 preserved",
+        "preserved org.apache.commons.configuration2.JSONConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-565 preserved",
+        "preserved org.apache.commons.configuration2.YAMLConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-601 preserved",
+        "preserved net.masterthought.cucumber.ReportBuilder#generateReports()Lnet/masterthought/cucumber/Reportable;",
+        "cucumber-reporting-1220 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-04/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 4093,
+      "sha256": "a9d0071c81c95ce1e0bec7890e6618b3f7c9aba109a6d67808bf040fb1f84779",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-compress-767.json",
+      "change": "added",
+      "bytes": 10078,
+      "sha256": "b275043e867f2d98d952c884487f9fe94bc2465a8c1731426690cbe3448754ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-compress-822.json",
+      "change": "added",
+      "bytes": 7032,
+      "sha256": "e5bd54cd2fa5d225ea24f716f292679af2be3f650a0fde05b3120b4264107b6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 56817,
+      "sha256": "c3fd5426f3aa55796632cdb2cd6847d6205c0d090bc6a98357efc6d69f8e5823",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 26789,
+      "sha256": "42f3dd4a8ec7f986b795f2a4843f42f0158d2cd5321f18af9aa57cea5c93e203",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-replay/04/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 8359,
+      "sha256": "15e991f45dcde73ef2ece677aff36ebff1f6cf997bc7bdb9d094b8b76f81bfbb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T06:51:03+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-04/cucumber-reporting-1220.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-compress-767.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-compress-822.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-configuration-565.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/04/commons-configuration-601.json",
+      "verification/external-upgrades/corpus-runs/early-failure-replay/04/cucumber-reporting-1220.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
