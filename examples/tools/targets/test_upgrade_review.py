@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import runtime_jdk, upgrade_claims, upgrade_replay
+from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_replay
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
 from cost_tier import cost
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
@@ -33,6 +33,8 @@ class UpgradeReviewTest(unittest.TestCase):
                 jar = classes / (owner.split("/")[-1] + ".jar")
                 with zipfile.ZipFile(jar, "w") as archive:
                     archive.write(classes / (owner + ".class"), owner + ".class")
+                    for member in classes.glob(owner + "$*.class"):
+                        archive.write(member, member.relative_to(classes).as_posix())
                 rows.append({"file": str(jar), "sha256": upgrade_replay.sha(jar)})
             path = classes / "prepared.json"
             path.write_text(json.dumps({"commit": side, "sourceSha256": upgrade_replay.sha(client_source), "classpath": rows}))
@@ -143,6 +145,41 @@ class UpgradeReviewTest(unittest.TestCase):
         edges = upgrade_claims.calls_in_methods(text, "app/Client")
         self.assertEqual(edges["read", "(I)Ljava/lang/String;"], [("dep/Store", "read", "(I)Ljava/lang/String;")])
         self.assertEqual(edges["read", "()Ljava/lang/String;"], [("app/Client", "fallback", "()Ljava/lang/String;")])
+
+    @cost("tool")
+    def test_old_loaded_type_is_absent_on_the_new_jvm_and_a_string_is_not_a_type_reference(self):
+        home = runtime_jdk.home("21")
+        if not home:
+            self.skipTest("requires JDK 21")
+        jdk = Path(home)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            method = "public static int value() { return 7; }"
+            prepared, dependencies = self.prepared_pair(root, jdk, "public static int call() { return dep.Number.value(); }", {
+                "old": method + " public static class Gone {} public static Gone[] items() { return null; }",
+                "new": method + ' public static String name() { return "dep/Number$Gone"; }'})
+            for side, expected in (("old", True), ("new", False)):
+                data = (root / side / "dep/Number.class").read_bytes()
+                refs = runtime_jar.type_references(data, "dep/Number$Gone")
+                kinds = refs["kinds"]
+                self.assertEqual(refs["methods"], ["items()[Ldep/Number$Gone;"] if expected else [])
+                self.assertEqual("method declaration" in kinds, expected)
+                self.assertEqual(bool(kinds), expected)
+            probe = root / "UpgradeProbe.java"
+            probe.write_text('public class UpgradeProbe { public static String observe(String[] args) { '
+                             'return dep.Number.Gone.class.getSimpleName() + "/" + app.Real.call(); } }')
+            spec = root / "scope.json"
+            spec.write_text(json.dumps({"entry": "app.Real#call()I", "observer": "return", "basis": "fixture",
+                "probeClass": "UpgradeProbe", "cases": [{"args": [], "expected": {"return": "Gone/7"}}]}))
+            report = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+            self.assertEqual(report["status"], "open")
+            row = report["beforeEntryComparison"][0]
+            self.assertIn("missingClass", row, report.get("missingClassEvidence"))
+            self.assertEqual(row["missingClass"]["relationship"], "old upgraded artifact supplied the missing class")
+            evidence = report["missingClassEvidence"]["dep.Number$Gone"]
+            self.assertEqual(evidence["old"]["lookup"]["jarSha256"], dependencies[0])
+            self.assertEqual(evidence["new"]["lookup"], {"outcome": "missing"})
+            self.assertEqual(evidence["new"]["providers"], [])
 
     def test_observations_require_the_original_caller_and_preserve_utf16_and_null(self):
         client, library = Path("/original/client.jar"), Path("/original/library.jar")

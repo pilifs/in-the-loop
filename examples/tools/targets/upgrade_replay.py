@@ -20,11 +20,12 @@ import tempfile
 import time
 from urllib.parse import unquote, urlsplit
 
-from targets import runtime_jar, runtime_jdk, upgrade_claims
+from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_linkage
 
 
 LAUNCHER = Path(__file__).with_name("java") / "UpgradeObservation.java"
 TRACER = LAUNCHER.with_name("UpgradeTrace.java")
+LOOKUP = LAUNCHER.with_name("UpgradeClassLookup.java")
 LOAD = re.compile(r"^(?:\[Loaded (\S+) from (file:[^\]]+)\]|.*?\[class,load\]\s+(\S+) source: (file:\S+))$")
 MARK = "UPGRADE-OBSERVATION "
 
@@ -201,8 +202,9 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
     if dependencies[0] == dependencies[1]:
         raise ValueError("the dependency digests identify the same bytes")
     report = {} if progress is None else progress
+    identity = runtime_jdk.identity(jdk)
     report.update({"entry":caller,"observer":spec["observer"],"domainBasis":spec["basis"],"cases":domain,"operandScope":operand_scope,
-              "probeSha256":sha(probe),"launcherSha256":sha(LAUNCHER),"tracerSha256":sha(TRACER),"jdk":runtime_jdk.identity(jdk)["release"],
+              "probeSha256":sha(probe),"launcherSha256":sha(LAUNCHER),"tracerSha256":sha(TRACER),"lookupSha256":sha(LOOKUP),"jdk":identity["release"],
               "sides":{s:v[2] for s,v in prepared.items()},"status":"open"})
     if "originalCallerSource" in spec:
         report["originalCallerSource"] = spec["originalCallerSource"]
@@ -248,7 +250,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                 raise ValueError(f"{side} is missing a declared runtime companion")
         tools = [jdk/"lib/tools.jar"] if (jdk/"lib/tools.jar").is_file() else []
         proc=subprocess.run([str(jdk/"bin/javac"),"-J-Djava.io.tmpdir="+t,"-proc:none","-g","-encoding","UTF-8",
-                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(probe),*map(str,supplied)],
+                             "-classpath",cp([*prepared["old"][0],*tools]),"-d",str(output),str(LAUNCHER),str(TRACER),str(LOOKUP),str(probe),*map(str,supplied)],
                              cwd=temp,env=env,capture_output=True,text=True,timeout=timeout)
         if proc.returncode:
             raise ValueError("observer compilation: "+proc.stderr[-1800:])
@@ -261,7 +263,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             raise ValueError("the observer must declare public static String observe(String[] args)")
         helper_class=lambda f:f.relative_to(output).as_posix()[:-6]
         compiled=sorted(output.rglob("*.class"))
-        if any(helper_class(f) not in ("UpgradeObservation", "UpgradeTrace") and helper_class(f).split("$")[0] not in {main.replace(".","/"), *fixture_classes} for f in compiled):
+        if any(helper_class(f) not in ("UpgradeObservation", "UpgradeTrace", "UpgradeClassLookup") and helper_class(f).split("$")[0] not in {main.replace(".","/"), *fixture_classes} for f in compiled):
             raise ValueError("the observer compiler produced an unrelated class")
         via = spec.get("invocationVia", "")
         direct = via or caller
@@ -276,6 +278,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         launch = [str(jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*tools]),
                   "UpgradeTrace", caller, str(jdk)]
         first_early = None
+        old_loaded = {}
         for side,(files,dependency,side_record) in prepared.items():
             if any(runtime_jar.read_class(jar,name) is not None for jar in files for name in report["probeClasses"]):
                 raise ValueError("observer classes shadow an input artifact")
@@ -332,6 +335,11 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     trials.append(observation)
                     operand_classes.update(classes)
                     loaded_each_time = loaded_each_time and bool(classes)
+                    if side == "old":
+                        if trial == 0:
+                            old_loaded[index] = set(classes)
+                        elif index in old_loaded:
+                            old_loaded[index].intersection_update(classes)
                 trial_record["loadedUpgradeOnEachReplay"] = loaded_each_time
                 if early:
                     trial_record["repeatableBeforeEntry"] = len(early) == 2 and early[0] == early[1]
@@ -346,6 +354,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             report["reason"] = (f"{first_early['side']} input {first_early['input']}: the original caller method was never entered. "
                                 + first_early.get("exception", ""))
             report["beforeEntryComparison"] = compare_before_entry(report["sides"], domain)
+            upgrade_linkage.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
+                                     temp, env, start+timeout)
             report["elapsedSeconds"] = round(time.monotonic()-start, 3)
             return report
         report.pop("stoppedAt", None)

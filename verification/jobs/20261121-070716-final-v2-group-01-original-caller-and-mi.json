@@ -1,0 +1,59 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-070716-final-v2-group-01-original-caller-and-mi",
+  "title": "Final V2 group 01 original caller and missing class replay",
+  "description": "Repeat these registered callers after adding independent fresh-JVM class lookups on both original classpaths. Check release-specific class providers and actual constant-pool or declaration references. Earlier stops retain the downstream open result. Repeat the declared corpus inputs on both original revisions. Trace the exact thrown object through cleanup and record the original runtime, provided or test environment, preserving unsupported cases. Cases compsuite-i-1, compsuite-i-38, compsuite-i-4, compsuite-i-70, compsuite-i-81.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {
+    "jobs": [
+      "20261121-065458-current-upgrade-group-01-native-and-fini"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T07:07:16+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "6G",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "Restore and verify archived Maven inputs",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/restore_archived.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"",
+      "cwd": "."
+    },
+    {
+      "name": "Build the original declared provided environment",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase compile --operand-scope provided --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/final-environments\" --case compsuite-i-81 --seconds 900 --output verification/external-upgrades/corpus-runs/v2-final-setup/01",
+      "cwd": "."
+    },
+    {
+      "name": "Check every original with the native verifier",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/final-environments\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v2-final-native/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+      "cwd": "."
+    },
+    {
+      "name": "Replay original finite caller observations",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/final-environments\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/v2-final-finite/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/v2-final-setup/01",
+    "verification/external-upgrades/corpus-runs/v2-final-native/01",
+    "verification/external-upgrades/corpus-runs/v2-final-finite/01"
+  ]
+}

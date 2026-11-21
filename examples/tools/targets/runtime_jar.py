@@ -184,7 +184,7 @@ def super_class(data):
     return _class_name(pool, index) if index else None
 
 
-def _declarations(data, with_code=False):
+def _declarations(data, with_code=False, *, field_declarations=None):
     """The constant pool, declared method access flags, and offset of the class attributes."""
     pool, offset = _pool(data)
     offset += 6  # access, this, super
@@ -208,6 +208,8 @@ def _declarations(data, with_code=False):
                     handlers = struct.unpack_from(">H", data, offset + 14 + size)[0]
                 offset += 6 + length
             found[_utf8(pool, name), _utf8(pool, desc)] = (access, body, handlers) if with_code else access
+        if table == 0 and field_declarations is not None:
+            field_declarations.update(found)
     return pool, found, offset
 
 
@@ -357,6 +359,31 @@ def references(data):
             name, desc = pool[nat][1]
             out.add((_class_name(pool, owner), _utf8(pool, name), _utf8(pool, desc)))
     return out
+
+
+def type_references(data, target):
+    """Symbolic class constants and JVM descriptors naming an exact internal type."""
+    fields = set()
+    pool, declarations, _ = _declarations(data, field_declarations=fields)
+    def mentions(descriptor):
+        return target in re.findall(r"L([^;]+);", descriptor)
+    kinds = set()
+    for tag, value in pool.values():
+        if tag == 7:
+            name = _utf8(pool, value)
+            if name == target or (name.startswith("[") and mentions(name)):
+                kinds.add("class constant")
+        elif tag == 12 and mentions(_utf8(pool, value[1])):
+            kinds.add("member reference descriptor")
+        elif tag == 16 and mentions(_utf8(pool, value)):
+            kinds.add("method type descriptor")
+    methods = sorted(name + desc for name, desc in declarations if mentions(desc))
+    field_names = sorted(name + ":" + desc for name, desc in fields if mentions(desc))
+    if methods:
+        kinds.add("method declaration")
+    if field_names:
+        kinds.add("field declaration")
+    return {"kinds": sorted(kinds), "methods": methods, "fields": field_names}
 
 
 def resolve_method(owner, name, descriptor, look):
