@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T18:01:06.264Z",
-  "duration_seconds": 3824,
+  "ended": "2026-11-21T18:02:57.070Z",
+  "duration_seconds": 3935,
   "stats": {
     "turns": 1,
-    "api_calls": 130,
-    "tool_calls": 146,
+    "api_calls": 132,
+    "tool_calls": 148,
     "tool_errors": 5,
     "compactions": 0,
-    "peak_context_tokens": 508642,
+    "peak_context_tokens": 516107,
     "usage": {
-      "input_tokens": 260,
-      "output_tokens": 263271,
-      "cache_read_input_tokens": 43046682,
-      "cache_creation_input_tokens": 497025
+      "input_tokens": 264,
+      "output_tokens": 271437,
+      "cache_read_input_tokens": 44065358,
+      "cache_creation_input_tokens": 504490
     }
   },
   "tools": {
-    "Bash": 116,
+    "Bash": 118,
     "Read": 19,
     "Write": 7,
     "Edit": 4
@@ -49,24 +49,24 @@
     {
       "index": 0,
       "started": "2026-11-21T16:57:22.471Z",
-      "ended": "2026-11-21T18:01:06.264Z",
+      "ended": "2026-11-21T18:02:57.070Z",
       "turns": 1,
-      "api_calls": 130,
+      "api_calls": 132,
       "usage": {
-        "input_tokens": 260,
-        "output_tokens": 263271,
-        "cache_read_input_tokens": 43046682,
-        "cache_creation_input_tokens": 497025
+        "input_tokens": 264,
+        "output_tokens": 271437,
+        "cache_read_input_tokens": 44065358,
+        "cache_creation_input_tokens": 504490
       },
-      "peak_context_tokens": 508642
+      "peak_context_tokens": 516107
     }
   ],
   "log": {
-    "sha256": "8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1",
-    "bytes": 3985069,
-    "lines": 1110,
-    "gzip_bytes": 689549,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1.jsonl.gz"
+    "sha256": "8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38",
+    "bytes": 4028424,
+    "lines": 1130,
+    "gzip_bytes": 695749,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -117,6 +117,14 @@
       "summary": "Cut the entry points over to checkpoints: the default run belongs to a promotion, not to a landing",
       "body": "The brief asks that the watcher stop pausing for the old checklist. CLAUDE.md, llm-dlc/README.md, the operating notes, the brief template and the /single-agent-run, /multi-agent-brief and /publish skills now say the same thing: a checkpoint (sync.py checkpoint --rev REV) puts a committed revision on origin's develop with no test run, no log upload and no wait, and is the watcher's to make without asking, at a finished slice, when a stream or a run lands, at a pause or when a snapshot is asked for; main moves by a promotion, at the user's word. Since 2026-11-21 the default test run is owed at a promotion to main and at a release only, each of which runs it itself when no passed run covers the commit. It is no longer owed when an example is done, when a stream or a run lands, or after a merge; an agent still runs it when it answers a development question, with default_run.py after-merge. The tests of what changed before each commit stay as they were.\n\nCLAUDE.md also says how to find and restore originals from the private archive and who reads which class, and the operating notes gain a section on checkpoints and the archive (never force, published commits are immutable, check custody before removing a run directory by hand, tests seal nothing). The Claude Code permissions deny reading the archive's token files or naming their path in a command; no allow rule was added for the checkpoint, which the watcher's session already runs as it runs the other watcher tools. Codex's rules cannot express a denied path and are unchanged.\n\nvm_inventory.py protect now leaves the runner's mark in each run directory it seals, so a rerun of the job does not take the directory for an attempt nobody sealed; it wrote the mark into the 910 directories sealed earlier without sealing anything again. llm-dlc/loops/llm-dlc-process-plumbing-results.md has the acceptance table as it stands after this cycle, what is left in order, and notes for the next cycle. Verified by the tests the documentation changes select (17 files, test_claude_setup.py and test_release.py among them) and test_vm_inventory.py.",
       "log_sha256": "8ad3ffc6b7a6d8544165d5d98e9d2e9b60083b7d4e2fb845afe4eb8da80924a1"
+    },
+    {
+      "change_id": "wovmywvwmmwumksrtrurptmoyqmnpmsk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the design of sync.py promote for the next cycle",
+      "body": "llm-dlc/loops/llm-dlc-process-plumbing-results.md gains the design of the promotion command as settled against the code in cycle 1: the frozen set from the remote's main and the named develop commit, one standing candidate workspace moved with jj new, the metadata as a commit of its own made by that checkout's own tools, the missing-receipt check, the gate with one narrow exemption for the README's generated session table, the forward-only pushes with the expected main, the summary under llm-dlc/artifacts, and the tests to write. Bookkeeping only: no code changed and no test was run.",
+      "log_sha256": "8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38"
     }
   ],
   "logs": {
@@ -148,6 +156,12 @@
       "bytes": 3985069,
       "lines": 1110,
       "gzip_bytes": 689549,
+      "url": null
+    },
+    "8d08815dc7d61808ecbb939c7bb20e94f5916345976f5b19261a78e2653b9e38": {
+      "bytes": 4028424,
+      "lines": 1130,
+      "gzip_bytes": 695749,
       "url": null
     },
     "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad": {
