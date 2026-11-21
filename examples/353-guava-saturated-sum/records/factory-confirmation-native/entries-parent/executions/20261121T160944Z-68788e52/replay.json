@@ -1,0 +1,76 @@
+[
+  {
+    "claimKey": "79fde9fa92863792",
+    "entry": "organic.SumView#entries(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 20
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "15e787e810cd6b755e14a476c3713603cd73a480d14137dfef36450850d8ddfb",
+        "classpath": [
+          "881c9d3acc2e8134c3ebe7a2a7c8896272c3a3ac1b138e3ead49bf8ce86ac3ee",
+          "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
+          "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
+          "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+          "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+          "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
+          "84d3a150518485f8140ea99b8a985656749629f6433c92b80c75b36aba3b099b"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 20;\nif (!(code >= 0 && code < 49)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.SumView.entries(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 20,
+      "input": {
+        "left": 3,
+        "right": 2147483647
+      },
+      "field": "entries",
+      "direct": {
+        "parent": {
+          "lookup": -2147483646,
+          "size": 2147483647,
+          "entries": "java.lang.IllegalArgumentException",
+          "absent": 0,
+          "live": [
+            [
+              6,
+              6,
+              6
+            ],
+            [
+              7,
+              7,
+              7
+            ]
+          ]
+        }
+      },
+      "tableSha256": "06e79b50befeb9c77a3e45a2cc8be679a37e5d540230de69071ca44f6369682a"
+    }
+  }
+]

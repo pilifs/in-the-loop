@@ -1,0 +1,291 @@
+{
+  "plan": {
+    "example": "356",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "e377aecb1db5609739dd2db1b9e0c5e7ba6005395ae6bd1585b8cc15d63499f2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "fc21f26f288ae1065bfa7230ce65e6f2e324f3bcfa70284a2c7a0e57ed61dedd"
+        }
+      ],
+      "key": "958932ee073d61b9"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "5a200e54cc18d98362f4f53c84d5424e33ca1d2f75cbd778d75d6e1a6dfeccc1"
+        },
+        "adapters": [
+          "adapter/organic/OverflowNumber.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "004e7a4949e08b430e3c8996998ee5a17ff9423a",
+        "parent": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "7a41138db9b86ad8cdf9b70cceae9f3f7e9a59a520abb6f4f58aecdf32fb1b3c"
+        },
+        "adapters": [
+          "adapter/organic/OverflowNumber.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-155347-repeat-organic-java-example-356-on-the-f/examples/356-gson-overflowing-number",
+    "network": true
+  },
+  "inputs": {
+    "example": "356",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "e377aecb1db5609739dd2db1b9e0c5e7ba6005395ae6bd1585b8cc15d63499f2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "fc21f26f288ae1065bfa7230ce65e6f2e324f3bcfa70284a2c7a0e57ed61dedd"
+        }
+      ],
+      "key": "958932ee073d61b9"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "5a200e54cc18d98362f4f53c84d5424e33ca1d2f75cbd778d75d6e1a6dfeccc1"
+        },
+        "adapters": [
+          "adapter/organic/OverflowNumber.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "004e7a4949e08b430e3c8996998ee5a17ff9423a",
+        "parent": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "7a41138db9b86ad8cdf9b70cceae9f3f7e9a59a520abb6f4f58aecdf32fb1b3c"
+        },
+        "adapters": [
+          "adapter/organic/OverflowNumber.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/OverflowNumber.java",
+        "sha256": "c3e71d9f3fa73233e6b5f42f1e0d7e326b09f00bd7e0fa51c17dfd74c9301fdc"
+      }
+    ]
+  },
+  "key": "9d6cd0ba79655e83eaaab0553d037d040455d2f57cc15e068a11b6289394a4ed"
+}

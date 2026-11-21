@@ -1,0 +1,349 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261121T160946Z-0774f207",
+  "task": "ten-fix",
+  "claimKey": "2263e8645181900d",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-21T16:09:46.030543+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261121-155348-repeat-organic-java-example-358-on-the-f",
+  "sourceCommit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0013
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.1839
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.2015
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.2452
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.2879
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.4345
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "fix": {
+      "revision": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
+      "target": {
+        "class": "org.apache.commons.codec.binary.Base16OutputStream",
+        "method": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;Z)V",
+        "loadedFrom": "built/commons-codec-1.16-SNAPSHOT.jar",
+        "classSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb",
+        "adapterCalls": [
+          "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+          "org.apache.commons.codec.binary.Base16OutputStream#close()V",
+          "org.apache.commons.codec.binary.Base16OutputStream#write([BII)V"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "601357f5f10ad7a227bcc6eaccf6992fb04a723258bd41594795927957bd577c",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/commons-codec-1.16-SNAPSHOT.jar",
+          "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/apache/commons-codec at 7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb: target/commons-codec-1.16-SNAPSHOT.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "c2e619ae1fd024de2a7ca16f125fc84019ba41151291fa77b8485b31242b01e2",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+    "prove",
+    "organic.HexWrites#bytes(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/built/commons-codec-1.16-SNAPSHOT.jar",
+    "--assume",
+    "code >= 2048 && code < 2049",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "8192",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "6b60043b7c651f33ec748bf0ae94068c3fa11f290fbb917196eb8de87582cdb9",
+    "commit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+    "libTree": "769ee78b99fbe616d0c990908e09569f9c454508",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 96,
+      "maxArrayLength": 8192
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+      "method": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+      "revisions": {
+        "fix": {
+          "commit": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
+          "loadedFrom": "built/commons-codec-1.16-SNAPSHOT.jar",
+          "classSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb",
+          "origin": "built by maven from https://github.com/apache/commons-codec at 7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb: target/commons-codec-1.16-SNAPSHOT.jar",
+          "parameters": {
+            "names": [
+              "out",
+              "doEncode"
+            ],
+            "recordedIn": "LocalVariableTable"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "organic.HexWrites#bytes(I)I",
+        "mapping": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2051
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "fix": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-codec-1.16-SNAPSHOT.jar",
+          "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "organic.HexWrites#bytes(I)I",
+    "entryBindings": {
+      "fix": {
+        "entry": "organic.HexWrites#bytes(I)I",
+        "classSha256": "d8e5adb0751742996c74b162467987628ba6d6860f15cade63ef800744b4cdbc",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+        "subjectClassSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+      "checkedEntry": "organic.HexWrites#bytes(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 2048 && code < 2049"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "96"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8192"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "organic.HexWrites#bytes(I)I",
+        "mapping": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2051
+      }
+    },
+    "commits": {
+      "fix": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "fix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+          "gaps",
+          "--target",
+          "organic.HexWrites#bytes(int)",
+          "--classes",
+          "prepare/fix/adapter-fix.jar",
+          "--classpath",
+          "prepare/fix/built/commons-codec-1.16-SNAPSHOT.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-fix.stdout",
+        "stderr": "verifier/probe-fix.stderr",
+        "gaps": [
+          {
+            "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+            "sites": [
+              "organic.HexWrites.decode:36"
+            ]
+          },
+          {
+            "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+            "sites": [
+              "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0312,
+      "peakRssBytes": 88801280,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0312,
+    "peakRssBytes": 88801280,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.041,
+  "missing": [],
+  "receipt": "receipts/ten-fix/20261121T160946Z-0774f207/result.json",
+  "preparedClaim": "229bf198954abb72",
+  "firstBlocker": null,
+  "endedAt": "2026-11-21T16:09:46.465099+00:00"
+}

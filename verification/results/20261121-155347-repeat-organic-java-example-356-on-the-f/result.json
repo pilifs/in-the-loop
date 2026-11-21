@@ -1,0 +1,1124 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-155347-repeat-organic-java-example-356-on-the-f",
+  "title": "Repeat organic Java example 356 on the factory verifier",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 20.7s, peak 176.2 MiB (estimated 2m00s, 3.0 GiB); 115 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-155347-repeat-organic-java-example-356-on-the-f.json",
+    "sha256": "d95e1eec00690826d55a0cba093802c3f5ea6125c2587aedc96dfe649f725818",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-155347-repeat-organic-java-example-356-on-the-f",
+      "title": "Repeat organic Java example 356 on the factory verifier",
+      "description": "Run the original native and finite JVM contracts on the same checker revision as the Avro factory proof, retaining its successes, refutations and first refusals.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "356"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T15:53:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the frozen native obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 356 --route native --stage factory-confirmation",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the exhaustive original JVM obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 356 --route finite --stage factory-confirmation",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/356-gson-overflowing-number/records/factory-confirmation-native",
+        "examples/356-gson-overflowing-number/records/factory-confirmation-finite"
+      ]
+    }
+  },
+  "sourceCommit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+  "startedAt": "2026-11-21T16:06:37+00:00",
+  "finishedAt": "2026-11-21T16:09:59+00:00",
+  "wallSeconds": 202.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1226168,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 184778752,
+    "wallSeconds": 20.7,
+    "cpuSeconds": 34.8,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the frozen native obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 356 --route native --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 9.322,
+      "cpuSeconds": 14.568,
+      "cpuThrottledSeconds": 0.804,
+      "peakMemoryBytes": 184778752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-frozen-native-oblig.log",
+        "lines": 1,
+        "bytes": 566,
+        "sha256": "482624222066dc8d5f0f508e42ea31e9d65db9b61a90c9fbd4bee592c8a8c001",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"356\", \"route\": \"native\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 9.03, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"token-parent\", \"token-fix\", \"lexeme-parent\", \"lexeme-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"35ba19a31d97586a7d9cbcbb757929d4d39c"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Repeat the exhaustive original JVM obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 356 --route finite --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 11.42,
+      "cpuSeconds": 20.256,
+      "cpuThrottledSeconds": 1.55,
+      "peakMemoryBytes": 135311360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-repeat-the-exhaustive-original.log",
+        "lines": 1,
+        "bytes": 557,
+        "sha256": "a649d42f8d91dfbedb30f207f7b1b07eed4685a17bd012f7909498319e6e3bad",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"356\", \"route\": \"finite\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 11.16, \"checkerSeconds\": 60, \"tasks\": [\"token-parent\", \"token-fix\", \"lexeme-parent\", \"lexeme-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"35ba19a31d97586a7d9cbcbb757929d4d39c1356\", \"c"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a6314bcf2b4f8ae70c5284983b3fe9059f3e209ab5387bac5bba2eb02006f7f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/plan.json",
+      "change": "added",
+      "bytes": 7302,
+      "sha256": "09e95b705778d56d41c9863796ebba17f9c1a73dfb3abf9f7395dfd89d8fa258",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/controls.json",
+      "change": "added",
+      "bytes": 7641,
+      "sha256": "281b3eba0824821c38d3c6d5f74be3acf10de0c8580141dfaf4700ce93160cd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/execution.json",
+      "change": "added",
+      "bytes": 23534,
+      "sha256": "c5e444c5ecd4c80b2283bf14f8ce900344892e00ebacdcd577067014627d4193",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "ebbd25a128afb27893a8596816e88bba298e99920a9adbfb391b29cab396c107",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "da79e44fe3891f579eb52bee355f507f569a38b20385e25d17a7bf0599f5f465",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier.json",
+      "change": "added",
+      "bytes": 15748,
+      "sha256": "4ee2457c3dbe7729854e84cc0dd93aa04b5038e672e998c3be3afa0909599016",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5261,
+      "sha256": "9256ea6b9ccb9e10c1c7bcfb31fabeee888248f0611aef920718dc4df81aea0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/result.json",
+      "change": "added",
+      "bytes": 16901,
+      "sha256": "01ab5b60c65f2f1a9a339c57055a9137a7ec0c518bdf69ca1ed4e3fe2f7c29bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/executions/20261121T160947Z-16b539c9/attempt.json",
+      "change": "added",
+      "bytes": 13021,
+      "sha256": "c2bc832a2bfc0bf168d1d084b505277c56226df29fa6d072d944284337bac42b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/executions/20261121T160947Z-16b539c9/checker.json",
+      "change": "added",
+      "bytes": 6722,
+      "sha256": "937ae4081e03c9cb7ec0ed80b8041ef57237026d236ef111b6d1c8f8e2a46d0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/executions/20261121T160947Z-16b539c9/correspondence.json",
+      "change": "added",
+      "bytes": 1392,
+      "sha256": "7f2971ee08f3447d3f54ed1c3f2cf008b8af15e0cc46d7e685a70ff16149931a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0b552305311807355f34cec995ba54eeff05f54f838b22af286b3aa0baea6185",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/plan.json",
+      "change": "added",
+      "bytes": 7211,
+      "sha256": "33c049d02d12399d49b471e33957528047ca8c5374f3a4c8b7f8c9d1018f0fc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/controls.json",
+      "change": "added",
+      "bytes": 7938,
+      "sha256": "92243d1fe30a8ff0643425407751853e86fb1c2b902e61371052f7b1d230a5be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/execution.json",
+      "change": "added",
+      "bytes": 23879,
+      "sha256": "252467c0386e00465fc6cd9d6a25e84dd929e651e0fda83ebd425683a4e7d480",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "93921ba6b7dad97213a864f961af10a7d053f65d5dec79853604b096346e94d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "da79e44fe3891f579eb52bee355f507f569a38b20385e25d17a7bf0599f5f465",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier.json",
+      "change": "added",
+      "bytes": 15814,
+      "sha256": "86297d82c440d8afc76c92541b1376162ca24d47761268de794cbb37a26707fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5265,
+      "sha256": "b0097b14f226d1f2bb4122e41a85ac058911f637891e4f0129c57081efdf4474",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/result.json",
+      "change": "added",
+      "bytes": 16964,
+      "sha256": "ea2ba3774f5ddba58254239070dcfa4244826a919fdcdb99dae6ab5c0fae5498",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-b8b6a496/attempt.json",
+      "change": "added",
+      "bytes": 13087,
+      "sha256": "0a7936983998ecbd381d391a0f8f8479162d6e5aebbab9cd44596887eb640648",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-b8b6a496/checker.json",
+      "change": "added",
+      "bytes": 6737,
+      "sha256": "68427f7c5bf7afb707ce9d919bd754b2caf30e2388f32c1253a942f4bb2a82f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-b8b6a496/correspondence.json",
+      "change": "added",
+      "bytes": 1395,
+      "sha256": "a72b99e3f0c0b3e44d2d928e132a03c8823bc22019247458da00007ececcdde4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d1a2f5bacdd105795d21e58a4682525aacb8f092efe406c4c917005936dc62b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/plan.json",
+      "change": "added",
+      "bytes": 7374,
+      "sha256": "e9ff2da49f8bf03651196ed78e42f9563f6cdb770b9849a9892a90ea47a588bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/controls.json",
+      "change": "added",
+      "bytes": 7637,
+      "sha256": "e35e726d3fb5aa193ea0c50476809e1439631849b96cbcf9985034fa473084b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/execution.json",
+      "change": "added",
+      "bytes": 23596,
+      "sha256": "cff2e8b01cd38510914f48c56d936b040ccd69b15bcbf42c77ef7890e0f48aa7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "beef93103218547c39c2ef5e3800bc2ad2b0c75b059b0b2e0cd77c4b95b3edae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "c1b81a3efc196fe8d48c75b9358d40f3956788d0feb7a5278e1047df14d37bd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier.json",
+      "change": "added",
+      "bytes": 15806,
+      "sha256": "48f8da6b8348c24fa1f0454843a50abb828abdd56aa3b858a70aa1e65f4a45b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5259,
+      "sha256": "8b5b9ecfa20fd47f9f5d38636b74f18df7cddcc07d3bd21cac4e24d6d45284ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/result.json",
+      "change": "added",
+      "bytes": 16928,
+      "sha256": "4b43254352e0ce3bdca31356a4f7e48930a09ab438c714e88e0101910e7bfa63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/executions/20261121T160945Z-3039bd5a/attempt.json",
+      "change": "added",
+      "bytes": 13084,
+      "sha256": "6e9c86662e5bce117b39826f7df983d0b10cf80a76243de19870a7e1ebf87a94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/executions/20261121T160945Z-3039bd5a/checker.json",
+      "change": "added",
+      "bytes": 6718,
+      "sha256": "2a5db7995f1cece3d17b44eb001d9ffe97b71e624a0e343fc5130985c92fdcad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/executions/20261121T160945Z-3039bd5a/correspondence.json",
+      "change": "added",
+      "bytes": 1415,
+      "sha256": "5fc60ad7bdda78eb37ed5a00a356ef9891fafe50be871c1faf87b605421a7a11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "da3d481b78ba2e89176ae31fa992eda5b6ff2f97c753b9656729b40daa20c2d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/plan.json",
+      "change": "added",
+      "bytes": 7279,
+      "sha256": "9d2ffb2e8e4035325f3b08bb71e95ac9e19eabebb15c4d098fc99b1f6da2be4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/controls.json",
+      "change": "added",
+      "bytes": 7934,
+      "sha256": "c5efff1d9bde4f02c72cf2134278dffe09ff92296ce2413d49b7bab75ba7cbf9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/execution.json",
+      "change": "added",
+      "bytes": 27281,
+      "sha256": "9c7a3ce4fd04a8331a24b6c183416864c8fd658cf0295e1aa3cd6fe1d8579a85",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "771b81a5c1b9518e8407679d3c56ea380276712bfe80b367a63c31ccf5753ca5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 581,
+      "sha256": "84469705dff32624cfeb386fac3df1cfc078c2ebaaeed4a6d2ad029f1ed37073",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier.json",
+      "change": "added",
+      "bytes": 16665,
+      "sha256": "a370691a2c9e156925871528299669c5ec55dd3e794bafe66f82e6a3e5db0e75",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5973,
+      "sha256": "9324d48bdc3189016cc2c2957fe3dcb7a4b9a685a5a841b55631d8bc072f9526",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/result.json",
+      "change": "added",
+      "bytes": 18263,
+      "sha256": "bce550f97e0e8532038cb056bdc36f1fa506ba599e6c0f46b93529cbf93768ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/attempt.json",
+      "change": "added",
+      "bytes": 13269,
+      "sha256": "ceaa203c57afa56f2e8f230c995d3b9fd46f6af94d6a937e8b56ff637ae105d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/checker.json",
+      "change": "added",
+      "bytes": 7485,
+      "sha256": "257ab96b17cd83bb0b89fc9b4cbb9a22f555647146a5fc622346b01180774c32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/correspondence.json",
+      "change": "added",
+      "bytes": 1418,
+      "sha256": "7a734dfb4fe98daa99bfc3b1d3eee7101ba3bcbd0cba01c2e0fdc82c64851a9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/replay.json",
+      "change": "added",
+      "bytes": 2027,
+      "sha256": "9f9c000bfe15390e59cdae1f5a77499e2519b0701d7b466fa46b422f9f876452",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3dabd2caf5c2f5ecb3bf000a1044a7d08879614044e6cf307dcb903c5a065fa8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/plan.json",
+      "change": "added",
+      "bytes": 8030,
+      "sha256": "90bcd7050c26649489153069eb3a59490787073b077f8e88846c37c5b37a9ee9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/controls.json",
+      "change": "added",
+      "bytes": 15496,
+      "sha256": "2bcb0bf15b3037f57ea531d9f7965572f1dfa502919e0294837ec4329d6ca932",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/execution.json",
+      "change": "added",
+      "bytes": 16143,
+      "sha256": "0fe31c09590783c43942d0dd5266ca376415c3a9fc02b40e7c881ce7b7c41cd5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/streams.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "940f4339277349aaf26ec00f31bf0c083ff30e10ae32bdf3a38b9bc353a7f956",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/summary.txt",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "d2d7a978afdd0e7bc94688797fbd5e8f1f9760dd0102018ac10c5cab001b77ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/result.json",
+      "change": "added",
+      "bytes": 11324,
+      "sha256": "8618c22f6e056926f44cc7a79a717d945c763b9ac3eb06c68430c99a413cbc43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/executions/20261121T160938Z-96497a7a/attempt.json",
+      "change": "added",
+      "bytes": 6548,
+      "sha256": "cb3c8842d6c50cb143cddaf702f8884c25575b7f4c37600b11aa5a3edc392bc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/run.json",
+      "change": "added",
+      "bytes": 632,
+      "sha256": "452c9c66ee3f32b58dfc81241fbddfa692b59c27bbc4496dfd584d72558720f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fc27869c5aaace23febe08442813781c042d1ad5f88c5f69a526b6eedb5177af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/plan.json",
+      "change": "added",
+      "bytes": 7323,
+      "sha256": "a5217d1dd2371b4e84f94ddec6588ebc9464cdfea183561d4bc581857bf0b543",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/controls.json",
+      "change": "added",
+      "bytes": 7631,
+      "sha256": "0c7ad0224e6fd02989c86850f8afa316dfe892fe4cecc416701f0da4e86e379e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/execution.json",
+      "change": "added",
+      "bytes": 22846,
+      "sha256": "5fee633128695327f89e7fe7a1ec15669b5e2a134b8cedf130469f096b6ad53c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "8203c9cb95e71f50e0ee5421c100023239e564598d319723cd31b1d82ca04bf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "cc598f9219d880bb087499c2d9737693af0a2044382928aa6d8adc8fbd1e02fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier.json",
+      "change": "added",
+      "bytes": 15078,
+      "sha256": "4e669fd293a254f1c4c9adef5e9394bd5c2a5cc821c630a6564d4574c27c5be8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5253,
+      "sha256": "e8c59fbd3ccbec89553451535c82ca338da6811777656e391b15bb5a96547055",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/result.json",
+      "change": "added",
+      "bytes": 16895,
+      "sha256": "0df1893b70409aaa751b3a41018da969c4f9a268d9030140d08250d17f8791e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/executions/20261121T160942Z-b3aa488a/attempt.json",
+      "change": "added",
+      "bytes": 12396,
+      "sha256": "0e341b7a75008b23fe3f14e893240ca653a11bf40f80affe78ece5d31f11952b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/executions/20261121T160942Z-b3aa488a/checker.json",
+      "change": "added",
+      "bytes": 6711,
+      "sha256": "eabe0f67a424156da4759f1e506fff13db6e43c42f1912bb29a716a34f0298d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/executions/20261121T160942Z-b3aa488a/correspondence.json",
+      "change": "added",
+      "bytes": 1404,
+      "sha256": "e3598f379ba467e3cc94d827dd109d4131e1ef52a7a6e412050fe0594e73ea01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a8cdfb84c73e8118feba78513cfa55903288c2d7b9817e945c5704d4100f2b06",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/plan.json",
+      "change": "added",
+      "bytes": 7228,
+      "sha256": "36b67db19338b247c612d4dcebee60303cb88779be80b0e2dce7d0526867a56b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/controls.json",
+      "change": "added",
+      "bytes": 7925,
+      "sha256": "622cb89dc4d134e0b30f0b4be639204d92428e8900d3040b9d8d708e95a181f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/execution.json",
+      "change": "added",
+      "bytes": 26523,
+      "sha256": "33a145adcd1dc6c7a925835b45df129c46013f37e13a6cc5059016d73e790197",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "9e2bf57807af8d6bdf92c60b4cd05e15a6de61675ef9addd827a0d0c56879886",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "75b6f45606cc3193ed417afd2871b1cdd51ebd3c9d0c6552cbab72d4e65de456",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier.json",
+      "change": "added",
+      "bytes": 15932,
+      "sha256": "bfd1670fca5a37b645186ef954bf66cc9fe743a00f80dc4805bc9b3f67266614",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5960,
+      "sha256": "1d6d5720c8fe4d45649a517b10bb414d2c5fe65928fcfbb8c29eded821ab9c60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/result.json",
+      "change": "added",
+      "bytes": 18223,
+      "sha256": "405870178ce308aac2acbe6072c0bd5c1f9e636b758ca668ad76619f2651fa69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/attempt.json",
+      "change": "added",
+      "bytes": 12585,
+      "sha256": "d6c756fd894aa6c36122a7b4ece276323e19e9b865f6b5b2ef837f450820c295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/checker.json",
+      "change": "added",
+      "bytes": 7471,
+      "sha256": "c34dd044f9385211a8504a945a39cf27d52472ad62d68a47b8d9f4ef158e48dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/correspondence.json",
+      "change": "added",
+      "bytes": 1407,
+      "sha256": "5065deaf72f5ee51f1eef20cae8842432054c9fe28acf2774bcc81ae0553a7c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/replay.json",
+      "change": "added",
+      "bytes": 2024,
+      "sha256": "ce649674c522dc0bbcc8d3b88e5b17f91e30ae4e7711b0231eea0be21642a93c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-native/workflow.log",
+      "change": "added",
+      "bytes": 1532,
+      "sha256": "9bb3aadd78eac5be7aa45d72211c06a97574b2dcd4cd6efa958a7f239d348fb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/batch.json",
+      "change": "added",
+      "bytes": 3672,
+      "sha256": "285989ddf137fac47bbe441c8d90c4076ee875381fa3d211f43c2ccf738dac83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/controls-fix.json",
+      "change": "added",
+      "bytes": 5225,
+      "sha256": "c90a17a4d602e715b5099b2428fb9e85b036591f26beaae68229a30e2755889f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/controls-parent.json",
+      "change": "added",
+      "bytes": 5247,
+      "sha256": "a4a29100f3ff04573b7f8ec869f1dabb27195d01c71716dbd81a5859d921f2d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/lexeme-fix.json",
+      "change": "added",
+      "bytes": 6966,
+      "sha256": "69aef0344d03c3e080600f8fedddb16f184ecef63f6f1b676d28d3ba16df3b5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/lexeme-parent.json",
+      "change": "added",
+      "bytes": 9024,
+      "sha256": "c07ed5a0cb32366b64af1b7bad73818024f72159017f7a59c03452ddaf4128d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/token-fix.json",
+      "change": "added",
+      "bytes": 6960,
+      "sha256": "7e35de91ea1cbfe801e5f8c7b877c61042df43e2b31e9bba9034c679b66d963a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/token-parent.json",
+      "change": "added",
+      "bytes": 9016,
+      "sha256": "07f0fd53e73ee535074f7711ce385f8ece503eebb90983fbf721b4612eb616fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/run.json",
+      "change": "added",
+      "bytes": 619,
+      "sha256": "ef527a21e7b9ef54fdffc4c0942d355d28cf727550321bfcdf745a0ad50c6948",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/factory-confirmation-finite/workflow.log",
+      "change": "added",
+      "bytes": 241,
+      "sha256": "12b7a199eba86073b41113939e06482ba333d184cbdfc34ae90b8a2b775fbff0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T16:10:23+00:00",
+    "applied": [
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/completion.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/plan.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/controls.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/execution.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/streams.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/20261121T160947Z-16b539c9/result.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/executions/20261121T160947Z-16b539c9/attempt.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/executions/20261121T160947Z-16b539c9/checker.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-fix/executions/20261121T160947Z-16b539c9/correspondence.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/completion.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/plan.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/controls.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/execution.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/streams.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/20261121T160946Z-b8b6a496/result.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-b8b6a496/attempt.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-b8b6a496/checker.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/controls-parent/executions/20261121T160946Z-b8b6a496/correspondence.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/completion.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/plan.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/controls.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/execution.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/streams.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/20261121T160945Z-3039bd5a/result.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/executions/20261121T160945Z-3039bd5a/attempt.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/executions/20261121T160945Z-3039bd5a/checker.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-fix/executions/20261121T160945Z-3039bd5a/correspondence.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/completion.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/plan.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/controls.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/execution.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/streams.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/20261121T160943Z-02b86b0e/result.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/attempt.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/checker.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/correspondence.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/lexeme-parent/executions/20261121T160943Z-02b86b0e/replay.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/completion.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/plan.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/controls.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/execution.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/streams.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/records/summary.txt",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/20261121T160938Z-96497a7a/result.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/replay/executions/20261121T160938Z-96497a7a/attempt.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/run.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/completion.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/plan.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/controls.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/execution.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/streams.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/20261121T160942Z-b3aa488a/result.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/executions/20261121T160942Z-b3aa488a/attempt.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/executions/20261121T160942Z-b3aa488a/checker.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-fix/executions/20261121T160942Z-b3aa488a/correspondence.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/completion.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/plan.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/controls.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/execution.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/streams.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/20261121T160941Z-e9f540ad/result.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/attempt.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/checker.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/correspondence.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/token-parent/executions/20261121T160941Z-e9f540ad/replay.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-native/workflow.log",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/batch.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/controls-fix.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/controls-parent.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/lexeme-fix.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/lexeme-parent.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/token-fix.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/20261121T160947Z-cdbc175e/token-parent.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/run.json",
+      "examples/356-gson-overflowing-number/records/factory-confirmation-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "769ee78b99fbe616d0c990908e09569f9c454508",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

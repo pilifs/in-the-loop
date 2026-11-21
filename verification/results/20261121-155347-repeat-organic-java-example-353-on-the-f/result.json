@@ -1,0 +1,1641 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-155347-repeat-organic-java-example-353-on-the-f",
+  "title": "Repeat organic Java example 353 on the factory verifier",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 24.9s, peak 150.6 MiB (estimated 2m00s, 3.0 GiB); 179 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-155347-repeat-organic-java-example-353-on-the-f.json",
+    "sha256": "5586420a7642a45db38b7ab18a84d33dc06fb9ba0cf43fd261468183f576389f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-155347-repeat-organic-java-example-353-on-the-f",
+      "title": "Repeat organic Java example 353 on the factory verifier",
+      "description": "Run the original native and finite JVM contracts on the same checker revision as the Avro factory proof, retaining its successes, refutations and first refusals.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "353"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T15:53:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the frozen native obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 353 --route native --stage factory-confirmation",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the exhaustive original JVM obligations",
+          "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 353 --route finite --stage factory-confirmation",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/353-guava-saturated-sum/records/factory-confirmation-native",
+        "examples/353-guava-saturated-sum/records/factory-confirmation-finite"
+      ]
+    }
+  },
+  "sourceCommit": "35ba19a31d97586a7d9cbcbb757929d4d39c1356",
+  "startedAt": "2026-11-21T16:06:37+00:00",
+  "finishedAt": "2026-11-21T16:10:03+00:00",
+  "wallSeconds": 206.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1226168,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 157900800,
+    "wallSeconds": 24.9,
+    "cpuSeconds": 38.6,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the frozen native obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 353 --route native --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 10.022,
+      "cpuSeconds": 13.453,
+      "cpuThrottledSeconds": 0.704,
+      "peakMemoryBytes": 157900800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-frozen-native-oblig.log",
+        "lines": 1,
+        "bytes": 620,
+        "sha256": "8cf4189cdddd625607e7aadf9d5651b29d3b95837f5ee67d75ad5749f59415e5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"353\", \"route\": \"native\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 9.92, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"lookup-parent\", \"lookup-fix\", \"entries-parent\", \"entries-fix\", \"size-parent\", \"size-fix\", \"absent-parent\", \"absent-fix\", \"live-parent\", \"live-fix\"], \""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Repeat the exhaustive original JVM obligations",
+      "run": "mkdir -p \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" && TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\" python3 lib/benchmark/organic-java/run.py 353 --route finite --stage factory-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 14.83,
+      "cpuSeconds": 25.181,
+      "cpuThrottledSeconds": 1.987,
+      "peakMemoryBytes": 144277504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-repeat-the-exhaustive-original.log",
+        "lines": 1,
+        "bytes": 612,
+        "sha256": "1300f6ec2e164dc2804336ffd45cacdad1361e6035d1aeaf53640c5bce3d0c9a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"353\", \"route\": \"finite\", \"stage\": \"factory-confirmation\", \"workflowExit\": 0, \"seconds\": 14.629, \"checkerSeconds\": 60, \"tasks\": [\"lookup-parent\", \"lookup-fix\", \"entries-parent\", \"entries-fix\", \"size-parent\", \"size-fix\", \"absent-parent\", \"absent-fix\", \"live-parent\", \"live-fix\"], \"verifier"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "01f898e0b699229919a06084ca476b3a573380d9321a5d26d6d7102d4e3b1ced",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/plan.json",
+      "change": "added",
+      "bytes": 7447,
+      "sha256": "eb837d1fea2aadadd0fdbe7e38b0a50998a06e9675ba46addf7d17957f1fc9f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/controls.json",
+      "change": "added",
+      "bytes": 41904,
+      "sha256": "0ad0e7589e62168df14a32178e5387018d89a0aa5cfda51f1dad593aa9f8e87a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/execution.json",
+      "change": "added",
+      "bytes": 68977,
+      "sha256": "3e5b5d355fbe8fa7db0a2509f369acac71b0e6f6bb53025e995d9217128f7794",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "9f362951393f3e9040e3aca956d89015ba4a461a452158d89410156e464f8c9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "2ce1166926ca7b4c1b8a90808e9a7f461cdb34f61379adde930d6234fe67a7f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier.json",
+      "change": "added",
+      "bytes": 26490,
+      "sha256": "b0f7dd23876f999e9b01c521fc4ec649ef4dfcbea579e6dc839cd8a1f74569ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5252,
+      "sha256": "12acd55f2e45fda63c2441fe308927e9dfcdb3ea915d8d246033f61931411f9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/result.json",
+      "change": "added",
+      "bytes": 18543,
+      "sha256": "346b4baee814f5a685293ebdec625f22e32c836969d56794f3b8d67b9e366f2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/executions/20261121T160947Z-47f847d6/attempt.json",
+      "change": "added",
+      "bytes": 25609,
+      "sha256": "12cdaa85c0723b619dcb10f6b07d95116ac09b1bbffe64b3b45c27aec1ac29e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/executions/20261121T160947Z-47f847d6/checker.json",
+      "change": "added",
+      "bytes": 7196,
+      "sha256": "7ed765cd6a7dc7822111e9ea74749eb61a611957f58aeab671a5047b27d41990",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/executions/20261121T160947Z-47f847d6/correspondence.json",
+      "change": "added",
+      "bytes": 1881,
+      "sha256": "8a8bd0b451a04f9402a846442a92ce7259c3336f30b8f5327ad73b781c6a7c7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "10c8fa7d6f695cedf9add873bf2b7ec3e230888eaa03d3ac0194007682fdc1ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/plan.json",
+      "change": "added",
+      "bytes": 7356,
+      "sha256": "a790e96ceed9e00b4490d9de9f940f87a499a8933646c28e07122a8c00e21852",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/controls.json",
+      "change": "added",
+      "bytes": 40712,
+      "sha256": "dac74a0d48efa1aeaa3bd9a061fe39d6575506e911b6beca2039fae7adfc580d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/execution.json",
+      "change": "added",
+      "bytes": 67859,
+      "sha256": "52b31d94ae397f420e235442ae2c00d24cd7c4be0ba5941f444e8b112a91ec20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "08ede22fa0fb62700335f3f3b009c52867d185580aa28d8c0aab9f18a32469a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "2ce1166926ca7b4c1b8a90808e9a7f461cdb34f61379adde930d6234fe67a7f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier.json",
+      "change": "added",
+      "bytes": 26579,
+      "sha256": "b0f08cff128d28a9498c5dc1ef86d10ce43b6f75d19223dcfb26de6451cf4b91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5254,
+      "sha256": "4ff554b9f34472207e36e752a2406b9671f2ff34dd18924d5093bcaa6dc4572b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/result.json",
+      "change": "added",
+      "bytes": 18629,
+      "sha256": "f6cd1d35ef73383a72e0040477f97573cdc234361540520eaffcccac2ec4b296",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/executions/20261121T160946Z-d10af6cc/attempt.json",
+      "change": "added",
+      "bytes": 25699,
+      "sha256": "091f123b00a5aa5a223522bd71b903ae53f47576ceabbe4703dc7221c87ff1f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/executions/20261121T160946Z-d10af6cc/checker.json",
+      "change": "added",
+      "bytes": 7222,
+      "sha256": "871977e09c046ed85a2e4c000078dbe21c618e8959e45708f9922490ea58a1b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/executions/20261121T160946Z-d10af6cc/correspondence.json",
+      "change": "added",
+      "bytes": 1884,
+      "sha256": "6bcd574c947cb7a62a12502aac25cb2e15b0df909a974d0949b4a760c096338f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e32582d2873c744c979bd80571083f4b8268614944270e1920554bb6aedc7291",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/plan.json",
+      "change": "added",
+      "bytes": 7642,
+      "sha256": "ca02557151a3abe77c2f01c36affba230cba4ebe14daee3df1c90aa47a49597b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/controls.json",
+      "change": "added",
+      "bytes": 41906,
+      "sha256": "f51cea4ebddff3c7f89a139723b249d5daf6889539166b4a244dda08c0951823",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/execution.json",
+      "change": "added",
+      "bytes": 69373,
+      "sha256": "e58b1e3e662ce9702489930f1b9d923880981d87e2ab9f22211f8075d97a0377",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "3b7adec80d8918b847d31a8a64807fda17acb59c3d8f9be259ded4361338b1ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "204e2244828d94ac8e14159a165a59c73eddbe172145443249e4af47bbf9c6dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier.json",
+      "change": "added",
+      "bytes": 26878,
+      "sha256": "869c4b4475ecf867b544363844bbb5e06cc0c15e7b45d730004407bb51b48b0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5258,
+      "sha256": "58c697df2edfa605d76d558fc95eabe2143a84638f400f59c5846696f9c81f79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/result.json",
+      "change": "added",
+      "bytes": 18648,
+      "sha256": "0d731c181edb4f6f1939dcbd600e782376ff366f19581e3983f5e5c281d3bfcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/executions/20261121T160945Z-72b362d4/attempt.json",
+      "change": "added",
+      "bytes": 25981,
+      "sha256": "e690c78cb6c5dd3408bf84d809d16e977a10f612bdb87f4d01fd08889780b633",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/executions/20261121T160945Z-72b362d4/checker.json",
+      "change": "added",
+      "bytes": 7203,
+      "sha256": "c42872b4959a505d7c3cf7098a33a4540491f5946b196103bd81ae43783ba8dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/executions/20261121T160945Z-72b362d4/correspondence.json",
+      "change": "added",
+      "bytes": 1928,
+      "sha256": "364fd8e232d9c92dcbfe0f759d9ace60805d898c40b50556abd3afa6d5dc09a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3cfe949684a78a0153b78b8c400cebd85d74823ae150a63e176b4272b0289aa1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/plan.json",
+      "change": "added",
+      "bytes": 7547,
+      "sha256": "ab163c78f854a050dba85644d8fcd0c6159882ed16f2aa4d6d6b0e9aae4f5990",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/controls.json",
+      "change": "added",
+      "bytes": 40714,
+      "sha256": "4ba4e0f9c61df80b81aaa51b51bd8a60f4d53b110b3ee408e31bed032e550428",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/execution.json",
+      "change": "added",
+      "bytes": 71940,
+      "sha256": "a9e45a04415e3c9455128a2e050ad5e466800e078815d8113da26fe7643851c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "903cef90a9fb95e80ceff0eae6a8e98ef2436d26ba5d3bf09106e464c92f50d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 510,
+      "sha256": "54350d767dd6a32f12674096d2bdb00f09c0890fce45295b122730131680f07a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier.json",
+      "change": "added",
+      "bytes": 27424,
+      "sha256": "338053f74429da1a3854726aec2222af243e69bd6d9286428ffec4ec620fc588",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5665,
+      "sha256": "cc84dc93b7008bd4be56ea81f946fe5f044c1c4944e14d97392df5b54e2f8922",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/result.json",
+      "change": "added",
+      "bytes": 19442,
+      "sha256": "6e59492e34293cc37de430b64760eab0d6a55eae5c44703c42633c2b9cb4d813",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/attempt.json",
+      "change": "added",
+      "bytes": 26190,
+      "sha256": "6263f8487ea4f615c94cadc69649191fc2d3989178b9d53374e5ff9e8b5c8a46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/checker.json",
+      "change": "added",
+      "bytes": 7660,
+      "sha256": "e6ce3cbda68064984fe384de7672295f64089063c7d26b0b4bbe7e8061ebb298",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/correspondence.json",
+      "change": "added",
+      "bytes": 1931,
+      "sha256": "de9cfdd921fed88c04c62d2f50aaf59546b95cce32e3050334c5756ed7878009",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/replay.json",
+      "change": "added",
+      "bytes": 2572,
+      "sha256": "1526c7e5655a26b6c88c084fd9a6ed1c142fcbb8914a1713ac5bf493a4551240",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0adcbc6216d203dcc6706e11378eddb005eef5471f41fbef3be2e368e6d97ca1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/plan.json",
+      "change": "added",
+      "bytes": 7583,
+      "sha256": "6a4966c7e86bfcc28ea13aedd20f299841785374d6e3d5a0d74a494e825f119c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/controls.json",
+      "change": "added",
+      "bytes": 41900,
+      "sha256": "bfc3ac4130608d6a6a84d24314edab1462e3ca59f88b7bc3153b86ec64878671",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/execution.json",
+      "change": "added",
+      "bytes": 69227,
+      "sha256": "14044b16c83c37a975312e97e2729e7d255923d4b8f435b1ff63a6b289da518e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "4e3cef2ca7b250e71a69e925a227d224ae72b563d40babe3220e4e15ec073067",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 276,
+      "sha256": "ae6b6ceb946d028b367cf5968a5128a645bead1de0a638470a666a0e35048d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier.json",
+      "change": "added",
+      "bytes": 26728,
+      "sha256": "2803990e9444eeb01fb91f118f949ff2392fc6d87dd534dcb5711276b33d078d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5219,
+      "sha256": "df5a708ef60b40eb9678af0d112ccec4b49958b2f524bb696864827c551ca5ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/result.json",
+      "change": "added",
+      "bytes": 18573,
+      "sha256": "e792df45d71aa84949473222cd7be0d692d087db66796414d535a43b1c0c0756",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/executions/20261121T160948Z-21e21ff1/attempt.json",
+      "change": "added",
+      "bytes": 25874,
+      "sha256": "ea03de076bbf49e43474a7a681e9de2691b37a6148ba50dea16659e6bdb7f4c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/executions/20261121T160948Z-21e21ff1/checker.json",
+      "change": "added",
+      "bytes": 7161,
+      "sha256": "b35f1f2d995b88a8873e1b43e711fed370b4517f43f0eb60dcc37fc49a89f4db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/executions/20261121T160948Z-21e21ff1/correspondence.json",
+      "change": "added",
+      "bytes": 1919,
+      "sha256": "2ccbf3b7609027eda73534d4a26ea835152317a4034ce075b3b4a6555ecd716e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2858ce5afb9f3b944c25f6b2c9cf173142adac1f89b4dab054973b3a223ac284",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/plan.json",
+      "change": "added",
+      "bytes": 7492,
+      "sha256": "37f7a0d8a9620bf18bbce6227d6a1d2538d40143c1adcf418713600ffda7b72e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/controls.json",
+      "change": "added",
+      "bytes": 40708,
+      "sha256": "104a309577e34ee752bd0bdffed8201ee7f664806afbed04204f57f519b899a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/execution.json",
+      "change": "added",
+      "bytes": 68111,
+      "sha256": "254f93e5655f607acbb88ecc2d4d491249f85b758da98b5f986ec081be3218f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "0576ac298eb56d5e638f6f95a08786ed9accba8d9f60b50d3255ad34d56c9c65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 276,
+      "sha256": "ae6b6ceb946d028b367cf5968a5128a645bead1de0a638470a666a0e35048d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier.json",
+      "change": "added",
+      "bytes": 26819,
+      "sha256": "e6a6265d08f3b74e0fb7828753791f06c8effe50398e875151fd214dbf22a729",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5223,
+      "sha256": "5e375f9d9ea95fb5b2fae5cbe59c3f9fbc618ef267c6f51ab57377a9ea4ca04c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/result.json",
+      "change": "added",
+      "bytes": 18661,
+      "sha256": "ab35e3b1371400153746a1724f423153e049affb7626911e5e453713c9f40c7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/executions/20261121T160947Z-aa889f39/attempt.json",
+      "change": "added",
+      "bytes": 25963,
+      "sha256": "7626d135c9383406dea26ab03d5cba61e1f51748e4342e9203c4f028e3f3ba24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/executions/20261121T160947Z-aa889f39/checker.json",
+      "change": "added",
+      "bytes": 7189,
+      "sha256": "2affc6a001d3d3525f36a61a36ae31da00deca93298e3ca54c14fe09b7c1a3aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/executions/20261121T160947Z-aa889f39/correspondence.json",
+      "change": "added",
+      "bytes": 1922,
+      "sha256": "1b1810d299436ed913867c99395ee4e23de7b2007b9b741575067ab278200293",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8c3df9a9123f58cec0ba4fba7b9dea30e17d023f7d366dc2e83210dc3e09adec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/plan.json",
+      "change": "added",
+      "bytes": 7531,
+      "sha256": "f94367fc91b259455f8fb108b5045f003d821176f5f4054a0200ff2126cc3234",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/controls.json",
+      "change": "added",
+      "bytes": 41904,
+      "sha256": "385032712c6dea512ac9e33b3fae3ed59d23ba5347107d014065d7c269c38492",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/execution.json",
+      "change": "added",
+      "bytes": 69041,
+      "sha256": "a60a08aacfaf10273291c3df71e697545f12440ab7a403752f751f55b92ba241",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "8a3e7a228e5b1b194a7c6baabd3e1be05ccea3512dc01ed753e9857ca93cd05e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "2b5177611a244ccdba89a78ff4761884effc3c7d7ca65bf70193f85c66d98251",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier.json",
+      "change": "added",
+      "bytes": 26554,
+      "sha256": "7c8595a0a9c385b7c7dfa1d65fe7a2a0afb9a71e0d784c800a2c6dab07b3d8d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5253,
+      "sha256": "54d77bcfe0e347c1b08d14f2613e0ad054a50d25c62a809043d83cc49445809e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/result.json",
+      "change": "added",
+      "bytes": 18586,
+      "sha256": "757cf09fc2c38953bcc1a0192e12fb8baccf8d3161836e29113e71011711d6f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/executions/20261121T160944Z-015d7176/attempt.json",
+      "change": "added",
+      "bytes": 25670,
+      "sha256": "1b0e9f89b4bfc01a75dc6cf519a4e803560799935680b0f6365260b836a1260f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/executions/20261121T160944Z-015d7176/checker.json",
+      "change": "added",
+      "bytes": 7197,
+      "sha256": "10864d602779581d64736085c5e4236d0bce0ca666eee6f3f073d5c86df290b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/executions/20261121T160944Z-015d7176/correspondence.json",
+      "change": "added",
+      "bytes": 1902,
+      "sha256": "150ed72df270e5ba34383c34e7414f6c91486f9b00ff0955571266e1122996b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "52adf79d63622fb53666ff99f66433a28bff70a3fb580c88c3f9da0697d25fa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/plan.json",
+      "change": "added",
+      "bytes": 7436,
+      "sha256": "df63a9986a4fab8f0cea8f74654510a0728d565bef68696bea7e9f46288cc8f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/controls.json",
+      "change": "added",
+      "bytes": 40712,
+      "sha256": "23be9592f502151f038d61f66bade923f792647698ce2bd955ba1af180b18630",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/execution.json",
+      "change": "added",
+      "bytes": 71599,
+      "sha256": "7a812dacc908da7cfb76ae509e3c29675e4e8b7b4b8fd1aad9d3fd4acc1dc19f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "42bc370502603bc4909fb37ebb5f30cf55d97f28b6974b1abad49a05b455203b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 508,
+      "sha256": "7fc0f92309111c4722ea514a4417f004eb62225eac0ae701b44df8b7d61f5ca6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier.json",
+      "change": "added",
+      "bytes": 27094,
+      "sha256": "6fae6535779a6d8ed88f62e7bdff6e319f1f274c79d13070262baebf2a36f382",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5655,
+      "sha256": "3d339b93719cf19bc9149e9f1e22bfcefbabb403e9d5acbaec65202cc3e90900",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/result.json",
+      "change": "added",
+      "bytes": 19377,
+      "sha256": "36a99842d0f73b20a7966dac2cc19dd3d5e1569f8823a5b515c7fe56414d37d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/attempt.json",
+      "change": "added",
+      "bytes": 25881,
+      "sha256": "90077eabab9bf4345869884960a68d20412bf3332749bd79ed07474b8f455b17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/checker.json",
+      "change": "added",
+      "bytes": 7649,
+      "sha256": "3013fc7645ea8b5c60bd21680c9f976a5d15f10cc0f8f23d381ad7e4c31f213c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/correspondence.json",
+      "change": "added",
+      "bytes": 1905,
+      "sha256": "5f28173f129714ac18741ae7708bf84947b3e4d76c041476a58371b472c76eca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/replay.json",
+      "change": "added",
+      "bytes": 2569,
+      "sha256": "2a4ab9fe0e626d21ee76451e06242356929fb1ed0f30c9504443ef35ef44eaad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "461a4bd51d3166a91c49ddf7b647328d383eaeb29e8270d4fb5677081b24b39e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/plan.json",
+      "change": "added",
+      "bytes": 8307,
+      "sha256": "812a58434fde0ad6684b61db5ddae4c82a11ea33ff8f2d210ec5d69e4bd6bd1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/controls.json",
+      "change": "added",
+      "bytes": 82552,
+      "sha256": "76cba0621865af866a0e3355ae83ba9726cf2e98dc13e644c6648a04f9ad70d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/execution.json",
+      "change": "added",
+      "bytes": 84114,
+      "sha256": "17aaa37dcc9a1eb6da9b32900c6ca8a47552265af60269ae03fcf56bb2f140ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/streams.json",
+      "change": "added",
+      "bytes": 1711,
+      "sha256": "357d059852b29d4119e2d1af06bd860582b4ebfb518782b15a0f25d4b90f40b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/summary.txt",
+      "change": "added",
+      "bytes": 923,
+      "sha256": "1723ae3fb0b21b89c05afce11643242a58159262ab3ef2a9ffcfb71e42c9365c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/result.json",
+      "change": "added",
+      "bytes": 15806,
+      "sha256": "fa41f046c6809f9e23ad0caf2bf9cd3991cafdfc121deca9a5bc4a71a87c6c41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/executions/20261121T160939Z-035b6558/attempt.json",
+      "change": "added",
+      "bytes": 11051,
+      "sha256": "93e4c0dca437056a7e3bc7acb3335626f35532f7ccabab1b5a3bbec7d75e5c5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/run.json",
+      "change": "added",
+      "bytes": 702,
+      "sha256": "2bae7c70572efe14b437cc647f58a42e7e2a78257c37ec6b2e9b3dc881515a5d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0bdc74fd2dbd494f5c0bda356be1dae6682917fcf07270e757e336c9e87cf19e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/plan.json",
+      "change": "added",
+      "bytes": 7461,
+      "sha256": "454bf79799c7f787ce23fbfda1149312d387791e491b383607b9237dfea26483",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 12306,
+      "sha256": "881df70c362ba9a17df32cc537e1d3f5b5634f3b730f8c240daca67dd822875b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/controls.json",
+      "change": "added",
+      "bytes": 41900,
+      "sha256": "f341717dd0575229eba247855418245d1e8cfea09bbd96ccae0272dd819a8455",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/execution.json",
+      "change": "added",
+      "bytes": 68980,
+      "sha256": "cca838181de915735bc957731a3adce9358278e9f62b005f1d1c2f39b8751c1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "a6939d1617dff7a7b65bbc458f5a57956f22afdaf19b385246b4f2356edfad05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 278,
+      "sha256": "b9010b5417feefa9c18f15ea0ef2b45bb572f6c75f1a34b657dce598e0269295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier.json",
+      "change": "added",
+      "bytes": 26489,
+      "sha256": "b07429c37f75474368f1e0eb78258aa25688ef3a6a5594d8864b93bc07f10f00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5244,
+      "sha256": "5e72bb4fa46c1a6249300d697da4a0eae6617c926346d53dd543977b339f4fe1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/result.json",
+      "change": "added",
+      "bytes": 18539,
+      "sha256": "2212ca151a258c0a8919ea7943fec5438f1a3e8ff2ec4817802244d7c89805e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/executions/20261121T160946Z-6d31b778/attempt.json",
+      "change": "added",
+      "bytes": 25619,
+      "sha256": "fdf3a508cbf4d5e45599e5f5c4f9407e80b002bfd254314b0b256a3054ccb2bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/executions/20261121T160946Z-6d31b778/checker.json",
+      "change": "added",
+      "bytes": 7186,
+      "sha256": "e925e3e359f771b723a73c387793dcdc0f980fe5adf46462892f376a94d55669",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/executions/20261121T160946Z-6d31b778/correspondence.json",
+      "change": "added",
+      "bytes": 1888,
+      "sha256": "560ec8cfae8cf154d8241448b907ec5a87350a015b38ed19769eab26f290db11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d283e4a10fac1b65743f86b3582e0f2575d4ce92e3a8bfd95e41c31f1fc1328d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/plan.json",
+      "change": "added",
+      "bytes": 7370,
+      "sha256": "31f82e1e5406c66c949e88ef0eac6fe3f191f720130b98851dac274c1db2cb22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 12127,
+      "sha256": "1c981f92d24326d6cbf584d7f1e4eb51bee4d8e57b5b6058e9ac3003ebb853be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/controls.json",
+      "change": "added",
+      "bytes": 40708,
+      "sha256": "70b65b512c0fb9afb95679184e4ef2193ae962647beec35904faff15e5d3844a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/execution.json",
+      "change": "added",
+      "bytes": 67857,
+      "sha256": "c0146f72c5b1d5cdb34c0a158bf25865ac8ad179ae6d4b78df755ff1d59db78d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "b02346c13e274be699f096c00352bdffdb88dfa33386f6941123122e641f9330",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 278,
+      "sha256": "b9010b5417feefa9c18f15ea0ef2b45bb572f6c75f1a34b657dce598e0269295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier.json",
+      "change": "added",
+      "bytes": 26573,
+      "sha256": "ce6891a9dbfc7e85b6ab3bd2bc97ace152dcbb1747f21166efbc67773083204c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5242,
+      "sha256": "9b1e4f7a993fdfff6311006840239c131d6bf06b2b93902d0a056788efc3a473",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/result.json",
+      "change": "added",
+      "bytes": 18620,
+      "sha256": "3dc2175347e1887e2e92953eb2f3d136990b6bc4e47f3b6c5e4a4abe53120ef8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/executions/20261121T160945Z-ef7c000b/attempt.json",
+      "change": "added",
+      "bytes": 25706,
+      "sha256": "3bd208b26b9a25570f512b184bf91eb87cf04371b349b6913293b13be6228abb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/executions/20261121T160945Z-ef7c000b/checker.json",
+      "change": "added",
+      "bytes": 7208,
+      "sha256": "28a47d92336691db9a0b7cac7f0cdd15a046680bccf6718de099fe6736adce1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/executions/20261121T160945Z-ef7c000b/correspondence.json",
+      "change": "added",
+      "bytes": 1891,
+      "sha256": "2403de463b3a6f24c4a3a187ad67a640f0d79b1b28d88bd9fd0516ae90cacf1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-native/workflow.log",
+      "change": "added",
+      "bytes": 2310,
+      "sha256": "90be6aae7846950fbe221d91322a8e317b7a5f29f1464e3c72169435ace871a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/absent-fix.json",
+      "change": "added",
+      "bytes": 14720,
+      "sha256": "92594dfdcdae68a2cb04a4193fea6d93dfc5dae495deb398895224cda5fd3e7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/absent-parent.json",
+      "change": "added",
+      "bytes": 14741,
+      "sha256": "fa0e5f278f2bc8b0e0c8999160b0fddb4a97ed0a8b2eb843ce1938c167da4d25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/batch.json",
+      "change": "added",
+      "bytes": 5750,
+      "sha256": "a424c3662cd9439e232241b1a25ce0fd1b85739a9cba71e46282b857c63ebbd9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/entries-fix.json",
+      "change": "added",
+      "bytes": 14771,
+      "sha256": "7e195722660a2567740631bc5d47d62681ab4675be5b98afe447bee9e94e7c89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/entries-parent.json",
+      "change": "added",
+      "bytes": 17382,
+      "sha256": "35748c7c54a63d2fb15dd44d239395adf16e454b67de2d5c9324a5f4042ed3ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/live-fix.json",
+      "change": "added",
+      "bytes": 6452,
+      "sha256": "0cb2bac0c63f5426915f03f663a523c911d80d9e2cb7edb3b52b5c31fce60b7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/live-parent.json",
+      "change": "added",
+      "bytes": 6471,
+      "sha256": "09623c4ada9178e955fc5c7facdab8702551566864ebfa9b20d8a0f82143eaf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/lookup-fix.json",
+      "change": "added",
+      "bytes": 14740,
+      "sha256": "d0f421406f490f56a236e49d3c757f00777358a758237cb880330f2c3811c507",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/lookup-parent.json",
+      "change": "added",
+      "bytes": 17348,
+      "sha256": "665979eddffd2db20c35c8cfbf6fbb5baa5d9914dd965dce7f0976d1b7043433",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/size-fix.json",
+      "change": "added",
+      "bytes": 14719,
+      "sha256": "2ed961718a47edcb4364085ba60a0522a430f181e2a6ff3c2b0f9092df3cf7ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/size-parent.json",
+      "change": "added",
+      "bytes": 14739,
+      "sha256": "8b1525b3797d1a6436b72a00665b1fc7ba23b7b6f938be7a1a2055ea72ee620a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/run.json",
+      "change": "added",
+      "bytes": 690,
+      "sha256": "dd67d31ba6a9141b99368c7f4410563d406612e0cfc9bb08af0eb3301f3e1d80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/353-guava-saturated-sum/records/factory-confirmation-finite/workflow.log",
+      "change": "added",
+      "bytes": 399,
+      "sha256": "6625549ba1c0312233fc8ec12016b56a12e0f4f87f15c50204ba4471be741d11",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T16:10:22+00:00",
+    "applied": [
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/20261121T160947Z-47f847d6/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/executions/20261121T160947Z-47f847d6/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/executions/20261121T160947Z-47f847d6/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-fix/executions/20261121T160947Z-47f847d6/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/20261121T160946Z-d10af6cc/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/executions/20261121T160946Z-d10af6cc/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/executions/20261121T160946Z-d10af6cc/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/absent-parent/executions/20261121T160946Z-d10af6cc/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/20261121T160945Z-72b362d4/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/executions/20261121T160945Z-72b362d4/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/executions/20261121T160945Z-72b362d4/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-fix/executions/20261121T160945Z-72b362d4/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/20261121T160944Z-68788e52/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/entries-parent/executions/20261121T160944Z-68788e52/replay.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/20261121T160948Z-21e21ff1/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/executions/20261121T160948Z-21e21ff1/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/executions/20261121T160948Z-21e21ff1/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-fix/executions/20261121T160948Z-21e21ff1/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/20261121T160947Z-aa889f39/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/executions/20261121T160947Z-aa889f39/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/executions/20261121T160947Z-aa889f39/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/live-parent/executions/20261121T160947Z-aa889f39/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/20261121T160944Z-015d7176/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/executions/20261121T160944Z-015d7176/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/executions/20261121T160944Z-015d7176/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-fix/executions/20261121T160944Z-015d7176/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/20261121T160943Z-162f878b/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/lookup-parent/executions/20261121T160943Z-162f878b/replay.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/records/summary.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/20261121T160939Z-035b6558/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/replay/executions/20261121T160939Z-035b6558/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/run.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/control-fix-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/control-fix-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/20261121T160946Z-6d31b778/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/executions/20261121T160946Z-6d31b778/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/executions/20261121T160946Z-6d31b778/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-fix/executions/20261121T160946Z-6d31b778/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/completion.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/plan.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/control-parent-jdk21.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/control-parent-jdk21.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/controls.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/execution.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/streams.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier-output.txt",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier.stderr",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/records/verifier.stdout",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/20261121T160945Z-ef7c000b/result.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/executions/20261121T160945Z-ef7c000b/attempt.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/executions/20261121T160945Z-ef7c000b/checker.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/size-parent/executions/20261121T160945Z-ef7c000b/correspondence.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-native/workflow.log",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/absent-fix.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/absent-parent.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/batch.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/entries-fix.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/entries-parent.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/live-fix.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/live-parent.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/lookup-fix.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/lookup-parent.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/size-fix.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/20261121T160948Z-d0203db3/size-parent.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/run.json",
+      "examples/353-guava-saturated-sum/records/factory-confirmation-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2675781,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "769ee78b99fbe616d0c990908e09569f9c454508",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/769ee78b99fbe616d0c990908e09569f9c454508/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

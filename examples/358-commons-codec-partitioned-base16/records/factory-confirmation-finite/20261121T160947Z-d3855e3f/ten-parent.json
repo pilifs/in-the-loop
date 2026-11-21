@@ -1,0 +1,177 @@
+{
+  "status": "refuted",
+  "entry": "organic.HexWrites#bytes(I)I",
+  "inputs": 1,
+  "differences": 1,
+  "sides": {
+    "parent": {
+      "commit": "b22276db7282efa0794e2cca02a32006c0bca0dd",
+      "entry": {
+        "entry": "organic.HexWrites#bytes(I)I",
+        "classSha256": "d8e5adb0751742996c74b162467987628ba6d6860f15cade63ef800744b4cdbc",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+        "subjectClassSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb"
+      },
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-codec-1.16-SNAPSHOT.jar",
+          "sha256": "d7c85c44b0fe1606e37d16c5420853802b5afefe450cdb30c02f6a9c56a81f78",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 2048 && code < 2049)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.HexWrites.bytes(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "e5530c1d9b5f2cfb6c58858dea02f3e02810473b0c715559bbde7c0c87ac6f9a",
+      "stdoutSha256": "07f75b930f67d1b76db80288ff61bdf3be4bf324b1b1fe76585559452f4023a7",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+      ],
+      "interval": [
+        2048,
+        2048
+      ],
+      "rows": [
+        {
+          "value": 2048,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.061,
+      "cpuSeconds": 0.0779,
+      "peakRssBytes": 59195392,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "organic.HexWrites#bytes(I)I",
+      "adapterSha256": "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+      "adapterClassSha256": "d8e5adb0751742996c74b162467987628ba6d6860f15cade63ef800744b4cdbc",
+      "subject": {
+        "class": "org.apache.commons.codec.binary.Base16OutputStream",
+        "method": "<init>",
+        "descriptor": "(Ljava/io/OutputStream;Z)V",
+        "loadedFrom": "built/commons-codec-1.16-SNAPSHOT.jar",
+        "classSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb",
+        "adapterCalls": [
+          "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+          "org.apache.commons.codec.binary.Base16OutputStream#close()V",
+          "org.apache.commons.codec.binary.Base16OutputStream#write([BII)V"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 2051,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0021,
+  "controlSeconds": 0.0176,
+  "replay": {
+    "claimKey": "2263e8645181900d",
+    "entry": "organic.HexWrites#bytes(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 2048
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "d8e5adb0751742996c74b162467987628ba6d6860f15cade63ef800744b4cdbc",
+        "classpath": [
+          "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+          "d7c85c44b0fe1606e37d16c5420853802b5afefe450cdb30c02f6a9c56a81f78"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 2048;\nif (!(code >= 2048 && code < 2049)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.HexWrites.bytes(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 2048,
+      "input": {
+        "hex": "4142434445",
+        "writes": [
+          3,
+          4,
+          3
+        ]
+      },
+      "field": "bytes",
+      "direct": {
+        "parent": {
+          "bytes": [
+            65,
+            66,
+            67,
+            68
+          ]
+        }
+      },
+      "tableSha256": "d3ac02404060a843c54d8cbfdcadc975a8426f9b8abe04dba072eda5827fddde"
+    }
+  },
+  "wallSeconds": 1.0584,
+  "task": "ten-parent",
+  "sourceClaim": "2263e8645181900d",
+  "inputsKey": "94ec1011434cd02994785e3aaeee88b73ca0e8892b34a4198d0a4d99801958f9",
+  "revisions": [
+    "parent"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "parent": "848b279d3b6d7157dc67bc6f777c469c604b3c844c01437e44359257709b276c"
+  }
+}
