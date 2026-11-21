@@ -68,13 +68,15 @@ def frozen_run(case, pin, route):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("example", choices=read(HERE / "cases.json")["cases"])
+    corpus = read(HERE / "cases.json")
+    cases = {**corpus["cases"], **corpus.get("reserves", {})}
+    parser.add_argument("example", choices=cases)
     parser.add_argument("--stage", default="baseline")
     parser.add_argument("--route", choices=("native", "finite"), required=True)
     parser.add_argument("--seconds", type=int, default=60)
     parser.add_argument("--tasks", help="explicit comma-separated list of tasks for a repeat")
     args = parser.parse_args()
-    case = read(HERE / "cases.json")["cases"][args.example]
+    case = cases[args.example]
     folder = ROOT / "examples" / case["folder"]
     archive = folder / "records" / (args.stage + "-" + args.route)
     env = dict(os.environ)

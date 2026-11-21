@@ -1,0 +1,1046 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-094513-356-utf16-native-checks-on-the-original",
+  "title": "356 utf16 native checks on the original gson public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.4s, peak 156.5 MiB (estimated 5m00s, 3.0 GiB); 106 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-094513-356-utf16-native-checks-on-the-original.json",
+    "sha256": "0d74026f6ffd39d3239df623cd43650ca3d5cde553df0ed8ceb3e6065cbae5b2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-094513-356-utf16-native-checks-on-the-original",
+      "title": "356 utf16 native checks on the original gson public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/google/gson#3034 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "356"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:45:13+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 356 --route native --stage utf16 --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/356-gson-overflowing-number/records/utf16-native"
+      ]
+    }
+  },
+  "sourceCommit": "6d24a68d88ea6e1e06e9c357bb09dd9b8973c9d2",
+  "startedAt": "2026-11-21T09:55:07+00:00",
+  "finishedAt": "2026-11-21T09:58:24+00:00",
+  "wallSeconds": 197.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4185577,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 164126720,
+    "wallSeconds": 8.4,
+    "cpuSeconds": 13.6,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 180.613,
+      "cpuSeconds": 180.768,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2130870272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "e6056920351b977c241d5c36ae82268f6da9df0acfcf697c3a65746683d820c3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-094513-356-utf16-native-checks-on-the-original/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 00s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 356 --route native --stage utf16 --seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 8.42,
+      "cpuSeconds": 13.598,
+      "cpuThrottledSeconds": 0.79,
+      "peakMemoryBytes": 164126720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 552,
+        "sha256": "e1bc8a78bd27f8f7e79bcc707ffeea168d310de516676d7fbd79a6ee0b6d6483",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"356\", \"route\": \"native\", \"stage\": \"utf16\", \"workflowExit\": 0, \"seconds\": 8.314, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"token-parent\", \"token-fix\", \"lexeme-parent\", \"lexeme-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"6d24a68d88ea6e1e06e9c357bb09dd9b8973c9d2\", \"checke"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d256e6d4a9c826f17f5e09bdddaf4915de32ac368e4c900c4478fe6e6279719a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/plan.json",
+      "change": "added",
+      "bytes": 7301,
+      "sha256": "9478e32b98bde532f2c6c31f5edb89ec30bacdf7796ecdfb5111eaa7111763e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/controls.json",
+      "change": "added",
+      "bytes": 7757,
+      "sha256": "f7a06c9d3580a795b49caf64ce12fa0f9deecb83d6abe71973ef306f13ecc7de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/execution.json",
+      "change": "added",
+      "bytes": 23651,
+      "sha256": "ef89bb37e7dd168a886435dfa2fc7d8d6c556033e8d06eebe4ea2aaa08384915",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "4363bd9166345d0ad804058257393791a524cbeacf8364863aa22380c3946d20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "da79e44fe3891f579eb52bee355f507f569a38b20385e25d17a7bf0599f5f465",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier.json",
+      "change": "added",
+      "bytes": 15745,
+      "sha256": "a33ba96691f1b33e213bf6054222b1ce79107de138df058f4dd3edc1124453f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5260,
+      "sha256": "80d417cc0db902d51f05dc62a1e81c7e13df9631fce345602629e363670975e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/result.json",
+      "change": "added",
+      "bytes": 16900,
+      "sha256": "d3023513e2c2a2b84b9bd7bda064b257fbb20025b5b9afe3c001a97664206064",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/executions/20261121T095824Z-6a139e7e/attempt.json",
+      "change": "added",
+      "bytes": 13018,
+      "sha256": "db16a191fb4565714406efd1e567397d4a2153b5f8d42b7de9b43e04ed96bed8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/executions/20261121T095824Z-6a139e7e/checker.json",
+      "change": "added",
+      "bytes": 6722,
+      "sha256": "91ced4074697a1e107658737f8be4b7dc62d7ec1ce41e2cefaf2898f944a0fc7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/executions/20261121T095824Z-6a139e7e/correspondence.json",
+      "change": "added",
+      "bytes": 1392,
+      "sha256": "7f2971ee08f3447d3f54ed1c3f2cf008b8af15e0cc46d7e685a70ff16149931a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3779dc9e2daa4e999b3b26463a4e5eda1291e456abb28ec1f28396a443c03be8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/plan.json",
+      "change": "added",
+      "bytes": 7210,
+      "sha256": "79c9255db642c53302c8a3e86f187b922d22ff3a4f0f052bb873d665a3391fb8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/controls.json",
+      "change": "added",
+      "bytes": 8054,
+      "sha256": "dab8df38e0805f3c68ed84c57733a485daac3554e5b8be2a3f8633f812b1cdc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/execution.json",
+      "change": "added",
+      "bytes": 23996,
+      "sha256": "aa7459509c9840fbbc940d9217429bec3a227b6c98c77280773d3d6de73bfa84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "ea6d5902a3096d7e541f5fe5f872d60ba2874a8d1684d82a1522b72d68f18fcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "da79e44fe3891f579eb52bee355f507f569a38b20385e25d17a7bf0599f5f465",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier.json",
+      "change": "added",
+      "bytes": 15811,
+      "sha256": "8acc52803f3898d821947a37cd0790d62c1ba45c9ab0141bb922f9a6209242d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5265,
+      "sha256": "f53b7fdb9c616631495afd6748ca3ba85e6c4ecdf00aaec17db43174572a9d9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/result.json",
+      "change": "added",
+      "bytes": 16961,
+      "sha256": "47bade715cf62f063faaf6f745ac94560779bb2ce58330547d41f15761350892",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/executions/20261121T095824Z-28f8816f/attempt.json",
+      "change": "added",
+      "bytes": 13085,
+      "sha256": "6c4d0ff02c47110cbc5ad10aba26144cad8a1038761299179b34ca13bba13d8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/executions/20261121T095824Z-28f8816f/checker.json",
+      "change": "added",
+      "bytes": 6736,
+      "sha256": "372ccb13a5fb29db86399c0b45a25bd2cf1c8a1f08cc14dcb1024b2838655281",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/executions/20261121T095824Z-28f8816f/correspondence.json",
+      "change": "added",
+      "bytes": 1395,
+      "sha256": "a72b99e3f0c0b3e44d2d928e132a03c8823bc22019247458da00007ececcdde4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a3c78e85522e3f84537dc418021bce6b3f65215a915e242136fa20548e4ba8a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/plan.json",
+      "change": "added",
+      "bytes": 7373,
+      "sha256": "04a8538822bdf70e46cfafe3c414f20864a817bbb20ffc6f509bb53140e12cae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/controls.json",
+      "change": "added",
+      "bytes": 7753,
+      "sha256": "8ad6b5748976743a62360e3eb19febd32eab4cb02d5c24d5f3ab7e1cfe00772c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/execution.json",
+      "change": "added",
+      "bytes": 23712,
+      "sha256": "731e399414165cf362e903b4de437f6ad8d52c44bfd17f0204efdc8f8113ae25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "a2e41b940dc57f696fa3e0067cca58c521b395be37ab3a81c7412eb1fa352912",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "c1b81a3efc196fe8d48c75b9358d40f3956788d0feb7a5278e1047df14d37bd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier.json",
+      "change": "added",
+      "bytes": 15802,
+      "sha256": "de5de06b34f22be603a49aa3f1a94f5132b13accbf7325db3fb314906c19c249",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5257,
+      "sha256": "ce2d1db564a07c4efcb6589d14d1d782477bbe7cac1038c851e6699c08c5963b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/result.json",
+      "change": "added",
+      "bytes": 16925,
+      "sha256": "c5d1165aead1703667832d6556b10eca35a96f587f0bd41264bba61d596b8117",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/executions/20261121T095822Z-99a8c36a/attempt.json",
+      "change": "added",
+      "bytes": 13083,
+      "sha256": "d8611e2b68478aa1510f9d11921df743d4393376e7899c61d07eada924308eef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/executions/20261121T095822Z-99a8c36a/checker.json",
+      "change": "added",
+      "bytes": 6716,
+      "sha256": "36f5a06cf753400a4f7ca2ad2c0956d1849f9522d98040b96711a17c9e099014",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/executions/20261121T095822Z-99a8c36a/correspondence.json",
+      "change": "added",
+      "bytes": 1415,
+      "sha256": "5fc60ad7bdda78eb37ed5a00a356ef9891fafe50be871c1faf87b605421a7a11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6bf1dc6b3bc9d291c13ffc71b97dc6019652a4e95931b23a19fbb5759e2a59f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/plan.json",
+      "change": "added",
+      "bytes": 7278,
+      "sha256": "deb8cdd9e24c8e07eb7888b4ed2f302d50e5b8508bde24ad49fd780ff339f5f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/controls.json",
+      "change": "added",
+      "bytes": 8050,
+      "sha256": "5f0435114c2f40425731a8f0d9cf9e32e64f387de79f0beb2c42ea78f6f244bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/execution.json",
+      "change": "added",
+      "bytes": 27400,
+      "sha256": "5685e50217514055c3977fdfc308c166f50d3f409113e23992e2f791d6cc0cb0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "4d1e0190427f58e3e8d98376ac682124334be3bfb3304158e6fa5871bf8919bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 581,
+      "sha256": "84469705dff32624cfeb386fac3df1cfc078c2ebaaeed4a6d2ad029f1ed37073",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier.json",
+      "change": "added",
+      "bytes": 16664,
+      "sha256": "790bc2619efa2b368d5cc05fba2afe3d215f4414fbe60eb06d15c3b66d42ba42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5973,
+      "sha256": "ea7c8e8a09a3fa1d01dcf7c92654a356329425b4dedff946671c671d23c95da5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/result.json",
+      "change": "added",
+      "bytes": 18260,
+      "sha256": "4934c580ed19e71526a13514f990ebd6c8fb7ec87a7d1ec353cd3682280a4d21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/attempt.json",
+      "change": "added",
+      "bytes": 13268,
+      "sha256": "fe743610d3478a9b57ef1d2ca822d24555dc69accdf4e585e993cf84b2544a33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/checker.json",
+      "change": "added",
+      "bytes": 7485,
+      "sha256": "ba34b4979d903e2606bbd4db59dac2a238171b05e365dc79377fffce8a8db9cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/correspondence.json",
+      "change": "added",
+      "bytes": 1418,
+      "sha256": "7a734dfb4fe98daa99bfc3b1d3eee7101ba3bcbd0cba01c2e0fdc82c64851a9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/replay.json",
+      "change": "added",
+      "bytes": 2027,
+      "sha256": "9f9c000bfe15390e59cdae1f5a77499e2519b0701d7b466fa46b422f9f876452",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "75f469c9876fbff003d98ffdf5969683ecd21f5087f40c68d04b6597f2244cff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/plan.json",
+      "change": "added",
+      "bytes": 8029,
+      "sha256": "c0c8d8bfe3abdf362cf3d60e6615f041478481128958640ab7cb830dd61a62e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/controls.json",
+      "change": "added",
+      "bytes": 15728,
+      "sha256": "4bdfe4a54fedefd9fd27b0bee254877ba8ee855e41a2b964dde8e2f6bcc7715a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/execution.json",
+      "change": "added",
+      "bytes": 16379,
+      "sha256": "9e8d888e5c5cac67a76ed3c6dd40e5e24dc0db131fc26510aa8035e2edc6515e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/streams.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "722018d8be097ddcf446d25567dc9fdf5d9cc6c349efeca4fd1aa157e8414fb8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/summary.txt",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "d2d7a978afdd0e7bc94688797fbd5e8f1f9760dd0102018ac10c5cab001b77ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/result.json",
+      "change": "added",
+      "bytes": 11322,
+      "sha256": "d6564473e84b76a96132e8bf7216899781ce5b2459ee50a6d29fe2b46a4fde51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/replay/executions/20261121T095816Z-9dfe96a1/attempt.json",
+      "change": "added",
+      "bytes": 6546,
+      "sha256": "6ba8f727e66e8da59898b714991eb55ec48e93da1d58a1951be9f5675e97c6d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/run.json",
+      "change": "added",
+      "bytes": 618,
+      "sha256": "01eae630dc14c126e01778c43e824cc29f10d3d272606794a77edf4b80467915",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "11a7f41ed55bd0076f73133e863d815b9f4d361fd446b95f3df75dfe5b833cde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/plan.json",
+      "change": "added",
+      "bytes": 7322,
+      "sha256": "3eedaecd765e819960de39ad23df998edf74ba5bf2de408a99e92efa73d2f652",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "8aec011ecc48fd4a6887312ace711d289aa7183098d479b634ef2268be68197c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/controls.json",
+      "change": "added",
+      "bytes": 7747,
+      "sha256": "63ac4c182ff974be8a16f45ba9080a79c7c59b309892abfc72b81f4eb7fc18b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/execution.json",
+      "change": "added",
+      "bytes": 22964,
+      "sha256": "ed2e7565ae0ce97b50881449078b35920f361cfaa8601edb9fe90d1509a3e54b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/streams.json",
+      "change": "added",
+      "bytes": 1943,
+      "sha256": "b83fcf166313b15d8afd5132a2f8a5cac88d5a52ee5b157358b8f4d9b2a65e2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "cc598f9219d880bb087499c2d9737693af0a2044382928aa6d8adc8fbd1e02fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier.json",
+      "change": "added",
+      "bytes": 15076,
+      "sha256": "05dc2e2b4ae551791e2630d68e3d0939ee1aac904bb26ef5e2d510843121eb7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5252,
+      "sha256": "846779b922effbb5e7e41174925d4df3d2c6fa5b8f40726cf8519818d09b2dfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/result.json",
+      "change": "added",
+      "bytes": 16891,
+      "sha256": "0a3a9a05aa816051727a909920640a1f5f14c79d57fe707f705ac743d1623f65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/executions/20261121T095820Z-4b2a0bb6/attempt.json",
+      "change": "added",
+      "bytes": 12397,
+      "sha256": "ddaaae888921b5203226155b03e9875e1bfe5fd4665b81b9c539f8298cf72231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/executions/20261121T095820Z-4b2a0bb6/checker.json",
+      "change": "added",
+      "bytes": 6710,
+      "sha256": "688553139a2ee7b82e289a28ff2f7ba3535a0f4c7f262e6c93eed8a9591fd843",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-fix/executions/20261121T095820Z-4b2a0bb6/correspondence.json",
+      "change": "added",
+      "bytes": 1404,
+      "sha256": "e3598f379ba467e3cc94d827dd109d4131e1ef52a7a6e412050fe0594e73ea01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "20a5f5f95076ff26aa7e08f8c31da6fafd70ae754f26db655b39853702737046",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/plan.json",
+      "change": "added",
+      "bytes": 7227,
+      "sha256": "09524ddfeae20e2206d383ced32294ef42b1903344734e5d1913787681c219d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2123,
+      "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/controls.json",
+      "change": "added",
+      "bytes": 8041,
+      "sha256": "aee636fb8646e864d365d0893ec47b6ecaf594ad16e24dcbba77ff279d9f6005",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/execution.json",
+      "change": "added",
+      "bytes": 26641,
+      "sha256": "2b0306035dedfe8a91a42b06b5ce317ef6e7b7902f4082bf21d7a678b36246a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "3b239f601eedb7981b6f26822e07c58a35f560812bbc1b2a89652faa6fb42695",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "75b6f45606cc3193ed417afd2871b1cdd51ebd3c9d0c6552cbab72d4e65de456",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier.json",
+      "change": "added",
+      "bytes": 15930,
+      "sha256": "18d7c13f47a53cfcaa4255c0a7d612405f7f2837af76c3ea507bd664f0c90aea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5960,
+      "sha256": "e80cca38de2eac494596a3d232d3d9f2b3d23b35c8ea29d4c54edf8cc8838588",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/result.json",
+      "change": "added",
+      "bytes": 18223,
+      "sha256": "4b0c93576c3e9be3ae9017f567f011c53d9291c4036782d8318c5b14d87f6c78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/attempt.json",
+      "change": "added",
+      "bytes": 12584,
+      "sha256": "d280dadeaeefa633ac31a6f468234ecf69425dcc5ae0d8effb7bfe582955a2cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/checker.json",
+      "change": "added",
+      "bytes": 7471,
+      "sha256": "5ba6f5fc86b9cda9939aa3b889f88be6fa2fa9eac90c3a481de60361fa045100",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/correspondence.json",
+      "change": "added",
+      "bytes": 1407,
+      "sha256": "5065deaf72f5ee51f1eef20cae8842432054c9fe28acf2774bcc81ae0553a7c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/replay.json",
+      "change": "added",
+      "bytes": 2024,
+      "sha256": "ce649674c522dc0bbcc8d3b88e5b17f91e30ae4e7711b0231eea0be21642a93c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/utf16-native/workflow.log",
+      "change": "added",
+      "bytes": 1532,
+      "sha256": "bf100babca4e4630d1cacbef500c2d658fd5bdeddfc01fa1d019d73a489577bc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:02:50+00:00",
+    "applied": [
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/completion.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/plan.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/controls.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/execution.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/streams.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/20261121T095824Z-6a139e7e/result.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/executions/20261121T095824Z-6a139e7e/attempt.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/executions/20261121T095824Z-6a139e7e/checker.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-fix/executions/20261121T095824Z-6a139e7e/correspondence.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/completion.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/plan.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/controls.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/execution.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/streams.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/20261121T095824Z-28f8816f/result.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/executions/20261121T095824Z-28f8816f/attempt.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/executions/20261121T095824Z-28f8816f/checker.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/controls-parent/executions/20261121T095824Z-28f8816f/correspondence.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/completion.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/plan.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/controls.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/execution.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/streams.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/20261121T095822Z-99a8c36a/result.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/executions/20261121T095822Z-99a8c36a/attempt.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/executions/20261121T095822Z-99a8c36a/checker.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-fix/executions/20261121T095822Z-99a8c36a/correspondence.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/completion.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/plan.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/controls.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/execution.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/streams.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/20261121T095820Z-8db80be2/result.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/attempt.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/checker.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/correspondence.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/lexeme-parent/executions/20261121T095820Z-8db80be2/replay.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/completion.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/plan.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/controls.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/execution.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/streams.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/records/summary.txt",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/20261121T095816Z-9dfe96a1/result.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/replay/executions/20261121T095816Z-9dfe96a1/attempt.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/run.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/completion.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/plan.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/control-fix-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/control-fix-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/controls.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/execution.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/streams.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/20261121T095820Z-4b2a0bb6/result.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/executions/20261121T095820Z-4b2a0bb6/attempt.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/executions/20261121T095820Z-4b2a0bb6/checker.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-fix/executions/20261121T095820Z-4b2a0bb6/correspondence.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/completion.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/plan.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/control-parent-jdk21.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/control-parent-jdk21.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/controls.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/execution.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/streams.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier-output.txt",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier.stderr",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/records/verifier.stdout",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/20261121T095819Z-888eee44/result.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/attempt.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/checker.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/correspondence.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/token-parent/executions/20261121T095819Z-888eee44/replay.json",
+      "examples/356-gson-overflowing-number/records/utf16-native/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "30007ef1a1e2f8c053282578af8dd6044d1a7d06",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/30007ef1a1e2f8c053282578af8dd6044d1a7d06/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

@@ -20,7 +20,8 @@ from targets import runtime_jdk, runtime_maven, upstream_artifact
 from public_ci import digest, namespace
 from maven_mirror import serve
 
-CASES = json.loads((HERE / "cases.json").read_text())["cases"]
+CORPUS = json.loads((HERE / "cases.json").read_text())
+CASES = {**CORPUS["cases"], **CORPUS.get("reserves", {})}
 OPTIONS = ["--batch-mode", "--no-transfer-progress", "-Dmaven.javadoc.skip=true", "-Drat.skip=true",
            "-Dcheckstyle.skip=true", "-Dspotless.skip=true", "-Dspotbugs.skip=true", "-Dgpg.skip=true"]
 DEPENDENCIES = "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath"

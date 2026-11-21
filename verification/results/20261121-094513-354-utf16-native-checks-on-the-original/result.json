@@ -1,0 +1,1507 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-094513-354-utf16-native-checks-on-the-original",
+  "title": "354 utf16 native checks on the original commons-lang public calls",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m17s, peak 981.3 MiB (estimated 5m00s, 3.0 GiB); 167 output file(s) changed",
+  "attention": [
+    "step 1 (Run the public task plan) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-094513-354-utf16-native-checks-on-the-original.json",
+    "sha256": "20e2d35478d2a051e7c07576f258bb10b150e0a558dd047d3a9dea3072c563ea",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-094513-354-utf16-native-checks-on-the-original",
+      "title": "354 utf16 native checks on the original commons-lang public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/commons-lang#1719 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "354"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:45:13+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 354 --route native --stage utf16 --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/354-commons-lang-surrogate-cuts/records/utf16-native"
+      ]
+    }
+  },
+  "sourceCommit": "6d24a68d88ea6e1e06e9c357bb09dd9b8973c9d2",
+  "startedAt": "2026-11-21T09:55:07+00:00",
+  "finishedAt": "2026-11-21T09:59:34+00:00",
+  "wallSeconds": 267.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4185577,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1028972544,
+    "wallSeconds": 77.4,
+    "cpuSeconds": 84.3,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 354 --route native --stage utf16 --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 77.365,
+      "cpuSeconds": 84.315,
+      "cpuThrottledSeconds": 1.402,
+      "peakMemoryBytes": 1028972544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 639,
+        "sha256": "2fdc052989ab8d79604cbd225d1ad46adba561aa2ea7f7a7010fd77495ed75f3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"354\", \"route\": \"native\", \"stage\": \"utf16\", \"workflowExit\": 1, \"seconds\": 77.185, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"fixed-cut-parent\", \"fixed-cut-fix\", \"truncate-parent\", \"truncate-fix\", \"abbreviate-parent\", \"abbreviate-fix\", \"intact-parent\", \"intact-fix\", \"width-five-parent\", \""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "bf58c82d7715d7965edcdb86937f3b98200eca6ef74313766db907c3a02a37c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/plan.json",
+      "change": "added",
+      "bytes": 7394,
+      "sha256": "a1604082b7d0c967df1e215d8cb099032b94f9e81ac59ab761b7a570cecc8d5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 320734,
+      "sha256": "67f4a4950a0e2fca9e62bd6c1276689c9c3a3221b2727bb750a6b050d6380225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "3ffd6ca3ad876c43af5223ba08f01df39b847f6ca13ddbc45ca19938cd751437",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/execution.json",
+      "change": "added",
+      "bytes": 1011516,
+      "sha256": "7e8caf8ef96abb05af80a4b9a494dbb81ce7f20d730acfae4230ed7bf796d1ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "dce603b012ee6fb7b887508f8aec8f41f8e83f16a51a44de31c84f33150c239a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 294,
+      "sha256": "0cc9ddc9d1e13064cf24eae7915ebd0684d7952771051cf3a5c6ea605d405aeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier.json",
+      "change": "added",
+      "bytes": 17004,
+      "sha256": "66527f45b396585b73d4adf267398814c43d3f47a0e36d967b12d2a664d7fe52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5279,
+      "sha256": "9a5c35a35ea368570b94a8347248c678c8dc6669d48f7b2cf06e70dc1c7c8208",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/result.json",
+      "change": "added",
+      "bytes": 18399,
+      "sha256": "d7f3615d95e8c606564d488cc21c8a357c5b35a754dccef567a4e30eacdf8d05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/executions/20261121T095928Z-ef0ff3e1/attempt.json",
+      "change": "added",
+      "bytes": 15630,
+      "sha256": "a140d732f32aa81e99290ed405e1d4840e726810cb1fe36a8477e8e685c14194",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/executions/20261121T095928Z-ef0ff3e1/checker.json",
+      "change": "added",
+      "bytes": 7111,
+      "sha256": "1a327a94ebc852056dbb703c9d6f944083c240586067da0f1fcf17a20cc3a6b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/executions/20261121T095928Z-ef0ff3e1/correspondence.json",
+      "change": "added",
+      "bytes": 1322,
+      "sha256": "6c295a13513d001e6ef131b4e1dfce005e2b113ccfa2dfc3987550bd7a4cab1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4a5813f0cf4efb22ee86c2ead9579c316ae539f95105b5c6d76cee1c67f9b2ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/plan.json",
+      "change": "added",
+      "bytes": 7299,
+      "sha256": "1d456728b56bd68aa12d6315849cb70070596d2c523dd9561ed1d9515d53ed48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 329622,
+      "sha256": "a33bfc3a9dc8877604920a4cda70609fda6823398631a27568540bb87f695c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "1cc5bff591b036ab12917b4a55e1113d38090662fff4aaa052dc4b8ef7a59df1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/execution.json",
+      "change": "added",
+      "bytes": 346539,
+      "sha256": "e4cea224bf04c3c3c99929d6bbe85ad1111b2ae715a3ac98fb89aef617a81299",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "f68bd348a318f1e85e1c013c38bc823c3306ada09683f890dac805adb16985ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 556,
+      "sha256": "2576284edb05a2f2c20c1ea68175151616f70df2a51ad36c623e9c0586b2ce90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier.json",
+      "change": "added",
+      "bytes": 17634,
+      "sha256": "89a9995619da35d1ae2e70c71635355990d83ad7825b1693ff8a50a36f3c2ab0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5771,
+      "sha256": "94f49e861cb7984833b07799c7cdde85868fb02caea95a6c57ab588178e71369",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/result.json",
+      "change": "added",
+      "bytes": 19275,
+      "sha256": "41c2cbdacbeafe42b839c7a666501b83b3115063a6bf3a0a6d71286751e9a22a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/attempt.json",
+      "change": "added",
+      "bytes": 15843,
+      "sha256": "6c04c68b04838efc44cf4a8e599feed7cc4ebaffaeb8cc8718d9658474e60d70",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/checker.json",
+      "change": "added",
+      "bytes": 7651,
+      "sha256": "f1049f77cc09cc3334bdf77865a0a17095636458bb113f5fb3c6ea398de05f50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/correspondence.json",
+      "change": "added",
+      "bytes": 1325,
+      "sha256": "7c9a6f19d7daed3683a68d1b22bb4a5016bd606f3bf49036dede125343121aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/replay.json",
+      "change": "added",
+      "bytes": 2424,
+      "sha256": "27a821d8896836c728c37b815d1daa5f7c97c5658c2e8e4ca01a35a84da9a13b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "bc57400e83443c154800ec4587bc445726621918fdd046e576feddaac75a9ab3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/plan.json",
+      "change": "added",
+      "bytes": 7379,
+      "sha256": "6f5b2375f82421e8b1f450f263277281855a9c7f47f92467b30dd46bdcc9e7e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 320734,
+      "sha256": "67f4a4950a0e2fca9e62bd6c1276689c9c3a3221b2727bb750a6b050d6380225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "8d797584514d555ae70bf08470bcb7c261f01be9a6031d2db43c4e0d28eaa41d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/execution.json",
+      "change": "added",
+      "bytes": 1010677,
+      "sha256": "07b0bb307247247bb26ac55c5725d6fb4b41c0d28d357d26ab8592f2b853c313",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "3a93454ce48b3af186a16a8d3b3f44187402d101ee48796fd7e58195afe1ba8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 292,
+      "sha256": "451ac27585e90484f108eef1e260ac8fcfdd35ae255b1f71cbde08486a87b42e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier.json",
+      "change": "added",
+      "bytes": 16197,
+      "sha256": "f61181a1fa5a8b20307806f279226924befabcf0847faefc1148c1c6def7491d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5279,
+      "sha256": "6a1c49981bbac1772c802bbd8b9b695b3663840aa13fa74d36b7b514d0ad9b2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/result.json",
+      "change": "added",
+      "bytes": 18392,
+      "sha256": "f54ac2c7319be4fa7c3a5bdd1352ef5d7dd2cbfb13c17963d188fb0b8c9ae8a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/executions/20261121T095822Z-8dec2bc3/attempt.json",
+      "change": "added",
+      "bytes": 14856,
+      "sha256": "aa0ce728d0778270f6d9a0a4640846f6caf37c48069688dfa59c1f6e5184bc73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/executions/20261121T095822Z-8dec2bc3/checker.json",
+      "change": "added",
+      "bytes": 7110,
+      "sha256": "c5990ec3f0fdb41f3e8e6179f202362409575e241e742eef803ae3692f025199",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/executions/20261121T095822Z-8dec2bc3/correspondence.json",
+      "change": "added",
+      "bytes": 1319,
+      "sha256": "20f60c7f63079f51823187cf6a942f83b8f6a2ba9377c23168129175e66d8846",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e8c898caf38773244eb9332d154e63e48ff3fbf81336b7edfc0c8a5d2da5237a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/plan.json",
+      "change": "added",
+      "bytes": 7284,
+      "sha256": "2b1158abc1ba8cea290ec291fdc21b0b11b0153e36985a2545816dda05224c5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 329622,
+      "sha256": "a33bfc3a9dc8877604920a4cda70609fda6823398631a27568540bb87f695c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "02592ec89e4dcd53b0d68e688648df13cc0d85278d13558199d77245effc45dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/execution.json",
+      "change": "added",
+      "bytes": 346004,
+      "sha256": "f04345e8eb3aa564d096b107f28f1de7ccdc36399a8d448fa8d6e00468432bc7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "1756975f4fab0eff4cb5bf76e76a8a3359319bd7beae2eafdd9f2fbf38097777",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 554,
+      "sha256": "82a4fb7e04879fa4f4ef6a5e73e52bf2a560d983f2bc4d4b88bec66431a0aab7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier.json",
+      "change": "added",
+      "bytes": 16822,
+      "sha256": "a25d140390427a2c94c12084a4ed13409ae0849f94c97ee098744bada3134c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5767,
+      "sha256": "d6cf7c00fa25d3a935b9abf9ec09a92286292724f2b335a101c83c78266deb6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/result.json",
+      "change": "added",
+      "bytes": 19266,
+      "sha256": "2e4ed52705fd2861bdabb386a0abef4af9d5b993d107531a9760804e090f4355",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/attempt.json",
+      "change": "added",
+      "bytes": 15068,
+      "sha256": "18d0be8a85b74bcccc92f47621cf78b4977129ddb3016aef84fc96f745fe67df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/checker.json",
+      "change": "added",
+      "bytes": 7646,
+      "sha256": "4e5b2e48341316eb20b3225b4c24a6c54ffadffbba1733e47f08b9f33ac0d231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/correspondence.json",
+      "change": "added",
+      "bytes": 1322,
+      "sha256": "5e9001b82f883640d6344dc40c2f7ae6eb4ddb9295f28cd0df6d986e0408f95f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/replay.json",
+      "change": "added",
+      "bytes": 2512,
+      "sha256": "473d9631784d731cf809aa82798153ef87a3350b239a01725e0c3599b5ca545c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dcc53224027e38288f9e1026cd7a6c065218016c430a49556ae8d0296aaa3cb3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/plan.json",
+      "change": "added",
+      "bytes": 7262,
+      "sha256": "cfa86b00e0f2729322aa1e993ca9c3986aec0a133f8092fd4463c40351b6a1e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 320734,
+      "sha256": "67f4a4950a0e2fca9e62bd6c1276689c9c3a3221b2727bb750a6b050d6380225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "003f7b2b95496fe34515187550db1a148158f84e08c1bacaa169aee7c6cdce7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/execution.json",
+      "change": "added",
+      "bytes": 1010595,
+      "sha256": "ec18b51e4760c5132a025bb650eed180bfccd291f99b7678f552937e4a6bbc1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "846e851a0862b43acc480dc5faf6a0d08c5929dc59e974af51f3bd3437e10a4d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "4f931ddac5546a1bbc60d636a4225897cf39413896b8b669a2ea17aa2323bc67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier.json",
+      "change": "added",
+      "bytes": 16109,
+      "sha256": "681da339570a7e635a670e0188c0fe4f9a719c53751cf359b211a22ea0a7d83d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5269,
+      "sha256": "3e8eb5ecc6bbd8aa191791307f9bc87a1d67b7a01612fbd3b943d0bd0f782f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/result.json",
+      "change": "added",
+      "bytes": 18317,
+      "sha256": "021722671cee7ded00bec8dc8e1438b815d4a52f81a55740c34e5ab015ee1304",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/executions/20261121T095931Z-bf2ed1b4/attempt.json",
+      "change": "added",
+      "bytes": 14784,
+      "sha256": "6624918daa8bbbfec10c11fa0614bf2f52852cf23d56b5ee5e4f6418651368e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/executions/20261121T095931Z-bf2ed1b4/checker.json",
+      "change": "added",
+      "bytes": 7098,
+      "sha256": "cc5dc4da177b3d05ef5d7288ccd96cb2a826527940d9964a5e259adb4cb4268a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/executions/20261121T095931Z-bf2ed1b4/correspondence.json",
+      "change": "added",
+      "bytes": 1297,
+      "sha256": "b2a12c8eb18b4767ae00a6a386c06b52a3554b06a7ceba59504872388e2089e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "439371b001491139550c876bcb0e3507df7b4fc6e5520131afe40323c78a1519",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/plan.json",
+      "change": "added",
+      "bytes": 7171,
+      "sha256": "f2dbc77eefb522b4e64ea7901993854025417a2d9d69e3e960ceff2144bc6379",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 329622,
+      "sha256": "a33bfc3a9dc8877604920a4cda70609fda6823398631a27568540bb87f695c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "ae32aa4afa2beb2d698484ad91db5e3b6aa3e56780a04034b1ea8bf3334f5833",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/execution.json",
+      "change": "added",
+      "bytes": 1046138,
+      "sha256": "b739650099f931b65055e8184a62020219f0af89bd36130f996a6a1b5f21df8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "c1327630918ee2fc27d10f66c3d25442202a9c81dbd4090aea9e09f25a8cfcb5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "4f931ddac5546a1bbc60d636a4225897cf39413896b8b669a2ea17aa2323bc67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier.json",
+      "change": "added",
+      "bytes": 16195,
+      "sha256": "c52261451aad300966aff18294cede1c4cb19cd47ce909f7653ed853feff1f18",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5268,
+      "sha256": "812771f195882084e27771ace8ae71ec42608984472254234b997ff7d97834cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/result.json",
+      "change": "added",
+      "bytes": 18399,
+      "sha256": "b067c8564512e94a7999d1291a4d3ff3eafba578b46ae0581d54c51c8615237f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/executions/20261121T095931Z-384ba0b4/attempt.json",
+      "change": "added",
+      "bytes": 14874,
+      "sha256": "c776e53e5675472b2a46166c8ad0f504d28af878de54521394295ca877cbb218",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/executions/20261121T095931Z-384ba0b4/checker.json",
+      "change": "added",
+      "bytes": 7121,
+      "sha256": "e8b3135e5d3154746121c214efb57c2639e929a935005df80d9387a306de402b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/executions/20261121T095931Z-384ba0b4/correspondence.json",
+      "change": "added",
+      "bytes": 1300,
+      "sha256": "21526f867db301f5f4d6144969e9fbf007d17f3cdefdaf4e3b0a2f2ac530b8be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "63a4b43798fb20f9134e08fe288dd154004fea2fa5baa455bd1bdb3c15f72aea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/plan.json",
+      "change": "added",
+      "bytes": 7872,
+      "sha256": "ff681376520ba94355ab4c507074b57a5a9890aa4114db19c9c802fd19fd505b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 320734,
+      "sha256": "67f4a4950a0e2fca9e62bd6c1276689c9c3a3221b2727bb750a6b050d6380225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 329622,
+      "sha256": "a33bfc3a9dc8877604920a4cda70609fda6823398631a27568540bb87f695c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "3b4a379023ccb269256be454ee0a18dd24785b7ace3a166dd15154e7e2da91ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/execution.json",
+      "change": "added",
+      "bytes": 684362,
+      "sha256": "e505b6174819d38130be5e4948edd73a202587da4d9aecc39fad3b5e32f02482",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/streams.json",
+      "change": "added",
+      "bytes": 1717,
+      "sha256": "7215ed8284e4a496e0d7e807940aac0ce5f23aa86ce1405bbd7c84dfcc480744",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/summary.txt",
+      "change": "added",
+      "bytes": 36409,
+      "sha256": "6fb5087bba9418e47df3efcf0fa6d99fedad32fc93f8669ec5d5f8261aa6f89d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/result.json",
+      "change": "added",
+      "bytes": 247076,
+      "sha256": "e6e2d86de9b6997a1c5d959721d0f0b74e461912cf598cd805880932298f9343",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/executions/20261121T095816Z-bbaf711e/attempt.json",
+      "change": "added",
+      "bytes": 9381,
+      "sha256": "259d7b4b7f9af4f7fd91cbf26c8bb778096b219bf7fd337da02fc8dd8a23e37e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/run.json",
+      "change": "added",
+      "bytes": 721,
+      "sha256": "0ba96ebe9b813f49828a5c44bd9bc95c34c13543f9089963c8660eb8c192603c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a2cbe527d99383500a1a131339dbadc5c9f9633db9028abedd0ec9dd27a0fd33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/plan.json",
+      "change": "added",
+      "bytes": 7418,
+      "sha256": "bc7974309cb0324d56298c3c3aabdbd02e4daacf84bf06deae0b620d4d24d2bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 320734,
+      "sha256": "67f4a4950a0e2fca9e62bd6c1276689c9c3a3221b2727bb750a6b050d6380225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "6a03e9a12d7dfa78742dc64add967d91f71d01373d3f1fb73a796d99d1f339b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/execution.json",
+      "change": "added",
+      "bytes": 1009777,
+      "sha256": "42968ab73ff685672794cdd9f8a8c68c53bb24dabed2a3903a661fbecc455da4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "e9854064147630c58b4b118f0db8c2aa1f2b0fb953f843d87e54bec575b801cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 108,
+      "sha256": "e1842cd83ce33682b9eb8531163fb6852b2a1a48b4dbceae7aa7a6424b9bce6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier.json",
+      "change": "added",
+      "bytes": 15337,
+      "sha256": "16897bcf95c79bcb025c903fa9b64f34a779dc0f6958907092c49e6932faf82a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4466,
+      "sha256": "73a24b59561a2303e94821730d96108c3f1ed26f85a1b427c0207ca8369fce20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/result.json",
+      "change": "added",
+      "bytes": 15167,
+      "sha256": "c3d9ca0822f396704fbf54f3b8074ea6179c48756508a82f78ccf46b49f75021",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/executions/20261121T095824Z-c38d1e20/attempt.json",
+      "change": "added",
+      "bytes": 14973,
+      "sha256": "18028ff0f0cfc113232674ad621201835b937a16f7cb88d12d5e0e981328ea6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/executions/20261121T095824Z-c38d1e20/checker.json",
+      "change": "added",
+      "bytes": 6258,
+      "sha256": "1aad2f819aa0f169429324fe6f6039e0381b1ac8bff555edabae1b91a470b950",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/executions/20261121T095824Z-c38d1e20/correspondence.json",
+      "change": "added",
+      "bytes": 1330,
+      "sha256": "02578c8ce43ae5e972c5df64518455f3b3ce16fc145c7448b98c8de0b1e2ea15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9f402e5134b0b8491b0f81b821eae948b698107595380425729e38020f788d7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/plan.json",
+      "change": "added",
+      "bytes": 7323,
+      "sha256": "59b4303fefc2e7cc22df30a9a2310505b1d404410f2be16cb4f8633b932e0942",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 329622,
+      "sha256": "a33bfc3a9dc8877604920a4cda70609fda6823398631a27568540bb87f695c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "bbdd1d4e3826fa11c6522ee45b43d1dad9efc0fc54d9356eb984c1d41ceb3c3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/execution.json",
+      "change": "added",
+      "bytes": 346156,
+      "sha256": "14f672f720b04942965c9cb99ef9287dacb99c166b7803e2ed1032c065a642a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "4679883b39b95aaf6a7338a79955d790401d19571c780f53c392582babe30ef2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 568,
+      "sha256": "848c4175eb63046b43be49301bbf53d0336a9d1f34f97f6fd8765ecd4354a8ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier.json",
+      "change": "added",
+      "bytes": 16920,
+      "sha256": "d1b60317a945a77625f8eea6e05468b5340cfebc39bcf2a38378ae7456801660",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5828,
+      "sha256": "e48d5f20bffdda3e2826a01ab7c4b51023e1c1494d2118ccd7f9ea241e5cc08a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/result.json",
+      "change": "added",
+      "bytes": 19351,
+      "sha256": "e644caeabad16e68c969991dc66d16e59f36078c4d49d07ed663a49ebfc62987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/attempt.json",
+      "change": "added",
+      "bytes": 15105,
+      "sha256": "f54d3529117900f5dbf275db2e567d22f191dc11a0a1317aaabc1af2d16d3665",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/checker.json",
+      "change": "added",
+      "bytes": 7711,
+      "sha256": "9bc69c1586c9b16a2c27b7db3485fcbf27e42bde019289f56007fc3b2fa6ea2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/correspondence.json",
+      "change": "added",
+      "bytes": 1333,
+      "sha256": "950ee11cb717ea62ecbf6946e286daaf7d69a457b2f24981fdc4058da6f2f8f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/replay.json",
+      "change": "added",
+      "bytes": 2667,
+      "sha256": "a700c03ea0f97c9a806648ec031f69af9a9475d41e2ab175633f8cbf018f0285",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ac557e4a496b3e797d285e144471888d2f6cb46051282151881510833e8adc46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/plan.json",
+      "change": "added",
+      "bytes": 7214,
+      "sha256": "50a077ae470bc3ee3e36567f273fb9828b5dffabf82e25590fa415d35bd2852c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 320734,
+      "sha256": "67f4a4950a0e2fca9e62bd6c1276689c9c3a3221b2727bb750a6b050d6380225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "cf131c48f929736e8d76aec6d966e5946bbe605b9e4b80acc8f717e2ad1a2038",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/execution.json",
+      "change": "added",
+      "bytes": 1011378,
+      "sha256": "f9b3a7e4e3931f5a248f8c4b0fcdfc15e89ab0c75566c66e495d7790d5ce90aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "9c0641236390a754888e864cd27dd68bc2f3a8175bf97d8d0a8448007b6bf370",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 294,
+      "sha256": "e85b70e1d708cb913378dbf9deebf7e052169234f51ddb10a5820d04d228c7a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier.json",
+      "change": "added",
+      "bytes": 16866,
+      "sha256": "082e0ba08e1a8c8141a385e73a2298618acf1b27eb928c69dd7fea70d1bca536",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5277,
+      "sha256": "57a0e3b20c95deb89de5408cfa1d224447549094a7aa5bcbfb8840e78a444bc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/result.json",
+      "change": "added",
+      "bytes": 18307,
+      "sha256": "1155171e62ac4b41031aa9cbac6017ec9c1021adf69abad9c4f9d10fab80e63a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/executions/20261121T095932Z-e90a46e4/attempt.json",
+      "change": "added",
+      "bytes": 15496,
+      "sha256": "ed07edff1b9106d444d1d11b9c27cd4fb51da70d39c2d1db21b2bcd4c507e2e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/executions/20261121T095932Z-e90a46e4/checker.json",
+      "change": "added",
+      "bytes": 7108,
+      "sha256": "1434014ab4c11e79905d40f4b7a4c159f50e34a9c5f241d9cfab6ffdc3e7ed55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/executions/20261121T095932Z-e90a46e4/correspondence.json",
+      "change": "added",
+      "bytes": 1277,
+      "sha256": "ffcf05612c282c99a976fb4ae2ab8e00f80311b8650d75a8637ac101f41d1b19",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5d90be56051220cd5f2767abc90e1bea0c29c7b0360167b8f21c4d6998aeb16e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/plan.json",
+      "change": "added",
+      "bytes": 7123,
+      "sha256": "18a126e525f8ab22e2cc577c40fa857c1b0984637050dabfdd5845fee6fce4fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 329622,
+      "sha256": "a33bfc3a9dc8877604920a4cda70609fda6823398631a27568540bb87f695c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "e051c78290afedc6322d2b16db85b0022ebe947ff7a6e5ac7204bf11081a2e63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/execution.json",
+      "change": "added",
+      "bytes": 1046923,
+      "sha256": "025a6a0f507cd03a50652a341b0a98695089d36f1b2bbc3e3072186d3320677d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "b31ba322314f87f8c20a68e75379a4bf2aa583eb231de0774e801bd60d017460",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 294,
+      "sha256": "e85b70e1d708cb913378dbf9deebf7e052169234f51ddb10a5820d04d228c7a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier.json",
+      "change": "added",
+      "bytes": 16954,
+      "sha256": "7fa8d1e67506c5e81d4579637a9d08d79546e8c8d9b03d366e4b56c30fe99ca4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5278,
+      "sha256": "725f6623191e57f3ecb06a028172154d9197f9cbdd30d432069c8e231b8f80a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/result.json",
+      "change": "added",
+      "bytes": 18391,
+      "sha256": "0141aca6381be945fead60919e7f5313b35d1db7fdf22a65c762dcb9066ad2d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/executions/20261121T095932Z-5c65eb10/attempt.json",
+      "change": "added",
+      "bytes": 15586,
+      "sha256": "8c65c47252500da6f74102d1909a52f24cf7d5bf686d56a77757e64247f945ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/executions/20261121T095932Z-5c65eb10/checker.json",
+      "change": "added",
+      "bytes": 7133,
+      "sha256": "61a417acac2e917774f536524eeffbeb2c6103e5cd3e5b2f6e5958755464c803",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/executions/20261121T095932Z-5c65eb10/correspondence.json",
+      "change": "added",
+      "bytes": 1280,
+      "sha256": "4eb633c4b6bee7a3c98ed927c08fb2e8fddcf5ce0b2b1373f4e986f2f3c28058",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/utf16-native/workflow.log",
+      "change": "added",
+      "bytes": 2595,
+      "sha256": "de9cb856681dd8008544fdc6eec1add8fcd6771e0baf51bc3b53a76c62b7b964",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:02:50+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/control-fix-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/control-fix-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/20261121T095928Z-ef0ff3e1/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/executions/20261121T095928Z-ef0ff3e1/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/executions/20261121T095928Z-ef0ff3e1/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-fix/executions/20261121T095928Z-ef0ff3e1/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/control-parent-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/control-parent-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/20261121T095926Z-0a66c938/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/abbreviate-parent/executions/20261121T095926Z-0a66c938/replay.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/control-fix-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/control-fix-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/20261121T095822Z-8dec2bc3/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/executions/20261121T095822Z-8dec2bc3/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/executions/20261121T095822Z-8dec2bc3/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-fix/executions/20261121T095822Z-8dec2bc3/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/control-parent-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/control-parent-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/20261121T095821Z-2baca61a/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/fixed-cut-parent/executions/20261121T095821Z-2baca61a/replay.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/control-fix-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/control-fix-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/20261121T095931Z-bf2ed1b4/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/executions/20261121T095931Z-bf2ed1b4/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/executions/20261121T095931Z-bf2ed1b4/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-fix/executions/20261121T095931Z-bf2ed1b4/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/control-parent-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/control-parent-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/20261121T095931Z-384ba0b4/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/executions/20261121T095931Z-384ba0b4/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/executions/20261121T095931Z-384ba0b4/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/intact-parent/executions/20261121T095931Z-384ba0b4/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-fix-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-fix-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-parent-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/control-parent-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/records/summary.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/20261121T095816Z-bbaf711e/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/replay/executions/20261121T095816Z-bbaf711e/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/run.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/control-fix-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/control-fix-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/20261121T095824Z-c38d1e20/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/executions/20261121T095824Z-c38d1e20/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/executions/20261121T095824Z-c38d1e20/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-fix/executions/20261121T095824Z-c38d1e20/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/control-parent-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/control-parent-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/20261121T095823Z-2f5d2bf6/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/truncate-parent/executions/20261121T095823Z-2f5d2bf6/replay.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/control-fix-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/control-fix-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/20261121T095932Z-e90a46e4/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/executions/20261121T095932Z-e90a46e4/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/executions/20261121T095932Z-e90a46e4/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-fix/executions/20261121T095932Z-e90a46e4/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/completion.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/plan.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/control-parent-jdk21.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/control-parent-jdk21.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/controls.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/execution.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/streams.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier-output.txt",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier.stderr",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/records/verifier.stdout",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/20261121T095932Z-5c65eb10/result.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/executions/20261121T095932Z-5c65eb10/attempt.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/executions/20261121T095932Z-5c65eb10/checker.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/width-five-parent/executions/20261121T095932Z-5c65eb10/correspondence.json",
+      "examples/354-commons-lang-surrogate-cuts/records/utf16-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 6748331,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "30007ef1a1e2f8c053282578af8dd6044d1a7d06",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/30007ef1a1e2f8c053282578af8dd6044d1a7d06/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

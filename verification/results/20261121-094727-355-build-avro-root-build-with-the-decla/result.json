@@ -1,0 +1,543 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-094727-355-build-avro-root-build-with-the-decla",
+  "title": "355 build-avro-root build with the declared Maven JDKs and original named tests",
+  "status": "failed",
+  "summary": "failed: 2 passed, 2 failed step(s) in 5m33s, peak 1.7 GiB (estimated 5m00s, 3.0 GiB); 32 output file(s) changed",
+  "attention": [
+    "step 1 (Build and test both pinned revisions) was held back 16m47s by its 2-CPU quota in 4m23s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (Run the common finite baseline) exited 1, expected 0",
+    "step 4 (Run the common native baseline) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-094727-355-build-avro-root-build-with-the-decla.json",
+    "sha256": "618bcb60c237eb8a96c2ce56be3a80ac5b2d129725e97ecb9b4a62f157066c5f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-094727-355-build-avro-root-build-with-the-decla",
+      "title": "355 build-avro-root build with the declared Maven JDKs and original named tests",
+      "description": "Build the top-level Avro parent and mapred reactor, preserving the original provided Hadoop client and disabling test-result caching for the named regression. After binding genuine artifacts, run the finite and native tasks with the original Git workflow, solver and executable.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "expected": "Original modules built and assertions fail on the parent and pass on the fix.",
+      "submitted": {
+        "at": "2026-11-21T09:47:27+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Build and test both pinned revisions",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/355-avro-writable-buffer-limit/records/build-avro-root",
+          "cwd": "."
+        },
+        {
+          "name": "Bind the two actual original classpaths",
+          "run": "python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-root",
+          "cwd": "."
+        },
+        {
+          "name": "Run the common finite baseline",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-root && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route finite --seconds 180",
+          "cwd": "."
+        },
+        {
+          "name": "Run the common native baseline",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-root && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route native --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/build-avro-root",
+        "examples/355-avro-writable-buffer-limit/records/baseline-finite",
+        "examples/355-avro-writable-buffer-limit/records/baseline-native"
+      ],
+      "stopOnFailure": false
+    }
+  },
+  "sourceCommit": "6d24a68d88ea6e1e06e9c357bb09dd9b8973c9d2",
+  "startedAt": "2026-11-21T09:55:07+00:00",
+  "finishedAt": "2026-11-21T10:00:48+00:00",
+  "wallSeconds": 341.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4185577,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1819578368,
+    "wallSeconds": 333.2,
+    "cpuSeconds": 629.3,
+    "memoryOfEstimate": 0.56,
+    "durationOfEstimate": 1.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and test both pinned revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/355-avro-writable-buffer-limit/records/build-avro-root",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 263.446,
+      "cpuSeconds": 520.877,
+      "cpuThrottledSeconds": 1007.253,
+      "peakMemoryBytes": 1819578368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-test-both-pinned-rev.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "63e089f2044ea03c06c6f70fff607995410f02b0345b218fa0e994b34fd0c7ec",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "355 parent qualified",
+        "355 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Bind the two actual original classpaths",
+      "run": "python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-root",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.083,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16527360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-bind-the-two-actual-original-c.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Run the common finite baseline",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-root && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route finite --seconds 180",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 29.665,
+      "cpuSeconds": 46.826,
+      "cpuThrottledSeconds": 4.703,
+      "peakMemoryBytes": 1005281280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-run-the-common-finite-baseline.log",
+        "lines": 1,
+        "bytes": 633,
+        "sha256": "71c59cd81138fcfe2a23e9590ce6913689645796747900f8394c4ae804298f01",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"finite\", \"stage\": \"baseline\", \"workflowExit\": 1, \"seconds\": 28.983, \"checkerSeconds\": 180, \"tasks\": [\"bounds-parent\", \"bounds-fix\", \"rejected-parent\", \"rejected-fix\", \"prefix-parent\", \"prefix-fix\", \"full-length-parent\", \"full-length-fix\", \"direct-limit-parent\", \"direct-l"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Run the common native baseline",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 355 --bind-existing --output examples/355-avro-writable-buffer-limit/records/build-avro-root && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 355 --stage baseline --route native --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 39.898,
+      "cpuSeconds": 61.535,
+      "cpuThrottledSeconds": 5.293,
+      "peakMemoryBytes": 1056149504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-run-the-common-native-baseline.log",
+        "lines": 1,
+        "bytes": 642,
+        "sha256": "1a379ba685ae3b8e0f6253c11c468896828a863dea243898d4164e0884100dfa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"native\", \"stage\": \"baseline\", \"workflowExit\": 1, \"seconds\": 39.202, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"bounds-parent\", \"bounds-fix\", \"rejected-parent\", \"rejected-fix\", \"prefix-parent\", \"prefix-fix\", \"full-length-parent\", \"full-length-fix\", \"direct-limit-parent\", "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-root/build-fix.json",
+      "change": "added",
+      "bytes": 54643,
+      "sha256": "a66e86d7f7725c510796540b359ecc394c57b96a16a5499b43da3131313a9ebf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-root/build-parent.json",
+      "change": "added",
+      "bytes": 54527,
+      "sha256": "77ea572171a14e3623e4ff44ea7a882ace7a8afd6c5d0ca185304a6a7da32164",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-root/fix-TEST-org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.xml.gz",
+      "change": "added",
+      "bytes": 4087,
+      "sha256": "8acca47d67a152435be2eba433ffc74306e30b86751a4e231a0c62e4a41a6d66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-root/fix-upstream.json",
+      "change": "added",
+      "bytes": 6734,
+      "sha256": "2031b50b4ecf7bae86bbbd283b07caf61ae4bca5195d012a4bb5bbd02b9f158e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-root/parent-TEST-org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.xml.gz",
+      "change": "added",
+      "bytes": 4337,
+      "sha256": "4da2e30f9385015ee015f0216ca9534fa992dcbf466c37d3832673d2ff8f8c0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/build-avro-root/parent-upstream.json",
+      "change": "added",
+      "bytes": 8014,
+      "sha256": "84fc2a42b4e39961b53a26649d29c04250b8d59e28df9f4432d416d0c04bfa9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/batch.json",
+      "change": "added",
+      "bytes": 5781,
+      "sha256": "e13fc0e917bda1abd7eb0b6f59975117f94853d8889fb1bbf411223c2084a95c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/bounds-fix.json",
+      "change": "added",
+      "bytes": 1846,
+      "sha256": "3c99e7ec9455bb57ac9e3f05891972d968c5787598731379da5cc957fe97ab2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/bounds-parent.json",
+      "change": "added",
+      "bytes": 1851,
+      "sha256": "6dd8a0d8633cd1a9322e0dcff61708a62edd69b5ad1bc2a0a27986d03ca409d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/direct-limit-fix.json",
+      "change": "added",
+      "bytes": 1852,
+      "sha256": "21abd73ffac53238030488e68cf3d282f41bcb11b86c890b52c6a4dc67418855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/direct-limit-parent.json",
+      "change": "added",
+      "bytes": 1857,
+      "sha256": "cd595cf8a0a28c3bc73f527e462e22fabc532afdae24d3cb8f5e2b89488dde9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/full-length-fix.json",
+      "change": "added",
+      "bytes": 1851,
+      "sha256": "fff406dbc2b5929881d90b5424ab2264ef35db48d3217faf90b957370bf6b52b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/full-length-parent.json",
+      "change": "added",
+      "bytes": 1860,
+      "sha256": "e52b031a7792416b44f095920600a03900d43fd488bafc5293c894f6a88ff9db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/prefix-fix.json",
+      "change": "added",
+      "bytes": 1846,
+      "sha256": "d2c804421d0fbbb9ff9d457bacf589399b18c8bb0306db285a32275a747bd180",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/prefix-parent.json",
+      "change": "added",
+      "bytes": 1855,
+      "sha256": "bb39304e7e7b10097b7c599a9e7887ee2fce4e19a4638edd34e93322ffae6cdc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/rejected-fix.json",
+      "change": "added",
+      "bytes": 1848,
+      "sha256": "cb5f55cb525e3fb20217e69d62b471f4f5677930c0b5f701282848a7067ce3fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/rejected-parent.json",
+      "change": "added",
+      "bytes": 1853,
+      "sha256": "86d44115515a2a5b84415b1e6afe511ecba93ee0fe52cc47d114198bcac2eaa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/run.json",
+      "change": "added",
+      "bytes": 711,
+      "sha256": "d173131dba44f6c1e05962ad1a484678c84460701a5f0d09ed3e532219cb7d8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-finite/workflow.log",
+      "change": "added",
+      "bytes": 2361,
+      "sha256": "e30d7ac8e1f92f367a74ac3c28e6efccf865a9093b0f0e7e713d48133d112327",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/bounds-fix/executions/20261121T100015Z-71d4b38e/attempt.json",
+      "change": "added",
+      "bytes": 2542,
+      "sha256": "bd3690587a2102c7102fe9706370488e12d275b4efe192cf7697696d2792c1ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/bounds-parent/executions/20261121T100012Z-6c3cd14b/attempt.json",
+      "change": "added",
+      "bytes": 2551,
+      "sha256": "0cdc89a4d78ebd507a87a4591e96a114c566fad2321a4408135bbbb116eea15c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/direct-limit-fix/executions/20261121T100044Z-de3b71f1/attempt.json",
+      "change": "added",
+      "bytes": 2548,
+      "sha256": "7c0c2fdef274a97825c33ce75ad44f2dee01ff2c17366c2a2597c0e096563187",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/direct-limit-parent/executions/20261121T100041Z-71a28b6a/attempt.json",
+      "change": "added",
+      "bytes": 2557,
+      "sha256": "8760fb81944709f74da7126700a1e7a57b9852eba7be157b89b4f14d90afc7ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/full-length-fix/executions/20261121T100037Z-93aeb81f/attempt.json",
+      "change": "added",
+      "bytes": 2547,
+      "sha256": "63aa40ef2729006c789615f8129007b0ff4f08240b26d5eb3e32fd5dee68022b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/full-length-parent/executions/20261121T100033Z-33eb9b84/attempt.json",
+      "change": "added",
+      "bytes": 2556,
+      "sha256": "71538dd0d429a5040559afc93ee3b091aeee84dfd3faaad8bfde42fbd38d2a06",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/prefix-fix/executions/20261121T100028Z-d43772eb/attempt.json",
+      "change": "added",
+      "bytes": 2542,
+      "sha256": "daf26814df8a9b33fbc07eba20f5e6452234ff193f93e330c9c2cacf54a4a4ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/prefix-parent/executions/20261121T100025Z-82da499c/attempt.json",
+      "change": "added",
+      "bytes": 2551,
+      "sha256": "7be00cd29b0755268b787bbf605466fb6f8c21b2418f5b2ff83c75e3ce611b4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/rejected-fix/executions/20261121T100021Z-b9b55836/attempt.json",
+      "change": "added",
+      "bytes": 2544,
+      "sha256": "3027810dc1cdb36483a0bd248f3c3a7a1f1897a249d36ba0933dcfbd05441ee8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/rejected-parent/executions/20261121T100018Z-e69f593f/attempt.json",
+      "change": "added",
+      "bytes": 2553,
+      "sha256": "a40e04a01676946d6a226bd6df6c828b2aceee1f2af33c38f506e8259924a8d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/replay/executions/20261121T100009Z-90ba79f7/attempt.json",
+      "change": "added",
+      "bytes": 2547,
+      "sha256": "af852b18af49720a544a7c2cffe5faa66b6521adb33be6bd03e3dad625fc98d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/run.json",
+      "change": "added",
+      "bytes": 724,
+      "sha256": "d675e9dafb0c530a8c22d9985339e522250a055ff86df5a37facf6b0594a6ce6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/baseline-native/workflow.log",
+      "change": "added",
+      "bytes": 3084,
+      "sha256": "fa7e0ed136c3e1434cbf7b397e6ec3941feb80f3793ab97d4b337d1f34c58a13",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:02:50+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/355-avro-writable-buffer-limit/records/build-avro-root/build-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/build-avro-root/build-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/build-avro-root/fix-TEST-org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.xml.gz",
+      "examples/355-avro-writable-buffer-limit/records/build-avro-root/fix-upstream.json",
+      "examples/355-avro-writable-buffer-limit/records/build-avro-root/parent-TEST-org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.xml.gz",
+      "examples/355-avro-writable-buffer-limit/records/build-avro-root/parent-upstream.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/batch.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/bounds-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/bounds-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/direct-limit-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/direct-limit-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/full-length-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/full-length-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/prefix-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/prefix-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/rejected-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/20261121T095939Z-d4dfbd17/rejected-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/run.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-finite/workflow.log",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/bounds-fix/executions/20261121T100015Z-71d4b38e/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/bounds-parent/executions/20261121T100012Z-6c3cd14b/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/direct-limit-fix/executions/20261121T100044Z-de3b71f1/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/direct-limit-parent/executions/20261121T100041Z-71a28b6a/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/full-length-fix/executions/20261121T100037Z-93aeb81f/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/full-length-parent/executions/20261121T100033Z-33eb9b84/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/prefix-fix/executions/20261121T100028Z-d43772eb/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/prefix-parent/executions/20261121T100025Z-82da499c/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/rejected-fix/executions/20261121T100021Z-b9b55836/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/rejected-parent/executions/20261121T100018Z-e69f593f/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/replay/executions/20261121T100009Z-90ba79f7/attempt.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/run.json",
+      "examples/355-avro-writable-buffer-limit/records/baseline-native/workflow.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff"
+}

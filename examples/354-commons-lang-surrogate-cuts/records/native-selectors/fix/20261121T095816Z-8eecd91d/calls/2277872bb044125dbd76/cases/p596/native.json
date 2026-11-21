@@ -1,0 +1,138 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "verificationselectors.Calls#p596()",
+    "domain": "",
+    "assume": null,
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 96 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/native-selectors-1pb7mmaf/truncate-fix-p596/checker/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ verificationselectors.Calls#p596() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 96 times with unwinding assertions)\n",
+    "work": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/native-selectors-1pb7mmaf/truncate-fix-p596/checker",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.016821445,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 64,
+      "stage": null,
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 0,
+        "solving_seconds": 0.0,
+        "gates_evaluated": 0,
+        "evaluating_seconds": 0.0,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1,
+        "clauses": 1,
+        "seconds": 0.008898067,
+        "loading_seconds": 0.001542573,
+        "decoding_seconds": 0.000091547,
+        "encoding_seconds": 0.001409077,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 30.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 30.0,
+          "seconds": 0.009,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.002,
+            "lowering": 0.0,
+            "symbolic": 0.006,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.034,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.009,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.023
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "harness",
+        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+      }
+    }
+  }
+]

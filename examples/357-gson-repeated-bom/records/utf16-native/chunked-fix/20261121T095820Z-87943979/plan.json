@@ -1,0 +1,246 @@
+{
+  "plan": {
+    "example": "357",
+    "task": "chunked-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "chunked-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "file": "claims/chunked.json",
+      "sha256": "a6b258401bc57db490616d068f46160d02f1bbea55bbcf7c52d403ba467c4364",
+      "property": "chunked",
+      "claimKind": "property",
+      "statement": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units.",
+      "assume": "code >= 0 && code < 9",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "97343eea2b21f709fd249229834e44aa59290bfda92503d801803af6b44a087b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "6bc7dfb25ff1d9e735d6fb3646b479b07cb7936eccb583b460b5f7ba887b17ef"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.BomReader#chunked(I)I",
+        "mapping": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "key": "dc1fa015b7573258"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
+        "parent": "216c41b6e70dc04e6856418dd76bb00c854eb6b4",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "3b88804cf4d0f5591f4ec077c5f81643334d66aae03bcc8b906655c0df5745c1"
+        },
+        "adapters": [
+          "adapter/organic/BomReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/chunked-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-094513-357-utf16-native-checks-on-the-original/examples/357-gson-repeated-bom",
+    "network": true
+  },
+  "inputs": {
+    "example": "357",
+    "task": "chunked-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "chunked-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "file": "claims/chunked.json",
+      "sha256": "a6b258401bc57db490616d068f46160d02f1bbea55bbcf7c52d403ba467c4364",
+      "property": "chunked",
+      "claimKind": "property",
+      "statement": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units.",
+      "assume": "code >= 0 && code < 9",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "97343eea2b21f709fd249229834e44aa59290bfda92503d801803af6b44a087b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "6bc7dfb25ff1d9e735d6fb3646b479b07cb7936eccb583b460b5f7ba887b17ef"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.BomReader#chunked(I)I",
+        "mapping": "Only the initial mark is consumed across reads capped at one, two or one hundred UTF-16 units. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "key": "dc1fa015b7573258"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "845664ba1c307e6c1910d07cfed2f622e0ad8df1",
+        "parent": "216c41b6e70dc04e6856418dd76bb00c854eb6b4",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "3b88804cf4d0f5591f4ec077c5f81643334d66aae03bcc8b906655c0df5745c1"
+        },
+        "adapters": [
+          "adapter/organic/BomReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/BomReader.java",
+        "sha256": "8ce29f287551136624fd0db916a21862a59c3c7422737b48bc8e2c29557e34ca"
+      }
+    ]
+  },
+  "key": "9bdb191c7eb4eed5db366ba31c30343600713cfabee43616ffc076894c9d22a1"
+}

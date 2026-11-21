@@ -369,6 +369,39 @@ class UpstreamTest(UpstreamCase):
         prepared = self.prepare()
         self.assertEqual(prepared.failedStage, "classpath", prepared.diagnostic)
         self.assertIn("fixture.Gate", prepared.diagnostic)
+        plan = self.plan()
+        def ordered(name):
+            return dataclasses.replace(plan, artifacts=tuple({**a, "orderedClasses": [name]} for a in plan.artifacts))
+        original, = [a.path for a in prepared.artifacts if a.role == "original"]
+        dependencies = [a.path for a in prepared.artifacts if a.role == "dependency"]
+        with self.assertRaisesRegex(runtime.Refused, "fixture.Gate"):
+            runtime._check_classpath(plan, self.work / "after", [original, *dependencies], original, None,
+                                     ordered_classes=["fixture.Gate"], dependencies=dependencies)
+
+        # Hadoop publishes distinct annotations at the same package-info name in sibling JARs.
+        folder = self.dir / "annotations"
+        folder.mkdir()
+        info = folder / "package-info.java"
+        info.write_text('@Deprecated(since="provider_one") package example.meta;')
+        subprocess.run(["javac", "--release", "11", "-d", str(folder), str(info)], check=True)
+        name = "example/meta/package-info.class"
+        original = (folder / name).read_bytes()
+        self.assertEqual(original.count(b"provider_one"), 1)
+        deps = []
+        for label in ("one", "two"):
+            jar = self.dir / (label + ".jar")
+            with zipfile.ZipFile(jar, "w") as archive:
+                archive.writestr(name, original.replace(b"provider_one", ("provider_" + label).encode()))
+            deps.append([f"x/y/{label}/1/{label}-1.jar", str(jar)])
+        self.set_knobs(dependencies=deps)
+        result = self.prepare(plan=ordered("example.meta.package-info"), workdir=self.work / "ordered")
+        self.assertEqual(result.stage, "artifacts-ready", result.diagnostic)
+        target = result.source["target"]
+        contenders = target["orderedClasses"]["example.meta.package-info"]
+        self.assertNotEqual(contenders[0]["classSha256"], contenders[1]["classSha256"])
+        self.assertEqual(contenders[0], target["jvmClassOrigins"]["example.meta.package-info"])
+        self.assertTrue(contenders[0]["path"].endswith("/one-1.jar"))
+        self.assertTrue(target["jvmClassOriginJdks"])
 
     @cost("tool")
     def test_gradle_is_a_toolchain_blocker_naming_the_distribution_it_would_need(self):

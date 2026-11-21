@@ -147,11 +147,14 @@ def artifact_sources(folder, target, revisions):
                 entry["parent"] = revision["parent"]
         else:
             entry["fixture"] = revision["fixture"]
-        for key in ("fixtureClasspath", "orderedClasses"):
-            if key in defined[source]:
-                if route != "fixture":
-                    return f"revision {source}: {key} requires a fixture"
-                entry[key] = list(defined[source][key])
+        if "fixtureClasspath" in defined[source]:
+            if route != "fixture":
+                return f"revision {source}: fixtureClasspath requires a fixture"
+            entry["fixtureClasspath"] = list(defined[source]["fixtureClasspath"])
+        if "orderedClasses" in defined[source]:
+            if route not in ("fixture", "upstream-build"):
+                return f"revision {source}: orderedClasses requires a fixture or an upstream build"
+            entry["orderedClasses"] = list(defined[source]["orderedClasses"])
         if "fixtureCompiler" in defined[source]:
             compiler = defined[source]["fixtureCompiler"]
             if route != "fixture" or sidecar.slice_flag_problems(compiler["flags"]):

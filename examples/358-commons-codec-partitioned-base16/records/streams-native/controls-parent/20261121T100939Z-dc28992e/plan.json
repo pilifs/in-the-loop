@@ -1,0 +1,238 @@
+{
+  "plan": {
+    "example": "358",
+    "task": "controls-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "controls-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+      "file": "claims/controls.json",
+      "sha256": "78f50d82f7944437cf7d91bc085874d9b801f064761e58a7bf816612cee6717d",
+      "property": "controls",
+      "claimKind": "property",
+      "statement": "The one-write and 2+4+4 companion schedules return ABCDE.",
+      "assume": "code >= 2049 && code < 2051",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 8192
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 8192
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "871bea8f2645637d2b998642ad7c5206541245d2cf54cf513042e8b48423307a"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d3ac02404060a843c54d8cbfdcadc975a8426f9b8abe04dba072eda5827fddde"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.HexWrites#bytes(I)I",
+        "mapping": "The one-write and 2+4+4 companion schedules return ABCDE. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2051
+      },
+      "key": "70972e5d9235df76"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-codec",
+        "commit": "b22276db7282efa0794e2cca02a32006c0bca0dd",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "3fe9a054484cde8a156f131371930010fc80e590ed2190facbae27f6734c77cf"
+        },
+        "adapters": [
+          "adapter/organic/HexWrites.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/controls-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-095939-358-streams-native-checks-on-the-origina/examples/358-commons-codec-partitioned-base16",
+    "network": true
+  },
+  "inputs": {
+    "example": "358",
+    "task": "controls-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "controls-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+      "file": "claims/controls.json",
+      "sha256": "78f50d82f7944437cf7d91bc085874d9b801f064761e58a7bf816612cee6717d",
+      "property": "controls",
+      "claimKind": "property",
+      "statement": "The one-write and 2+4+4 companion schedules return ABCDE.",
+      "assume": "code >= 2049 && code < 2051",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 8192
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 8192
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "871bea8f2645637d2b998642ad7c5206541245d2cf54cf513042e8b48423307a"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d3ac02404060a843c54d8cbfdcadc975a8426f9b8abe04dba072eda5827fddde"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.HexWrites#bytes(I)I",
+        "mapping": "The one-write and 2+4+4 companion schedules return ABCDE. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 2051
+      },
+      "key": "70972e5d9235df76"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-codec",
+        "commit": "b22276db7282efa0794e2cca02a32006c0bca0dd",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "3fe9a054484cde8a156f131371930010fc80e590ed2190facbae27f6734c77cf"
+        },
+        "adapters": [
+          "adapter/organic/HexWrites.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/HexWrites.java",
+        "sha256": "aac5f02364e3f9a9f686bb0095d39bb9baa6a435b02f64cb38de7f4e3b2fb349"
+      }
+    ]
+  },
+  "key": "98e803fedb72951aefe859010472e3d9351167bb8eb60708c73737b5ea9a1929"
+}
