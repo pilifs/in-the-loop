@@ -1,0 +1,347 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-220624-array-induction-through-the-library-meth",
+  "title": "Array induction through the library method repeats the five stored results (336, 337, 346)",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 13.6s, peak 117.3 MiB (estimated 3m00s, 1.0 GiB)",
+  "attention": [
+    "step 1 (336 first-any-length) was held back 1.4s by its 1-CPU quota in 2.0s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (337 fill-any-length) was held back 2.9s by its 1-CPU quota in 3.0s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (337 caller-any-length) was held back 2.9s by its 1-CPU quota in 3.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 4 (337 caller-extra-any-length (negative control)) was held back 3.2s by its 1-CPU quota in 3.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 5 (346 first-any-length) was held back 1.7s by its 1-CPU quota in 1.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-220624-array-induction-through-the-library-meth.json",
+    "sha256": "d36977d80ebe266a89bfeb7b410a278496f6fadd2119c9ccc03bd8af37f479be",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-220624-array-induction-through-the-library-meth",
+      "title": "Array induction through the library method repeats the five stored results (336, 337, 346)",
+      "description": "The array-induction proof method moved from examples/tools/targets/array_induction.py into lib/python/jvm_array_induction.py (with the javap reader in lib/python/jvm_disassembly.py); the examples keep an adapter. Each of the five declared array contracts is proved again at this commit through the extracted method, into a scratch folder, and compared with the example's stored record of the same source: every named obligation with its expected and obtained solver answer, the cell and index widths, the class digests, the bytecode walked, the certificate's digest and the status. A step passes only when Z3 ran and the stored result is repeated. 337's caller-extra-any-length is the negative control: it must stay unresolved on 'caller read follows from the proved frame' (expected unsat, obtained sat), which the comparison counts as repeated. Nothing is written to an example.",
+      "kind": "example",
+      "capabilities": [
+        "native:array-invariant"
+      ],
+      "links": {
+        "examples": [
+          "336",
+          "337",
+          "346"
+        ],
+        "paths": [
+          "lib/python/jvm_array_induction.py",
+          "examples/tools/targets/array_induction.py"
+        ]
+      },
+      "expected": "Five steps exit 0, each printing 'the same result' against a stored record; the fourth also prints the one unmet obligation of the negative control.",
+      "submitted": {
+        "at": "2026-11-21T22:06:24+00:00",
+        "session": "b9b56f5e-fc0e-48ca-a64e-7a46495d814f"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "z3"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "3m",
+        "notes": "All five took 7 s together when probed inline on this machine; the estimate leaves room for a cold artifact preparation."
+      },
+      "steps": [
+        {
+          "name": "336 first-any-length",
+          "run": "python3 examples/tools/build.py 336 --array-induction first-any-length --checker-seconds 60 --compare",
+          "cwd": "."
+        },
+        {
+          "name": "337 fill-any-length",
+          "run": "python3 examples/tools/build.py 337 --array-induction fill-any-length --checker-seconds 60 --compare",
+          "cwd": "."
+        },
+        {
+          "name": "337 caller-any-length",
+          "run": "python3 examples/tools/build.py 337 --array-induction caller-any-length --checker-seconds 60 --compare",
+          "cwd": "."
+        },
+        {
+          "name": "337 caller-extra-any-length (negative control)",
+          "run": "set -o pipefail; python3 examples/tools/build.py 337 --array-induction caller-extra-any-length --checker-seconds 60 --compare | tee /dev/stderr | grep -q 'unmet: caller read follows from the proved frame: expected unsat, obtained sat'",
+          "cwd": "."
+        },
+        {
+          "name": "346 first-any-length",
+          "run": "python3 examples/tools/build.py 346 --array-induction first-any-length --checker-seconds 60 --compare",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "a812c9bdb4071000527ca27b54f9657b9d871f69",
+  "startedAt": "2026-11-21T22:11:33+00:00",
+  "finishedAt": "2026-11-21T22:11:54+00:00",
+  "wallSeconds": 21.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1525772,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": "All five took 7 s together when probed inline on this machine; the estimate leaves room for a cold artifact preparation."
+  },
+  "usage": {
+    "peakMemoryBytes": 123043840,
+    "wallSeconds": 13.6,
+    "cpuSeconds": 12.8,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "336 first-any-length",
+      "run": "python3 examples/tools/build.py 336 --array-induction first-any-length --checker-seconds 60 --compare",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 2.005,
+      "cpuSeconds": 1.804,
+      "cpuThrottledSeconds": 1.369,
+      "peakMemoryBytes": 119566336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-336-first-any-length.log",
+        "lines": 3,
+        "bytes": 442,
+        "sha256": "10937a5904c0c92b881ed4b3a271fc6f528ee7727e9a74d37bc1e70ca76c6bbc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 10 solver answers, /tmp/tmp6lwx8f2j/first-any-length/4396f8e89adf63fa0f2a",
+        "first-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/first-any-length/58996c50200b0046ffaa: the same result",
+        "first-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "337 fill-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction fill-any-length --checker-seconds 60 --compare",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 3.007,
+      "cpuSeconds": 2.842,
+      "cpuThrottledSeconds": 2.873,
+      "peakMemoryBytes": 106577920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-337-fill-any-length.log",
+        "lines": 3,
+        "bytes": 437,
+        "sha256": "766f8a22e880734f2b869116b335d2a0a758ae7e661b74a83e3c808297f09dd8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fill-any-length: established, 10 solver answers, /tmp/tmp0d0lf7af/fill-any-length/2d90b3f81c39016d9940",
+        "fill-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/fill-any-length/6b85ebd4829039081f32: the same result",
+        "fill-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "337 caller-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction caller-any-length --checker-seconds 60 --compare",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 3.408,
+      "cpuSeconds": 3.203,
+      "cpuThrottledSeconds": 2.893,
+      "peakMemoryBytes": 120500224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-337-caller-any-length.log",
+        "lines": 3,
+        "bytes": 447,
+        "sha256": "33bed297b320924316428ec55968f67ef4c5f11b1dc640ccc878ad1caea9a0bc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "caller-any-length: established, 12 solver answers, /tmp/tmpt7o6wg2p/caller-any-length/b1925f82d49b5e512f17",
+        "caller-any-length: established, 12 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/caller-any-length/2bf9f7a7d6d4481dc137: the same result",
+        "caller-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "337 caller-extra-any-length (negative control)",
+      "run": "set -o pipefail; python3 examples/tools/build.py 337 --array-induction caller-extra-any-length --checker-seconds 60 --compare | tee /dev/stderr | grep -q 'unmet: caller read follows from the proved frame: expected unsat, obtained sat'",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 3.409,
+      "cpuSeconds": 3.18,
+      "cpuThrottledSeconds": 3.153,
+      "peakMemoryBytes": 123043840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-337-caller-extra-any-length-ne.log",
+        "lines": 4,
+        "bytes": 579,
+        "sha256": "4df23512f8c8cf839a0f14c1ad1b7ec4068e3d19f4fe906fa5ad989001bf125a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "caller-extra-any-length: unresolved, 14 solver answers, /tmp/tmpdhbiggka/caller-extra-any-length/1d470cb3534a5c7df1c7",
+        "caller-extra-any-length: unresolved, 14 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/caller-extra-any-length/98d5d5ae53cf2d12ce0c: the same result",
+        "caller-extra-any-length: unmet: caller read follows from the proved frame: expected unsat, obtained sat",
+        "caller-extra-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "346 first-any-length",
+      "run": "python3 examples/tools/build.py 346 --array-induction first-any-length --checker-seconds 60 --compare",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 1.804,
+      "cpuSeconds": 1.776,
+      "cpuThrottledSeconds": 1.673,
+      "peakMemoryBytes": 104869888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-346-first-any-length.log",
+        "lines": 4,
+        "bytes": 611,
+        "sha256": "9dc9769099becee07d7f84436e5008ae1eed7c6a6e78c11fe5be4c5d5289c1dc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 11 solver answers, /tmp/tmpuabhgwgc/first-any-length/bd44ba74c9da6a37ad4b",
+        "first-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/0e84bb986daf03cbffef: the same result",
+        "first-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/30437c63909c329614e6: the same result",
+        "first-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-21T22:12:18+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T221154Z-567656e8e728426b"
+    }
+  }
+}

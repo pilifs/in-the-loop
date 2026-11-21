@@ -2,6 +2,45 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261121-220624-array-induction-through-the-library-meth",
+      "title": "Array induction through the library method repeats the five stored results (336, 337, 346)",
+      "status": "passed",
+      "summary": "passed: 5 passed step(s) in 13.6s, peak 117.3 MiB (estimated 3m00s, 1.0 GiB)",
+      "attention": [
+        "step 1 (336 first-any-length) was held back 1.4s by its 1-CPU quota in 2.0s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (337 fill-any-length) was held back 2.9s by its 1-CPU quota in 3.0s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 3 (337 caller-any-length) was held back 2.9s by its 1-CPU quota in 3.4s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 4 (337 caller-extra-any-length (negative control)) was held back 3.2s by its 1-CPU quota in 3.4s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 5 (346 first-any-length) was held back 1.7s by its 1-CPU quota in 1.8s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "native:array-invariant"
+      ],
+      "links": {
+        "examples": [
+          "336",
+          "337",
+          "346"
+        ],
+        "paths": [
+          "lib/python/jvm_array_induction.py",
+          "examples/tools/targets/array_induction.py"
+        ]
+      },
+      "sourceCommit": "a812c9bdb4071000527ca27b54f9657b9d871f69",
+      "finishedAt": "2026-11-21T22:11:54+00:00",
+      "wallSeconds": 13.6,
+      "peakMemoryBytes": 123043840,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 1073741824,
+        "durationSeconds": 180.0,
+        "notes": "All five took 7 s together when probed inline on this machine; the estimate leaves room for a cold artifact preparation."
+      },
+      "host": "vm-1",
+      "result": "20261121-220624-array-induction-through-the-library-meth/result.json"
+    },
+    {
       "id": "20261121-195020-345-native-selectors-with-the-built-chec",
       "title": "345 native selectors with the built checker: the run packs its per-case output and the packed record validates",
       "status": "passed",
