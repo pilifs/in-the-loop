@@ -20,7 +20,8 @@ public final class TreeOrder {
         CompilationUnit root = tree(code);
         Node[] want = expected(root, post);
         try {
-            List<Node> got = root.findAll(Node.class, post ? Node.TreeTraversal.POSTORDER : Node.TreeTraversal.PREORDER);
+            Node receiver = root;
+            List<Node> got = receiver.findAll(Node.class, post ? Node.TreeTraversal.POSTORDER : Node.TreeTraversal.PREORDER);
             if (got.size() != want.length) return 0;
             for (int i = 0; i < want.length; i++) if (got.get(i) != want[i]) return 0;
             return 1;

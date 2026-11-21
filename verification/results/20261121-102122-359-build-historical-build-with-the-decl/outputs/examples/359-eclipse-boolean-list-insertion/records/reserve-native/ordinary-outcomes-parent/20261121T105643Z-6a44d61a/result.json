@@ -1,0 +1,444 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "282b54159da5a327",
+    "format": 1,
+    "example": "359",
+    "statement": {
+      "approach": "target",
+      "task": "ordinary-outcomes-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "ordinary-outcomes-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+        "file": "claims/ordinary-outcomes.json",
+        "sha256": "40063124a2675ff47b39096f87ce8ec1bed3f5be56d87f199ae39c716e704f80",
+        "property": "ordinary-outcomes",
+        "claimKind": "property",
+        "statement": "The original indices two, three and four retain the expected return or rejection.",
+        "assume": "code >= 942 && code < 945",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 64
+        },
+        "explicitBounds": {
+          "unwind": 96,
+          "maxArrayLength": 64
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/organic/Cases.java",
+            "sha256": "b874ed5a092c0f8cf566636f6e5ee6a6089c12a351e8c437bcd7c27e864f866c"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "5dde4d874924fb52bd10bbf7ee53e5578c41cd378a89b28c7f74cc6d4314d303"
+          }
+        ],
+        "adapter": {
+          "entry": "organic.InsertBits#returns(I)I",
+          "mapping": "The original indices two, three and four retain the expected return or rejection. Its original receiver and direct outcome are indexed in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2865
+        },
+        "key": "67e289ed6f58e436"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 64
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "ordinary-outcomes-parent",
+      "sidecar": "2b97e8f56fe81902ca1e30256ce2e49dd10edc6f311b4b97294d51ed581d0843",
+      "revisions": {
+        "parent": "8a34cc65bd5449e4f45c9c39e75d7d92ec2717e6"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "589872431e831ccfdb7030911d4a6e83d76fbf69f5e7064919da3d3c43db59ac"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "61eb265a42c5a186ab435a1d8dc5d9bc35fac20c327ec51094b84009ad3679f7"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "c628b4efe382d596b0fd41960019640d2b2be6c63690e5ee7cd82de580b88a8b"
+        },
+        {
+          "revision": "parent",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "5a95f8c6b49996fa0dfe81d930ea59ee13dc23b5bedf899988ee0446eafdf3ae",
+          "coordinates": "org.eclipse.collections:eclipse-collections-api:12.0.0-SNAPSHOT"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/organic/InsertBits.java": "909546422a25f06531060807632d9a7e61a90877bf9a773c0806eca713891ee3",
+        "claims/ordinary-outcomes.json": "40063124a2675ff47b39096f87ce8ec1bed3f5be56d87f199ae39c716e704f80",
+        "controls/table.json": "5dde4d874924fb52bd10bbf7ee53e5578c41cd378a89b28c7f74cc6d4314d303",
+        "driver/organic/Cases.java": "b874ed5a092c0f8cf566636f6e5ee6a6089c12a351e8c437bcd7c27e864f866c"
+      },
+      "claimKey": "67e289ed6f58e436"
+    }
+  },
+  "attempt": {
+    "id": "20261121T105643Z-6a44d61a",
+    "claim": "282b54159da5a327",
+    "startedAt": "2026-11-21T10:56:43+00:00",
+    "seconds": 0.3,
+    "engine": "native",
+    "options": [
+      "prove",
+      "organic.InsertBits#returns(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/org/eclipse/collections/eclipse-collections-api/12.0.0-SNAPSHOT/eclipse-collections-api-12.0.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 942 && code < 945",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "15e32d8b0bb81586c2a4cd37b1aa8eb8b2382d8ed4ee938af3981f00ebf9bc9f"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "c93bf01782bb39b079576dd3f57019863b2212a3c9876739bd234369e00411ac",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261121-102122-359-build-historical-build-with-the-decl",
+      "sourceCommit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-102122-359-build-historical-build-with-the-decl"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.265,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.062,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 96,
+      "maxArrayLength": 64,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "282b54159da5a327",
+    "attempt": "20261121T105643Z-6a44d61a",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 942 && code < 945",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.BitSet.<init>(I)V@jdk-21.0.13 (java.util.BitSet.<init>(int) at org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.<init>:73). With --gaps assume it assumes instead that java.util.BitSet.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.027,
+            "properties": 1,
+            "unwind": 96,
+            "maxArrayLength": 64,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.015,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.004,
+                  "solving": 0.004,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 7127,
+                  "clauses": 24575
+                }
+              }
+            ],
+            "native": {
+              "paths": 3,
+              "merges": 0,
+              "solverCalls": 25,
+              "solvingSeconds": 0.004001351,
+              "gatesEvaluated": 1722,
+              "evaluatingSeconds": 4.2698e-05,
+              "divisions": 1,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 7127,
+              "clauses": 24575,
+              "seconds": 0.015397417,
+              "loadingSeconds": 0.001347974,
+              "decodingSeconds": 9.6581e-05,
+              "encodingSeconds": 0.004075959,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.util.BitSet.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.BitSet.<init>(int)",
+                "sites": [
+                  "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.<init>:73"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 942 && code < 945",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.BitSet.<init>(I)V@jdk-21.0.13 (java.util.BitSet.<init>(int) at org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList.<init>:73). With --gaps assume it assumes instead that java.util.BitSet.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 942 && code < 945"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "ecff85404ad2665e6fe0663a4fc2d1d7888143261dd3c29abed4f96000ff1beb",
+        "bytes": 628478
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+        "bytes": 551
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "a39491fe2e9301a3bda817bf204809cf7a17be1e6defa7a3ceb1d0a78b7bb7b7",
+        "bytes": 1974
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+        "bytes": 524288
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "589e656b984101b693f491f0f2080ca9ce84279f38ecf2bfed5d427ace2da575",
+        "bytes": 524288
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "6ae0f1d8714aba1305f9af539d16071dd131ce0a23300d5ee8d71e878d14c341",
+        "bytes": 6266
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "c6bc7a484ebe27f787a25f6614357bb135c348c089263ba0003f06e5c8ce9467",
+        "bytes": 17028
+      }
+    ]
+  }
+}

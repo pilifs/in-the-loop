@@ -1,0 +1,240 @@
+{
+  "plan": {
+    "example": "354",
+    "task": "truncate-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "truncate-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "file": "claims/truncate.json",
+      "sha256": "d66b5bfec37afa85010aeb6c4979f90e0f5802f134b52bc94c1fbc88c3bc890d",
+      "property": "truncate",
+      "claimKind": "property",
+      "statement": "All strings of up to four a or grin tokens retain exactly the complete tokens in the requested offset and width.",
+      "assume": "code >= 0 && code < 1515",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "8e0f84b4b3b7cc40d16da048d3515ce6f12b67bb7634e5cdb68647728fac4a07"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SurrogateCuts#truncate(I)I",
+        "mapping": "All strings of up to four a or grin tokens retain exactly the complete tokens in the requested offset and width. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 1515
+      },
+      "key": "ea59dde270b77f97"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "75d85a807d7b66da432a822de6fc75c48134decf",
+        "parent": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "d13c775114ef73c16f962ba18d4e2942ae253a43f7954f835486526c5f40a50b"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/truncate-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-102303-354-final-native-checks-on-the-original/examples/354-commons-lang-surrogate-cuts",
+    "network": true
+  },
+  "inputs": {
+    "example": "354",
+    "task": "truncate-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "truncate-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "file": "claims/truncate.json",
+      "sha256": "d66b5bfec37afa85010aeb6c4979f90e0f5802f134b52bc94c1fbc88c3bc890d",
+      "property": "truncate",
+      "claimKind": "property",
+      "statement": "All strings of up to four a or grin tokens retain exactly the complete tokens in the requested offset and width.",
+      "assume": "code >= 0 && code < 1515",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "8e0f84b4b3b7cc40d16da048d3515ce6f12b67bb7634e5cdb68647728fac4a07"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SurrogateCuts#truncate(I)I",
+        "mapping": "All strings of up to four a or grin tokens retain exactly the complete tokens in the requested offset and width. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 1515
+      },
+      "key": "ea59dde270b77f97"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "75d85a807d7b66da432a822de6fc75c48134decf",
+        "parent": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "d13c775114ef73c16f962ba18d4e2942ae253a43f7954f835486526c5f40a50b"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/SurrogateCuts.java",
+        "sha256": "cbe0ae15444393462b5d1f2b538ec4ab16ed55b1a08194208782690d5df4314e"
+      }
+    ]
+  },
+  "key": "e80087771370d245a6b479ee71bea5030976f74761a578282db14143d669b52c"
+}

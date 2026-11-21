@@ -1,0 +1,109 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261121T104934Z-6461a4ad",
+  "task": "preorder-parent",
+  "claimKey": "62e6583918e0de39",
+  "revisions": [
+    "parent"
+  ],
+  "startedAt": "2026-11-21T10:49:34.411162+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261121-102122-360-build-historical-build-with-the-decl",
+  "sourceCommit": "5e41cd71ab872a626179c02914aaae9f812c2c8c",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0014
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.003
+    }
+  ],
+  "status": "refused",
+  "lastCompletedStage": "controls-returned",
+  "bindings": {
+    "parent": {
+      "revision": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+      "target": {
+        "class": "com.github.javaparser.ast.Node",
+        "method": "findAll",
+        "descriptor": "(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+        "loadedFrom": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+        "classSha256": "f32a7828ec7e1bdecbf5a0f8d5c18f2b14de26e6720d17940c97c569846f3b5b",
+        "adapterCalls": [
+          "com.github.javaparser.ast.CompilationUnit#<init>()V",
+          "com.github.javaparser.ast.CompilationUnit#<init>(Ljava/lang/String;)V",
+          "com.github.javaparser.ast.CompilationUnit#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+          "com.github.javaparser.ast.CompilationUnit#getPackageDeclaration()Ljava/util/Optional;",
+          "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+          "com.github.javaparser.ast.PackageDeclaration#getName()Lcom/github/javaparser/ast/expr/Name;"
+        ],
+        "adapterCallsTarget": false
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "87b9c6f47b572e0e9a3ba9d25e21e84cb5d6996bb7fc075ee33ba80473276c15",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "1234b280c65cac3aa567ae15fdabfaf5a45e7a2ca725b89de03cf5314e2502fc",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+          "sha256": "cbe961009b6fafe13085b895a486660a470485ac34316043e20df41188f446a8",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/javaparser/javaparser at e0eb16b8870fc05c03ab794e502dd76f97422e26: javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "792bc1f3db5368b266f6e706cdfe300b4afbd95991557a7f83803b7c73942ada",
+  "refusal": {
+    "interface": "run-controls",
+    "owner": "example-targets-runtime",
+    "reason": "parent lacks a prepared adapter calling the upstream target",
+    "stage": "adapter-correspondence",
+    "diagnostic": null
+  },
+  "injected": false,
+  "endedAt": "2026-11-21T10:49:34.415506+00:00"
+}

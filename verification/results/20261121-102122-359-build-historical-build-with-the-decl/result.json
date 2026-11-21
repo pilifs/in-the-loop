@@ -1,0 +1,2581 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-102122-359-build-historical-build-with-the-decl",
+  "title": "359 build-historical build with the declared Maven JDKs and original named tests",
+  "status": "failed",
+  "summary": "failed: 2 passed, 2 failed step(s) in 10m12s, peak 3.4 GiB (estimated 15m00s, 3.0 GiB); 285 output file(s) changed",
+  "attention": [
+    "step 1 (Build and test both pinned revisions) was held back 22m42s by its 2-CPU quota in 6m50s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (Verify baseline native on the original entry) exited 1, expected 0",
+    "step 4 (Verify reserve native on the original entry) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-102122-359-build-historical-build-with-the-decl.json",
+    "sha256": "ddf2f334f081b8de2f349ca993154391dd08d76f0f13471e08b3c92e06e61911",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-102122-359-build-historical-build-with-the-decl",
+      "title": "359 build-historical build with the declared Maven JDKs and original named tests",
+      "description": "Provide the actual compilers selected by the original Maven POM while verifying the application under JDK 21. Retain both fresh named test reports, the compiled class and ordered dependencies including the declared Hadoop host where applicable. Use the upstream's Java 8-era build on JDK 17 and run public observations on JDK 21. Recheck both the frozen baseline and the repaired checker, keeping every original refusal.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr"
+      ],
+      "links": {
+        "examples": [
+          "359"
+        ]
+      },
+      "expected": "Original modules built and assertions fail on the parent and pass on the fix.",
+      "submitted": {
+        "at": "2026-11-21T10:21:22+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "maven",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "15m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Build and test both pinned revisions",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/359-eclipse-boolean-list-insertion/records/build-historical",
+          "cwd": "."
+        },
+        {
+          "name": "Verify reserve finite on the original entry",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --bind-existing --output examples/359-eclipse-boolean-list-insertion/records/build-historical && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 359 --stage reserve --route finite --seconds 180",
+          "cwd": "."
+        },
+        {
+          "name": "Verify baseline native on the original entry",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --bind-existing --output examples/359-eclipse-boolean-list-insertion/records/build-historical && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 359 --stage baseline --route native --seconds 60",
+          "cwd": "."
+        },
+        {
+          "name": "Verify reserve native on the original entry",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --bind-existing --output examples/359-eclipse-boolean-list-insertion/records/build-historical && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 359 --stage reserve --route native --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/359-eclipse-boolean-list-insertion/records/build-historical",
+        "examples/359-eclipse-boolean-list-insertion/records/reserve-finite",
+        "examples/359-eclipse-boolean-list-insertion/records/baseline-native",
+        "examples/359-eclipse-boolean-list-insertion/records/reserve-native"
+      ],
+      "stopOnFailure": false
+    }
+  },
+  "sourceCommit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+  "startedAt": "2026-11-21T10:43:40+00:00",
+  "finishedAt": "2026-11-21T10:56:47+00:00",
+  "wallSeconds": 787.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 757440,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3697627136,
+    "wallSeconds": 612.6,
+    "cpuSeconds": 978.3,
+    "memoryOfEstimate": 1.15,
+    "durationOfEstimate": 0.68
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and test both pinned revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/359-eclipse-boolean-list-insertion/records/build-historical",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 410.568,
+      "cpuSeconds": 749.728,
+      "cpuThrottledSeconds": 1362.95,
+      "peakMemoryBytes": 3697627136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-test-both-pinned-rev.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "52b97e71b57c5249e76685682803e1fec9d4a47cc2a050b287586c70290cb49e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "359 parent qualified",
+        "359 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Verify reserve finite on the original entry",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --bind-existing --output examples/359-eclipse-boolean-list-insertion/records/build-historical && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 359 --stage reserve --route finite --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 99.045,
+      "cpuSeconds": 117.716,
+      "cpuThrottledSeconds": 1.871,
+      "peakMemoryBytes": 408313856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-verify-reserve-finite-on-the-o.log",
+        "lines": 1,
+        "bytes": 625,
+        "sha256": "6f77eb83045bd13b2c9b73e9befc6bc07e74e49fd143b57e58db9f9576e7d53c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"359\", \"route\": \"finite\", \"stage\": \"reserve\", \"workflowExit\": 0, \"seconds\": 98.828, \"checkerSeconds\": 180, \"tasks\": [\"returns-parent\", \"returns-fix\", \"contents-parent\", \"contents-fix\", \"ordinary-outcomes-parent\", \"ordinary-outcomes-fix\", \"ordinary-contents-parent\", \"ordinary-contents-fix"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Verify baseline native on the original entry",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --bind-existing --output examples/359-eclipse-boolean-list-insertion/records/build-historical && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 359 --stage baseline --route native --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 49.9,
+      "cpuSeconds": 53.646,
+      "cpuThrottledSeconds": 0.604,
+      "peakMemoryBytes": 310849536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-verify-baseline-native-on-the.log",
+        "lines": 1,
+        "bytes": 635,
+        "sha256": "b2ef6b32b0adb20f66239cfc449325a1a2d8cc696c20eabd005339dff0d399bd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"359\", \"route\": \"native\", \"stage\": \"baseline\", \"workflowExit\": 1, \"seconds\": 49.184, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"returns-parent\", \"returns-fix\", \"contents-parent\", \"contents-fix\", \"ordinary-outcomes-parent\", \"ordinary-outcomes-fix\", \"ordinary-contents-parent\", \"ordinary-co"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Verify reserve native on the original entry",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 359 --bind-existing --output examples/359-eclipse-boolean-list-insertion/records/build-historical && ORGANIC_SOURCE_REPOSITORY=\"/home/filip/code/in-the-loop\" python3 lib/benchmark/organic-java/run.py 359 --stage reserve --route native --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 53.133,
+      "cpuSeconds": 57.211,
+      "cpuThrottledSeconds": 0.494,
+      "peakMemoryBytes": 274255872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-verify-reserve-native-on-the-o.log",
+        "lines": 1,
+        "bytes": 634,
+        "sha256": "d0f605c169826cee6e9f2a9371591523f61d675a9d0180c869f910ad443495e8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"359\", \"route\": \"native\", \"stage\": \"reserve\", \"workflowExit\": 1, \"seconds\": 52.784, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"returns-parent\", \"returns-fix\", \"contents-parent\", \"contents-fix\", \"ordinary-outcomes-parent\", \"ordinary-outcomes-fix\", \"ordinary-contents-parent\", \"ordinary-con"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/build-historical/build-fix.json",
+      "change": "added",
+      "bytes": 13993,
+      "sha256": "7f892e894cb7d3e251a48dd5d8e280a6e9931ace1d2d08c240523a6f4eeb9d8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/build-historical/build-parent.json",
+      "change": "added",
+      "bytes": 13827,
+      "sha256": "7be8b2a660fc6b5ef208f0ad361239dc14749853cd146975e0c009ed119e3b07",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/build-historical/fix-TEST-org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayListTest.xml.gz",
+      "change": "added",
+      "bytes": 1487,
+      "sha256": "ec1ba430eb07f42a71ed48b31352631fe50c670719ec554e98ad87106c4530f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/build-historical/fix-upstream.json",
+      "change": "added",
+      "bytes": 14992,
+      "sha256": "2fa2916cbfdb282607b46881b8e351f6b5d3616d5cc13a0526fc10010ec1b1e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/build-historical/parent-TEST-org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayListTest.xml.gz",
+      "change": "added",
+      "bytes": 1588,
+      "sha256": "e6f972270769e264cfd15a2c083995061595462cee22cb33015816d609dab91b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/build-historical/parent-upstream.json",
+      "change": "added",
+      "bytes": 15542,
+      "sha256": "6916b90bd81236837aa1e797ae4e09315707bce5dd04639c5235eb959b2767ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/batch.json",
+      "change": "added",
+      "bytes": 4868,
+      "sha256": "07abcf8ad7317cdb39c667a5637d9087bbeb6e99f18d79bf1d43e209b534c344",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/contents-fix.json",
+      "change": "added",
+      "bytes": 505205,
+      "sha256": "02b4c9c50689bad690c110570361337ae5364ddacd180e623e9d6f662f79bcf8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/contents-parent.json",
+      "change": "added",
+      "bytes": 507961,
+      "sha256": "5b7d5d84030135bd609d6894ef86622eaa356d4c76b002fa3f2d30f66d127552",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-contents-fix.json",
+      "change": "added",
+      "bytes": 5421,
+      "sha256": "8c2c22f7d8e0438c2278cfad3dd04bb09645f96c393d4e4791c53eb3b0517ce5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-contents-parent.json",
+      "change": "added",
+      "bytes": 5442,
+      "sha256": "7542dde5f05670e07ac28602df68be6b58548f37c253d3671e8cf1cd3f0cfc7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-outcomes-fix.json",
+      "change": "added",
+      "bytes": 5425,
+      "sha256": "c219ed79f0369ac80091ea103bb5e6dd04e0136673e23910bf6babdb3c35a03d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-outcomes-parent.json",
+      "change": "added",
+      "bytes": 5446,
+      "sha256": "a1d7dca06f380e6e79eee5c4701b23c4c5c4d22f03d656b6243a0ac230553a13",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/returns-fix.json",
+      "change": "added",
+      "bytes": 505158,
+      "sha256": "68b2c202153e8bf95419f595c8470b8dfb531fe9a98a593de8af15bee766be34",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/returns-parent.json",
+      "change": "added",
+      "bytes": 507912,
+      "sha256": "ad8fc37114ce1ffabfba9f0ec5642d5a99b694cc799170d52842f695de0c101a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/run.json",
+      "change": "added",
+      "bytes": 695,
+      "sha256": "2245b15c3cb158009cc2f850473d31f59cf3c26968e1b1691ca57a5a0091e0a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/workflow.log",
+      "change": "added",
+      "bytes": 378,
+      "sha256": "b6895bdec0ea8f2c4ef5bfe547a0c44abee6f76e1bd754edc3e745a83f07204c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "07f17944f9f93d1808145f133c2e52b701a34ecfbec9335e121e721f22bf402c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/plan.json",
+      "change": "added",
+      "bytes": 7531,
+      "sha256": "7193b4d075a54d51264f79110f7e08e268e6ac24abd72a9f2feaf1df634388d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "00ba4924caa69eeb111408e15c768bdd8d976fb8dd22760cd7f5327341e7348d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/execution.json",
+      "change": "added",
+      "bytes": 628847,
+      "sha256": "e1cb327adbaac93e8242be21f434aa6d0d4c11ad8a07d5cf1e607e9c5ee34abe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "8dc768bd955d111c3dd7481b5faf922d154fb3a7218a4d8a79bad8516efeeb59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier.json",
+      "change": "added",
+      "bytes": 17181,
+      "sha256": "26db70d9f834112f3d54d87cd5231657d310207c62a6ce91c8aad16768df596a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6282,
+      "sha256": "a87ec79d6b06a5201b5bdb65102aa66604abd9b2922c64e37ffacd1563fff1f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/result.json",
+      "change": "added",
+      "bytes": 15275,
+      "sha256": "8a67085f6bc2be7d698767acbb671a4cb6a75cb6ee78d37b9f222a2a2fce8bcf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/executions/20261121T105538Z-8c71b218/attempt.json",
+      "change": "added",
+      "bytes": 14135,
+      "sha256": "23d3f2cb03f2bd7ec497de2ac9c22b10efa59916a670cdedf732820878f9ca3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/executions/20261121T105538Z-8c71b218/checker.json",
+      "change": "added",
+      "bytes": 7763,
+      "sha256": "b6f7ccb0591fe65ecba8e26a070996d6693177635df46fbc1c96d79de983bb75",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/executions/20261121T105538Z-8c71b218/correspondence.json",
+      "change": "added",
+      "bytes": 1504,
+      "sha256": "89e24e52409aaf278c8bd5306529268ff9cc2a5964a3e79da1cfcdb319c992c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6cf0fdfff44df9c64263a2d404b4b1ccec293a627bdd2985fd5cdacaf6fff5a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/plan.json",
+      "change": "added",
+      "bytes": 7436,
+      "sha256": "cdc369e3c12f8ec429cee1a4e952f1fdbd33b4a3b6aee43130d0bfcf4fbcc7cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "cac27170ea1a3ae27b5f0439ee6e43d8494cfe7c39b96f7327bc6fe28b3a0392",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/execution.json",
+      "change": "added",
+      "bytes": 628692,
+      "sha256": "cb747d56e498561c7a743b50b5b1037efe30ec7d0d9ddfdf599f54c85b1a5b1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "0b41958d0fcdd86172d1a6a99dbfd36ebdac3a8b3d466e8e7a9d071693505c6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier.json",
+      "change": "added",
+      "bytes": 17241,
+      "sha256": "9bc31dee9aaa8584053c14db217fb2de29783499d8b6625d0e54172166495da3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6279,
+      "sha256": "1ecb9a325292caf67ba05c01e6714c6cd0cc66916ec7dc22adc35ab3e865c616",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/result.json",
+      "change": "added",
+      "bytes": 15327,
+      "sha256": "60cd9fd2051dae425348543574747cf628b6cbd65c8f8225c02703a1c6d4d365",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/executions/20261121T105529Z-855f7e6b/attempt.json",
+      "change": "added",
+      "bytes": 14198,
+      "sha256": "6eb55b81550a557d7de3ab5d9284e73b001c82fd1d98798f8609208607e2ada3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/executions/20261121T105529Z-855f7e6b/checker.json",
+      "change": "added",
+      "bytes": 7772,
+      "sha256": "21a4872c5a3f22b936df4d28849d89f4690ca9adbdb6adcf86d3613c045e6887",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/executions/20261121T105529Z-855f7e6b/correspondence.json",
+      "change": "added",
+      "bytes": 1507,
+      "sha256": "9ba3b30ff25712c298ceebb51c2ea38d6983c298295cbd81ce20bf37475b223a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2859f8320873ae5ca94e9984f343aede0923cb6ee0630f4dc7e684856a3df58b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/plan.json",
+      "change": "added",
+      "bytes": 7434,
+      "sha256": "670c86767cf45f7b216cfe14e6134adfe18187eb7017bcd8f3ac73f0bd29d08a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "09a0cfaa65f30b7ca1509177e3bb25c067cc7cc62b7b8bc0eee61d8a0afa3fd5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/execution.json",
+      "change": "added",
+      "bytes": 628709,
+      "sha256": "27b36a32bedf98a26db194964f2c7119a190cd7a67e9b4a9fbe4d9e6ad8f1a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "453a1f530651597cc299b6e401467792199e6c2a6e030efcb9fe874047deb77a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier.json",
+      "change": "added",
+      "bytes": 17061,
+      "sha256": "90f313ab0760774142138b0aa222b9b98e99c6384f345c06a4ec5617b76f1e0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6269,
+      "sha256": "2d8e5078d846b901e3fcd56f34a19f6a7b7d60b5d378d029247fa3093ed33e68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/result.json",
+      "change": "added",
+      "bytes": 15227,
+      "sha256": "400027c07401a0a75ecda0a34a30b0a8f422e2a669027540f77c5c53927b1f2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/executions/20261121T105552Z-8978d7e7/attempt.json",
+      "change": "added",
+      "bytes": 14017,
+      "sha256": "147f1c88b919ecaf80e0362ac6d1b553620a46e5cb70be416106a84bc85b4d2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/executions/20261121T105552Z-8978d7e7/checker.json",
+      "change": "added",
+      "bytes": 7750,
+      "sha256": "59c3d11e1445d8dce35d69165b3c337b4d83acd333b04c6b8632648fe5f82a54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/executions/20261121T105552Z-8978d7e7/correspondence.json",
+      "change": "added",
+      "bytes": 1459,
+      "sha256": "6da8f933832e64cd2c9455b788d2bf06415d74c06adbfd8b1f71a2421538093e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ebe0b75b2d4314b9a81cfbf4982d09a414e539373f6691fb463fe79cc56b6c2b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/plan.json",
+      "change": "added",
+      "bytes": 7343,
+      "sha256": "0f6aaf0451046c215a4aff6fbb14db04c2598f5fdf523ca3c71cd9fedd4aa0b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "92e6d97c268d5115421c16ea6def4a36807c22514154bf5448a7ab2fdebb29b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/execution.json",
+      "change": "added",
+      "bytes": 628558,
+      "sha256": "f1f017c63764ea1bcd3eb182f3153651d3cc6611b72ccf027c78a24c9549b512",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "b7331eb6e67f215389838f68f4d13eae8ed1cd9803b46357d37c5e631f5cfc05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier.json",
+      "change": "added",
+      "bytes": 17125,
+      "sha256": "ebe53ce726d512baa71aa4bad046f83940c30663097ab4af07c1c5bd431a6aca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6270,
+      "sha256": "4b04104e6858612fc50d260d054bec632b6d3e706c5169e748921247b0db1a43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/result.json",
+      "change": "added",
+      "bytes": 15288,
+      "sha256": "ecc88b2eb89c04b1e55b0ad52bfa5f41dc0c3658ddb7b401d628c666f475e593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/executions/20261121T105551Z-90cf0424/attempt.json",
+      "change": "added",
+      "bytes": 14084,
+      "sha256": "67cc3a476b6eff90cd90cb6ef20b9157b3d0399c955c121dcf4810839c65ffb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/executions/20261121T105551Z-90cf0424/checker.json",
+      "change": "added",
+      "bytes": 7763,
+      "sha256": "bc0f11c92b7baae1a68c6c3b9a3cf4e8ec30264607a685bc41e2436e77cb9f4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/executions/20261121T105551Z-90cf0424/correspondence.json",
+      "change": "added",
+      "bytes": 1462,
+      "sha256": "d306dcf457ca1fa7463de337c8731b29113aeaa6315a8acd6e8dc082e2e95393",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5a511bb4044472195316a5788b48b608e2058aa8c3820fcd0ceabd737cfca393",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/plan.json",
+      "change": "added",
+      "bytes": 7464,
+      "sha256": "1fcee92a4d48f74cd1d338dcd6b5a8336113f54cdefa2ae6012f1effc5f918f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "9228d390d0de201f3b79a6802c2be52b6ba050e471a70e7158c2acb8e36ae7a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/execution.json",
+      "change": "added",
+      "bytes": 628645,
+      "sha256": "71037ebf8392a53009ee04fa1ae8fc96899001dad66ccb54b0603c2fc33dedb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "f610796dc4eaa6152d273216f8d3cb72f0fa260bcdaf56ee3db14f1f8bf4e02b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier.json",
+      "change": "added",
+      "bytes": 16980,
+      "sha256": "95b54d1d5535a8bda91c46ccc268f9f7c2837931edc68af7ab65fc3cea0910f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6267,
+      "sha256": "eec439509ddabd5022a3a7d336b8eb5613dfa01991bfecb70b2790d14d3dad66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/result.json",
+      "change": "added",
+      "bytes": 15242,
+      "sha256": "3ee80d000d8a98380c1d65ba6bdcf24f956ccd8bf2a38cec2419ea13cfee1dab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/executions/20261121T105550Z-89c16dd2/attempt.json",
+      "change": "added",
+      "bytes": 13941,
+      "sha256": "c09d1e4b4d72ecf80ca087f541dd00f0b732f05381ea4c4b1994b12eb4c24fc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/executions/20261121T105550Z-89c16dd2/checker.json",
+      "change": "added",
+      "bytes": 7747,
+      "sha256": "452de7b519eaec424caeb4f93636949519469e67c57d0cdcee0746f14caad4a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/executions/20261121T105550Z-89c16dd2/correspondence.json",
+      "change": "added",
+      "bytes": 1466,
+      "sha256": "75d16d3ea301da6c99b2fe624365f6b0a8665c3ab6370a2e8030847b3691fc71",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4803b6eb704eab19e8ca5ed965e17ddf853aa82a8e09837bbdf83fbb30ced687",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/plan.json",
+      "change": "added",
+      "bytes": 7373,
+      "sha256": "70921ff103a3679ec017b720f45677c76039357809f990636431761fe89d3bb5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b0c889c90db0181ca83af78c7234d210c0ce59cc85eca9d270076e1fe131aaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/execution.json",
+      "change": "added",
+      "bytes": 628492,
+      "sha256": "4c0fd363aaecd480a2cd6f84faf3cbd28bdd0586ab8573ba7b349df32778aaa0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "7b7ccd3179d7568cf4b3cc68f535bdd95ecc701e5efb3ef9389b2c138cca5f98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier.json",
+      "change": "added",
+      "bytes": 17042,
+      "sha256": "1fec850a667b51b484ef950e075c746913ae724c61d68ca8d1e007ae7f2ec594",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6266,
+      "sha256": "9ccb71147dac9fd0e45369861ed9eb650f84c73b5413f54ca82cff14d083cf0f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/result.json",
+      "change": "added",
+      "bytes": 15301,
+      "sha256": "38bca14b2420ee6e5675a641ad59c2f3f07abeacedefec2ece9928634bb819ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/executions/20261121T105549Z-7c3a2a73/attempt.json",
+      "change": "added",
+      "bytes": 14007,
+      "sha256": "d5a5f837ba1c287bf53a5b9b2542cef144e0a296cffca88e2447a490c904a75a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/executions/20261121T105549Z-7c3a2a73/checker.json",
+      "change": "added",
+      "bytes": 7758,
+      "sha256": "507a9fe9b22eff72b469e2f30715a020687c93ee6af175df23bb503a0312f74e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/executions/20261121T105549Z-7c3a2a73/correspondence.json",
+      "change": "added",
+      "bytes": 1469,
+      "sha256": "b490a6e7f88635d830a8d09caa874906801ede662b27c55993b4c16329e90e48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9354a63a186dbf1e4337579826634f2cbdd9081f2055dcfceab7a2f9a293ca5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/plan.json",
+      "change": "added",
+      "bytes": 8079,
+      "sha256": "9fabfbbcb1f253ecf4265e62893445a38a5a4f044c2c214b5ea211dfa9c71ebe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "2f5771cf0f753bec942eba817ce3f891f567fb6010acb88553acdb92a2ea3859",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/execution.json",
+      "change": "added",
+      "bytes": 1254874,
+      "sha256": "de10eaea3e394c666687cc01849bad583754d97cc3846fe4254ffd44868b7e8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/streams.json",
+      "change": "added",
+      "bytes": 1715,
+      "sha256": "5bb85051bc9e891e587a317b542ce36a9e75a6e52fd2f26d5ae393b4647368e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/summary.txt",
+      "change": "added",
+      "bytes": 26994,
+      "sha256": "6096e614496b989afd22b2cbf4b2b8d888706e6bc07ff4763b4d0730e9d92b4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/result.json",
+      "change": "added",
+      "bytes": 199095,
+      "sha256": "dac6e34ea2a871912fae2dfd74907472a8e533f05c93980e685cb26b064802b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/executions/20261121T105504Z-bf247a8c/attempt.json",
+      "change": "added",
+      "bytes": 6848,
+      "sha256": "32604dbbb143a45ad6db6535570d21fa8b0bee71e87a3a83238e2128f594b689",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0a00345aea5b0b67f6bc628e00d2904ebe63c1e3d765bf4abb9be1872c756185",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/plan.json",
+      "change": "added",
+      "bytes": 7356,
+      "sha256": "95644a86c687e425766a9e0fba72556455270a17a0403691ce098574decf49db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "e4151f0f46cc034496207a59165de64985729c5de82e533ffe3d4fd713074ea4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/execution.json",
+      "change": "added",
+      "bytes": 628633,
+      "sha256": "f36c4adc59c5f734f934bcca96474219b2d237c3f210e5d0b1449cf0edcf5fa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "50e9155184be3add74ee1e6d275131e15f18c5a72f990efde643b861ec56cbe7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier.json",
+      "change": "added",
+      "bytes": 16948,
+      "sha256": "e08593eceaf2fcad4d06ef89e7963a98a137be6d2dcb09f229aaa2c3a354c231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6278,
+      "sha256": "b0cb52fd375e640c630670b02b74a9cc054d5c223b1af97d2ed393b50dbeaf69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/result.json",
+      "change": "added",
+      "bytes": 15184,
+      "sha256": "cab5043b6ff19f0e12d2abdf31190a7f9e557e993f96e7ec4e0adab009484430",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/executions/20261121T105518Z-e9a22d12/attempt.json",
+      "change": "added",
+      "bytes": 13908,
+      "sha256": "6346e4e2e56afbe0ed97631470f07b3cf07025f8a75383ed2ceca871f2194f03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/executions/20261121T105518Z-e9a22d12/checker.json",
+      "change": "added",
+      "bytes": 7758,
+      "sha256": "8bac5f9582fe5598d62dd14781aa3376a4ff11c7c013a56d986ef2226c42aefc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/executions/20261121T105518Z-e9a22d12/correspondence.json",
+      "change": "added",
+      "bytes": 1462,
+      "sha256": "a624006dc361ed30f78e8b88381331b43f13510c6baa14f60d8631c7f07eb286",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b35cdd26dc9c2ba19e85daff600d5e6ecd53b9756aee03f57b3b2c7880074953",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/plan.json",
+      "change": "added",
+      "bytes": 7261,
+      "sha256": "9e3c70a64bd7923c2e21fda9add48d01b632c6688f8da78d71f376a7772eb518",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "778d1aa88bbd5c30aa97195db8df242a95f5f10a4936130d453707ad711f214c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/execution.json",
+      "change": "added",
+      "bytes": 628480,
+      "sha256": "20a4e073403d3471e3108ff356f3cef8cac1e7233308db761d47c507ba939c78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "773bfe340e6989a1bcd76a1f7d47625a96d0f9c597e282f9eb47a9ebb9e1aadd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier.json",
+      "change": "added",
+      "bytes": 17010,
+      "sha256": "ee812f0e8107753bf9d8a4215735af6922739864a483cc22bd943492b690cbea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6277,
+      "sha256": "9e0d45edcab245c290eaf50a5cd6a069a9e6555385299debea25d6c993c58d2d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/result.json",
+      "change": "added",
+      "bytes": 15239,
+      "sha256": "2beae2e64b6821c05657c132802d4e03ba4050804f5c1d419bd7910ccfcda8ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/executions/20261121T105510Z-2ec0857b/attempt.json",
+      "change": "added",
+      "bytes": 13972,
+      "sha256": "b872472358c7bedbe8a2598ce56bc9c0a477e2bafa6d6843a5f53b52f1a7db3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/executions/20261121T105510Z-2ec0857b/checker.json",
+      "change": "added",
+      "bytes": 7769,
+      "sha256": "79f83ddfeefa5dd81027dbeeffa2787e2fee49a2079b5dba10be655309f51620",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/executions/20261121T105510Z-2ec0857b/correspondence.json",
+      "change": "added",
+      "bytes": 1465,
+      "sha256": "12b77dc7c17b877727605a9bdf37fcd4f56938bf0c73728540ba6bb217fd7236",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/run.json",
+      "change": "added",
+      "bytes": 709,
+      "sha256": "e23677ab26326678cf85f42676370bf044ff642e967756f44078f80ec9cdb112",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/baseline-native/workflow.log",
+      "change": "added",
+      "bytes": 2383,
+      "sha256": "dbcbcbbe2efa9adbd7ac855e65515099fc68814a4a98529d706a7571ff278015",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "80e0a07a2246e364747f2cded3d29a07c07bfa9f66c9cc1ecbdc1c86a1c9caf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/plan.json",
+      "change": "added",
+      "bytes": 7517,
+      "sha256": "6b6505d0869c0c919a34efc9fbbdc9e9ef4f1522c65b696605ea9935ee7a621e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "136b7be3a529db756c7a398a23202886721bf6bc572dd612d0652d1397c67306",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/execution.json",
+      "change": "added",
+      "bytes": 628835,
+      "sha256": "3cfa989aff06891c6c818183120ceaca6399dad4dc923ecc49063e83bec578d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "1e36fcc04f75e041df2dba3860fd273133dbbee14fbe81f423f03d49ff1e6d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier.json",
+      "change": "added",
+      "bytes": 17169,
+      "sha256": "b059eeb1a8220fd6769d916cfec3addc455bfaa905bf4e14d517ec985985a180",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6282,
+      "sha256": "46d7e72b6cfb9fe7111d829603bfba2371e9ab328d228e0267883cc0194520e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/result.json",
+      "change": "added",
+      "bytes": 15275,
+      "sha256": "a4f48c8c1156f425a401ce74896899cb1648dedbc72e9b29f88459f50f7f187e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/executions/20261121T105632Z-ba9e4328/attempt.json",
+      "change": "added",
+      "bytes": 14123,
+      "sha256": "924bce025f9c7f0bc258c5708b89fe1b2431adacb0da8ee54069c96039ee26f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/executions/20261121T105632Z-ba9e4328/checker.json",
+      "change": "added",
+      "bytes": 7757,
+      "sha256": "af99493162681e592ca3d603f53b82f5d4bde1bc9ac462af553e50a9183c325d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/executions/20261121T105632Z-ba9e4328/correspondence.json",
+      "change": "added",
+      "bytes": 1504,
+      "sha256": "89e24e52409aaf278c8bd5306529268ff9cc2a5964a3e79da1cfcdb319c992c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5339042dae63d3788ecdc617b701c09763023290aca945c4f54db77938aaa6cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/plan.json",
+      "change": "added",
+      "bytes": 7422,
+      "sha256": "e2344d77647929510b2ad36ab14d44965070a40510c9d73aa8bdc20c96ad5f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "ea9baa19f374659302d194ef9032eefcfb1fc25c228d2cfde14f508be25f5c5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/execution.json",
+      "change": "added",
+      "bytes": 628690,
+      "sha256": "1657bce4f1b98fc81e38d2058a10f8c7956308d3cefe1a06ef81545f0bb17dff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "c7848123575580a8e779d2b4d06e9089ab05087d215b9c0f0f86f9f1c5a37843",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier.json",
+      "change": "added",
+      "bytes": 17239,
+      "sha256": "ea55c9c75516bca4110c75da797f47f934db1d9b457aeee897c23423e52fd4db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6289,
+      "sha256": "e9024aad86ab33dc57859c9f8e13f6247217b88a57275bd85bcfa8e1bf63c210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/result.json",
+      "change": "added",
+      "bytes": 15336,
+      "sha256": "96d97d12afcb445828bc400046f72802ec2c2f83d23156db3b40cbd2d9277585",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/executions/20261121T105622Z-eca24354/attempt.json",
+      "change": "added",
+      "bytes": 14186,
+      "sha256": "e87740426d698bc1870c178383d355577c9c88a8c96b1aef6ca2b6df83cd36d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/executions/20261121T105622Z-eca24354/checker.json",
+      "change": "added",
+      "bytes": 7776,
+      "sha256": "0694f57d7e8d8451189ed2e16a1928b8a72e24128c49a9aab0efd7bd90b3da85",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/executions/20261121T105622Z-eca24354/correspondence.json",
+      "change": "added",
+      "bytes": 1507,
+      "sha256": "9ba3b30ff25712c298ceebb51c2ea38d6983c298295cbd81ce20bf37475b223a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "57a10266439af930d1cd8bda4957edee6ad0b6d0d620ced42866bb4e1c038491",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/plan.json",
+      "change": "added",
+      "bytes": 7420,
+      "sha256": "d370756bcdf426a7e9823a030bf46183cecd59c9b68b4ddf6fcb2e975c7e343e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "b5bee62f2056c690ffafbda16fe7971446bcd79721ff5e5f7e68a9bcba9d7a74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/execution.json",
+      "change": "added",
+      "bytes": 628696,
+      "sha256": "4f7fdb9223a9590130845916d5556f5417599ee9bfa1a73625429f1d28bee51d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "bf1415ccbd7629bf4aae7d194dcc7a74cef88472b0dd976ee7536bb4cad74688",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier.json",
+      "change": "added",
+      "bytes": 17048,
+      "sha256": "d027d4a4260b0c5e2e320982e9a1f46859bdf468eb9ce5d620030e6a320f2050",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6269,
+      "sha256": "e3bbecd852dcedcfdabbe76f4bebf6b2dbc1ff1bab7a7453f42fcc5707824c92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/result.json",
+      "change": "added",
+      "bytes": 15228,
+      "sha256": "72978ffc71cf520eb42be09793b8a7fef71e2e787856db9ddcfac20b5d9b86c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/executions/20261121T105646Z-14ec0c05/attempt.json",
+      "change": "added",
+      "bytes": 14004,
+      "sha256": "12b3e1036a066d1edce12187800719506cbc45c247ccadfb04431da7e6837b84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/executions/20261121T105646Z-14ec0c05/checker.json",
+      "change": "added",
+      "bytes": 7744,
+      "sha256": "8364c52b399b70e64ef6699650ede7ab0671096441c786c6e692b62eaaf39b0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/executions/20261121T105646Z-14ec0c05/correspondence.json",
+      "change": "added",
+      "bytes": 1459,
+      "sha256": "6da8f933832e64cd2c9455b788d2bf06415d74c06adbfd8b1f71a2421538093e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a4ff9f818b5c1a99ce7fff3c63842ac5e1a6f5aa3353ed83bbf0da79bc595590",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/plan.json",
+      "change": "added",
+      "bytes": 7329,
+      "sha256": "8a4a6d3061cae397a8e1d9f97a2aec3a4c62be68cf0e92dd416547d9e71cb13a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "92e6d97c268d5115421c16ea6def4a36807c22514154bf5448a7ab2fdebb29b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/execution.json",
+      "change": "added",
+      "bytes": 628544,
+      "sha256": "881a6c02ec2fb7c36f7ad0b4d62c0401364a495641181193a6bf705b8f1536d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "387949623579792c34d27575720d3891ae60033dae5b74174c15dc145006bfa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "6649642ff86447d134e4de7004b89e8ceab52fb37d9d94a65c4662712ef62f3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier.json",
+      "change": "added",
+      "bytes": 17111,
+      "sha256": "61e8d8312393ae0f36d681938aeca3022584d85ad8c928e4790e4e694c8908e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6270,
+      "sha256": "0242ec5e55e464fc4bb03fcadfbd02966857bf2894e58cd0618720dc9ff5ea41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/result.json",
+      "change": "added",
+      "bytes": 15287,
+      "sha256": "1ebb48b82171015edc4c474c53f7ec9b12f313fc7a465a748c75e0d0b06f7304",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/executions/20261121T105645Z-35d5eb05/attempt.json",
+      "change": "added",
+      "bytes": 14070,
+      "sha256": "ce15c9c4bf89682a1e3616a8d729da315545354cd0dea17199401bb0f04b98a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/executions/20261121T105645Z-35d5eb05/checker.json",
+      "change": "added",
+      "bytes": 7756,
+      "sha256": "1113f0e8a096b165db29205fe11ff47715371c8683c8fe0df072ec422fbab37f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/executions/20261121T105645Z-35d5eb05/correspondence.json",
+      "change": "added",
+      "bytes": 1462,
+      "sha256": "d306dcf457ca1fa7463de337c8731b29113aeaa6315a8acd6e8dc082e2e95393",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1c2d140f6bff4387e5ac71f734e96e70734f94b4aed4865bcaf2efa21deed7e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/plan.json",
+      "change": "added",
+      "bytes": 7450,
+      "sha256": "808513b1dd8a5aafb464aacc30ab772f9d50d9898e8eb841e240656c76023de1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "51e51a7024d681b2d4deb09b832a38f1f18c2360c32281835503051b5009f7f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/execution.json",
+      "change": "added",
+      "bytes": 628631,
+      "sha256": "479d6b53c1a9e52ecddd860836e40e90d64d46a567916b07953b843cc9e6ab14",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "a2e67428d84011e1b85c3384f3b3ef2ccdb41da623b5a6a454f9fc7afdb3d8e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier.json",
+      "change": "added",
+      "bytes": 16966,
+      "sha256": "f17e3f99c9f920dd3e5500e0cf29e3fe7e1abaa56bfd120fe1d9f1251d57ffa1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6266,
+      "sha256": "a098dfe7c11c5a3479534dd63897ceed3e5abd1216f8db4b8986beeb2d029315",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/result.json",
+      "change": "added",
+      "bytes": 15241,
+      "sha256": "4ad1d50137760b05f82eeda3b4902d9c279bd4ee5911a9c369f82ecc542776a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/executions/20261121T105644Z-5c3927e0/attempt.json",
+      "change": "added",
+      "bytes": 13925,
+      "sha256": "79c1a70108206809605abc65b367e5e9bc274bf8ecfd9dc739d7baf088848803",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/executions/20261121T105644Z-5c3927e0/checker.json",
+      "change": "added",
+      "bytes": 7740,
+      "sha256": "1574433f5af4076740b9b4a8cbf400922bae7006c3676676cc4fadf9d752193c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/executions/20261121T105644Z-5c3927e0/correspondence.json",
+      "change": "added",
+      "bytes": 1466,
+      "sha256": "75d16d3ea301da6c99b2fe624365f6b0a8665c3ab6370a2e8030847b3691fc71",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f5f3e9b457045a5548d4e978193403d46726b40ab284c267dbdd7f5479935eb0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/plan.json",
+      "change": "added",
+      "bytes": 7359,
+      "sha256": "9c36acfd8c54260b9c6047d20914cc45047077fc47f855e9b52bd5bbb3e37acf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "589e656b984101b693f491f0f2080ca9ce84279f38ecf2bfed5d427ace2da575",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/execution.json",
+      "change": "added",
+      "bytes": 628478,
+      "sha256": "ecff85404ad2665e6fe0663a4fc2d1d7888143261dd3c29abed4f96000ff1beb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "a39491fe2e9301a3bda817bf204809cf7a17be1e6defa7a3ceb1d0a78b7bb7b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier.json",
+      "change": "added",
+      "bytes": 17028,
+      "sha256": "c6bc7a484ebe27f787a25f6614357bb135c348c089263ba0003f06e5c8ce9467",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6266,
+      "sha256": "6ae0f1d8714aba1305f9af539d16071dd131ce0a23300d5ee8d71e878d14c341",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/result.json",
+      "change": "added",
+      "bytes": 15301,
+      "sha256": "161994f2643b85347fe53ccc830e20e8f3bb3069dcb2421afdc8a8a4a0cbf630",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/executions/20261121T105643Z-6a44d61a/attempt.json",
+      "change": "added",
+      "bytes": 13991,
+      "sha256": "c1cbec377fabdcf4cad52a9bfbd34d5a453ffd9a4ee5a3de3670e114decf575a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/executions/20261121T105643Z-6a44d61a/checker.json",
+      "change": "added",
+      "bytes": 7751,
+      "sha256": "06503db0b600d4c910c06cb453249697017f55077b90189eccdfb941b1321053",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/executions/20261121T105643Z-6a44d61a/correspondence.json",
+      "change": "added",
+      "bytes": 1469,
+      "sha256": "b490a6e7f88635d830a8d09caa874906801ede662b27c55993b4c16329e90e48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a29d14d380d9a0297da2d9c2e42e42cee38517a44c0dfa17e32b11307fa0d941",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/plan.json",
+      "change": "added",
+      "bytes": 8065,
+      "sha256": "77fa46733717979131558cf85737cde2ea4082f13763b1fd483d798ad6b2bbe1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "2f5771cf0f753bec942eba817ce3f891f567fb6010acb88553acdb92a2ea3859",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/execution.json",
+      "change": "added",
+      "bytes": 1254874,
+      "sha256": "2dfededd11e58ca98c8acfec07fec7bdc87bf016449b9acb42413688a3bd053d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/streams.json",
+      "change": "added",
+      "bytes": 1715,
+      "sha256": "aef5ec8753768d71765de3d2c9034e6f438484284853da784b3380809650169f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/summary.txt",
+      "change": "added",
+      "bytes": 26994,
+      "sha256": "6096e614496b989afd22b2cbf4b2b8d888706e6bc07ff4763b4d0730e9d92b4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/result.json",
+      "change": "added",
+      "bytes": 199095,
+      "sha256": "2fe03c609b346cfec6569c82870ed81ac5a250e62fe471bb62048cbc553c3135",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/executions/20261121T105554Z-6feb17cf/attempt.json",
+      "change": "added",
+      "bytes": 6849,
+      "sha256": "2981bd460d6ee1e5fd34f27ee164212c431d375d31d6bcae9bcd715b3de9a4e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "61c9ce7390b2e61546a3d20a5757b4db9f3a64d5b1fa7931c45c0083c3f2c426",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/plan.json",
+      "change": "added",
+      "bytes": 7342,
+      "sha256": "97b1c19aee9b07fd8a59a5e10fd81a562e4a995adeb04ec612fc9d5d964aba7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "4b1f5da62fde2dc763b66ea32949c9cb04bf4b93ea0fe594665c2b4ed662279d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "6fcf535b68149b860a1298894b90cf93d240882040f3bbb85604a83942cb5cec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/execution.json",
+      "change": "added",
+      "bytes": 628623,
+      "sha256": "9b35b2783da83fbe4aef7727731e5727192e7f1a284291f97ab45270059b0dd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "27b286079275f623b869b8e3fce85e65440c7d1b0cc0a9ccc074c3e390a5ffa3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier.json",
+      "change": "added",
+      "bytes": 16939,
+      "sha256": "c6342dccbf721e0e47f39de0afde0556d2ab51e173c420255240355952c0da4d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6279,
+      "sha256": "ae99e965512da88c805e7797508aa1371dd2ed85f0c9e9269f7877fda55d3261",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/result.json",
+      "change": "added",
+      "bytes": 15185,
+      "sha256": "3127dcaaa4dc20a28eab4078605745cfe9a07325f9707eb083eda1befe56dfab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/executions/20261121T105612Z-00f65d04/attempt.json",
+      "change": "added",
+      "bytes": 13899,
+      "sha256": "bbcc23d4b42dd9c03dc59725acdf327a18a02fc6c7647cdfb41a8b23905c65ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/executions/20261121T105612Z-00f65d04/checker.json",
+      "change": "added",
+      "bytes": 7754,
+      "sha256": "8b931dd2472cc13da8043968b6f206ddd10244d20fd8aac273ccd912aab8fc59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/executions/20261121T105612Z-00f65d04/correspondence.json",
+      "change": "added",
+      "bytes": 1462,
+      "sha256": "a624006dc361ed30f78e8b88381331b43f13510c6baa14f60d8631c7f07eb286",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "97470f3d62a027b4b953ac1d83ece2f60af75d0c6cbf3fec95585593c78b65e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/plan.json",
+      "change": "added",
+      "bytes": 7247,
+      "sha256": "4085060bbf19f7a7859458a2332ace0e09015d1b59a56b8025f7fb790d39d36e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "a5c8490d96eb667c70a32ca3c7604edb0d957205f00c6c6d0050ceff58788118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "778d1aa88bbd5c30aa97195db8df242a95f5f10a4936130d453707ad711f214c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/execution.json",
+      "change": "added",
+      "bytes": 628474,
+      "sha256": "24df4c2fd2d116ab6a98353753ae2662e8d690b322504d63186cb1435df09eb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "68e386a85d9b6432c5209510b38fb6fdc8ddf40dba15d7dfc23bdf4100143dac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "d11b74ddb96faba0f606d3b14b6295bc4c623132de7192c3d0b35f1ee03cf23f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier.json",
+      "change": "added",
+      "bytes": 17004,
+      "sha256": "fcf807b7830f1d8c998ebc3834822c6b54092884618962e6230f6b6fb34e8136",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6283,
+      "sha256": "ebc405fa87123caa5160895780893536576cf728243ce013d338e501a37a1450",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/result.json",
+      "change": "added",
+      "bytes": 15243,
+      "sha256": "3fad3e7cc80506c85879746a9408e0ae054090474866b0caf887fbe71e3a5702",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/executions/20261121T105600Z-d7b30a87/attempt.json",
+      "change": "added",
+      "bytes": 13964,
+      "sha256": "f67e193a7152416d3072dc3f4f5dd5acdfc13633379c0c6ea1db06132b6f228b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/executions/20261121T105600Z-d7b30a87/checker.json",
+      "change": "added",
+      "bytes": 7768,
+      "sha256": "027faa9f5292529088325185023d3ed4cb0ff1605b882276ec15e9de09e2e14b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/executions/20261121T105600Z-d7b30a87/correspondence.json",
+      "change": "added",
+      "bytes": 1465,
+      "sha256": "12b77dc7c17b877727605a9bdf37fcd4f56938bf0c73728540ba6bb217fd7236",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/run.json",
+      "change": "added",
+      "bytes": 708,
+      "sha256": "5ad3ea94d0f3e4dd05ab7257f2c26be9aff5902b65226388a9bd4a0b3c6f081c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/359-eclipse-boolean-list-insertion/records/reserve-native/workflow.log",
+      "change": "added",
+      "bytes": 2383,
+      "sha256": "897e55db1fd2d652977438626fb00ede16c3b0e96360d2d9085ecaa5321060ae",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:57:17+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/359-eclipse-boolean-list-insertion/records/build-historical/build-fix.json",
+      "examples/359-eclipse-boolean-list-insertion/records/build-historical/build-parent.json",
+      "examples/359-eclipse-boolean-list-insertion/records/build-historical/fix-TEST-org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayListTest.xml.gz",
+      "examples/359-eclipse-boolean-list-insertion/records/build-historical/fix-upstream.json",
+      "examples/359-eclipse-boolean-list-insertion/records/build-historical/parent-TEST-org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayListTest.xml.gz",
+      "examples/359-eclipse-boolean-list-insertion/records/build-historical/parent-upstream.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/batch.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/contents-fix.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/contents-parent.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-contents-fix.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-contents-parent.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-outcomes-fix.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/ordinary-outcomes-parent.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/returns-fix.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/20261121T105325Z-33ee6bfa/returns-parent.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/run.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-finite/workflow.log",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/20261121T105538Z-8c71b218/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/executions/20261121T105538Z-8c71b218/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/executions/20261121T105538Z-8c71b218/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-fix/executions/20261121T105538Z-8c71b218/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/20261121T105529Z-855f7e6b/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/executions/20261121T105529Z-855f7e6b/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/executions/20261121T105529Z-855f7e6b/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/contents-parent/executions/20261121T105529Z-855f7e6b/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/20261121T105552Z-8978d7e7/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/executions/20261121T105552Z-8978d7e7/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/executions/20261121T105552Z-8978d7e7/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-fix/executions/20261121T105552Z-8978d7e7/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/20261121T105551Z-90cf0424/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/executions/20261121T105551Z-90cf0424/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/executions/20261121T105551Z-90cf0424/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-contents-parent/executions/20261121T105551Z-90cf0424/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/20261121T105550Z-89c16dd2/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/executions/20261121T105550Z-89c16dd2/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/executions/20261121T105550Z-89c16dd2/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-fix/executions/20261121T105550Z-89c16dd2/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/20261121T105549Z-7c3a2a73/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/executions/20261121T105549Z-7c3a2a73/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/executions/20261121T105549Z-7c3a2a73/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/ordinary-outcomes-parent/executions/20261121T105549Z-7c3a2a73/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/records/summary.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/20261121T105504Z-bf247a8c/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/replay/executions/20261121T105504Z-bf247a8c/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/20261121T105518Z-e9a22d12/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/executions/20261121T105518Z-e9a22d12/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/executions/20261121T105518Z-e9a22d12/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-fix/executions/20261121T105518Z-e9a22d12/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/20261121T105510Z-2ec0857b/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/executions/20261121T105510Z-2ec0857b/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/executions/20261121T105510Z-2ec0857b/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/returns-parent/executions/20261121T105510Z-2ec0857b/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/run.json",
+      "examples/359-eclipse-boolean-list-insertion/records/baseline-native/workflow.log",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/20261121T105632Z-ba9e4328/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/executions/20261121T105632Z-ba9e4328/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/executions/20261121T105632Z-ba9e4328/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-fix/executions/20261121T105632Z-ba9e4328/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/20261121T105622Z-eca24354/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/executions/20261121T105622Z-eca24354/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/executions/20261121T105622Z-eca24354/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/contents-parent/executions/20261121T105622Z-eca24354/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/20261121T105646Z-14ec0c05/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/executions/20261121T105646Z-14ec0c05/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/executions/20261121T105646Z-14ec0c05/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-fix/executions/20261121T105646Z-14ec0c05/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/20261121T105645Z-35d5eb05/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/executions/20261121T105645Z-35d5eb05/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/executions/20261121T105645Z-35d5eb05/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-contents-parent/executions/20261121T105645Z-35d5eb05/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/20261121T105644Z-5c3927e0/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/executions/20261121T105644Z-5c3927e0/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/executions/20261121T105644Z-5c3927e0/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-fix/executions/20261121T105644Z-5c3927e0/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/20261121T105643Z-6a44d61a/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/executions/20261121T105643Z-6a44d61a/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/executions/20261121T105643Z-6a44d61a/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/ordinary-outcomes-parent/executions/20261121T105643Z-6a44d61a/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/records/summary.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/20261121T105554Z-6feb17cf/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/replay/executions/20261121T105554Z-6feb17cf/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/control-fix-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/control-fix-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/20261121T105612Z-00f65d04/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/executions/20261121T105612Z-00f65d04/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/executions/20261121T105612Z-00f65d04/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-fix/executions/20261121T105612Z-00f65d04/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/completion.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/plan.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/control-parent-jdk21.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/control-parent-jdk21.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/controls.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/execution.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/streams.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier-output.txt",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier.stderr",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/records/verifier.stdout",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/20261121T105600Z-d7b30a87/result.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/executions/20261121T105600Z-d7b30a87/attempt.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/executions/20261121T105600Z-d7b30a87/checker.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/returns-parent/executions/20261121T105600Z-d7b30a87/correspondence.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/run.json",
+      "examples/359-eclipse-boolean-list-insertion/records/reserve-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 24920949,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "2d182dd1f729468156da6c7fb83da09a8c0e8d6f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz"
+}

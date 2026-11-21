@@ -1,0 +1,75 @@
+[
+  {
+    "claimKey": "1b5eb75fdc2d9864",
+    "entry": "organic.SurrogateCuts#fixedCut(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 13
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "68f9e7122fe2a60f22dd458930f528c332defe2b686fe8d24203c61f70bd0cfb",
+        "classpath": [
+          "fc50e33bc999cd3f10244dd2fef4324705732e7d49e611951cdf6d0f81520df4",
+          "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+          "71568c9f8396677219f650268fbf6493ded484edcdbdf2dae6129ca5be81e8db",
+          "95488102feaf2e2858adf6b299353677dac6c15294006f8ed1c5556f8e3cd251",
+          "ee52e1c299a632184fba274a9370993e09140429f5e516e6c5570fd6574b297f",
+          "4b909690cab288c761eb94c0bf0e814496cf3921d8affac84cd87774530351e5",
+          "3a70240de7cdcde04e7c504c2327d7035b9c25ae0206881e3bf4e6798a273ed8"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 13;\nif (!(code >= 0 && code < 36)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.SurrogateCuts.fixedCut(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 13,
+      "input": {
+        "units": [
+          55357,
+          56832
+        ],
+        "start": 0,
+        "width": 0
+      },
+      "field": "fixedCut",
+      "direct": {
+        "parent": {
+          "truncate": [],
+          "fixedCut": [
+            56832
+          ],
+          "abbreviate": [
+            55357,
+            56832,
+            46,
+            46,
+            46
+          ]
+        }
+      },
+      "tableSha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+    }
+  }
+]

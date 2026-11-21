@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T10:41:14.630Z",
-  "duration_seconds": 133425,
+  "ended": "2026-11-21T11:00:50.944Z",
+  "duration_seconds": 134601,
   "stats": {
     "turns": 19,
-    "api_calls": 6165,
-    "tool_calls": 15637,
-    "tool_errors": 455,
+    "api_calls": 6264,
+    "tool_calls": 15884,
+    "tool_errors": 472,
     "compactions": 20,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 10549698,
-      "output_tokens": 3326433,
-      "cache_read_input_tokens": 1898115712,
+      "input_tokens": 10660350,
+      "output_tokens": 3366282,
+      "cache_read_input_tokens": 1915358208,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 9052,
-    "exec": 5677,
-    "apply_patch": 593,
+    "Bash": 9193,
+    "exec": 5776,
+    "apply_patch": 600,
     "send_message": 148,
     "sleep": 64,
     "wait": 59,
@@ -91,6 +91,7 @@
     "examples/350-rocker-with-declaration/README.md",
     "examples/351-aws-joda-instant/README.md",
     "examples/352-cucumber-duration/README.md",
+    "examples/360-javaparser-postorder-root/adapter/organic/TreeOrder.java",
     "examples/approaches.md",
     "examples/schema/result.schema.json",
     "examples/schema/target-claim.schema.json",
@@ -222,6 +223,7 @@
     "lib/tests/fixtures/claims/claims/IteratorCollection.java",
     "lib/tests/fixtures/claims/claims/L.java",
     "lib/tests/fixtures/claims/claims/ListConversions.java",
+    "lib/tests/fixtures/claims/claims/LiveMapViews.java",
     "lib/tests/fixtures/claims/claims/M.java",
     "lib/tests/fixtures/claims/claims/R.java",
     "lib/tests/fixtures/claims/claims/ReaderAndListeners.java",
@@ -611,24 +613,24 @@
     {
       "index": 20,
       "started": "2026-11-21T10:33:05.381Z",
-      "ended": "2026-11-21T10:41:14.630Z",
+      "ended": "2026-11-21T11:00:50.944Z",
       "turns": 0,
-      "api_calls": 42,
+      "api_calls": 141,
       "usage": {
-        "input_tokens": 106058,
-        "output_tokens": 17710,
-        "cache_read_input_tokens": 3609728,
+        "input_tokens": 216710,
+        "output_tokens": 57559,
+        "cache_read_input_tokens": 20852224,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 116869
+      "peak_context_tokens": 220584
     }
   ],
   "log": {
-    "sha256": "b4c83a8d1a3e4c4de454c0d41184f294556b014376dcbdd5c59ae75088829a4a",
-    "bytes": 142044878,
-    "lines": 48930,
-    "gzip_bytes": 56438626,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/b4c83a8d1a3e4c4de454c0d41184f294556b014376dcbdd5c59ae75088829a4a.jsonl.gz"
+    "sha256": "925cef52ccd1565e00f92e479277398e7e7aa5e4b44057a54dbb758bcefcf50d",
+    "bytes": 143922573,
+    "lines": 49678,
+    "gzip_bytes": 57133690,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/925cef52ccd1565e00f92e479277398e7e7aa5e4b44057a54dbb758bcefcf50d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3023,6 +3025,14 @@
       "summary": "Preserve the selected JDK's String exception order and register the two transfer cases (verification pending)",
       "body": "A null array and a negative offset or count can have two different Java exceptions. Both native engines now consult the selected bootstrap constructor, including the exception's own bytecode in Java 8. A check without runtime bytes refuses the ambiguous case. Five real JVMs and five strict native probes agreed: Java 8 reported bounds, bounds, null while Java 11, 17, 21 and 25 reported null three times. All 18 values tests and the 43 changed-test suites passed.\n\nFreeze two separate transfer cases: Eclipse Collections' 2,865 bounded insertions and JavaParser's two traversal shapes with identity and exhaustion controls. Historical build jobs 20261121-102122-359 and 20261121-102122-360 replace the first attempts, which reached the unrelated Eclipse P2 plugin and the incompatible Java 21 SequencedCollection API respectively. Their JDK 17 builds supply original JARs for JDK 21 observations. Jobs starting 20261121-102303 through 20261121-102305 repeat all primary native and finite checks and both Lang selector proofs on this tree.\n\nRecount actual test XML and original bytecode receipts, including Surefire's named assertion source lines when malformed UTF-16 truncates its XML stack message. The ordered Hadoop run finished all ten finite obligations and reached real external initialization in both strict routes. The scorecard independently reconstructed 36 of 46 native and 46 of 46 finite outcomes ahead of the final repeat.",
       "log_sha256": "b4c83a8d1a3e4c4de454c0d41184f294556b014376dcbdd5c59ae75088829a4a"
+    },
+    {
+      "change_id": "mswlntqznvzyyllnpyyyynuoplykqqvm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Execute the selected JDK BitSet on real Eclipse list mutations (verification pending)",
+      "body": "The first strict check of Eclipse Collections stopped in BitSet(int). Execute its selected runtime bytecode with the existing heap and class initializer support. A non-vacuous symbolic check now establishes the insertion-return contract over all 2,865 inputs. An additional control crosses bits 63 and 64 through the original map entry alias, clears the other bit and checks a negative read on the JVM, interpreter and native checker. A single unsplit exact-content run reached the 60-second limit. Jobs 20261121-105825 retain the original parent witness and run every fixed constant selector against the actual list.\n\nBoth reserve revisions now have original module JARs, class hashes and fresh upstream XML. Eclipse's parent threw IndexOutOfBoundsException at the named test, JavaParser's parent threw EmptyStackException and both fixes passed. JavaParser's public observer now invokes findAll through the declaring Node type, matching the upstream call on the same CompilationUnit. Both complete public JVM grids match the independent fixed oracle. The original strict parser reaches the line.separator property, and a separately observed startup reaches an unbound enum object.\n\nThe Eclipse stream exceeds the normal 512 KiB receipt prefix. Re-run its public control, verify every byte against the complete digest from the original receipt, and retain whole JSON rows in small files. Both 2,865-row streams were reassembled, a changed byte and a truncation were rejected. The primary repeat at 88866c1d still qualified 36/46 strict native and 46/46 finite obligations. Jobs 20261121-105255 through 20261121-105257 recheck the eight pairs and the language selector proofs on this product. Job 20261121-104615 tests proof reuse across the changed String model.\n\nThe reserve examples passed validation. All 41 changed-test suites passed, with successful reruns of the temporary JBMC stand-in test and the performance suite. The pipeline validated every job description.",
+      "log_sha256": "925cef52ccd1565e00f92e479277398e7e7aa5e4b44057a54dbb758bcefcf50d"
     }
   ],
   "logs": {
@@ -3552,6 +3562,12 @@
       "bytes": 119988679,
       "lines": 41668,
       "gzip_bytes": 47683070,
+      "url": null
+    },
+    "925cef52ccd1565e00f92e479277398e7e7aa5e4b44057a54dbb758bcefcf50d": {
+      "bytes": 143922573,
+      "lines": 49678,
+      "gzip_bytes": 57133690,
       "url": null
     },
     "927794b4fa91437138477f95a1c560d19ea12808b50e8ef944977674903d5e65": {

@@ -1011,7 +1011,7 @@ impl ClassPath {
             | "java/io/InputStreamReader" | "sun/nio/cs/StreamDecoder" | "jdk/internal/misc/InternalLock" | "java/nio/charset/CodingErrorAction" | "java/nio/ByteOrder"
             | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"
             | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
-            | "java/util/TimSort" | "java/util/ComparableTimSort"
+            | "java/util/TimSort" | "java/util/ComparableTimSort" | "java/util/BitSet"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
             | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"

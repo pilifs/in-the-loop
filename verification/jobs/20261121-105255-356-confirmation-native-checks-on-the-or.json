@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-105255-356-confirmation-native-checks-on-the-or",
+  "title": "356 confirmation native checks on the original gson public calls",
+  "description": "Execute each preserved and changed public observation from real PR https://github.com/google/gson#3034 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+  "kind": "real-world",
+  "capabilities": [
+    "organic-java-pr",
+    "organic:native"
+  ],
+  "links": {
+    "examples": [
+      "356"
+    ]
+  },
+  "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+  "submitted": {
+    "at": "2026-11-21T10:52:55+00:00",
+    "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "memoryLimit": "7G",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 356 --route native --stage confirmation --seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/356-gson-overflowing-number/records/confirmation-native"
+  ]
+}

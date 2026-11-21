@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-105825-359-fix-original-packed-list-contents-on",
+  "title": "359 fix original packed-list contents on qualified native selectors",
+  "description": "The original BooleanArrayList accepts a Boolean list, inserted array and index selected by the frozen 2,865-row table. Run its real JDK BitSet-backed reverse shift, check the receiver size and every bit, and replay each reported violating input on a separate JVM. The fixed ordinary run reaches its deadline on this full content claim. A certificate must include all admitted indices.",
+  "kind": "real-world",
+  "capabilities": [
+    "organic-java-pr",
+    "native-finite-selectors"
+  ],
+  "links": {
+    "examples": [
+      "359"
+    ]
+  },
+  "expected": "Parent input 940 violates the exact post-state. The fix establishes it over every one of the 2,865 inputs.",
+  "submitted": {
+    "at": "2026-11-21T10:58:25+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "15m",
+    "memoryLimit": "5G",
+    "timeout": "90m"
+  },
+  "steps": [
+    {
+      "name": "Check each admitted call to the original packed-list insertion",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 examples/tools/build.py 359 --native-selectors contents-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/359-eclipse-boolean-list-insertion/records/native-selectors/fix"
+  ]
+}

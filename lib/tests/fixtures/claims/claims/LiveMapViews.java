@@ -1,5 +1,6 @@
 package claims;
 
+import java.util.BitSet;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -62,6 +63,19 @@ public final class LiveMapViews {
         return copy.equals(map) && map.equals(copy) && new LinkedHashMap<>(map).equals(copy);
     }
 
+    public static boolean packedValue(boolean grow) {
+        Map<String, BitSet> map = new HashMap<>();
+        BitSet original = new BitSet(1);
+        map.put("k", original);
+        BitSet entry = map.entrySet().iterator().next().getValue();
+        int index = grow ? 64 : 63;
+        original.set(0);
+        entry.set(index, true);
+        entry.set(0, false);
+        if (entry != original || original.get(0) || !original.get(index) || original.get(index + 1)) return false;
+        try { entry.get(-1); return false; } catch (IndexOutOfBoundsException expected) { return true; }
+    }
+
     public static boolean insertionOrder() {
         Map<String, String> map = new HashMap<>();
         map.put("B", "two"); map.put("A", "one");
@@ -69,6 +83,7 @@ public final class LiveMapViews {
     }
 
     public static void main(String[] args) {
-        if (!remove(true) || !remove(false) || !collisions() || !mixed() || !copies() || insertionOrder()) throw new AssertionError();
+        if (!remove(true) || !remove(false) || !collisions() || !mixed() || !copies() || insertionOrder()
+                || !packedValue(false) || !packedValue(true)) throw new AssertionError();
     }
 }

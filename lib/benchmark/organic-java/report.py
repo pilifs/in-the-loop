@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "examples/tools"))
 import build
 from targets import finite_check, finite_oracle, native_selectors, route, sidecar
 from domains import check_controls, wrong_results
+from public_observations import complete_stream
 from upstream import named_failure
 
 PRIMARY = {
@@ -47,12 +48,12 @@ def original_observations(folder, table):
             continue
         sources, rows = {}, {}
         for side in ("parent", "fix"):
-            f = receipt.parent / "records" / ("control-" + side + "-jdk21.stdout")
-            records = [json.loads(s) for s in f.read_text().splitlines() if s.startswith("{")]
+            raw, files = complete_stream(folder, receipt, side)
+            records = [json.loads(s) for s in raw.splitlines() if s.startswith(b"{")]
             problems = table.problems(records)
             if side == "fix" and problems:
                 raise ValueError(f"{folder.name} fixed observations disagree with the oracle")
-            sources[side] = {"path": rel(f), "sha256": digest(f), "rows": len(records),
+            sources[side] = {"files": [rel(f) for f in files], "sha256": hashlib.sha256(raw).hexdigest(), "rows": len(records),
                              "disagreements": dict(Counter(field for _, field in problems))}
             rows[side] = {r["id"]: r for r in records}
         i, field = WITNESS[folder.name[:3]]
@@ -91,6 +92,10 @@ def native(folder, task, stages, plan):
                     result["solverSeconds"] = sum((t.get("native") or {}).get("solving_seconds", 0) for t in timings)
             if c["status"] not in ("established", "refuted"):
                 return result
+            source = d["claim"]["target"]
+            if any(digest(folder / f) != checksum for f, checksum in source["files"].items()):
+                result.update(status="superseded", recordedStatus=c["status"], problem="the recorded adapter or claim inputs have changed")
+                return result
             assert a["engine"] == "native" and stated["gapMode"] == "strict" and not c["vacuous"]
             if c["status"] == "established":
                 assert stated["vacuity"]["status"] == "non-vacuous"
@@ -112,6 +117,8 @@ def finite(folder, task, plan, stages):
     paths = (p for stage in stages for p in sorted((folder / "records" / (stage + "-finite")).glob("*/" + task["id"] + ".json"), reverse=True))
     for path in paths:
         record = read(path)
+        if record["status"] != "open" and any(record.get(k) != v for k, v in finite_check.claim_identity(plan).items()):
+            return {"status": "superseded", "qualified": False, "receipt": rel(path), "reason": "the current adapter or source binding differs"}
         finite_check.validate_record(plan, record)
         return {key: record.get(key) for key in ("status", "inputs", "differences", "reason", "prepareSeconds", "controlSeconds", "wallSeconds")} | {
             "qualified": record["status"] == task["expected"], "receipt": rel(path),
@@ -124,6 +131,9 @@ def score(number, case, stages):
     ex = build.load_example(folder)
     target = sidecar.load(folder, ex)
     results = {}
+    product_runs = (folder / "records" / (stage + "-native") / "run.json"
+                    for stage in stages if stage in ("confirmation", "final", "reserve"))
+    pinned = next((read(path) for path in product_runs if path.is_file()), None)
     for task in target["tasks"]:
         if task["kind"] == "replay":
             continue
@@ -135,6 +145,8 @@ def score(number, case, stages):
                 if proof.get("status") == task["expected"]:
                     file = (folder / proof["record"]).resolve()
                     report = read(file)
+                    if pinned and (report["checker"]["sha256"], report["checker"]["commit"]) != (pinned["checkerSha256"], pinned["verifierCommit"]):
+                        continue
                     solving = sum((read(file.parents[2] / r["raw"])[0].get("search") or {})
                                   .get("native", {}).get("solving_seconds", 0) for r in report["checked"])
                     current = {"status": proof["status"], "qualified": True, "route": "strict native selectors",
@@ -196,7 +208,7 @@ def score(number, case, stages):
         assert r["recipe"]["commit"] == case[rev]
         builds[rev] = {"receipt": rel(f), "originalJarSha256": r["artifacts"][0]["sha256"],
                        "productionClass": output["selectedClass"], "classSha256": output["selectedClassSha256"],
-                       "classpathEntries": len(r["artifacts"])}
+                       "classpathEntries": len(r["artifacts"]), "buildAndClasspathSeconds": sum(s.get("seconds", 0) for s in r["build"]["steps"])}
     adapters = {name: {"sha256": digest(folder / name), "sourceLines": len((folder / name).read_text().splitlines())}
                 for name in target["preparation"]["adapters"]}
     runs = {}
@@ -214,7 +226,7 @@ def score(number, case, stages):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--stages", default="final,reserve,ordered,streams,utf16,baseline", help="most recent first")
+    ap.add_argument("--stages", default="confirmation,final,reserve,ordered,streams,utf16,baseline", help="most recent first")
     ap.add_argument("--output", type=Path, default=ROOT / "verification/organic-java-pr-campaign.json")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
@@ -226,11 +238,14 @@ def main():
     for v in ("baseline", "current", "finiteBaseline", "finite"):
         summary[v] = {"completeCases": sum(c["caseDecided"][v] for c in rows.values()),
                       "qualifiedObligations": sum(t[v]["qualified"] for c in rows.values() for t in c["tasks"].values())}
-    pins = {(run["verifierCommit"], run["checkerSha256"]) for r in rows.values() for name, run in r["runs"].items() if name.startswith("final-")}
+    stage = next((s for s in args.stages.split(",") if s in ("confirmation", "final") and
+                  all(all(s + "-" + route in r["runs"] for route in ("native", "finite")) for r in rows.values())), None)
+    pins = {(run["verifierCommit"], run["checkerSha256"]) for r in rows.values() for name, run in r["runs"].items()
+            if stage and name in (stage + "-native", stage + "-finite")}
     if len(pins) > 1:
         raise ValueError("the final primary runs used different verifier builds")
     pin = next(iter(pins), None)
-    result = {"baselinePin": read(HERE / "baseline.json"), "finalVerifier": None if pin is None else {"commit": pin[0], "executableSha256": pin[1]},
+    result = {"baselinePin": read(HERE / "baseline.json"), "finalVerifier": None if pin is None else {"stage": stage, "commit": pin[0], "executableSha256": pin[1]},
               "summary": summary, "cases": rows, "reserves": reserves}
     raw = json.dumps(result, indent=2, ensure_ascii=True) + "\n"
     if args.check:

@@ -1329,10 +1329,11 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     let mut machine = Machine::new(&cp);
     for mode in [0, 1] {
         assert_eq!(machine.call_static("claims/LiveMapViews", "remove", "(Z)Z", vec![Value::Int(mode)]).unwrap(), Some(Value::Int(1)));
+        assert_eq!(machine.call_static("claims/LiveMapViews", "packedValue", "(Z)Z", vec![Value::Int(mode)]).unwrap(), Some(Value::Int(1)));
     }
     assert_eq!(machine.call_static("claims/LiveMapViews", "collisions", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     assert_eq!(machine.call_static("claims/LiveMapViews", "copies", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
-    for name in ["remove", "collisions", "mixed"] {
+    for name in ["remove", "collisions", "mixed", "packedValue"] {
         let mut options = options(classes, &format!("claims.LiveMapViews#{name}"), 3, name);
         options.unwind = 30;
         let o = run(&options);

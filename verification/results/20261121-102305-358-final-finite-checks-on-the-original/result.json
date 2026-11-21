@@ -1,0 +1,236 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-102305-358-final-finite-checks-on-the-original",
+  "title": "358 final finite checks on the original commons-codec public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24.5s, peak 212.3 MiB (estimated 5m00s, 3.0 GiB); 9 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-102305-358-final-finite-checks-on-the-original.json",
+    "sha256": "15d828bb3d95525fb6c448831fd2b0560b00ebd758a88b62663f158123fe2fcf",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-102305-358-final-finite-checks-on-the-original",
+      "title": "358 final finite checks on the original commons-codec public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/commons-codec#135 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:finite"
+      ],
+      "links": {
+        "examples": [
+          "358"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T10:23:05+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 358 --route finite --stage final --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/358-commons-codec-partitioned-base16/records/final-finite"
+      ]
+    }
+  },
+  "sourceCommit": "88866c1dafc86d76b2c905878108da7b0d94ac95",
+  "startedAt": "2026-11-21T10:47:12+00:00",
+  "finishedAt": "2026-11-21T10:47:44+00:00",
+  "wallSeconds": 32.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 757440,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 222568448,
+    "wallSeconds": 24.5,
+    "cpuSeconds": 33.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 358 --route finite --stage final --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 24.481,
+      "cpuSeconds": 33.871,
+      "cpuThrottledSeconds": 0.734,
+      "peakMemoryBytes": 222568448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 538,
+        "sha256": "e5de750c526ba06d5ad4b7a069b644575632aa8ba81772b70452694a9727f17a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"358\", \"route\": \"finite\", \"stage\": \"final\", \"workflowExit\": 0, \"seconds\": 24.184, \"checkerSeconds\": 180, \"tasks\": [\"bytes-parent\", \"bytes-fix\", \"ten-parent\", \"ten-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"88866c1dafc86d76b2c905878108da7b0d94ac95\", \"checkerSha256\": \"15e"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/batch.json",
+      "change": "added",
+      "bytes": 3655,
+      "sha256": "21ac5dc9f29e79bbfbafd32408324f96a636785bdc791f62f957c346f778dedd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/bytes-fix.json",
+      "change": "added",
+      "bytes": 361784,
+      "sha256": "f11ea87094bb45b8d29b31f7305510fabb53dfc1da11e25f07498af58f8b8404",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/bytes-parent.json",
+      "change": "added",
+      "bytes": 363999,
+      "sha256": "0d480feb1e62f693d89a77c14847f2bf28c1fee948b6e1655f75e6fd2560486b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/controls-fix.json",
+      "change": "added",
+      "bytes": 4794,
+      "sha256": "3c1b2508e88006092827c84c7952e30e2faef829e35f19799d9a0fedf2eed477",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/controls-parent.json",
+      "change": "added",
+      "bytes": 4816,
+      "sha256": "d341e945ea44da0e9b8ea7dd83f2947a3ec443f590479f20f596cb17105c0833",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/ten-fix.json",
+      "change": "added",
+      "bytes": 4630,
+      "sha256": "7179e3d14ea929893a0400c30cdb3c73878aa1ab16f9b6d51d7f253839770490",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/ten-parent.json",
+      "change": "added",
+      "bytes": 6654,
+      "sha256": "16921cbfaff0741dd8c810779ef4d5d0f9ec4e232cda9cdc75189f9ac2446a17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/run.json",
+      "change": "added",
+      "bytes": 600,
+      "sha256": "1d755dea7ccc2cadf438b487530069fbe8e93748b857bd018783542c3f99eeed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/final-finite/workflow.log",
+      "change": "added",
+      "bytes": 237,
+      "sha256": "304797fc4a357410ca62a3411b8f23f3064c1b8e86048de09ee0d0d099f6e2b5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:51:45+00:00",
+    "applied": [
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/batch.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/bytes-fix.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/bytes-parent.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/controls-fix.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/controls-parent.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/ten-fix.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/20261121T104720Z-0c983367/ten-parent.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/run.json",
+      "examples/358-commons-codec-partitioned-base16/records/final-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2d182dd1f729468156da6c7fb83da09a8c0e8d6f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2d182dd1f729468156da6c7fb83da09a8c0e8d6f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,279 @@
+{
+  "plan": {
+    "example": "354",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "8e0f84b4b3b7cc40d16da048d3515ce6f12b67bb7634e5cdb68647728fac4a07"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+        }
+      ],
+      "key": "8aa0b365d4f9de89"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "26031cf6c75b40deecc3435baede53c63b71adf6ffb1b3122d4ecd2ad3a7a2d6"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "75d85a807d7b66da432a822de6fc75c48134decf",
+        "parent": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "d13c775114ef73c16f962ba18d4e2942ae253a43f7954f835486526c5f40a50b"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-102303-354-final-native-checks-on-the-original/examples/354-commons-lang-surrogate-cuts",
+    "network": true
+  },
+  "inputs": {
+    "example": "354",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "8e0f84b4b3b7cc40d16da048d3515ce6f12b67bb7634e5cdb68647728fac4a07"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+        }
+      ],
+      "key": "8aa0b365d4f9de89"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "26031cf6c75b40deecc3435baede53c63b71adf6ffb1b3122d4ecd2ad3a7a2d6"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "75d85a807d7b66da432a822de6fc75c48134decf",
+        "parent": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-fix.json",
+          "sha256": "d13c775114ef73c16f962ba18d4e2942ae253a43f7954f835486526c5f40a50b"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/SurrogateCuts.java",
+        "sha256": "cbe0ae15444393462b5d1f2b538ec4ab16ed55b1a08194208782690d5df4314e"
+      }
+    ]
+  },
+  "key": "7c40e72ca30e511415bc26d7377c8df5f51e6bdb60400979c30e8ca97b5b6142"
+}
