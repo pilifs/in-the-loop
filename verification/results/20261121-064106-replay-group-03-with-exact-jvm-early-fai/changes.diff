@@ -1,0 +1,1424 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-03/ea-async-27.json
+@@ -0,0 +1,66 @@
++{
++  "old": {
++    "commit": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
++    "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++    "scope": "complete original Maven production module",
++    "module": "async/pom.xml",
++    "subjectJdk": "8.0.512.0+9-tem",
++    "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++    "goals": [
++      "-pl",
++      "async",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=target/upgrade-runtime.cp",
++      "compile",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++    ],
++    "declaredReleaseRepositories": [],
++    "stage": "artifacts ready",
++    "compiledClasses": 24,
++    "resources": 1,
++    "seconds": 8.61,
++    "orderedClasspathSha256": [
++      "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++      "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++      "f2820ea6ef069b83f37d805f5cec58b2872a25650f5f95b4f3cc572156323df0",
++      "62b2c0d818fde5c52cf6404aa10836dbb170a2c3fa8466e656f0f991732fa01f",
++      "02317d9ed739dab470a96f44de712fde51a811362ca26852b34324388e61257c",
++      "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++      "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++    ]
++  },
++  "new": {
++    "commit": "a99e044708fac3654f621649d89bf1820bcd44a0",
++    "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++    "scope": "complete original Maven production module",
++    "module": "async/pom.xml",
++    "subjectJdk": "8.0.512.0+9-tem",
++    "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++    "goals": [
++      "-pl",
++      "async",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=target/upgrade-runtime.cp",
++      "compile",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++    ],
++    "declaredReleaseRepositories": [],
++    "stage": "artifacts ready",
++    "compiledClasses": 24,
++    "resources": 1,
++    "seconds": 10.41,
++    "orderedClasspathSha256": [
++      "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++      "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++      "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
++      "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
++      "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
++      "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++      "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++    ]
++  }
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-replay/03/commons-text-775.json
+@@ -0,0 +1,246 @@
++{
++  "entry": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
++  "observer": "The exact capitalized string and separators returned for the specified ASCII words and delimiters.",
++  "domainBasis": "Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed.",
++  "cases": [
++    {
++      "args": [
++        "hELLO wORLD",
++        " "
++      ],
++      "expected": {
++        "return": "Hello World"
++      }
++    },
++    {
++      "args": [
++        "rED,bLUE",
++        ","
++      ],
++      "expected": {
++        "return": "Red,Blue"
++      }
++    },
++    {
++      "args": [
++        "twO-FOLD nAME",
++        "- "
++      ],
++      "expected": {
++        "return": "Two-Fold Name"
++      }
++    },
++    {
++      "args": [
++        "",
++        ","
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        null,
++        " "
++      ],
++      "expected": {
++        "return": null
++      }
++    }
++  ],
++  "probeSha256": "d075eede429cd8b293b7c4b565618886e40721f9caaa8cafe1a4a8bcd3640ebc",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "349bdc6aebd33dc7a61fea007e9f1d33095a1e4d27944fa2cad62a2edecbe41b",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "2b02f079f088a41e5bda78274872b3af3863a560",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "classpath": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "dependency": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Hello World"
++            },
++            {
++              "return": "Hello World"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Red,Blue"
++            },
++            {
++              "return": "Red,Blue"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Two-Fold Name"
++            },
++            {
++              "return": "Two-Fold Name"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.StringUtils"
++      ]
++    },
++    "new": {
++      "commit": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "classpath": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "dependency": "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 1,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Hello World"
++            },
++            {
++              "return": "Hello World"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Red,Blue"
++            },
++            {
++              "return": "Red,Blue"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Two-Fold Name"
++            },
++            {
++              "return": "Two-Fold Name"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.StringUtils"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
++    "UpgradeProbe": "d493ac559de33d9feb35ed18760fd1c91ad99df64f00f14dbe86ec6a0c6855ef",
++    "UpgradeTrace": "c500117a957c7ad5167b615e6363889f5494f490d9e03f2e2b2ec4670f18f47c"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 11.831,
++  "specSha256": "ff7e04724696598bb9beb16167305590e56097f75dfb5cabe2eb41a7f7ac5bdb"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-replay/03/compsuite-i-80.json
+@@ -0,0 +1,179 @@
++{
++  "entry": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "observer": "Observe the logger name behind the INFO output stream for a caller-relative short name and for an explicit full name.",
++  "domainBasis": "The registered developer test requires the calling class name as the prefix for short logger names. A name containing package separators already specifies the logger. Both original POMs select logback-classic 1.1.2 for the registered test, including its logback-core dependency. That backend is fixed across the two runs. With the production API alone the old and new versions both used NOP.",
++  "cases": [
++    {
++      "args": [
++        "MyLogger"
++      ],
++      "expected": {
++        "return": "UpgradeProbe.MyLogger"
++      }
++    },
++    {
++      "args": [
++        "example.full.name"
++      ],
++      "expected": {
++        "return": "example.full.name"
++      }
++    }
++  ],
++  "probeSha256": "6fc25fee9e5643ede0b9e3908a61807d4a0563b8d7a0a0b1aa5ed171e305bed4",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "349bdc6aebd33dc7a61fea007e9f1d33095a1e4d27944fa2cad62a2edecbe41b",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "5d23d18cba42cb03f95b89c2c459b01163408ebf",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
++        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++      ],
++      "dependency": "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "UpgradeProbe.MyLogger"
++            },
++            {
++              "return": "UpgradeProbe.MyLogger"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "example.full.name"
++            },
++            {
++              "return": "example.full.name"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.spi.LocationAwareLogger",
++        "org.slf4j.spi.LoggerFactoryBinder"
++      ]
++    },
++    "new": {
++      "commit": "938bbeb343eb5fd465517c713fe9065ce997058a",
++      "sourceSha256": "56045d756ac15642ab2361ced55afa29a6a913e0b2ef3b2da9c23a3b170aa085",
++      "callerClassSha256": "e0675e4ad985e187e1d1e836199c1a7ea8fce1dde6849bed344be194a357d6d7",
++      "classpath": [
++        "ee8d76e4a679c04f4b4bab595f2f8c4945cb8e861826ca317888dabd611c0510",
++        "a7f713593007813bf07d19bd1df9f81c86c0719e9a0bb2ef1b98b78313fc940d",
++        "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
++        "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22",
++        "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++      ],
++      "dependency": "8df06cc146b8638a24cefb669d20f4bdb2c4497d5047c548a0a190df6f97c3a5",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 11,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "NOP"
++            },
++            {
++              "return": "NOP"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.slf4j.ILoggerFactory",
++        "org.slf4j.IMarkerFactory",
++        "org.slf4j.Logger",
++        "org.slf4j.LoggerFactory",
++        "org.slf4j.Marker",
++        "org.slf4j.event.LoggingEvent",
++        "org.slf4j.helpers.BasicMDCAdapter",
++        "org.slf4j.helpers.BasicMDCAdapter$1",
++        "org.slf4j.helpers.BasicMarkerFactory",
++        "org.slf4j.helpers.MarkerIgnoringBase",
++        "org.slf4j.helpers.NOPLogger",
++        "org.slf4j.helpers.NOPLoggerFactory",
++        "org.slf4j.helpers.NOPMDCAdapter",
++        "org.slf4j.helpers.NOPServiceProvider",
++        "org.slf4j.helpers.NamedLoggerBase",
++        "org.slf4j.helpers.SubstituteLoggerFactory",
++        "org.slf4j.helpers.SubstituteServiceProvider",
++        "org.slf4j.helpers.Util",
++        "org.slf4j.spi.LoggingEventBuilder",
++        "org.slf4j.spi.MDCAdapter",
++        "org.slf4j.spi.SLF4JServiceProvider"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalFixtures": [],
++  "runtimeCompanions": [
++    {
++      "mavenPath": "ch/qos/logback/logback-classic/1.1.2/logback-classic-1.1.2.jar",
++      "sha256": "30b792e2745752fad8e1f92ca750d5f2d480edd2c5e99bc098aaebe22eb48c22"
++    },
++    {
++      "mavenPath": "ch/qos/logback/logback-core/1.1.2/logback-core-1.1.2.jar",
++      "sha256": "90f1dfca25cd776f28a589f58b181d0e6787668a1b1fa8510bead402f86edcb1"
++    }
++  ],
++  "originalInvocation": "org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "159f2bf0ba81aac6c441266b6daa215d5037ae87d7776769ff59df58ddc504d0",
++    "UpgradeProbe": "5998336ad04eddf16db692500cb64b2af4d27499c36ac8bd0d869cfeec53f718",
++    "UpgradeTrace": "2fd5d6c439a2c98e841470872c63d76caff15925bba1951743f7b86993648459"
++  },
++  "differences": [
++    0,
++    1
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 5.451,
++  "specSha256": "a266a2725a59aa69863c56e11b0489f4e14c66c72d3416a367a86e854b9fac44"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-replay/03/ea-async-27.json
+@@ -0,0 +1,416 @@
++{
++  "entry": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
++  "observer": "Transform and execute eight fixed bytecode/future combinations. Read completion at return and the eventual integer.",
++  "domainBasis": "Each class has zero through three extra uninitialized stack copies across await. The already resolved input completes synchronously. The pending input completes after the argument is supplied. The generated function constructs the integer represented by that argument. The same original class bytes are passed on both releases.",
++  "cases": [
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjAHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAhAAQAAgAAABW7ABBZK8AAErgAGMAAGrcAHbgAILAAAAAAACIAAAAEAAEADgAA",
++        "true",
++        "100"
++      ],
++      "expected": {
++        "return": "true/100"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjAHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAhAAQAAgAAABW7ABBZK8AAErgAGMAAGrcAHbgAILAAAAAAACIAAAAEAAEADgAA",
++        "false",
++        "101"
++      ],
++      "expected": {
++        "return": "false/101"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjEHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAjAAUAAgAAABe7ABBZWSvAABK4ABjAABq3AB1XuAAgsAAAAAAAIgAAAAQAAQAOAAA=",
++        "true",
++        "110"
++      ],
++      "expected": {
++        "return": "true/110"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjEHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAjAAUAAgAAABe7ABBZWSvAABK4ABjAABq3AB1XuAAgsAAAAAAAIgAAAAQAAQAOAAA=",
++        "false",
++        "111"
++      ],
++      "expected": {
++        "return": "false/111"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjIHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAlAAYAAgAAABm7ABBZWVkrwAASuAAYwAAatwAdV1e4ACCwAAAAAAAiAAAABAABAA4AAA==",
++        "true",
++        "120"
++      ],
++      "expected": {
++        "return": "true/120"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjIHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAlAAYAAgAAABm7ABBZWVkrwAASuAAYwAAatwAdV1e4ACCwAAAAAAAiAAAABAABAA4AAA==",
++        "false",
++        "121"
++      ],
++      "expected": {
++        "return": "false/121"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjMHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAnAAcAAgAAABu7ABBZWVlZK8AAErgAGMAAGrcAHVdXV7gAILAAAAAAACIAAAAEAAEADgAA",
++        "true",
++        "130"
++      ],
++      "expected": {
++        "return": "true/130"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAIwEAEFVwZ3JhZGVQcm9iZUdlbjMHAAEBABBqYXZhL2xhbmcvT2JqZWN0BwADAQAPVXBncmFkZVByb2JlJEFGBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQA8KExqYXZhL2xhbmcvT2JqZWN0OylMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWphdmEvbGFuZy9JbnRlZ2VyBwAPAQAmamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmUHABEBABJjb20vZWEvYXN5bmMvQXN5bmMHABMBAAVhd2FpdAEAPChMamF2YS91dGlsL2NvbmN1cnJlbnQvQ29tcGxldGFibGVGdXR1cmU7KUxqYXZhL2xhbmcvT2JqZWN0OwwAFQAWCgAUABcBABBqYXZhL2xhbmcvU3RyaW5nBwAZAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWDAAHABsKABAAHAEAD2NvbXBsZXRlZEZ1dHVyZQwAHgAMCgASAB8BAARDb2RlAQAKRXhjZXB0aW9ucwAhAAIABAABAAYAAAACAAEABwAIAAEAIQAAABEAAQABAAAABSq3AAqxAAAAAAABAAsADAACACEAAAAnAAcAAgAAABu7ABBZWVlZK8AAErgAGMAAGrcAHVdXV7gAILAAAAAAACIAAAAEAAEADgAA",
++        "false",
++        "131"
++      ],
++      "expected": {
++        "return": "false/131"
++      }
++    }
++  ],
++  "probeSha256": "d27b7bd79486cbc164fd45498f24cb24f0f18833b40b31fe160492b38b79c612",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "349bdc6aebd33dc7a61fea007e9f1d33095a1e4d27944fa2cad62a2edecbe41b",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "classpath": [
++        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++        "f2820ea6ef069b83f37d805f5cec58b2872a25650f5f95b4f3cc572156323df0",
++        "62b2c0d818fde5c52cf6404aa10836dbb170a2c3fa8466e656f0f991732fa01f",
++        "02317d9ed739dab470a96f44de712fde51a811362ca26852b34324388e61257c",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "dependency": "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 24,
++      "resources": 1,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/100"
++            },
++            {
++              "return": "true/100"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/101"
++            },
++            {
++              "return": "false/101"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/110"
++            },
++            {
++              "return": "true/110"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/111"
++            },
++            {
++              "return": "false/111"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/120"
++            },
++            {
++              "return": "true/120"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 5,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/121"
++            },
++            {
++              "return": "false/121"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 6,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/130"
++            },
++            {
++              "return": "true/130"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 7,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/131"
++            },
++            {
++              "return": "false/131"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.Context",
++        "org.objectweb.asm.CurrentFrame",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Handle",
++        "org.objectweb.asm.Handler",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.ModuleVisitor",
++        "org.objectweb.asm.ModuleWriter",
++        "org.objectweb.asm.Opcodes",
++        "org.objectweb.asm.Symbol",
++        "org.objectweb.asm.SymbolTable",
++        "org.objectweb.asm.SymbolTable$Entry",
++        "org.objectweb.asm.Type"
++      ]
++    },
++    "new": {
++      "commit": "a99e044708fac3654f621649d89bf1820bcd44a0",
++      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
++      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
++      "classpath": [
++        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
++        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
++        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++      "preparation": "complete original Maven production module",
++      "compiledClasses": 24,
++      "resources": 1,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/100"
++            },
++            {
++              "return": "true/100"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/101"
++            },
++            {
++              "return": "false/101"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/110"
++            },
++            {
++              "return": "true/110"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/111"
++            },
++            {
++              "return": "false/111"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/120"
++            },
++            {
++              "return": "true/120"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 5,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/121"
++            },
++            {
++              "return": "false/121"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 6,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "true/130"
++            },
++            {
++              "return": "true/130"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 7,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "false/131"
++            },
++            {
++              "return": "false/131"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassTooLargeException",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.Context",
++        "org.objectweb.asm.CurrentFrame",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Handle",
++        "org.objectweb.asm.Handler",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodTooLargeException",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.ModuleVisitor",
++        "org.objectweb.asm.ModuleWriter",
++        "org.objectweb.asm.Opcodes",
++        "org.objectweb.asm.Symbol",
++        "org.objectweb.asm.SymbolTable",
++        "org.objectweb.asm.SymbolTable$Entry",
++        "org.objectweb.asm.Type"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "159f2bf0ba81aac6c441266b6daa215d5037ae87d7776769ff59df58ddc504d0",
++    "UpgradeProbe$1": "92bfade61d193455621fb76ee748ede8d628742399186ac09c23973742a90a52",
++    "UpgradeProbe$AF": "ec59f52e6c5b3b10c7864b8945a89a98836e374915b1fbe9a775d80c24d77e44",
++    "UpgradeProbe$Loader": "6df9b262cec70d26ab314e6951d7b9a1a3ccd3a1c743955e1488f8d222dc80a4",
++    "UpgradeProbe": "840979dac8afabb76c8e3be534eec34429c2e09d83246ad25610b4bb0c77176b",
++    "UpgradeTrace": "2fd5d6c439a2c98e841470872c63d76caff15925bba1951743f7b86993648459"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 20.681,
++  "specSha256": "122eb0714c3ec4b4d856cab8aa17709903691056cbc15e9173bb92502c3daa0b"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-replay/03/incremental-analysis-28.json
+@@ -0,0 +1,283 @@
++{
++  "entry": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
++  "observer": "Which compiled classes should be analysed for one changed source file? Compare the original finder\u2019s selected binary names.",
++  "domainBasis": "Two independently inspected classfiles carry SourceFile values Empty.java and Numbers.java. A matching changed source selects its class, and an unrelated source selects none. The two earlier input files have no SourceFile attribute and supply explicit negative controls.",
++  "cases": [
++    {
++      "args": [
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAApFbXB0eS5qYXZhDAAEAAUBABhldmFsdWF0aW9uL2ZpeHR1cmUvRW1wdHkBABBqYXZhL2xhbmcvT2JqZWN0ACEAAgADAAAAAAABAAEABAAFAAEABgAAABEAAQABAAAABSq3AAGxAAAAAAABAAcAAAACAAg=",
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAAxOdW1iZXJzLmphdmEMAAQABQEAGmV2YWx1YXRpb24vZml4dHVyZS9OdW1iZXJzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAQAHAAAAAgAI",
++        "Empty"
++      ],
++      "expected": {
++        "return": "evaluation.fixture.Empty"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAApFbXB0eS5qYXZhDAAEAAUBABhldmFsdWF0aW9uL2ZpeHR1cmUvRW1wdHkBABBqYXZhL2xhbmcvT2JqZWN0ACEAAgADAAAAAAABAAEABAAFAAEABgAAABEAAQABAAAABSq3AAGxAAAAAAABAAcAAAACAAg=",
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAAxOdW1iZXJzLmphdmEMAAQABQEAGmV2YWx1YXRpb24vZml4dHVyZS9OdW1iZXJzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAQAHAAAAAgAI",
++        "Numbers"
++      ],
++      "expected": {
++        "return": "evaluation.fixture.Numbers"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAApFbXB0eS5qYXZhDAAEAAUBABhldmFsdWF0aW9uL2ZpeHR1cmUvRW1wdHkBABBqYXZhL2xhbmcvT2JqZWN0ACEAAgADAAAAAAABAAEABAAFAAEABgAAABEAAQABAAAABSq3AAGxAAAAAAABAAcAAAACAAg=",
++        "yv66vgAAADQADAoAAwAJBwAKBwALAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAClNvdXJjZUZpbGUBAAxOdW1iZXJzLmphdmEMAAQABQEAGmV2YWx1YXRpb24vZml4dHVyZS9OdW1iZXJzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAQAHAAAAAgAI",
++        "Missing"
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA==",
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA==",
++        "Empty"
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA==",
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA==",
++        "Numbers"
++      ],
++      "expected": {
++        "return": ""
++      }
++    }
++  ],
++  "probeSha256": "d25fa528e50e13e335630043ef7cdcb89affbd22e89757e14d918149a38a8270",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "349bdc6aebd33dc7a61fea007e9f1d33095a1e4d27944fa2cad62a2edecbe41b",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "f4633c66214da5bca3761136e88c71ec3b1eead0",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "classpath": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "dependency": "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Empty"
++            },
++            {
++              "return": "evaluation.fixture.Empty"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Numbers"
++            },
++            {
++              "return": "evaluation.fixture.Numbers"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    },
++    "new": {
++      "commit": "4e33671a32cbad26d39404389165d07c35770070",
++      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
++      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
++      "classpath": [
++        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
++        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
++        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
++        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
++        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
++        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
++        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
++      ],
++      "dependency": "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Empty"
++            },
++            {
++              "return": "evaluation.fixture.Empty"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "evaluation.fixture.Numbers"
++            },
++            {
++              "return": "evaluation.fixture.Numbers"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
++    "UpgradeTrace": "c500117a957c7ad5167b615e6363889f5494f490d9e03f2e2b2ec4670f18f47c",
++    "com/worksap/tools/spotbugs/maven/incremental/UpgradeProbe": "a3fb84ee8e67f33ab95a2af9a7f8e66ca7e18f76f716586683d20e88117ada9e"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 12.224,
++  "specSha256": "09c3f0c599d933898e5cfcbcd0bf283147380e2b297ec515184e1ae71a205981"
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/early-failure-replay/03/whatjdk-12.json
+@@ -0,0 +1,216 @@
++{
++  "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
++  "observer": "Read the classfile, fields and methods delivered by the original WhatJDK archive reader. The four inputs cover reference arrays, overloads, a long field and an empty class.",
++  "domainBasis": "The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator.",
++  "cases": [
++    {
++      "args": [
++        "yv66vgAAADQAEAoAAwANBwAOBwAPAQAFdG90YWwBAAFKAQAFbmFtZXMBABNbTGphdmEvbGFuZy9TdHJpbmc7AQAGPGluaXQ+AQADKClWAQAEQ29kZQEABmNob29zZQEAKChbTGphdmEvbGFuZy9TdHJpbmc7SSlMamF2YS9sYW5nL09iamVjdDsMAAgACQEAJmV2YWx1YXRpb24vZml4dHVyZS9BcnJheXNBbmRSZWZlcmVuY2VzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAIABAAEAAUAAAABAAYABwAAAAIAAQAIAAkAAQAKAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEACwAMAAEACgAAABAAAgADAAAABCscMrAAAAAAAAA="
++      ],
++      "expected": {
++        "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA=="
++      ],
++      "expected": {
++        "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFKAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAcZXZhbHVhdGlvbi9maXh0dXJlL0xvbmdGaWVsZAEAEGphdmEvbGFuZy9PYmplY3QBAAVsYWJlbAAxAAQABQAAAAIAAgAGAAcAAAAZAAgACQABAAoAAAACAAsAAwABAAwADQABAA4AAAARAAEAAQAAAAUqtwABsQAAAAAAAQAPABAAAQAOAAAAEAACAAIAAAAEGwRgrAAAAAAAAQAPABEAAQAOAAAAEgAEAAMAAAAGHxQAAmGtAAAAAAAA"
++      ],
++      "expected": {
++        "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++      }
++    },
++    {
++      "args": [
++        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA=="
++      ],
++      "expected": {
++        "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++      }
++    }
++  ],
++  "probeSha256": "872f10271ddc3fb0b3bf843c4ee11297bd31e6c01fdfe9852a7a74d12680dc14",
++  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
++  "tracerSha256": "349bdc6aebd33dc7a61fea007e9f1d33095a1e4d27944fa2cad62a2edecbe41b",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "classpath": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
++      ],
++      "dependency": "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    },
++    "new": {
++      "commit": "e5574c3c06f9db307b96baa5937f9c19039df605",
++      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
++      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
++      "classpath": [
++        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
++        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
++        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
++      ],
++      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++      "preparation": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 2,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            },
++            {
++              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            },
++            {
++              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ClassReader",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.Context"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [],
++  "runtimeCompanions": [],
++  "originalInvocation": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
++  "invocationVia": null,
++  "probeClasses": {
++    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
++    "UpgradeTrace": "c500117a957c7ad5167b615e6363889f5494f490d9e03f2e2b2ec4670f18f47c",
++    "com/iodesystems/whatjdk/UpgradeProbe$1": "513889c08c5463fca230569f7cc3be52e30afbc41b72c9c97cd9586657753827",
++    "com/iodesystems/whatjdk/UpgradeProbe": "2eea25b749f3563b19628dc08a40c80e7ec322c603a9c5e137bacadfdadf5a68"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 10.109,
++  "specSha256": "2a4b25018cdfde34a5d83d652d50a1b49cf3699f123c7a4cfd08b5c48c60f7f2"
++}

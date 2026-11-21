@@ -1,0 +1,1403 @@
+{
+  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(Ljava/util/List;)J",
+  "observer": "Open the original LanguageTool n-gram indexes and read the occurrence count for the supplied tokens.",
+  "domainBasis": "The upstream LuceneSingleIndexLanguageModelTest.testLanguageModel gives the counts for the unigram, bigram, trigram and missing token. All three index directories come byte-for-byte from both original commits.",
+  "cases": [
+    {
+      "args": [
+        "the"
+      ],
+      "expected": {
+        "return": "55"
+      }
+    },
+    {
+      "args": [
+        "the",
+        "nice"
+      ],
+      "expected": {
+        "return": "3"
+      }
+    },
+    {
+      "args": [
+        "the",
+        "nice",
+        "building"
+      ],
+      "expected": {
+        "return": "1"
+      }
+    },
+    {
+      "args": [
+        "not-in-here"
+      ],
+      "expected": {
+        "return": "0"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "e6392b647c8c6b2f104faf259ebde851ee03a6adaa9105b7c11b908e558effb0",
+  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
+  "tracerSha256": "0c743a41b737519d631100cac2b373643bb8126aa81ba212dfede4b364d78345",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "fe77e85a2f7b472ba71564821e7545025eeda242",
+      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
+      "callerClassSha256": "c7f6f8c8aad8be9fb4370f436283bbfae6e5868bb58bef29304676dd7955d328",
+      "classpath": [
+        "5310a7d9295fbbbe01e7a71ee2f246134c481e803ed54289181a91a904f92815",
+        "de2e1dcdcf3ef917a8ce858661a06726a9a944f28e33ad7f9e08bea44dc3c230",
+        "df45e56549b63e0fe716953c9d43cc158f8bf008baf60498e7c17f3faa00a70b",
+        "972139718abc8a4893fa78cba8cf7b2c903f35c97aaf44fa3031b0669948b480",
+        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+        "86a199d206fc1a462d97a3fcd4fc03825dd7f75e4fb441bfe0f4eb7388869d93",
+        "1caab6adc345299ce86a993d9ebc01032622cdbd274b5d3a414905b5e5440c54",
+        "a2f741b2536a919f396447dd6771ddc6bb8d92bf3407f7af46d1260e7c43fd40",
+        "d5721847b0ccc3c687f7fb5c25e8da3bfe8a9924e2c37af50a35e756bc387b4c",
+        "7b3dd6661e83e313d70b4aa82c5180bb39535e536a3435fa741fff9727433b6a",
+        "e8c64ecc494b6683d2df7749150d06af6b95eec9821abbf91b8dd2e15e680d87",
+        "ce6f913cad1f0db3aad70186d65c5bc7ffcc9a99e3fe8e0b137312819f7c362f",
+        "f53ecc3d71da9ebc82edd10fb35638d32e8b9d849273dd717a021eca02f2278d",
+        "76a787944faab6c9bea64dc78400949027ed6fb686fe9b328d18f949852bc89f",
+        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
+        "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5",
+        "16771a79414738cbb37560dd4311a39e597d46adedc45f9b4289ea0cb448488f",
+        "912e6d8bf817dd4bba0d5c5174a903bc90f8a22869e74d24dfe5533efaeae356",
+        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
+        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
+        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
+        "35da65fdbd3f9c1fe79cfc8399db975fd97660d8a219febfda9fd1a5fc058f10",
+        "0ce6c067fc776be1dc5ca32de65943a19b1a878037eb9ce453f0ee9a191b8856",
+        "4add5fbcb7f548b79230ed7e01cb9fd4f9e2524bd1598dbcbfd8150563fe27f7",
+        "883007989d373d19f352ba9792b25dec21dc7d0e205a710a93a3815101bb3d03",
+        "da804c5e0d11414529caa39e83cb17c10f89b872fbfefee7c826bd117693dd49",
+        "055d062b049eb3195331c7822c71b86532883535bab87bb2f899a266097db493",
+        "a30888c85399f9e472ead38c495a21a425ba61412a14084493c090360c40e3f0",
+        "f19ac45cfbbe12fa952be1e691eae80a74c9c7f4ac46ab3f760ca9cfa3bc694b",
+        "66a8b44e63c47a088ba1953875ea5b2b0eb0769a23906405789b3bb01c9cf8dd",
+        "27a77db909f3c2833c0b1a37c55af1db06045118ad2eed96ce567b6632bce038",
+        "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "1e3de0e229972422204e634614c00859e7c568e9eb55092833ff13e9133a5905",
+        "a248cca2a09916eb0cb8180c30a35606a485ffc5cfefde6dc351d543e77edadf",
+        "eb19f3ce42ca0257162f779e63c19bdd86b5c53e5181ef4a50b745e5ced54300",
+        "4a9ae963f1ae7c464d490b5480a3375f70c114292e3dd340f545fe6c494937d1",
+        "c160fbd78f51a0c2375a794e435ce2112524a6871f64d0331895e9e26ee8b9ee",
+        "14ea54ec9ff2bb51a0583c1d0d7ebd22ec78a5dad47cdd205dca54706b474743",
+        "08a70eadb4b274edaefc1194c1f7570621a51b0a9aa036aa15dcdb7b927e7c76",
+        "fb2dde9020a47bb024c43d9de0a94e73abef793bf08f01354cc97cb2d2e2a957",
+        "a678cb1aa8f5d03d901c992c75741841d98a9bc3d55dad02e84d65315c4e60f2",
+        "3e892546b72ab547cb77de4d840bcfd05c853e73390fed7370a8f19acb0735a0",
+        "767e11f33eddcd506980f0ff213f9d553a6a21802e3be1330345f62f7ee3d50f",
+        "0dfaafce29a9a245b0a9180ec2c1073d2bd8f0330f03a9f1f6a74d1bc83f62d6",
+        "6ba385b450a6311a15c918cf8688b9af9327c6104f0ecbd35933cfcd3095fe04",
+        "0b3d6fd42958ee98715ba2ec5fe221f4ca1e694d7c981b0ae0cd68e97baf6dce",
+        "7d1560fe2c3564128f2ff3f7c0fc9f0666738aa0e704f3d78b8954f9e0ec3adf",
+        "e2d6f4084f8a180de66c7700343fe8ad3a0aa84f2cb0561edb417fe1fd41aa15",
+        "5e168368fbc250af3c79aa5fef0c3467a2d64e5a7bd74005f25d8399aeb0708d"
+      ],
+      "dependency": "16771a79414738cbb37560dd4311a39e597d46adedc45f9b4289ea0cb448488f",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 335,
+      "resources": 18,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "55"
+            },
+            {
+              "return": "55"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "3"
+            },
+            {
+              "return": "3"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "1"
+            },
+            {
+              "return": "1"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "0"
+            },
+            {
+              "return": "0"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.lucene.codecs.UndeadNormsProducer",
+        "org.apache.lucene.codecs.blocktree.Lucene40BlockTreeTermsReader",
+        "org.apache.lucene.codecs.blocktree.Lucene40FieldReader",
+        "org.apache.lucene.codecs.blocktree.Lucene40IntersectTermsEnum",
+        "org.apache.lucene.codecs.blocktree.Lucene40SegmentTermsEnum",
+        "org.apache.lucene.codecs.blocktree.Lucene40SegmentTermsEnumFrame",
+        "org.apache.lucene.codecs.lucene40.Lucene40Codec",
+        "org.apache.lucene.codecs.lucene40.Lucene40Codec$1",
+        "org.apache.lucene.codecs.lucene40.Lucene40CompoundFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40CompoundReader",
+        "org.apache.lucene.codecs.lucene40.Lucene40CompoundReader$FileEntry",
+        "org.apache.lucene.codecs.lucene40.Lucene40DocValuesFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40DocValuesReader",
+        "org.apache.lucene.codecs.lucene40.Lucene40FieldInfosFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40LiveDocsFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40NormsFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40NormsReader",
+        "org.apache.lucene.codecs.lucene40.Lucene40PostingsFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40PostingsReader",
+        "org.apache.lucene.codecs.lucene40.Lucene40SegmentInfoFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40StoredFieldsFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40StoredFieldsReader",
+        "org.apache.lucene.codecs.lucene40.Lucene40TermVectorsFormat",
+        "org.apache.lucene.codecs.lucene40.Lucene40TermVectorsReader",
+        "org.apache.lucene.codecs.lucene41.ForUtil",
+        "org.apache.lucene.codecs.lucene41.IntBlockTermState",
+        "org.apache.lucene.codecs.lucene41.Lucene41Codec",
+        "org.apache.lucene.codecs.lucene41.Lucene41Codec$1",
+        "org.apache.lucene.codecs.lucene41.Lucene41PostingsFormat",
+        "org.apache.lucene.codecs.lucene41.Lucene41PostingsReader",
+        "org.apache.lucene.codecs.lucene41.Lucene41PostingsReader$BlockDocsEnum",
+        "org.apache.lucene.codecs.lucene41.Lucene41PostingsReader$EverythingEnum",
+        "org.apache.lucene.codecs.lucene41.Lucene41StoredFieldsFormat",
+        "org.apache.lucene.codecs.lucene41.Lucene41StoredFieldsIndexReader",
+        "org.apache.lucene.codecs.lucene41.Lucene41StoredFieldsReader",
+        "org.apache.lucene.codecs.lucene41.Lucene41StoredFieldsReader$1",
+        "org.apache.lucene.codecs.lucene41.Lucene41StoredFieldsReader$BlockState",
+        "org.apache.lucene.codecs.lucene41.Lucene41StoredFieldsReader$BlockState$1",
+        "org.apache.lucene.codecs.lucene41.Lucene41StoredFieldsReader$SerializedDocument",
+        "org.apache.lucene.codecs.lucene410.Lucene410Codec",
+        "org.apache.lucene.codecs.lucene410.Lucene410Codec$1",
+        "org.apache.lucene.codecs.lucene410.Lucene410Codec$2",
+        "org.apache.lucene.codecs.lucene410.Lucene410Codec$3",
+        "org.apache.lucene.codecs.lucene410.Lucene410DocValuesConsumer",
+        "org.apache.lucene.codecs.lucene410.Lucene410DocValuesFormat",
+        "org.apache.lucene.codecs.lucene410.Lucene410DocValuesProducer",
+        "org.apache.lucene.codecs.lucene42.Lucene42Codec",
+        "org.apache.lucene.codecs.lucene42.Lucene42Codec$1",
+        "org.apache.lucene.codecs.lucene42.Lucene42Codec$2",
+        "org.apache.lucene.codecs.lucene42.Lucene42Codec$3",
+        "org.apache.lucene.codecs.lucene42.Lucene42DocValuesFormat",
+        "org.apache.lucene.codecs.lucene42.Lucene42DocValuesProducer",
+        "org.apache.lucene.codecs.lucene42.Lucene42FieldInfosFormat",
+        "org.apache.lucene.codecs.lucene42.Lucene42NormsFormat",
+        "org.apache.lucene.codecs.lucene42.Lucene42NormsProducer",
+        "org.apache.lucene.codecs.lucene42.Lucene42TermVectorsFormat",
+        "org.apache.lucene.codecs.lucene42.Lucene42TermVectorsReader",
+        "org.apache.lucene.codecs.lucene45.Lucene45Codec",
+        "org.apache.lucene.codecs.lucene45.Lucene45Codec$1",
+        "org.apache.lucene.codecs.lucene45.Lucene45Codec$2",
+        "org.apache.lucene.codecs.lucene45.Lucene45Codec$3",
+        "org.apache.lucene.codecs.lucene45.Lucene45DocValuesConsumer",
+        "org.apache.lucene.codecs.lucene45.Lucene45DocValuesFormat",
+        "org.apache.lucene.codecs.lucene45.Lucene45DocValuesProducer",
+        "org.apache.lucene.codecs.lucene46.Lucene46Codec",
+        "org.apache.lucene.codecs.lucene46.Lucene46Codec$1",
+        "org.apache.lucene.codecs.lucene46.Lucene46Codec$2",
+        "org.apache.lucene.codecs.lucene46.Lucene46Codec$3",
+        "org.apache.lucene.codecs.lucene46.Lucene46FieldInfosFormat",
+        "org.apache.lucene.codecs.lucene46.Lucene46SegmentInfoFormat",
+        "org.apache.lucene.codecs.lucene49.Lucene49Codec",
+        "org.apache.lucene.codecs.lucene49.Lucene49Codec$1",
+        "org.apache.lucene.codecs.lucene49.Lucene49Codec$2",
+        "org.apache.lucene.codecs.lucene49.Lucene49Codec$3",
+        "org.apache.lucene.codecs.lucene49.Lucene49DocValuesConsumer",
+        "org.apache.lucene.codecs.lucene49.Lucene49DocValuesFormat",
+        "org.apache.lucene.codecs.lucene49.Lucene49DocValuesProducer",
+        "org.apache.lucene.codecs.lucene49.Lucene49NormsFormat",
+        "org.apache.lucene.codecs.lucene49.Lucene49NormsProducer",
+        "org.apache.lucene.codecs.lucene49.Lucene49NormsProducer$1",
+        "org.apache.lucene.codecs.lucene49.Lucene49NormsProducer$2",
+        "org.apache.lucene.codecs.lucene49.Lucene49NormsProducer$3",
+        "org.apache.lucene.codecs.lucene49.Lucene49NormsProducer$NormsEntry",
+        "org.apache.lucene.codecs.lucene50.Lucene50Codec",
+        "org.apache.lucene.codecs.lucene50.Lucene50Codec$1",
+        "org.apache.lucene.codecs.lucene50.Lucene50Codec$2",
+        "org.apache.lucene.codecs.lucene50.Lucene50DocValuesConsumer",
+        "org.apache.lucene.codecs.lucene50.Lucene50DocValuesFormat",
+        "org.apache.lucene.codecs.lucene50.Lucene50DocValuesProducer",
+        "org.apache.lucene.codecs.lucene50.Lucene50NormsFormat",
+        "org.apache.lucene.codecs.lucene50.Lucene50NormsProducer",
+        "org.apache.lucene.codecs.lucene53.Lucene53Codec",
+        "org.apache.lucene.codecs.lucene53.Lucene53Codec$1",
+        "org.apache.lucene.codecs.lucene53.Lucene53Codec$2"
+      ]
+    },
+    "new": {
+      "commit": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
+      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
+      "callerClassSha256": "c7f6f8c8aad8be9fb4370f436283bbfae6e5868bb58bef29304676dd7955d328",
+      "classpath": [
+        "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7",
+        "de2e1dcdcf3ef917a8ce858661a06726a9a944f28e33ad7f9e08bea44dc3c230",
+        "df45e56549b63e0fe716953c9d43cc158f8bf008baf60498e7c17f3faa00a70b",
+        "972139718abc8a4893fa78cba8cf7b2c903f35c97aaf44fa3031b0669948b480",
+        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+        "86a199d206fc1a462d97a3fcd4fc03825dd7f75e4fb441bfe0f4eb7388869d93",
+        "1caab6adc345299ce86a993d9ebc01032622cdbd274b5d3a414905b5e5440c54",
+        "a2f741b2536a919f396447dd6771ddc6bb8d92bf3407f7af46d1260e7c43fd40",
+        "d5721847b0ccc3c687f7fb5c25e8da3bfe8a9924e2c37af50a35e756bc387b4c",
+        "7b3dd6661e83e313d70b4aa82c5180bb39535e536a3435fa741fff9727433b6a",
+        "e8c64ecc494b6683d2df7749150d06af6b95eec9821abbf91b8dd2e15e680d87",
+        "ce6f913cad1f0db3aad70186d65c5bc7ffcc9a99e3fe8e0b137312819f7c362f",
+        "f53ecc3d71da9ebc82edd10fb35638d32e8b9d849273dd717a021eca02f2278d",
+        "76a787944faab6c9bea64dc78400949027ed6fb686fe9b328d18f949852bc89f",
+        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
+        "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5",
+        "391a6664649fb1eb6fe623bf3a7b12a60dfd4b6f77e1a159308f5cab198e9530",
+        "912e6d8bf817dd4bba0d5c5174a903bc90f8a22869e74d24dfe5533efaeae356",
+        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
+        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
+        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
+        "35da65fdbd3f9c1fe79cfc8399db975fd97660d8a219febfda9fd1a5fc058f10",
+        "0ce6c067fc776be1dc5ca32de65943a19b1a878037eb9ce453f0ee9a191b8856",
+        "4add5fbcb7f548b79230ed7e01cb9fd4f9e2524bd1598dbcbfd8150563fe27f7",
+        "883007989d373d19f352ba9792b25dec21dc7d0e205a710a93a3815101bb3d03",
+        "da804c5e0d11414529caa39e83cb17c10f89b872fbfefee7c826bd117693dd49",
+        "055d062b049eb3195331c7822c71b86532883535bab87bb2f899a266097db493",
+        "a30888c85399f9e472ead38c495a21a425ba61412a14084493c090360c40e3f0",
+        "f19ac45cfbbe12fa952be1e691eae80a74c9c7f4ac46ab3f760ca9cfa3bc694b",
+        "66a8b44e63c47a088ba1953875ea5b2b0eb0769a23906405789b3bb01c9cf8dd",
+        "27a77db909f3c2833c0b1a37c55af1db06045118ad2eed96ce567b6632bce038",
+        "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "1e3de0e229972422204e634614c00859e7c568e9eb55092833ff13e9133a5905",
+        "a248cca2a09916eb0cb8180c30a35606a485ffc5cfefde6dc351d543e77edadf",
+        "eb19f3ce42ca0257162f779e63c19bdd86b5c53e5181ef4a50b745e5ced54300",
+        "4a9ae963f1ae7c464d490b5480a3375f70c114292e3dd340f545fe6c494937d1",
+        "c160fbd78f51a0c2375a794e435ce2112524a6871f64d0331895e9e26ee8b9ee",
+        "14ea54ec9ff2bb51a0583c1d0d7ebd22ec78a5dad47cdd205dca54706b474743",
+        "08a70eadb4b274edaefc1194c1f7570621a51b0a9aa036aa15dcdb7b927e7c76",
+        "fb2dde9020a47bb024c43d9de0a94e73abef793bf08f01354cc97cb2d2e2a957",
+        "a678cb1aa8f5d03d901c992c75741841d98a9bc3d55dad02e84d65315c4e60f2",
+        "3e892546b72ab547cb77de4d840bcfd05c853e73390fed7370a8f19acb0735a0",
+        "767e11f33eddcd506980f0ff213f9d553a6a21802e3be1330345f62f7ee3d50f",
+        "0dfaafce29a9a245b0a9180ec2c1073d2bd8f0330f03a9f1f6a74d1bc83f62d6",
+        "6ba385b450a6311a15c918cf8688b9af9327c6104f0ecbd35933cfcd3095fe04",
+        "0b3d6fd42958ee98715ba2ec5fe221f4ca1e694d7c981b0ae0cd68e97baf6dce",
+        "7d1560fe2c3564128f2ff3f7c0fc9f0666738aa0e704f3d78b8954f9e0ec3adf",
+        "e2d6f4084f8a180de66c7700343fe8ad3a0aa84f2cb0561edb417fe1fd41aa15",
+        "5e168368fbc250af3c79aa5fef0c3467a2d64e5a7bd74005f25d8399aeb0708d"
+      ],
+      "dependency": "391a6664649fb1eb6fe623bf3a7b12a60dfd4b6f77e1a159308f5cab198e9530",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 335,
+      "resources": 18,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            },
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            },
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            },
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            },
+            {
+              "throws": "java.lang.NoClassDefFoundError",
+              "causes": [
+                "java.lang.NoClassDefFoundError",
+                "java.lang.ClassNotFoundException"
+              ],
+              "frames": [
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos#readCommit(Lorg/apache/lucene/store/Directory;Ljava/lang/String;)Lorg/apache/lucene/index/SegmentInfos;",
+                  "codeIndex": 1222,
+                  "sourceLine": 459,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 5,
+                  "sourceLine": 53,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader$1#doBody(Ljava/lang/String;)Ljava/lang/Object;",
+                  "codeIndex": 2,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.SegmentInfos$FindSegmentsFile#run(Lorg/apache/lucene/index/IndexCommit;)Ljava/lang/Object;",
+                  "codeIndex": 199,
+                  "sourceLine": 731,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.StandardDirectoryReader#open(Lorg/apache/lucene/store/Directory;Lorg/apache/lucene/index/IndexCommit;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 9,
+                  "sourceLine": 50,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.apache.lucene.index.DirectoryReader#open(Lorg/apache/lucene/store/Directory;)Lorg/apache/lucene/index/DirectoryReader;",
+                  "codeIndex": 2,
+                  "sourceLine": 63,
+                  "artifact": "classpath",
+                  "classpathIndex": 15,
+                  "jarSha256": "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;)V",
+                  "codeIndex": 37,
+                  "sourceLine": 242,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel$LuceneSearcher#<init>(Ljava/io/File;Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$1;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 230,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#getCachedLuceneSearcher(Ljava/io/File;)Lorg/languagetool/languagemodel/LuceneSingleIndexLanguageModel$LuceneSearcher;",
+                  "codeIndex": 23,
+                  "sourceLine": 183,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#addIndex(Ljava/io/File;I)V",
+                  "codeIndex": 100,
+                  "sourceLine": 119,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 39,
+                  "sourceLine": 93,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                },
+                {
+                  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#<init>(Ljava/io/File;)V",
+                  "codeIndex": 123,
+                  "sourceLine": 65,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "ffac49688d84b9f509d5522082675d6c4f842c032d2cfa0612bdd72130e1c3b7"
+                }
+              ],
+              "observerCodeIndex": 13,
+              "lastCauseMessage": "org.apache.lucene.codecs.PointsFormat",
+              "subsequentRethrows": []
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true,
+          "repeatableBeforeEntry": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.lucene.codecs.lucene70.Lucene70Codec",
+        "org.apache.lucene.codecs.lucene70.Lucene70DocValuesConsumer",
+        "org.apache.lucene.codecs.lucene70.Lucene70DocValuesFormat",
+        "org.apache.lucene.codecs.lucene70.Lucene70DocValuesProducer"
+      ]
+    }
+  },
+  "status": "open",
+  "originalFixtures": [
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/_0.cfe",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/_0.cfe",
+      "sha256": "75760809d512411c9e578111a1b5344571fa7907214fa0b8db0c107e22b2d8f7"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/_0.cfs",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/_0.cfs",
+      "sha256": "46f35d0cf0a924aa7565e6c0946e2d039085ce16414d55a28e157731dbc0d955"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/_0.si",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/_0.si",
+      "sha256": "f960333b051c093e172984ba0acadaed94d70d02de8b626b57ad802fb912c77e"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/segments.gen",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/segments.gen",
+      "sha256": "3590ca7b85581e41d9c5932d92c9cd907e9247633c780e41d38a504f27803043"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/segments_1",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/segments_1",
+      "sha256": "04c7479454747bc93aff994c54a8b1569091c4e7b9bd5a36d0bf8f75eceb2433"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/write.lock",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/write.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/_0.cfe",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/_0.cfe",
+      "sha256": "c1d4140edbd1e5eaa0aa0e3cb94e197674fcc190f3b271cff81819235bf9e8c9"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/_0.cfs",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/_0.cfs",
+      "sha256": "32ad9ef7e5bf2369213dc7a943376b6c51d0f696dca5dd7ecba87af5e36d317f"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/_0.si",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/_0.si",
+      "sha256": "71cfb4df2b3226de85421b6f6e25428b9b1d7517534b07e4570b570a54727f80"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/segments.gen",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/segments.gen",
+      "sha256": "3590ca7b85581e41d9c5932d92c9cd907e9247633c780e41d38a504f27803043"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/segments_1",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/segments_1",
+      "sha256": "04c7479454747bc93aff994c54a8b1569091c4e7b9bd5a36d0bf8f75eceb2433"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/write.lock",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/write.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/_0.cfe",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/_0.cfe",
+      "sha256": "52aa6462fc05531965386cbe7fa34495be24f30495f50fe01105a8fa34d50808"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/_0.cfs",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/_0.cfs",
+      "sha256": "cbb48a0e101f00cbcecf4806e3e83986e5f27005a4fc0d573082d9f81369e5ec"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/_0.si",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/_0.si",
+      "sha256": "1da89412ce5fd22b936cbe318d6f96679182ef4dcf7908c7ee220d00b8bfedd6"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/segments.gen",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/segments.gen",
+      "sha256": "3590ca7b85581e41d9c5932d92c9cd907e9247633c780e41d38a504f27803043"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/segments_1",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/segments_1",
+      "sha256": "04c7479454747bc93aff994c54a8b1569091c4e7b9bd5a36d0bf8f75eceb2433"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/write.lock",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/write.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "runtimeCompanions": [],
+  "originalInvocation": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(Ljava/util/List;)J",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeObservation": "159f2bf0ba81aac6c441266b6daa215d5037ae87d7776769ff59df58ddc504d0",
+    "UpgradeProbe": "1e8aa667e83a779631b0afa2e8c90c429e05cccbd139378192d536bcb0400914",
+    "UpgradeTrace": "0a551b0a850f4da3a445f361979b522d0b5e9fc01361131ef62673e3c8265bd1"
+  },
+  "stoppedAt": {
+    "side": "new",
+    "input": 0,
+    "repetition": 1,
+    "exception": "java.lang.NoClassDefFoundError: org/apache/lucene/codecs/PointsFormat at java.lang.Class.getDeclaredConstructors0(Native Method) caused by java.lang.ClassNotFoundException: org.apache.lucene.codecs.PointsFormat at java.net.URLClassLoader.findClass(URLClassLoader.java:387)"
+  },
+  "reason": "new input 0: the original caller method was never entered. java.lang.NoClassDefFoundError: org/apache/lucene/codecs/PointsFormat at java.lang.Class.getDeclaredConstructors0(Native Method) caused by java.lang.ClassNotFoundException: org.apache.lucene.codecs.PointsFormat at java.net.URLClassLoader.findClass(URLClassLoader.java:387)",
+  "beforeEntryComparison": [
+    {
+      "input": 0,
+      "status": "reproduced earlier failure",
+      "before": {
+        "return": "55"
+      },
+      "after": {
+        "throws": "java.lang.NoClassDefFoundError"
+      }
+    },
+    {
+      "input": 1,
+      "status": "reproduced earlier failure",
+      "before": {
+        "return": "3"
+      },
+      "after": {
+        "throws": "java.lang.NoClassDefFoundError"
+      }
+    },
+    {
+      "input": 2,
+      "status": "reproduced earlier failure",
+      "before": {
+        "return": "1"
+      },
+      "after": {
+        "throws": "java.lang.NoClassDefFoundError"
+      }
+    },
+    {
+      "input": 3,
+      "status": "reproduced earlier failure",
+      "before": {
+        "return": "0"
+      },
+      "after": {
+        "throws": "java.lang.NoClassDefFoundError"
+      }
+    }
+  ],
+  "elapsedSeconds": 16.444,
+  "specSha256": "dcd86fedbb5445e50887c09a1643a030b57c421190f119cc48affa1aa09be55f"
+}

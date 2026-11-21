@@ -1,0 +1,265 @@
+{
+  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+  "observer": "Exact bytes and byte count from a single ordinary MIME part, including empty, binary and multiline bodies.",
+  "domainBasis": "The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless.",
+  "cases": [
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "return": "0:"
+      }
+    },
+    {
+      "args": [
+        "aGVsbG8="
+      ],
+      "expected": {
+        "return": "5:aGVsbG8="
+      }
+    },
+    {
+      "args": [
+        "bGluZTENCmxpbmUy"
+      ],
+      "expected": {
+        "return": "12:bGluZTENCmxpbmUy"
+      }
+    },
+    {
+      "args": [
+        "AP8NCgE="
+      ],
+      "expected": {
+        "return": "5:AP8NCgE="
+      }
+    }
+  ],
+  "probeSha256": "9f6de3d93cdb33bf38a5394aff4698342312446d9ef5a98077c58c05d16ca898",
+  "launcherSha256": "3f0f8f5542fe7579f392384985a5c001088357bebe7db379260a5ce71988fbde",
+  "tracerSha256": "349bdc6aebd33dc7a61fea007e9f1d33095a1e4d27944fa2cad62a2edecbe41b",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
+      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
+      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
+      "classpath": [
+        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
+        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
+      ],
+      "dependency": "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 13,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "0:"
+            },
+            {
+              "return": "0:"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:aGVsbG8="
+            },
+            {
+              "return": "5:aGVsbG8="
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            },
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:AP8NCgE="
+            },
+            {
+              "return": "5:AP8NCgE="
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.Charsets",
+        "org.apache.commons.io.CloseableURLConnection",
+        "org.apache.commons.io.IOUtils",
+        "org.apache.commons.io.StandardLineSeparator",
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
+        "org.apache.commons.io.output.AppendableWriter",
+        "org.apache.commons.io.output.ByteArrayOutputStream",
+        "org.apache.commons.io.output.NullOutputStream",
+        "org.apache.commons.io.output.NullWriter",
+        "org.apache.commons.io.output.QueueOutputStream",
+        "org.apache.commons.io.output.StringBuilderWriter",
+        "org.apache.commons.io.output.ThresholdingOutputStream",
+        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
+      ]
+    },
+    "new": {
+      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
+      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
+      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
+      "classpath": [
+        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
+        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+      ],
+      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 13,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "0:"
+            },
+            {
+              "return": "0:"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:aGVsbG8="
+            },
+            {
+              "return": "5:aGVsbG8="
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            },
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:AP8NCgE="
+            },
+            {
+              "return": "5:AP8NCgE="
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.Charsets",
+        "org.apache.commons.io.CloseableURLConnection",
+        "org.apache.commons.io.IOUtils",
+        "org.apache.commons.io.StandardLineSeparator",
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.CharSequenceReader",
+        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
+        "org.apache.commons.io.output.AppendableWriter",
+        "org.apache.commons.io.output.ByteArrayOutputStream",
+        "org.apache.commons.io.output.NullOutputStream",
+        "org.apache.commons.io.output.NullWriter",
+        "org.apache.commons.io.output.QueueOutputStream",
+        "org.apache.commons.io.output.StringBuilderWriter",
+        "org.apache.commons.io.output.ThresholdingOutputStream",
+        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "originalInvocation": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeObservation": "4458672664859b208593e55a5a3197334370d3a2663d504a8f74a206981bdc45",
+    "UpgradeProbe": "afd54c7ed179e8fc6721d5cb242348a31c510182995d5a7f7378e6153bc9f909",
+    "UpgradeTrace": "c500117a957c7ad5167b615e6363889f5494f490d9e03f2e2b2ec4670f18f47c"
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 9.777,
+  "specSha256": "82ca90561de07cc179ce2e8f21e86b5a8bad62056e61de6c43debb43795e2024"
+}

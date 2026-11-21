@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T06:56:48.336Z",
-  "duration_seconds": 119958,
+  "ended": "2026-11-21T07:09:27.615Z",
+  "duration_seconds": 120718,
   "stats": {
     "turns": 16,
-    "api_calls": 5456,
-    "tool_calls": 13860,
-    "tool_errors": 406,
+    "api_calls": 5496,
+    "tool_calls": 13972,
+    "tool_errors": 412,
     "compactions": 17,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 9469103,
-      "output_tokens": 2904303,
-      "cache_read_input_tokens": 1697203200,
+      "input_tokens": 9511292,
+      "output_tokens": 2932965,
+      "cache_read_input_tokens": 1708025600,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 8025,
-    "exec": 4981,
-    "apply_patch": 546,
+    "Bash": 8084,
+    "exec": 5021,
+    "apply_patch": 559,
     "send_message": 148,
     "sleep": 63,
     "wait": 53,
@@ -109,6 +109,7 @@
     "examples/tools/targets/java/IsolatedCases.java",
     "examples/tools/targets/java/LoadedClasses.java",
     "examples/tools/targets/java/MapTransitions.java",
+    "examples/tools/targets/java/UpgradeClassLookup.java",
     "examples/tools/targets/java/UpgradeObservation.java",
     "examples/tools/targets/java/UpgradeTrace.java",
     "examples/tools/targets/java/org/intheloop/controls/Grid.java",
@@ -134,6 +135,7 @@
     "examples/tools/targets/test_runtime_upstream.py",
     "examples/tools/targets/test_upgrade_review.py",
     "examples/tools/targets/test_workflow_refusal.py",
+    "examples/tools/targets/upgrade_linkage.py",
     "examples/tools/targets/upgrade_replay.py",
     "examples/tools/targets/upstream_artifact.py",
     "examples/tools/targets/workflow.py",
@@ -562,24 +564,24 @@
     {
       "index": 17,
       "started": "2026-11-21T06:22:35.208Z",
-      "ended": "2026-11-21T06:56:48.336Z",
+      "ended": "2026-11-21T07:09:27.615Z",
       "turns": 1,
-      "api_calls": 140,
+      "api_calls": 180,
       "usage": {
-        "input_tokens": 246107,
-        "output_tokens": 72265,
-        "cache_read_input_tokens": 24554880,
+        "input_tokens": 288296,
+        "output_tokens": 100927,
+        "cache_read_input_tokens": 35377280,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 249546
+      "peak_context_tokens": 288506
     }
   ],
   "log": {
-    "sha256": "cfd3f871f7f81e3d12e39f952fa5285202aeb0094febf97a084314497a5599a7",
-    "bytes": 124476701,
-    "lines": 43261,
-    "gzip_bytes": 49399042,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/cfd3f871f7f81e3d12e39f952fa5285202aeb0094febf97a084314497a5599a7.jsonl.gz"
+    "sha256": "f7190a9814395168a55f36c55f64ae346cd8047542eecbf3a9671177049e9b19",
+    "bytes": 125293767,
+    "lines": 43603,
+    "gzip_bytes": 49768341,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/f7190a9814395168a55f36c55f64ae346cd8047542eecbf3a9671177049e9b19.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2240,20 +2242,28 @@
       "log_sha256": "b872505392702da88a2aa533275005088250891dce6e93a056d5fe3b59508a26"
     },
     {
-      "change_id": "nqxwrloywmuzwnqxvzzpmknzrotkmlwm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "cfd3f871f7f81e3d12e39f952fa5285202aeb0094febf97a084314497a5599a7"
-    },
-    {
       "change_id": "qmpvuwxuurmunvvpkrkrvrvklmomlunq",
       "commit_id": null,
       "immutable": false,
       "summary": "Recover declared upgrade environments and rethrows (verification pending)",
       "body": "Java finally and resource cleanup can rethrow the same exception after its original stack has unwound. The debugger retains the last attributed throw on the same observer thread plus its subsequent propagation, and distinguishes it from a newly allocated exception. The original-classpath workflow now records and enforces Maven runtime, host-provided and test scopes. It imports fourteen digest-pinned historical release files atomically. Verified Git commits survive shallow local clones. LanguageTool now has observations of its genuine n-gram index and Derby test database. The first build retry recovered both developer tests: each passed before the upgrade and failed afterward. Derby is explicitly test-only on both original POMs.\n\nAll 28 affected groups passed, including 58 Rust test binaries. Four live JVM controls and five Maven and original-CI controls passed separately. Checked the archived cache, all 32 local Git pairs offline, javac against the original LanguageTool module, the tier inventory and the job schemas. Jobs 20261121-065458-current-upgrade-group-01-native-and-fini through 20261121-065459-current-upgrade-group-07-native-and-fini repeat all 32 pairs on the repaired build. Jobs 20261121-065459-restored-lucene-original-maven-ci-on-bot, 20261121-065459-restored-derby-original-maven-ci-on-both and 20261121-065459-restored-deltaspike-original-maven-ci-on rerun original CI.",
       "log_sha256": "cfd3f871f7f81e3d12e39f952fa5285202aeb0094febf97a084314497a5599a7"
+    },
+    {
+      "change_id": "lxnnkkqnsqpsrwupyllqvnvumrtllzvn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "f7190a9814395168a55f36c55f64ae346cd8047542eecbf3a9671177049e9b19"
+    },
+    {
+      "change_id": "oqxkwqszqnlvqykuqwstuxusmolrorqq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record original startup failures and restored LanguageTool tests",
+      "body": "Import 22 completed jobs from the single host runner after validating each committed job specification, result and applied output SHA-256. The original Lucene test now passes on the old artifact and fails with a missing PointsFormat after the upgrade. The original Derby testcase passes before and cannot obtain a JDBC connection after. Its classpath is test-only. The application replays trace the original POI failure through resource cleanup and recover Apollo's nested Guava linkage error. Nacos's missing ErrorCoded and Bundlor's additional Ant dependency identify the next repeat. Receipts include every intermediate open and missing build.",
+      "log_sha256": "f7190a9814395168a55f36c55f64ae346cd8047542eecbf3a9671177049e9b19"
     }
   ],
   "logs": {
@@ -3018,6 +3028,12 @@
       "lines": 1673,
       "gzip_bytes": 2149993,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f50362dd9df150b665afbb9d71c26af00b877af82be21310f67bc5f44f0563b0.jsonl.gz"
+    },
+    "f7190a9814395168a55f36c55f64ae346cd8047542eecbf3a9671177049e9b19": {
+      "bytes": 125293767,
+      "lines": 43603,
+      "gzip_bytes": 49768341,
+      "url": null
     },
     "fa318ade23c47f560deaf9206540027d850a1275ef8005c5e76beea1dc8c04e8": {
       "bytes": 103752356,

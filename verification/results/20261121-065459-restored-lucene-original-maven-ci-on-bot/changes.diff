@@ -1,0 +1,216 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-10/compsuite-i-10/new/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] Running org.languagetool.tools.RuleMatchAsXmlSerializerTest
++[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s - in org.languagetool.tools.RuleMatchAsXmlSerializerTest
++[INFO] Running org.languagetool.tools.ContextToolsTest
++[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in org.languagetool.tools.ContextToolsTest
++[INFO] Running org.languagetool.tools.ToolsTest
++[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s - in org.languagetool.tools.ToolsTest
++[INFO] Running org.languagetool.tools.RuleMatchesAsJsonSerializerTest
++[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.085 s - in org.languagetool.tools.RuleMatchesAsJsonSerializerTest
++[INFO] Running org.languagetool.tools.StringToolsTest
++[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in org.languagetool.tools.StringToolsTest
++[INFO] Running org.languagetool.ResourceBundleToolsTest
++[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in org.languagetool.ResourceBundleToolsTest
++[INFO] 
++[INFO] Results:
++[INFO] 
++[ERROR] Errors: 
++[ERROR]   LuceneSingleIndexLanguageModelTest.testLanguageModel:37 » NoClassDefFound org/...
++[INFO] 
++[ERROR] Tests run: 241, Failures: 0, Errors: 1, Skipped: 9
++[INFO] 
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for languagetool-parent 4.6:
++[INFO] 
++[INFO] languagetool-parent ................................ SUCCESS [  0.812 s]
++[INFO] LanguageTool Style and Grammar Checker Core ........ FAILURE [ 19.718 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD FAILURE
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  21.656 s
++[INFO] Finished at: 2026-11-21T06:59:50Z
++[INFO] ------------------------------------------------------------------------
++[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project languagetool-core: There are test failures.
++[ERROR] 
++[ERROR] Please refer to /project/languagetool-core/target/surefire-reports for the individual test results.
++[ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
++[ERROR] -> [Help 1]
++[ERROR] 
++[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
++[ERROR] Re-run Maven using the -X switch to enable full debug logging.
++[ERROR] 
++[ERROR] For more information about the errors and possible solutions, please read the following articles:
++[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
++[ERROR] 
++[ERROR] After correcting the problems, you can resume the build with the command
++[ERROR]   mvn <args> -rf :languagetool-core
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-10/compsuite-i-10/new/summary.json
+@@ -0,0 +1,64 @@
++{
++  "revision": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
++  "module": "languagetool-core",
++  "goals": [
++    "-pl",
++    "languagetool-core",
++    "-am",
++    "verify"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repo1.maven.org/maven2/"
++  ],
++  "resolver": {
++    "cachedRequests": 1236
++  },
++  "exit": 1,
++  "seconds": 25.51,
++  "logSha256": "aa269cbd62d10bbb9a81f9d78e41875be3c7d6eb32d992d63cd200cc753fd12d",
++  "freshReports": {
++    "tests": 241,
++    "failures": 0,
++    "errors": 1,
++    "skipped": 9,
++    "named": [
++      {
++        "class": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModelTest",
++        "method": "testLanguageModel",
++        "outcome": "error",
++        "type": "java.lang.NoClassDefFoundError",
++        "message": "org/apache/lucene/codecs/PointsFormat"
++      }
++    ],
++    "firstFailures": [
++      {
++        "class": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModelTest",
++        "method": "testLanguageModel",
++        "outcome": "error",
++        "type": "java.lang.NoClassDefFoundError",
++        "message": "org/apache/lucene/codecs/PointsFormat"
++      }
++    ],
++    "reportCount": 76,
++    "reportsSha256": "92ef1cb772a0a5940e7ba2bc47f8c66b2b8799d4a5f09e87eb2e53d42475b766"
++  },
++  "diagnostic": [
++    "java.lang.NoClassDefFoundError: org/apache/lucene/codecs/PointsFormat",
++    "Caused by: java.lang.ClassNotFoundException: org.apache.lucene.codecs.PointsFormat",
++    "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project languagetool-core: There are test failures.",
++    "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++  ],
++  "namedTest": "LuceneSingleIndexLanguageModelTest#testLanguageModel",
++  "namedTestExecuted": true,
++  "disposition": "tests or lifecycle failed"
++}
+Binary file verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-10/compsuite-i-10/new/testcases/b1b2b337fe4d.xml.gz changed
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-10/compsuite-i-10/old/maven-tail.txt
+@@ -0,0 +1,45 @@
++[INFO] 
++[WARNING] Tests run: 241, Failures: 0, Errors: 0, Skipped: 9
++[INFO] 
++[INFO] 
++[INFO] --- maven-jar-plugin:2.6:jar (default-jar) @ languagetool-core ---
++                    
++                    
++                    
++                    
++                    
++                   
++                    
++                    
++                    
++                   
++                   
++                    
++                    
++                    
++                    
++                   
++                   
++                   
++                    
++                   
++                    
++                    
++                   
++                    
++                    
++[INFO] Building jar: /project/languagetool-core/target/languagetool-core-4.6.jar
++[INFO] 
++[INFO] --- maven-jar-plugin:2.6:test-jar (default) @ languagetool-core ---
++[INFO] Building jar: /project/languagetool-core/target/languagetool-core-4.6-tests.jar
++[INFO] ------------------------------------------------------------------------
++[INFO] Reactor Summary for languagetool-parent 4.6:
++[INFO] 
++[INFO] languagetool-parent ................................ SUCCESS [  1.403 s]
++[INFO] LanguageTool Style and Grammar Checker Core ........ SUCCESS [ 21.635 s]
++[INFO] ------------------------------------------------------------------------
++[INFO] BUILD SUCCESS
++[INFO] ------------------------------------------------------------------------
++[INFO] Total time:  24.196 s
++[INFO] Finished at: 2026-11-21T06:59:24Z
++[INFO] ------------------------------------------------------------------------
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-10/compsuite-i-10/old/summary.json
+@@ -0,0 +1,48 @@
++{
++  "revision": "fe77e85a2f7b472ba71564821e7545025eeda242",
++  "historicalCiFiles": {
++    ".travis.yml": {
++      "sha256": "7b4742e5eaf7592536a443d850f6d3998ab83f1e85b40013bde36a04c5977e6c",
++      "mavenCommandLines": []
++    }
++  },
++  "selectedLifecycle": "Maven verify on the original owning module and required reactor modules",
++  "module": "languagetool-core",
++  "goals": [
++    "-pl",
++    "languagetool-core",
++    "-am",
++    "verify"
++  ],
++  "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++  "mavenHome": "apache-maven-3.6.3",
++  "network": "isolated client with a serial public Maven mirror",
++  "declaredReleaseRepositories": [
++    "https://repo1.maven.org/maven2/"
++  ],
++  "resolver": {
++    "cachedRequests": 1280
++  },
++  "exit": 0,
++  "seconds": 28.5,
++  "logSha256": "cfbb461435ee819cb58d52b2f4f3ce8d05617bb7f7f104a52c05589667a95241",
++  "freshReports": {
++    "tests": 241,
++    "failures": 0,
++    "errors": 0,
++    "skipped": 9,
++    "named": [
++      {
++        "class": "org.languagetool.languagemodel.LuceneSingleIndexLanguageModelTest",
++        "method": "testLanguageModel",
++        "outcome": "passed"
++      }
++    ],
++    "firstFailures": [],
++    "reportCount": 76,
++    "reportsSha256": "f1c144bfc753d8aa3641676ab7853aad3fb161d16b10bbf87dd663e3ebbbf9ce"
++  },
++  "namedTest": "LuceneSingleIndexLanguageModelTest#testLanguageModel",
++  "namedTestExecuted": true,
++  "disposition": "passed"
++}
+Binary file verification/external-upgrades/corpus-runs/v2-original-ci/compsuite-i-10/compsuite-i-10/old/testcases/b1b2b337fe4d.xml.gz changed

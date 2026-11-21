@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-063426-module-recovery-1-original-maven-classpa",
+  "title": "Module recovery 1 original Maven classpaths for caller comparison",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m21s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [
+    "step 1 (Rebuild the original owning Maven modules) was held back 3m57s by its 2-CPU quota in 1m21s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-063426-module-recovery-1-original-maven-classpa.json",
+    "sha256": "4c85c4d9b1f4ba881492a48d0449e4deed4c7e2367c851c3c50acedc69f64afa",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-063426-module-recovery-1-original-maven-classpa",
+      "title": "Module recovery 1 original Maven classpaths for caller comparison",
+      "description": "Repeat the original module workload on one host runner. Earlier processes on two checkout-local queues shared a systemd unit name and terminated before producing evidence. Build both historical revisions with their actual processed resources and dependencies. Record the causal build diagnostic when a historical release is unavailable. This group covers compsuite-i-4, compsuite-i-70, compsuite-i-103, reflector-35.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation"
+      ],
+      "links": {
+        "jobs": [
+          "20261121-062837-restore-complete-original-maven-modules"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T06:34:26+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "6G",
+        "timeout": "70m"
+      },
+      "steps": [
+        {
+          "name": "Rebuild the original owning Maven modules",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-103 --case reflector-35",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1"
+      ]
+    }
+  },
+  "sourceCommit": "a1eb4ea7f4a9739b5f99c965e8ba32d945986f3c",
+  "startedAt": "2026-11-21T06:38:00+00:00",
+  "finishedAt": "2026-11-21T06:39:27+00:00",
+  "wallSeconds": 87.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 665427,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1182392320,
+    "wallSeconds": 81.4,
+    "cpuSeconds": 152.6,
+    "memoryOfEstimate": 0.55,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Rebuild the original owning Maven modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-103 --case reflector-35",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4200.0,
+      "cancelled": false,
+      "wallSeconds": 81.365,
+      "cpuSeconds": 152.629,
+      "cpuThrottledSeconds": 237.408,
+      "peakMemoryBytes": 1182392320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-rebuild-the-original-owning-ma.log",
+        "lines": 12,
+        "bytes": 562,
+        "sha256": "ee69da9255d7aea7977d54e9d05eb9e2b0d478f1d456d015f8c856548a311370",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-4 old artifacts ready",
+        "compsuite-i-4 new artifacts ready",
+        "compsuite-i-70 old artifacts ready",
+        "compsuite-i-70 new artifacts ready",
+        "compsuite-i-103 old artifacts ready",
+        "compsuite-i-103 new artifacts ready",
+        "warning: You appear to have cloned an empty repository.",
+        "fatal: unable to read tree (a7421542ac2b34670c7c261539fc253d77526afc)",
+        "reflector-35 old original Maven build unavailable",
+        "warning: You appear to have cloned an empty repository.",
+        "fatal: unable to read tree (b8a65d35911580a469964aa722f4cd989c1a5382)",
+        "reflector-35 new original Maven build unavailable"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 5281,
+      "sha256": "7dc23c40b75d6f1f097d1193e67b886565cd992daec6a1b78e67d29b1602aedf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 4219,
+      "sha256": "02b1dcdc3f144cbde3b0eebaf810515bde9fb20fb7465b355256e0c42a01cef7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 3941,
+      "sha256": "41f66b5ba84a5f1e133a45a223282dfd68f1a0e125b21d035414bde6186788b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/reflector-35.json",
+      "change": "added",
+      "bytes": 689,
+      "sha256": "42b7c116080cfaa9baa7cbe9606e9747733d465206ad068ad2537535b62e520d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T06:42:45+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/compsuite-i-103.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/compsuite-i-70.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-1/reflector-35.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
