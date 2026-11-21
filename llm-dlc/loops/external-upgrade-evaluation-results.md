@@ -20,6 +20,8 @@ On the disclosed Commons Text calibration, the repaired class reader reached the
 
 For ReflectASM, the same original client used ASM 5.1 to build a working interface accessor. Calling `replace` returned the previous value `"one"` and `size` returned 2. With ASM 7.2, accessor construction threw before the caller could invoke either method. A plain `Object` companion still worked. On EA Async #27, complete production builds against ASM 6.2 and 6.2.1 agreed on the result and completion state over the specified frame shapes and future states. These JVM reference results can be compared directly with what the verifier reports. [ReflectASM receipts](../../verification/external-upgrades/references/compsuite-i-38.json) · [EA Async receipts](../../verification/external-upgrades/references/ea-async-27.json)
 
+The finite JVM checker now refutes the original rxjava-jdbc claim on the complete boolean domain. Each selector starts in a fresh JVM. Combined insertion returned `[2]` and `[1, 2]` across the upgrade. Separate insertion returned `[1, 2]` at both pins. A fresh witness reran the combined selector and independently matched the application subscriber. The native symbolic route remains open at JDBC connection creation. Local-source intake also reached artifacts-ready on both revisions of rxjava-jdbc and Commons Text with network access disabled. [Qualified finite JDBC proof](../../examples/348-rxjava-jdbc-generated-keys/records/finite-proofs/20261121T041338Z-1d03f437/generated-keys.json) · [Four offline source preparations](../../verification/external-upgrades/local-source-intake.json)
+
 ## What the disclosed clients do
 
 | Client | Independent result | First step V0 could not check |
