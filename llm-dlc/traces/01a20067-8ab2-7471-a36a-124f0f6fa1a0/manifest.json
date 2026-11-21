@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-21T23:18:35.450Z",
-  "ended": "2026-11-21T23:35:31.894Z",
-  "duration_seconds": 1016,
+  "ended": "2026-11-21T23:39:03.099Z",
+  "duration_seconds": 1228,
   "stats": {
-    "turns": 1,
-    "api_calls": 4,
+    "turns": 2,
+    "api_calls": 5,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 61939,
+    "peak_context_tokens": 73532,
     "usage": {
-      "input_tokens": 62418,
-      "output_tokens": 383,
-      "cache_read_input_tokens": 132864,
+      "input_tokens": 74126,
+      "output_tokens": 566,
+      "cache_read_input_tokens": 194688,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-21T23:18:35.450Z",
-      "ended": "2026-11-21T23:35:31.894Z",
-      "turns": 1,
-      "api_calls": 4,
+      "ended": "2026-11-21T23:39:03.099Z",
+      "turns": 2,
+      "api_calls": 5,
       "usage": {
-        "input_tokens": 62418,
-        "output_tokens": 383,
-        "cache_read_input_tokens": 132864,
+        "input_tokens": 74126,
+        "output_tokens": 566,
+        "cache_read_input_tokens": 194688,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 61939
+      "peak_context_tokens": 73532
     }
   ],
   "log": {
-    "sha256": "7111bf16ed57e5c48a3c6d023aa120d792b4fb97a624a0c269ec2a77b9cf85e1",
-    "bytes": 435735,
-    "lines": 55,
-    "gzip_bytes": 136809,
-    "path": "llm-dlc/traces/01a20067-8ab2-7471-a36a-124f0f6fa1a0/logs/7111bf16ed57e5c48a3c6d023aa120d792b4fb97a624a0c269ec2a77b9cf85e1.jsonl.gz"
+    "sha256": "e925feb04a88e51a932eb3639606eddefa8c64b4f8efe7e07cd9006233a1c998",
+    "bytes": 542105,
+    "lines": 67,
+    "gzip_bytes": 166794,
+    "path": "llm-dlc/traces/01a20067-8ab2-7471-a36a-124f0f6fa1a0/logs/e925feb04a88e51a932eb3639606eddefa8c64b4f8efe7e07cd9006233a1c998.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -72,20 +72,20 @@
       "log_sha256": "30c5c0c83a8569882b7fcf30e01e05f62386a498f2f21227d59b0ed96b860c6c"
     },
     {
-      "change_id": "vrkopxnyvvukyyrztvxvmnwkprqpmoom",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "7111bf16ed57e5c48a3c6d023aa120d792b4fb97a624a0c269ec2a77b9cf85e1"
-    },
-    {
       "change_id": "okprpnmlzynkmuxlurpyskkvmnmkqowm",
       "commit_id": null,
       "immutable": false,
       "summary": "Trace startup dependencies on original JVMs (verification pending)",
       "body": "Pair each ordinary JVM call with a nontransforming JVMTI observer on the same checked Maven JARs. Record static and selected receiver reads and writes by method and bytecode offset, actual class status and unbound classes. Inspect class bytes offline to distinguish static declarations and candidate writers from the paths that actually ran. Include CPU, directory, resource, separator, changed-observer and throwing-initializer controls.\n\nOn Temurin 21.0.13 the Avro writer-schema observer returned BYTES and the identical object twice. The JavaParser separator observer returned LF, failed at initialization after the property was cleared, and failed again with an erroneous class. Instrumented and ordinary JVM outputs matched. The static scanner checked instruction offsets against the original classfile labels and lengths, including 180 Avro-path classes in the smoke test. Both jobs validated. Jobs 20261121-233322-trace-original-startup-and-field-depende and 20261121-233332-trace-javaparser-field-and-property-depe run the full profile matrix on both revisions.",
       "log_sha256": "7111bf16ed57e5c48a3c6d023aa120d792b4fb97a624a0c269ec2a77b9cf85e1"
+    },
+    {
+      "change_id": "mlynmynnnmzqnskkupukntkrskpxwlzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze Avro decimal cursor and result claims (verification pending)",
+      "body": "Example 361 exercises the public DecimalConversion.fromBytes twice on the same buffer. Twelve original windows include signed values, nonzero positions, prefix and suffix bytes, and two scales. A separate Python big-endian oracle checks cursor, both unscaled integers and both scales. The parent consumed every window and the second conversion raised NumberFormatException. The fixed bytecode preserved every window and matched all expected values.\n\nVerified both complete Maven build receipts and the named upstream JUnit failure and pass. All three wrong-result controls were rejected. All five tasks planned, both sides replayed on Temurin 21, the example validator passed and all 32 selected test groups passed. Job 20261121-233929-check-the-prepared-avro-729-baseline-on measures the frozen native and finite claims on these products. It supersedes 20261121-233611-baseline-the-frozen-avro-729-cursor-and, announced before the example landed.",
+      "log_sha256": "e925feb04a88e51a932eb3639606eddefa8c64b4f8efe7e07cd9006233a1c998"
     }
   ],
   "logs": {
@@ -105,6 +105,12 @@
       "bytes": 229687,
       "lines": 20,
       "gzip_bytes": 81026,
+      "url": null
+    },
+    "e925feb04a88e51a932eb3639606eddefa8c64b4f8efe7e07cd9006233a1c998": {
+      "bytes": 542105,
+      "lines": 67,
+      "gzip_bytes": 166794,
       "url": null
     }
   },

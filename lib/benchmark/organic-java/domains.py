@@ -9,7 +9,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 NAMES = {"353": "SumView", "354": "SurrogateCuts", "355": "WritableBuffer",
          "356": "OverflowNumber", "357": "BomReader", "358": "HexWrites",
-         "359": "InsertBits", "360": "TreeOrder"}
+         "359": "InsertBits", "360": "TreeOrder", "361": "DecimalWindow"}
 
 
 def units(text):
@@ -95,6 +95,13 @@ def rows(number):
             post = ['name','package','root'] if package else ['root']
             yield {'package':package}, {'postorder':post, 'preorder':list(reversed(post)),
                                         'terminal':{'nodes':post,'exhausted':True}}
+    elif number == "361":
+        backing = bytes([99, 128, 1, 127, 255, 42])
+        for start, width, scale in itertools.product((1, 2, 3), (1, 2), (0, 2)):
+            end = start + width
+            decimal = [int.from_bytes(backing[start:end], "big", signed=True), scale]
+            yield {"start": start, "width": width, "scale": scale}, {
+                "cursor": [start, end], "decimals": [decimal, decimal]}
 
 
 def table(number):
@@ -125,6 +132,9 @@ def wrong_results(number):
         return [(2048, "bytes", list(b"ABCD"))]
     if number == "359":
         return [(0, "returns", "true"), (0, "contents", {"size": 1, "values": [False]})]
+    if number == "361":
+        return [(0, "cursor", [2, 2]), (0, "decimals", [[128, 0], [128, 0]]),
+                (3, "decimals", [[-32767, 0], [-32767, 0]])]
     return [(0, "postorder", []), (1, "preorder", ["name", "package", "root"]),
             (1, "terminal", {"nodes": ["name", "package", "root"], "exhausted": False})]
 

@@ -99,7 +99,7 @@ def frozen_run(case, pin, route):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     corpus = read(HERE / "cases.json")
-    cases = {**corpus["cases"], **corpus.get("reserves", {})}
+    cases = {**corpus["cases"], **corpus.get("reserves", {}), **corpus.get("adoptions", {})}
     parser.add_argument("example", choices=cases)
     parser.add_argument("--stage", default="baseline")
     parser.add_argument("--route", choices=("native", "finite"), required=True)

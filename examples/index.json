@@ -17971,6 +17971,100 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 360 TASK"
       }
+    },
+    {
+      "id": "361",
+      "path": "examples/361-avro-decimal-buffer-cursor",
+      "title": "Repeated Avro decimal conversion over a caller-owned buffer window",
+      "summary": "Two reads of the same nonempty byte window must preserve the caller’s cursor and return the same signed decimal and scale.",
+      "origin": "real-world",
+      "system": "Apache Avro",
+      "symbol": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "deserialization"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen for original upstream replay",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Twelve selectors cross three nonzero positions, one- and two-byte windows and scales zero and two. Every window has prefix and suffix bytes. The independent oracle decodes only the selected bytes as a signed big-endian integer."
+      ],
+      "source": "https://github.com/apache/avro/pull/729",
+      "target": {
+        "family": "avro",
+        "role": "calibration",
+        "case": "avro-decimal-buffer-cursor",
+        "tasks": [
+          "replay",
+          "cursor-parent",
+          "cursor-fix",
+          "decimals-parent",
+          "decimals-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "cursor-parent": "scaffolded",
+          "cursor-fix": "scaffolded",
+          "decimals-parent": "scaffolded",
+          "decimals-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "cursor-parent": "refuted",
+          "cursor-fix": "established",
+          "decimals-parent": "refuted",
+          "decimals-fix": "established"
+        },
+        "claims": {
+          "cursor-parent": null,
+          "cursor-fix": null,
+          "decimals-parent": null,
+          "decimals-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261121T233612Z-250b916d/result.json",
+            "attempt": "20261121T233612Z-250b916d",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen for original upstream replay",
+          "source": "https://github.com/apache/avro/pull/729",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 361 TASK"
+      }
     }
   ]
 }
