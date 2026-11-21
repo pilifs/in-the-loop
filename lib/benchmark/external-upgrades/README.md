@@ -49,6 +49,8 @@ The signed JSON envelope has `payload` and `signatureHex`. Sign UTF-8 `upgrade-r
 
 For a claimed native result, the adjudicators bind `decisive_receipt_sha256`, `decisive_claim_id` and `decisive_status` to the archived result for the relevant caller claim. The scorer reads the actual engine, claim ID, executable digest and vacuity flag from that receipt. An unsubstantiated native label keeps the PR in the denominator and earns no native credit. Review the original model wording in `raw_maintainer_report` when the controller has qualified an unsupported assurance, and record the reporting fault separately from the delivered decision.
 
+Each newly sealed report includes a `client-cost.json` record bound to its immutable hash. `python3 lib/benchmark/external-upgrades/scorecard.py cost SEALED_OPERATOR_JSON` also reconciles earlier reports. The native client returns a running dollar total for each role conversation. Its final reading is that session's estimate. Token usage is incremental. An unsettled request or an inconsistent native session history leaves the dollar estimate unknown. [Disclosed per-request tariff audit](adjudication/operator-cost-audit.json)
+
 Human consent, pre-report CI and intended action, actual decisions and voluntary repeat requests are collected only in each participating team's agreed environment after the retrospective gate opens. A public calibration and a synthetic smoke test cannot establish those outcomes.
 
 ## Original CI for the two disclosed upstream PRs

@@ -1,0 +1,170 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-015236-run-both-stock-aws-compcheck-settings-wi",
+  "title": "Run both stock AWS CompCheck settings with serial Central restores",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Measure stock c15-2 with both knowledge settings and dependency restores) was held back 1m25s by its 4-CPU quota in 1m01s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-015236-run-both-stock-aws-compcheck-settings-wi.json",
+    "sha256": "d80a6f4f2d4cf6b0d3527149a2a8cff854fd41ced2dff0e2cc587837759ac15d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-015236-run-both-stock-aws-compcheck-settings-wi",
+      "title": "Run both stock AWS CompCheck settings with serial Central restores",
+      "description": "Use genuine CompCheck 937d1d1 and its published AWS c15-2 DateUtils.doParseISO8601Date line 104 input with JDK 8 and Maven 3.6.3. In two fresh checkouts, first supply all ordinary incident knowledge, then exclude only the two AWS issue-233 records. Start without compiled application classes or a recorded static context. The upstream CLI itself installs the unchanged client from source using a temporary local Maven repository and a serialized read-through mirror of the single shared Maven Central cache. Capture the compiled DateUtils digest, evidence of the actual selected static call, matching, any generated-test validation and the first unresolved step. The pair shares a 2.9 GB additional-Central-data cap; each unprivileged build has no external network except the dependency bridge.",
+      "kind": "real-world",
+      "capabilities": [
+        "baseline:compcheck"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/compcheck_aws.py"
+        ]
+      },
+      "expected": "Two independently measured stock outcomes name the client build and actual context, distinguish API matching from JUnit validation and retain genuine unavailability. No application class injection or cached answer is permitted.",
+      "submitted": {
+        "at": "2026-11-21T01:52:36+00:00",
+        "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+      },
+      "requires": [
+        "bwrap",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "4G",
+        "duration": "8m",
+        "memoryLimit": "16G",
+        "timeout": "2h",
+        "notes": "Prior calibrated CompCheck treatments used under 3 GiB. Both warm original-source treatments share one two-hour ceiling, four CPUs, 16 GiB maximum memory and a 2.9 GB allowance for additional public Maven data. The original 60-second generated-test search remains part of stock CompCheck."
+      },
+      "steps": [
+        {
+          "name": "Measure stock c15-2 with both knowledge settings and dependency restores",
+          "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --warm-stock --output lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json"
+      ]
+    }
+  },
+  "sourceCommit": "8a5bc79f1f39b394264402df62db5c1d6f62110a",
+  "startedAt": "2026-11-21T02:00:48+00:00",
+  "finishedAt": "2026-11-21T02:01:53+00:00",
+  "wallSeconds": 65.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585261,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 17179869184,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 480.0,
+    "notes": "Prior calibrated CompCheck treatments used under 3 GiB. Both warm original-source treatments share one two-hour ceiling, four CPUs, 16 GiB maximum memory and a 2.9 GB allowance for additional public Maven data. The original 60-second generated-test search remains part of stock CompCheck."
+  },
+  "usage": {
+    "peakMemoryBytes": 4130283520,
+    "wallSeconds": 61.5,
+    "cpuSeconds": 132.3,
+    "memoryOfEstimate": 0.96,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure stock c15-2 with both knowledge settings and dependency restores",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --warm-stock --output lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 61.535,
+      "cpuSeconds": 132.264,
+      "cpuThrottledSeconds": 85.703,
+      "peakMemoryBytes": 4130283520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-stock-c15-2-with-both.log",
+        "lines": 2,
+        "bytes": 117,
+        "sha256": "0ee4361adf6514c24dcba9b1dd30a100642ecf198be98785fa197c27d1c4339a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "normal CLI exit 0 contexts 1 match True test logs 0",
+        "leave-issue-233-out CLI exit 1 contexts 1 match None test logs 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json",
+      "change": "added",
+      "bytes": 7741,
+      "sha256": "4c889a92bf672138b1cb33f91bfb87893e1a1362e78411707a9b55f1f3291eca",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T02:01:58+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

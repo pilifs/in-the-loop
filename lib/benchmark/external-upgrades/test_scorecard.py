@@ -28,6 +28,20 @@ def operator(case="u01", build="V0"):
 
 
 class UpgradeScoringTest(unittest.TestCase):
+    def test_resumed_cost_uses_the_last_reading_of_each_distinct_role_session(self):
+        def request(session, mode, amount):
+            return {"nativeSessionSha256": session * 64, "nativeMode": mode, "estimatedUsd": amount}
+        a = request("a", "--session-id", 0.03)
+        resumed = request("a", "--resume", 0.05)
+        b = request("b", "--session-id", 0.04)
+        fresh = {"estimatedUsd": 0.01}
+        doc = {"compute_usd": 0.13, "measured_completed_requests": [a, b, resumed, fresh]}
+        self.assertEqual(sc.operator_cost(doc), 0.10)
+        self.assertIsNone(sc.operator_cost({**doc, "unsettled_reservation": 50}))
+        self.assertIsNone(sc.operator_cost({**doc, "measured_completed_requests": [resumed]}))
+        self.assertIsNone(sc.operator_cost({**doc, "measured_completed_requests": [a, request("a", "--resume", 0.02)]}))
+        self.assertEqual(sc.operator_cost({"compute_usd": 0.03}), 0.03)
+
     def test_first_report_keeps_its_evidence_and_rejects_replacement(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -40,6 +54,7 @@ class UpgradeScoringTest(unittest.TestCase):
             case = {"case_id": doc["case_id"], "input_sha256": DIGEST}
             sealed = root / "reports"
             first = sc.seal_report(source, sealed)
+            self.assertEqual(json.loads((sealed / "V0/u01/client-cost.json").read_bytes()), sc.cost_record(doc, first))
             with self.assertRaisesRegex(ValueError, "already sealed"):
                 sc.seal_report(source, sealed)
             def read(profile, launch=None):

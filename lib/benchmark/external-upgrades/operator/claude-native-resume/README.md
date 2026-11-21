@@ -1,8 +1,8 @@
 # Claude NativeResume operator
 
-**Native `--resume` preserved each authenticated first-party role’s complete prior tool result.** Fable and Opus each ran the public synthetic consumer on both revisions through the real case-only MCP. On a second payable request each recalled its own fresh nonce and both integers (`42`, `42`) without another tool call. No role returned the other nonce. All four native requests ran at high effort within their individual $0.75 and 120-second limits. The total client estimate was $0.0550996. [Live first-party receipt](evidence/live-resume.json) · [Shared operator profile](claude-native-resume.json) · [V0 build launch](v0-launch.json)
+**Native `--resume` preserved each authenticated first-party role’s complete prior tool result.** Fable and Opus each ran the public synthetic consumer on both revisions through the real case-only MCP. On a second payable request each recalled its own fresh nonce and both integers (`42`, `42`) without another tool call. No role returned the other nonce. All four native requests ran at high effort within their individual $0.75 and 120-second limits. The final estimates for the two native sessions total $0.0388728. Each resumed client reported its cumulative session cost. [Live first-party receipt](evidence/live-resume.json) · [Shared operator profile](claude-native-resume.json) · [V0 build launch](v0-launch.json)
 
-| Model | Initial wall time | Resumed wall time | Initial estimated cost | Resumed estimated cost |
+| Model | Initial wall time | Resumed wall time | First request estimate | Session estimate after resume |
 | --- | ---: | ---: | ---: | ---: |
 | Fable 5.2 | 3.070 s | 2.783 s | $0.0108052 | $0.0280840 |
 | Opus 5.5 | 4.011 s | 2.209 s | $0.0054216 | $0.0107888 |

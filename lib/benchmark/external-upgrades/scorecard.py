@@ -3,6 +3,7 @@
 import argparse
 from collections import Counter
 from datetime import datetime, timezone
+from decimal import Decimal
 import hashlib
 import json
 import os
@@ -48,6 +49,42 @@ def identifier(value):
 def hex_digest(value):
     require(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value), "missing SHA-256 identity")
     return value
+
+
+def operator_cost(doc):
+    """Sum one final client estimate per native conversation and each independent stateless call."""
+    if doc.get("unsettled_reservation") or doc["compute_usd"] is None:
+        return None
+    if not any(r.get("nativeMode") is not None for r in doc.get("measured_completed_requests", [])):
+        return doc["compute_usd"]
+    independent = Decimal(0)
+    sessions = {}
+    for request in doc["measured_completed_requests"]:
+        raw = request.get("estimatedUsd")
+        if type(raw) not in (int, float) or raw < 0:
+            return None
+        amount = Decimal(str(raw))
+        if not amount.is_finite():
+            return None
+        mode = request.get("nativeMode")
+        if mode is None:
+            independent += amount
+            continue
+        session = request.get("nativeSessionSha256")
+        if not isinstance(session, str) or not re.fullmatch(r"[0-9a-f]{64}", session):
+            return None
+        if mode == "--session-id":
+            if session in sessions:
+                return None
+        elif mode != "--resume" or session not in sessions or amount < sessions[session]:
+            return None
+        sessions[session] = amount
+    return float(independent + sum(sessions.values()))
+
+
+def cost_record(doc, report_hash):
+    return {"case_id": doc["case_id"], "profile_sha256": doc["profile_sha256"], "report_sha256": report_hash,
+            "recorded_compute_usd": doc["compute_usd"], "client_estimated_usd": operator_cost(doc)}
 
 
 def check_artifacts(artifacts):
@@ -131,6 +168,7 @@ def seal_report(source, destination):
         body = canonical(doc)
         (prepared / "operator.json").write_bytes(body)
         (prepared / "report.sha256").write_text(sha(body) + "\n")
+        (prepared / "client-cost.json").write_bytes(canonical(cost_record(doc, sha(body))))
         sealed = datetime.now(timezone.utc)
         require(timestamp(doc["finished_utc"]) <= sealed, "cannot seal a future report")
         (prepared / "seal.json").write_bytes(canonical({"report_sha256": sha(body), "sealed_utc": sealed.isoformat()}))
@@ -172,6 +210,9 @@ def read_first(root, build, case, locked, product, profile, launch=None):
     require(sha(body) == digest, "sealed operator report changed")
     doc = json.loads(body)
     seconds = check_operator(doc)
+    cost_file = folder / "client-cost.json"
+    if cost_file.exists():
+        require(cost_file.read_bytes() == canonical(cost_record(doc, digest)), "sealed client cost differs")
     require((doc["case_id"], doc["build"], doc["input_sha256"], doc["product_sha256"]) ==
             (case["case_id"], build, case["input_sha256"], product), "case, artifact pair or product identity differs")
     require(doc["profile_sha256"] == profile, "operator profile differs from the signed roster")
@@ -267,7 +308,8 @@ def score(roster_doc, sealed, grades, build, product, budget, reveal_after, key)
                          "firstActionableUtc": doc["first_actionable_utc"], "humanMinutes": doc["human_minutes"],
                          "uncachedInputTokens": doc["uncached_input_tokens"], "outputTokens": doc["output_tokens"],
                          "cachedInputTokens": doc["cached_input_tokens"], "checkpoint15m": doc["checkpoint_15m"],
-                         "computeUsd": doc["compute_usd"], "withinBudget": within, "decision": decision,
+                         "computeUsd": operator_cost(doc), "reportedComputeUsd": doc["compute_usd"],
+                         "withinBudget": within, "decision": decision,
                          "improvedCapability": (grade.get("improved_capability") or {}).get("name"),
                          "action": grade["action_grade"], "ci": grade["ci_result"], "primaryReason": primary_reason})
     def count(stratum):
@@ -327,6 +369,8 @@ def main():
     seal = commands.add_parser("seal-report")
     seal.add_argument("operator", type=Path)
     seal.add_argument("reports", type=Path)
+    costs = commands.add_parser("cost", help="reconcile cumulative native session estimates in sealed first reports")
+    costs.add_argument("reports", nargs="+", type=Path)
     calc = commands.add_parser("score")
     calc.add_argument("roster", type=Path)
     calc.add_argument("reports", type=Path)
@@ -336,6 +380,14 @@ def main():
     try:
         if args.operation == "seal-report":
             print(seal_report(args.operator, args.reports))
+            return
+        if args.operation == "cost":
+            rows = []
+            for path in args.reports:
+                doc = json.loads(path.read_bytes())
+                check_operator(doc)
+                rows.append(cost_record(doc, sha(path.read_bytes())))
+            print(json.dumps(rows, indent=2))
             return
         commitment = json.loads(Path(__file__).with_name("seed-commitment.json").read_text())
         key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(commitment["signer_ed25519_raw_hex"]))

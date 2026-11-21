@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a1fb31-b3eb-7231-b464-c3233fd02921` (open) |
+| Session | `01a1fb31-b3eb-7231-b464-c3233fd02921` (ended) |
 | When | 2026-11-20 23:01 UTC to 2026-11-21 02:14 UTC (192 min) |
 | Models | `gpt-6.2-astra` |
 | Client | codex 0.170.0 |
@@ -157,10 +157,6 @@ A bounded worker can run original BUMP testcases without putting subjects, coord
 The real allocator verified the two existing signed original-production references against 694 source entries and 94 matched PR leads and withheld both rosters. A closer four-input routine scope had 16 original-reader matches and 16 independent controls, with two nonoptional full-module dependencies still unavailable on each side. Two original BUMP OCI pairs were verified from the public-order intake before the signed checkpoint.
 
 Synthetic dispatch verified the private-receipt binding and rejected substituted code. The coverage test rejects additional fields, mismatched exits and incorrect trial counts. All affected tests passed, including 58 Rust binaries, and the tier lint agreed. The actual job inputs matched their committed hash, the runtime helper was byte-identical to its public source, and each side inventoried its whole historical Maven cache.
-
-### (in progress)
-
-change `ntvxsvxrkkxq`, not yet described
 
 ### Recognize stock tool results during resumed review (verification pending)
 

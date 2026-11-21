@@ -2,6 +2,93 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261121-021356-349-calibrate-verified-native-tool-resul",
+      "title": "349 calibrate verified native tool results on the original upgrade",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m07s, peak 432.5 MiB (estimated 12m00s, 3.0 GiB); 7 output file(s) changed",
+      "attention": [],
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "349"
+        ]
+      },
+      "sourceCommit": "ee809b6f0280a62d958e16d28b1bce1e870d544d",
+      "finishedAt": "2026-11-21T02:18:37+00:00",
+      "wallSeconds": 127.7,
+      "peakMemoryBytes": 453517312,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 720.0,
+        "notes": "Earlier planning-only runs took seconds to a few minutes. This treatment may reach native proof. The shared PR cap is 250000 uncached input plus output tokens, four CPUs, 16 GiB and two hours starting at intake."
+      },
+      "host": "vm-1",
+      "result": "20261121-021356-349-calibrate-verified-native-tool-resul/result.json"
+    },
+    {
+      "id": "20261121-020417-repeat-one-sequestered-bump-testcase-in",
+      "title": "Repeat one sequestered BUMP testcase in four clean historical builds",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1m32s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (Run four offline repetitions and publish opaque coverage) was held back 6m05s by its 2-CPU quota in 1m32s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "baseline:original-ci"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/curation/queued_bump.py"
+        ]
+      },
+      "sourceCommit": "a75b672e03a02605cecf36b7c7b68eb148acd162",
+      "finishedAt": "2026-11-21T02:12:28+00:00",
+      "wallSeconds": 92.2,
+      "peakMemoryBytes": 1308409856,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 3221225472,
+        "durationSeconds": 240.0,
+        "notes": "The independent curator estimated four minutes, two CPUs and a four GiB hard limit for four original named Maven trials. Source, dependencies and runtime are local."
+      },
+      "host": "vm-1",
+      "result": "20261121-020417-repeat-one-sequestered-bump-testcase-in/result.json"
+    },
+    {
+      "id": "20261121-015236-run-both-stock-aws-compcheck-settings-wi",
+      "title": "Run both stock AWS CompCheck settings with serial Central restores",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed",
+      "attention": [
+        "step 1 (Measure stock c15-2 with both knowledge settings and dependency restores) was held back 1m25s by its 4-CPU quota in 1m01s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "baseline:compcheck"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/compcheck_aws.py"
+        ]
+      },
+      "sourceCommit": "8a5bc79f1f39b394264402df62db5c1d6f62110a",
+      "finishedAt": "2026-11-21T02:01:53+00:00",
+      "wallSeconds": 61.5,
+      "peakMemoryBytes": 4130283520,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 480.0,
+        "notes": "Prior calibrated CompCheck treatments used under 3 GiB. Both warm original-source treatments share one two-hour ceiling, four CPUs, 16 GiB maximum memory and a 2.9 GB allowance for additional public Maven data. The original 60-second generated-test search remains part of stock CompCheck."
+      },
+      "host": "vm-1",
+      "result": "20261121-015236-run-both-stock-aws-compcheck-settings-wi/result.json"
+    },
+    {
       "id": "20261121-014525-349-run-the-history-preserving-operator",
       "title": "349 run the history-preserving operator on Commons Text",
       "status": "passed",
