@@ -1,0 +1,205 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-234853-restore-the-original-receiver-cohort-bef",
+  "title": "Restore the original receiver cohort before the 32-case rescore",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 47.9s, peak 299.3 MiB (estimated 6m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-234853-restore-the-original-receiver-cohort-bef.json",
+    "sha256": "babe353ffc144123436fa13f1ac5f328cdb2626b08a3f7319ef364c8a8a97ad0",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-234853-restore-the-original-receiver-cohort-bef",
+      "title": "Restore the original receiver cohort before the 32-case rescore",
+      "description": "Recreate the temporary source trees removed at the end of the external-upgrade campaign. Fetch the 28 original repositories serially, verify each old and new commit and the registered caller source digest, and retain the prepared inputs in the shared VM cache for the receiver recheck.",
+      "kind": "real-world",
+      "capabilities": [
+        "source:provenance"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-21T23:48:53+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "git"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "6m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Recover and verify the original upstream source pairs",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/receiver_sources.py --work \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-sources.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/receiver-sources.json"
+      ]
+    }
+  },
+  "sourceCommit": "0d524cff711089a1bb75de6cd17fc3e5b1313f34",
+  "startedAt": "2026-11-21T23:52:35+00:00",
+  "finishedAt": "2026-11-21T23:53:31+00:00",
+  "wallSeconds": 56.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2649064,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 313880576,
+    "wallSeconds": 47.9,
+    "cpuSeconds": 7.0,
+    "memoryOfEstimate": 0.29,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recover and verify the original upstream source pairs",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/receiver_sources.py --work \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-sources.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 47.913,
+      "cpuSeconds": 6.98,
+      "cpuThrottledSeconds": 1.188,
+      "peakMemoryBytes": 313880576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recover-and-verify-the-origina.log",
+        "lines": 93,
+        "bytes": 8246,
+        "sha256": "543b4ae5edd459c44c8a5da7b60b88265924fb7f82836f50e29624a4554bbff8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "From https://github.com/worksapplications/incremental-analysis",
+        " * [new ref]         f4633c66214da5bca3761136e88c71ec3b1eead0 -> corpus/f4633c66214da5bca3761136e88c71ec3b1eead0",
+        " * [new ref]         4e33671a32cbad26d39404389165d07c35770070 -> corpus/4e33671a32cbad26d39404389165d07c35770070",
+        "From https://github.com/apache/commons-text",
+        " * [new ref]         2b02f079f088a41e5bda78274872b3af3863a560 -> corpus/2b02f079f088a41e5bda78274872b3af3863a560",
+        " * [new ref]         267f1d14a96824e60451bcb3e8e1fb8a7e882a10 -> corpus/267f1d14a96824e60451bcb3e8e1fb8a7e882a10",
+        "From https://github.com/apache/commons-compress",
+        " * [new ref]         f3dfc34f01616abaf75cb255d59769d660428b83 -> corpus/f3dfc34f01616abaf75cb255d59769d660428b83",
+        " * [new ref]         b0757903222468a7a6b5e80a305ca749585129d5 -> corpus/b0757903222468a7a6b5e80a305ca749585129d5",
+        " * [new ref]         8a79b1fd5fd993e94f3487f8acd2cd3ee9d4f15d -> corpus/8a79b1fd5fd993e94f3487f8acd2cd3ee9d4f15d",
+        " * [new ref]         2cdf39ce4b191ac6c25a2e69905f82942872e587 -> corpus/2cdf39ce4b191ac6c25a2e69905f82942872e587",
+        "From https://github.com/apache/commons-configuration",
+        " * [new ref]         b485cdac96378f862237a6ad2fe3c8f57ae0612c -> corpus/b485cdac96378f862237a6ad2fe3c8f57ae0612c",
+        " * [new ref]         d2101a20e2b74ced47ae57dd3b6d1d90b03d409b -> corpus/d2101a20e2b74ced47ae57dd3b6d1d90b03d409b",
+        " * [new ref]         4c3ff511d02fb23b0ce967930bb828e8e69ee25e -> corpus/4c3ff511d02fb23b0ce967930bb828e8e69ee25e",
+        " * [new ref]         0721015a499d1848bdf5a524c0f8a4f3a4fbbca2 -> corpus/0721015a499d1848bdf5a524c0f8a4f3a4fbbca2",
+        "From https://github.com/damianszczepanik/cucumber-reporting",
+        " * [new ref]         d7c01732f611b6c9180c247d61e85bf5bbb38104 -> corpus/d7c01732f611b6c9180c247d61e85bf5bbb38104",
+        " * [new ref]         82d4caa2a3b42f6479af62efc3b27fee4e3b16ca -> corpus/82d4caa2a3b42f6479af62efc3b27fee4e3b16ca",
+        " * [new ref]         b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d -> corpus/b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d",
+        " * [new ref]         bf97b9ef1d60f9959a61379c3b3a682350e8e583 -> corpus/bf97b9ef1d60f9959a61379c3b3a682350e8e583",
+        "From https://github.com/apache/commons-beanutils",
+        " * [new ref]         389264ff96c9e361ecb830a9813eae3f86f38d3a -> corpus/389264ff96c9e361ecb830a9813eae3f86f38d3a",
+        " * [new ref]         5dc228566038283964a4f665c147282d462babdd -> corpus/5dc228566038283964a4f665c147282d462babdd",
+        "From https://github.com/apache/commons-csv",
+        " * [new ref]         f7d8d7e7bd9780423a0088a9b18b755ec714c5ab -> corpus/f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
+        " * [new ref]         8993be875a32fdc336780b1610a2e002d320571e -> corpus/8993be875a32fdc336780b1610a2e002d320571e",
+        "From https://github.com/jarviscraft/reflector",
+        " * [new ref]         a7421542ac2b34670c7c261539fc253d77526afc -> corpus/a7421542ac2b34670c7c261539fc253d77526afc",
+        " * [new ref]         b8a65d35911580a469964aa722f4cd989c1a5382 -> corpus/b8a65d35911580a469964aa722f4cd989c1a5382",
+        "From https://github.com/apache/commons-fileupload",
+        " * [new ref]         b958432b728f99c2f1142a896c8634fd1fc5b38c -> corpus/b958432b728f99c2f1142a896c8634fd1fc5b38c",
+        " * [new ref]         9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf -> corpus/9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
+        "From https://github.com/apache/commons-vfs",
+        " * [new ref]         8ac9ec3cb4f7116e6809ef4d146736ac637939c7 -> corpus/8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
+        " * [new ref]         55c96cfd2bdabe455058826ad86788f120b1425d -> corpus/55c96cfd2bdabe455058826ad86788f120b1425d",
+        "From https://github.com/apache/commons-validator",
+        " * [new ref]         a952e2fbe2b2226c72083f74cf66562a3118225f -> corpus/a952e2fbe2b2226c72083f74cf66562a3118225f",
+        " * [new ref]         86e32931594e3437cd8614311f5da7bc0c62613c -> corpus/86e32931594e3437cd8614311f5da7bc0c62613c",
+        "32 upgrade pairs in 28 original repositories"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-sources.json",
+      "change": "added",
+      "bytes": 8670,
+      "sha256": "0c24306d5f203d0ef063b413cec25d6c949374d74a49dd0b5c2b7624b0926d0d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T23:53:48+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-sources.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261121T235331Z-7107042c4bedc937",
+      "outputs": "20261121T235331Z-7331249d70d143e0",
+      "diff": "20261121T235331Z-751428694b96f902"
+    }
+  }
+}
