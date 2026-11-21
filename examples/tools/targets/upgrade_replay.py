@@ -2,6 +2,8 @@
 
 The supplied Java observer constructs the real receiver and returns the caller-visible string
 or a reviewed encoding of its result. The declared cases carry independent expected observations.
+If a JVM throws before the selected method, report the escaping exception and its live call stack
+on fresh replays of both revisions. The selected method's result stays open.
 """
 
 import argparse
@@ -84,13 +86,17 @@ def parse_output(text, caller, original, dependency, observation_text=None):
     return outcome, sorted(name for name, origins in loaded.items() if origins == {dependency})
 
 
-def early_failure(stack_file, loaded, files, artifact_hashes, dependency, records):
+def early_failure(debugger_marks, loaded, files, artifact_hashes, dependency, records):
     """Bind the JVM's live throw stack to unambiguous files on this side's ordered classpath."""
     evidence = {"causes": [s.removeprefix("UPGRADE-CAUSE ") for s in records if s.startswith("UPGRADE-CAUSE ")],
                 "frames": [], "observerCodeIndex": None}
-    if not stack_file.is_file():
+    last_message = next((s.removeprefix("UPGRADE-LAST-CAUSE ") for s in records if s.startswith("UPGRADE-LAST-CAUSE ")), "-")
+    if last_message != "-":
+        evidence["lastCauseMessage"] = base64.b64decode(last_message, validate=True).decode("utf-16-be", "surrogatepass")[:500]
+    stacks = [s.removeprefix("UPGRADE-THROW-STACK ") for s in debugger_marks if s.startswith("UPGRADE-THROW-STACK ")]
+    if len(stacks) != 1:
         return evidence
-    for line in stack_file.read_text(encoding="utf-8").splitlines():
+    for line in base64.b64decode(stacks[0], validate=True).decode("utf-8").splitlines():
         fields = line.split("\t")
         if fields[0] == "observer":
             evidence["observerCodeIndex"] = int(fields[1])
@@ -109,12 +115,31 @@ def early_failure(stack_file, loaded, files, artifact_hashes, dependency, record
     return evidence
 
 
-def run_observation(run_dir, command, env, resources, deadline):
+def compare_before_entry(sides, domain):
+    comparisons = []
+    for old, new, case in zip(sides["old"]["trials"], sides["new"]["trials"], domain):
+        if "beforeEntry" not in old and "beforeEntry" not in new:
+            continue
+        result = {"input": old["input"], "status": "unqualified"}
+        observed = new.get("beforeEntry", [])
+        if old.get("repeatableBeforeEntry") and new.get("repeatableBeforeEntry"):
+            result["status"] = "stopped before entry on both revisions"
+        elif (new.get("repeatableBeforeEntry") and observed[0]["observerCodeIndex"] is not None
+              and any(f["artifact"] in ("client", "upgrade") for f in observed[0]["frames"])
+              and old["qualifiedMethodEntries"] == 2 and old["observations"] == [case["expected"]] * 2
+              and old["loadedUpgradeOnEachReplay"] and new["loadedUpgradeOnEachReplay"]):
+            result.update(status="reproduced earlier failure", before=case["expected"], after={"throws": observed[0]["throws"]})
+        comparisons.append(result)
+    return comparisons
+
+
+def run_observation(run_dir, launch, subject_cp, via, main, encoded, trace_exception, env, resources, deadline):
     run_dir.mkdir()
     for original, relative_file in resources:
         destination = run_dir / "fixtures" / relative_file
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_bytes(original.read_bytes())
+    command = [*launch, str(run_dir), subject_cp, via, main, trace_exception, *encoded]
     with subprocess.Popen(command, cwd=run_dir, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                           start_new_session=True) as child:
         try:
@@ -222,59 +247,81 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         report["originalInvocation"] = caller
         report["invocationVia"] = via or None
         report["probeClasses"]={helper_class(f):sha(f) for f in compiled}
+        launch = [str(jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*tools]),
+                  "UpgradeTrace", caller, str(jdk)]
+        first_early = None
         for side,(files,dependency,side_record) in prepared.items():
             if any(runtime_jar.read_class(jar,name) is not None for jar in files for name in report["probeClasses"]):
                 raise ValueError("observer classes shadow an input artifact")
             records=[]
             side_record["trials"] = records
             operand_classes=set()
+            subject_cp = cp([output, *files])
             for index,case in enumerate(domain):
                 trials=[]
                 trial_record = {"input": index, "qualifiedMethodEntries": 0, "observations": trials}
                 records.append(trial_record)
+                early = []
+                loaded_each_time = True
+                enc=["-" if x is None else base64.b64encode(x.encode("utf-16-be","surrogatepass")).decode() for x in case["args"]]
+                def run(directory, trace_exception):
+                    return run_observation(directory, launch, subject_cp, via, main, enc, trace_exception,
+                                           env, resources, start+timeout)
+
                 for trial in range(2):
                     run_dir = temp / f"{side}-{index}-{trial}"
-                    run_dir.mkdir()
-                    enc=["-" if x is None else base64.b64encode(x.encode("utf-16-be","surrogatepass")).decode() for x in case["args"]]
                     report["stoppedAt"] = {"side": side, "input": index, "repetition": trial+1}
-                    for original, relative_file in resources:
-                        destination = run_dir / "fixtures" / relative_file
-                        destination.parent.mkdir(parents=True, exist_ok=True)
-                        destination.write_bytes(original.read_bytes())
-                    cmd=[str(jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+str(run_dir), "-cp",
-                         cp([output,*tools]), "UpgradeTrace", caller, str(jdk), str(run_dir), cp([output,*files]), via,main,*enc]
-                    with subprocess.Popen(cmd, cwd=run_dir, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                          start_new_session=True) as child:
-                        try:
-                            stdout, stderr = child.communicate(timeout=max(0.01, timeout-(time.monotonic()-start)))
-                        except subprocess.TimeoutExpired:
-                            os.killpg(child.pid, signal.SIGKILL)
-                            child.communicate()
-                            raise
-                    if child.returncode:
-                        raise ValueError(f"{side} input {index}: JVM exit {child.returncode}: {stderr.decode(errors='replace')[-500:]}")
-                    child_output = stdout.decode(errors="replace") + "\n" + (run_dir / "child.stderr").read_text(errors="replace")
-                    observation_file = run_dir / "observation.txt"
-                    if not observation_file.is_file():
-                        raise ValueError(f"{side} input {index}: the application stopped before producing its observation")
-                    observation_text = observation_file.read_text(encoding="utf-8")
+                    trace_exception = early[0]["throws"] if early else ""
+                    child_output, marks, observation_text = run(run_dir, trace_exception)
                     detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
                     if detail:
                         detail = base64.b64decode(detail, validate=True).decode("utf-16-be", "surrogatepass")
                         report["stoppedAt"]["exception"] = detail[:750]
-                    if "UPGRADE-HIT " + caller not in stderr.decode(errors="replace").splitlines():
-                        raise ValueError(f"{side} input {index}: the original caller method was never entered. {detail}")
+                    if "UPGRADE-HIT " + caller not in marks:
+                        outcome = typed_outcome(observation_text.splitlines())
+                        if "throws" not in outcome:
+                            raise ValueError(f"{side} input {index}: the original caller method was never entered. {detail}")
+                        if not trace_exception:
+                            # Re-execute with exception events limited to the escaping type. Ordinary
+                            # successful checks pay no cost for tracing library-internal exceptions.
+                            run_dir = temp / f"{side}-{index}-{trial}-throw"
+                            child_output, marks, observation_text = run(run_dir, outcome["throws"])
+                        if (typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller in marks
+                                or (trace_exception and trace_exception != outcome["throws"])):
+                            raise ValueError(f"{side} input {index}: inconsistent failure before the original caller")
+                        loaded = class_origins(child_output)
+                        classes = [name for name, origins in loaded.items() if origins == {dependency}]
+                        operand_classes.update(classes)
+                        loaded_each_time = loaded_each_time and bool(classes)
+                        evidence = early_failure(marks, loaded, files, side_record["classpath"],
+                                                 dependency, observation_text.splitlines())
+                        early.append({**outcome, **evidence})
+                        trial_record["beforeEntry"] = early
+                        if first_early is None:
+                            first_early = dict(report["stoppedAt"])
+                        continue
                     trial_record["qualifiedMethodEntries"] += 1
                     observation,classes=parse_output(child_output,caller,files[0],dependency,observation_text)
                     trials.append(observation)
                     operand_classes.update(classes)
-                if trials[0]!=trials[1]:
+                    loaded_each_time = loaded_each_time and bool(classes)
+                trial_record["loadedUpgradeOnEachReplay"] = loaded_each_time
+                if early:
+                    trial_record["repeatableBeforeEntry"] = len(early) == 2 and early[0] == early[1]
+                elif trials[0]!=trials[1]:
                     raise ValueError(f"{side} input {index} gave different observations in fresh JVMs")
 
-            if not operand_classes:
+            if not operand_classes and all("beforeEntry" not in row for row in records):
                 raise ValueError(f"{side} did not load any class from the upgraded artifact")
             side_record.update(trials=records,loadedDependencyClasses=sorted(operand_classes))
+        if first_early is not None:
+            report["stoppedAt"] = first_early
+            report["reason"] = (f"{first_early['side']} input {first_early['input']}: the original caller method was never entered. "
+                                + first_early.get("exception", ""))
+            report["beforeEntryComparison"] = compare_before_entry(report["sides"], domain)
+            report["elapsedSeconds"] = round(time.monotonic()-start, 3)
+            return report
         report.pop("stoppedAt", None)
         old,new=(report["sides"][k]["trials"] for k in ("old","new"))
         differences=[i for i,(a,b) in enumerate(zip(old,new)) if a["observations"][0]!=b["observations"][0]]

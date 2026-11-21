@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,7 +130,7 @@ public final class UpgradeTrace {
         OutputStream diagnostics = Files.newOutputStream(Paths.get(args[2], "child.stderr"));
         Thread stdout = forward(child.getInputStream(), System.out), stderr = forward(child.getErrorStream(), diagnostics);
         boolean hit = false, finished = false;
-        Map<Long, List<String>> thrown = new LinkedHashMap<>();
+        Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
             List<String> watched = exception.isEmpty() ? Arrays.asList(owner)
                     : Arrays.asList(owner, exception, "UpgradeObservation");
@@ -146,10 +147,10 @@ public final class UpgradeTrace {
                     } else if (event instanceof ExceptionEvent) {
                         ExceptionEvent raised = (ExceptionEvent) event;
                         if (!raised.exception().referenceType().name().equals(exception)) continue;
-                        long id = raised.exception().uniqueID();
+                        String id = raised.thread().uniqueID() + "/" + raised.exception().uniqueID();
                         List<String> stack = throwingStack(raised, observer);
-                        thrown.remove(id);
                         if (stack != null) {
+                            thrown.remove(id);
                             if (thrown.size() == 64) thrown.remove(thrown.keySet().iterator().next());
                             thrown.put(id, stack);
                         }
@@ -157,9 +158,10 @@ public final class UpgradeTrace {
                         BreakpointEvent point = (BreakpointEvent) event;
                         if ("failure".equals(point.request().getProperty("purpose"))) {
                             ObjectReference escaping = (ObjectReference) point.thread().frame(0).getArgumentValues().get(1);
-                            List<String> stack = thrown.get(escaping.uniqueID());
+                            List<String> stack = thrown.get(point.thread().uniqueID() + "/" + escaping.uniqueID());
                             if (stack != null && escaping.referenceType().name().equals(exception))
-                                Files.write(Paths.get(args[2], "throwing-stack.tsv"), stack, StandardCharsets.UTF_8);
+                                System.err.println("UPGRADE-THROW-STACK " + Base64.getEncoder().encodeToString(
+                                        String.join("\n", stack).getBytes(StandardCharsets.UTF_8)));
                         } else if (calledFromObserver(point, observer, args[4])) {
                             hit = true;
                             point.request().disable();

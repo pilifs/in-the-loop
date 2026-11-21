@@ -58,12 +58,15 @@ public final class UpgradeObservation {
         output.write("UPGRADE-OBSERVATION throw " + thrown.getClass().getName() + "\n");
         StringBuilder detail = new StringBuilder();
         Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
+        Throwable last = thrown;
         for (Throwable cause = thrown; cause != null && seen.size() < 16 && seen.add(cause); cause = cause.getCause()) {
+            last = cause;
             if (detail.length() > 0) detail.append(" caused by ");
             detail.append(cause.getClass().getName()).append(": ").append(cause.getMessage());
             if (cause.getStackTrace().length != 0) detail.append(" at ").append(cause.getStackTrace()[0]);
             output.write("UPGRADE-CAUSE " + cause.getClass().getName() + "\n");
         }
+        output.write("UPGRADE-LAST-CAUSE " + encode(last.getMessage()) + "\n");
         output.write("UPGRADE-DETAIL " + encode(detail.toString()) + "\n");
         for (StackTraceElement frame : thrown.getStackTrace()) {
             output.write("UPGRADE-FRAME " + frame.getClassName() + "#" + frame.getMethodName() + "\n");

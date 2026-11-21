@@ -12,9 +12,34 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from targets import runtime_jdk, upgrade_claims, upgrade_replay
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
 from cost_tier import cost
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 
 class UpgradeReviewTest(unittest.TestCase):
+    def prepared_pair(self, root, jdk, client, versions):
+        client_source = root / "Real.java"
+        client_source.write_text("package app; public class Real { " + client + " }")
+        prepared, dependencies = [], []
+        for side, methods in versions.items():
+            classes = root / side
+            classes.mkdir()
+            source = root / "Number.java"
+            source.write_text("package dep; public class Number { " + methods + " }")
+            subprocess.run([str(jdk / "bin/javac"), "-J-Djava.io.tmpdir=" + str(root), "-d", str(classes),
+                            str(client_source), str(source)], check=True, capture_output=True)
+            rows = []
+            for owner in ("app/Real", "dep/Number"):
+                jar = classes / (owner.split("/")[-1] + ".jar")
+                with zipfile.ZipFile(jar, "w") as archive:
+                    archive.write(classes / (owner + ".class"), owner + ".class")
+                rows.append({"file": str(jar), "sha256": upgrade_replay.sha(jar)})
+            path = classes / "prepared.json"
+            path.write_text(json.dumps({"commit": side, "sourceSha256": upgrade_replay.sha(client_source), "classpath": rows}))
+            prepared.append(path)
+            dependencies.append(rows[1]["sha256"])
+        return prepared, dependencies
+
     @cost("tool")
     def test_loading_a_caller_and_referencing_an_unexecuted_call_cannot_qualify_an_input(self):
         jdk = runtime_jdk.home("21")
@@ -23,27 +48,9 @@ class UpgradeReviewTest(unittest.TestCase):
         jdk = Path(jdk)
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            client_source = root / "Real.java"
-            client_source.write_text("package app; public class Real { public static int call() { return dep.Number.value(); } public static int wrapper() { return call(); } }")
-            prepared, dependencies = [], []
-            for side, number in (("old", "7"), ("new", "8")):
-                classes = root / side
-                classes.mkdir()
-                source = root / "Number.java"
-                source.write_text("package dep; public class Number { public static int value() { return " + number + "; } }")
-                subprocess.run([str(jdk / "bin/javac"), "-J-Djava.io.tmpdir=" + tmp, "-d", str(classes),
-                                str(client_source), str(source)], check=True, capture_output=True)
-                rows = []
-                for owner in ("app/Real", "dep/Number"):
-                    jar = classes / (owner.split("/")[-1] + ".jar")
-                    with zipfile.ZipFile(jar, "w") as archive:
-                        archive.write(classes / (owner + ".class"), owner + ".class")
-                    rows.append({"file": str(jar), "sha256": upgrade_replay.sha(jar)})
-                path = classes / "prepared.json"
-                path.write_text(json.dumps({"commit": side, "sourceSha256": upgrade_replay.sha(client_source),
-                                            "classpath": rows}))
-                prepared.append(path)
-                dependencies.append(rows[1]["sha256"])
+            prepared, dependencies = self.prepared_pair(root, jdk,
+                "public static int call() { return dep.Number.value(); } public static int wrapper() { return call(); }",
+                {side: "public static int value() { return " + n + "; }" for side, n in (("old", "7"), ("new", "8"))})
             probe = root / "UpgradeProbe.java"
             probe.write_text("public class UpgradeProbe { public static String observe(String[] x) { "
                              "if (x.length == 1) return app.Real.class.getName(); "
@@ -70,6 +77,45 @@ class UpgradeReviewTest(unittest.TestCase):
                              "return Integer.toString(x.length == 1 ? app.Real.call() : app.Real.wrapper()); } }")
             with self.assertRaisesRegex(ValueError, "original caller method was never entered"):
                 upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+
+    @cost("tool")
+    def test_failure_before_entry_is_bound_to_the_escaping_object_and_original_jars(self):
+        home = runtime_jdk.home("21")
+        if not home:
+            self.skipTest("requires JDK 21")
+        jdk = Path(home)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            prepared, dependencies = self.prepared_pair(root, jdk,
+                "public static void prepare() { dep.Number.prepare(); } public static int call() { return 7; }",
+                {"old": "public static void prepare() {}",
+                 "new": "public static void prepare() { IllegalStateException problem = new IllegalStateException(); "
+                        "problem.setStackTrace(new StackTraceElement[0]); throw problem; }"})
+            probe = root / "UpgradeProbe.java"
+            probe.write_text("""public class UpgradeProbe {
+                public static String observe(String[] input) {
+                    if (input[0].equals("replace")) {
+                        try { app.Real.prepare(); }
+                        catch (IllegalStateException original) { throw new IllegalStateException("observer"); }
+                    } else { app.Real.prepare(); }
+                    return Integer.toString(app.Real.call());
+                }
+            }""")
+            spec = root / "scope.json"
+            spec.write_text(json.dumps({"entry": "app.Real#call()I", "observer": "return", "basis": "fixture",
+                "probeClass": "UpgradeProbe", "cases": [{"args": [value], "expected": {"return": "7"}}
+                                                       for value in ("original", "replace")]}))
+            result = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+            self.assertEqual(result["status"], "open")
+            primary, replaced = result["sides"]["new"]["trials"]
+            self.assertEqual(primary["qualifiedMethodEntries"], 0)
+            self.assertEqual(primary["observations"], [])
+            self.assertTrue(primary["repeatableBeforeEntry"])
+            self.assertEqual([(f["entry"], f["artifact"]) for f in primary["beforeEntry"][0]["frames"]],
+                             [("dep.Number#prepare()V", "upgrade"), ("app.Real#prepare()V", "client")])
+            self.assertEqual(replaced["beforeEntry"][0]["frames"], [])
+            self.assertEqual([c["status"] for c in result["beforeEntryComparison"]],
+                             ["reproduced earlier failure", "unqualified"])
 
     def test_only_instructions_from_the_selected_overload_supply_call_evidence(self):
         text = """public class app.Client {
