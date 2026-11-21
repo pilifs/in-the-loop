@@ -1,0 +1,267 @@
+{
+  "id": "incremental-analysis-28",
+  "build": "current",
+  "operator": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "entry": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search",
+  "observer": "Inspect the original class selection and the referenced class names in a small build.",
+  "revisions": {
+    "old": "f4633c66214da5bca3761136e88c71ec3b1eead0",
+    "new": "4e33671a32cbad26d39404389165d07c35770070"
+  },
+  "result": "open",
+  "readerSha256": "c7839d4ddbb898e9f1a6a55b6bf93d796cb9e839db1a81a0eb369032efcf8d0a",
+  "checkerSha256": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
+  "sides": {
+    "old": {
+      "commit": "f4633c66214da5bca3761136e88c71ec3b1eead0",
+      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 2,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
+        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
+        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
+        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
+        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
+        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
+        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
+        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+        "5ae4f6a5f844d34db58ada075bdb31b58de138e54288a0b9e6a3996329993cb6",
+        "635c839cad0212b7e9a27dea5823928b5b7010e5ca2d17985fb688d84d48fdb3",
+        "a94ad5b4d2bbbd20b6f38165751bddceb227420eb92c36160116fb5eaa157b9e",
+        "0e8aff5fe29b7b7c8e643d75eafc98cd754a3ceb5d215908cd69dd366b0286dd",
+        "229b10c12289bc0e28e3b9b64de3a61a6b736eb8afa145fdf4c33ff008736cb5",
+        "75e3810c681735e7a088294668f893667d193c87905e5bc976e03ccd939602c6",
+        "47ebf67979b231bf215ed967a63b2a142c8a2c1c7b219c0206559985e802b836",
+        "7ad0a3b98a9c284d6abc5beaf53f25ba4c4eb2b46b2402698a58774017c00dc0",
+        "0ab4654db5d86c019107dccad0d9c6c7fa8b3a9847e0a1f0b21b8384e43d9941",
+        "2cafa2629da49edd54eb4df6d15f628c2d80eec293f37cd561f1fe78e7bcff9d",
+        "9a84f5863407acf2bf9cf280cd02f5a518952a386de61df3b8c5db8cfdec725d",
+        "3f74c7c7b9c924769cf3c5b4d52d21aa63e9a2ccbf16f5d26c30ebb31b99699d",
+        "9e9a57439a98034732e94d841bb7065b56e3a065654361ca9cc07135e9fbe17c",
+        "807e9bc9e28d57ec0cb6daf04c317b3e13de5899c0282ee0f76c009198739350",
+        "1f10b2204cc77c919301f20ff90461c3df1b6e6cb148be1c2d22107f4851d423",
+        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
+        "11eec6fcc7a47c50c8d7fb7ac69920c33c70cb8df6b7a0d8eb751c813fb1928a",
+        "2254aa20804aaa804085830ae0b6e9105989c97849d2037e892872d13247c30a",
+        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "aba7980581027ad5fc74a27ee4d64aad74932fdb32694967242d03fc50290d1f",
+        "8f3a655545fc5b4cbf12b5eb8a154fccb0c1144423a1450511f44005a3d574a2",
+        "b2931d41740490a8d931cbe0cfe9ac20deb66cca606e679f52522f7f534c9fd7",
+        "4df7a6a7be64b35bbccf60b5c115697f9ea3421d22674ae67135dde375fcca1f",
+        "3b0559bb8432f28937efe6ca193ef54a8506d0075d73fd7406b9b116c6a11063",
+        "5a15fdba22669e0fdd06e10dcce6320879e1f7398fbc910cd0677b50672a78c4",
+        "5fedab561b430bfaef520f06d269e21e999e564fb893465aa2d7d21ed06527ab",
+        "9e2434820dd2ba44ad70a66e5b2a9993a2a8b047ceabc3e850e4858cbf3f91c3"
+      ],
+      "orderedSha256": [
+        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
+        "b88ef66468b3c978ad0c97fd6e90979e56155b4ac69089ba7a44e9aa7ffe9acf",
+        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
+        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
+        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
+        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
+        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
+        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
+        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
+      ],
+      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
+      "descriptors": [
+        "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
+        "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
+      ]
+    },
+    "new": {
+      "commit": "4e33671a32cbad26d39404389165d07c35770070",
+      "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 2,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
+        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
+        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
+        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
+        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
+        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
+        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
+        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+        "5ae4f6a5f844d34db58ada075bdb31b58de138e54288a0b9e6a3996329993cb6",
+        "635c839cad0212b7e9a27dea5823928b5b7010e5ca2d17985fb688d84d48fdb3",
+        "a94ad5b4d2bbbd20b6f38165751bddceb227420eb92c36160116fb5eaa157b9e",
+        "0e8aff5fe29b7b7c8e643d75eafc98cd754a3ceb5d215908cd69dd366b0286dd",
+        "229b10c12289bc0e28e3b9b64de3a61a6b736eb8afa145fdf4c33ff008736cb5",
+        "75e3810c681735e7a088294668f893667d193c87905e5bc976e03ccd939602c6",
+        "47ebf67979b231bf215ed967a63b2a142c8a2c1c7b219c0206559985e802b836",
+        "7ad0a3b98a9c284d6abc5beaf53f25ba4c4eb2b46b2402698a58774017c00dc0",
+        "0ab4654db5d86c019107dccad0d9c6c7fa8b3a9847e0a1f0b21b8384e43d9941",
+        "2cafa2629da49edd54eb4df6d15f628c2d80eec293f37cd561f1fe78e7bcff9d",
+        "9a84f5863407acf2bf9cf280cd02f5a518952a386de61df3b8c5db8cfdec725d",
+        "3f74c7c7b9c924769cf3c5b4d52d21aa63e9a2ccbf16f5d26c30ebb31b99699d",
+        "9e9a57439a98034732e94d841bb7065b56e3a065654361ca9cc07135e9fbe17c",
+        "807e9bc9e28d57ec0cb6daf04c317b3e13de5899c0282ee0f76c009198739350",
+        "1f10b2204cc77c919301f20ff90461c3df1b6e6cb148be1c2d22107f4851d423",
+        "a1a922d0d9b6d183ed3800dfac01d1e1eb159f0e8c6f94736931c1def54a941f",
+        "11eec6fcc7a47c50c8d7fb7ac69920c33c70cb8df6b7a0d8eb751c813fb1928a",
+        "2254aa20804aaa804085830ae0b6e9105989c97849d2037e892872d13247c30a",
+        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "aba7980581027ad5fc74a27ee4d64aad74932fdb32694967242d03fc50290d1f",
+        "8f3a655545fc5b4cbf12b5eb8a154fccb0c1144423a1450511f44005a3d574a2",
+        "b2931d41740490a8d931cbe0cfe9ac20deb66cca606e679f52522f7f534c9fd7",
+        "4df7a6a7be64b35bbccf60b5c115697f9ea3421d22674ae67135dde375fcca1f",
+        "3b0559bb8432f28937efe6ca193ef54a8506d0075d73fd7406b9b116c6a11063",
+        "5a15fdba22669e0fdd06e10dcce6320879e1f7398fbc910cd0677b50672a78c4",
+        "5fedab561b430bfaef520f06d269e21e999e564fb893465aa2d7d21ed06527ab",
+        "9e2434820dd2ba44ad70a66e5b2a9993a2a8b047ceabc3e850e4858cbf3f91c3"
+      ],
+      "orderedSha256": [
+        "0ba2862f7dcab7901b3a80c2c3b7decf1fdc71bf5095144b9b969557eecf1218",
+        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
+        "ed439400a5e0ecb5e74593d6a58dd187b89502e5b9cbc2dd1082052c50c6d5fb",
+        "92eb273a3316762478fdd4fe03a0ce1842c56f496c9c12fe1235db80450e1fdb",
+        "5cb1e9f9cf0be011487545694ff0a178237c6bfcbb21c97865cdc52c60b9347a",
+        "f78d44a1e3877f1ce748b4a85df5171e5e8e9a5c3c6f63bb9003db6f84cce952",
+        "3bae789b401333b2a1d1603b7fa573e19908628191707203f6eb708cdee2c052",
+        "f877d304660ac2a142f3865badfc971dec7ed73c747c7f8d5d2f5139ca736513",
+        "e1c814fd04492a27c38e0317eabeaa1b3e950ec8010239e400fe90ad6c9107b4",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
+      ],
+      "callerClassSha256": "9b28865acc9203261ad16bec7a7a8d1d31187fdce3cabb0e337b61f9357e9733",
+      "descriptors": [
+        "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
+        "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
+      ]
+    }
+  },
+  "declarations": {
+    "common": [
+      "(Ljava/nio/file/Path;Ljava/util/Set;)Ljava/util/stream/Stream;",
+      "(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;"
+    ],
+    "removed": [],
+    "added": []
+  },
+  "native": {
+    "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
+    "exit": 1,
+    "seconds": 0.052,
+    "outputSha256": "4ab4e072fd9f6c1453638b5b0346e0fa48c5ffda4d21de4aeb40d4cd3d58bfe9",
+    "outcome": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
+      "domain": null,
+      "counterexample": null,
+      "proof": null,
+      "problem": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
+      "statement": null,
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
+          "uri": null,
+          "line": 107
+        }
+      ],
+      "output": "\u2717 com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
+      "work": "$WORK/checker-mspkxn4r/overload-0"
+    },
+    "firstBlocker": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+  },
+  "firstBlocker": "review the recorded exact overloads",
+  "nativeOverloads": [
+    {
+      "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
+      "exit": 1,
+      "seconds": 0.052,
+      "outputSha256": "4ab4e072fd9f6c1453638b5b0346e0fa48c5ffda4d21de4aeb40d4cd3d58bfe9",
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)",
+        "domain": null,
+        "counterexample": null,
+        "proof": null,
+        "problem": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
+            "uri": null,
+            "line": 107
+          }
+        ],
+        "output": "\u2717 com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
+        "work": "$WORK/checker-mspkxn4r/overload-0"
+      },
+      "firstBlocker": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+    },
+    {
+      "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream)",
+      "exit": 1,
+      "seconds": 0.036,
+      "outputSha256": "aa2829524382d23c05fdc0247cfe982ff398aff8c72fefd0c609a65c4906c758",
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream)",
+        "domain": null,
+        "counterexample": null,
+        "proof": null,
+        "problem": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
+            "uri": null,
+            "line": 60
+          }
+        ],
+        "output": "\u2717 com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream) cannot be verified: search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
+        "work": "$WORK/checker-mspkxn4r/overload-1"
+      },
+      "firstBlocker": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+    }
+  ],
+  "elapsedSeconds": 0.157,
+  "sourceSha256": "35584c361aeecec5428eb00e0e81a8e150ba17ddf0f4933bc136f1ba745f4799"
+}

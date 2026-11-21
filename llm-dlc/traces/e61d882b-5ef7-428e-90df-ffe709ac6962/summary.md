@@ -3536,6 +3536,12 @@ change `lpmrululwqmo` · [log `ff4c580f8499`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 1 job(s). 20261121-070717-final-v2-group-06-original-caller-and-mi: passed: 2 passed step(s) in 25.3s, peak 132.1 MiB (estimated 6m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
+### Record verification results for 7 job(s)
+
+change `mlowsnvomywl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 7 of the 7 job(s). 20261121-070716-final-v2-group-01-original-caller-and-mi: passed: 4 passed step(s) in 1m12s, peak 800.6 MiB (estimated 6m00s, 2.0 GiB); 11 output file(s) changed Applied 11 output(s). 20261121-070716-final-v2-group-02-original-caller-and-mi: passed: 2 passed step(s) in 58.1s, peak 311.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-03-original-caller-and-mi: passed: 2 passed step(s) in 1m03s, peak 132.5 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070716-final-v2-group-04-original-caller-and-mi: passed: 2 passed step(s) in 1m10s, peak 196.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-togglz-original-ci-and-named-featu: passed: 3 passed step(s) in 1m12s, peak 1.7 GiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-05-original-caller-and-mi: passed: 2 passed step(s) in 57.7s, peak 137.0 MiB (estimated 6m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-070717-final-v2-group-07-original-caller-and-mi: passed: 4 passed step(s) in 1m45s, peak 2.5 GiB (estimated 6m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz) has every step in between: reasoning, tool calls and their results.
