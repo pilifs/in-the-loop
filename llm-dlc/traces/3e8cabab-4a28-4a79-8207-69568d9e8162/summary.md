@@ -3032,19 +3032,19 @@ Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the j
 
 ### Add the LLM-DLC process plumbing brief
 
-change `tsovozrrxxtm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`330361f70413`](https://github.com/pilifs/in-the-loop/commit/330361f704133da7e3cf062e59068a2485c11290) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The user's brief, copied unchanged from their analysis folder, for a single-agent run on Fable 5.2 at high effort to start after organic-java-pr-campaign ends: develop checkpoints and gated promotion to main, private custody of original outputs in R2, watcher-delegated redaction decisions, and less churn in traces and the verification layout. Documentation only.
 
 ### Record that Avro #3878's seven universal results hold only under a recorded startup (VF-054)
 
-change `rqsswoxxxwnr` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`c3805257ad73`](https://github.com/pilifs/in-the-loop/commit/c3805257ad73e593f881952ee28d4d94f0c463a0) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 At the user's request when run 7 (organic-java-pr-campaign) stopped: 39/46 primary obligations are decided at original native scope, and the seven open ones are Avro's universal properties, proved only under one recorded JVM startup. Strict checking with ordinary startup stops at Hadoop Configuration.&lt;clinit> and Avro Schema.&lt;clinit>. The finding also records JavaParser's System.getProperty refusal, two 60-second checker timeouts (354, 359), and the Temurin-hash-bound JDK models, and asks for an analysis of proving over every startup state before any brief. Documentation only.
 
 ### Add the lib architecture fast-follow brief
 
-change `ppuqvlpymstl` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`6de23ad6358b`](https://github.com/pilifs/in-the-loop/commit/6de23ad6358b7a34dc27fe5b3c17db2219437b66) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 The user's brief, copied unchanged from their analysis folder, for a single-agent run that continues the dlc-process-plumbing Fable session once that run ends: one shared Rust/Python contract for proof output, binding preparation and checking to the class bytes the JVM loads, and moving array induction into lib. Documentation only.
 
