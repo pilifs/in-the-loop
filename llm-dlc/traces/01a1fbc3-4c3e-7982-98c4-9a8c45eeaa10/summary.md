@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Measure original Maven suites and rerun stock CI (verification pending)
 
-change `ouptkpqnyopw` · [log `47de3e3f91b4`](https://terminalvalue.net/raw-traces/01a1fbc3-4c3e-7982-98c4-9a8c45eeaa10/47de3e3f91b45421955362e4e6aea3309aae2c79f0187c6ee1b5212c85f9a232.jsonl.gz)
+[`8d2752e09bab`](https://github.com/pilifs/in-the-loop/commit/8d2752e09bab2c192d870934b74e95fccc65cf39) · [log `47de3e3f91b4`](https://terminalvalue.net/raw-traces/01a1fbc3-4c3e-7982-98c4-9a8c45eeaa10/47de3e3f91b45421955362e4e6aea3309aae2c79f0187c6ee1b5212c85f9a232.jsonl.gz)
 
 Both Cucumber JDK 11 builds passed all 665 reported tests including 27 skips, and a direct replay from nine original source-built classes reproduced the historic 0.007 fixture. Both Commons Text JDK 21 builds ran 1305 tests, including all 34 passing escape tests. The same 18 lookup errors occurred in the isolated machine on both revisions. Retain suite XML checksums, exact named reports, cache requests, and Maven logs. Two independently written grades found that the first two disclosed operator reports supported their availability limits and supplied zero new caller decisions.
 
@@ -30,7 +30,7 @@ Verified all named XML, compressed original logs, both first-report digests and 
 
 ### Preserve isolated operator history across requests (verification pending)
 
-change `yrrxynxpszxt` · [log `7c2a34e30a17`](https://terminalvalue.net/raw-traces/01a1fbc3-4c3e-7982-98c4-9a8c45eeaa10/7c2a34e30a17edd22068b40b412295119fbde7398c95fc22ba453b87c6cd2cfc.jsonl.gz)
+[`47b26d6e754f`](https://github.com/pilifs/in-the-loop/commit/47b26d6e754f157cd611026b60c849856a96f0fa) · [log `7c2a34e30a17`](https://terminalvalue.net/raw-traces/01a1fbc3-4c3e-7982-98c4-9a8c45eeaa10/7c2a34e30a17edd22068b40b412295119fbde7398c95fc22ba453b87c6cd2cfc.jsonl.gz)
 
 Freeze a shared Claude operator before roster lock. Each role retains its own full native session across metered requests, the reviewer sees only approved case inputs, and a separate uncredentialed image estimates the next request size without product code. Bind each build to a separate launch lock and full tool-root digest while comparing the invariant machine and JDK environment. Stock H2 intake again sealed as unavailable without inference. Job 20261121-014525-349-run-the-history-preserving-operator starts an independent Commons Text calibration with the same original sources and budgets.
 

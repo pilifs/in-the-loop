@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Reproduce three more external caller upgrades and run the exact V0 product (verification pending)
 
-change `xvnxswnqoosr` · [log `691a087eb961`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/691a087eb961e36824c4eb412010a3e0101962e873d53fb77b04be3db49a9619.jsonl.gz)
+[`84efdbf1702b`](https://github.com/pilifs/in-the-loop/commit/84efdbf1702b7f212b2dd0573b34a0f3b8e6b68f) · [log `691a087eb961`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/691a087eb961e36824c4eb412010a3e0101962e873d53fb77b04be3db49a9619.jsonl.gz)
 
 Rocker rejects the same malformed input at line 1 column 18 on both ANTLR versions, with a different diagnostic. A runtime-only substitution reproduces that difference. The invalid converse substitution fails during parser initialization. AWS public ISO parsing round-trips Long.MAX_VALUE on both dependencies, while the protected Joda formatter newly accepts it. Cucumber prints all 18 deserialized durations with truncated milliseconds on both revisions. Six reached consumer classes in both AWS and Cucumber match the published bytes. Rebuilt from the frozen trees, checked loaded class origins and original Surefire outcomes, ran all three public replay tasks and retained offline lifecycle failures and effective POMs.
 
@@ -30,7 +30,7 @@ Verification jobs: 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc, 202
 
 ### Seal the external upgrade scorecard and report five pinned product outcomes (verification pending)
 
-change `prllusvynovw` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+[`ee966bafea03`](https://github.com/pilifs/in-the-loop/commit/ee966bafea0359d78d9f712f6a6cf012c4a1392c) · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
 
 All five disclosed V0 jobs verified the exact executable, word-level solver, JDK and 459 product files on both ends. The product left the claims open at JDBC connection setup, modified UTF-8 class intake, ANTLR WeakHashMap initialization, the Date constructor and a multi-release Jackson class. Independent JVM replays explain the actual changes and preservations. Keep every failed original attempt with its first blocker. The blind operator environment proved a synthetic control and excluded private content, while the normal client's additional native tools still need an isolated runner.
 
@@ -40,25 +40,25 @@ Pinned native and JBMC invocations were compared before solver launch on identic
 
 ### Record verification results for 1 job(s)
 
-change `kwopuvyzuups` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+[`a94921a29b48`](https://github.com/pilifs/in-the-loop/commit/a94921a29b48f819a9434c549de27aa830cbf8cf) · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261120-232916-compare-stock-compcheck-knowledge-on-aws: passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Note the user's answer to the Maven-resolver question in VF-048
 
-change `yxvunwsmovuo` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+[`72e2079df4ff`](https://github.com/pilifs/in-the-loop/commit/72e2079df4ff54b649ce2be653f0ae67e1d944ec) · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
 
 Through the run's continue message the user exempts Maven and Gradle resolution from public repositories from the web-request limit (serially, one shared cache under ~/.cache/in-the-loop/), and BUMP cases are fetched one by one. Whether the exemption goes into the operating notes is left to the user. Documentation only.
 
 ### Record verification results for 5 job(s)
 
-change `yznztvqqwuvt` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+[`efda5e814982`](https://github.com/pilifs/in-the-loop/commit/efda5e8149828f5f2c22fb352ccdd9f70c30d959) · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
 
 Outputs applied for 1 of the 5 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-233743-run-assisted-compcheck-on-original-aws-d: passed: 1 passed step(s) in 24.9s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261120-234730-348-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 6.2s, peak 168.6 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234730-349-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 3.1s, peak 156.6 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed 20261120-234730-350-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 4.6s, peak 136.4 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed 20261120-234731-351-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 5.4s, peak 144.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `urmwmrtxmtvl` · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
+[`ee31855085df`](https://github.com/pilifs/in-the-loop/commit/ee31855085df29f6f8cde08e006b2020833a08ac) · [log `2ee2be9cef6d`](https://terminalvalue.net/raw-traces/01a1fb31-b3fa-7a63-8674-07981a22dff9/2ee2be9cef6d29497a3c0e50f8e690a5152947820c37109727745fe1c776f8d1.jsonl.gz)
 
 Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc: failed: 1 failed step(s) in 5.0s, peak 140.2 MiB (estimated 1m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 20261120-234731-352-run-the-frozen-v0-dependency-upgrade: failed: 1 failed step(s) in 57.1s, peak 169.0 MiB (estimated 2m00s, 2.0 GiB); 19 output file(s) changed Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 

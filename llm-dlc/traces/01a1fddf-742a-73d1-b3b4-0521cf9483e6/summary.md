@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Bind observed Java enum constants to their owning class (verification pending)
 
-change `pyrzyryustkx` · [log `34d980128e9c`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/34d980128e9cd68f39d1996b6dc60a7503efc5f9c76e7bb6c2dd43f8765ffff1.jsonl.gz)
+[`86a243a76dcf`](https://github.com/pilifs/in-the-loop/commit/86a243a76dcfd98db4c1a718de8506eefa013180) · [log `34d980128e9c`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/34d980128e9cd68f39d1996b6dc60a7503efc5f9c76e7bb6c2dd43f8765ffff1.jsonl.gz)
 
 The JVM observer retains an enum’s own final scalar and String fields, including aliases through values(), together with its actual name and ordinal. The checker binds both classes to the selected bytes and checks the bootstrap getters. Foreign constants and unobserved JDK state, including the cached identity hash, remain outside this observation. Reference array component types are relocated on the previous side of a pair.
 
@@ -28,7 +28,7 @@ Registered eight startup-conditioned JavaParser comparisons while preserving the
 
 ### Verify JavaParser traversal on original JDK collections (verification pending)
 
-change `upounrksloyk` · [log `b0ba3ab34c62`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/b0ba3ab34c62dd8d7aa863b2e86fa9ab5720a3cd09ab9c7f05aad2a4c4dfe79f.jsonl.gz)
+[`e9d1ce9977bc`](https://github.com/pilifs/in-the-loop/commit/e9d1ce9977bc7f6096cff703069b1671122fbef7) · [log `b0ba3ab34c62`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/b0ba3ab34c62dd8d7aa863b2e86fa9ab5720a3cd09ab9c7f05aad2a4c4dfe79f.jsonl.gz)
 
 Execute ArrayList.forEach, Stack and Vector, singleton and unmodifiable child lists, and Class.cast on the selected JDK bytecode. Track the runtime class of final JDK values and prepared ArrayLists. Interpreter replay reads live ArrayList elements through consumer callbacks, preserves null and exception order, and detects structural mutation. Regression controls exercise field updates, stack aliases and exhaustion, live list views and failing class casts on the physical JVM, native checker and interpreter.
 
@@ -36,7 +36,7 @@ The original JavaParser postorder parent fails at code zero and the physical JDK
 
 ### Bind JVM startup to measured process settings (verification pending)
 
-change `ylwmnqsozqok` · [log `7f2ef4a7f041`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/7f2ef4a7f041f92efcf02595cd05e060f30c709ef05858339c555471404cdb4a.jsonl.gz)
+[`e0f71e82b822`](https://github.com/pilifs/in-the-loop/commit/e0f71e82b822b279e0bb12dbdc199ad873f13ab0) · [log `7f2ef4a7f041`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/7f2ef4a7f041f92efcf02595cd05e060f30c709ef05858339c555471404cdb4a.jsonl.gz)
 
 Observed Java initializers and their independent comparison JVMs can run with a fixed processor count and an empty process environment. The physical VM must confirm the positive, read-only CPU setting and the empty environment. The statement, startup digest, and example claim identity carry the conditions. Ordinary property proof keys retain their previous behavior, and a scoped initialization stays outside that cache. The same controls work on both sides of a regression proof.
 
@@ -46,7 +46,7 @@ Jobs 20261121-120341-avro-factory-and-nested-converter-with-m and 20261121-12093
 
 ### Record JavaParser traversal proofs and Avro startup boundaries
 
-change `yrozzuyyslnq` · [log `86abac5b24fb`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/86abac5b24fbeca702eb39e28560632c71ed9bfb3be97b665d5a8cb450fb8bcd.jsonl.gz)
+[`37bfeb1442db`](https://github.com/pilifs/in-the-loop/commit/37bfeb1442dbf75894401522693c9deb3c1fc8d5) · [log `86abac5b24fb`](https://terminalvalue.net/raw-traces/01a1fddf-742a-73d1-b3b4-0521cf9483e6/86abac5b24fbeca702eb39e28560632c71ed9bfb3be97b665d5a8cb450fb8bcd.jsonl.gz)
 
 The two original JavaParser counterexamples at input zero now have independently replayed, hash-bound JVM evidence. Under the separately frozen Node initializer state the native checker decided all eight tasks: six established and two refuted. The full scoped run took 26.1 seconds plus 4.6 seconds for the two original replays. The narrower enum-only run and the ambient run retain their distinct blockers. In Avro the first blockers after binding the process settings are Hadoop filesystem path resolution and a cross-class accessor registration. All ten Avro obligations keep their original finite scope.
 

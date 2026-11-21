@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Rebuild original upgrade inputs for replay (verification pending)
 
-change `uurxkzmtkznn` · [log `ef08e96c0f64`](https://terminalvalue.net/raw-traces/01a1fcc4-0efc-7bb3-9ab6-f4eadea9b952/ef08e96c0f64ac79d26ad5e7f48c5dc266a3e6d06b8c2e4af7c8dbf82a777405.jsonl.gz)
+[`e314248fc006`](https://github.com/pilifs/in-the-loop/commit/e314248fc006042a1e56088482c05a36dc01d245) · [log `ef08e96c0f64`](https://terminalvalue.net/raw-traces/01a1fcc4-0efc-7bb3-9ab6-f4eadea9b952/ef08e96c0f64ac79d26ad5e7f48c5dc266a3e6d06b8c2e4af7c8dbf82a777405.jsonl.gz)
 
 Restore the pinned histories of all 32 engineering cases and repeat the native baseline on both sets. Four groups rebuild authentic Maven modules, generated classes and resources for the paid-down framework setup failures. The two native jobs are 20261121-062836-rebuild-original-java-upgrades-for-the-m and 20261121-062836-rebuild-original-java-upgrades-for-the-t. The module jobs are 20261121-062837-restore-complete-original-maven-modules, 20261121-062848-group-2-original-java-modules-for-caller, 20261121-062849-group-3-original-java-modules-for-caller and 20261121-062849-group-4-original-java-modules-for-caller. The original Git source resolver verified every revision and pipeline validation found no problems.
 

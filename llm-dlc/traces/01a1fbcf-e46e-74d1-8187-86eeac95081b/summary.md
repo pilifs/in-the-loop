@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Collect the original suite outcomes and compare AWS (verification pending)
 
-change `mxumkqtyrttk` · [log `0219eb0c6b49`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/0219eb0c6b490deaf19898e20dd296ba36854fa7fa656f2a83cac17e45a6aefc.jsonl.gz)
+[`1c326bb29809`](https://github.com/pilifs/in-the-loop/commit/1c326bb29809ef30a0ce89f058cdbd0190420997) · [log `0219eb0c6b49`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/0219eb0c6b490deaf19898e20dd296ba36854fa7fa656f2a83cac17e45a6aefc.jsonl.gz)
 
 In its documented environment, the unchanged CompSuite CLI produced one original testcase per fresh H2 revision. The upgraded assertion expected [2] and received [1, 2]. Its zero process exit did not indicate a pass. Complete Maven reruns confirmed 454 tests per pin, two skips, and three upgraded-side failures. The repeat Commons Text suite reduced 18 former network errors to two genuine external-site dependencies by supplying local hostname resolution. All 34 string-escape tests passed on both pins.
 
@@ -30,7 +30,7 @@ Job 20261121-015236-run-both-stock-aws-compcheck-settings-wi starts normal and s
 
 ### Queue blinded historical BUMP repetitions (verification pending)
 
-change `sqrpvsotxrsu` · [log `cbd6776f7dba`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/cbd6776f7dba10ecd946d80352fba86b0998fa4d88d3a7bb6436c28077b5dd97.jsonl.gz)
+[`b683952201a0`](https://github.com/pilifs/in-the-loop/commit/b683952201a00a021b90e1f5ad76602f7ef03810) · [log `cbd6776f7dba`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/cbd6776f7dba10ecd946d80352fba86b0998fa4d88d3a7bb6436c28077b5dd97.jsonl.gz)
 
 A bounded worker can run original BUMP testcases without putting subjects, coordinates, logs or expected outcomes in the public queue. It verifies the frozen private manifest, approved worker bytes and the exact reviewed networkless image helper. Only the four-trial coverage counts and receipt digests can be published. Job 20261121-020417-repeat-one-sequestered-bump-testcase-in repeats an original named case in four clean offline worktrees. The private application evidence remains in custody.
 
@@ -40,7 +40,7 @@ Synthetic dispatch verified the private-receipt binding and rejected substituted
 
 ### Recognize stock tool results during resumed review (verification pending)
 
-change `rxnykkvqspyr` · [log `492977d37529`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/492977d37529ae41a693f035d2cf23705bb453607abf0a61acfb934e6ae59330.jsonl.gz)
+[`eae5b1b6891e`](https://github.com/pilifs/in-the-loop/commit/eae5b1b6891e18f11d5146db4284619cc38eed5f) · [log `492977d37529`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/492977d37529ae41a693f035d2cf23705bb453607abf0a61acfb934e6ae59330.jsonl.gz)
 
 The ordinary client can append a reminder to a valid broker response or persist a large response as a case-local preview. The meter previously refused both forms. A thin, separately frozen amendment verifies the exact exit and output on the correct native tool ID, authenticates the persisted file and originating session, rejects substituted or foreign content, and retains sanitized terminal flags in the sealed evidence. Prior measurements remain intact. Job 20261121-021356-349-calibrate-verified-native-tool-resul runs the same disclosed Commons Text PR on this pre-lock correction.
 
@@ -50,7 +50,7 @@ The fixed profile and launch digests were rechecked on a real scoped H2 intake, 
 
 ### Record verification results for 1 job(s)
 
-change `kmrtkksrmmyy` · [log `492977d37529`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/492977d37529ae41a693f035d2cf23705bb453607abf0a61acfb934e6ae59330.jsonl.gz)
+[`6c667179f82e`](https://github.com/pilifs/in-the-loop/commit/6c667179f82eba2e2c2ca35187fdce76c4e7bdd8) · [log `492977d37529`](https://terminalvalue.net/raw-traces/01a1fbcf-e46e-74d1-8187-86eeac95081b/492977d37529ae41a693f035d2cf23705bb453607abf0a61acfb934e6ae59330.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-015236-run-both-stock-aws-compcheck-settings-wi: passed: 1 passed step(s) in 1m01s, peak 3.8 GiB (estimated 8m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 

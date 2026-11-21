@@ -20,73 +20,73 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results for 1 job(s)
 
-change `qulswuqnwtou` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`e6addfa1def9`](https://github.com/pilifs/in-the-loop/commit/e6addfa1def9b1de6fd792b3a87008bcd42b980b) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-051151-caller-recovery-2-check-original-fixture: passed: 1 passed step(s) in 18.8s, peak 123.4 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 6 job(s)
 
-change `xkzpulxsnron` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`8526f45f5c45`](https://github.com/pilifs/in-the-loop/commit/8526f45f5c45a369123c8bdbf7fa3f7dc11d2ae9) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 6 of the 6 job(s). 20261121-051151-caller-recovery-1-check-original-fixture: passed: 1 passed step(s) in 53.3s, peak 165.6 MiB (estimated 3m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). 20261121-051151-complete-modules-1-materialize-original: passed: 2 passed step(s) in 1m40s, peak 959.5 MiB (estimated 12m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-051152-complete-modules-2-materialize-original: passed: 1 passed step(s) in 2m19s, peak 1.4 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-051152-complete-modules-3-materialize-original: passed: 1 passed step(s) in 1m29s, peak 1.0 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-051152-complete-modules-4-materialize-original: passed: 1 passed step(s) in 1m55s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261121-052300-transfer-applications-replay-original-qr: passed: 2 passed step(s) in 2m33s, peak 1.2 GiB (estimated 12m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 2 job(s)
 
-change `trnkpwqpmkzs` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`bdb28eb033fc`](https://github.com/pilifs/in-the-loop/commit/bdb28eb033fcd4551a41d2e6a57e5e076e234d8d) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261121-050135-350-exhaust-both-original-application-in: passed: 1 passed step(s) in 5.8s, peak 127.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-050135-351-exhaust-both-original-application-in: passed: 1 passed step(s) in 4.8s, peak 130.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `kunoxzvnosun` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`64228ee70323`](https://github.com/pilifs/in-the-loop/commit/64228ee703231846476774a816555d9bcdd56c39) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-053029-352-compare-original-formatter-paths-pas: failed: 1 failed step(s) in 35.3s, peak 217.4 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `ummuvrmtmktr` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`8ee5391684a9`](https://github.com/pilifs/in-the-loop/commit/8ee5391684a9f6e552f7602243dd3c847b06518e) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261121-054619-observe-spring-configuration-callbacks-a: passed: 1 passed step(s) in 16.8s, peak 144.2 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-054619-separate-outbound-wire-serialization-and: passed: 1 passed step(s) in 9.4s, peak 149.5 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-054619-togglz-original-deltaspike-callback-and: passed: 3 passed step(s) in 29.3s, peak 564.6 MiB (estimated 5m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `xrxszllqtwpw` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`1241e4acb37f`](https://github.com/pilifs/in-the-loop/commit/1241e4acb37fa824c848f171a4abfbe8bde66b47) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-054619-apollo-original-guice-services-and-tagge: passed: 3 passed step(s) in 51.9s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `vpsrlxylurkm` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`3e16529d66e6`](https://github.com/pilifs/in-the-loop/commit/3e16529d66e6d9bea0fc84a505453207ab3714e3) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-055303-compile-original-togglz-and-check-its-co: passed: 2 passed step(s) in 14.0s, peak 577.4 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `oltlmqzxzuuz` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`cbc6b7effb1d`](https://github.com/pilifs/in-the-loop/commit/cbc6b7effb1d8b045a18f3f8e2366e302991a856) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-055302-rebuild-both-original-apollo-modules-in: passed: 2 passed step(s) in 36.5s, peak 1.1 GiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 3 job(s)
 
-change `lqtkmznupvso` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`6459600a2b87`](https://github.com/pilifs/in-the-loop/commit/6459600a2b874ed5b536569dae46b0e238ec8fce) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 3 of the 3 job(s). 20261121-055812-pinned-v1-finite-caller-group-1-replay-o: passed: 1 passed step(s) in 19.2s, peak 151.8 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-native-comparison-on-the-trans: passed: 1 passed step(s) in 14.2s, peak 177.5 MiB (estimated 6m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-055813-pinned-v1-finite-caller-group-6-replay-o: passed: 1 passed step(s) in 24.2s, peak 137.3 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 5 job(s)
 
-change `vwsmtyovzomu` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`dac3eceaed4f`](https://github.com/pilifs/in-the-loop/commit/dac3eceaed4fe085470ddcca8ed9bba610c385d7) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 5 of the 5 job(s). 20261121-055812-pinned-v1-finite-caller-group-2-replay-o: passed: 1 passed step(s) in 32.9s, peak 146.3 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-finite-caller-group-3-replay-o: passed: 1 passed step(s) in 58.7s, peak 131.3 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-finite-caller-group-4-replay-o: passed: 1 passed step(s) in 1m03s, peak 195.9 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-055812-pinned-v1-native-comparison-on-the-main: passed: 1 passed step(s) in 35.7s, peak 455.8 MiB (estimated 6m00s, 2.0 GiB); 24 output file(s) changed Applied 24 output(s). 20261121-055813-pinned-v1-finite-caller-group-5-replay-o: passed: 1 passed step(s) in 47.9s, peak 139.8 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `xlromxtxovkn` · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
+[`c79f86265c36`](https://github.com/pilifs/in-the-loop/commit/c79f86265c360f9a4a121c6231605942a46f3e0a) · [log `89c42a3b0106`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/89c42a3b0106ef9364ddac1f010c6cdb7b880c6a8820e0ef715302c87f2e3700.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261121-060355-pinned-v1-native-recovery-on-five-comple: passed: 2 passed step(s) in 1.6s, peak 119.4 MiB (estimated 6m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
 ### Replay original application fixtures and complete Maven modules (verification pending)
 
-change `wwpymuotyszx` · [log `f08d89934cdb`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/f08d89934cdb3f7ed610215cb1431ba36959979200e1ab9d14f43075e6bed20b.jsonl.gz)
+[`0e76b00eea24`](https://github.com/pilifs/in-the-loop/commit/0e76b00eea24018e39f781d0f575c0c8b56c26da) · [log `f08d89934cdb`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/f08d89934cdb3f7ed610215cb1431ba36959979200e1ab9d14f43075e6bed20b.jsonl.gz)
 
 Bind both sides of each caller observation to the original source fixtures and ordered runtime artifacts. Preserve partial outcomes, exception causes and original frames when a later input fails. The complete-module preparation includes generated classes, processed resources and reactor prerequisites. Correct the missing-list oracle and the generated classes used to check SourceFile metadata. The real logging backend is an explicit assumption of the ZT-exec claim.
 
@@ -96,7 +96,7 @@ Verification jobs 20261121-051151-caller-recovery-1-check-original-fixture, 2026
 
 ### Follow normal and throwing paths through declared checked exceptions (verification pending)
 
-change `wmntoukwuovq` · [log `de88fa0b4bd9`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/de88fa0b4bd9872ebdc2f3a9c28211d612a6eb2e901c43c0589cd50dc12e45da.jsonl.gz)
+[`4d9dda0e6448`](https://github.com/pilifs/in-the-loop/commit/4d9dda0e6448d2aa3c8ea6f6dbf57a1c7bd81f9a) · [log `de88fa0b4bd9`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/de88fa0b4bd9872ebdc2f3a9c28211d612a6eb2e901c43c0589cd50dc12e45da.jsonl.gz)
 
 The before-and-after Java harness already catches the throwables escaping each call. Let it compare eligible methods that declare checked exceptions. A new control changes IOException to EOFException on one input and preserves the returned value on its companion. The native checker finds the first input and proves the companion. Separate JVMs reproduce both exception classes and the returned value.
 
@@ -104,7 +104,7 @@ All 24 pairing tests passed. All 58 Rust test binaries and all 10 selected test 
 
 ### Record original CI, CompCheck and qualified caller outcomes for 32 upgrades (verification pending)
 
-change `pznpnmopuxqr` · [log `cfba57c02585`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/cfba57c02585bbb43d78a2f7977acd35439d3279fe39d8b5055db40b0667a6c5.jsonl.gz)
+[`7aba15778faf`](https://github.com/pilifs/in-the-loop/commit/7aba15778faf34f84456f3e629f057164cfa7583) · [log `cfba57c02585`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/cfba57c02585bbb43d78a2f7977acd35439d3279fe39d8b5055db40b0667a6c5.jsonl.gz)
 
 All 64 original module builds and 32 focused historical builds have receipts. Ten original developer tests passed before and failed after. Run stock CompCheck on its nine registered sites and record the leave-incident-out result. Reviewers can inspect each original revision, testcase, checked domain and finite JVM witness. The main corpus now reproduces the ReflectASM and profiler changes and establishes all twelve routine observations. Four of eight transfer cases have relevant outcomes. Preserved historical cases remain explicitly reported.
 
@@ -114,7 +114,7 @@ Jobs 20261121-050135-350-exhaust-both-original-application-in, 20261121-050135-3
 
 ### Qualify framework callbacks on the live application stack (verification pending)
 
-change `wrsyotytumyl` · [log `6b8379e926ff`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/6b8379e926ff4a09800d988e2a548b9d512d367f18dc4ad5598cdb5395546063.jsonl.gz)
+[`55dafd8d26ac`](https://github.com/pilifs/in-the-loop/commit/55dafd8d26ac6de30ebb528d79e4ab0dfb54ab6b) · [log `6b8379e926ff`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/6b8379e926ff4a09800d988e2a548b9d512d367f18dc4ad5598cdb5395546063.jsonl.gz)
 
 A reviewed observation can call a public entry that synchronously reaches the selected original method. The breakpoint requires the target, prescribed caller and observer on the same thread stack on every repetition. An unrelated earlier call cannot qualify. Supply original provider registrations, record elapsed time on open cases, bind additional caller sources, and retain the original release tags and declared public Maven repositories for historical builds.
 
@@ -124,7 +124,7 @@ Jobs 20261121-054619-apollo-original-guice-services-and-tagge, 20261121-054619-t
 
 ### Keep typed JVM observations intact in applications that write concurrent logs (verification pending)
 
-change `qsxomxxxwuzx` · [log `fe21e3fea6b7`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/fe21e3fea6b73f4be9fb9835118e584d7309cf91753d7c0030ff026eaf5bf8cd.jsonl.gz)
+[`b8bb105ca551`](https://github.com/pilifs/in-the-loop/commit/b8bb105ca5516ef9c0ba09ae1680a3bfa59eaf7b) · [log `fe21e3fea6b7`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/fe21e3fea6b73f4be9fb9835118e584d7309cf91753d7c0030ff026eaf5bf8cd.jsonl.gz)
 
 Nacos exposed a truncated UTF-16 observation when console logging overlapped the application result. Write the adapter result and its exception record into an exclusive file for the fresh JVM. Keep class-load diagnostics and the trusted stack-hit marker on separate streams. A regression makes the application print counterfeit result-shaped log lines and checks the real returned value.
 
@@ -134,7 +134,7 @@ Jobs 20261121-055302-rebuild-both-original-apollo-modules-in and 20261121-055303
 
 ### Pin V1 and repeat all 32 original Java upgrades (verification pending)
 
-change `wtvsnzlnxtqu` · [log `d67e53ec07af`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/d67e53ec07af75a3231323d76cfe8e0ed4fe7c021997d6594e1848eb3e083df7.jsonl.gz)
+[`c9a061f3d30b`](https://github.com/pilifs/in-the-loop/commit/c9a061f3d30b38d07f1bef82c6759f2f45aa3687) · [log `d67e53ec07af`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/d67e53ec07af75a3231323d76cfe8e0ed4fe7c021997d6594e1848eb3e083df7.jsonl.gz)
 
 Pin the repaired product at 7d47b8208d3f781ac91550b8a6be6d46f1189acd with native binary 47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2. The lock binds the model settings, JDK, solver, sources, application corpus, scenario definitions and the orchestration used for this repeat. The portable file manifest can be verified on a fresh copy. Rechecked the recorded product and all twelve tool and JDK hashes against the actual cached executable.
 
@@ -144,7 +144,7 @@ Verification jobs 20261121-055812-pinned-v1-native-comparison-on-the-main, 20261
 
 ### Record original framework and calibration results and check five recovered modules (verification pending)
 
-change `qvnynrvxkxnu` · [log `b9887c6e0bb3`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/b9887c6e0bb3050b0bd53f402bb9ba070c38c219290ec389d5d2c0e8a728b576.jsonl.gz)
+[`a4cb7b594145`](https://github.com/pilifs/in-the-loop/commit/a4cb7b594145620d833b5aa45cacd21d31ff8780) · [log `b9887c6e0bb3`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/b9887c6e0bb3050b0bd53f402bb9ba070c38c219290ec389d5d2c0e8a728b576.jsonl.gz)
 
 The original phone response decoder preserved its output. The separate outbound Wire converter raised NoSuchMethodError, and opening the actual spreadsheet raised IncompatibleClassChangeError before reading a style. The restored Apollo Git tags reproduce its original named test. The new Nacos context fails before property-source precedence can be checked. A real FTP file, directory and missing path preserve their types. Rocker diagnostic equality is refuted, the AWS public round trip is preserved and the native duration proof stops at Jackson Class.forName after the checked-exception repair.
 
@@ -152,7 +152,7 @@ Imported the original collector results and digests, including failed and partia
 
 ### Report pinned V1 decisions on all 32 original Java dependency upgrades
 
-change `rrzzrvttpsmq` · [log `965cffc25360`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/965cffc2536083e89789aec018cfaa95329306e1d9827689ab796310e4e54096.jsonl.gz)
+[`1ef0f6308a5a`](https://github.com/pilifs/in-the-loop/commit/1ef0f6308a5a8cb9d968288e5dc03347c9e710fd) · [log `965cffc25360`](https://terminalvalue.net/raw-traces/01a1fc93-0ceb-7d41-9971-672d9a371356/965cffc2536083e89789aec018cfaa95329306e1d9827689ab796310e4e54096.jsonl.gz)
 
 Against V0 with no accepted decisions, V1 independently replays 2 of 12 registered main changes and establishes all 12 finite main preservation claims. On eight transfer clients V1 alone succeeds on five, two in represented families and three in new ones. All approved outcomes are engineering-assisted finite JVM results. The proposed gate for a three-team pilot remains unmet.
 

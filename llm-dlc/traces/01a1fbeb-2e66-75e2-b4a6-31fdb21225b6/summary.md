@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Reconcile native session costs and collect comparison evidence
 
-change `xnmxuqlnsknt` · [log `faec7afc127b`](https://terminalvalue.net/raw-traces/01a1fbeb-2e66-75e2-b4a6-31fdb21225b6/faec7afc127ba92c2a438d50bd2bea59a57d0e3fad2056e032ac5e39f113b71c.jsonl.gz)
+[`b1c16001b806`](https://github.com/pilifs/in-the-loop/commit/b1c16001b8064cd12008a2c24e209b852cadb12c) · [log `faec7afc127b`](https://terminalvalue.net/raw-traces/01a1fbeb-2e66-75e2-b4a6-31fdb21225b6/faec7afc127ba92c2a438d50bd2bea59a57d0e3fad2056e032ac5e39f113b71c.jsonl.gz)
 
 The client reports a cumulative dollar estimate when a native session resumes. Use the final reading of each independent conversation and retain each stateless request separately. The scorecard now publishes this derived amount alongside newly sealed reports and can calculate it for existing immutable seals. The case ledger and report correct prior sums. The final Commons Text treatment cost an estimated 1.3339372 dollars; its raw sum of 7.2377754 double-counted earlier turns. All 64 individual request increments matched the frozen token price table within one billionth of a dollar.
 

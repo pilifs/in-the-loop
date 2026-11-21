@@ -484,7 +484,11 @@ impl<'a> Machine<'a> {
         let mut base = Base::Object;
         let mut current = Some(class.to_string());
         while let Some(c) = current {
-            match self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))? {
+            let mut layout = self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))?;
+            if layout.is_none() && c == crate::models::CONCURRENT_MAP {
+                layout = self.cp.concurrent_map_method("<init>", "()V").map(|(cf, _)| cf);
+            }
+            match layout {
                 Some(cf) => {
                     // A field a subclass declares again is a second field, kept under its declaring class's
                     // name ([`ClassPath::field_key`]).
@@ -687,6 +691,13 @@ impl<'a> Machine<'a> {
     pub fn call_virtual(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
         let class = self.class_of(r);
+        if class == crate::models::CONCURRENT_MAP {
+            if let Some((cf, method)) = self.cp.concurrent_map_method(name, descriptor) {
+                let mut full = vec![receiver];
+                full.extend(args);
+                return self.invoke(&cf, &method, full);
+            }
+        }
         if let Some((cf, method)) = self.cp.linked_queue_method(&class, owner, name, descriptor, false) {
             let mut full = vec![receiver];
             full.extend(args);
@@ -1246,6 +1257,13 @@ impl<'a> Machine<'a> {
     /// `invokespecial`: constructors, private methods and `super.` calls go to the named class, not the receiver's.
     fn call_special(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
+        if owner == crate::models::CONCURRENT_MAP && self.class_of(r) == owner {
+            if let Some((cf, method)) = self.cp.concurrent_map_method(name, descriptor) {
+                let mut full = vec![receiver];
+                full.extend(args);
+                return self.invoke(&cf, &method, full);
+            }
+        }
         if let Some((cf, method)) = self.cp.linked_queue_method(&self.class_of(r), owner, name, descriptor, true) {
             let mut full = vec![receiver];
             full.extend(args);

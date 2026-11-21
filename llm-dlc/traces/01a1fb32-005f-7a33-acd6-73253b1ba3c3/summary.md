@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Run original public Maven CI in isolation (verification pending)
 
-change `suxvplotslrl` · [log `7378323b3d3b`](https://terminalvalue.net/raw-traces/01a1fb32-005f-7a33-acd6-73253b1ba3c3/7378323b3d3b6b33affcba8b181cba5b9e292311cfcd72aec5d43b7e6a969a40.jsonl.gz)
+[`c54c7157957a`](https://github.com/pilifs/in-the-loop/commit/c54c7157957adba1fe431632da0c93ff9395734e) · [log `7378323b3d3b`](https://terminalvalue.net/raw-traces/01a1fb32-005f-7a33-acd6-73253b1ba3c3/7378323b3d3b6b33affcba8b181cba5b9e292311cfcd72aec5d43b7e6a969a40.jsonl.gz)
 
 Run both complete upstream checkouts of Commons Text 586 and Cucumber Reporting 1156 on one configured Linux JDK for each project. Preserve their Maven goals, XML results, failure counts, clocks and logs. A networkless build can fetch only Maven Central artifact paths through a read-through mirror, serialized against the shared local cache. Jobs 20261121-011924-349-run-the-original-commons-text-linux and 20261121-011925-352-run-the-original-cucumber-reporting now have the original Git objects and the prescribed JVM scratch directory.
 

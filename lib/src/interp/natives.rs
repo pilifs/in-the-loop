@@ -470,6 +470,7 @@ pub fn get_static_jdk(m: &mut Machine, class: &str, name: &str) -> Exec<Value> {
 
 pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
     let native = match class {
+        crate::models::CONCURRENT_MAP if m.cp.concurrent_map_method("<init>", "()V").is_some() => return m.new_instance(class),
         "java/lang/StringBuilder" | "java/lang/StringBuffer" => Native::StringBuilder(JStr::new()),
         // A String the program constructs: `<init>` gives it its contents (`invoke_special_jdk`).
         "java/lang/String" => Native::String(JStr::new()),

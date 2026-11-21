@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Retire blinded and Claude treatments from upgrade engineering
 
-change `tqnwtttlszlv` · [log `fa8d4fc38e0f`](https://terminalvalue.net/raw-traces/01a1fc19-411e-7e61-aa3b-5f300eb3cfbb/fa8d4fc38e0f01bad5cf787f3e56aed3beb86b34bc77f1f803bbb9b1fa1fbbfe.jsonl.gz)
+[`98016c3f32b2`](https://github.com/pilifs/in-the-loop/commit/98016c3f32b24d894d3c80b2c6c25efd938b08a1) · [log `fa8d4fc38e0f`](https://terminalvalue.net/raw-traces/01a1fc19-411e-7e61-aa3b-5f300eb3cfbb/fa8d4fc38e0f01bad5cf787f3e56aed3beb86b34bc77f1f803bbb9b1fa1fbbfe.jsonl.gz)
 
 Use one gpt-6.2-astra session at high effort for selection, preparation, review and checking, with identified revision pairs and preserved first outcomes. Mark each of the six existing Claude opening reports superseded and unscored at the user's 03:05 UTC change of direction. The original V0 engine and lock stay reproducible. Checked all six records and compiled the prospective lock generator.
 

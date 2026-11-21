@@ -1340,7 +1340,10 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     }
     assert_eq!(machine.call_static("claims/LiveMapViews", "collisions", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     assert_eq!(machine.call_static("claims/LiveMapViews", "copies", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
-    for name in ["remove", "collisions", "mixed", "packedValue"] {
+    for name in ["backedSets", "concurrentViews"] {
+        assert_eq!(machine.call_static("claims/LiveMapViews", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    }
+    for name in ["remove", "collisions", "mixed", "packedValue", "backedSets", "concurrentViews"] {
         let mut options = options(classes, &format!("claims.LiveMapViews#{name}"), 3, name);
         options.unwind = 30;
         let o = run(&options);

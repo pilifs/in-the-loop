@@ -784,6 +784,7 @@ impl ClassPath {
             | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
             | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
+            | ("java/util/Collections", "newSetFromMap", "(Ljava/util/Map;)Ljava/util/Set;")
             | ("java/util/Collections", "unmodifiableList", "(Ljava/util/List;)Ljava/util/List;")
             | ("java/util/Collections", "singletonList", "(Ljava/lang/Object;)Ljava/util/List;")
             | ("java/util/Collections", "singletonIterator", "(Ljava/lang/Object;)Ljava/util/Iterator;")
@@ -870,6 +871,17 @@ impl ClassPath {
             return None;
         }
         let Loaded { class, origin: Origin::Jdk } = self.load(QUEUE).ok()?? else { return None };
+        let method = class.method(name, desc)?.clone();
+        (!method.is_static() && method.code.is_some()).then_some((class, method))
+    }
+
+    /// The count and cached key view of a freshly constructed, single-threaded concurrent map.
+    /// These paths use ordinary instance fields. A call reaching an atomic update needs its own semantics.
+    pub(crate) fn concurrent_map_method(&self, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if self.runs_model(crate::models::CONCURRENT_MAP) || !matches!((name, desc),
+            ("<init>", "()V") | ("isEmpty", "()Z") | ("size", "()I") | ("sumCount", "()J")
+            | ("keySet", "()Ljava/util/Set;" | "()Ljava/util/concurrent/ConcurrentHashMap$KeySetView;")) { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(crate::models::CONCURRENT_MAP).ok()?? else { return None };
         let method = class.method(name, desc)?.clone();
         (!method.is_static() && method.code.is_some()).then_some((class, method))
     }
@@ -1043,7 +1055,9 @@ impl ClassPath {
     /// Ordinary single-threaded JDK objects whose instance and static fields both engines
     /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
     pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
-        if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node") {
+        if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
+            | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
+            | "java/util/concurrent/ConcurrentHashMap$CollectionView") {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }
