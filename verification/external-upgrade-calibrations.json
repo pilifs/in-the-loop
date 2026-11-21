@@ -1,0 +1,480 @@
+{
+  "schema": "external-upgrade-calibrations/v1",
+  "productLock": {
+    "file": "lib/benchmark/external-upgrades/v0.json",
+    "sha256": "30fe7ff15836e09c071a09483661817b3103e2b4f11c55596f2d3ba6546357de"
+  },
+  "calibrations": [
+    {
+      "example": "348",
+      "client": "rxjava-jdbc / H2",
+      "disclosed": true,
+      "scored": false,
+      "revisions": {
+        "old": "5e04239e1f831878884972fbf72ab1f529b0647d",
+        "new": "735c4108c0ebfd9ad4f350d496e9c74bc0893bb7"
+      },
+      "observation": "The ordered generated-key list changes from [2] to [1,2] for a combined insert. Two separate inserts return [1,2] on both sides, and both rows are stored in either case.",
+      "scope": "Two SQL call shapes, fresh in-memory H2 databases, synchronous Rx consumer.",
+      "independentRoute": "JDK 8 fresh Surefire and direct JVM, with a JDK 21 public replay.",
+      "evidence": {
+        "file": "examples/348-rxjava-jdbc-generated-keys/records/calibration.json",
+        "sha256": "ca2cd93195d9ea26a7e9158d18b3742c61f21c4ac43ced9814f323d67826aa91"
+      },
+      "publicHandoff": {
+        "file": "examples/348-rxjava-jdbc-generated-keys/workflow-handoff.md",
+        "sha256": "73514f272672581231bbbdc3acbcbf19a83d17f462d0e722a696df072ae0f098"
+      },
+      "pinnedProduct": {
+        "result": "open",
+        "firstUnverifiedStep": "JDBC DriverManager.getConnection(String) at GeneratedKeys.keys",
+        "elapsedSeconds": 5.629,
+        "receipt": {
+          "file": "verification/results/20261120-234730-348-run-the-frozen-v0-dependency-upgrade/outputs/examples/348-rxjava-jdbc-generated-keys/records/frozen-v0/generated-keys/invocation.json",
+          "sha256": "6a5495c5553157022350a27ff35ffb795c99390935b865ff0d4603035492331d"
+        },
+        "workflowOutput": {
+          "file": "verification/results/20261120-234730-348-run-the-frozen-v0-dependency-upgrade/outputs/examples/348-rxjava-jdbc-generated-keys/records/frozen-v0/generated-keys/workflow.log",
+          "sha256": "fa4f88090fe4ab9ab4380f5f4ddac4bab382c7bcbcd949384e77229421229f34"
+        },
+        "job": {
+          "file": "verification/results/20261120-234730-348-run-the-frozen-v0-dependency-upgrade/result.json",
+          "sha256": "65cf99735cbcffd9d0ea936c52d27381452f391733d0f9fa0a171e2bcb0b79bd"
+        }
+      },
+      "operationalCI": [
+        {
+          "measurement": "full-linux-ci",
+          "subjectJdk": "8.0.512.0+9-tem",
+          "cacheAndLogs": {
+            "file": "examples/348-rxjava-jdbc-generated-keys/records/full-linux-ci/result.json",
+            "sha256": "aecf1076fbb9a5bde5dcf282edd2bedf45201b0cfcdb2adb4d2e2717cd1377ae"
+          },
+          "sides": {
+            "old": {
+              "mavenExit": 0,
+              "tests": 454,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 2,
+              "seconds": 10.527,
+              "namedSuitePassed": 115
+            },
+            "new": {
+              "mavenExit": 1,
+              "tests": 454,
+              "failures": 3,
+              "errors": 0,
+              "skipped": 2,
+              "seconds": 13.501,
+              "namedSuitePassed": 114
+            }
+          }
+        }
+      ],
+      "stockCompSuite": {
+        "file": "examples/348-rxjava-jdbc-generated-keys/records/stock-compsuite-warm/result.json",
+        "sha256": "8b49049374809307fe6366e1af1f5102c94e8f6330481d6345712e27486e3377"
+      },
+      "openingProductReports": [
+        {
+          "operatorTreatment": "claude-alternate",
+          "route": "unavailable",
+          "disposition": "original-intake",
+          "profileSha256": "343d4af671dfa6328f5a55e2a7feb65246c7ab1370c1b29e767c035aeaed1952",
+          "elapsedSeconds": 23.288,
+          "uncachedInputPlusOutputTokens": 0,
+          "rawRecordedUsd": 0.0,
+          "clientEstimatedUsd": 0.0,
+          "report": {
+            "file": "lib/benchmark/external-upgrades/operator/claude-alternate/opening-reports/V0/u-7b26f3c1/operator.json",
+            "sha256": "d9262498d9e9e4af312afab04e0e013d597555fc0405a2b724ab043bd7aadc1b"
+          },
+          "status": "superseded",
+          "scored": false
+        },
+        {
+          "operatorTreatment": "claude-native-resume",
+          "route": "unavailable",
+          "disposition": "original-intake",
+          "profileSha256": "cd03b5ceb0524be99cc7f5e4a17c02d178edbc2e76fdaa0b05df0a3e85a66d25",
+          "elapsedSeconds": 30.032,
+          "uncachedInputPlusOutputTokens": 0,
+          "rawRecordedUsd": 0.0,
+          "clientEstimatedUsd": 0.0,
+          "report": {
+            "file": "lib/benchmark/external-upgrades/operator/claude-native-resume/opening-reports/V0/u-7b26f3c1/operator.json",
+            "sha256": "dd3b77c802aa94eb9779df42b3024e1b5558823d8e4b6efd0459bbf13b48f739"
+          },
+          "status": "superseded",
+          "scored": false
+        },
+        {
+          "operatorTreatment": "claude-native-resume-results",
+          "route": "unavailable",
+          "disposition": "original-intake",
+          "profileSha256": "0e807f3e8fbbc629181131cd7ed6777d76461cfdc7c58eae4d3290639d7dc3a9",
+          "elapsedSeconds": 31.958,
+          "uncachedInputPlusOutputTokens": 0,
+          "rawRecordedUsd": 0.0,
+          "clientEstimatedUsd": 0.0,
+          "report": {
+            "file": "lib/benchmark/external-upgrades/operator/claude-native-resume-results/opening-reports/V0/u-7b26f3c1/operator.json",
+            "sha256": "2f8e17a66f0adc323d174102bc2cd9252be9b91d3dd05f669ed35ab269892c19"
+          },
+          "status": "superseded",
+          "scored": false
+        }
+      ]
+    },
+    {
+      "example": "349",
+      "client": "Commons Text / Commons Lang",
+      "disclosed": true,
+      "scored": false,
+      "revisions": {
+        "old": "c252787dca5fe36e1f1f6c131061bbf016b1e1b6",
+        "new": "a8e4f42ef23fe396a7c45df3124157401c0da17c"
+      },
+      "observation": "All 156 fields returned the exact expected characters in both revisions. The independently constructed quote-doubling mutant disagreed on 71.",
+      "scope": "All strings of length 0–3 over a, comma, quote, CR and LF.",
+      "independentRoute": "Exhaustive JVM on the full compiled source trees.",
+      "evidence": {
+        "file": "examples/349-commons-text-csv-upgrade/records/full-source-jvm.json",
+        "sha256": "d11491adce56f5396104f0583bb53c1730781b7709f56499dc8fff881a392a99"
+      },
+      "publicHandoff": {
+        "file": "examples/349-commons-text-csv-upgrade/records/first-handoff.md",
+        "sha256": "ba164a08d5e3d12621f868a86a692f3d63ae9e66584b5a56419b30c59145a537"
+      },
+      "pinnedProduct": {
+        "result": "open",
+        "firstUnverifiedStep": "Decoding a legal modified UTF-8 NUL in the original StringEscapeUtils.class constant pool during intake.",
+        "elapsedSeconds": 2.269,
+        "receipt": {
+          "file": "verification/results/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/outputs/examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/invocation.json",
+          "sha256": "0d7134383e4c45e6d77da50f202505ec460e8138136927a162fbbef5b233dae5"
+        },
+        "workflowOutput": {
+          "file": "verification/results/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/outputs/examples/349-commons-text-csv-upgrade/records/frozen-v0/preservation/workflow.log",
+          "sha256": "9493b0ea95628b9985a632c4f3540d22006e775b926e41b302e39f4416da1987"
+        },
+        "job": {
+          "file": "verification/results/20261120-234730-349-run-the-frozen-v0-dependency-upgrade/result.json",
+          "sha256": "9a2490e379f075bda759b92e125dac3393b99b5619f5e2c3d6b35a1bbb29ec0e"
+        }
+      },
+      "operationalCI": [
+        {
+          "measurement": "full-linux-ci",
+          "subjectJdk": "21.0.13.0+9-tem",
+          "cacheAndLogs": {
+            "file": "examples/349-commons-text-csv-upgrade/records/full-linux-ci/result.json",
+            "sha256": "30080ac667b3bc730d48dca89055a66cb4cde4e8467da028f6cc361af3541962"
+          },
+          "sides": {
+            "old": {
+              "mavenExit": 1,
+              "tests": 1305,
+              "failures": 0,
+              "errors": 18,
+              "skipped": 2,
+              "seconds": 104.952,
+              "namedSuitePassed": 34
+            },
+            "new": {
+              "mavenExit": 1,
+              "tests": 1305,
+              "failures": 0,
+              "errors": 18,
+              "skipped": 2,
+              "seconds": 35.151,
+              "namedSuitePassed": 34
+            }
+          }
+        },
+        {
+          "measurement": "full-linux-ci-localhost",
+          "subjectJdk": "21.0.13.0+9-tem",
+          "cacheAndLogs": {
+            "file": "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost/result.json",
+            "sha256": "bd7db83bdf982f32098e9941ed53758cafe885a4437066e6e131b82c074265a9"
+          },
+          "sides": {
+            "old": {
+              "mavenExit": 1,
+              "tests": 1305,
+              "failures": 0,
+              "errors": 2,
+              "skipped": 2,
+              "seconds": 69.549,
+              "namedSuitePassed": 34
+            },
+            "new": {
+              "mavenExit": 1,
+              "tests": 1305,
+              "failures": 0,
+              "errors": 2,
+              "skipped": 2,
+              "seconds": 50.152,
+              "namedSuitePassed": 34
+            }
+          }
+        }
+      ],
+      "openingProductReports": [
+        {
+          "operatorTreatment": "claude-alternate",
+          "route": "unavailable",
+          "disposition": "token-budget",
+          "profileSha256": "343d4af671dfa6328f5a55e2a7feb65246c7ab1370c1b29e767c035aeaed1952",
+          "elapsedSeconds": 451.385,
+          "uncachedInputPlusOutputTokens": 207114,
+          "rawRecordedUsd": 3.5903544000000007,
+          "clientEstimatedUsd": 3.5903544,
+          "report": {
+            "file": "lib/benchmark/external-upgrades/operator/claude-alternate/opening-reports/V0/u-d8e01af4/operator.json",
+            "sha256": "a5a287a5b37757d5f3d481fab1552d1e650d28ef1a0b368679ee19d68c484c9f"
+          },
+          "status": "superseded",
+          "scored": false
+        },
+        {
+          "operatorTreatment": "claude-native-resume",
+          "route": "unavailable",
+          "disposition": "shadow-meter",
+          "profileSha256": "cd03b5ceb0524be99cc7f5e4a17c02d178edbc2e76fdaa0b05df0a3e85a66d25",
+          "elapsedSeconds": 302.311,
+          "uncachedInputPlusOutputTokens": 2080,
+          "rawRecordedUsd": 0.0721872,
+          "clientEstimatedUsd": 0.049342000000000004,
+          "report": {
+            "file": "lib/benchmark/external-upgrades/operator/claude-native-resume/opening-reports/V0/u-d8e01af4/operator.json",
+            "sha256": "358bc79113c66507320a3195444512bd79791e85ebecb5de61f8e509e5812ef3"
+          },
+          "status": "superseded",
+          "scored": false
+        },
+        {
+          "operatorTreatment": "claude-native-resume-results",
+          "route": "unavailable",
+          "disposition": "token-budget",
+          "profileSha256": "0e807f3e8fbbc629181131cd7ed6777d76461cfdc7c58eae4d3290639d7dc3a9",
+          "elapsedSeconds": 282.063,
+          "uncachedInputPlusOutputTokens": 66253,
+          "rawRecordedUsd": 7.237775400000001,
+          "clientEstimatedUsd": 1.3339372,
+          "report": {
+            "file": "lib/benchmark/external-upgrades/operator/claude-native-resume-results/opening-reports/V0/u-d8e01af4/operator.json",
+            "sha256": "3083c75cd1778d44d0a42b971d5a9d0ff520d662c431d4796b9418c636f4db81"
+          },
+          "status": "superseded",
+          "scored": false
+        }
+      ]
+    },
+    {
+      "example": "350",
+      "client": "Rocker / ANTLR",
+      "disclosed": true,
+      "scored": false,
+      "revisions": {
+        "old": "823d8c375411c26044b21d4a47b3f57ca4c13b9c",
+        "new": "1cdb2748723454cde4c4d2366a261ba4a24a23d3"
+      },
+      "observation": "Rejection and position 1:18 are preserved, error wording changes and the valid variable retains its type, name and expression.",
+      "scope": "One malformed and one valid declaration. Both full generated compilers plus runtime substitutions.",
+      "independentRoute": "Original developer Surefire testcase and direct JVM.",
+      "evidence": {
+        "file": "examples/350-rocker-with-declaration/records/observations.json",
+        "sha256": "dba6194133a0e479d5e86b10ef71c3796c8c5710d91c8e85e018371ce9a2c8c4"
+      },
+      "publicHandoff": {
+        "file": "examples/350-rocker-with-declaration/records/first-handoff.md",
+        "sha256": "7589cbc10f7d61951294eaa5ef8ee628769dd416269609fecd22532847dd2f3f"
+      },
+      "pinnedProduct": {
+        "result": "open",
+        "firstUnverifiedStep": "WeakHashMap.<init>() in ANTLR Recognizer initialization on the runtime-only native control.",
+        "elapsedSeconds": 3.974,
+        "receipt": {
+          "file": "verification/results/20261120-234730-350-run-the-frozen-v0-dependency-upgrade/outputs/examples/350-rocker-with-declaration/records/frozen-v0/diagnostic/invocation.json",
+          "sha256": "ea5521470f8eaebb29ddd4ba46b9fe8a7d64da87b80bfe912eb63440073b4153"
+        },
+        "workflowOutput": {
+          "file": "verification/results/20261120-234730-350-run-the-frozen-v0-dependency-upgrade/outputs/examples/350-rocker-with-declaration/records/frozen-v0/diagnostic/workflow.log",
+          "sha256": "4f7ef6d3b676c3615ad89459ca9950e625af83099366dd5e956a2efb739abec6"
+        },
+        "job": {
+          "file": "verification/results/20261120-234730-350-run-the-frozen-v0-dependency-upgrade/result.json",
+          "sha256": "a0bb131c954fb7e23df46b1cab29173efd2ee2696788654e6db4c74853cc99b7"
+        }
+      }
+    },
+    {
+      "example": "351",
+      "client": "AWS SDK / Joda-Time",
+      "disclosed": true,
+      "scored": false,
+      "revisions": {
+        "old": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "new": "985a81b554e02742036fd158e6494c61a367f980"
+      },
+      "observation": "The protected formatter newly parses the maximum instant. Both public SDK versions round-trip this and the ordinary instant.",
+      "scope": "Long.MAX_VALUE and 946684800123 milliseconds, UTC and English.",
+      "independentRoute": "Original developer Surefire testcase, protected formatter plus public SDK JVM companion.",
+      "evidence": {
+        "file": "examples/351-aws-joda-instant/records/observations.json",
+        "sha256": "df8e4ebb9a587a84ef7bf741096369b83aa393580fde2b4ceb40cb69e029b20f"
+      },
+      "publicHandoff": {
+        "file": "examples/351-aws-joda-instant/records/first-handoff.md",
+        "sha256": "aefa07e2b2b9bd03678c59e4d6db0a0fc37a5d5020d9c2d70beefb5fbec178ba"
+      },
+      "pinnedProduct": {
+        "result": "open",
+        "firstUnverifiedStep": "java.util.Date.<init>(long) in the adapter at the original public round-trip task.",
+        "elapsedSeconds": 4.784,
+        "receipt": {
+          "file": "verification/results/20261120-234731-351-run-the-frozen-v0-dependency-upgrade/outputs/examples/351-aws-joda-instant/records/frozen-v0/roundtrip/invocation.json",
+          "sha256": "1422700e06fb570eb20fad621d612abe2b2e128cf3ff0f2d45e2e2af99c0d067"
+        },
+        "workflowOutput": {
+          "file": "verification/results/20261120-234731-351-run-the-frozen-v0-dependency-upgrade/outputs/examples/351-aws-joda-instant/records/frozen-v0/roundtrip/workflow.log",
+          "sha256": "902c41f6ef523ae5b49370286c620be661082d4b39b42e274d9a407ecdd44c7c"
+        },
+        "job": {
+          "file": "verification/results/20261120-234731-351-run-the-frozen-v0-dependency-upgrade/result.json",
+          "sha256": "89fb8c2843f1a0faf48a16fe2bff87318b8cd7d4ab5ee9373353807082659988"
+        }
+      }
+    },
+    {
+      "example": "352",
+      "client": "Cucumber Reporting / Joda-Time",
+      "disclosed": true,
+      "scored": false,
+      "revisions": {
+        "old": "9e98993fbccbdd19a6be628fd9dcc4d8e2a4ff79",
+        "new": "29697966eacf46448a806ea03c6dd2d10e2665ec"
+      },
+      "observation": "The original deserialized report returned the expected truncated millisecond text on all 18 durations per revision.",
+      "scope": "Seconds {0,1,59}, milliseconds {0,1,999}, submillisecond nanoseconds {0,999999}, UTC and English.",
+      "independentRoute": "Exhaustive JVM on the actual caller and Jackson receiver.",
+      "evidence": {
+        "file": "examples/352-cucumber-duration/records/observations.json",
+        "sha256": "4568df30a84a888ae414f8c713883eb72e0d7ac766f5aa2aab8554476a3e830e"
+      },
+      "publicHandoff": {
+        "file": "examples/352-cucumber-duration/records/first-handoff.md",
+        "sha256": "f090280aa13a02eff2a31a05d592328ab88afac47c9a7addecaee97f4d49f4ad"
+      },
+      "pinnedProduct": {
+        "result": "open",
+        "firstUnverifiedStep": "The V0 classpath reader refuses jackson-core multi-release FastDoubleSwar.class, before a semantic result.",
+        "elapsedSeconds": 56.419,
+        "receipt": {
+          "file": "verification/results/20261120-234731-352-run-the-frozen-v0-dependency-upgrade/outputs/examples/352-cucumber-duration/records/frozen-v0/format/invocation.json",
+          "sha256": "f9fef8130baec5a683da0ef3259578a9473977d15bf28681645f972b56637b1d"
+        },
+        "workflowOutput": {
+          "file": "verification/results/20261120-234731-352-run-the-frozen-v0-dependency-upgrade/outputs/examples/352-cucumber-duration/records/frozen-v0/format/workflow.log",
+          "sha256": "50d4d1fd395839c0a3be9a880908db9a369ac2f44958b69e62b33d9075358585"
+        },
+        "job": {
+          "file": "verification/results/20261120-234731-352-run-the-frozen-v0-dependency-upgrade/result.json",
+          "sha256": "5bc9450fbd3b91df3072d822e21847f837caedcab2ade5f2df5f60996879ef76"
+        }
+      },
+      "operationalCI": [
+        {
+          "measurement": "full-linux-ci",
+          "subjectJdk": "11.0.33.0+10-tem",
+          "cacheAndLogs": {
+            "file": "examples/352-cucumber-duration/records/full-linux-ci/result.json",
+            "sha256": "ffcb3777bf751883732db2b3d5a322e902dbd6a692d7956d107e86eecb7e9b80"
+          },
+          "sides": {
+            "old": {
+              "mavenExit": 0,
+              "tests": 665,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 27,
+              "seconds": 83.347,
+              "namedSuitePassed": 6
+            },
+            "new": {
+              "mavenExit": 0,
+              "tests": 665,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 27,
+              "seconds": 24.986,
+              "namedSuitePassed": 6
+            }
+          }
+        }
+      ],
+      "originalFixture": {
+        "file": "examples/352-cucumber-duration/records/original-test-fixture.json",
+        "sha256": "c402e587aefd5aba144584f55d7e60b597ef1970fe6698122b4fb1f0b00f3613"
+      }
+    }
+  ],
+  "compcheck": {
+    "stock": {
+      "file": "lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json",
+      "sha256": "88084dbba22ef77cffb711326caf8d1551160c9189e1b8f453f72890519a3896"
+    },
+    "assisted": {
+      "file": "lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json",
+      "sha256": "f6ac2b9cd9406e0732328be9667bdc63250abf8b37ae0a88854d4e6a8a1a69bb"
+    },
+    "firstStop": {
+      "file": "lib/benchmark/external-upgrades/baselines/compcheck-aws-stop.json",
+      "sha256": "fe00a45794d5fca837f6537e976d59c5a36e651d1aee32dd24433c879891650b"
+    },
+    "stockWithSerialResolution": {
+      "file": "lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json",
+      "sha256": "4c889a92bf672138b1cb33f91bfb87893e1a1362e78411707a9b55f1f3291eca"
+    }
+  },
+  "openingAdjudications": {
+    "caseFileContinuation": [
+      {
+        "file": "lib/benchmark/external-upgrades/adjudication/first-reports-integration.json",
+        "sha256": "ec1afc59a4470613807a8ee5c7e31daecda0135e9610d4370a774f58fac65d00"
+      },
+      {
+        "file": "lib/benchmark/external-upgrades/adjudication/first-reports-independent.json",
+        "sha256": "3ae6cea1767b3a9e1cc587404e4d24c3c2ea888dc582ddae3ae3d4688ffdc231"
+      }
+    ],
+    "nativeHistoryAndRecognition": [
+      {
+        "file": "lib/benchmark/external-upgrades/adjudication/native-opening-integration.json",
+        "sha256": "dc9bcec81eaefe227bd334ecdadb07a20e7e9d2d212bcb00b7317a6737939b97"
+      },
+      {
+        "file": "lib/benchmark/external-upgrades/adjudication/recognized-opening-integration.json",
+        "sha256": "f86f6326437e2cdb4f39015fa466c9aa976a5b72832068b4791e5de00c5145f0"
+      },
+      {
+        "file": "lib/benchmark/external-upgrades/adjudication/native-openings-independent.json",
+        "sha256": "270fd8f7a2ad364982104a4ef3db3ad203b7cf90bb146496b2e876ac94c652eb"
+      }
+    ]
+  },
+  "costReconciliation": {
+    "file": "lib/benchmark/external-upgrades/adjudication/operator-cost-audit.json",
+    "sha256": "afb577cf45c16c7105b72cf80169cf732a04579c10b66a6a58cc4c5a3b5d71e9"
+  },
+  "operatorPolicy": {
+    "effectiveUtc": "2026-11-21T03:05:22Z",
+    "model": "gpt-6.2-astra",
+    "effort": "high",
+    "allRolesInSameSession": true,
+    "claudeReports": "superseded and excluded from scores"
+  }
+}

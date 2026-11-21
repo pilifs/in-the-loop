@@ -17,6 +17,7 @@ class-file reader, offline; nothing here runs Java. Runtime stream's.
 """
 
 import hashlib
+import re
 import struct
 import zipfile
 from pathlib import Path
@@ -40,6 +41,38 @@ def read_class(jar, name):
             return z.read(name + ".class")
         except KeyError:
             return None
+
+
+def effective_entries(archive, feature):
+    """The logical entries a JVM of the specified feature sees in its original JAR."""
+    entries = {item.filename: item for item in archive.infolist() if not item.is_dir()}
+    manifest = entries.get("META-INF/MANIFEST.MF")
+    if not manifest:
+        return entries
+    text = archive.read(manifest).replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    main = text.partition(b"\n\n")[0].replace(b"\n ", b"")
+    attributes = dict((k.lower(), v) for line in main.splitlines() for k, sep, v in [line.partition(b": ")] if sep)
+    if attributes.get(b"multi-release", b"").lower() != b"true":
+        return entries
+    ranks = {}
+    for name, item in list(entries.items()):
+        if not name.startswith("META-INF/versions/"):
+            continue
+        del entries[name]
+        version, _, logical = name[len("META-INF/versions/"):].partition("/")
+        if (not logical or logical.startswith("META-INF/") or not re.fullmatch(r"[1-9][0-9]{0,8}", version)):
+            continue
+        release = int(version)
+        if 9 <= release <= feature and release > ranks.get(logical, 0):
+            ranks[logical] = release
+            entries[logical] = item
+    return entries
+
+
+def effective_class(jar, name, feature):
+    with zipfile.ZipFile(jar) as archive:
+        selected = effective_entries(archive, feature).get(name + ".class")
+        return archive.read(selected) if selected is not None else None
 
 
 def resolve(classpath, root="."):
@@ -93,6 +126,17 @@ def feature_needed(jar):
 _FIXED = {3: 4, 4: 4, 5: 8, 6: 8, 7: 2, 8: 2, 9: 4, 10: 4, 11: 4, 12: 4, 15: 3, 16: 2, 17: 4, 18: 4, 19: 2, 20: 2}
 
 
+def modified_utf8(data):
+    """Read a CONSTANT_Utf8 (JVMS 4.4.7), retaining isolated Java UTF-16 surrogates."""
+    if re.search(rb"[\x00\xf0-\xff]", data):
+        raise ValueError("literal NUL or four-byte sequence in class-file modified UTF-8")
+    text = data.replace(b"\xc0\x80", b"\0").decode("utf-8", "surrogatepass")
+    if b"\xed" in data:
+        # A supplementary character is stored as two encoded UTF-16 code units.
+        return text.encode("utf-16-be", "surrogatepass").decode("utf-16-be", "surrogatepass")
+    return text
+
+
 def _pool(data):
     """The constant pool as {index: (tag, value)} and the offset just after it."""
     if data[:4] != b"\xca\xfe\xba\xbe":
@@ -104,7 +148,9 @@ def _pool(data):
         offset += 1
         if tag == 1:
             length = struct.unpack_from(">H", data, offset)[0]
-            pool[i] = (1, data[offset + 2: offset + 2 + length].decode("utf-8", "surrogatepass"))
+            if offset + 2 + length > len(data):
+                raise ValueError(f"truncated modified UTF-8 at constant pool entry {i}")
+            pool[i] = (1, modified_utf8(data[offset + 2: offset + 2 + length]))
             offset += 2 + length
         elif tag in _FIXED:
             size = _FIXED[tag]
@@ -138,7 +184,7 @@ def super_class(data):
     return _class_name(pool, index) if index else None
 
 
-def _declarations(data, with_code=False):
+def _declarations(data, with_code=False, *, field_declarations=None):
     """The constant pool, declared method access flags, and offset of the class attributes."""
     pool, offset = _pool(data)
     offset += 6  # access, this, super
@@ -162,6 +208,8 @@ def _declarations(data, with_code=False):
                     handlers = struct.unpack_from(">H", data, offset + 14 + size)[0]
                 offset += 6 + length
             found[_utf8(pool, name), _utf8(pool, desc)] = (access, body, handlers) if with_code else access
+        if table == 0 and field_declarations is not None:
+            field_declarations.update(found)
     return pool, found, offset
 
 
@@ -301,16 +349,68 @@ def debug_attributes(data):
     return found
 
 
+def _member_ref(pool, value):
+    owner, nat = value
+    name, desc = pool[nat][1]
+    return _class_name(pool, owner), _utf8(pool, name), _utf8(pool, desc)
+
+
 def references(data):
     """{(owner, name, descriptor)} of every Methodref and InterfaceMethodref in the class's constant pool."""
     pool, _ = _pool(data)
-    out = set()
+    return {_member_ref(pool, value) for tag, value in pool.values() if tag in (10, 11)}
+
+
+def member_reference_kinds(data, operand):
+    pool, _ = _pool(data)
+    kinds = {9: "field", 10: "method", 11: "interface method"}
+    return sorted({kinds[tag] for tag, value in pool.values() if tag in kinds and _member_ref(pool, value) == operand})
+
+
+def member_at_code_index(data, name, descriptor, index, *, code_sha256, pool_sha256):
+    """Resolve the field or method instruction at a bytecode index reported by a live JVM."""
+    pool, declarations, _ = _declarations(data, with_code=True)
+    _, code, _ = declarations.get((name, descriptor), (None, None, None))
+    if (not code or not 0 <= index <= len(code) - 3 or hashlib.sha256(code).hexdigest() != code_sha256
+            or hashlib.sha256(data[10:_pool(data)[1]]).hexdigest() != pool_sha256):
+        return None
+    opcodes = ("getstatic", "putstatic", "getfield", "putfield", "invokevirtual", "invokespecial",
+               "invokestatic", "invokeinterface")
+    opcode = code[index]
+    if not 0xb2 <= opcode <= 0xb9:
+        return None
+    tag, value = pool[struct.unpack_from(">H", code, index + 1)[0]]
+    allowed = (9,) if opcode <= 0xb5 else (11,) if opcode == 0xb9 else (10,) if opcode == 0xb6 else (10, 11)
+    if tag not in allowed:
+        return None
+    owner, member, desc = _member_ref(pool, value)
+    return {"opcode": opcodes[opcode - 0xb2], "owner": owner.replace("/", "."), "name": member,
+            "descriptor": desc, "referenceKind": {9: "field", 10: "method", 11: "interface method"}[tag]}
+
+
+def type_references(data, target):
+    """Symbolic class constants and JVM descriptors naming an exact internal type."""
+    fields = set()
+    pool, declarations, _ = _declarations(data, field_declarations=fields)
+    def mentions(descriptor):
+        return target in re.findall(r"L([^;]+);", descriptor)
+    kinds = set()
     for tag, value in pool.values():
-        if tag in (10, 11):
-            owner, nat = value
-            name, desc = pool[nat][1]
-            out.add((_class_name(pool, owner), _utf8(pool, name), _utf8(pool, desc)))
-    return out
+        if tag == 7:
+            name = _utf8(pool, value)
+            if name == target or (name.startswith("[") and mentions(name)):
+                kinds.add("class constant")
+        elif tag == 12 and mentions(_utf8(pool, value[1])):
+            kinds.add("member reference descriptor")
+        elif tag == 16 and mentions(_utf8(pool, value)):
+            kinds.add("method type descriptor")
+    methods = sorted(name + desc for name, desc in declarations if mentions(desc))
+    field_names = sorted(name + ":" + desc for name, desc in fields if mentions(desc))
+    if methods:
+        kinds.add("method declaration")
+    if field_names:
+        kinds.add("field declaration")
+    return {"kinds": sorted(kinds), "methods": methods, "fields": field_names}
 
 
 def resolve_method(owner, name, descriptor, look):

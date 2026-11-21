@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-015236-run-both-stock-aws-compcheck-settings-wi",
+  "title": "Run both stock AWS CompCheck settings with serial Central restores",
+  "description": "Use genuine CompCheck 937d1d1 and its published AWS c15-2 DateUtils.doParseISO8601Date line 104 input with JDK 8 and Maven 3.6.3. In two fresh checkouts, first supply all ordinary incident knowledge, then exclude only the two AWS issue-233 records. Start without compiled application classes or a recorded static context. The upstream CLI itself installs the unchanged client from source using a temporary local Maven repository and a serialized read-through mirror of the single shared Maven Central cache. Capture the compiled DateUtils digest, evidence of the actual selected static call, matching, any generated-test validation and the first unresolved step. The pair shares a 2.9 GB additional-Central-data cap; each unprivileged build has no external network except the dependency bridge.",
+  "kind": "real-world",
+  "capabilities": [
+    "baseline:compcheck"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/external-upgrades/baselines/compcheck_aws.py"
+    ]
+  },
+  "expected": "Two independently measured stock outcomes name the client build and actual context, distinguish API matching from JUnit validation and retain genuine unavailability. No application class injection or cached answer is permitted.",
+  "submitted": {
+    "at": "2026-11-21T01:52:36+00:00",
+    "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+  },
+  "requires": [
+    "bwrap",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "4G",
+    "duration": "8m",
+    "memoryLimit": "16G",
+    "timeout": "2h",
+    "notes": "Prior calibrated CompCheck treatments used under 3 GiB. Both warm original-source treatments share one two-hour ceiling, four CPUs, 16 GiB maximum memory and a 2.9 GB allowance for additional public Maven data. The original 60-second generated-test search remains part of stock CompCheck."
+  },
+  "steps": [
+    {
+      "name": "Measure stock c15-2 with both knowledge settings and dependency restores",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --warm-stock --output lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/external-upgrades/baselines/compcheck-aws-warm-stock.json"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "preservation",
+  "property": "roundtrip",
+  "statement": "Both SDK revisions return the original milliseconds through their public ISO formatter and parser for Long.MAX_VALUE and 2000-01-01T00:00:00.123Z.",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32,
+    "maxArrayLength": 96
+  },
+  "adapter": {
+    "entry": "calibration.Projection#roundtrip(Z)J",
+    "mapping": "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception.",
+    "correspondence": "caller-oracle",
+    "cases": 2
+  }
+}

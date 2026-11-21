@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-055812-pinned-v1-finite-caller-group-1-replay-o",
+  "title": "Pinned V1 finite caller group 1 replay original Java application behavior",
+  "description": "Use the pinned, byte-identified observer runtime on each original application. Check both fresh JVM repetitions per admitted input and both ordered classpaths. Compare with independent old expectations. Cases compsuite-i-38, compsuite-i-1, compsuite-i-70, compsuite-i-4, compsuite-i-81.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "expected": "Every selected upgrade retains its actual outcome, including missing inputs and open proof obligations.",
+  "submitted": {
+    "at": "2026-11-21T05:58:12+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "6G",
+    "timeout": "110m"
+  },
+  "steps": [
+    {
+      "name": "Run the pinned original workloads",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json --preparations \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds --maven-cache \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete --complete \"$HOME\"/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules --output verification/external-upgrades/corpus-runs/v1-finite/01 --case compsuite-i-38 --case compsuite-i-1 --case compsuite-i-70 --case compsuite-i-4 --case compsuite-i-81",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/v1-finite/01"
+  ]
+}

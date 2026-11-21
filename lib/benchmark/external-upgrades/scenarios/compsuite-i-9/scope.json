@@ -1,0 +1,34 @@
+{
+  "entry": "org.languagetool.dev.wikipedia.atom.MatchDatabase#add(Lorg/languagetool/dev/wikipedia/atom/WikipediaRuleMatch;)V",
+  "probeClass": "org.languagetool.dev.wikipedia.atom.UpgradeProbe",
+  "operandScope": "test",
+  "observer": "Store a spelling match in the original Derby test environment, list it, and mark a matching or different rule as fixed.",
+  "basis": "The original MatchDatabaseTest.test expects the inserted rule ID and diff 123, and an update to diff 124 on the matching rule. The original SQL predicate also requires the rule ID to match. Both POMs declare Derby in test scope. This environment does not supply a production-upgrade decision.",
+  "fixtures": [
+    {
+      "kind": "java",
+      "file": "FakeRule.java",
+      "source": "languagetool-wikipedia/src/test/java/org/languagetool/dev/wikipedia/atom/FakeRule.java",
+      "sha256": "09298411a469f561e6501d1d0a2e761a45f203f8a277066f0a0821d5dbef1860",
+      "class": "org.languagetool.dev.wikipedia.atom.FakeRule"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "same"
+      ],
+      "expected": {
+        "return": "1/ID_1/123/1/124"
+      }
+    },
+    {
+      "args": [
+        "different"
+      ],
+      "expected": {
+        "return": "1/ID_1/123/0/0"
+      }
+    }
+  ]
+}

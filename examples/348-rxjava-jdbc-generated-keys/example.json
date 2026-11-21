@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "348",
+  "title": "H2 returns both generated keys for a single two-row insert through rxjava-jdbc",
+  "summary": "The unchanged client exposes a different Rx list after H2 changes from 1.4.192 to 1.4.200. Its two single-row inserts return the same list on both versions, and both rows are stored in all four runs.",
+  "origin": "real-world",
+  "categories": [
+    "compatibility",
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "external-target"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "rxjava-jdbc",
+    "file": "src/main/java/com/github/davidmoten/rx/jdbc/QueryUpdateOnSubscribe.java",
+    "symbol": "com.github.davidmoten.rx.jdbc.QueryUpdateOnSubscribe#performUpdate"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "dependency-upgrade",
+    "description": "The two CompSuite tags differ only in the test-scoped H2 version in pom.xml."
+  },
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/compsuite-team/rxjava-jdbc",
+    "url": "https://github.com/compsuite-team/rxjava-jdbc/commit/735c4108c0ebfd9ad4f350d496e9c74bc0893bb7"
+  },
+  "target": "target.json",
+  "verdictLabel": "Caller-visible change replayed on the JVM",
+  "notes": [
+    "Disclosed CompSuite i-87 opening calibration. The existing DatabaseSyncTest assertion detects the returned-key change. The independent observation also records the persisted rows. H2 is test-scoped in this client POM.",
+    "With serial Maven Central restoration, the unchanged CompSuite CLI ran under Python 3.11.14, Maven 3.6.3 and JDK 8. Fresh old and new XML captured the original generated-keys pass and failure. The complete Maven suites contained 454 tests each, two skipped, and three upgraded-side assertion failures."
+  ]
+}

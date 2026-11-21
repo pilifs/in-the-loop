@@ -15996,6 +15996,445 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 347 TASK"
       }
+    },
+    {
+      "id": "348",
+      "path": "examples/348-rxjava-jdbc-generated-keys",
+      "title": "H2 returns both generated keys for a single two-row insert through rxjava-jdbc",
+      "summary": "The unchanged client exposes a different Rx list after H2 changes from 1.4.192 to 1.4.200. Its two single-row inserts return the same list on both versions, and both rows are stored in all four runs.",
+      "origin": "real-world",
+      "system": "rxjava-jdbc",
+      "symbol": "com.github.davidmoten.rx.jdbc.QueryUpdateOnSubscribe#performUpdate",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "compatibility",
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "dependency-upgrade",
+      "verdict": null,
+      "verdictLabel": "Caller-visible change replayed on the JVM",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Disclosed CompSuite i-87 opening calibration. The existing DatabaseSyncTest assertion detects the returned-key change. The independent observation also records the persisted rows. H2 is test-scoped in this client POM.",
+        "With serial Maven Central restoration, the unchanged CompSuite CLI ran under Python 3.11.14, Maven 3.6.3 and JDK 8. Fresh old and new XML captured the original generated-keys pass and failure. The complete Maven suites contained 454 tests each, two skipped, and three upgraded-side assertion failures."
+      ],
+      "source": "https://github.com/compsuite-team/rxjava-jdbc/commit/735c4108c0ebfd9ad4f350d496e9c74bc0893bb7",
+      "target": {
+        "family": "h2-jdbc-generated-keys",
+        "role": "calibration",
+        "case": "rxjava-jdbc-generated-keys",
+        "tasks": [
+          "replay",
+          "generated-keys"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "generated-keys": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "generated-keys": "refuted"
+        },
+        "claims": {
+          "generated-keys": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T235855Z-343f9d3f/result.json",
+            "attempt": "20261120T235855Z-343f9d3f",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Caller-visible change replayed on the JVM",
+          "source": "https://github.com/compsuite-team/rxjava-jdbc/commit/735c4108c0ebfd9ad4f350d496e9c74bc0893bb7",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 348 TASK"
+      }
+    },
+    {
+      "id": "349",
+      "path": "examples/349-commons-text-csv-upgrade",
+      "title": "Commons Text CSV field quoting across a Commons Lang upgrade",
+      "summary": "Check the characters returned by the original StringEscapeUtils.escapeCsv on both sides of Apache Commons Text PR #586.",
+      "origin": "real-world",
+      "system": "Apache Commons Text",
+      "symbol": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "text-encoding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review",
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "none",
+      "changeKind": "dependency-upgrade",
+      "verdict": null,
+      "verdictLabel": "156/156 fields preserved on each JVM classpath; native workflow stopped at class-file intake",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "This published calibration is excluded from both evaluation cohorts. The full-source JVM run compiles both pinned Commons Text trees. The target workflow compiles the original entry and translator classes from the same revisions. Each replay invokes the public method.",
+        "The old and new full client JARs are byte-identical. All 34 original StringEscapeUtilsTest tests passed on both JVM classpaths. The quote-doubling omission disagreed on 71 inputs, including a single double quote, and failed both original CSV escaping tests.",
+        "The standard route stopped before checker launch while decoding a modified UTF-8 NUL in the original StringEscapeUtils constant pool. A separate direct CLI probe on the full production classes refused before.org.apache.commons.text.StringEscapeUtils.<clinit>() under strict gaps.",
+        "On the complete Linux JDK 21 Maven CI lane, both revisions reported 1305 tests and all 34 StringEscapeUtils tests passed. With ordinary local hostname resolution, the two errors remaining on each side require the external Apache DNS or HTTPS endpoint."
+      ],
+      "source": "https://github.com/apache/commons-text/pull/586",
+      "target": {
+        "family": "commons-text-commons-lang",
+        "role": "calibration",
+        "case": "commons-text-csv-upgrade",
+        "tasks": [
+          "replay",
+          "mutant-replay",
+          "preservation"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "mutant-replay": "scaffolded",
+          "preservation": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "mutant-replay": null,
+          "preservation": "established"
+        },
+        "claims": {
+          "preservation": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261121T035036Z-a45d1bb7/result.json",
+            "attempt": "20261121T035036Z-a45d1bb7",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "mutant-replay": {
+            "path": "receipts/mutant-replay/20261121T035040Z-9634e5d7/result.json",
+            "attempt": "20261121T035040Z-9634e5d7",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "156/156 fields preserved on each JVM classpath; native workflow stopped at class-file intake",
+          "source": "https://github.com/apache/commons-text/pull/586",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 349 TASK"
+      }
+    },
+    {
+      "id": "350",
+      "path": "examples/350-rocker-with-declaration",
+      "title": "Rocker reports a different diagnostic at the same parser position",
+      "summary": "The original compiler rejects a trailing comma with ParserException at line 1, column 18 under both ANTLR versions. The text changes and the same valid declaration succeeds.",
+      "origin": "real-world",
+      "system": "Rocker",
+      "symbol": "com.fizzed.rocker.model.WithStatement#parse",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "text-encoding"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "pull-request-review",
+          "external-target"
+        ]
+      },
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "low",
+      "changeKind": "dependency-upgrade",
+      "verdict": null,
+      "verdictLabel": "Independent finite JVM calibration",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Disclosed external-upgrade calibration. The caller observations and preparation scope are recorded with the example.",
+        "The runtime-only control uses the released old generated parser on both sides. Independent recompilation with both generators and four JVM substitutions distinguish its scope from the whole PR."
+      ],
+      "source": "https://github.com/compsuite-team/rocker/commit/1cdb2748723454cde4c4d2366a261ba4a24a23d3",
+      "target": {
+        "family": "rocker-antlr",
+        "role": "calibration",
+        "case": "rocker-with-declaration",
+        "tasks": [
+          "replay",
+          "diagnostic"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "diagnostic": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "diagnostic": "refuted"
+        },
+        "claims": {
+          "diagnostic": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T235859Z-1b30d789/result.json",
+            "attempt": "20261120T235859Z-1b30d789",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Independent finite JVM calibration",
+          "source": "https://github.com/compsuite-team/rocker/commit/1cdb2748723454cde4c4d2366a261ba4a24a23d3",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 350 TASK"
+      }
+    },
+    {
+      "id": "351",
+      "path": "examples/351-aws-joda-instant",
+      "title": "AWS round-trips the maximum instant across a Joda-Time upgrade",
+      "summary": "The historical formatter loses its former upper-limit exception. The public AWS SDK formatter/parser pair returns the original maximum instant on both versions.",
+      "origin": "real-world",
+      "system": "AWS SDK for Java",
+      "symbol": "com.amazonaws.util.DateUtils#parseISO8601Date",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "exceptions",
+          "special-values"
+        ],
+        "technique": [
+          "pull-request-review",
+          "external-target"
+        ]
+      },
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "low",
+      "changeKind": "dependency-upgrade",
+      "verdict": null,
+      "verdictLabel": "Independent finite JVM calibration",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Disclosed external-upgrade calibration. The caller observations and preparation scope are recorded with the example.",
+        "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception."
+      ],
+      "source": "https://github.com/compsuite-team/aws-sdk-java/commit/985a81b554e02742036fd158e6494c61a367f980",
+      "target": {
+        "family": "aws-joda",
+        "role": "calibration",
+        "case": "aws-joda-instant",
+        "tasks": [
+          "replay",
+          "roundtrip"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "roundtrip": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "roundtrip": "established"
+        },
+        "claims": {
+          "roundtrip": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T235902Z-083eff34/result.json",
+            "attempt": "20261120T235902Z-083eff34",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Independent finite JVM calibration",
+          "source": "https://github.com/compsuite-team/aws-sdk-java/commit/985a81b554e02742036fd158e6494c61a367f980",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 351 TASK"
+      }
+    },
+    {
+      "id": "352",
+      "path": "examples/352-cucumber-duration",
+      "title": "Cucumber Reporting preserves millisecond display precision",
+      "summary": "On both Joda-Time versions, 18 deserialized report durations print seconds and three digits of truncated milliseconds in UTC and English.",
+      "origin": "real-world",
+      "system": "Cucumber Reporting",
+      "symbol": "net.masterthought.cucumber.json.Result#getFormattedDuration",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "clocks-and-time"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "pull-request-review",
+          "external-target"
+        ]
+      },
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "low",
+      "changeKind": "dependency-upgrade",
+      "verdict": null,
+      "verdictLabel": "Independent finite JVM calibration",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Disclosed external-upgrade calibration. The caller observations and preparation scope are recorded with the example.",
+        "Each selector picks one of three seconds, three millisecond values and two remainders; Jackson builds the real Result and the actual Joda formatter supplies the returned text.",
+        "The unchanged sample.json result in ResultTest contains 7,040,000 ns and status passed. A separate JVM run loaded nine client classes built from each original revision and formatted it as 0.007 on both Joda versions."
+      ],
+      "source": "https://github.com/damianszczepanik/cucumber-reporting/pull/1156",
+      "target": {
+        "family": "cucumber-reporting-joda",
+        "role": "calibration",
+        "case": "cucumber-duration",
+        "tasks": [
+          "replay",
+          "format"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "format": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "format": "established"
+        },
+        "claims": {
+          "format": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261121T005017Z-a0292044/result.json",
+            "attempt": "20261121T005017Z-a0292044",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 3
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Independent finite JVM calibration",
+          "source": "https://github.com/damianszczepanik/cucumber-reporting/pull/1156",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 352 TASK"
+      }
     }
   ]
 }

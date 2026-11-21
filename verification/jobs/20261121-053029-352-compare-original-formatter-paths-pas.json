@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-053029-352-compare-original-formatter-paths-pas",
+  "title": "352 compare original formatter paths past checked exception declarations",
+  "description": "The native checker now follows actual normal and exceptional JVM paths through a method with a checked exception declaration. On the two original Cucumber Reporting inputs record whether checking the exact duration strings finishes and the first unresolved operation if it remains open. The independently qualified 18-input finite result is retained separately.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "352"
+    ]
+  },
+  "expected": "Original native claim and qualified controls pass, or an explicit unresolved native outcome with the first genuine blocker.",
+  "submitted": {
+    "at": "2026-11-21T05:30:29+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Run original duration proof workflow",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 352 --task format",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/352-cucumber-duration/receipts/format"
+  ]
+}

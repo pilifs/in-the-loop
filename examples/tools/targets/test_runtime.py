@@ -220,6 +220,39 @@ class PrepareTest(FixtureCopy):
 
 
 class JarTest(unittest.TestCase):
+    def test_effective_jar_uses_the_highest_eligible_release_and_the_main_manifest(self):
+        from io import BytesIO
+        import zipfile
+        contents = BytesIO()
+        with zipfile.ZipFile(contents, "w") as jar:
+            for path in ("lib/X.class", "META-INF/versions/8/lib/X.class", "META-INF/versions/017/lib/X.class",
+                         "META-INF/versions/17/lib/X.class", "META-INF/versions/23/lib/X.class",
+                         "META-INF/versions/17/lib/OnlyHere.class", "META-INF/versions/17/META-INF/services/X"):
+                jar.writestr(path, path)
+            jar.writestr("META-INF/MANIFEST.MF", b"Manifest-Version: 1.0\r\nMulti-Release: tr\r\n ue\r\n\r\n")
+        with zipfile.ZipFile(contents) as jar:
+            for feature, expected in ((8, "lib/X.class"), (11, "lib/X.class"), (21, "META-INF/versions/17/lib/X.class"),
+                                      (25, "META-INF/versions/23/lib/X.class")):
+                self.assertEqual(runtime_jar.effective_entries(jar, feature)["lib/X.class"].filename, expected)
+            self.assertIn("lib/OnlyHere.class", runtime_jar.effective_entries(jar, 17))
+            self.assertNotIn("META-INF/services/X", runtime_jar.effective_entries(jar, 17))
+        second = BytesIO()
+        with zipfile.ZipFile(second, "w") as jar:
+            jar.writestr("lib/X.class", b"base")
+            jar.writestr("META-INF/versions/17/lib/X.class", b"version")
+            jar.writestr("META-INF/MANIFEST.MF", "Manifest-Version: 1.0\n\nName: lib/X.class\nMulti-Release: true\n")
+        with zipfile.ZipFile(second) as jar:
+            self.assertEqual(jar.read(runtime_jar.effective_entries(jar, 21)["lib/X.class"]), b"base")
+
+    def test_modified_utf8_keeps_java_names_and_literal_code_units(self):
+        read = runtime_jar.modified_utf8
+        self.assertEqual(read(b"a\xc0\x80b"), "a\0b")
+        self.assertEqual(read(b"\xed\xa0\x81\xed\xb0\x80"), "\U00010400")
+        self.assertEqual(read(b"\xed\xa0\x81x\xed\xb0\x80"), "\ud801x\udc00")
+        for malformed in (b"\0", b"\xc0\x81", b"\xed\xa0", b"\xf0\x90\x90\x80"):
+            with self.subTest(malformed=malformed), self.assertRaises(ValueError):
+                read(malformed)
+
     def test_the_class_reader_sees_declarations_and_calls(self):
         out = Path(manifest()["dir"])
         gate = runtime_jar.read_class(out / "after.jar", "fixture/Gate")
@@ -244,6 +277,15 @@ class JarTest(unittest.TestCase):
 
 
 class JdkTest(unittest.TestCase):
+    def test_launcher_banner_is_not_a_runtime_identity(self):
+        answer = subprocess.CompletedProcess([], 0, "", 'Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/work\n'
+                                                   'openjdk version "21.0.13" 2026-10-20 LTS\n')
+        with tempfile.TemporaryDirectory() as home, mock.patch.object(subprocess, "run", return_value=answer):
+            self.assertEqual(runtime_jdk.identity(home)["version"], 'openjdk version "21.0.13" 2026-10-20 LTS')
+            answer.returncode = 1
+            runtime_jdk.identity.cache_clear()
+            self.assertEqual(runtime_jdk.identity(home)["version"], "")
+
     def test_installed_jdks_are_found_by_full_path(self):
         homes = runtime_jdk.homes()
         if not {"21", "25"} <= set(homes):
@@ -1276,7 +1318,9 @@ class VerifierTest(FixtureCopy):
         self.assertEqual(Path(prove["cwd"]), self.attempt.resolve(), "paths are relative to the attempt directory")
         jdk = runtime_jdk.identity(runtime_jdk.home("25"))
         self.assertEqual(set(prove["env"]) - {"LC_CTYPE"},  # LC_CTYPE: Python's own locale coercion, if any
-                         {"LANG", "LC_ALL", "TZ", "JAVA_HOME", "PATH", "JVMCONTRACT_JAVA_OPTS", "JVMCONTRACT_JBMC_MEMORY_MB"})
+                         {"LANG", "LC_ALL", "TZ", "JAVA_HOME", "PATH", "JVMCONTRACT_JAR_RELEASE",
+                          "JVMCONTRACT_JAVA_OPTS", "JVMCONTRACT_JBMC_MEMORY_MB"})
+        self.assertEqual(prove["env"]["JVMCONTRACT_JAR_RELEASE"], jdk["feature"])
         self.assertNotIn("JAVA_TOOL_OPTIONS", prove["env"], "the verifier inherited the caller's JVM options")
         self.assertEqual(prove["env"]["JAVA_HOME"], jdk["home"])
         self.assertEqual(prove["env"]["JVMCONTRACT_JAVA_OPTS"], "-Xmx300m", "the runner's memory setting passes through")

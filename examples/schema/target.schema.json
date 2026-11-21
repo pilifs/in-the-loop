@@ -34,7 +34,7 @@
       "required": ["repository", "revisions"],
       "additionalProperties": false,
       "properties": {
-        "repository": { "description": "The upstream repository, on github.com (the downloads policy of decision 1).", "type": "string", "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$" },
+        "repository": { "description": "The original GitHub repository or a named local Git repository supplied under TARGETS_LOCAL_GIT_ROOT. Both routes require exact commit IDs.", "type": "string", "pattern": "^(https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+|local-git:[A-Za-z0-9][A-Za-z0-9_-]{0,79})$" },
         "researchedOn": { "description": "When the research this entry comes from was done (the archived registry's as_of).", "type": "string", "format": "date", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
         "revisions": {
           "description": "Each revision the case uses, by name. A commit is a full 40-hex SHA: a branch, a short SHA or a tag alone is a mutable reference and is refused. A tag or release is recorded beside the commit, never instead of it. A control (identity.role) may instead name a `fixture`: a directory of sources in its folder, built locally, never an upstream revision. A constructed `mutant` (any role) is another revision with a patch applied: it stays constructed, never an upstream change, a CVE or a historical success.",

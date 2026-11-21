@@ -1,4 +1,4 @@
-"""Qualify concrete int and long scalars and arrays on each revision's ordered classpath."""
+"""Replay primitive values and integer arrays on each revision's ordered classpath."""
 
 import hashlib
 import json
@@ -11,12 +11,20 @@ from targets import qualification, runtime, runtime_jar
 from accept import descriptor_parameters
 
 
+RETURNS = {"I": ("int", "0", "Long.toString(result)"), "J": ("long", "0", "Long.toString(result)"),
+           "Z": ("boolean", "false", "Boolean.toString(result)"),
+           "[I": ("int[]", "null", "java.util.Arrays.toString(result)"),
+           "[J": ("long[]", "null", "java.util.Arrays.toString(result)"),
+           "Ljava/lang/String;": ("java.lang.String", "null",
+                                 'result == null ? "null" : java.util.Arrays.toString(result.chars().toArray())')}
+
+
 def supported(entry, claim):
     _, _, descriptor = runtime_jar.parse_target(entry)
-    if not descriptor or descriptor.split(")")[-1] not in ("I", "J") or claim.get("throws"):
+    if not descriptor or descriptor.split(")")[-1] not in RETURNS or claim.get("throws"):
         return False
     params = descriptor_parameters(descriptor)
-    return params is not None and all(t in ("int", "long", "int[]", "long[]") for t in params)
+    return params is not None and all(t in ("boolean", "int", "long", "int[]", "long[]", "java.lang.String") for t in params)
 
 
 def snapshot_assertion(assertion, inputs, names):
@@ -72,19 +80,27 @@ def quantified(expression):
     return expression
 
 
-def source(entry, claim, inputs, names):
+def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
     """Render a replay of the selected public static entry. Inputs have already been type checked."""
     owner, method, descriptor = runtime_jar.parse_target(entry)
     statements = []
     for arg in inputs:
         value = arg["value"]
-        if value is None:
+        if argument_expression is not None and len(inputs) == 1:
+            literal = argument_expression
+        elif value is None:
             literal = "null"
         elif isinstance(value, dict):
             literal = names[value["same"]]
         elif isinstance(value, list):
             suffix = "L" if arg["type"] == "long[]" else ""
             literal = "new " + arg["type"] + "{" + ",".join(str(n) + suffix for n in value) + "}"
+        elif arg["type"] == "java.lang.String":
+            data = value.encode("utf-16-be", "surrogatepass")
+            units = [str(int.from_bytes(data[i:i+2], "big")) for i in range(0, len(data), 2)]
+            literal = "new String(new char[]{" + ",".join(units) + "})"
+        elif type(value) is bool:
+            literal = str(value).lower()
         elif arg["type"] == "long":
             literal = str(value) + "L"
         else:
@@ -96,14 +112,14 @@ def source(entry, claim, inputs, names):
     statements.append(f'if (!({quantified(condition)})) {{ System.out.println("outside"); return; }}')
     assertion, snapshots = snapshot_assertion(claim.get("assert"), inputs, names)
     statements.extend(snapshots)
-    ret = "long" if descriptor.endswith("J") else "int"
+    ret, initial, render_result = RETURNS[descriptor.split(")")[-1]]
     uses_quantifier = assertion and ("\\forall" in assertion or "\\exists" in assertion)
     result_name = "result"
     if uses_quantifier:
         result_name = "returnedValue"
         while result_name in names:
             result_name += "_"
-    statements.extend([f"{ret} {result_name} = 0;", "Throwable failure = null;",
+    statements.extend([f"{ret} {result_name} = {initial};", "Throwable failure = null;",
                        f'try {{ {result_name} = {owner}.{method}({", ".join(names)}); }} catch (Throwable t) {{ failure = t; }}'])
     if uses_quantifier:
         statements.append(f"final {ret} result = {result_name};")
@@ -114,7 +130,7 @@ def source(entry, claim, inputs, names):
     for o in selected:
         kind = o if isinstance(o, str) else o["kind"]
         if kind == "result":
-            expr = 'failure == null ? Long.toString(result) : "null"'
+            expr = f'failure == null ? {render_result} : "null"'
         elif kind == "exception":
             expr = 'failure == null ? "null" : ((char)34 + failure.getClass().getName() + (char)34)'
         elif kind == "array-parameter" and o["parameter"] in names:
@@ -124,7 +140,7 @@ def source(entry, claim, inputs, names):
         else:
             raise ValueError(f"replay cannot observe {o}")
         statements.append(f"System.out.println({expr});")
-    return "class CandidateReplay { public static void main(String[] args) {\n" + "\n".join(statements) + "\n} }\n"
+    return "class CandidateReplay { public static void main(String[] args) {\n" + "\n".join(statements) + "\n} " + helper + "}\n"
 
 
 def check(plan, prepared, inputs, work, entry=None):
@@ -136,7 +152,7 @@ def check(plan, prepared, inputs, work, entry=None):
     aliases = qualification.alias_groups([p.split(",") for p in claim.get("mayAlias", [])])
     try:
         if not supported(entry, claim):
-            raise ValueError("this independent replay requires int/long scalars or arrays and an int or long result")
+            raise ValueError("independent replay requires boolean, int, long or integer-array inputs and result")
         jdk = runtime._verifier_jdk(plan, prepared)
         report["jdkRelease"] = jdk["release"]
         work = Path(work)

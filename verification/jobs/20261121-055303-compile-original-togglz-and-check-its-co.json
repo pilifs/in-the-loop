@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-055303-compile-original-togglz-and-check-its-co",
+  "title": "Compile original Togglz and check its configuration callback before optional packaging",
+  "description": "Run both source revisions with the pinned public Maven and JDK. A separate serial mirror connection serves each revision. The target receives its own original resources and dependencies. Togglz uses the original compile lifecycle so its historical packaging plugin cannot prevent access to already compiled classes.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "expected": "Record each exact original run, the checked observation when available and the first unsupported step otherwise.",
+  "submitted": {
+    "at": "2026-11-21T05:53:03+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "6G",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Build original Maven modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus\" --case compsuite-i-81 --output verification/external-upgrades/corpus-runs/module-retry/02 --phase compile",
+      "cwd": "."
+    },
+    {
+      "name": "Check the original receiver",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos-with-tags.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules-plus\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/transfer-complete\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --case compsuite-i-81 --output verification/external-upgrades/corpus-runs/finite-recovery-3/02",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/module-retry/02",
+    "verification/external-upgrades/corpus-runs/finite-recovery-3/02"
+  ]
+}

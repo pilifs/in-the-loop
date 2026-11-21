@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-081222-v3-h2-original-jdbc-driver-selection-and",
+  "title": "V3 H2 original JDBC driver selection and unmatched URL",
+  "description": "Use the public driver preflight on both original rxjava-jdbc classpaths. Check that its calibration URL selects the H2 driver from the pinned artifact and that both releases reject a different JDBC subprotocol. Driver selection does not open the database or establish generated-key behavior.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation"
+  ],
+  "links": {
+    "examples": [
+      "348"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T08:12:22+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "512M",
+    "duration": "1m",
+    "memoryLimit": "1G",
+    "timeout": "5m"
+  },
+  "steps": [
+    {
+      "name": "Check four fresh H2 driver selections",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/jdbc_selection.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/v3-h2-driver",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/v3-h2-driver"
+  ]
+}

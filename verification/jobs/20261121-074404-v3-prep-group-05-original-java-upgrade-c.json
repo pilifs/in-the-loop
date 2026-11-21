@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-074404-v3-prep-group-05-original-java-upgrade-c",
+  "title": "V3 prep group 05 original Java upgrade caller replays",
+  "description": "Rebuild each selected module or source slice at its two original Git revisions. For the ordering and validation cases, compile the upstream test fixtures and preserve the production runtime ahead of the fixture classpath. Run strict native and finite checks on both revisions, keeping original intake failures, pre-entry exceptions, and per-input replay evidence. Cases commons-beanutils-440, commons-csv-8993be87, commons-fileupload-377, compsuite-i-94, cucumber-reporting-1198, reflector-35.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T07:44:04+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "memoryLimit": "6G",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "Prepare original Maven modules compsuite-i-94",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase compile --with-test-fixtures --output verification/external-upgrades/corpus-runs/v3-inputs/05 --case compsuite-i-94",
+      "cwd": "."
+    },
+    {
+      "name": "Prepare original Maven modules reflector-35",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --phase compile --output verification/external-upgrades/corpus-runs/v3-inputs/05 --case reflector-35",
+      "cwd": "."
+    },
+    {
+      "name": "Run native checking for each original pair",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v3-prep-native/05 --case commons-beanutils-440 --case commons-csv-8993be87 --case commons-fileupload-377 --case compsuite-i-94 --case cucumber-reporting-1198 --case reflector-35",
+      "cwd": "."
+    },
+    {
+      "name": "Replay scoped original caller behavior",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; area=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/v3-caller-replay\"; cache=\"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/external-upgrades/corpus-runs/v3-prep-finite/05 --case commons-beanutils-440 --case commons-csv-8993be87 --case commons-fileupload-377 --case compsuite-i-94 --case cucumber-reporting-1198 --case reflector-35",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/v3-inputs/05",
+    "verification/external-upgrades/corpus-runs/v3-prep-native/05",
+    "verification/external-upgrades/corpus-runs/v3-prep-finite/05"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-050027-compsuite-i-29-run-compcheck-on-its-orig",
+  "title": "compsuite-i-29 run CompCheck on its original published call sites",
+  "description": "Run stock CompCheck on the exact original client commit and registered API locations in an isolated original checkout. Record contexts, matches and generated test evidence separately. Remove knowledge of this same incident when present, retaining other clients.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "compcheck"
+  ],
+  "links": {},
+  "expected": "Each registered site produces a measured outcome. A static match gets no credit for a test that did not run.",
+  "submitted": {
+    "at": "2026-11-21T05:00:27+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "5G",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Run stock and applicable sensitivity treatments",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/compcheck_corpus.py --case compsuite-i-29 --archive \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/compcheck-aws-inputs-v1/compcheck.tar.gz\" --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/compcheck-runs/compsuite-i-29",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/compcheck-runs/compsuite-i-29"
+  ]
+}

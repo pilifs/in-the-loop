@@ -1,0 +1,15 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "generated-keys",
+  "kind": "preservation",
+  "statement": "On a fresh H2 database with an identity primary key, both versions return the same ordered integer keys for two known values inserted either in one statement or in two successive calls.",
+  "observations": ["result", "exception"],
+  "bounds": {"unwind": 16, "maxArrayLength": 16},
+  "adapter": {
+    "entry": "calibration.GeneratedKeys#keys(Z)[I",
+    "mapping": "The boolean selects one two-row statement or two single-row inserts. An unnamed H2 database belongs to a fresh JDBC connection. The original rxjava-jdbc subscriber drains the keys and the adapter copies each returned integer at its original index.",
+    "correspondence": "independent-observer",
+    "cases": 2
+  }
+}

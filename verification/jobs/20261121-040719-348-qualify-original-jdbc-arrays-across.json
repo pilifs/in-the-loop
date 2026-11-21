@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-040719-348-qualify-original-jdbc-arrays-across",
+  "title": "348 qualify original JDBC arrays across the unconditional preservation region",
+  "description": "Run the unchanged generated-keys claim after recognizing the standard false allowed-change predicate as unconditional preservation. Both real JDBC inputs run in separate fresh JVMs at both pins. The isolated bounded diagnostic reproduced [2] versus [1,2] for the combined insert and agreement for the separate inserts.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "348"
+    ]
+  },
+  "expected": "Two admitted booleans, one differing ordered return, both revision-bound fresh witness observations and the original correspondence controls.",
+  "submitted": {
+    "at": "2026-11-21T04:07:19+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check the original submitted claim",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 348 --finite-domain --tasks generated-keys",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs"
+  ]
+}

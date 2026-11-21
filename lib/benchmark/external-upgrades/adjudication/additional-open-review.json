@@ -1,0 +1,62 @@
+{
+  "attestation": "external-upgrade-open-review/v1",
+  "encoding": "UTF-8 JSON of payload, sorted keys, separators comma and colon, ensure_ascii=false, no trailing newline",
+  "algorithm": "Ed25519",
+  "publicKeyHex": "2d65ad10fefe3fb504ef386b2a6547790463543d44934f53c050825c8a818d59",
+  "signatureHex": "038d524f333448bc3ce8a662b9bac65242759286c7dcebf0a44721d2850fab0b6c0e8eaa89479c47606c2c12f944b8285b9e49fea707136a7655c3cbf71a4701",
+  "payloadSha256": "5f40f9d7e3ccd39454efed24d2187fa67fa94518a7f3c3e29425843e72ad582c",
+  "payload": {
+    "reviewer": "Isolated calibration_reviewer session. Disclosed calibration and independent JVM reruns on six verified ordered classpaths. The self-issued reviewer key authenticates this record only.",
+    "completedUtc": "2026-11-20T23:30:29+00:00",
+    "caseRecords": {
+      "additional-open-rerun.json": "4c045d74186a9ccdc538a7aaa87efbf042a07063e117771c5a548e5d5da79b78"
+    },
+    "cohort": "All three disclosed cases are outside scored and transfer denominators.",
+    "cost": "No human review minutes. Six JVMs and XML inspection. Per-side wall times are retained in the linked rerun; agent token and dollar attribution unavailable.",
+    "grades": [
+      {
+        "caseId": "open-rocker-i105",
+        "relevance": "Observable diagnostic wording for a malformed declaration. A caller can still reject the same invalid template at the same location.",
+        "scope": "One trailing-comma declaration and one valid companion on each original grammar/generated-parser/runtime pair. Four authored grammars have identical digests, all eight generated Java source files changed. Attribution belongs to that upgrade closure.",
+        "observation": {
+          "exceptionBoth": "com.fizzed.rocker.runtime.ParserException",
+          "positionBoth": [
+            1,
+            18
+          ],
+          "oldMessage": "template-path:[1,18] missing ARGUMENT at '<EOF>'",
+          "newMessage": "template-path:[1,18] extraneous input '<EOF>' expecting {ARGUMENT_COMMA, ARGUMENT}",
+          "validBoth": "return\t1\tString\ts\t\"test\""
+        },
+        "ci": "The named endsWithComma test ran exactly once on each side, passed on old and failed its diagnostic substring expectation on new.",
+        "action": "If the wording is part of a diagnostic API, preserve an agreed message or update clients. Otherwise accept the parser update and retain location and rejection assertions.",
+        "additionalFinding": "The valid declaration gives the same parsed variable and expression. Original CI already flags the changed wording."
+      },
+      {
+        "caseId": "open-aws-i19",
+        "relevance": "The AWS-owned protected Joda formatter changes at Long.MAX_VALUE; the public AWS date conversion preserves its returned instant at both measured dates.",
+        "scope": "UTC/en-US, two instants, each formatted and parsed through the exposed test formatter and the public SDK methods.",
+        "observation": {
+          "edgeMillis": 9223372036854775807,
+          "printed": "292278994-08-17T07:12:55.807Z",
+          "formatterOld": "org.joda.time.IllegalFieldValueException",
+          "formatterNew": 9223372036854775807,
+          "publicSDKBoth": 9223372036854775807,
+          "ordinaryBoth": 946684800123
+        },
+        "ci": "testIssue233JodaTimeLimit ran exactly once on each side. New Joda parsed the value and the test itself raised AssertionError where its annotation required IllegalFieldValueException.",
+        "action": "Update the expectation if direct Joda callers want the newly supported maximum. Keep the public SDK round-trip check. Treat any decision to remove the workaround as a separate change requiring a wider domain.",
+        "additionalFinding": "The nested formatter change is already visible to original CI. Comparing the public SDK output shows that its workaround preserves the observed application return value."
+      },
+      {
+        "caseId": "open-cucumber-1156",
+        "relevance": "A report reader sees seconds and three truncated millisecond digits after nanoseconds are deserialized into Result.",
+        "scope": "All 18 combinations of seconds {0,1,59}, milliseconds {0,1,999}, and remainders {0,999999} ns under UTC and English.",
+        "observation": "Both sides matched independently computed seconds and three-digit milliseconds on 18/18 values; 1,999,999 ns rendered 0.001.",
+        "ci": "The supplied calibration records no pre-existing named test; the incremental comparison to the full historical CI remains unknown.",
+        "action": "Accept the Joda-Time patch for these displayed durations. Retain the output precision check."
+      }
+    ],
+    "assurancesContradicted": 0
+  }
+}

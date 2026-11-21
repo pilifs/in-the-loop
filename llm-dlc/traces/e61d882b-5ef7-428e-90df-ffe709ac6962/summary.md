@@ -3554,6 +3554,260 @@ change `nvmpmosmroml` · [log `ff4c580f8499`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 5 of the 5 job(s). 20261121-080528-v3-cause-group-01-original-java-upgrade: passed: 2 passed step(s) in 34.3s, peak 156.8 MiB (estimated 4m00s, 2.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261121-080528-v3-cause-group-02-original-java-upgrade: passed: 2 passed step(s) in 1m19s, peak 311.6 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-03-original-java-upgrade: passed: 2 passed step(s) in 3m12s, peak 221.1 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-04-original-java-upgrade: passed: 2 passed step(s) in 1m44s, peak 322.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). 20261121-080529-v3-cause-group-05-original-java-upgrade: passed: 2 passed step(s) in 1m34s, peak 274.8 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
 
+### Preregister the external upgrade evaluation and freeze its product baseline
+
+change `nznwyxozwvrw` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The accepted importer and array campaign landed at e7cdfb6a6ede. Freeze that product, its verifier and solver digests, JDK image, model settings and the neutral maintainer prompt before scoring. Register deterministic matching, an independent curator seed commitment, the held-out split, evidence rules, budgets and investment gates. The four disclosed scope examples and prospective teams remain outside the retrospective denominators.
+
+Rebuilt the locked test-fast verifier offline, reproduced the 12 tool and JDK digests with pin.py --check, and checked the prompt against the original brief byte for byte. The queue validator reported zero invalid files.
+
+### Calibrate two external upgrades on their original client observations (verification pending)
+
+change `qvluvnpvrtpq` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The unchanged rxjava-jdbc client returned [2] then [1, 2] from one two-row insert as H2 changed. Both releases returned [1, 2] for separate inserts and stored the same rows. The registered JDK 21 replay and independent JDK 8 reproduction agree with the original named test. H2 is test-scoped in the client POM. Commons Text preserved every returned UTF-16 field on all 156 inputs with both Lang versions. Removing quote doubling broke 71. The public V0 route stopped at modified UTF-8 during class intake. The direct native diagnostic reached static initialization and remains open.
+
+These two disclosed calibrations are excluded from all scores, as are Rocker, AWS and Cucumber Reporting. Both public proof plans are executable. The queue validator found no invalid jobs, the first changed-test run passed 29 groups with an acceptance retry, and the independent reviews reran the actual observations and checked the original test identities. Job 20261120-231316-check-returned-h2-keys-through-the-uncha checks the native generated-key claim. Job 20261120-230733-check-commons-text-pr-586-csv-return-pre checks CSV preservation using the standard route.
+
+### Bind upgrade references to actual JVM runs and historical CI (verification pending)
+
+change `zxqxmmysqyyn` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The separate curator committed a seed, reproduced the pinned CompSuite and CompCheck join of 13/123, and added checks for the named test, ordered classpath, non-vacuity, identical production sources and loaded library in both runs. Signed encrypted reference packets are kept outside the product checkout. Open calibration model calls used 176,898 and 214,213 uncached input plus generated tokens at 15 minutes. Freeze the 250,000-token per-PR cap for both product versions.
+
+On JDK 8, the historical rxjava-jdbc named Surefire assertions ran in four fresh reports. Only the new H2 two-row test failed. The Maven 3.6.3 effective models, unchanged client class hashes, dependency digests and separate whole-suite baseline are replayable. Checked the four actual XML test identities, both effective models and the standard prepared target. The curator exercised signature, tamper, wrong-key and stale-test controls. Verification job 20261120-232343-run-the-full-rxjava-jdbc-historical-sure runs the complete historical Surefire test set on both source tags.
+
+### Measure the CI signal and isolate incident knowledge in CompCheck (verification pending)
+
+change `wzoutloywwrs` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The complete historical rxjava-jdbc Surefire set ran 454 tests on each H2 pin with two skips on each side. The upgrade produced three failures in subclasses inheriting the same assertion. All 105 built production classes matched the published client JAR. The original native claim stopped at DriverManager.getConnection. Commons Text stopped during class intake. The retained reports distinguish those limits from the JVM results. Imported all three collector results and verified their original blobs.
+
+The separate curator's neutral export retains ordinary sibling tests, checks original Git blobs and scans nested archives for the excluded compiled trigger. The independent reviewer reproduced the Rocker, AWS and Cucumber outcomes in six JVMs and signed the grades. The CompCheck wrapper exercises the disclosed AWS production parser with all knowledge and again with just the two records for that same incident removed. Verification job 20261120-232916-compare-stock-compcheck-knowledge-on-aws records each tool command and its first actual outcome. The signed grade, 348 artifact hashes, prepared target and queue schema were checked.
+
+### Reproduce three more external caller upgrades and run the exact V0 product (verification pending)
+
+change `xvnxswnqoosr` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Rocker rejects the same malformed input at line 1 column 18 on both ANTLR versions, with a different diagnostic. A runtime-only substitution reproduces that difference. The invalid converse substitution fails during parser initialization. AWS public ISO parsing round-trips Long.MAX_VALUE on both dependencies, while the protected Joda formatter newly accepts it. Cucumber prints all 18 deserialized durations with truncated milliseconds on both revisions. Six reached consumer classes in both AWS and Cucumber match the published bytes. Rebuilt from the frozen trees, checked loaded class origins and original Surefire outcomes, ran all three public replay tasks and retained offline lifecycle failures and effective POMs.
+
+All five public native plans are executable. Verify the exact V0 binary, solver, JDK and all 459 protected product files at both ends of each calibration. Retain the first rxjava receipt and failing control without changing any bytes; the semantic expectation is a refutation. The first stock CompCheck runs found no extracted callsite because the context file was empty. Its assisted comparison supplies a byte-identical client class and no call context. Queue validation passed and the 348 evidence matched all 20 recorded hashes.
+
+Verification jobs: 20261120-233716-recheck-the-frozen-rxjava-key-equivalenc, 20261120-233743-run-assisted-compcheck-on-original-aws-d, 20261120-234730-348-run-the-frozen-v0-dependency-upgrade, 20261120-234730-349-run-the-frozen-v0-dependency-upgrade, 20261120-234730-350-run-the-frozen-v0-dependency-upgrade, 20261120-234731-351-run-the-frozen-v0-dependency-upgrade and 20261120-234731-352-run-the-frozen-v0-dependency-upgrade.
+
+### Seal the external upgrade scorecard and report five pinned product outcomes (verification pending)
+
+change `prllusvynovw` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+All five disclosed V0 jobs verified the exact executable, word-level solver, JDK and 459 product files on both ends. The product left the claims open at JDBC connection setup, modified UTF-8 class intake, ANTLR WeakHashMap initialization, the Date constructor and a multi-release Jackson class. Independent JVM replays explain the actual changes and preservations. Keep every failed original attempt with its first blocker. The blind operator environment proved a synthetic control and excluded private content, while the normal client's additional native tools still need an isolated runner.
+
+The scorecard seals immutable first reports and evidence and enforces all 24 original reports or all 16 paired transfer reports before reading signed grades. It checks scope, replay, non-vacuity, reviewer disagreement, costs, retrospective gates and matched transfer conditions. The four unit controls, digest audit, prepared target validation with original JVM replays for 348, 350, 351 and 352, and all 62 default test groups passed. The full run's tree changed during execution, so its pass was not recorded as a push gate. The Commons Text V0 intake failure remains a calibration result.
+
+Pinned native and JBMC invocations were compared before solver launch on identical artifact, observer and bounds. Verification jobs 20261121-000827-348-compare-jbmc-on-the-matched-external and 20261121-000827-351-compare-jbmc-on-the-matched-external run that actual engine comparison. Verification jobs 20261121-000727-replay-fscrawler-ordinary-docx-across-th and 20261121-000727-replay-bump-assertj-guava-enforcer-on-bo rerun the two disclosed BUMP classifications using their content-addressed images. The independent signed reference under curation is excluded from all public calibration counts.
+
+### Compare real upgrade baselines and retain historical CI evidence (verification pending)
+
+change `npkosurzxovz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Two BUMP image pairs give different maintainer decisions. FSCrawler's old ordinary DOCX produced extracted text and the upgrade yielded null. The AssertJ upgrade failed Maven Enforcer before tests; the old suite passed 355 tests. Check image digests, original POM-only diffs, archived CI, bytecode linkage and a networkless replay. Recover 529 original Maven JARs and 845 POMs for warm offline builds. The first FSCrawler repeat stopped at conflicting heap flags before launching Maven; remove the added heap maximum and preserve the original failure.
+
+The V0 paired JBMC frontend refused distinct dependency closures for rxjava-jdbc and AWS. The actual evidence binds identical application targets, observers, classpaths, deadline and bounds to the native attempts. Add a standalone engine comparison using byte-identical harnesses on both sides. The unchanged JVM validated both input arms on both revisions before the standalone jobs were queued. Original-scope scoring now checks the ordered artifact digests against the signed roster. All four scorecard tests, cost-tier lint and the verification queue validator passed. The new trace allow-list proposal is for the published Jackson Databind version in the AWS POM, which the scanner classified as an IP address.
+
+Verification jobs: 20261121-001305-replay-fscrawler-ordinary-docx-across-th, 20261121-001750-348-run-standalone-jbmc-on-both-original and 20261121-001750-351-run-standalone-jbmc-on-both-original. The separate JBMC checks retain exception and unwinding evidence and cannot earn a blinded product decision.
+
+### Collect the historical DOCX replay and matched standalone JBMC results
+
+change `wurynlzvuwpt` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The corrected FSCrawler container reproduced the original DOCX failure and preserving text companion. Standalone JBMC ran on the same original H2 and AWS artifacts as the native checks. H2 hit incomplete unwinding and its isolated caller property even passed on an input the JVM refutes. Both AWS processes exhausted their share of the 600-second engine deadline. Preserve the full per-side outputs and the limits on the comparison.
+
+The runner collected all three jobs and both independently reconstructed FSCrawler payloads agree. The Cucumber PR record pins the actual merge and head. Both Joda pins passed the 18-input replay again. All Cucumber form, plan, router and cross-example checks passed, as did 36 of 36 changed-test groups.
+
+### Select matched upgrade cohorts and bind first reports to their operator
+
+change `ktxtxoktymqu` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Jointly select all 16 change and routine pairs with the frozen matching and diversity rules. The local Z3 allocator skips a nearer match when it would exhaust a reserve category, requires audited signed references, and reports aggregate shortfalls while keeping names in custody. The scorecard binds the separate operator profile and records actual client overlap, cross-run exposure and whether an untouched client exercised an improvement.
+
+Release audited review-time trees and ordered production classpaths separately. Two independently generated rxjava-jdbc and Commons Text packets were byte-identical. The original GitHub source intake accepted the disclosed genuine locator and refused the local neutral form. The signed custody snapshot covers one original-scope preservation reference. Neither cohort was locked.
+
+Five allocation and four scoring regressions passed, including nearest-match traps, signed packet substitution, insufficient evidence and exposure on a paired gain. A 96-change synthetic allocation completed in 0.23 seconds. The cost lint passed, the affected run passed all 36 groups, and the immutable product lock verified 12 tool and JDK digests.
+
+### Qualify an isolated upgrade operator and run Commons Text (verification pending)
+
+change `pzvqxourtvnu` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Two actual first-party Claude roles returned the synthetic original JVM observations with only the neutral case tool. The controller freezes the role, prompt, toolchain, isolation checks and request-level budget. The independent reviewer receives a clean copy of the packet and proposed plan. Each PR retains the first report through intake failure, interruption, timeout or success. Its measured one-request scheduler differs from an uninterrupted stock role and is identified separately.
+
+The first fresh disclosed H2 run verified the source and both 10-JAR classpaths, stopped at the original GitHub-only source requirement and sealed its unavailable report in 23.3 seconds with no model calls. Job 20261121-010347-349-run-a-fresh-operator-on-the-original takes the genuine Commons Text source pair through the same measured operator starting from the neutral request. Both calibrations stay outside the cohorts.
+
+The two authenticated synthetic trials took 10.4 seconds at an estimated total of $0.089. The synthetic lifecycle reproduced independent stages, 900-second checkpoint, exhausted budgets and first-report preservation. All six execution pins and five original qualification receipts verified, and the changed suite passed all 10 groups. The signed private custody checkpoint now records one full production change and one full production preservation. Neither roster is locked.
+
+### Run original public Maven CI in isolation (verification pending)
+
+change `suxvplotslrl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Run both complete upstream checkouts of Commons Text 586 and Cucumber Reporting 1156 on one configured Linux JDK for each project. Preserve their Maven goals, XML results, failure counts, clocks and logs. A networkless build can fetch only Maven Central artifact paths through a read-through mirror, serialized against the shared local cache. Jobs 20261121-011924-349-run-the-original-commons-text-linux and 20261121-011925-352-run-the-original-cucumber-reporting now have the original Git objects and the prescribed JVM scratch directory.
+
+A real isolated Maven 3.10.0 on JDK 11 read the expected cached JUnit JAR. The mirror fetched the disclosed JUnit 5.10.1 POM, verified its independent checksum and served a byte-identical cached read. Two release paths were accepted, six invalid paths refused. Both affected test groups passed.
+
+The first neutral Commons Text operator run on the case-file continuation scheduler made 42 planning requests and produced no approved claim. Its immutable unavailable report records 207114 charged tokens, an estimated 3.59 dollars and 7 minutes 31 seconds including queue time. The separately adjudicated 156-input finite JVM result remains available. The full default suite passed all 63 groups on the preceding operator commit.
+
+### Measure original Maven suites and rerun stock CI (verification pending)
+
+change `ouptkpqnyopw` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Both Cucumber JDK 11 builds passed all 665 reported tests including 27 skips, and a direct replay from nine original source-built classes reproduced the historic 0.007 fixture. Both Commons Text JDK 21 builds ran 1305 tests, including all 34 passing escape tests. The same 18 lookup errors occurred in the isolated machine on both revisions. Retain suite XML checksums, exact named reports, cache requests, and Maven logs. Two independently written grades found that the first two disclosed operator reports supported their availability limits and supplied zero new caller decisions.
+
+Job 20261121-013031-348-reproduce-stock-compsuite-and-the-en runs the unaltered CompSuite CLI with JDK 8, Maven 3.6.3 and CPython 3.11.14. Job 20261121-013031-349-repeat-original-commons-text-ci-with separates ordinary loopback hostname lookup from tests requiring an external site. The transfer scorer binds each product-specific launch independently of common operator and environment identity, and correctly labels V0 even if the arguments are reversed.
+
+Verified all named XML, compressed original logs, both first-report digests and source-built fixture class origins. The documented CompSuite runtime started and its unmodified info command found the expected test. All 41 affected test groups passed, as did all four scoring regressions. All example plans, oracle and repository integration checks passed. The Commons Text form still records the frozen importer failure to produce canonical artifact receipts.
+
+### Preserve isolated operator history across requests (verification pending)
+
+change `yrrxynxpszxt` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Freeze a shared Claude operator before roster lock. Each role retains its own full native session across metered requests, the reviewer sees only approved case inputs, and a separate uncredentialed image estimates the next request size without product code. Bind each build to a separate launch lock and full tool-root digest while comparing the invariant machine and JDK environment. Stock H2 intake again sealed as unavailable without inference. Job 20261121-014525-349-run-the-history-preserving-operator starts an independent Commons Text calibration with the same original sources and budgets.
+
+Both authenticated roles recalled their own prior case observation without another tool call in four real requests costing an estimated 0.0551 dollars. Product-only mutations preserved the measured environment digest, while environment changes invalidated it. Fresh Java and javac processes honored case-private JVM temp storage and the original Bitwuzla control proved its claim. All 13 execution pins, the distinct launch and both staged tool roots were verified. All nine affected test groups passed.
+
+The grader also checks actual non-vacuous native receipts, checker digest, claim identity and status instead of awarding native credit from a tool name. The four scoring regressions passed, including a genuine native receipt and an otherwise identical receipt declaring JBMC. Existing opening reports and their independently authored grades remain immutable.
+
+### Collect the original suite outcomes and compare AWS (verification pending)
+
+change `mxumkqtyrttk` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+In its documented environment, the unchanged CompSuite CLI produced one original testcase per fresh H2 revision. The upgraded assertion expected [2] and received [1, 2]. Its zero process exit did not indicate a pass. Complete Maven reruns confirmed 454 tests per pin, two skips, and three upgraded-side failures. The repeat Commons Text suite reduced 18 former network errors to two genuine external-site dependencies by supplying local hostname resolution. All 34 string-escape tests passed on both pins.
+
+The native-history Commons Text calibration sealed after two planner calls. Its credentialless metering check refused the next request after 2080 charged tokens, about 0.072 estimated dollars and five minutes from intake. No caller claim reached a reviewer. The machine-readable ledger ties cost, original CI and both measured scheduler treatments to their receipts.
+
+Job 20261121-015236-run-both-stock-aws-compcheck-settings-wi starts normal and same-incident-held-out CompCheck from the actual original AWS source with no injected classes or prior context. Both treatments share serial Central restoration, the common 4 CPU and 16 GiB maximum, and a two-hour ceiling. The isolated Maven 3.6.3 and JDK 8 smoke passed. All retained Maven log, named XML and report digests verified, all 35 affected test groups passed, and the example checks showed the previously recorded Commons Text receipt gap.
+
+### Queue blinded historical BUMP repetitions (verification pending)
+
+change `sqrpvsotxrsu` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+A bounded worker can run original BUMP testcases without putting subjects, coordinates, logs or expected outcomes in the public queue. It verifies the frozen private manifest, approved worker bytes and the exact reviewed networkless image helper. Only the four-trial coverage counts and receipt digests can be published. Job 20261121-020417-repeat-one-sequestered-bump-testcase-in repeats an original named case in four clean offline worktrees. The private application evidence remains in custody.
+
+The real allocator verified the two existing signed original-production references against 694 source entries and 94 matched PR leads and withheld both rosters. A closer four-input routine scope had 16 original-reader matches and 16 independent controls, with two nonoptional full-module dependencies still unavailable on each side. Two original BUMP OCI pairs were verified from the public-order intake before the signed checkpoint.
+
+Synthetic dispatch verified the private-receipt binding and rejected substituted code. The coverage test rejects additional fields, mismatched exits and incorrect trial counts. All affected tests passed, including 58 Rust binaries, and the tier lint agreed. The actual job inputs matched their committed hash, the runtime helper was byte-identical to its public source, and each side inventoried its whole historical Maven cache.
+
+### Recognize stock tool results during resumed review (verification pending)
+
+change `rxnykkvqspyr` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The ordinary client can append a reminder to a valid broker response or persist a large response as a case-local preview. The meter previously refused both forms. A thin, separately frozen amendment verifies the exact exit and output on the correct native tool ID, authenticates the persisted file and originating session, rejects substituted or foreign content, and retains sanitized terminal flags in the sealed evidence. Prior measurements remain intact. Job 20261121-021356-349-calibrate-verified-native-tool-resul runs the same disclosed Commons Text PR on this pre-lock correction.
+
+A distinct live Commons Text diagnostic reproduced the refusal after two requests and an estimated 0.0521 dollars. The third local shadow preserved the exact 36-byte result and added a 174-character stock reminder. The original historical receipt established only its preflight stop. Synthetic large-output trials independently exercised native file-backed previews. Both model clients passed positive and negative controls, all 15 semantic controls passed, and 58 Rust test binaries passed in the changed-file selection. A forced offline refusal preserved its separately hashed sanitized predicate evidence.
+
+The fixed profile and launch digests were rechecked on a real scoped H2 intake, which stopped at the original GitHub-only source boundary with zero inference. The new Commons Text run starts fresh and has its own release, clock and report store within the same 4 CPU, 16 GiB, 250000 token and two-hour budgets.
+
+### Reconcile native session costs and collect comparison evidence
+
+change `xnmxuqlnsknt` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The client reports a cumulative dollar estimate when a native session resumes. Use the final reading of each independent conversation and retain each stateless request separately. The scorecard now publishes this derived amount alongside newly sealed reports and can calculate it for existing immutable seals. The case ledger and report correct prior sums. The final Commons Text treatment cost an estimated 1.3339372 dollars; its raw sum of 7.2377754 double-counted earlier turns. All 64 individual request increments matched the frozen token price table within one billionth of a dollar.
+
+On the original Commons Text PR, the corrected native-result meter restored the prior result and call ID through fourteen planner requests. With 66253 charged tokens and 183747 remaining, its next 175744-byte context needed a conservative reservation of 185984 tokens. No claim was approved. Preserve the terminal predicate evidence, acknowledgements of the metering correction and both earlier first reports. A separate public AWS comparison compiled 576 original production sources per treatment, recovered the real call site with both knowledge sets, and produced no JUnit finding in either.
+
+The first opaque BUMP reference job returned four fresh exact original testcase records after 92 seconds. Its private receipt is digest-bound and requires independent caller adjudication. The user-only custody checkpoint, outstanding artifact access and one possible module-path trace exposure are recorded without disclosing the candidate. All affected test groups, five scorecard regressions, inventory lint, pinned tool digests and recorded evidence hashes verified.
+
+### Protect private screening output and retain independent opening grades
+
+change `nkounlltlnxn` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Two separate private diagnostics exposed a module-relative path from unslotted leads. The custodian recorded both before selection, flagged the second for possible association with a scoped observation and notified the owner before publication. The new stream filter captures merged stdout and stderr from process start in owner-only files. It emits only an opaque capture receipt and explicitly typed scalar progress. Regex matches on arbitrary output are not a substitute for this schema.
+
+Synthetic tracebacks, both dynamic-key patterns, long streams and malformed summaries retained every original private byte and emitted zero marker bytes. The real process- and unit-level controls passed. The affected selection passed all three groups including 58 Rust binaries. The independent reviewer verified all four native-history first-report seals, both original reference signatures and the complete finite CSV domain. None established an application result, contradicted an assurance or added actionable evidence to CI.
+
+The latest signed docket checkpoint records 20 excluded, three unavailable and four pending nearer PRs; the original-production reference counts remain one change and one preservation. Four private BUMP builds reproduced all 118 historical compiler outputs and reached the exact named test. Their caller observation still awaits separate adjudication.
+
+### Reopen curator artifact restoration under the updated acquisition terms
+
+change `pnpqvwpulqvo` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Record the user’s 02:47:55 UTC clarification before either cohort is locked. Curators can resolve undisclosed coordinates serially from Central and declared public repositories inside the ordinary sandbox, with coordinates and output kept private. The active writable home-cache repository was seeded with 5189 verified files, and the first two missing production JARs and their POMs were restored against their release checksums. Earlier offline dispositions are retained while all affected candidates are reconsidered by the same rule.
+
+The changed-file selector chose no tests for these two research-protocol pages. The full default tier had passed all 64 groups on the preceding committed tree.
+
+### Keep unavailable runtimes in the upgrade decision denominator
+
+change `kllnmvuptwxu` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Bind the requested runtime and launch separately from the image actually observed. An absent or unverified runtime now seals an honest unavailable first report and the affected PR stays in the denominator. Paired output retains every attempted case and distinguishes verified matched conditions before granting a transferable gain.
+
+An end-to-end synthetic exercise brought the ordinary staged controller through a genuinely missing runtime, sealed its report and graded it with no inference. Five scorer regressions passed, including missing-image denominator and transfer checks. Both affected test groups, including 58 Cargo binaries, passed and the cost lint agreed.
+
+The public findings now place the measured callers beside the 24, 8 and 15 study populations. A restricted three-stream scan of 2414 redacted tool-output entries against 271 markers confirmed the two earlier source path exposures and one additional test-method marker. The affected unassigned lead was retired from untouched-oracle claims; a human can review the exact private evidence before any publication.
+
+### Retire blinded and Claude treatments from upgrade engineering
+
+change `tqnwtttlszlv` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Use one gpt-6.2-astra session at high effort for selection, preparation, review and checking, with identified revision pairs and preserved first outcomes. Mark each of the six existing Claude opening reports superseded and unscored at the user's 03:05 UTC change of direction. The original V0 engine and lock stay reproducible. Checked all six records and compiled the prospective lock generator.
+
+### Read JVM modified UTF-8 in original class-file intake (verification pending)
+
+change `syutlxpywnmz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Decode encoded NULs and supplementary Java identifiers, preserve isolated UTF-16 code units, and reject malformed encodings in the preparation and impact readers. The exact old and new Commons Text StringEscapeUtils classes both stopped V0 at byte C0. The repaired reader sees the real escapeCsv descriptor and all 20 declarations on each. All 25 affected test groups passed. Job 20261121-033202-replay-both-commons-text-csv-tasks-after exercises both full CSV replay routes and the quote-doubling control.
+
+### Run V0 and the repaired intake on 32 original Java upgrades (verification pending)
+
+change `nwulutxzzvqz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Run the frozen V0 class reader and checker and the repaired class reader on the same original sources and ordered Maven graphs. 20261121-034247-original-upgrade-corpus-v0-and-class-int, 20261121-034303-corpus-02-compare-v0-and-repaired-class, 20261121-034303-corpus-03-compare-v0-and-repaired-class, 20261121-034303-corpus-04-compare-v0-and-repaired-class, 20261121-034303-corpus-05-compare-v0-and-repaired-class, 20261121-034303-corpus-06-compare-v0-and-repaired-class, 20261121-034304-corpus-07-compare-v0-and-repaired-class, 20261121-034304-corpus-08-compare-v0-and-repaired-class. Verified all 64 original source identities, 24 main and 8 transfer assignments, and exercised the two-sided native launch on real ReflectASM bytes with a stand-in. Eight previously collected original JVM trial records supply plain references for ReflectASM and EA Async.
+
+### Bind JVM replay receipts to the actual JDK version (verification pending)
+
+change `wowvlvvkqszm` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Read the JDK's version line even when the launcher prints JVM options first. Pass the configured temporary directory to isolated controls. After the modified UTF-8 fix both original Commons Text runs produced 156 expected fields and the mutant disagreed on 71, but the launcher banner made those receipts ineligible. Captured the failed run and its unchanged raw observations. All 26 affected test groups passed. Job 20261121-034615-349-qualify-fresh-csv-replays-with-confi repeats both routes on JDK 21.
+
+### Record all 32 V0 comparisons and qualify the original CSV control
+
+change `kusmrlnqllpu` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Eight queue jobs returned 64 original-pair reports. All 24 main and eight transfer cases stayed open on V0 and after the class-reader repair. Across the main set, six cases required an instance receiver, five required an exact overload, five stopped in Maven resolution, four at multi-release JARs, three at unsupported parameters and one at a missing runtime coordinate. Checked every V0/current pair, both strata and the independent transfer split. The qualified CSV job ran on the original client at both pins, with 156/156 expected outputs and 71 discrepancies on the mutant.
+
+### Exhaust boolean caller paths and compare ordered JVM array returns (verification pending)
+
+change `lzmptplkqmlx` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The finite checker now visits both boolean inputs in fresh JVMs, retaining primitive integer arrays element by element, null, and the exception outcome. A differing input is replayed again and bound to its original classpath and typed argument. This can check callers that require a real JDBC driver without introducing a database model. Added controls for ordered values, numeric width, invalid boolean witnesses and incomplete domains. All 45 affected test groups passed. Job 20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t runs the unchanged rxjava-jdbc claim against both original H2 releases.
+
+### Prepare exact local Git revisions through the normal Java target workflow
+
+change `kmmssluoxrxv` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Accept named local Git sources scoped to an explicitly supplied directory and optionally import two plain source trees without Git filters or changes to their bytes. The workflow verifies the exact commits, trees and recorded parent. Remote Git acquisition retains its host restriction. Both revisions of rxjava-jdbc and Commons Text reached artifacts-ready offline through the public source lock and preparation paths. Regression controls cover binary content, ancestry, repeated names and paths outside the store. All 45 affected test groups passed.
+
+### Check the unconditional preservation region on real JDBC callers (verification pending)
+
+change `slsuxonqtssz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Recognize the workflow's literal false allowed-change predicate as unconditional preservation. The first queued finite attempt recorded its refusal before Java. A capped run of the complete repaired route admitted both booleans and qualified the true witness in fresh JVMs on the original classpaths: the combined insert returned [2] versus [1, 2], and separate inserts agreed. The targeted finite-domain regression passed. Job 20261121-040719-348-qualify-original-jdbc-arrays-across archives the full public check.
+
+### Qualify the real JDBC counterexample and mark Commons Text prepared
+
+change `wwxktpqwqrys` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+The queued finite JVM proof admitted and independently checked both boolean inputs on each original Rx and H2 classpath. The combined insert returned [2] versus [1,2] on the two releases and the separate-insert companion agreed. The new and original classes and witness are recorded in the example. Commons Text now passes the standard example validation and both fresh replay tasks, with a correct router entry for the canonical queue receipts.
+
+### Load the actual multi-release JAR entries for a pinned native JVM (verification pending)
+
+change `zuvmpvqnzovz` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Native target workflows bind JAR selection to a verified Java release. Read the highest eligible class or resource, preserve classpath precedence, include the selection in the proof cache and check actual caller bytes during preparation. Unbound or overridden runtimes retain the conservative refusal. The original JVM countermodel now proves the versioned result 20 and rejects the base result 1. Tested folded manifests, lower and higher feature releases, and entry sections. The changed run exercised 58 Rust targets and 42 Python groups. After correcting inventory and keeping the selected revision local to the binding check, reran the lint and both workflow regressions successfully. Queue jobs 20261121-042108-multi-release-corpus-group-1-check-eight, 20261121-042108-multi-release-corpus-group-2-check-eight, 20261121-042109-multi-release-corpus-group-3-check-eight, 20261121-042109-multi-release-corpus-group-4-check-eight, 20261121-042108-352-check-the-actual-duration-caller-thr repeat all 32 original upgrades and the Jackson calibration.
+
+### Find and replay the real caller on original dependency upgrade classpaths (verification pending)
+
+change `mxuwkwnryopt` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Discover concrete caller methods and exact overloads from original bytecode, then run a finite, source-reviewed observer on the original classpaths. The debugger sees a real entry into the declared method and descriptor for every input and repetition. JAR origins, exact UTF-16 results or escaping exceptions, independent expectations and stable repeated JVMs qualify each decision. The negative regression loads the client and references a call in an untaken branch, and correctly earns no result. A real ReflectASM probe reproduced the changed behavior with all eight original method-entry checks. Of 42 affected test groups, the history-span test failed while collection was active and passed when repeated; the updated three replay tests and tier lint pass. Jobs 20261121-042207-finite-caller-group-1-qualify-original-a, 20261121-042207-finite-caller-group-2-qualify-original-a, 20261121-042207-finite-caller-group-3-qualify-original-a, 20261121-042207-finite-caller-group-4-qualify-original-a, 20261121-043632-finite-caller-group-5-replay-original-ma, 20261121-043632-finite-caller-group-6-replay-original-ma, 20261121-043003-overload-recovery-group-1-compare-sixtee, 20261121-043003-overload-recovery-group-2-compare-sixtee cover 63 finite inputs across 16 upgrades and a full 32-case exact-overload rerun.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz) has every step in between: reasoning, tool calls and their results.

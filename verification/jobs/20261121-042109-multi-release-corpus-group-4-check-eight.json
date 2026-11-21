@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-042109-multi-release-corpus-group-4-check-eight",
+  "title": "Multi-release corpus group 4 check eight original upgrade pairs",
+  "description": "Repeat eight original native claims at the selected JDK release using both exact recorded runtime graphs, with the original operator entry and the same per-case check deadline. Full rerun includes compiler and resolver failures. Cases: cucumber-reporting-1220, cucumber-reporting-1198, commons-beanutils-440, commons-csv-8993be87, reflector-35, commons-fileupload-377, commons-vfs-55c96cfd, commons-validator-86e32931.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "jvmcontract:equivalence"
+  ],
+  "links": {},
+  "expected": "Every case has a fresh report with its real outcome and exact artifact hashes when compilation succeeded.",
+  "submitted": {
+    "at": "2026-11-21T04:21:09+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "8m",
+    "memoryLimit": "6G",
+    "timeout": "2h"
+  },
+  "steps": [
+    {
+      "name": "Check eight original pairs",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/multi-release/04 --case cucumber-reporting-1220 --case cucumber-reporting-1198 --case commons-beanutils-440 --case commons-csv-8993be87 --case reflector-35 --case commons-fileupload-377 --case commons-vfs-55c96cfd --case commons-validator-86e32931",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/multi-release/04"
+  ]
+}

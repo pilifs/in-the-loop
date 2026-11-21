@@ -1,0 +1,44 @@
+{
+  "entry": "org.apache.commons.configuration2.JSONConfiguration#read(Ljava/io/Reader;)V",
+  "probeClass": "UpgradeProbe",
+  "observer": "Read the configuration through the original Reader API and inspect the named string list.",
+  "basis": "The literals specify their scalar or ordered sequence. For an absent key AbstractConfiguration.getList(Class, String) delegates to the overload with a null default. List elements in this finite domain contain no comma or bracket. The initial observer dereferenced that missing list; this observer retains null.",
+  "cases": [
+    {
+      "args": [
+        "{\"colors\":[\"red\",\"blue\"]}",
+        "colors"
+      ],
+      "expected": {
+        "return": "[red, blue]"
+      }
+    },
+    {
+      "args": [
+        "{\"cfg\":{\"name\":\"Ada\"}}",
+        "cfg.name"
+      ],
+      "expected": {
+        "return": "[Ada]"
+      }
+    },
+    {
+      "args": [
+        "{\"count\":7}",
+        "count"
+      ],
+      "expected": {
+        "return": "[7]"
+      }
+    },
+    {
+      "args": [
+        "{}",
+        "absent"
+      ],
+      "expected": {
+        "return": null
+      }
+    }
+  ]
+}

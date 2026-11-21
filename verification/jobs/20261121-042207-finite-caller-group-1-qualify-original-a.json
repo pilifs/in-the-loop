@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-042207-finite-caller-group-1-qualify-original-a",
+  "title": "Finite caller group 1 qualify original application observations",
+  "description": "Run the reviewed application observer against each original client and upgraded artifact. Require the exact consumer invocation, actual JVM class origins, independent old expectations and agreement between fresh JVM repeats. Cases: commons-beanutils-440, commons-compress-767, commons-compress-822.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "expected": "Each case records a qualified finite result or the first unavailable operation. Only caller outcomes on both original artifacts count.",
+  "submitted": {
+    "at": "2026-11-21T04:22:07+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Replay original caller scenarios",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/01 --case commons-beanutils-440 --case commons-compress-767 --case commons-compress-822",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/finite-callers/01"
+  ]
+}

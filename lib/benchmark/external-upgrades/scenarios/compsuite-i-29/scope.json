@@ -1,0 +1,24 @@
+{
+  "entry": "com.uber.profiling.Arguments#runConfigProvider()V",
+  "probeClass": "UpgradeProbe",
+  "observer": "The real profiler applies a root configuration and then a tag-specific override. Observe the retained tag, interval and I/O flag.",
+  "basis": "The declared provider supplies input settings only. An exact tag1 has an explicit override, while a different tag uses root values. Both expectations follow the original configuration contract and historical test.",
+  "cases": [
+    {
+      "args": [
+        "tag1"
+      ],
+      "expected": {
+        "return": "tag1/9001/false"
+      }
+    },
+    {
+      "args": [
+        "other"
+      ],
+      "expected": {
+        "return": "other/9000/true"
+      }
+    }
+  ]
+}

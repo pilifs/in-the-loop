@@ -1,0 +1,159 @@
+{
+  "old-generator_old-runtime": {
+    "exit": 0,
+    "observations": [
+      "reject\tcom.fizzed.rocker.runtime.ParserException\t1\t18\ttemplate-path:[1,18] missing ARGUMENT at '<EOF>'",
+      "return\t1\tString\ts\t\"test\""
+    ],
+    "stderr": [
+      "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
+      "SLF4J: Defaulting to no-operation (NOP) logger implementation",
+      "SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details."
+    ],
+    "classpath": [
+      {
+        "name": "driver",
+        "sha256": "1e446008d7120a2e81e1c3e4f565e56b3e7622c8922130c895f871e5f378ab63"
+      },
+      {
+        "name": "client",
+        "sha256": "cc8dfd83cfb46a8340bcc6654a238e39491c327d3b7900c456b89bb9e74a37b5"
+      },
+      {
+        "name": "rocker-runtime-1.2.1.jar",
+        "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+      },
+      {
+        "name": "antlr4-runtime-4.5.3.jar",
+        "sha256": "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752"
+      },
+      {
+        "name": "commons-lang3-3.3.2.jar",
+        "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+      },
+      {
+        "name": "slf4j-api-1.7.7.jar",
+        "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+      }
+    ]
+  },
+  "old-generator_new-runtime": {
+    "exit": 0,
+    "observations": [
+      "reject\tcom.fizzed.rocker.runtime.ParserException\t1\t18\ttemplate-path:[1,18] extraneous input '<EOF>' expecting {ARGUMENT_COMMA, ARGUMENT}",
+      "return\t1\tString\ts\t\"test\""
+    ],
+    "stderr": [
+      "ANTLR Tool version 4.5.3 used for code generation does not match the current runtime version 4.7.2ANTLR Runtime version 4.5.3 used for parser compilation does not match the current runtime version 4.7.2SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
+      "SLF4J: Defaulting to no-operation (NOP) logger implementation",
+      "SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.",
+      "ANTLR Tool version 4.5.3 used for code generation does not match the current runtime version 4.7.2ANTLR Runtime version 4.5.3 used for parser compilation does not match the current runtime version 4.7.2"
+    ],
+    "classpath": [
+      {
+        "name": "driver",
+        "sha256": "1e446008d7120a2e81e1c3e4f565e56b3e7622c8922130c895f871e5f378ab63"
+      },
+      {
+        "name": "client",
+        "sha256": "cc8dfd83cfb46a8340bcc6654a238e39491c327d3b7900c456b89bb9e74a37b5"
+      },
+      {
+        "name": "rocker-runtime-1.2.1.jar",
+        "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+      },
+      {
+        "name": "antlr4-runtime-4.7.2.jar",
+        "sha256": "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4"
+      },
+      {
+        "name": "commons-lang3-3.3.2.jar",
+        "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+      },
+      {
+        "name": "slf4j-api-1.7.7.jar",
+        "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+      }
+    ]
+  },
+  "new-generator_old-runtime": {
+    "exit": 1,
+    "observations": [],
+    "stderr": [
+      "ANTLR Tool version 4.7.2 used for code generation does not match the current runtime version 4.5.3ANTLR Runtime version 4.7.2 used for parser compilation does not match the current runtime version 4.5.3Exception in thread \"main\" java.lang.ExceptionInInitializerError",
+      "\tat com.fizzed.rocker.model.WithStatement.parseWithStatement(WithStatement.java:127)",
+      "\tat com.fizzed.rocker.model.WithStatement.parse(WithStatement.java:88)",
+      "\tat Observe.main(Observe.java:8)",
+      "Caused by: java.lang.UnsupportedOperationException: java.io.InvalidClassException: org.antlr.v4.runtime.atn.ATN; Could not deserialize ATN with UUID 59627784-3be5-417a-b9eb-8131a7286089 (expected aadb8d7e-aeef-4415-ad2b-8204d6cf042e or a legacy UUID).",
+      "\tat org.antlr.v4.runtime.atn.ATNDeserializer.deserialize(ATNDeserializer.java:153)",
+      "\tat com.fizzed.rocker.antlr4.WithBlockLexer.<clinit>(WithBlockLexer.java:126)",
+      "\t... 3 more",
+      "Caused by: java.io.InvalidClassException: org.antlr.v4.runtime.atn.ATN; Could not deserialize ATN with UUID 59627784-3be5-417a-b9eb-8131a7286089 (expected aadb8d7e-aeef-4415-ad2b-8204d6cf042e or a legacy UUID).",
+      "\t... 5 more"
+    ],
+    "classpath": [
+      {
+        "name": "driver",
+        "sha256": "1e446008d7120a2e81e1c3e4f565e56b3e7622c8922130c895f871e5f378ab63"
+      },
+      {
+        "name": "client",
+        "sha256": "7c288e88a292aa586cbb7fc782f4e8ccd1906d9cd3329def7b93351f6ec8e592"
+      },
+      {
+        "name": "rocker-runtime-1.2.1.jar",
+        "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+      },
+      {
+        "name": "antlr4-runtime-4.5.3.jar",
+        "sha256": "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752"
+      },
+      {
+        "name": "commons-lang3-3.3.2.jar",
+        "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+      },
+      {
+        "name": "slf4j-api-1.7.7.jar",
+        "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+      }
+    ]
+  },
+  "new-generator_new-runtime": {
+    "exit": 0,
+    "observations": [
+      "reject\tcom.fizzed.rocker.runtime.ParserException\t1\t18\ttemplate-path:[1,18] extraneous input '<EOF>' expecting {ARGUMENT_COMMA, ARGUMENT}",
+      "return\t1\tString\ts\t\"test\""
+    ],
+    "stderr": [
+      "SLF4J: Failed to load class \"org.slf4j.impl.StaticLoggerBinder\".",
+      "SLF4J: Defaulting to no-operation (NOP) logger implementation",
+      "SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details."
+    ],
+    "classpath": [
+      {
+        "name": "driver",
+        "sha256": "1e446008d7120a2e81e1c3e4f565e56b3e7622c8922130c895f871e5f378ab63"
+      },
+      {
+        "name": "client",
+        "sha256": "7c288e88a292aa586cbb7fc782f4e8ccd1906d9cd3329def7b93351f6ec8e592"
+      },
+      {
+        "name": "rocker-runtime-1.2.1.jar",
+        "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+      },
+      {
+        "name": "antlr4-runtime-4.7.2.jar",
+        "sha256": "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4"
+      },
+      {
+        "name": "commons-lang3-3.3.2.jar",
+        "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+      },
+      {
+        "name": "slf4j-api-1.7.7.jar",
+        "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+      }
+    ]
+  }
+}

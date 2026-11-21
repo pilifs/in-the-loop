@@ -1,0 +1,24 @@
+{
+  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Generate and invoke an empty-constructor adapter on two actual classes.",
+  "basis": "Both selected classes have accessible argument-free constructors. A working public generator should produce a fresh instance with each requested class identity. An original runtime that cannot create the adapter remains open.",
+  "cases": [
+    {
+      "args": [
+        "object"
+      ],
+      "expected": {
+        "return": "java.lang.Object"
+      }
+    },
+    {
+      "args": [
+        "example"
+      ],
+      "expected": {
+        "return": "UpgradeProbe$Example"
+      }
+    }
+  ]
+}

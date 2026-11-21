@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-020417-repeat-one-sequestered-bump-testcase-in",
+  "title": "Repeat one sequestered BUMP testcase in four clean historical builds",
+  "description": "The curator prepared a digest-bound original comparison. Run four independent offline Maven builds in networkless user namespaces using their original images and JARs. The generic runner checks for stale testcase reports and retains Maven logs, XML and runtime details privately. The public output contains only aggregate coverage and opaque input, program and receipt digests, preserving the blinded selection.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "baseline:original-ci"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/external-upgrades/curation/queued_bump.py"
+    ]
+  },
+  "expected": "Four fresh, exact, unskipped testcase records constitute a completed reference reproduction attempt. No eligibility, signed reference or cohort membership follows from its exit code.",
+  "submitted": {
+    "at": "2026-11-21T02:04:17+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "bwrap",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "15m",
+    "notes": "The independent curator estimated four minutes, two CPUs and a four GiB hard limit for four original named Maven trials. Source, dependencies and runtime are local."
+  },
+  "steps": [
+    {
+      "name": "Run four offline repetitions and publish opaque coverage",
+      "run": "python3 -I lib/benchmark/external-upgrades/curation/queued_bump.py --session 0cea9d0e-0fe8-427e-8e71-96614b084e11 --packet e129ea4f5fcfcdbcdb7e87d2 --input-sha256 bac60aa83ef6774a94046a801d8559ebde5c5478657ea526d5b89574f9fea0e8 --output lib/benchmark/external-upgrades/curation/replays/e129ea4f5fcfcdbcdb7e87d2.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/external-upgrades/curation/replays/e129ea4f5fcfcdbcdb7e87d2.json"
+  ]
+}

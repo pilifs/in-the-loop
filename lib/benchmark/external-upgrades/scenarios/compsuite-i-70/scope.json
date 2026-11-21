@@ -1,0 +1,24 @@
+{
+  "entry": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle()Lorg/apache/poi/ss/usermodel/CellStyle;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Open the original spreadsheet and read the first numeric cell and its style. A failure before the cell-style call is a separate operational finding.",
+  "basis": "The original developer test requires exactly one worksheet, a numeric first cell and a non-null style. The input spreadsheet is unchanged in both Git revisions.",
+  "cases": [
+    {
+      "args": [
+        "large.xlsx"
+      ],
+      "expected": {
+        "return": "1/NUMERIC/true"
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "kind": "resource",
+      "file": "large.xlsx",
+      "source": "src/test/resources/large.xlsx",
+      "sha256": "1688458848b942e9c8ee73210829972b7e62b23464669638bb42f56822e54243"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-233743-run-assisted-compcheck-on-original-aws-d",
+  "title": "Run assisted CompCheck on original AWS DateUtils bytecode",
+  "description": "The two unassisted callsite-only CompCheck runs both failed to build AWS offline and wrote empty contexts. Repeat both knowledge treatments on the same stock production c15-2 using the actual original DateUtils.class, independently hash-matched to the AWS calibration, in Maven target/classes. The case-specific preparation supplies authentic binary dependencies, never knowledge context, API return values, test fixtures or expected answers. Record context size, matching result, generated test counts and the first unsupported step.",
+  "kind": "real-world",
+  "capabilities": [
+    "baseline:compcheck"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/external-upgrades/baselines/compcheck_aws.py"
+    ]
+  },
+  "expected": "Each treatment records its scoped stock outcome on bytecode from the actual old revision, including an open result if the workflow cannot reach generated JUnit validation.",
+  "submitted": {
+    "at": "2026-11-20T23:37:43+00:00",
+    "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+  },
+  "requires": [
+    "bwrap",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "4m",
+    "memoryLimit": "6G",
+    "timeout": "16m",
+    "notes": "The baseline configures a 60-second EvoSuite search with a 4 GiB heap on a matching context. The paired cold run took 24 seconds including preparation and 2.82 GiB peak."
+  },
+  "steps": [
+    {
+      "name": "Compare assisted original bytecode with and without AWS issue 233 knowledge",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --prepared-client --output lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/external-upgrades/baselines/compcheck-aws-assisted.json"
+  ]
+}

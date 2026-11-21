@@ -1,0 +1,41 @@
+{
+  "probeClass": "UpgradeProbe",
+  "operandScope": "provided",
+  "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+  "invocationVia": "org.togglz.core.activation.AbstractPropertyDrivenActivationStrategy#isActive(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;)Z",
+  "observer": "Read the effective activation of FEATURE_ONE through the original Togglz strategy and DeltaSpike provider discovery.",
+  "basis": "Use the exact upstream test provider and service registration. Set the provider to each boolean and initialize the feature state to its opposite as in the developer test.",
+  "fixtures": [
+    {
+      "kind": "java",
+      "file": "TestConfigSourceProvider.java",
+      "source": "deltaspike/src/test/java/org/togglz/deltaspike/TestConfigSourceProvider.java",
+      "sha256": "da225885c5d81e75fbe6e5480cb365943b8630d4fb820e09191da5b8865185c9",
+      "class": "org.togglz.deltaspike.TestConfigSourceProvider"
+    },
+    {
+      "kind": "service",
+      "file": "META-INF/services/org.apache.deltaspike.core.spi.config.ConfigSourceProvider",
+      "source": "deltaspike/src/test/resources/META-INF/services/org.apache.deltaspike.core.spi.config.ConfigSourceProvider",
+      "sha256": "e237a03d7eead2261d106b3bb868706afb8b7dc3102643c0545af3dc65a6ad37"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "true"
+      ],
+      "expected": {
+        "return": "true"
+      }
+    },
+    {
+      "args": [
+        "false"
+      ],
+      "expected": {
+        "return": "false"
+      }
+    }
+  ]
+}

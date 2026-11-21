@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-051225-original-named-test-group-4-reproduce-fo",
+  "title": "Original named test group 4 reproduce four upstream upgrade expectations",
+  "description": "Run each actual registered developer test on fresh old and new source trees. Include reactor prerequisites, accept Maven Central Animal Sniffer signature artifacts, retain XML and the final Maven diagnostic, and separately identify zero named tests. This complements the complete Maven lifecycle runs. Cases: compsuite-i-36, compsuite-i-103, compsuite-i-37, compsuite-i-80.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation"
+  ],
+  "links": {},
+  "expected": "Each original expectation has a concrete reproducer result or a specific unverified operation. A passing wrapper with no named test remains unavailable.",
+  "submitted": {
+    "at": "2026-11-21T05:12:25+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "memoryLimit": "6G",
+    "timeout": "100m"
+  },
+  "steps": [
+    {
+      "name": "Run original named test on both revisions",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --focused --output verification/external-upgrades/corpus-runs/focused-ci/04 --case compsuite-i-36 --case compsuite-i-103 --case compsuite-i-37 --case compsuite-i-80",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/focused-ci/04"
+  ]
+}

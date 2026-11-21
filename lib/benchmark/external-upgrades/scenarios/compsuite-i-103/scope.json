@@ -1,0 +1,48 @@
+{
+  "probeClass": "UpgradeProbe",
+  "entry": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V",
+  "invocationVia": "org.springframework.context.support.AbstractApplicationContext#refresh()V",
+  "observer": "Register two first-priority Nacos property sources through the original Spring refresh and read which one wins over the system property.",
+  "basis": "The original developer test requires the source named first to head the environment and override user.name. The original Nacos HTTP handler supplies the input property on loopback. Two distinct returned values test precedence as well as source registration.",
+  "fixtures": [
+    {
+      "kind": "java",
+      "file": "TestConfiguration.java",
+      "source": "nacos-spring-context/src/test/java/com/alibaba/nacos/spring/test/TestConfiguration.java",
+      "sha256": "c3de9b6936001340d79aa534ff7d78cb943abc832bfa5be0398ddc12ce59a9ca",
+      "class": "com.alibaba.nacos.spring.test.TestConfiguration"
+    },
+    {
+      "kind": "java",
+      "file": "TestApplicationHolder.java",
+      "source": "nacos-spring-context/src/test/java/com/alibaba/nacos/spring/test/TestApplicationHolder.java",
+      "sha256": "20d58613a946e6b7766f43e87651f7d133e732594c94d8b0609f239477247f59",
+      "class": "com.alibaba.nacos.spring.test.TestApplicationHolder"
+    },
+    {
+      "kind": "java",
+      "file": "NacosConfigHttpHandler.java",
+      "source": "nacos-spring-samples/nacos-embedded-webserver/src/main/java/com/alibaba/nacos/embedded/web/server/NacosConfigHttpHandler.java",
+      "sha256": "43a51dd0bc6bc01fc4c299c5e27e97d25d544012f01c48c527c00a19e825d3b9",
+      "class": "com.alibaba.nacos.embedded.web.server.NacosConfigHttpHandler"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "nacos-a"
+      ],
+      "expected": {
+        "return": "first/nacos-a"
+      }
+    },
+    {
+      "args": [
+        "nacos-b"
+      ],
+      "expected": {
+        "return": "first/nacos-b"
+      }
+    }
+  ]
+}

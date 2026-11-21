@@ -1,0 +1,21 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "preservation",
+  "property": "diagnostic",
+  "statement": "With the released Rocker compiler held fixed, does changing ANTLR runtime preserve the diagnostic returned for the trailing comma and the fields of one valid declaration?",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32,
+    "maxArrayLength": 96
+  },
+  "adapter": {
+    "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+    "mapping": "The runtime-only control uses the released old generated parser on both sides. Independent recompilation with both generators and four JVM substitutions distinguish its scope from the whole PR.",
+    "correspondence": "caller-oracle",
+    "cases": 2
+  }
+}

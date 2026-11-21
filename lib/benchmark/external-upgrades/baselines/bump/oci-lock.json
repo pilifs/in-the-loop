@@ -1,0 +1,209 @@
+{
+  "baseline": "BUMP 324d5513aa5ca40b5cb32de5b816a58fa60bd7bb",
+  "readUtc": "2026-11-20/21 UTC",
+  "ociRepository": "ghcr.io/chains-project/breaking-updates",
+  "runtime": "Alpine OpenJDK 11.0.19+7-alpine-r1, Apache Maven 3.9.2 (c9616018c7a021c1c39be70fb2843d6f5f9b8a1c), linux/amd64",
+  "jdkReleaseSha256": "26925b7b2922fece1d9a03921f6633c09a3aca357e9a99c3d2638142a69f850a",
+  "cases": {
+    "fscrawler": {
+      "repository": "https://github.com/dadoonet/fscrawler",
+      "breaking": "097d93fbb2f9998ef1390ad10f92d1b70fda8b90",
+      "pre": "f6238f5aa1b1cebee9b9f0c87c26c088a7d1e6bc",
+      "preTree": "fe06c7439a54f9345f4d517ce9e198bf9e233ebb",
+      "changedFiles": [
+        "pom.xml"
+      ],
+      "breakingTree": "200b837c2b88ad46313f84fd8872c0345b1fdbdd",
+      "project": "fscrawler",
+      "pr": "https://github.com/dadoonet/fscrawler/pull/1296",
+      "recordUrl": "https://github.com/chains-project/bump/blob/324d5513aa5ca40b5cb32de5b816a58fa60bd7bb/data/benchmark/097d93fbb2f9998ef1390ad10f92d1b70fda8b90.json",
+      "recordSha256": "830abf1c8079dd338d40d26096d9cf2963ac1c93a9424a952333b5ff33055358",
+      "recordCategory": "TEST_FAILURE",
+      "upgrade": {
+        "dependencyGroupID": "org.apache.poi",
+        "dependencyArtifactID": "poi-ooxml",
+        "previousVersion": "4.1.2",
+        "newVersion": "5.1.0",
+        "dependencyScope": "compile",
+        "updatedFileType": "JAR",
+        "dependencySection": "dependencyManagement"
+      },
+      "sides": {
+        "pre": {
+          "tag": "097d93fbb2f9998ef1390ad10f92d1b70fda8b90-pre",
+          "manifestSha256": "eeb4fa3a753b8ef5fb602ab9cbdf0812b9903e79e8141e9bd0a9a2d612d78d1f",
+          "manifestBytes": 1039,
+          "configSha256": "1fe17c413f8d164c9e42fe2b68b1a44c4f7ed13e91399c1dc42e40d2222d3356",
+          "configBytes": 2566,
+          "workdir": "/fscrawler",
+          "entryArgv": [
+            "sh",
+            "-c",
+            "mvn clean test -B | tee %s.log"
+          ],
+          "builtBy": "sh -c set -o pipefail && git checkout 097d93fbb2f9998ef1390ad10f92d1b70fda8b90 && git checkout HEAD~1 && rm -rf .git && mvn clean test -B | tee 097d93fbb2f9998ef1390ad10f92d1b70fda8b90.log",
+          "layers": [
+            {
+              "sha256": "31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+              "bytes": 3397879,
+              "acquired": true
+            },
+            {
+              "sha256": "42276f95e61fb8c21e366aa2af910d650d2566ae9f78f39224e88673daeae7ea",
+              "bytes": 159137183,
+              "acquired": true
+            },
+            {
+              "sha256": "04b8bc7f4361dd9c7d6aeb8399784e37ba492327e081a30545f434a1fb638a25",
+              "bytes": 24913268,
+              "acquired": false
+            },
+            {
+              "sha256": "9b6d45901ed24a6eb9e899f2b59fe7dd9e92cadfb7c9b21003448a38225de04b",
+              "bytes": 159361222,
+              "acquired": true
+            }
+          ],
+          "localLayer": "fscrawler-final-layer.tgz"
+        },
+        "breaking": {
+          "tag": "097d93fbb2f9998ef1390ad10f92d1b70fda8b90-breaking",
+          "manifestSha256": "5f32eb42297f5069ea61441345c6f93f9deaf6d69285f15a4def8673737bafa6",
+          "manifestBytes": 1166,
+          "configSha256": "950746db63d6772838e73fd554638284ad1c1148032ca394cd54d7ce60cf1924",
+          "configBytes": 2534,
+          "workdir": "/fscrawler",
+          "entryArgv": [
+            "sh",
+            "-c",
+            "mvn clean test -B | tee %s.log"
+          ],
+          "builtBy": "sh -c set -o pipefail && git checkout 097d93fbb2f9998ef1390ad10f92d1b70fda8b90 && rm -rf .git && mvn clean test -B | tee 097d93fbb2f9998ef1390ad10f92d1b70fda8b90.log",
+          "layers": [
+            {
+              "sha256": "31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+              "bytes": 3397879,
+              "acquired": true
+            },
+            {
+              "sha256": "42276f95e61fb8c21e366aa2af910d650d2566ae9f78f39224e88673daeae7ea",
+              "bytes": 159137183,
+              "acquired": true
+            },
+            {
+              "sha256": "04b8bc7f4361dd9c7d6aeb8399784e37ba492327e081a30545f434a1fb638a25",
+              "bytes": 24913268,
+              "acquired": false
+            },
+            {
+              "sha256": "2ec3b483cfdeace9b4441302fff1114dd3eba5ec7edd3c04be22c00c6cccaa94",
+              "bytes": 152498804,
+              "acquired": true
+            }
+          ],
+          "localLayer": "fscrawler-breaking-final.tgz"
+        }
+      }
+    },
+    "assertj": {
+      "repository": "https://github.com/assertj/assertj-guava",
+      "breaking": "0968864d08e0fce1e5e1caaf89afddd2cc1b2569",
+      "pre": "5705970602ede90f3dc8c001d0d749461c20d56f",
+      "preTree": "d0c15156b32ce4f68de535fc65c023b9548edeb1",
+      "changedFiles": [
+        "pom.xml"
+      ],
+      "breakingTree": "0cbbf7b0ccf528f5b89cecc556e3609f6ab83efe",
+      "project": "assertj-guava",
+      "pr": "https://github.com/assertj/assertj-guava/pull/98",
+      "recordUrl": "https://github.com/chains-project/bump/blob/324d5513aa5ca40b5cb32de5b816a58fa60bd7bb/data/benchmark/0968864d08e0fce1e5e1caaf89afddd2cc1b2569.json",
+      "recordSha256": "750c7acc9f77f227c387d8df80919bf6458c17e0d723b051be2d9962d1e79144",
+      "recordCategory": "ENFORCER_FAILURE",
+      "upgrade": {
+        "dependencyGroupID": "org.assertj",
+        "dependencyArtifactID": "assertj-core",
+        "previousVersion": "3.22.0",
+        "newVersion": "3.23.0",
+        "dependencyScope": "compile",
+        "updatedFileType": "JAR",
+        "dependencySection": "dependencies"
+      },
+      "sides": {
+        "pre": {
+          "tag": "0968864d08e0fce1e5e1caaf89afddd2cc1b2569-pre",
+          "manifestSha256": "03e0f28997db0fd8ac6d69d835b023e015afe4b188e0f42b3d23469a176fe9d2",
+          "manifestBytes": 1163,
+          "configSha256": "ed45e965b8299c5fc07283b5ddb25ffceb5c563990ec401b2109494f3ff97bf9",
+          "configBytes": 2594,
+          "workdir": "/assertj-guava",
+          "entryArgv": [
+            "sh",
+            "-c",
+            "mvn clean test -B | tee %s.log"
+          ],
+          "builtBy": "sh -c set -o pipefail && git checkout 0968864d08e0fce1e5e1caaf89afddd2cc1b2569 && git checkout HEAD~1 && rm -rf .git && mvn clean test -B | tee 0968864d08e0fce1e5e1caaf89afddd2cc1b2569.log",
+          "layers": [
+            {
+              "sha256": "31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+              "bytes": 3397879,
+              "acquired": true
+            },
+            {
+              "sha256": "42276f95e61fb8c21e366aa2af910d650d2566ae9f78f39224e88673daeae7ea",
+              "bytes": 159137183,
+              "acquired": true
+            },
+            {
+              "sha256": "11989af9f1439a7f1fe2f12e54329cdc0587670ced6e522d3c979515db8326d8",
+              "bytes": 880146,
+              "acquired": false
+            },
+            {
+              "sha256": "d6c1f88f74b301c71eef77deb3254ad93a175263a861a674797e664455a76318",
+              "bytes": 45919483,
+              "acquired": true
+            }
+          ],
+          "localLayer": "assertj-pre-final.tgz"
+        },
+        "breaking": {
+          "tag": "0968864d08e0fce1e5e1caaf89afddd2cc1b2569-breaking",
+          "manifestSha256": "c191a67a0c6beaa04c8a08687d1a3cb77f6d88e2364e2393677ab30f5dcb65ac",
+          "manifestBytes": 1163,
+          "configSha256": "d76a78d6c25d5e0c7f008fb3ffda7ea3d7ef88663ae714434526a1eed517a3dc",
+          "configBytes": 2562,
+          "workdir": "/assertj-guava",
+          "entryArgv": [
+            "sh",
+            "-c",
+            "mvn clean test -B | tee %s.log"
+          ],
+          "builtBy": "sh -c set -o pipefail && git checkout 0968864d08e0fce1e5e1caaf89afddd2cc1b2569 && rm -rf .git && mvn clean test -B | tee 0968864d08e0fce1e5e1caaf89afddd2cc1b2569.log",
+          "layers": [
+            {
+              "sha256": "31e352740f534f9ad170f75378a84fe453d6156e40700b882d737a8f4a6988a3",
+              "bytes": 3397879,
+              "acquired": true
+            },
+            {
+              "sha256": "42276f95e61fb8c21e366aa2af910d650d2566ae9f78f39224e88673daeae7ea",
+              "bytes": 159137183,
+              "acquired": true
+            },
+            {
+              "sha256": "11989af9f1439a7f1fe2f12e54329cdc0587670ced6e522d3c979515db8326d8",
+              "bytes": 880146,
+              "acquired": false
+            },
+            {
+              "sha256": "402e51150703da0d6657a95f2a231c89ad970d848ef28a5f47abe693fa8a3111",
+              "bytes": 35756239,
+              "acquired": true
+            }
+          ],
+          "localLayer": "assertj-breaking-final.tgz"
+        }
+      }
+    }
+  }
+}

@@ -3,10 +3,10 @@
   "schema": "verification-result/v1",
   "id": "20261121-062836-rebuild-original-java-upgrades-for-the-m",
   "title": "Rebuild original Java upgrades for the main native checkpoint",
-  "status": "failed",
-  "summary": "failed: 1 failed step(s) in 49.9s, peak 460.3 MiB (estimated 8m00s, 2.0 GiB); 5 output file(s) changed",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m06s, peak 458.5 MiB (estimated 8m00s, 2.0 GiB); 24 output file(s) changed",
   "attention": [
-    "step 1 (Rebuild both sides and run the pinned native verifier) exited SIGTERM, expected 0"
+    "step 1 (Rebuild both sides and run the pinned native verifier) was held back 2m06s by its 2-CPU quota in 3m06s: it would run faster with more CPUs (a JVM needs 2)"
   ],
   "job": {
     "path": "verification/jobs/20261121-062836-rebuild-original-java-upgrades-for-the-m.json",
@@ -50,14 +50,14 @@
     }
   },
   "sourceCommit": "423361f11e2cb938f4ece5ca85b6038c62bd4fc4",
-  "startedAt": "2026-11-21T06:31:18+00:00",
-  "finishedAt": "2026-11-21T06:32:15+00:00",
-  "wallSeconds": 57.0,
+  "startedAt": "2026-11-21T06:32:07+00:00",
+  "finishedAt": "2026-11-21T06:35:22+00:00",
+  "wallSeconds": 195.0,
   "runner": {
     "backend": "local",
     "isolation": "systemd",
     "host": "vm-1",
-    "pid": 609946,
+    "pid": 615861,
     "workers": 13,
     "cpus": 26.0,
     "memoryBudgetBytes": 77309411328,
@@ -76,11 +76,11 @@
     "notes": null
   },
   "usage": {
-    "peakMemoryBytes": 482627584,
-    "wallSeconds": 49.9,
-    "cpuSeconds": 0.0,
+    "peakMemoryBytes": 480735232,
+    "wallSeconds": 186.8,
+    "cpuSeconds": 307.3,
     "memoryOfEstimate": 0.22,
-    "durationOfEstimate": 0.1
+    "durationOfEstimate": 0.39
   },
   "environment": {
     "host": "vm-1",
@@ -108,26 +108,26 @@
       "name": "Rebuild both sides and run the pinned native verifier",
       "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --set main --output verification/external-upgrades/corpus-runs/early-failure-inputs/native-main",
       "cwd": ".",
-      "status": "failed",
-      "exitCode": null,
-      "signal": "SIGTERM",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
       "timedOut": false,
       "stoppedFor": null,
       "overranTimeout": false,
       "timeoutSeconds": 4200.0,
       "cancelled": false,
-      "wallSeconds": 49.92,
-      "cpuSeconds": 0.004,
-      "cpuThrottledSeconds": null,
-      "peakMemoryBytes": 482627584,
+      "wallSeconds": 186.822,
+      "cpuSeconds": 307.318,
+      "cpuThrottledSeconds": 126.682,
+      "peakMemoryBytes": 480735232,
       "peakMemoryMeasure": "cgroup memory.peak",
       "oomKills": 0,
       "memoryHighEvents": 0,
       "log": {
         "path": "logs/1-rebuild-both-sides-and-run-the.log",
-        "lines": 5,
-        "bytes": 1631,
-        "sha256": "13421f5da905bb84f5fbcdd9744153b4f1e7208c866b1cf6b59a28f65d22a067",
+        "lines": 24,
+        "bytes": 5244,
+        "sha256": "dd18dde2dfeb0275b8a0e24b65eddc0bb7191f5a4f54a777e435f69a0a8a3c02",
         "truncated": false
       },
       "signalCounts": {},
@@ -137,7 +137,26 @@
         "compsuite-i-1 current open convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponse",
         "compsuite-i-70 current open getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lan",
         "compsuite-i-10 current open original Maven classpath",
-        "compsuite-i-85 current open parameter orderId has type pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId, which is outside the objects a regression check makes: pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId has 2 constructors; an object made by one of seve"
+        "compsuite-i-85 current open parameter orderId has type pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId, which is outside the objects a regression check makes: pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId has 2 constructors; an object made by one of seve",
+        "compsuite-i-9 current open original Maven classpath",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-62 current open original Maven classpath",
+        "compsuite-i-94 current open original Maven classpath",
+        "compsuite-i-81 current open original classpath",
+        "compsuite-i-39 current open review the recorded exact overloads",
+        "compsuite-i-29 current open runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
+        "ea-async-27 current open review the recorded exact overloads",
+        "whatjdk-12 current open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of",
+        "incremental-analysis-28 current open review the recorded exact overloads",
+        "commons-text-775 current open review the recorded exact overloads",
+        "commons-compress-767 current open review the recorded exact overloads",
+        "commons-compress-822 current open review the recorded exact overloads",
+        "commons-configuration-565 current open review the recorded exact overloads",
+        "commons-configuration-601 current open review the recorded exact overloads",
+        "cucumber-reporting-1220 current open generateReports is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of net.masterthought.cucumber.ReportBuilder made by its constructor, whose the argument jsonFiles of net.masterthought.cucumber.",
+        "cucumber-reporting-1198 current open parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their c",
+        "commons-beanutils-440 current open parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans",
+        "commons-csv-8993be87 current open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of sever"
       ],
       "expectExit": [
         0
@@ -146,53 +165,205 @@
   ],
   "outputs": [
     {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 6180,
+      "sha256": "dd92bbe374c8678cfd178446f00642a1acbb869ec5811034651b72fe9da8a111",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-compress-767.json",
+      "change": "added",
+      "bytes": 12546,
+      "sha256": "306294fe13e25ffe54f1cbec8e8e704af4a4b54fdea63c53d321870e40135b3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-compress-822.json",
+      "change": "added",
+      "bytes": 12858,
+      "sha256": "d3629806cdab71df8117e958203bfe01cccfa80ab27b8407c19da35a672af1b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 17145,
+      "sha256": "50731c8987fb2efca1f0ccf3ad89f40163a59bb610751bd2c04a6d879691b2ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 22913,
+      "sha256": "6858dee67bf2169e49f0042e1657ffbdfa111e06c5ffe30094cfe2f610ef5d9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 5325,
+      "sha256": "4d102e575e422da443a2227ef730e58c8cde5f9b07a78c28ab671ec02af51585",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-text-775.json",
+      "change": "added",
+      "bytes": 38612,
+      "sha256": "654a2d9f77b9f52eb9cf4d42dc883d681c08906b135d01ebf8f3e91ee0568491",
+      "sourceSha256": null
+    },
+    {
       "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-1.json",
       "change": "added",
       "bytes": 7720,
-      "sha256": "9e08839b3ea43987fb2e48568f5527c409919bf01f7824a5b84c96bd800ff4c1",
+      "sha256": "bbafcf007b8ff407ee7b0712554f9704c34be130b69511609258771c85b975c5",
       "sourceSha256": null
     },
     {
       "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-10.json",
       "change": "added",
       "bytes": 2413,
-      "sha256": "211f0e49a3788f316f5490b12befbcbb152e65b69c12563ca5c23167ba056981",
+      "sha256": "5983e90a80d5ee40f29d5a10bf21005afbc3162b666aeba9207d183d01987b5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 8687,
+      "sha256": "4bf040d78c93e26974c30730259fc8fc54d00b9be9adca3cf917abb58a52ba46",
       "sourceSha256": null
     },
     {
       "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-38.json",
       "change": "added",
       "bytes": 5270,
-      "sha256": "9e62411baa216e0c38ac61af752e9c3aaee8fdf293bf8b4a6069214af9b3f49c",
+      "sha256": "24808d2b5c6ffecd99f4ebb3e5ab109bbe7d8f99ce544218ff435b5828548269",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 13343,
+      "sha256": "75544a6ce9409517d5a900b2c333c83a6b3dbcf13f528a304606c53786bb39c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 11199,
+      "sha256": "9f21af022706f6600243ff6843874fbf6ecf93b7d2e0f253a2cd96ac17f89e0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 2487,
+      "sha256": "dbab75d1fba884905e2fc494f1dea7d3a1d8083907fe4c9e5ea2f153a4aa6aef",
       "sourceSha256": null
     },
     {
       "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-70.json",
       "change": "added",
       "bytes": 9855,
-      "sha256": "6b446959bd8a0a86b300c4cc3d98604f990b7f73e85fedc302f6617b5e06530f",
+      "sha256": "5224ec83e796fe38153c439a1b55139c79df108293c5aba50e05104acf7e7dbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 1562,
+      "sha256": "72568170363f8775dd1cf31dd523e7eda4c01432312c4d1106c99abae9911d28",
       "sourceSha256": null
     },
     {
       "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-85.json",
       "change": "added",
-      "bytes": 19176,
-      "sha256": "189b2e695e275e5a29296ac724299669e0c8276d5b0596ef61a46f5fa0aaad99",
+      "bytes": 19175,
+      "sha256": "98c952ff810f9e583fba44b34874213895885c9096d9da0c6d5d5916d5ab0afa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 2423,
+      "sha256": "55c6df8716f1ce08a2cdde4fcbc1229510877afa4e9406489f0bc9dc605a30db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 3396,
+      "sha256": "6b456141e8e84179a9daf0a33c1c13a6b64b316747a4152e01d2d5e0b12c323f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 10600,
+      "sha256": "eb080ec27eedea03818150afdcc8aca7cf91c738cdbd2fe89b8c626f19e24f0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 11113,
+      "sha256": "4a9e4b17564721cc9760f33a1c1e80442f79ce0054b784ec32c3fbb2d04d5c1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/ea-async-27.json",
+      "change": "added",
+      "bytes": 13367,
+      "sha256": "f2338b7358454ae0ea8cf62768da8bd6006fc069adbc0c8a3743cd8934ccbaed",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 22183,
+      "sha256": "069cff315e975e990eca77df9b40f1f1ab426201c39d13374f3ec92197451b65",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/whatjdk-12.json",
+      "change": "added",
+      "bytes": 5796,
+      "sha256": "33fc52d7c1aa6aa84016195bda079f26e66e76e369bc0c6ea7d4ece621f4459d",
       "sourceSha256": null
     }
   ],
   "collected": {
-    "at": "2026-11-21T06:32:29+00:00",
-    "applied": [],
-    "conflicts": [],
-    "kept": [
+    "at": "2026-11-21T06:35:37+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-beanutils-440.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-compress-767.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-compress-822.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-configuration-565.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-configuration-601.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-csv-8993be87.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/commons-text-775.json",
       "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-1.json",
       "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-10.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-29.json",
       "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-38.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-39.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-62.json",
       "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-70.json",
-      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-85.json"
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-81.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-85.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-9.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/compsuite-i-94.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/cucumber-reporting-1198.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/cucumber-reporting-1220.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/ea-async-27.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/incremental-analysis-28.json",
+      "verification/external-upgrades/corpus-runs/early-failure-inputs/native-main/current/whatjdk-12.json"
     ],
-    "why": "not applied: the job failed"
+    "conflicts": [],
+    "kept": [],
+    "why": null
   },
   "changesDiff": "changes.diff"
 }

@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-230733-check-commons-text-pr-586-csv-return-pre",
+  "title": "Check Commons Text PR 586 CSV return preservation",
+  "description": "On the original Commons Text PR revisions compiled with their own Commons Lang 3.16.0 and 3.17.0 dependencies, run the public strict native equivalence workflow on StringEscapeUtils.escapeCsv for all non-null fields of length zero through three over a, comma, double quote, CR and LF. Record the first unsupported step or a qualified result. The independent JVM oracle and calibration-only quote-doubling mutant have separate replay tasks.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence",
+    "target:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "349"
+    ]
+  },
+  "expected": "example 349 task preservation gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-20T23:07:33+00:00",
+    "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "8m",
+    "notes": "Two 15-file source checkouts, compilation, deterministic 156-field JVM controls and a bounded native comparison."
+  },
+  "steps": [
+    {
+      "name": "example 349 task preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 349 --task preservation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/349-commons-text-csv-upgrade/receipts/preservation"
+  ]
+}

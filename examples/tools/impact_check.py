@@ -45,6 +45,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import build  # noqa: E402  (plan(), TOOL_APPS, IGNORE)
+from targets.runtime_jar import modified_utf8
 
 REPO = build.REPO
 DESCRIPTOR_CLASS = re.compile(r"L([\w/$]+);")
@@ -60,7 +61,7 @@ def parse_class(data):
         pos += 1
         if tag == 1:
             n = u2(pos)
-            cp[i] = ("utf8", data[pos + 2:pos + 2 + n].decode("utf-8", "replace"))
+            cp[i] = ("utf8", modified_utf8(data[pos + 2:pos + 2 + n]))
             pos += 2 + n
         elif tag == 7:
             cp[i] = ("class", u2(pos))

@@ -345,8 +345,10 @@ def _lock_upstream(plan, revision, entry, folder):
         raise Refused.blocked(b) from None
     source = {
         "route": "upstream-build", "repository": recipe["repository"], "revision": revision,
-        "provenance": "the exact commit, fetched from github.com into an isolated checkout and built there by its "
-                      "recorded recipe with its own build tool; the original sources stay untouched",
+        "provenance": ("the exact commit, fetched from " + ("the named local Git repository" if
+                       runtime_upstream.LOCAL_GIT.fullmatch(recipe["repository"]) else "github.com") +
+                       " into an isolated checkout and built there by its recorded recipe with its own build tool; "
+                       "the original sources stay untouched"),
         "history": {"commit": recipe["commit"], **({"parent": recipe["parent"]} if recipe["parent"] else {})},
         "upstream": {k: recipe[k] for k in ("tool", "argv", "jdk")},
         **_controls_source(folder, entry),
@@ -366,9 +368,8 @@ def _lock_slice(plan, revision, entry, folder):
     the slice's recipe (the files compiled, the JDK and the javac flags, checked as sidecar.py checks them) and the
     JARs it is compiled against, each by fixed coordinates, an allowed URL and a recorded sha256. Nothing is fetched."""
     repository, commit, parent = entry.get("repository"), entry.get("commit"), entry.get("parent")
-    if not isinstance(repository, str) or not runtime_upstream.REPOSITORY.match(repository.removesuffix(".git")):
-        raise Refused("lock", f"revision {revision}: {repository!r} is not an https repository on github.com, the one "
-                              f"host commits are fetched from")
+    if not runtime_upstream.repository_allowed(repository):
+        raise Refused("lock", f"revision {revision}: {repository!r} is not an https repository on github.com or a named local Git source")
     for what, sha in (("commit", commit), ("recorded parent", parent)):
         if (what == "commit" or sha is not None) and (not isinstance(sha, str) or not FULL_SHA.match(sha)):
             raise Refused("lock", f"revision {revision}: its {what} {sha!r} is not a full commit")
@@ -397,9 +398,10 @@ def _lock_slice(plan, revision, entry, folder):
     matches = _slice_matches(revision, recipe.get("matches"))
     source = {
         "route": "source-slice", "repository": repository, "revision": revision,
-        "provenance": "an extracted source slice: the named files of the exact commit, fetched from github.com, compiled "
-                      "alone by the recorded JDK and flags against the recorded JARs; never the commit's own build, "
-                      "and a narrower scope than it",
+        "provenance": ("an extracted source slice: the named files of the exact commit, fetched from " +
+                       ("the named local Git repository" if runtime_upstream.LOCAL_GIT.fullmatch(repository) else "github.com") +
+                       ", compiled alone by the recorded JDK and flags against the recorded JARs; never the commit's "
+                       "own build, and a narrower scope than it"),
         "history": {"commit": commit, **({"parent": parent} if parent else {})},
         "slice": {"files": list(files), "jdk": jdk, "flags": list(flags), **({"matches": matches} if matches else {}),
                   **({"companionClasses": recipe["companionClasses"]} if recipe.get("companionClasses") else {}),
@@ -547,9 +549,9 @@ def _lock_mutant(plan, revision, entry, folder):
             raise Refused("lock", f"{what}'s patch modifies {', '.join(other)}: on the published-artifact route only "
                                   f"Java sources are recompiled into a copy of the base JAR, so a resource or build "
                                   f"change can't be made; the upstream-build route can")
-        if not runtime_upstream.REPOSITORY.match(str(entry.get("repository", "")).removesuffix(".git")):
+        if not runtime_upstream.repository_allowed(entry.get("repository")):
             raise Refused("lock", f"{what}: its sources are checked out from the repository, and "
-                                  f"{entry.get('repository')!r} is not an https repository on github.com")
+                                  f"{entry.get('repository')!r} is not an https repository on github.com or a named local Git source")
     if route == "source-slice":
         compiled = (base.get("slice") or {}).get("files") or []
         other = [f for f in files if f not in compiled]
@@ -963,7 +965,7 @@ def _published_mutant(plan, source, folder, workdir, build, toolchain, acquired)
     copy of it (mutant/<the base JAR's name>). The base JAR stays an artifact (role `base`), off the classpath. That
     the commit's files are the JAR's sources is the sidecar's linkage, recorded and not checked here."""
     m = source["mutant"]
-    if not plan.network:
+    if not plan.network and not runtime_upstream.LOCAL_GIT.fullmatch(source["repository"]):
         raise Refused("acquire", "a published-route mutant's sources are checked out from github.com, and the task's plan "
                                  "allows no acquisition (network: false)", needs="acquisition",
                       next="plan the task with acquisition (TaskPlan.network)")
@@ -1164,7 +1166,7 @@ def _prepare_slice(plan, revision, locked, workdir):
     build, toolchain = _builder(source, workdir)
     acquired, log, cache = [], [], runtime_maven.Cache()
     try:
-        if not plan.network:
+        if not plan.network and not runtime_upstream.LOCAL_GIT.fullmatch(source["repository"]):
             raise Refused("acquire", "a source slice is checked out from github.com, and the task's plan allows no "
                                      "acquisition (network: false)", needs="acquisition",
                           next="plan the task with acquisition (TaskPlan.network)")
@@ -1351,6 +1353,8 @@ CONTROL_TIMEOUT = 120  # seconds one control's JVM may run before it is killed a
 CONTROL_ENV = {"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TZ": "UTC"}
 CONTROL_FLAGS = ("-Xmx512m", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8",
                  "-Duser.language=en", "-Duser.country=US", "-Duser.timezone=UTC")
+if os.environ.get("TMPDIR"):
+    CONTROL_FLAGS += (f"-Djava.io.tmpdir={Path(os.environ['TMPDIR']).resolve()}",)
 
 
 def _preparation_dir(prepared):
@@ -1708,7 +1712,7 @@ def _parameters(plan, where, prepared):
 CLASSES = "classes"  # under the verifier's work directory: each side's original JAR, extracted for equivalence
 
 
-def _class_dirs(sides, workdir, attempt, paths=None):
+def _class_dirs(sides, workdir, attempt, paths=None, feature=None, entry_bindings=None):
     """Each side's original JAR extracted into workdir/classes/<revision> (jvmcontract equivalence takes directories
     of classes), every entry's bytes as the checked JAR holds them; the record of what was extracted, by revision."""
     import zipfile
@@ -1720,16 +1724,21 @@ def _class_dirs(sides, workdir, attempt, paths=None):
         into.mkdir(parents=True)
         count = 0
         with zipfile.ZipFile(where / jar.path) as z:
-            for info in z.infolist():
-                name = info.filename
-                if info.is_dir():
-                    continue
+            selected = (runtime_jar.effective_entries(z, feature) if feature is not None else
+                        {i.filename: i for i in z.infolist() if not i.is_dir()})
+            for name, info in selected.items():
                 if name.startswith("/") or ".." in Path(name).parts:
                     raise Refused("verifier", f"revision {r}'s {jar.path} has an entry outside its root: {name!r}")
                 target = into / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(z.read(info))
                 count += 1
+        if entry_bindings:
+            bound = entry_bindings[r]
+            owner = runtime_jar.internal(runtime_jar.parse_target(bound["entry"])[0])
+            caller = into / (owner + ".class")
+            if not caller.is_file() or sha256(caller) != bound["classSha256"]:
+                raise Refused("verifier", "the effective JAR entry for the selected JVM differs from the prepared caller")
         out[r] = {"dir": into.relative_to(attempt).as_posix(), "from": f"prepare/{r}/{jar.path}", "sha256": jar.sha256,
                   "entries": count}
     return out
@@ -1846,6 +1855,21 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             argv = (*argv[:at], rel(local_lemmas), *argv[at+1:])
             identities["checkedLemmas"] = dict(plan.checkedLemmas)
         env = _verifier_env(jdk)
+        if plan.engine == "native":
+            env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
+            feature = int(jdk["feature"])
+            for side, (where, side_prepared, _) in sides.items():
+                binding = invocation.entries[side]
+                original = side_prepared.source["target"]["loadedFrom"]
+                checks = ((binding["entry"], binding["loadedFrom"], binding["classSha256"]),
+                          (plan.target, original, binding["subjectClassSha256"]))
+                for entry, jar, expected in dict.fromkeys(checks):
+                    owner = runtime_jar.internal(runtime_jar.parse_target(entry)[0])
+                    selected = runtime_jar.effective_class(where / jar, owner, feature)
+                    if selected is None or hashlib.sha256(selected).hexdigest() != expected:
+                        raise Refused("verifier", "the effective JAR entry for the selected JVM differs from the prepared caller")
+        if plan.engine == "native":
+            env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
             "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
@@ -1855,7 +1879,9 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             "commits": {r: p.commit for r, (_, p, _) in sides.items()},
             "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
         if plan.kind == "equivalence":
-            identities["classes"] = _class_dirs(sides, workdir, attempt, invocation.classpaths)
+            feature = int(jdk["feature"]) if plan.engine == "native" else None
+            identities["classes"] = _class_dirs(sides, workdir, attempt, invocation.classpaths, feature,
+                                                 invocation.entries if feature is not None else None)
         if recipe.correspondence:
             identities["scope"].update(label="adapter", adapter=recipe.correspondence)
             identities["scope"]["meaning"] = recipe.correspondence["mapping"]

@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-044738-352-exhaust-actual-duration-strings-with",
+  "title": "352 exhaust actual duration strings with lossless JVM string observations",
+  "description": "Exhaust selectors 0 through 17 on the original Jackson-deserialized Cucumber Result and its Joda-Time formatter. Compare each returned Java string including all UTF-16 units and the escaping exception outcome on the two pinned runtime classpaths.",
+  "kind": "real-world",
+  "capabilities": [
+    "finite-jvm",
+    "external-upgrade-evaluation"
+  ],
+  "links": {
+    "examples": [
+      "352"
+    ]
+  },
+  "expected": "18 admitted duration configurations with the same exact three-digit strings and qualified adapter controls.",
+  "submitted": {
+    "at": "2026-11-21T04:47:38+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Exhaust and qualify the original string claim",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 352 --finite-domain --tasks format",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/352-cucumber-duration/records/finite-proofs"
+  ]
+}

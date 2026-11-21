@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-065459-current-upgrade-group-07-native-and-fini",
+  "title": "Current upgrade group 07 native and finite JVM caller evidence",
+  "description": "Repeat the declared corpus inputs on both original revisions. Trace the exact thrown object through cleanup and record the original runtime, provided or test environment, preserving unsupported cases. Cases compsuite-i-9.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T06:54:59+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "6G",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "Restore and verify archived Maven inputs",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/restore_archived.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"",
+      "cwd": "."
+    },
+    {
+      "name": "Build the original declared test environment",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase package --operand-scope test --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/environments\" --case compsuite-i-9 --seconds 900 --output verification/external-upgrades/corpus-runs/v2-setup/07",
+      "cwd": "."
+    },
+    {
+      "name": "Check every original with the native verifier",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/environments\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/v2-native/07 --case compsuite-i-9",
+      "cwd": "."
+    },
+    {
+      "name": "Replay original finite caller observations",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/environments\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/v2-finite/07 --case compsuite-i-9",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/v2-setup/07",
+    "verification/external-upgrades/corpus-runs/v2-native/07",
+    "verification/external-upgrades/corpus-runs/v2-finite/07"
+  ]
+}

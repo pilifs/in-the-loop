@@ -1,0 +1,50 @@
+{
+  "entry": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
+  "probeClass": "org.apache.commons.vfs2.provider.ftp.UpgradeProbe",
+  "observer": "The original VFS FTP client classifies a file, a directory and an absent path on a real loopback FTP server.",
+  "basis": "The server root contains one actual file and one actual directory. The Apache FTPServer and MINA versions come from the original project test environment and are held fixed on both sides. Each observation has its own temporary root and listener. The FTPServer parent POM specifies SLF4J API 1.7.36. It is supplied on both sides.",
+  "cases": [
+    {
+      "args": [
+        "entry.dat"
+      ],
+      "expected": {
+        "return": "file"
+      }
+    },
+    {
+      "args": [
+        "folder"
+      ],
+      "expected": {
+        "return": "folder"
+      }
+    },
+    {
+      "args": [
+        "absent"
+      ],
+      "expected": {
+        "return": "missing"
+      }
+    }
+  ],
+  "runtimeCompanions": [
+    {
+      "mavenPath": "org/apache/ftpserver/ftpserver-core/1.2.1/ftpserver-core-1.2.1.jar",
+      "sha256": "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec"
+    },
+    {
+      "mavenPath": "org/apache/ftpserver/ftplet-api/1.2.1/ftplet-api-1.2.1.jar",
+      "sha256": "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07"
+    },
+    {
+      "mavenPath": "org/apache/mina/mina-core/2.2.5/mina-core-2.2.5.jar",
+      "sha256": "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62"
+    },
+    {
+      "mavenPath": "org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
+      "sha256": "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-062836-rebuild-original-java-upgrades-for-the-t",
+  "title": "Rebuild original Java upgrades for the transfer native checkpoint",
+  "description": "Restore the original Git sources after the previous cleanup, check both pinned runtime classpaths and repeat the unmodified native checker on every case in this set. These preparations are shared with the finite JVM follow-up.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T06:28:36+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "8m",
+    "memoryLimit": "6G",
+    "timeout": "70m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild both sides and run the pinned native verifier",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$HOME/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract\" --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --set transfer --output verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/early-failure-inputs/native-transfer"
+  ]
+}

@@ -36,12 +36,7 @@ Beside the stages, the watcher keeps a verification loop running on Sonnet 5.5 f
 user confirms once, after stage 2, with the machine's assessment and the plan in front of them; a hardware limit
 that blocks ends the run after stage 1. With `--scaffold-only` the skill stops after stage 3.
 
-**GitHub only.** The official plugin proves changes whose revisions are commits on github.com, with dependencies
-from the allowed hosts (Maven Central, repo.spring.io, the Gradle hosts), and nothing else: the routes that prepare a
-revision refuse any other source ([`examples/README.md`](../examples/README.md#add-an-example)), and the skill does
-not work around them. A change in a repository elsewhere, or one not pushed yet, is set aside at stage 2 until it is
-on GitHub. The user decided this on 2026-11-15; a local or private source could be added here later, or by a fork of
-this repository with its own release.
+**Source revisions.** Remote acquisition uses commits on github.com and dependencies from the allowed artifact hosts. A maintainer can also supply exact Git revisions in a named local store. For two source directories, `examples/tools/targets/local_pair.py` imports their literal bytes and returns the two local commit IDs and the history entry for `target.json`. A source-slice task can then use cached artifacts offline. Local snapshot identities describe the supplied files. Record the original upstream commits separately when known. [Local source pairs](../examples/README.md#local-source-pairs)
 
 **In development.** Here the skill is a project skill: `.claude/skills/prove-java-change` links to its folder in the
 plugin, so `/prove-java-change NNN [NNN ...]` runs the copy being worked on. The bootstrap answers `development`,
@@ -331,9 +326,7 @@ your plan asks for.
      (`misstates`, which the setup corrects as you state it) or where something is missing or too narrow
      (`suggestion`, which is the user's);
    - **designed** (a catalog entry, or a change with no example): nothing states its claims yet. Design them.
-3. **Each change.** Its two revisions as exact commits on github.com, what it is meant to change and what it must
-   keep. Read the code. A change that is not on GitHub is set aside, not worked around
-   ([GitHub only](#prove-java-change)).
+3. **Each change.** Record its two exact commits and its public GitHub or supplied local source locator. Read the caller and the dependency change to identify what a client can observe and what the change is meant to preserve.
 4. **Its size.** The closest past examples and what they cost (`examples/tools/find.py`, their notes and receipts,
    `pipeline.py report`), set against the budget: whether a proof is plausible here and what will be hard.
 5. **Its claims,** for each example you design, settled in full: the property; the preservation boundary (what the
@@ -346,6 +339,8 @@ your plan asks for.
    [`target-claim.schema.json`](../examples/schema/target-claim.schema.json) says, and each task as the sidecar's
    tasks: the setup writes them as they are. Stage 4 may not change a claim to fit a result, so a claim you are not
    sure of is an open question for the user, not a guess.
+   For a dependency-only change with compiled client and dependency JARs, run `examples/tools/build.py --upgrade-claims` before broad source browsing. It gives exact caller and callee descriptors and identifies return, exception or callback observations. Select a reachable receiver and a domain the maintainer can recognize. The finite original-classpath route accepts a small reviewed observer and independent expected values for that domain. [Upgrade claim and replay commands](../examples/README.md#dependency-upgrade-observations)
+
 6. **The order,** the most accessible first: a proof that lands early can extend the verifier under the later ones,
    and a hard one first can use up the run.
 7. **The plan.** Fill in [`prove-plan-template.md`](prove-plan-template.md) as

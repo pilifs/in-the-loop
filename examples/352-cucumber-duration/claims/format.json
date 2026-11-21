@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "preservation",
+  "property": "format",
+  "statement": "Both sides of the upgrade return exactly the same duration string for 18 report values deserialized from JSON, in UTC and English.",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32,
+    "maxArrayLength": 96
+  },
+  "adapter": {
+    "entry": "calibration.Projection#format(I)Ljava/lang/String;",
+    "mapping": "Each selector picks one of three seconds, three millisecond values and two remainders; Jackson builds the real Result and the actual Joda formatter supplies the returned text.",
+    "correspondence": "caller-oracle",
+    "cases": 18
+  },
+  "assume": "code >= 0 && code < 18"
+}

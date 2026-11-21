@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-051151-complete-modules-1-materialize-original",
+  "title": "Complete modules 1 materialize original classes and resources",
+  "description": "Build the exact original Maven revisions and reactor prerequisites, including generated production classes and processed resources. Bind the resulting original client archive and resolved runtime order by digest; clean the Maven working tree after each side. Cases: compsuite-i-39, compsuite-i-70, cucumber-reporting-1220.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "expected": "Record both original revisions, the precise unverified stage when unavailable and the true result on each qualified finite caller.",
+  "submitted": {
+    "at": "2026-11-21T05:11:51+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "12m",
+    "memoryLimit": "6G",
+    "timeout": "100m"
+  },
+  "steps": [
+    {
+      "name": "Build complete original Maven modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/complete-modules/01 --case compsuite-i-39 --case compsuite-i-70 --case cucumber-reporting-1220",
+      "cwd": "."
+    },
+    {
+      "name": "Replay on original module outputs",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/whole-modules\" --output verification/external-upgrades/corpus-runs/finite-recovery/03 --case compsuite-i-39 --case compsuite-i-70 --case cucumber-reporting-1220",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/complete-modules/01",
+    "verification/external-upgrades/corpus-runs/finite-recovery/03"
+  ]
+}

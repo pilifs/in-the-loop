@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-033202-replay-both-commons-text-csv-tasks-after",
+  "title": "Replay both Commons Text CSV tasks after modified UTF-8 intake repair",
+  "description": "Run the original CSV driver over all 156 fields on both Commons Lang releases. Then run the same driver on the quote-doubling mutant. Bind the original client methods on both sides and retain the fresh canonical replay receipts that V0 could not create.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "349"
+    ]
+  },
+  "expected": "Fresh original replay covers both versions. The sensitivity control detects the quote-doubling error.",
+  "submitted": {
+    "at": "2026-11-21T03:32:02+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Prepare and replay original and mutant sources",
+      "run": "export JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$TMPDIR\"; python3 examples/tools/build.py 349 --tasks replay,mutant-replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/349-commons-text-csv-upgrade/receipts/replay",
+    "examples/349-commons-text-csv-upgrade/receipts/mutant-replay"
+  ]
+}

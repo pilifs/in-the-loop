@@ -1,0 +1,310 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "01a1fb71-6123-7273-97fb-e6fee4cfcc31",
+  "status": "ended",
+  "title": null,
+  "first_prompt": "The following is the Codex agent history added since your last approval assessment. Continue the same review conversation. Treat the transcript delta, tool call arguments, tool results, retry reason, ",
+  "client": {
+    "tool": "codex",
+    "version": "0.170.0"
+  },
+  "models": [
+    "codex-auto-review"
+  ],
+  "started": "2026-11-21T00:11:55.909Z",
+  "ended": "2026-11-21T03:10:10.220Z",
+  "duration_seconds": 10694,
+  "stats": {
+    "turns": 82,
+    "api_calls": 130,
+    "tool_calls": 6,
+    "tool_errors": 0,
+    "compactions": 3,
+    "peak_context_tokens": 246567,
+    "usage": {
+      "input_tokens": 4419071,
+      "output_tokens": 16248,
+      "cache_read_input_tokens": 15745536,
+      "cache_creation_input_tokens": 0
+    }
+  },
+  "tools": {
+    "Bash": 3,
+    "exec": 3
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-21T00:11:55.909Z",
+      "ended": "2026-11-21T01:25:51.310Z",
+      "turns": 26,
+      "api_calls": 48,
+      "usage": {
+        "input_tokens": 1336101,
+        "output_tokens": 6564,
+        "cache_read_input_tokens": 5280000,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 241797
+    },
+    {
+      "index": 1,
+      "started": "2026-11-21T01:25:51.320Z",
+      "ended": "2026-11-21T02:24:44.886Z",
+      "turns": 28,
+      "api_calls": 38,
+      "usage": {
+        "input_tokens": 1778175,
+        "output_tokens": 4424,
+        "cache_read_input_tokens": 4786816,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 246567
+    },
+    {
+      "index": 2,
+      "started": "2026-11-21T02:24:44.899Z",
+      "ended": "2026-11-21T03:09:20.074Z",
+      "turns": 27,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 1216281,
+        "output_tokens": 5004,
+        "cache_read_input_tokens": 5594240,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 239515
+    },
+    {
+      "index": 3,
+      "started": "2026-11-21T03:09:20.085Z",
+      "ended": "2026-11-21T03:10:10.220Z",
+      "turns": 1,
+      "api_calls": 2,
+      "usage": {
+        "input_tokens": 88514,
+        "output_tokens": 256,
+        "cache_read_input_tokens": 84480,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 94221
+    }
+  ],
+  "log": {
+    "sha256": "d7fb881d70374eabac71e7ee2ccfb3e608691c1d568562f9c7a4c2bcd7a90ba4",
+    "bytes": 7672074,
+    "lines": 1606,
+    "gzip_bytes": 1353739,
+    "path": "llm-dlc/traces/01a1fb71-6123-7273-97fb-e6fee4cfcc31/logs/d7fb881d70374eabac71e7ee2ccfb3e608691c1d568562f9c7a4c2bcd7a90ba4.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "npkosurzxovzqtywklumtywnnrnkzkmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Compare real upgrade baselines and retain historical CI evidence (verification pending)",
+      "body": "Two BUMP image pairs give different maintainer decisions. FSCrawler's old ordinary DOCX produced extracted text and the upgrade yielded null. The AssertJ upgrade failed Maven Enforcer before tests; the old suite passed 355 tests. Check image digests, original POM-only diffs, archived CI, bytecode linkage and a networkless replay. Recover 529 original Maven JARs and 845 POMs for warm offline builds. The first FSCrawler repeat stopped at conflicting heap flags before launching Maven; remove the added heap maximum and preserve the original failure.\n\nThe V0 paired JBMC frontend refused distinct dependency closures for rxjava-jdbc and AWS. The actual evidence binds identical application targets, observers, classpaths, deadline and bounds to the native attempts. Add a standalone engine comparison using byte-identical harnesses on both sides. The unchanged JVM validated both input arms on both revisions before the standalone jobs were queued. Original-scope scoring now checks the ordered artifact digests against the signed roster. All four scorecard tests, cost-tier lint and the verification queue validator passed. The new trace allow-list proposal is for the published Jackson Databind version in the AWS POM, which the scanner classified as an IP address.\n\nVerification jobs: 20261121-001305-replay-fscrawler-ordinary-docx-across-th, 20261121-001750-348-run-standalone-jbmc-on-both-original and 20261121-001750-351-run-standalone-jbmc-on-both-original. The separate JBMC checks retain exception and unwinding evidence and cannot earn a blinded product decision.",
+      "log_sha256": "cdc9e8740fd111bdaf6d7c5162a1ab75472dd531c571540767d4fda05bcbff03"
+    },
+    {
+      "change_id": "wurynlzvuwptxqrtqpoyrlmuyksvtmux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Collect the historical DOCX replay and matched standalone JBMC results",
+      "body": "The corrected FSCrawler container reproduced the original DOCX failure and preserving text companion. Standalone JBMC ran on the same original H2 and AWS artifacts as the native checks. H2 hit incomplete unwinding and its isolated caller property even passed on an input the JVM refutes. Both AWS processes exhausted their share of the 600-second engine deadline. Preserve the full per-side outputs and the limits on the comparison.\n\nThe runner collected all three jobs and both independently reconstructed FSCrawler payloads agree. The Cucumber PR record pins the actual merge and head. Both Joda pins passed the 18-input replay again. All Cucumber form, plan, router and cross-example checks passed, as did 36 of 36 changed-test groups.",
+      "log_sha256": "f73b2cc9469b8d82f6272e348b568f14b8609d61c4e5e5befd99231ac0e4b871"
+    },
+    {
+      "change_id": "ktxtxoktymqunruyypwxkmvvlxsxwwmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Select matched upgrade cohorts and bind first reports to their operator",
+      "body": "Jointly select all 16 change and routine pairs with the frozen matching and diversity rules. The local Z3 allocator skips a nearer match when it would exhaust a reserve category, requires audited signed references, and reports aggregate shortfalls while keeping names in custody. The scorecard binds the separate operator profile and records actual client overlap, cross-run exposure and whether an untouched client exercised an improvement.\n\nRelease audited review-time trees and ordered production classpaths separately. Two independently generated rxjava-jdbc and Commons Text packets were byte-identical. The original GitHub source intake accepted the disclosed genuine locator and refused the local neutral form. The signed custody snapshot covers one original-scope preservation reference. Neither cohort was locked.\n\nFive allocation and four scoring regressions passed, including nearest-match traps, signed packet substitution, insufficient evidence and exposure on a paired gain. A 96-change synthetic allocation completed in 0.23 seconds. The cost lint passed, the affected run passed all 36 groups, and the immutable product lock verified 12 tool and JDK digests.",
+      "log_sha256": "31d77066bd0530a9faad9a2060d4a86c06825deac869852177d67d5fede7f50a"
+    },
+    {
+      "change_id": "pzvqxourtvnuusosnlpovkvromtutwop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify an isolated upgrade operator and run Commons Text (verification pending)",
+      "body": "Two actual first-party Claude roles returned the synthetic original JVM observations with only the neutral case tool. The controller freezes the role, prompt, toolchain, isolation checks and request-level budget. The independent reviewer receives a clean copy of the packet and proposed plan. Each PR retains the first report through intake failure, interruption, timeout or success. Its measured one-request scheduler differs from an uninterrupted stock role and is identified separately.\n\nThe first fresh disclosed H2 run verified the source and both 10-JAR classpaths, stopped at the original GitHub-only source requirement and sealed its unavailable report in 23.3 seconds with no model calls. Job 20261121-010347-349-run-a-fresh-operator-on-the-original takes the genuine Commons Text source pair through the same measured operator starting from the neutral request. Both calibrations stay outside the cohorts.\n\nThe two authenticated synthetic trials took 10.4 seconds at an estimated total of $0.089. The synthetic lifecycle reproduced independent stages, 900-second checkpoint, exhausted budgets and first-report preservation. All six execution pins and five original qualification receipts verified, and the changed suite passed all 10 groups. The signed private custody checkpoint now records one full production change and one full production preservation. Neither roster is locked.",
+      "log_sha256": "1bacbe88208b2ad6a1629f3ac1d58203ae3d0bfd470bd87df7a5c2a1dbdf0fdf"
+    },
+    {
+      "change_id": "suxvplotslrlvxlkqstutqzzuuuonvlr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Run original public Maven CI in isolation (verification pending)",
+      "body": "Run both complete upstream checkouts of Commons Text 586 and Cucumber Reporting 1156 on one configured Linux JDK for each project. Preserve their Maven goals, XML results, failure counts, clocks and logs. A networkless build can fetch only Maven Central artifact paths through a read-through mirror, serialized against the shared local cache. Jobs 20261121-011924-349-run-the-original-commons-text-linux and 20261121-011925-352-run-the-original-cucumber-reporting now have the original Git objects and the prescribed JVM scratch directory.\n\nA real isolated Maven 3.10.0 on JDK 11 read the expected cached JUnit JAR. The mirror fetched the disclosed JUnit 5.10.1 POM, verified its independent checksum and served a byte-identical cached read. Two release paths were accepted, six invalid paths refused. Both affected test groups passed.\n\nThe first neutral Commons Text operator run on the case-file continuation scheduler made 42 planning requests and produced no approved claim. Its immutable unavailable report records 207114 charged tokens, an estimated 3.59 dollars and 7 minutes 31 seconds including queue time. The separately adjudicated 156-input finite JVM result remains available. The full default suite passed all 63 groups on the preceding operator commit.",
+      "log_sha256": "ff1dee5bbbc136d49c869e04b5b1afdf9936711f2a670623cecb0ba59b28a4e9"
+    },
+    {
+      "change_id": "ouptkpqnyopwsvtwkmpxyyrqqwnowqxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Measure original Maven suites and rerun stock CI (verification pending)",
+      "body": "Both Cucumber JDK 11 builds passed all 665 reported tests including 27 skips, and a direct replay from nine original source-built classes reproduced the historic 0.007 fixture. Both Commons Text JDK 21 builds ran 1305 tests, including all 34 passing escape tests. The same 18 lookup errors occurred in the isolated machine on both revisions. Retain suite XML checksums, exact named reports, cache requests, and Maven logs. Two independently written grades found that the first two disclosed operator reports supported their availability limits and supplied zero new caller decisions.\n\nJob 20261121-013031-348-reproduce-stock-compsuite-and-the-en runs the unaltered CompSuite CLI with JDK 8, Maven 3.6.3 and CPython 3.11.14. Job 20261121-013031-349-repeat-original-commons-text-ci-with separates ordinary loopback hostname lookup from tests requiring an external site. The transfer scorer binds each product-specific launch independently of common operator and environment identity, and correctly labels V0 even if the arguments are reversed.\n\nVerified all named XML, compressed original logs, both first-report digests and source-built fixture class origins. The documented CompSuite runtime started and its unmodified info command found the expected test. All 41 affected test groups passed, as did all four scoring regressions. All example plans, oracle and repository integration checks passed. The Commons Text form still records the frozen importer failure to produce canonical artifact receipts.",
+      "log_sha256": "6a56ec73387c1e719ca48da0e5155cb8afe5f00b06dcee2fb4508c72511ab779"
+    },
+    {
+      "change_id": "yrrxynxpszxtvkysrvvrturqnvpspqwp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve isolated operator history across requests (verification pending)",
+      "body": "Freeze a shared Claude operator before roster lock. Each role retains its own full native session across metered requests, the reviewer sees only approved case inputs, and a separate uncredentialed image estimates the next request size without product code. Bind each build to a separate launch lock and full tool-root digest while comparing the invariant machine and JDK environment. Stock H2 intake again sealed as unavailable without inference. Job 20261121-014525-349-run-the-history-preserving-operator starts an independent Commons Text calibration with the same original sources and budgets.\n\nBoth authenticated roles recalled their own prior case observation without another tool call in four real requests costing an estimated 0.0551 dollars. Product-only mutations preserved the measured environment digest, while environment changes invalidated it. Fresh Java and javac processes honored case-private JVM temp storage and the original Bitwuzla control proved its claim. All 13 execution pins, the distinct launch and both staged tool roots were verified. All nine affected test groups passed.\n\nThe grader also checks actual non-vacuous native receipts, checker digest, claim identity and status instead of awarding native credit from a tool name. The four scoring regressions passed, including a genuine native receipt and an otherwise identical receipt declaring JBMC. Existing opening reports and their independently authored grades remain immutable.",
+      "log_sha256": "4d933f931bedade17f309880ea571ed895b995e0e6b11edc03c6ddb8c9458572"
+    },
+    {
+      "change_id": "mxumkqtyrttkwrzrvvxysulzuvlkspos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Collect the original suite outcomes and compare AWS (verification pending)",
+      "body": "In its documented environment, the unchanged CompSuite CLI produced one original testcase per fresh H2 revision. The upgraded assertion expected [2] and received [1, 2]. Its zero process exit did not indicate a pass. Complete Maven reruns confirmed 454 tests per pin, two skips, and three upgraded-side failures. The repeat Commons Text suite reduced 18 former network errors to two genuine external-site dependencies by supplying local hostname resolution. All 34 string-escape tests passed on both pins.\n\nThe native-history Commons Text calibration sealed after two planner calls. Its credentialless metering check refused the next request after 2080 charged tokens, about 0.072 estimated dollars and five minutes from intake. No caller claim reached a reviewer. The machine-readable ledger ties cost, original CI and both measured scheduler treatments to their receipts.\n\nJob 20261121-015236-run-both-stock-aws-compcheck-settings-wi starts normal and same-incident-held-out CompCheck from the actual original AWS source with no injected classes or prior context. Both treatments share serial Central restoration, the common 4 CPU and 16 GiB maximum, and a two-hour ceiling. The isolated Maven 3.6.3 and JDK 8 smoke passed. All retained Maven log, named XML and report digests verified, all 35 affected test groups passed, and the example checks showed the previously recorded Commons Text receipt gap.",
+      "log_sha256": "258e7951d45f5050514a928e81abcb497d17ec0e8a2cf560f72f7f4a54d45ed5"
+    },
+    {
+      "change_id": "sqrpvsotxrsupxpkomynolyusyrxrnnl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue blinded historical BUMP repetitions (verification pending)",
+      "body": "A bounded worker can run original BUMP testcases without putting subjects, coordinates, logs or expected outcomes in the public queue. It verifies the frozen private manifest, approved worker bytes and the exact reviewed networkless image helper. Only the four-trial coverage counts and receipt digests can be published. Job 20261121-020417-repeat-one-sequestered-bump-testcase-in repeats an original named case in four clean offline worktrees. The private application evidence remains in custody.\n\nThe real allocator verified the two existing signed original-production references against 694 source entries and 94 matched PR leads and withheld both rosters. A closer four-input routine scope had 16 original-reader matches and 16 independent controls, with two nonoptional full-module dependencies still unavailable on each side. Two original BUMP OCI pairs were verified from the public-order intake before the signed checkpoint.\n\nSynthetic dispatch verified the private-receipt binding and rejected substituted code. The coverage test rejects additional fields, mismatched exits and incorrect trial counts. All affected tests passed, including 58 Rust binaries, and the tier lint agreed. The actual job inputs matched their committed hash, the runtime helper was byte-identical to its public source, and each side inventoried its whole historical Maven cache.",
+      "log_sha256": "3c5f1fcf0d13e4c5cfa4622917bc2245faeffcc5178cb53dade9ee42ed4ed9b8"
+    },
+    {
+      "change_id": "rxnykkvqspyrpywutqotvwsyznroukno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Recognize stock tool results during resumed review (verification pending)",
+      "body": "The ordinary client can append a reminder to a valid broker response or persist a large response as a case-local preview. The meter previously refused both forms. A thin, separately frozen amendment verifies the exact exit and output on the correct native tool ID, authenticates the persisted file and originating session, rejects substituted or foreign content, and retains sanitized terminal flags in the sealed evidence. Prior measurements remain intact. Job 20261121-021356-349-calibrate-verified-native-tool-resul runs the same disclosed Commons Text PR on this pre-lock correction.\n\nA distinct live Commons Text diagnostic reproduced the refusal after two requests and an estimated 0.0521 dollars. The third local shadow preserved the exact 36-byte result and added a 174-character stock reminder. The original historical receipt established only its preflight stop. Synthetic large-output trials independently exercised native file-backed previews. Both model clients passed positive and negative controls, all 15 semantic controls passed, and 58 Rust test binaries passed in the changed-file selection. A forced offline refusal preserved its separately hashed sanitized predicate evidence.\n\nThe fixed profile and launch digests were rechecked on a real scoped H2 intake, which stopped at the original GitHub-only source boundary with zero inference. The new Commons Text run starts fresh and has its own release, clock and report store within the same 4 CPU, 16 GiB, 250000 token and two-hour budgets.",
+      "log_sha256": "26d350b0b8f23e8469c7fe60bf58b973c1e6602058fa5fb90d9e8c34d324ed32"
+    },
+    {
+      "change_id": "xnmxuqlnskntykpulzyrvmoyuxurmnpr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Reconcile native session costs and collect comparison evidence",
+      "body": "The client reports a cumulative dollar estimate when a native session resumes. Use the final reading of each independent conversation and retain each stateless request separately. The scorecard now publishes this derived amount alongside newly sealed reports and can calculate it for existing immutable seals. The case ledger and report correct prior sums. The final Commons Text treatment cost an estimated 1.3339372 dollars; its raw sum of 7.2377754 double-counted earlier turns. All 64 individual request increments matched the frozen token price table within one billionth of a dollar.\n\nOn the original Commons Text PR, the corrected native-result meter restored the prior result and call ID through fourteen planner requests. With 66253 charged tokens and 183747 remaining, its next 175744-byte context needed a conservative reservation of 185984 tokens. No claim was approved. Preserve the terminal predicate evidence, acknowledgements of the metering correction and both earlier first reports. A separate public AWS comparison compiled 576 original production sources per treatment, recovered the real call site with both knowledge sets, and produced no JUnit finding in either.\n\nThe first opaque BUMP reference job returned four fresh exact original testcase records after 92 seconds. Its private receipt is digest-bound and requires independent caller adjudication. The user-only custody checkpoint, outstanding artifact access and one possible module-path trace exposure are recorded without disclosing the candidate. All affected test groups, five scorecard regressions, inventory lint, pinned tool digests and recorded evidence hashes verified.",
+      "log_sha256": "1320e685820eb22144e8ebf3f690a79489eeca854df29d1971335838b1baa5f5"
+    },
+    {
+      "change_id": "nkounlltlnxnznqpvuponrntsumlskkp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Protect private screening output and retain independent opening grades",
+      "body": "Two separate private diagnostics exposed a module-relative path from unslotted leads. The custodian recorded both before selection, flagged the second for possible association with a scoped observation and notified the owner before publication. The new stream filter captures merged stdout and stderr from process start in owner-only files. It emits only an opaque capture receipt and explicitly typed scalar progress. Regex matches on arbitrary output are not a substitute for this schema.\n\nSynthetic tracebacks, both dynamic-key patterns, long streams and malformed summaries retained every original private byte and emitted zero marker bytes. The real process- and unit-level controls passed. The affected selection passed all three groups including 58 Rust binaries. The independent reviewer verified all four native-history first-report seals, both original reference signatures and the complete finite CSV domain. None established an application result, contradicted an assurance or added actionable evidence to CI.\n\nThe latest signed docket checkpoint records 20 excluded, three unavailable and four pending nearer PRs; the original-production reference counts remain one change and one preservation. Four private BUMP builds reproduced all 118 historical compiler outputs and reached the exact named test. Their caller observation still awaits separate adjudication.",
+      "log_sha256": "679ce6218aa4c668380f4fe8f7847286c53b9c646b8a67267e7cd5068ccadf57"
+    },
+    {
+      "change_id": "pnpqvwpulqvoystyqmusmvrtywrulnuq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Reopen curator artifact restoration under the updated acquisition terms",
+      "body": "Record the user’s 02:47:55 UTC clarification before either cohort is locked. Curators can resolve undisclosed coordinates serially from Central and declared public repositories inside the ordinary sandbox, with coordinates and output kept private. The active writable home-cache repository was seeded with 5189 verified files, and the first two missing production JARs and their POMs were restored against their release checksums. Earlier offline dispositions are retained while all affected candidates are reconsidered by the same rule.\n\nThe changed-file selector chose no tests for these two research-protocol pages. The full default tier had passed all 64 groups on the preceding committed tree.",
+      "log_sha256": "d48b643f69a96b841578682153f688907db570c2e0f5c023a696c8c2aedb7cf3"
+    },
+    {
+      "change_id": "kllnmvuptwxulosuzyuqutulzntrqkmz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep unavailable runtimes in the upgrade decision denominator",
+      "body": "Bind the requested runtime and launch separately from the image actually observed. An absent or unverified runtime now seals an honest unavailable first report and the affected PR stays in the denominator. Paired output retains every attempted case and distinguishes verified matched conditions before granting a transferable gain.\n\nAn end-to-end synthetic exercise brought the ordinary staged controller through a genuinely missing runtime, sealed its report and graded it with no inference. Five scorer regressions passed, including missing-image denominator and transfer checks. Both affected test groups, including 58 Cargo binaries, passed and the cost lint agreed.\n\nThe public findings now place the measured callers beside the 24, 8 and 15 study populations. A restricted three-stream scan of 2414 redacted tool-output entries against 271 markers confirmed the two earlier source path exposures and one additional test-method marker. The affected unassigned lead was retired from untouched-oracle claims; a human can review the exact private evidence before any publication.",
+      "log_sha256": "0edf92021400f53077252b28648053c2773b12d2604d256f1bbe0bff08fe578e"
+    }
+  ],
+  "logs": {
+    "0edf92021400f53077252b28648053c2773b12d2604d256f1bbe0bff08fe578e": {
+      "bytes": 7547267,
+      "lines": 1593,
+      "gzip_bytes": 1316071,
+      "url": null
+    },
+    "1320e685820eb22144e8ebf3f690a79489eeca854df29d1971335838b1baa5f5": {
+      "bytes": 5646367,
+      "lines": 1184,
+      "gzip_bytes": 1005047,
+      "url": null
+    },
+    "1bacbe88208b2ad6a1629f3ac1d58203ae3d0bfd470bd87df7a5c2a1dbdf0fdf": {
+      "bytes": 1887378,
+      "lines": 433,
+      "gzip_bytes": 383301,
+      "url": null
+    },
+    "258e7951d45f5050514a928e81abcb497d17ec0e8a2cf560f72f7f4a54d45ed5": {
+      "bytes": 3894576,
+      "lines": 832,
+      "gzip_bytes": 720692,
+      "url": null
+    },
+    "26d350b0b8f23e8469c7fe60bf58b973c1e6602058fa5fb90d9e8c34d324ed32": {
+      "bytes": 4422095,
+      "lines": 970,
+      "gzip_bytes": 805697,
+      "url": null
+    },
+    "31d77066bd0530a9faad9a2060d4a86c06825deac869852177d67d5fede7f50a": {
+      "bytes": 1627632,
+      "lines": 355,
+      "gzip_bytes": 332187,
+      "url": null
+    },
+    "3c5f1fcf0d13e4c5cfa4622917bc2245faeffcc5178cb53dade9ee42ed4ed9b8": {
+      "bytes": 4149275,
+      "lines": 894,
+      "gzip_bytes": 761103,
+      "url": null
+    },
+    "4d933f931bedade17f309880ea571ed895b995e0e6b11edc03c6ddb8c9458572": {
+      "bytes": 3636542,
+      "lines": 771,
+      "gzip_bytes": 682678,
+      "url": null
+    },
+    "679ce6218aa4c668380f4fe8f7847286c53b9c646b8a67267e7cd5068ccadf57": {
+      "bytes": 5962728,
+      "lines": 1271,
+      "gzip_bytes": 1054939,
+      "url": null
+    },
+    "6a56ec73387c1e719ca48da0e5155cb8afe5f00b06dcee2fb4508c72511ab779": {
+      "bytes": 3390453,
+      "lines": 711,
+      "gzip_bytes": 654043,
+      "url": null
+    },
+    "cdc9e8740fd111bdaf6d7c5162a1ab75472dd531c571540767d4fda05bcbff03": {
+      "bytes": 462299,
+      "lines": 91,
+      "gzip_bytes": 110331,
+      "url": null
+    },
+    "d48b643f69a96b841578682153f688907db570c2e0f5c023a696c8c2aedb7cf3": {
+      "bytes": 6659500,
+      "lines": 1457,
+      "gzip_bytes": 1146617,
+      "url": null
+    },
+    "d7fb881d70374eabac71e7ee2ccfb3e608691c1d568562f9c7a4c2bcd7a90ba4": {
+      "bytes": 7672074,
+      "lines": 1606,
+      "gzip_bytes": 1353739,
+      "url": null
+    },
+    "f73b2cc9469b8d82f6272e348b568f14b8609d61c4e5e5befd99231ac0e4b871": {
+      "bytes": 1498548,
+      "lines": 318,
+      "gzip_bytes": 313577,
+      "url": null
+    },
+    "ff1dee5bbbc136d49c869e04b5b1afdf9936711f2a670623cecb0ba59b28a4e9": {
+      "bytes": 2395740,
+      "lines": 573,
+      "gzip_bytes": 458976,
+      "url": null
+    }
+  },
+  "redaction_policy": 5,
+  "generator": "llm-dlc/tools/sync.py"
+}

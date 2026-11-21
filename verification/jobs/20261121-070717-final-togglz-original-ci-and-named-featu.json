@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-070717-final-togglz-original-ci-and-named-featu",
+  "title": "Final Togglz original CI and named feature theory with Bundlor Ant",
+  "description": "Repeat both original Maven lifecycles and the historical feature-flag theory with the last transitive SpringSource Ant release restored and verified.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "original-client-ci"
+  ],
+  "links": {
+    "jobs": [
+      "20261121-065459-restored-deltaspike-original-maven-ci-on"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T07:07:17+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "6G",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "Verify the archived inputs",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/restore_archived.py --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\"",
+      "cwd": "."
+    },
+    {
+      "name": "Recheck both complete original owning-module lifecycles",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --case compsuite-i-81 --seconds 600 --output verification/external-upgrades/corpus-runs/v2-final-original-ci/compsuite-i-81",
+      "cwd": "."
+    },
+    {
+      "name": "Run the original named feature-flag theory",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --focused --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --case compsuite-i-81 --seconds 600 --output verification/external-upgrades/corpus-runs/v2-final-focused-ci",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/v2-final-original-ci/compsuite-i-81",
+    "verification/external-upgrades/corpus-runs/v2-final-focused-ci"
+  ]
+}

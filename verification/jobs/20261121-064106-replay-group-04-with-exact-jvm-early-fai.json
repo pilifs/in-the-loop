@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-064106-replay-group-04-with-exact-jvm-early-fai",
+  "title": "Replay group 04 with exact JVM early failure evidence",
+  "description": "Exercise the unchanged registered observations. Record independently matched returns and errors. For failures before the selected method, match the escaping object to two live debugger stacks and keep the downstream question open. Cases commons-compress-767, commons-compress-822, commons-configuration-565, commons-configuration-601, cucumber-reporting-1220.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T06:41:06+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "6G",
+    "timeout": "70m"
+  },
+  "steps": [
+    {
+      "name": "Recover the original module before optional packaging",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase compile --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-04 --case cucumber-reporting-1220",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the reviewed observer on each original classpath",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/builds\" --complete \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-replay/04 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601 --case cucumber-reporting-1220",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/early-failure-inputs/compiled-04",
+    "verification/external-upgrades/corpus-runs/early-failure-replay/04"
+  ]
+}

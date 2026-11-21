@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-234731-351-run-the-frozen-v0-dependency-upgrade",
+  "title": "351 run the frozen V0 dependency upgrade check",
+  "description": "Invoke the unchanged public workflow on the public SDK ISO round-trip on two instants with the pinned V0 executable, Temurin 21 and Bitwuzla word solver. Verify all 459 protected workflow and verifier source files before and after, bind the original output to its digest and retain the workflow exit. This is a disclosed calibration.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "external-upgrade-evaluation"
+  ],
+  "links": {
+    "examples": [
+      "351"
+    ]
+  },
+  "expected": "The product meets the original semantic expectation. An intake failure or unresolved property remains a failure of this route and its evidence is archived.",
+  "submitted": {
+    "at": "2026-11-20T23:47:31+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "python3",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "16G",
+    "timeout": "2h",
+    "notes": "Opening calibrations took seconds and under 2 GiB. The per-case limit is 4 CPUs, 16 GiB and two hours."
+  },
+  "steps": [
+    {
+      "name": "Run the exact V0 public task",
+      "run": "python3 lib/benchmark/external-upgrades/pinned_task.py 351 roundtrip --output examples/351-aws-joda-instant/records/frozen-v0/roundtrip",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/351-aws-joda-instant/records/frozen-v0/roundtrip",
+    "examples/351-aws-joda-instant/receipts/roundtrip"
+  ]
+}

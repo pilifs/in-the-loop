@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-035106-348-exhaust-both-jdbc-insert-shapes-on-t",
+  "title": "348 exhaust both JDBC insert shapes on the original Rx and H2 classpaths",
+  "description": "Evaluate the exact public boolean-to-int-array adapter for both a combined insert and two separate inserts, using a fresh JVM per selector and version. Retain ordered integer arrays, the independent direct subscriber and database-row controls, and a fresh-JVM replay of the differing input.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "348"
+    ]
+  },
+  "expected": "The paired claim is refuted by the combined insert. The separate-insert companion agrees and the fresh witness returns the original arrays from both actual H2 releases.",
+  "submitted": {
+    "at": "2026-11-21T03:51:06+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Qualify both real JDBC call shapes",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 348 --finite-domain --tasks generated-keys",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/348-rxjava-jdbc-generated-keys/records/finite-proofs"
+  ]
+}

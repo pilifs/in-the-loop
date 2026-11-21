@@ -1,0 +1,95 @@
+{
+  "maven": "3.6.3",
+  "modelJdk": "Temurin 11.0.33+10",
+  "modelBuilderSha256": "7d9a508edae881054fdb6ad530a5e053a0689ab1318bf7a099016e758b8323ba",
+  "modelReader": "examples/349-commons-text-csv-upgrade/reproduction/EffectivePom.java",
+  "sides": {
+    "old": {
+      "revision": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+      "pomSha256": "624eef6f13d9df1d15fe162a5d3544b48977a29e28282abaa2d28222612fc267",
+      "effectiveNormalizedSha256": "b5d8f66252e391e7aea1463e19f132e4eb32d573ba570b7867fc1c248e2b2422",
+      "gzipSha256": "3212d10eecdccdad553bd30b3fc0a6debf5503f7b8c3f2cc503313245f920903",
+      "originalLifecycleOffline": [
+        {
+          "argv": [
+            "mvn",
+            "-B",
+            "-o",
+            "-Dmaven.repo.local=${MODEL_CACHE}",
+            "-f",
+            "${CHECKOUT}/aws-java-sdk-core/pom.xml",
+            "-Dtest=DateUtilsTest#testIssue233JodaTimeLimit",
+            "test"
+          ],
+          "exit": 1,
+          "elapsedSeconds": 0.553,
+          "firstError": "[ERROR] Plugin org.apache.maven.plugins:maven-resources-plugin:2.6 or one of its dependencies could not be resolved: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.maven.plugins:maven-resources-plugin:jar:2.6 has not been downloaded from it before. -> [Help 1]",
+          "freshTestReports": 0
+        },
+        {
+          "argv": [
+            "mvn",
+            "-B",
+            "-o",
+            "-Dmaven.repo.local=${MODEL_CACHE}",
+            "install",
+            "-Dhttps.protocols=TLSv1.2",
+            "-pl",
+            "!aws-java-sdk-osgi"
+          ],
+          "exit": 1,
+          "elapsedSeconds": 0.846,
+          "firstError": "[ERROR] Unresolveable build extension: Plugin org.apache.felix:maven-bundle-plugin:2.5.3 or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.apache.felix:maven-bundle-plugin:jar:2.5.3, org.codehaus.plexus:plexus-utils:jar:1.1: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.felix:maven-bundle-plugin:jar:2.5.3 has not been downloaded from it before. @ ",
+          "freshTestReports": 0
+        }
+      ]
+    },
+    "new": {
+      "revision": "985a81b554e02742036fd158e6494c61a367f980",
+      "pomSha256": "baf8c134e529552161c1a8769c5b23be3ddc8fff792f7c28dd42a1c855e35c67",
+      "effectiveNormalizedSha256": "7b5cfc29e0302c3da7ae6aca48403a2721b0a83e156a0efff1dd14585af5ee4e",
+      "gzipSha256": "e412046533f1ee9134e7baad3a8dfa41d36e5a03a2804fe19cb2abc129b3a216",
+      "originalLifecycleOffline": [
+        {
+          "argv": [
+            "mvn",
+            "-B",
+            "-o",
+            "-Dmaven.repo.local=${MODEL_CACHE}",
+            "-f",
+            "${CHECKOUT}/aws-java-sdk-core/pom.xml",
+            "-Dtest=DateUtilsTest#testIssue233JodaTimeLimit",
+            "test"
+          ],
+          "exit": 1,
+          "elapsedSeconds": 0.574,
+          "firstError": "[ERROR] Plugin org.apache.maven.plugins:maven-resources-plugin:2.6 or one of its dependencies could not be resolved: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.maven.plugins:maven-resources-plugin:jar:2.6 has not been downloaded from it before. -> [Help 1]",
+          "freshTestReports": 0
+        },
+        {
+          "argv": [
+            "mvn",
+            "-B",
+            "-o",
+            "-Dmaven.repo.local=${MODEL_CACHE}",
+            "install",
+            "-Dhttps.protocols=TLSv1.2",
+            "-pl",
+            "!aws-java-sdk-osgi"
+          ],
+          "exit": 1,
+          "elapsedSeconds": 0.752,
+          "firstError": "[ERROR] Unresolveable build extension: Plugin org.apache.felix:maven-bundle-plugin:2.5.3 or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.apache.felix:maven-bundle-plugin:jar:2.5.3, org.codehaus.plexus:plexus-utils:jar:1.1: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.felix:maven-bundle-plugin:jar:2.5.3 has not been downloaded from it before. @ ",
+          "freshTestReports": 0
+        }
+      ]
+    }
+  },
+  "externalPomFiles": {
+    "org/sonatype/oss/oss-parent/9/oss-parent-9.pom": "fb40265f982548212ff82e362e59732b2187ec6f0d80182885c14ef1f982827a",
+    "com/fasterxml/oss-parent/56/oss-parent-56.pom": "fd491f78857424106d2e3d605bcd799b53d31a565cdc868463ca7e875db45a50",
+    "com/fasterxml/jackson/jackson-parent/2.16/jackson-parent-2.16.pom": "8bf6142812148a2abf6850b272f0af4c3d8ff1121ed604c402f3f38c9e6546ab",
+    "com/fasterxml/jackson/jackson-bom/2.16.0/jackson-bom-2.16.0.pom": "5aaa28874405bf04fba8e2c57159227824461ba6f7d552abdb8e8d3a0ba6f8bf",
+    "com/fizzed/maven-parent/2.1.0/maven-parent-2.1.0.pom": "bba5e63c24abf01cc7d80573d9061840a5681d6b1e7145006e6c4b25a859ed6f"
+  }
+}

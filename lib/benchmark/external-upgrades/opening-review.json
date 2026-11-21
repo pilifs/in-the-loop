@@ -1,0 +1,135 @@
+{
+  "schema": "external-upgrade-open-adjudication/v1",
+  "reviewer": "Campaign implementation session, independent of both evidence producers",
+  "scored": false,
+  "commonsText": {
+    "evidence": {
+      "old": {
+        "rows": 156,
+        "wrongFields": 0,
+        "jsonlSha256": "edab64508ca680b4f16298106dee8d2b21c6dbf3db544a6b7acbb31ea6a1997a",
+        "singleQuote": [
+          34,
+          34,
+          34,
+          34
+        ]
+      },
+      "new": {
+        "rows": 156,
+        "wrongFields": 0,
+        "jsonlSha256": "edab64508ca680b4f16298106dee8d2b21c6dbf3db544a6b7acbb31ea6a1997a",
+        "singleQuote": [
+          34,
+          34,
+          34,
+          34
+        ]
+      },
+      "mutant": {
+        "rows": 156,
+        "wrongFields": 71,
+        "jsonlSha256": "c60823d093661d212c732a788d8be89dbd815a429256187fa6e046c757800207",
+        "singleQuote": [
+          34,
+          34,
+          34
+        ]
+      }
+    },
+    "grade": "Exhaustive original caller behavior preserved on all 156 inputs in both full source builds. The public native workflow stopped at modified UTF-8 during intake.",
+    "action": "Keep the upgrade on the CSV field domain. Retain the existing quote-doubling check.",
+    "incremental": "No new failure. The independent check expands exact character coverage over the full enumerated alphabet."
+  },
+  "rxjava": {
+    "evidence": {
+      "old": {
+        "test": "com.github.davidmoten.rx.jdbc.DatabaseSyncTest#testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement",
+        "failureMessage": null,
+        "observations": {
+          "combined": {
+            "keys": [
+              2
+            ],
+            "rows": [
+              [
+                1,
+                "something"
+              ],
+              [
+                2,
+                "again"
+              ]
+            ],
+            "h2Jar": "h2-1.4.192.jar",
+            "sha256": "225b22e9857235c46c93861410b60b8c81c10dc8985f4faf188985ba5445126c"
+          },
+          "separate": {
+            "keys": [
+              1,
+              2
+            ],
+            "rows": [
+              [
+                1,
+                "something"
+              ],
+              [
+                2,
+                "again"
+              ]
+            ],
+            "h2Jar": "h2-1.4.192.jar",
+            "sha256": "225b22e9857235c46c93861410b60b8c81c10dc8985f4faf188985ba5445126c"
+          }
+        }
+      },
+      "new": {
+        "test": "com.github.davidmoten.rx.jdbc.DatabaseSyncTest#testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement",
+        "failureMessage": "expected:<[2]> but was:<[1, 2]>",
+        "observations": {
+          "combined": {
+            "keys": [
+              1,
+              2
+            ],
+            "rows": [
+              [
+                1,
+                "something"
+              ],
+              [
+                2,
+                "again"
+              ]
+            ],
+            "h2Jar": "h2-1.4.200.jar",
+            "sha256": "3ad9ac4b6aae9cd9d3ac1c447465e1ed06019b851b893dd6a8d76ddb6d85bca6"
+          },
+          "separate": {
+            "keys": [
+              1,
+              2
+            ],
+            "rows": [
+              [
+                1,
+                "something"
+              ],
+              [
+                2,
+                "again"
+              ]
+            ],
+            "h2Jar": "h2-1.4.200.jar",
+            "sha256": "3ad9ac4b6aae9cd9d3ac1c447465e1ed06019b851b893dd6a8d76ddb6d85bca6"
+          }
+        }
+      }
+    },
+    "grade": "Relevant developer expectation changed for a single multi-row insert. Separate insert calls and stored rows are preserved in the companion.",
+    "action": "Review any caller assuming one last key per statement. Update the expected sequence only where both returned keys are intended.",
+    "incremental": "The named CI test already reports the change. Inspecting stored rows and the second call shape explains which application behavior is affected.",
+    "eligibility": "Disclosed calibration. Client declares H2 with test scope."
+  }
+}

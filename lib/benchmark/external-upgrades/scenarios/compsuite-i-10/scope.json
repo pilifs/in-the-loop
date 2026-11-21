@@ -1,0 +1,153 @@
+{
+  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(Ljava/util/List;)J",
+  "probeClass": "UpgradeProbe",
+  "observer": "Open the original LanguageTool n-gram indexes and read the occurrence count for the supplied tokens.",
+  "basis": "The upstream LuceneSingleIndexLanguageModelTest.testLanguageModel gives the counts for the unigram, bigram, trigram and missing token. All three index directories come byte-for-byte from both original commits.",
+  "fixtures": [
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/_0.cfe",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/_0.cfe",
+      "sha256": "75760809d512411c9e578111a1b5344571fa7907214fa0b8db0c107e22b2d8f7"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/_0.cfs",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/_0.cfs",
+      "sha256": "46f35d0cf0a924aa7565e6c0946e2d039085ce16414d55a28e157731dbc0d955"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/_0.si",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/_0.si",
+      "sha256": "f960333b051c093e172984ba0acadaed94d70d02de8b626b57ad802fb912c77e"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/segments.gen",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/segments.gen",
+      "sha256": "3590ca7b85581e41d9c5932d92c9cd907e9247633c780e41d38a504f27803043"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/segments_1",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/segments_1",
+      "sha256": "04c7479454747bc93aff994c54a8b1569091c4e7b9bd5a36d0bf8f75eceb2433"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/1grams/write.lock",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/1grams/write.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/_0.cfe",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/_0.cfe",
+      "sha256": "c1d4140edbd1e5eaa0aa0e3cb94e197674fcc190f3b271cff81819235bf9e8c9"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/_0.cfs",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/_0.cfs",
+      "sha256": "32ad9ef7e5bf2369213dc7a943376b6c51d0f696dca5dd7ecba87af5e36d317f"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/_0.si",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/_0.si",
+      "sha256": "71cfb4df2b3226de85421b6f6e25428b9b1d7517534b07e4570b570a54727f80"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/segments.gen",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/segments.gen",
+      "sha256": "3590ca7b85581e41d9c5932d92c9cd907e9247633c780e41d38a504f27803043"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/segments_1",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/segments_1",
+      "sha256": "04c7479454747bc93aff994c54a8b1569091c4e7b9bd5a36d0bf8f75eceb2433"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/2grams/write.lock",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/2grams/write.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/_0.cfe",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/_0.cfe",
+      "sha256": "52aa6462fc05531965386cbe7fa34495be24f30495f50fe01105a8fa34d50808"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/_0.cfs",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/_0.cfs",
+      "sha256": "cbb48a0e101f00cbcecf4806e3e83986e5f27005a4fc0d573082d9f81369e5ec"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/_0.si",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/_0.si",
+      "sha256": "1da89412ce5fd22b936cbe318d6f96679182ef4dcf7908c7ee220d00b8bfedd6"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/segments.gen",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/segments.gen",
+      "sha256": "3590ca7b85581e41d9c5932d92c9cd907e9247633c780e41d38a504f27803043"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/segments_1",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/segments_1",
+      "sha256": "04c7479454747bc93aff994c54a8b1569091c4e7b9bd5a36d0bf8f75eceb2433"
+    },
+    {
+      "kind": "resource",
+      "file": "ngram-index/3grams/write.lock",
+      "source": "languagetool-core/src/test/resources/org/languagetool/resource/yy/ngram-index/3grams/write.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "the"
+      ],
+      "expected": {
+        "return": "55"
+      }
+    },
+    {
+      "args": [
+        "the",
+        "nice"
+      ],
+      "expected": {
+        "return": "3"
+      }
+    },
+    {
+      "args": [
+        "the",
+        "nice",
+        "building"
+      ],
+      "expected": {
+        "return": "1"
+      }
+    },
+    {
+      "args": [
+        "not-in-here"
+      ],
+      "expected": {
+        "return": "0"
+      }
+    }
+  ]
+}

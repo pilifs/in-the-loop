@@ -1,0 +1,40 @@
+{
+  "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+  "probeClass": "com.iodesystems.whatjdk.UpgradeProbe",
+  "observer": "Read the classfile, fields and methods delivered by the original WhatJDK archive reader. The four inputs cover reference arrays, overloads, a long field and an empty class.",
+  "basis": "The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator.",
+  "cases": [
+    {
+      "args": [
+        "yv66vgAAADQAEAoAAwANBwAOBwAPAQAFdG90YWwBAAFKAQAFbmFtZXMBABNbTGphdmEvbGFuZy9TdHJpbmc7AQAGPGluaXQ+AQADKClWAQAEQ29kZQEABmNob29zZQEAKChbTGphdmEvbGFuZy9TdHJpbmc7SSlMamF2YS9sYW5nL09iamVjdDsMAAgACQEAJmV2YWx1YXRpb24vZml4dHVyZS9BcnJheXNBbmRSZWZlcmVuY2VzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAIABAAEAAUAAAABAAYABwAAAAIAAQAIAAkAAQAKAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEACwAMAAEACgAAABAAAgADAAAABCscMrAAAAAAAAA="
+      ],
+      "expected": {
+        "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA=="
+      ],
+      "expected": {
+        "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFKAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAcZXZhbHVhdGlvbi9maXh0dXJlL0xvbmdGaWVsZAEAEGphdmEvbGFuZy9PYmplY3QBAAVsYWJlbAAxAAQABQAAAAIAAgAGAAcAAAAZAAgACQABAAoAAAACAAsAAwABAAwADQABAA4AAAARAAEAAQAAAAUqtwABsQAAAAAAAQAPABAAAQAOAAAAEAACAAIAAAAEGwRgrAAAAAAAAQAPABEAAQAOAAAAEgAEAAMAAAAGHxQAAmGtAAAAAAAA"
+      ],
+      "expected": {
+        "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA=="
+      ],
+      "expected": {
+        "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+      }
+    }
+  ]
+}

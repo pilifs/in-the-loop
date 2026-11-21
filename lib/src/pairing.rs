@@ -57,8 +57,8 @@
 //!   there). This is the reading of "the same exception" the claims of 287 and 307 are checked under: a JVM's
 //!   message for a `NullPointerException` the JVM raises names the method the null was called with, so the two
 //!   versions of 307 (`getBytes(String)` against `getBytes(Charset)`) throw for a null password exceptions whose
-//!   messages differ, which the claim means to be the same. The outcome's note says so. A method that declares
-//!   checked exceptions is refused, not yet taken;
+//!   messages differ, which the claim means to be the same. The paired harness catches escaping throwables on each call,
+//!   including methods that declare checked exceptions;
 //! - **the result** is compared by `==` for a primitive and by content for a String, two nulls agreeing;
 //! - **each version starts as if it ran alone** ([`FRESH`]): the scope, the previous version and the new one each
 //!   begin where the checker has given the path a fresh state, the static fields and the classes' initialization
@@ -129,9 +129,7 @@ pub fn refusal(options: &Options, method: &Method, before: Option<&Method>, own_
     if before.descriptor != method.descriptor || !before.is_static() {
         return Some("the previous version's method has another descriptor: a regression check as a property of the pair of versions calls the same method of both".into());
     }
-    if [method, before].iter().any(|m| m.attributes.iter().any(|a| a.name == "Exceptions")) {
-        return Some("the method declares checked exceptions, which a regression check as a property of the pair of versions (lib/src/pairing.rs) does not take yet".into());
-    }
+
     if !own_checker && !arrays {
         return Some("a regression check with an assumption, lemmas, a String[] or a nullable String is the tool's own checker's (--engine native or auto, without --confirm): JBMC is given none of them".into());
     }

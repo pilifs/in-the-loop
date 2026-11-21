@@ -1,0 +1,262 @@
+{
+  "example": "351",
+  "recipeSha256": "3efffa831de147910d3684c30611a1a0f00aeee2d4fafd59d2c203d42d1d7266",
+  "observerSha256": "8cc7d0ac4af57efeee7a28ed3e7e8f407a3f5a2ea8ff261d8fc82c81048eb872",
+  "changedPaths": [
+    "aws-java-sdk-core/pom.xml"
+  ],
+  "sides": {
+    "old": {
+      "revision": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+      "originalInputs": {
+        "aws-java-sdk-core/src/main/java/com/amazonaws/AmazonClientException.java": "fe082e368d5fd5bab9d1209b47f202fb712b44b4388ad586fa6fc325052b4a32",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/SdkBaseException.java": "1817e9e0731dcbb364e57fb034abeabffd6b8842bbbb2126d13e839d72057e73",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/SdkClientException.java": "fdc13d5f1a988331264d3d6946ed7bcfb3ea95c495df067328263f12e095997e",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/annotation/SdkInternalApi.java": "f47dd4ed1aee06c8a4cc20b2ca140f6c81c064f02138db0995a44923f3b325ee",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/annotation/ThreadSafe.java": "192448583fc6f478d14686620eb0c4397723c85880fb8c5902f3037a4e54af52",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/util/DateUtils.java": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336"
+      },
+      "subjectJdkRelease": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "subjectJdkImage": "e699f968b854b98994148dac954cfb1fa78a0a7065d64e374a6d57fb463d5d5e",
+      "classpath": [
+        {
+          "name": "driver",
+          "sha256": "cde16231d16f5aeaff95989790615df4eaf2ec439fe7e19ddebf0b213392e29b"
+        },
+        {
+          "name": "client",
+          "sha256": "f4c8e19fee76237b163ab6a17cd75feb596d6085026a5eb8b2b30f25b57a9a60"
+        },
+        {
+          "name": "joda-time-2.8.1.jar",
+          "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2"
+        }
+      ],
+      "compileClasspath": [
+        {
+          "name": "joda-time-2.8.1.jar",
+          "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2"
+        },
+        {
+          "name": "aws-java-sdk-core-1.11.664.jar",
+          "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+        }
+      ],
+      "loaded": [
+        {
+          "class": "com.amazonaws.util.DateUtils",
+          "from": "client"
+        },
+        {
+          "class": "com.amazonaws.SdkBaseException",
+          "from": "client"
+        },
+        {
+          "class": "com.amazonaws.AmazonClientException",
+          "from": "client"
+        },
+        {
+          "class": "com.amazonaws.SdkClientException",
+          "from": "client"
+        },
+        {
+          "class": "org.joda.time.format.DateTimeFormatter",
+          "from": "joda-time-2.8.1.jar"
+        }
+      ],
+      "observations": [
+        "formatter\t9223372036854775807\t292278994-08-17T07:12:55.807Z\tthrow\torg.joda.time.IllegalFieldValueException\tCannot parse \"292278994-08-17T07:12:55.807Z\": Value 292278994 for year must be in the range [-292275054,292278993]",
+        "sdk\t9223372036854775807\t292278994-08-17T07:12:55.807Z\treturn\t9223372036854775807",
+        "formatter\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123",
+        "sdk\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123"
+      ],
+      "prepSeconds": 0.762,
+      "observationSeconds": 0.081,
+      "publishedComparison": {
+        "jar": "aws-java-sdk-core-1.11.664.jar",
+        "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
+        "classes": 6,
+        "different": []
+      },
+      "namedTest": {
+        "class": "com.amazonaws.util.DateUtilsTest",
+        "method": "testIssue233JodaTimeLimit",
+        "sourceSha256": "bfe3823aecb3d6689c27f291c75d2fdb220e09e1d2c74de4f9ca724201d6a629",
+        "xmlSha256": "1c5200e4525fe0d6d50002576c779af4fa1345718cbe603ce64622526ccd7411",
+        "status": "passed",
+        "providerExit": 0,
+        "exception": null,
+        "message": null,
+        "classpath": [
+          {
+            "name": "tests",
+            "sha256": "11e38c4f61bead26fef2337032503fc49a8fbe7b650e6631af9a686923c8e01c"
+          },
+          {
+            "name": "client",
+            "sha256": "f4c8e19fee76237b163ab6a17cd75feb596d6085026a5eb8b2b30f25b57a9a60"
+          },
+          {
+            "name": "joda-time-2.8.1.jar",
+            "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2"
+          },
+          {
+            "name": "junit-4.12.jar",
+            "sha256": "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a"
+          },
+          {
+            "name": "hamcrest-core-1.3.jar",
+            "sha256": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+          },
+          {
+            "name": "surefire-api-2.12.4.jar",
+            "sha256": "84f6a8a5ca6072eee7b48592e3e491d7bb85f24faebbc5fcf4c745056d5d8dfb"
+          },
+          {
+            "name": "surefire-junit4-2.12.4.jar",
+            "sha256": "1f577b8aeee990dcb7d0fa3fa7ac8962e253e00dd41921cae6ecac72691398fc"
+          },
+          {
+            "name": "maven-surefire-common-2.12.4.jar",
+            "sha256": "5fa774434507bea2edcf4496536c88f883926cc6baf121b5af172fa494aaa30d"
+          },
+          {
+            "name": "aws-java-sdk-core-1.11.664.jar",
+            "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+          },
+          {
+            "name": "jackson-core-2.6.7.jar",
+            "sha256": "918c04b9f9043d51dead2192b5d94d9f065870c9f26c8defbe9c6dbc951f304f"
+          }
+        ],
+        "elapsedSeconds": 0.179
+      }
+    },
+    "new": {
+      "revision": "985a81b554e02742036fd158e6494c61a367f980",
+      "originalInputs": {
+        "aws-java-sdk-core/src/main/java/com/amazonaws/AmazonClientException.java": "fe082e368d5fd5bab9d1209b47f202fb712b44b4388ad586fa6fc325052b4a32",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/SdkBaseException.java": "1817e9e0731dcbb364e57fb034abeabffd6b8842bbbb2126d13e839d72057e73",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/SdkClientException.java": "fdc13d5f1a988331264d3d6946ed7bcfb3ea95c495df067328263f12e095997e",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/annotation/SdkInternalApi.java": "f47dd4ed1aee06c8a4cc20b2ca140f6c81c064f02138db0995a44923f3b325ee",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/annotation/ThreadSafe.java": "192448583fc6f478d14686620eb0c4397723c85880fb8c5902f3037a4e54af52",
+        "aws-java-sdk-core/src/main/java/com/amazonaws/util/DateUtils.java": "b9818ec907d5f0cb2b3918b16b6de28f67b07ede9b2d9c7b92baa6edfce12336"
+      },
+      "subjectJdkRelease": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "subjectJdkImage": "e699f968b854b98994148dac954cfb1fa78a0a7065d64e374a6d57fb463d5d5e",
+      "classpath": [
+        {
+          "name": "driver",
+          "sha256": "cde16231d16f5aeaff95989790615df4eaf2ec439fe7e19ddebf0b213392e29b"
+        },
+        {
+          "name": "client",
+          "sha256": "f4c8e19fee76237b163ab6a17cd75feb596d6085026a5eb8b2b30f25b57a9a60"
+        },
+        {
+          "name": "joda-time-2.10.5.jar",
+          "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e"
+        }
+      ],
+      "compileClasspath": [
+        {
+          "name": "joda-time-2.10.5.jar",
+          "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e"
+        },
+        {
+          "name": "aws-java-sdk-core-1.11.664.jar",
+          "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+        }
+      ],
+      "loaded": [
+        {
+          "class": "com.amazonaws.util.DateUtils",
+          "from": "client"
+        },
+        {
+          "class": "com.amazonaws.SdkBaseException",
+          "from": "client"
+        },
+        {
+          "class": "com.amazonaws.AmazonClientException",
+          "from": "client"
+        },
+        {
+          "class": "com.amazonaws.SdkClientException",
+          "from": "client"
+        },
+        {
+          "class": "org.joda.time.format.DateTimeFormatter",
+          "from": "joda-time-2.10.5.jar"
+        }
+      ],
+      "observations": [
+        "formatter\t9223372036854775807\t292278994-08-17T07:12:55.807Z\treturn\t9223372036854775807",
+        "sdk\t9223372036854775807\t292278994-08-17T07:12:55.807Z\treturn\t9223372036854775807",
+        "formatter\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123",
+        "sdk\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123"
+      ],
+      "prepSeconds": 0.676,
+      "observationSeconds": 0.095,
+      "publishedComparison": {
+        "jar": "aws-java-sdk-core-1.11.664.jar",
+        "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
+        "classes": 6,
+        "different": []
+      },
+      "namedTest": {
+        "class": "com.amazonaws.util.DateUtilsTest",
+        "method": "testIssue233JodaTimeLimit",
+        "sourceSha256": "bfe3823aecb3d6689c27f291c75d2fdb220e09e1d2c74de4f9ca724201d6a629",
+        "xmlSha256": "3c0b32183233730107ed69d0597b9e85a288876a2a19bf326ecb72ff10babde8",
+        "status": "error",
+        "providerExit": 1,
+        "exception": "java.lang.Exception",
+        "message": "Unexpected exception, expected<org.joda.time.IllegalFieldValueException> but was<java.lang.AssertionError>",
+        "classpath": [
+          {
+            "name": "tests",
+            "sha256": "11e38c4f61bead26fef2337032503fc49a8fbe7b650e6631af9a686923c8e01c"
+          },
+          {
+            "name": "client",
+            "sha256": "f4c8e19fee76237b163ab6a17cd75feb596d6085026a5eb8b2b30f25b57a9a60"
+          },
+          {
+            "name": "joda-time-2.10.5.jar",
+            "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e"
+          },
+          {
+            "name": "junit-4.12.jar",
+            "sha256": "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a"
+          },
+          {
+            "name": "hamcrest-core-1.3.jar",
+            "sha256": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+          },
+          {
+            "name": "surefire-api-2.12.4.jar",
+            "sha256": "84f6a8a5ca6072eee7b48592e3e491d7bb85f24faebbc5fcf4c745056d5d8dfb"
+          },
+          {
+            "name": "surefire-junit4-2.12.4.jar",
+            "sha256": "1f577b8aeee990dcb7d0fa3fa7ac8962e253e00dd41921cae6ecac72691398fc"
+          },
+          {
+            "name": "maven-surefire-common-2.12.4.jar",
+            "sha256": "5fa774434507bea2edcf4496536c88f883926cc6baf121b5af172fa494aaa30d"
+          },
+          {
+            "name": "aws-java-sdk-core-1.11.664.jar",
+            "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+          },
+          {
+            "name": "jackson-core-2.6.7.jar",
+            "sha256": "918c04b9f9043d51dead2192b5d94d9f065870c9f26c8defbe9c6dbc951f304f"
+          }
+        ],
+        "elapsedSeconds": 0.182
+      }
+    }
+  }
+}

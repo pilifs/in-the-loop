@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "352",
+  "title": "Cucumber Reporting preserves millisecond display precision",
+  "summary": "On both Joda-Time versions, 18 deserialized report durations print seconds and three digits of truncated milliseconds in UTC and English.",
+  "origin": "real-world",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "clocks-and-time",
+    "rounding",
+    "pull-request-review",
+    "external-target"
+  ],
+  "severity": "low",
+  "subject": {
+    "system": "Cucumber Reporting",
+    "file": "src/main/java/net/masterthought/cucumber/json/Result.java",
+    "symbol": "net.masterthought.cucumber.json.Result#getFormattedDuration"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "dependency-upgrade",
+    "description": "On both Joda-Time versions, 18 deserialized report durations print seconds and three digits of truncated milliseconds in UTC and English."
+  },
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/damianszczepanik/cucumber-reporting",
+    "url": "https://github.com/damianszczepanik/cucumber-reporting/pull/1156"
+  },
+  "verdictLabel": "Independent finite JVM calibration",
+  "notes": [
+    "Disclosed external-upgrade calibration. The caller observations and preparation scope are recorded with the example.",
+    "Each selector picks one of three seconds, three millisecond values and two remainders; Jackson builds the real Result and the actual Joda formatter supplies the returned text.",
+    "The unchanged sample.json result in ResultTest contains 7,040,000 ns and status passed. A separate JVM run loaded nine client classes built from each original revision and formatted it as 0.007 on both Joda versions."
+  ],
+  "target": "target.json"
+}

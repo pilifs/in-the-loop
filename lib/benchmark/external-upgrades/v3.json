@@ -1,0 +1,87 @@
+{
+  "schema": "external-upgrade-product/v1",
+  "revision": "83ae65d6afb1beec8e1a9237787df69693c7968d",
+  "gitObjects": {
+    "lib/Cargo.lock": "2f6deac2c3db25b2b551a2a8eae25c13551db0de",
+    "lib/Cargo.toml": "a8d1b5c245cb92e35e5abc6f2e93dc57e0b909ee",
+    "lib/src": "10dd8965c063f7f349a0d22abbf0d52f3e3c4f0f",
+    "lib/models": "799b484f3624e3e74918f82b69840306c2ad53c7",
+    "lib/solvers": "b00d39cd171c87df7d93da28c8c9413d84f000b4",
+    "examples/tools": "d4c59c739aad478f157bd9e0717b0d90ccff82df",
+    "examples/schema": "a116cfe7f3e73488c33e19311f5f3c069340d800",
+    "llm-dlc/runtime.md": "1ee50a862ea493712af74a2160622b35be81cc2d",
+    "llm-dlc/tools": "6300aa3fbab02289fc3201a7c804219d2f8a20af",
+    "llm-dlc/prove-plan-template.md": "b93d2755ac69abf15540cd2b81a0ef6c2552a5b4",
+    "llm-dlc/prove-plan.schema.json": "25e666c3c924f1983c0b14ec75440382248bcb6e",
+    ".agents/skills/prove-java-change": "c7ca301f0dfff8dea3afc8c32600043009a1bb43",
+    ".claude/skills/prove-java-change": "edf20affe49afd13f291c2674a06715927b85dc4"
+  },
+  "sourceManifestSha256": "b73426bfef7ee9e0391de5050e32e28ecdf177ed57075a75bd3a85b30630626c",
+  "sha256": {
+    "jvmcontract": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
+    "jbmc": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+    "z3": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+    "release": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+    "bin/java": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+    "bin/javac": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+    "lib/server/libjvm.so": "b1a6a98962406718a491922ea6a3f8d898ea7c4a9ebe814a7963defc61ce62b2",
+    "lib/modules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+    "libbitwuzla.so.0": "eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99",
+    "libbitwuzlabv.so": "572d4d4ddc6059933a9118f646ca8e8ae13297717eebf4f1ff18c279c21e00e2",
+    "libbitwuzlabb.so": "451f9a45e9a56360189b4148a5f757d9a164b687156f2261530c68faea547738",
+    "libbitwuzlals.so": "6ce5946999d68a87e6b38ec4ebf33dc68dd8aab072fedc9b0429fc65a96f2a2c"
+  },
+  "architecture": "x86_64",
+  "build": [
+    "cargo",
+    "build",
+    "--offline",
+    "--locked",
+    "--manifest-path",
+    "lib/Cargo.toml",
+    "--profile",
+    "test-fast",
+    "--bin",
+    "jvmcontract"
+  ],
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+  "checkerVersion": "jvmcontract 0.1.0",
+  "jbmcVersion": "6.11.0 (cbmc-6.11.0)",
+  "z3Version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
+  "plannerAndProver": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "preparation": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "neutralPrompt": "Identify which behavior of this application could change for its caller. Check the most consequential preservation or change claim you can justify with the pinned verifier. Record the result as open at the first unsupported operation.",
+  "promptSha256": "a8b55a0348d4d6f30ad6e19e5bd6c69a17032a426a96def9a16a2194f4fdb115",
+  "native": {
+    "engine": "native",
+    "gaps": "strict",
+    "solver": "bitwuzla-words"
+  },
+  "workflow": [
+    "llm-dlc/runtime.md",
+    "python3 examples/tools/build.py --plan NNN --task TASK",
+    "python3 examples/tools/build.py NNN --task TASK",
+    "python3 examples/tools/targets/workflow_handoff.py handoff NNN --markdown",
+    "python3 verification/pipeline.py report --format json"
+  ],
+  "engineeringInputs": {
+    "corpus.json": "bc3159780eb227b9f9753ecbc49ca543bb9fc700",
+    "scenarios": "4e897dc6c6e11d3ac9c230fae41697d722906b78",
+    "engineering.py": "b046a95e384dd53aff7afe795792618316be40c6",
+    "check_scenarios.py": "8104755c9587f30495e761cc487c7f09b4d1963d",
+    "corpus_sources.py": "b3bba48d1d7394e3f2edd5ea6d45444ca2784a48",
+    "baselines/complete_client.py": "07a05016ccc5b2960c149feb65c799b1cb1a942d",
+    "baselines/corpus_ci.py": "8f2325d3aad205058a46ecc89a449f68b7f5fb06",
+    "baselines/maven_mirror.py": "69a8e5fc4f103990c6977324c6ce438947d0994a",
+    "baselines/restore_archived.py": "c9a2c4ba430d7ff420f33b98b559866d8550483a",
+    "baselines/archived-releases.json": "3c36831adb5d6e67c102747b626cd76c324d1a76",
+    "baselines/jdbc_selection.py": "7e5cce5f7e82008ccdd6e81b3214bf0475ce1f42"
+  }
+}

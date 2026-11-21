@@ -1,0 +1,35 @@
+{
+  "entry": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+  "probeClass": "UpgradeProbe",
+  "observer": "Transform and execute the developer\u2019s simple await shape and read the resulting task value.",
+  "basis": "The input bytecode awaits and returns its completed Task argument. Its class bytes are fixed on the original ASM version. The upstream test expects hello; the second input verifies that the returned value follows its own argument.",
+  "fixtures": [
+    {
+      "kind": "java",
+      "file": "Task.java",
+      "source": "async/src/test/java/com/ea/async/Task.java",
+      "sha256": "c7a40dc32645fe0c0cef73545226447f70a78e4e7c8639411da112120373626a",
+      "class": "com.ea.async.Task"
+    }
+  ],
+  "cases": [
+    {
+      "args": [
+        "yv66vgAAADQAGQEAC1NpbXBsZUFzeW5jBwABAQAQamF2YS9sYW5nL09iamVjdAcAAwEAGlVwZ3JhZGVQcm9iZSRBc3luY0Z1bmN0aW9uBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQAnKExqYXZhL2xhbmcvT2JqZWN0OylMY29tL2VhL2FzeW5jL1Rhc2s7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWNvbS9lYS9hc3luYy9UYXNrBwAPAQASY29tL2VhL2FzeW5jL0FzeW5jBwARAQAFYXdhaXQBADwoTGphdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRhYmxlRnV0dXJlOylMamF2YS9sYW5nL09iamVjdDsMABMAFAoAEgAVAQAEQ29kZQEACkV4Y2VwdGlvbnMAIQACAAQAAQAGAAAAAgABAAcACAABABcAAAARAAEAAQAAAAUqtwAKsQAAAAAAAQALAAwAAgAXAAAAGQABAAIAAAANK8AAELgAFlcrwAAQsAAAAAAAGAAAAAQAAQAOAAA=",
+        "hello"
+      ],
+      "expected": {
+        "return": "hello"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAGQEAC1NpbXBsZUFzeW5jBwABAQAQamF2YS9sYW5nL09iamVjdAcAAwEAGlVwZ3JhZGVQcm9iZSRBc3luY0Z1bmN0aW9uBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQAnKExqYXZhL2xhbmcvT2JqZWN0OylMY29tL2VhL2FzeW5jL1Rhc2s7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWNvbS9lYS9hc3luYy9UYXNrBwAPAQASY29tL2VhL2FzeW5jL0FzeW5jBwARAQAFYXdhaXQBADwoTGphdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRhYmxlRnV0dXJlOylMamF2YS9sYW5nL09iamVjdDsMABMAFAoAEgAVAQAEQ29kZQEACkV4Y2VwdGlvbnMAIQACAAQAAQAGAAAAAgABAAcACAABABcAAAARAAEAAQAAAAUqtwAKsQAAAAAAAQALAAwAAgAXAAAAGQABAAIAAAANK8AAELgAFlcrwAAQsAAAAAAAGAAAAAQAAQAOAAA=",
+        "second"
+      ],
+      "expected": {
+        "return": "second"
+      }
+    }
+  ]
+}

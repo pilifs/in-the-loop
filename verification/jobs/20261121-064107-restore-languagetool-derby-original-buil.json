@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-064107-restore-languagetool-derby-original-buil",
+  "title": "Restore LanguageTool Derby original build and test",
+  "description": "Both original LanguageTool pins depend on the retired JCenter xgboost predictor 0.3.0. Rebuild both modules on the original JDK, resolve the declared upgraded artifact and run the original registered developer testcase in fresh checkouts using the recovered cache.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T06:41:07+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "6G",
+    "timeout": "70m"
+  },
+  "steps": [
+    {
+      "name": "Compile both original revisions",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --phase compile --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --seconds 650 --case compsuite-i-9 --output verification/external-upgrades/corpus-runs/restored-legacy-maven/compsuite-i-9/module",
+      "cwd": "."
+    },
+    {
+      "name": "Run the historical named testcase on each pin",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/corpus_ci.py --focused --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --seconds 650 --case compsuite-i-9 --output verification/external-upgrades/corpus-runs/restored-legacy-maven/compsuite-i-9/original-test",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/restored-legacy-maven/compsuite-i-9"
+  ]
+}

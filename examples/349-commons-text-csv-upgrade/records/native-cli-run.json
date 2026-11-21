@@ -1,0 +1,60 @@
+{
+  "startedUtc": "2026-11-20T23:13:50.902+00:00",
+  "elapsedSeconds": 0.916,
+  "exit": 1,
+  "command": [
+    "$CHECKER",
+    "equivalence",
+    "--before",
+    "$WORK/old/client.classes",
+    "--after",
+    "$WORK/new/client.classes",
+    "--before-classpath",
+    "$INPUTS/commons-lang3-3.16.0.jar",
+    "--classpath",
+    "$INPUTS/commons-lang3-3.17.0.jar",
+    "--target",
+    "org.apache.commons.text.StringEscapeUtils#escapeCsv",
+    "--assume",
+    "(input.length() < 1 || input.charAt(0) == 97 || input.charAt(0) == 44 || input.charAt(0) == 34 || input.charAt(0) == 13 || input.charAt(0) == 10) && (input.length() < 2 || input.charAt(1) == 97 || input.charAt(1) == 44 || input.charAt(1) == 34 || input.charAt(1) == 13 || input.charAt(1) == 10) && (input.length() < 3 || input.charAt(2) == 97 || input.charAt(2) == 44 || input.charAt(2) == 34 || input.charAt(2) == 13 || input.charAt(2) == 10)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "24",
+    "--max-array-length",
+    "3",
+    "--timeout",
+    "30",
+    "--work",
+    "$WORK/native-probe/work",
+    "--report",
+    "$WORK/native-probe/report",
+    "--json"
+  ],
+  "checkerSha256": "b17e1f49724dc0593b1a38b63eb86e515967e2266e29214a5313fcc1dc94527d",
+  "classes": {
+    "old": {
+      "clientJarSha256": "b9654617bc44d1b34b56200723ff74262a78ba3795cab9972b683a49a5f2e806",
+      "classes": 153
+    },
+    "new": {
+      "clientJarSha256": "b9654617bc44d1b34b56200723ff74262a78ba3795cab9972b683a49a5f2e806",
+      "classes": 153
+    }
+  },
+  "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+  "stdoutSha256": "11514ee7b04ff01fd594798d4de07b01f69b361586d5d0a583bb3b05ac53624c",
+  "stderr": "",
+  "bytecodeInputCorrection": "The first CLI invocation supplied client.jar for --before/--after and exited 2 before a checker ran (Not a directory). Each corrected class directory was compared against every class in its replay JAR.",
+  "artifact": "native-cli-outcome.json",
+  "artifactNormalizedSha256": "65f6ec3476d7e6e71526e4340a1f12da7f25f0c61177f23f24124baa7cb3f155",
+  "configuration": "Assisted diagnostic on full classes, same V0 binary, strict mode, bundled CaDiCaL 1.9.5. The registered operator configuration selects bitwuzla-words.",
+  "resourceCap": {
+    "outerWallSeconds": 300,
+    "memoryMaxBytes": 4294967296,
+    "memorySwapMaxBytes": 0,
+    "checkerDeadlineSeconds": 30
+  }
+}

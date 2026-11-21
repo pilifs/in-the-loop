@@ -1,0 +1,53 @@
+{
+  "entry": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
+  "probeClass": "UpgradeProbe",
+  "observer": "The exact capitalized string and separators returned for the specified ASCII words and delimiters.",
+  "basis": "Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed.",
+  "cases": [
+    {
+      "args": [
+        "hELLO wORLD",
+        " "
+      ],
+      "expected": {
+        "return": "Hello World"
+      }
+    },
+    {
+      "args": [
+        "rED,bLUE",
+        ","
+      ],
+      "expected": {
+        "return": "Red,Blue"
+      }
+    },
+    {
+      "args": [
+        "twO-FOLD nAME",
+        "- "
+      ],
+      "expected": {
+        "return": "Two-Fold Name"
+      }
+    },
+    {
+      "args": [
+        "",
+        ","
+      ],
+      "expected": {
+        "return": ""
+      }
+    },
+    {
+      "args": [
+        null,
+        " "
+      ],
+      "expected": {
+        "return": null
+      }
+    }
+  ]
+}

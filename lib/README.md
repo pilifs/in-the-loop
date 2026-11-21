@@ -239,6 +239,9 @@ tasks.register<Exec>("verifyContracts") {
 tasks.named("check") { dependsOn("verifyContracts") }
 ```
 
+A native target workflow binds multi-release class and resource lookup to the selected Java runtime. For a direct native CLI check, set `JVMCONTRACT_JAR_RELEASE` to the feature of the JDK in `JAVA_HOME`. The checker verifies the release identity and selects the highest eligible versioned entry in each JAR. An explicit JVM multi-release override leaves the class open. The proof cache records the selected release. [JAR file specification](https://docs.oracle.com/en/java/javase/21/docs/specs/jar/jar.html#multi-release-jar-files)
+
+
 ## How a behavioural contract is proved
 
 The contract of [`OrderLifecycle#decide`](../examples/apps/boxoffice/ticketing-domain/src/main/java/net/terminalvalue/boxoffice/ticketing/domain/OrderLifecycle.java) is [36 lines](../examples/apps/boxoffice/ticketing-domain/src/contract/OrderLifecycle.decide.contract): every (status, input) pair and what the method does with it.

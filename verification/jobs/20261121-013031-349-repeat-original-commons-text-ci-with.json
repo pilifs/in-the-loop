@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-013031-349-repeat-original-commons-text-ci-with",
+  "title": "349 repeat original Commons Text CI with normal local host resolution",
+  "description": "Reproduce the same original Maven lifecycle and exact Git revision pair on JDK 21 in a networkless guest with localhost and its own hostname in /etc/hosts. The first full run reached 1305 tests on each side with 18 lookup errors. This isolates missing machine-local name service from tests requiring a real external site. Retain all suite counts and all 34 StringEscapeUtils outcomes.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "baseline:original-ci"
+  ],
+  "links": {
+    "examples": [
+      "349"
+    ]
+  },
+  "expected": "The same suite and named CSV coverage are measured on both real artifacts. Record any remaining external-service dependency explicitly.",
+  "submitted": {
+    "at": "2026-11-21T01:30:31+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "python3",
+    "git",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "14G",
+    "duration": "3m",
+    "memoryLimit": "16G",
+    "timeout": "2h",
+    "notes": "The first full Linux run reached 1305 tests per side in 2m20s and peaked at 13.9 GiB. Preserve the matched 16 GiB hard limit and 4 CPUs; the shared Maven artifact cache is warm."
+  },
+  "steps": [
+    {
+      "name": "Run the two original CI processes with ordinary loopback identity",
+      "run": "python3 lib/benchmark/external-upgrades/baselines/public_ci.py 349 --out examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/349-commons-text-csv-upgrade/records/full-linux-ci-localhost"
+  ]
+}

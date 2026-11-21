@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "350",
+  "title": "Rocker reports a different diagnostic at the same parser position",
+  "summary": "The original compiler rejects a trailing comma with ParserException at line 1, column 18 under both ANTLR versions. The text changes and the same valid declaration succeeds.",
+  "origin": "real-world",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "text-encoding",
+    "parser-differential",
+    "pull-request-review",
+    "external-target"
+  ],
+  "severity": "low",
+  "subject": {
+    "system": "Rocker",
+    "file": "rocker-compiler/src/main/java/com/fizzed/rocker/model/WithStatement.java",
+    "symbol": "com.fizzed.rocker.model.WithStatement#parse"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "dependency-upgrade",
+    "description": "The original compiler rejects a trailing comma with ParserException at line 1, column 18 under both ANTLR versions. The text changes and the same valid declaration succeeds."
+  },
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/compsuite-team/rocker",
+    "url": "https://github.com/compsuite-team/rocker/commit/1cdb2748723454cde4c4d2366a261ba4a24a23d3"
+  },
+  "verdictLabel": "Independent finite JVM calibration",
+  "notes": [
+    "Disclosed external-upgrade calibration. The caller observations and preparation scope are recorded with the example.",
+    "The runtime-only control uses the released old generated parser on both sides. Independent recompilation with both generators and four JVM substitutions distinguish its scope from the whole PR."
+  ],
+  "target": "target.json"
+}

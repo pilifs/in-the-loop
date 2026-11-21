@@ -1,6 +1,6 @@
-"""Exhaustively check a bounded integer entry on real JVM bytecode through the public task recipe.
+"""Exhaustively check a bounded integer or boolean entry on real JVM bytecode through the public task recipe.
 
-The outer integer envelope is proved by the syntax of the frozen Java guard. The JVM evaluates the
+The Java guard bounds integer selectors. Boolean selectors cover false and true in separate JVMs. The JVM evaluates the
 entire guard on each point. Each invocation gets a fresh application class loader on its revision's
 ordered classpath. A refutation is also repeated in a separate fresh JVM.
 """
@@ -22,8 +22,8 @@ LIMIT = 4096
 CHUNK = 1024
 
 
-def envelope(guard, name, limit=LIMIT):
-    """Prove a superset using only mandatory top-level conjuncts over a signed int and decimal literals."""
+def conjuncts(guard):
+    """Split only mandatory top-level conjuncts of the supported Java guard syntax."""
     if not guard or re.search(r"[^A-Za-z0-9_$(). \t\n%*/+<>=!&|-]|//|/\*|->|\+\+|--|(?<![<>=!])=(?!=)", guard):
         raise ValueError("the finite checker cannot certify the Java guard syntax")
     level, start, i = 0, 0, 0
@@ -46,6 +46,12 @@ def envelope(guard, name, limit=LIMIT):
     if level:
         raise ValueError("unbalanced guard")
     parts.append(guard[start:].strip())
+    return parts
+
+
+def envelope(guard, name, limit=LIMIT):
+    """Prove a superset using only mandatory top-level conjuncts over a signed int and decimal literals."""
+    parts = conjuncts(guard)
     low, high = -(1 << 31), (1 << 31) - 1
     for term in parts:
         m = re.fullmatch(re.escape(name) + r"\s*(<=|>=|==|<|>)\s*(-?(?:0|[1-9][0-9]*))", term)
@@ -61,6 +67,124 @@ def envelope(guard, name, limit=LIMIT):
     if type(limit) is not int or limit < 1 or low > high or high - low + 1 > limit:
         raise ValueError(f"no nonempty certified interval of at most {limit} values")
     return low, high
+
+
+def string_alphabets(claim, name, limit):
+    """Certify allowed UTF-16 units at every position up to the explicit JVM string-length bound."""
+    length = claim["bounds"]["maxArrayLength"]
+    if type(length) is not int or not 0 <= length < limit:
+        raise ValueError("the string bound exceeds the finite input limit")
+    alphabets = [None] * length
+    owner = re.escape(name)
+    for term in conjuncts(claim.get("assume") or "true"):
+        if not (term.startswith("(") and term.endswith(")")):
+            continue
+        head, *units = [part.strip() for part in term[1:-1].split("||")]
+        cutoff = re.fullmatch(owner + r"\.length\(\)\s*<\s*([1-9][0-9]*)", head)
+        if not cutoff or not units:
+            continue
+        position = int(cutoff[1]) - 1
+        if position >= length:
+            continue
+        values = set()
+        for bound in units:
+            match = re.fullmatch(owner + rf"\.charAt\(\s*{position}\s*\)\s*==\s*(0|[1-9][0-9]*)", bound)
+            if not match or int(match[1]) > 65535:
+                break
+            values.add(int(match[1]))
+        else:
+            # Every matching conjunct is necessary. Their intersection remains a sound per-position bound.
+            alphabets[position] = values if alphabets[position] is None else alphabets[position] & values
+    if any(values is None for values in alphabets):
+        raise ValueError("the guard does not certify a finite UTF-16 alphabet at every position")
+    widths, count = [], 1
+    for values in alphabets:
+        widths.append((widths[-1] if widths else 1) * len(values))
+        count += widths[-1]
+        if count > limit:
+            raise ValueError("the certified UTF-16 input set exceeds the finite input limit")
+    return [sorted(values) for values in alphabets], count
+
+
+def string_value(alphabets, index):
+    if index == 0:
+        return ""
+    index -= 1
+    width = 1
+    for length, alphabet in enumerate(alphabets, 1):
+        width *= len(alphabet)
+        if index < width:
+            units = [0] * length
+            for p in reversed(range(length)):
+                index, digit = divmod(index, len(alphabets[p]))
+                units[p] = alphabets[p][digit]
+            return b"".join(c.to_bytes(2, "big") for c in units).decode("utf-16-be", "surrogatepass")
+        index -= width
+    raise ValueError("invalid finite string selector")
+
+
+def string_helper(alphabets):
+    rows = ",".join("{" + ",".join(map(str, alphabet)) + "}" for alphabet in alphabets)
+    return """static String inputString(int index) {
+        int[][] alphabets = new int[][]{%s};
+        if (index == 0) return "";
+        index--;
+        long width = 1;
+        for (int length = 1; length <= alphabets.length; length++) {
+            width *= alphabets[length-1].length;
+            if (index < width) {
+                char[] units = new char[length];
+                for (int p = length-1; p >= 0; p--) {
+                    units[p] = (char) alphabets[p][index %% alphabets[p].length];
+                    index /= alphabets[p].length;
+                }
+                return new String(units);
+            }
+            index -= width;
+        }
+        throw new IllegalArgumentException("string selector");
+    } """ % rows
+
+
+def actual_input(kind, claim, name, index, limit):
+    if kind == "boolean":
+        return bool(index)
+    if kind == "java.lang.String":
+        return string_value(string_alphabets(claim, name, limit)[0], index)
+    return index
+
+
+def selector(entry, claim, name, limit):
+    """Map a complete primitive domain to the integer indices consumed by the launcher."""
+    descriptor = runtime_jar.parse_target(entry)[2] or ""
+    helper = ""
+    if descriptor.startswith("(I)"):
+        bounds = envelope(claim["assume"], name, limit)
+        kind, expression = "int", "Integer.parseInt(args[0])"
+    elif descriptor.startswith("(Z)") and limit >= 2:
+        bounds = (0, 1)
+        kind, expression = "boolean", 'args[0].equals("1")'
+    elif descriptor.startswith("(Ljava/lang/String;)"):
+        alphabets, count = string_alphabets(claim, name, limit)
+        bounds = (0, count-1)
+        kind, expression = "java.lang.String", "inputString(Integer.parseInt(args[0]))"
+        helper = string_helper(alphabets)
+    else:
+        raise ValueError("the finite execution strategy needs a bounded integer, boolean or certified string alphabet")
+    probe = replay_candidate.source(entry, claim, [{"name": name, "type": kind, "value": None}], [name],
+                                   argument_expression=expression, helper=helper)
+    return kind, bounds, probe
+
+
+def valid_result(value, descriptor):
+    """The observable JSON value must have the actual JVM return type and width."""
+    if descriptor == "Ljava/lang/String;":
+        return isinstance(value, list) and all(type(c) is int and 0 <= c <= 65535 for c in value)
+    if descriptor == "Z":
+        return type(value) is bool
+    if descriptor.startswith("["):
+        return isinstance(value, list) and all(valid_result(element, descriptor[1:]) for element in value)
+    return type(value) is int and qualification.signed_input(value, {"I": "int", "J": "long"}[descriptor])
 
 
 def read_rows(stdout, low, high, fields, property_):
@@ -115,13 +239,15 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
         raise ValueError(recipe.describe())
     claim = plan.claim
     if (plan.kind not in ("prove", "equivalence") or claim.get("observations") != ["result", "exception"]
-            or any(claim.get(k) for k in ("models", "namedModels", "observedInitializers", "boundEnvironment", "assumptions", "allowedChange",
+            or any(claim.get(k) for k in ("models", "namedModels", "observedInitializers", "boundEnvironment", "assumptions",
                                             "contracts", "plan", "throws", "nullable", "mayAlias"))
             or not replay_candidate.supported(recipe.entry, claim)):
-        raise ValueError("a scalar static int/long result with return and exception observations is required")
+        raise ValueError("a supported static entry with return and exception observations is required")
+    if claim.get("allowedChange") and claim["allowedChange"].strip() != "false":
+        raise ValueError("a conditional allowed-change region needs a separately qualified finite scope")
     owner, method, desc = runtime_jar.parse_target(recipe.entry)
-    if desc not in ("(I)I", "(I)J"):
-        raise ValueError("the finite execution strategy requires one int parameter")
+    if not desc.startswith(("(I)", "(Z)", "(Ljava/lang/String;)")):
+        raise ValueError("the finite execution strategy needs one int, boolean or string parameter")
     prepared, built = {}, {}
     for rev in plan.revisions:
         p = route.prepare_revision(plan, rev, work / "prepare" / rev, shared["prepared"])
@@ -162,8 +288,7 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
             raise ValueError("the checked entry is not static")
         [name], _ = runtime_jar.parameter_names(data, method, desc)
         names[rev] = name
-        low, high = envelope(claim["assume"], name, case_limit)
-        probe = replay_candidate.source(recipe.entry, claim, [{"type": "int", "name": name, "value": "Integer.parseInt(args[0])"}], [name])
+        kind, (low, high), probe = selector(recipe.entry, claim, name, case_limit)
         directory = work / rev
         directory.mkdir(parents=True)
         (directory / "CandidateReplay.java").write_text(probe)
@@ -177,7 +302,8 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
         prefix = [str(home / "bin/java"), *runtime.CONTROL_FLAGS, "-cp", str(launcher_classes), "IsolatedCases"]
         deadline = time.monotonic() + seconds
         elapsed = 0.0
-        width = CHUNK if high - low + 1 > 4096 else high - low + 1
+        # Fresh JVMs for the two boolean calls also reset platform state such as registered JDBC drivers.
+        width = 1 if kind == "boolean" else CHUNK if high - low + 1 > 4096 else high - low + 1
         outs = []
         for first in range(low, high + 1, width):
             last = min(high, first + width - 1)
@@ -225,8 +351,14 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
     result = {"status": "refuted" if failed else "established", "entry": recipe.entry, "inputs": count,
               "differences": len(failed), "sides": sides, "jdkRelease": jdk["release"], "correspondence": comparisons,
               "prepareSeconds": round(prep_seconds, 4), "controlSeconds": round(controls_seconds, 4)}
+    if desc.endswith(")Ljava/lang/String;"):
+        result["returnEncoding"] = "ordered UTF-16 code units or null"
+    if kind == "java.lang.String":
+        alphabets, cardinality = string_alphabets(claim, names[plan.revisions[0]], case_limit)
+        result["inputDomain"] = {"type": kind, "unitsByPosition": alphabets, "candidateStrings": cardinality}
     if failed:
-        value = [{"name": names[plan.revisions[0]], "type": "int", "value": failed[0]}]
+        value = [{"name": names[plan.revisions[0]], "type": kind,
+                  "value": actual_input(kind, claim, names[plan.revisions[0]], failed[0], case_limit)}]
         replay = replay_candidate.check(plan, prepared, value, work / "witness", recipe.entry)
         replay = qualification.attach_observations(plan, controls, replay)
         checker = {"checkedEntry": recipe.entry, "classpath": invocation.classpaths, "jdkRelease": jdk["release"]}
@@ -270,7 +402,7 @@ def campaign(folder, example, target, tasks, seconds, retry, stop_after, case_li
     directory.mkdir(parents=True)
     journal = {"schema": "finite-jvm-batch/v1", "id": batch_id, "retryOf": retry, "order": tasks, "claims": keys,
                "status": "running", "completed": [], "missing": list(tasks), "secondsPerJvm": seconds,
-               "launcherSha256": runtime.sha256(LAUNCHER), "scope": "Each integer starts with a fresh application class loader on the pinned runtime and classpath. Intervals above 4096 use consecutive JVM batches on one total deadline."}
+               "launcherSha256": runtime.sha256(LAUNCHER), "scope": "Each input starts with fresh application classes on its pinned classpath. Boolean selections also start a fresh JVM for each value. Integer intervals above 4096 use consecutive JVM batches on one total deadline."}
     save = lambda: executions.save(directory / "batch.json", journal)
     save()
     shared = {"prepared": {}, "controls": {}}
@@ -331,20 +463,26 @@ def validate_record(plan, record):
     recipe = recipes.translate(plan)
     if record["entry"] != recipe.entry or list(record["sides"]) != list(plan.revisions):
         raise ValueError("wrong checked entry or ordered revisions")
+    if recipe.entry.endswith(")Ljava/lang/String;") and record.get("returnEncoding") != "ordered UTF-16 code units or null":
+        raise ValueError("the finite string return lacks its UTF-16 encoding")
     outputs = []
     for side in record["sides"].values():
         if side["entry"]["entry"] != recipe.entry or not side["classpath"]:
             raise ValueError("missing checked entry or classpath")
         rows = side["rows"]
         name = side["parameter"]
-        low, high = envelope(plan.claim["assume"], name, record.get("caseLimit", LIMIT))
-        if high - low + 1 > 4096:
-            expected_chunks = [[start, min(high, start + CHUNK - 1)] for start in range(low, high + 1, CHUNK)]
+        kind, (low, high), program = selector(recipe.entry, plan.claim, name, record.get("caseLimit", LIMIT))
+        if kind == "java.lang.String":
+            alphabets, count = string_alphabets(plan.claim, name, record.get("caseLimit", LIMIT))
+            if record.get("inputDomain") != {"type": kind, "unitsByPosition": alphabets, "candidateStrings": count}:
+                raise ValueError("the recorded string alphabet differs from the frozen source guard")
+        if kind == "boolean" or high - low + 1 > 4096:
+            width = 1 if kind == "boolean" else CHUNK
+            expected_chunks = [[start, min(high, start + width - 1)] for start in range(low, high + 1, width)]
             if [chunk["interval"] for chunk in side.get("chunks", [])] != expected_chunks:
                 raise ValueError("the recorded JVM batches do not cover the certified interval exactly")
         if side["interval"] != [low, high] or [r["value"] for r in rows] != list(range(low, high + 1)):
             raise ValueError("the finite evidence does not cover its entire integer envelope")
-        program = replay_candidate.source(recipe.entry, plan.claim, [{"type": "int", "name": name, "value": "Integer.parseInt(args[0])"}], [name])
         if program != side["program"]:
             raise ValueError("the Java probe differs from the frozen guard, assertion or observer")
         stdout = []
@@ -358,7 +496,10 @@ def validate_record(plan, record):
                         raise ValueError("invalid assertion result")
                     stdout.append(json.dumps(row["satisfies"]))
                 values = row["observations"]
-                if len(values) != 2 or values[0] is not None and type(values[0]) is not int or values[1] is not None and not isinstance(values[1], str):
+                returns = runtime_jar.parse_target(recipe.entry)[2].split(")")[-1]
+                if (len(values) != 2 or values[0] is not None and not valid_result(values[0], returns)
+                        or values[1] is not None and (not isinstance(values[1], str) or values[0] is not None)
+                        or values == [None, None] and not returns.startswith(("[", "L"))):
                     raise ValueError("invalid return or exception observations")
                 stdout.extend(json.dumps(v, ensure_ascii=False) for v in values)
                 admitted[n] = row
@@ -380,7 +521,10 @@ def validate_record(plan, record):
         replay = record["replay"]
         if (replay.get("reproduced") is not True or replay["claimKey"] != plan.claim["key"]
                 or replay["entry"] != recipe.entry or replay["jdkRelease"] != record["jdkRelease"]
-                or replay["inputs"][0]["value"] != failed[0]):
+                or replay["inputs"] != [{"name": record["sides"][plan.revisions[0]]["parameter"],
+                                         "type": kind, "value": actual_input(kind, plan.claim, record["sides"][plan.revisions[0]]["parameter"],
+                                                                          failed[0], record.get("caseLimit", LIMIT))}]
+                or type(replay["inputs"][0]["value"]) is not {"boolean": bool, "int": int, "java.lang.String": str}[kind]):
             raise ValueError("the finite witness lacks its independent JVM qualification")
         for rev, observed in zip(plan.revisions, outputs):
             side = record["sides"][rev]

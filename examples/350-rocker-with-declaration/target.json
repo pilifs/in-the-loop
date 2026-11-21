@@ -1,0 +1,146 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "rocker-with-declaration",
+    "family": "rocker-antlr",
+    "role": "calibration",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/compsuite-team/rocker",
+    "revisions": {
+      "old": {
+        "commit": "823d8c375411c26044b21d4a47b3f57ca4c13b9c"
+      },
+      "new": {
+        "commit": "1cdb2748723454cde4c4d2366a261ba4a24a23d3",
+        "parent": "823d8c375411c26044b21d4a47b3f57ca4c13b9c"
+      }
+    },
+    "pairs": [
+      {
+        "name": "upgrade",
+        "kind": "introduction",
+        "before": "old",
+        "after": "new",
+        "selected": true
+      }
+    ],
+    "links": [
+      "https://github.com/compsuite-team/rocker/commit/1cdb2748723454cde4c4d2366a261ba4a24a23d3"
+    ],
+    "introduction": {
+      "status": "established",
+      "commit": "1cdb2748723454cde4c4d2366a261ba4a24a23d3",
+      "evidence": "Full regenerated parsers reproduce the diagnostic change; a control holding the old generator fixed isolates the runtime substitution."
+    }
+  },
+  "preparation": {
+    "route": "published-artifact",
+    "jdks": [
+      "21"
+    ],
+    "artifacts": [
+      {
+        "revision": "old",
+        "coordinates": "com.fizzed:rocker-compiler:1.2.1",
+        "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-compiler/1.2.1/rocker-compiler-1.2.1.jar",
+        "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04"
+      },
+      {
+        "revision": "old",
+        "coordinates": "com.fizzed:rocker-runtime:1.2.1",
+        "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-runtime/1.2.1/rocker-runtime-1.2.1.jar",
+        "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+      },
+      {
+        "revision": "old",
+        "coordinates": "org.antlr:antlr4-runtime:4.5.3",
+        "url": "https://repo.maven.apache.org/maven2/org/antlr/antlr4-runtime/4.5.3/antlr4-runtime-4.5.3.jar",
+        "sha256": "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752"
+      },
+      {
+        "revision": "old",
+        "coordinates": "org.apache.commons:commons-lang3:3.3.2",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar",
+        "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+      },
+      {
+        "revision": "old",
+        "coordinates": "org.slf4j:slf4j-api:1.7.7",
+        "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar",
+        "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+      },
+      {
+        "revision": "new",
+        "coordinates": "com.fizzed:rocker-compiler:1.2.1",
+        "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-compiler/1.2.1/rocker-compiler-1.2.1.jar",
+        "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04"
+      },
+      {
+        "revision": "new",
+        "coordinates": "com.fizzed:rocker-runtime:1.2.1",
+        "url": "https://repo.maven.apache.org/maven2/com/fizzed/rocker-runtime/1.2.1/rocker-runtime-1.2.1.jar",
+        "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+      },
+      {
+        "revision": "new",
+        "coordinates": "org.antlr:antlr4-runtime:4.7.2",
+        "url": "https://repo.maven.apache.org/maven2/org/antlr/antlr4-runtime/4.7.2/antlr4-runtime-4.7.2.jar",
+        "sha256": "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4"
+      },
+      {
+        "revision": "new",
+        "coordinates": "org.apache.commons:commons-lang3:3.3.2",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar",
+        "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+      },
+      {
+        "revision": "new",
+        "coordinates": "org.slf4j:slf4j-api:1.7.7",
+        "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.7/slf4j-api-1.7.7.jar",
+        "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+      }
+    ],
+    "adapters": [
+      "adapter/calibration/Projection.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "upgrade",
+      "target": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;"
+    },
+    {
+      "id": "diagnostic",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "upgrade",
+      "target": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+      "claim": "claims/diagnostic.json",
+      "allowedChange": "false",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ],
+      "engine": "native",
+      "gaps": "strict"
+    }
+  ],
+  "controls": [
+    {
+      "id": "caller-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    },
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/calibration/CaseDriver.java"
+    }
+  ]
+}

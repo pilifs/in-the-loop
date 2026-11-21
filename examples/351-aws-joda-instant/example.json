@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "351",
+  "title": "AWS round-trips the maximum instant across a Joda-Time upgrade",
+  "summary": "The historical formatter loses its former upper-limit exception. The public AWS SDK formatter/parser pair returns the original maximum instant on both versions.",
+  "origin": "real-world",
+  "categories": [
+    "functional",
+    "compatibility"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "clocks-and-time",
+    "exceptions",
+    "special-values",
+    "pull-request-review",
+    "external-target"
+  ],
+  "severity": "low",
+  "subject": {
+    "system": "AWS SDK for Java",
+    "file": "aws-java-sdk-core/src/main/java/com/amazonaws/util/DateUtils.java",
+    "symbol": "com.amazonaws.util.DateUtils#parseISO8601Date"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "dependency-upgrade",
+    "description": "The historical formatter loses its former upper-limit exception. The public AWS SDK formatter/parser pair returns the original maximum instant on both versions."
+  },
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/compsuite-team/aws-sdk-java",
+    "url": "https://github.com/compsuite-team/aws-sdk-java/commit/985a81b554e02742036fd158e6494c61a367f980"
+  },
+  "verdictLabel": "Independent finite JVM calibration",
+  "notes": [
+    "Disclosed external-upgrade calibration. The caller observations and preparation scope are recorded with the example.",
+    "The boolean selects one of two signed instants. Call both public SDK methods on the real date, recording the millisecond value or exception."
+  ],
+  "target": "target.json"
+}

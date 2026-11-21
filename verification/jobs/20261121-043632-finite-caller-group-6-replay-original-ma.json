@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-043632-finite-caller-group-6-replay-original-ma",
+  "title": "Finite caller group 6 replay original main and transfer applications",
+  "description": "Qualify the exact original caller entry with JDI and verify the loaded original dependency in fresh JVMs before comparing each reviewed finite observation. Inputs and independent expectations are committed with the case. Cases: ea-async-27, incremental-analysis-28, whatjdk-12.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "finite-jvm"
+  ],
+  "links": {},
+  "expected": "Each finite scope gets its true changed, preserved or open result. An early or unreachable observation earns no decision.",
+  "submitted": {
+    "at": "2026-11-21T04:36:32+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Compare original caller observations",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/finite-callers/06 --case ea-async-27 --case incremental-analysis-28 --case whatjdk-12",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/finite-callers/06"
+  ]
+}

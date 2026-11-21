@@ -20,45 +20,73 @@ use crate::Error;
 enum Entry {
     Dir(PathBuf),
     /// A jar, and the class files it holds for a release of Java of their own where its manifest says it is a
-    /// multi-release JAR ([`versioned_classes`]).
+    /// multi-release JAR ([`versioned_entries`]).
     Jar(crate::zip::ZipArchive, PathBuf, BTreeMap<String, Vec<u32>>),
 }
 
-/// The classes a multi-release JAR holds a class file of for a release of Java of their own
-/// (`META-INF/versions/N/x/Y.class`), each with those releases: none unless the manifest's main section says
-/// `Multi-Release: true`, without which a JVM reads only the base class files.
-fn versioned_classes(zip: &crate::zip::ZipArchive) -> Result<BTreeMap<String, Vec<u32>>, Error> {
+/// The versioned entries of a JAR whose main manifest enables multi-release lookup (JAR specification).
+fn versioned_entries(zip: &crate::zip::ZipArchive) -> Result<BTreeMap<String, Vec<u32>>, Error> {
     let mut out: BTreeMap<String, Vec<u32>> = BTreeMap::new();
     let Some(manifest) = zip.read("META-INF/MANIFEST.MF")? else { return Ok(out) };
-    let text = String::from_utf8_lossy(&manifest);
-    let main = text.split("\n").map(|l| l.trim_end_matches('\r')).take_while(|l| !l.is_empty());
-    if !main.filter_map(|l| l.split_once(':')).any(|(k, v)| k.trim().eq_ignore_ascii_case("Multi-Release") && v.trim().eq_ignore_ascii_case("true")) {
-        return Ok(out);
-    }
+    let manifest = String::from_utf8_lossy(&manifest).replace("\r\n", "\n").replace('\r', "\n");
+    let main = manifest.split("\n\n").next().unwrap_or("").replace("\n ", "");
+    let enabled = main.lines().filter_map(|line| line.split_once(": "))
+        .filter(|(key, _)| key.eq_ignore_ascii_case("Multi-Release")).next_back()
+        .is_some_and(|(_, value)| value.eq_ignore_ascii_case("true"));
+    if !enabled { return Ok(out) }
     for name in zip.names() {
-        let Some((release, class)) = name.strip_prefix("META-INF/versions/").and_then(|r| r.split_once('/')) else { continue };
-        let (Ok(release), Some(class)) = (release.parse::<u32>(), class.strip_suffix(".class")) else { continue };
-        out.entry(class.to_string()).or_default().push(release);
+        let Some((release, entry)) = name.strip_prefix("META-INF/versions/").and_then(|rest| rest.split_once('/')) else { continue };
+        if release.starts_with('0') || !release.bytes().all(|b| b.is_ascii_digit()) || entry.starts_with("META-INF/") { continue }
+        if let Ok(release @ 9..) = release.parse::<u32>() {
+            out.entry(entry.to_owned()).or_default().push(release);
+        }
     }
     Ok(out)
 }
 
+/// An explicitly bound release for a native check, checked against the actual JDK installation.
+/// A launcher override or an unavailable runtime leaves multi-release classes subject to the conservative refusal.
+pub(crate) fn configured_jar_release() -> Option<u32> {
+    let requested: u32 = std::env::var("JVMCONTRACT_JAR_RELEASE").ok()?.parse().ok()?;
+    for name in ["JAVA_TOOL_OPTIONS", "_JAVA_OPTIONS", "JDK_JAVA_OPTIONS"] {
+        if std::env::var(name).is_ok_and(|s| s.contains("jdk.util.jar.") || s.split_whitespace().any(|s| s.starts_with('@'))) {
+            return None;
+        }
+    }
+    let release = std::fs::read_to_string(crate::jimage::JImage::find_java_home()?.join("release")).ok()?;
+    let version = release.lines().find_map(|l| l.strip_prefix("JAVA_VERSION="))?.trim_matches('"');
+    let feature: u32 = version.strip_prefix("1.").unwrap_or(version).split(|ch: char| !ch.is_ascii_digit()).next()?.parse().ok()?;
+    (requested == feature).then_some(requested)
+}
+
 impl Entry {
-    fn read(&self, class_name: &str) -> Result<Option<Vec<u8>>, Error> {
+    fn resource(&self, name: &str, feature: Option<u32>) -> Result<Option<Vec<u8>>, Error> {
         match self {
             Entry::Dir(dir) => {
-                let file = dir.join(format!("{class_name}.class"));
+                let file = dir.join(name);
+                if file.is_dir() { return Ok(None) }
                 match std::fs::read(&file) {
                     Ok(bytes) => Ok(Some(bytes)),
                     Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
                     Err(e) => Err(Error::new(format!("cannot read {}: {e}", file.display()))),
                 }
             }
-            Entry::Jar(zip, _, _) => zip.read(&format!("{class_name}.class")),
+            Entry::Jar(zip, _, versions) => {
+                if let (Some(feature), Some(available)) = (feature, versions.get(name)) {
+                    if let Some(selected) = available.iter().copied().filter(|&v| v <= feature).max() {
+                        return zip.read(&format!("META-INF/versions/{selected}/{name}"));
+                    }
+                }
+                zip.read(name)
+            }
         }
     }
 
-    fn class_names(&self) -> Result<Vec<String>, Error> {
+    fn read(&self, class_name: &str, feature: Option<u32>) -> Result<Option<Vec<u8>>, Error> {
+        self.resource(&format!("{class_name}.class"), feature)
+    }
+
+    fn class_names(&self, feature: Option<u32>) -> Result<Vec<String>, Error> {
         match self {
             Entry::Dir(dir) => {
                 let mut names = Vec::new();
@@ -66,11 +94,15 @@ impl Entry {
                 names.sort();
                 Ok(names)
             }
-            Entry::Jar(zip, _, _) => Ok(zip
-                .names()
-                .filter(|n| n.ends_with(".class") && !n.starts_with("META-INF/"))
-                .map(|n| n.trim_end_matches(".class").to_string())
-                .collect()),
+            Entry::Jar(zip, _, versions) => {
+                let mut names: std::collections::BTreeSet<_> = zip.names()
+                    .filter(|n| !n.starts_with("META-INF/")).filter_map(|n| n.strip_suffix(".class")).collect();
+                if let Some(feature) = feature {
+                    names.extend(versions.iter().filter(|(_, v)| v.iter().any(|&n| n <= feature))
+                        .filter_map(|(name, _)| name.strip_suffix(".class")));
+                }
+                Ok(names.into_iter().map(str::to_owned).collect())
+            }
         }
     }
 
@@ -88,6 +120,7 @@ fn walk(root: &Path, dir: &Path, names: &mut Vec<String>) -> Result<(), Error> {
         let entry = entry.map_err(|e| Error::new(format!("cannot list {}: {e}", dir.display())))?;
         let path = entry.path();
         if path.is_dir() {
+            if dir == root && entry.file_name() == "META-INF" { continue }
             walk(root, &path, names)?;
         } else if path.extension().is_some_and(|e| e == "class") {
             // Multi-release and module descriptors are not classes of the module.
@@ -126,6 +159,7 @@ pub struct Loaded {
 /// The application classes and the JDK, with lazy loading and a cache.
 pub struct ClassPath {
     entries: Vec<Entry>,
+    jar_release: Option<u32>,
     jdk: Option<JImage>,
     /// Whether the tool's models of JDK classes are part of this class path (they are, unless turned off).
     models: bool,
@@ -158,7 +192,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -181,7 +215,7 @@ impl ClassPath {
             self.entries.push(Entry::Dir(path.to_path_buf()));
         } else if path.is_file() {
             let zip = crate::zip::ZipArchive::open(path)?;
-            let versioned = versioned_classes(&zip)?;
+            let versioned = versioned_entries(&zip)?;
             self.entries.push(Entry::Jar(zip, path.to_path_buf(), versioned));
         } else {
             return Err(Error::new(format!("{} is neither a directory nor a jar", path.display())));
@@ -206,19 +240,34 @@ impl ClassPath {
 
     /// Uses the JDK found through `JAVA_HOME` or `PATH` for JDK class shapes, if there is one.
     pub fn with_default_jdk(mut self) -> ClassPath {
-        self.jdk = JImage::open_default();
-        self.refusals.borrow_mut().clear();
-        self.jdk_packages = Default::default();
-        self.initializer_runs.borrow_mut().clear();
+        if let Some(jdk) = JImage::open_default() {
+            return self.with_jdk(jdk);
+        }
+        self.jdk = None;
+        self.jar_release = None;
+        self.reset_runtime_caches();
         self
     }
 
     pub fn with_jdk(mut self, jdk: JImage) -> ClassPath {
+        if let Some(feature) = self.jar_release {
+            let major = jdk.read_class("java/lang/Object").ok().flatten()
+                .and_then(|bytes| Some(u16::from_be_bytes(bytes.get(6..8)?.try_into().ok()?)));
+            if major.map(u32::from) != feature.checked_add(44) {
+                self.jar_release = None;
+            }
+        }
         self.jdk = Some(jdk);
+        self.reset_runtime_caches();
+        self
+    }
+
+    fn reset_runtime_caches(&mut self) {
+        self.cache.borrow_mut().clear();
+        self.classes.replace(None);
         self.refusals.borrow_mut().clear();
         self.jdk_packages = Default::default();
         self.initializer_runs.borrow_mut().clear();
-        self
     }
 
     pub fn jdk(&self) -> Option<&JImage> {
@@ -239,19 +288,7 @@ impl ClassPath {
     pub fn resources(&self, name: &str) -> Result<Vec<(String, Vec<u8>)>, Error> {
         let mut out = Vec::new();
         for entry in &self.entries {
-            let bytes = match entry {
-                Entry::Dir(dir) => {
-                    let file = dir.join(name);
-                    if !file.is_file() {
-                        continue;
-                    }
-                    std::fs::read(&file).map_err(|e| Error::new(format!("cannot read {}: {e}", file.display())))?
-                }
-                Entry::Jar(zip, _, _) => match zip.read(name)? {
-                    Some(bytes) => bytes,
-                    None => continue,
-                },
-            };
+            let Some(bytes) = entry.resource(name, self.jar_release)? else { continue };
             out.push((entry.display(), bytes));
         }
         Ok(out)
@@ -261,7 +298,7 @@ impl ClassPath {
     pub fn application_class_names(&self) -> Result<Vec<String>, Error> {
         let mut names = Vec::new();
         for entry in &self.entries {
-            names.extend(entry.class_names()?);
+            names.extend(entry.class_names(self.jar_release)?);
         }
         Ok(names)
     }
@@ -273,7 +310,7 @@ impl ClassPath {
             return Err(Error::new(refused));
         }
         for entry in &self.entries {
-            if let Some(bytes) = entry.read(name)? {
+            if let Some(bytes) = entry.read(name, self.jar_release)? {
                 return Ok(Some(bytes));
             }
         }
@@ -320,7 +357,7 @@ impl ClassPath {
     /// (`lib/tests/observed_countermodels.rs`, where each was a false proof):
     /// - the first entry that holds it is a multi-release JAR with a class file of it for a release of Java of its
     ///   own (`META-INF/versions/N/`), which a JVM of that release or later loads in place of the base one, and the
-    ///   tool reads only the base;
+    ///   native check has no pinned runtime release for choosing the correct bytes;
     /// - an entry holds it in a package of the JDK's image (`org.xml.sax.helpers`, `javax.xml.parsers`): a JVM
     ///   loads a class of a package of a module of the boot layer from that module, never from the class path,
     ///   where the tool reads the entries first. Not where the entry's class file is the image's own, byte for
@@ -338,13 +375,14 @@ impl ClassPath {
 
     /// [`ClassPath::refused`]'s first case.
     fn versioned(&self, name: &str) -> Option<String> {
-        if !self.entries.iter().any(|e| matches!(e, Entry::Jar(_, _, versioned) if versioned.contains_key(name))) {
+        let file = format!("{name}.class");
+        if self.jar_release.is_some() || !self.entries.iter().any(|e| matches!(e, Entry::Jar(_, _, versioned) if versioned.contains_key(&file))) {
             return None;
         }
         for entry in &self.entries {
             match entry {
-                Entry::Jar(zip, path, versioned) if zip.contains(&format!("{name}.class")) || versioned.contains_key(name) => {
-                    let releases = versioned.get(name)?;
+                Entry::Jar(zip, path, versioned) if zip.contains(&file) || versioned.contains_key(&file) => {
+                    let releases = versioned.get(&file)?;
                     let releases: Vec<String> = releases.iter().map(u32::to_string).collect();
                     return Some(format!(
                         "{} is a class of a multi-release JAR ({}) that holds a class file of it for Java {} (META-INF/versions/), which a JVM of that release or later loads in place of the base class file; the tool reads only the base, so the class is refused (lib/src/classpath.rs)",
@@ -377,7 +415,7 @@ impl ClassPath {
         if !packages.contains(package) {
             return None;
         }
-        let (entry, bytes) = self.entries.iter().find_map(|e| e.read(name).ok().flatten().map(|b| (e, b)))?;
+        let (entry, bytes) = self.entries.iter().find_map(|e| e.read(name, self.jar_release).ok().flatten().map(|b| (e, b)))?;
         // The JDK's own class file, put on a class path so that its bytecode is run (`contract_proving`, JBMC's
         // class path), is the class a JVM loads.
         if jdk.read_class(name).ok().flatten().is_some_and(|own| own == bytes) {
@@ -415,7 +453,7 @@ impl ClassPath {
 
     fn load_uncached(&self, name: &str) -> Result<Option<Loaded>, Error> {
         for entry in &self.entries {
-            if let Some(bytes) = entry.read(name)? {
+            if let Some(bytes) = entry.read(name, self.jar_release)? {
                 let class = ClassFile::parse(&bytes).map_err(|e| Error::new(format!("{name} in {}: {e}", entry.display())))?;
                 return Ok(Some(Loaded { class: Rc::new(class), origin: Origin::Application }));
             }

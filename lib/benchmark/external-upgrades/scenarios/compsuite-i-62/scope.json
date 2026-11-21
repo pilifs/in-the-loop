@@ -1,0 +1,26 @@
+{
+  "probeClass": "UpgradeProbe",
+  "entry": "com.baidu.unbiz.fluentvalidator.interceptor.FluentValidateInterceptor#invoke(Lorg/aopalliance/intercept/MethodInvocation;)Ljava/lang/Object;",
+  "withTestFixtures": true,
+  "invocationVia": "com.baidu.unbiz.fluentvalidator.service.CarService#addCarsWithExcludeGroups(Ljava/util/List;)Ljava/util/List;",
+  "observer": "Read the number of cars and the submitted registration plate returned by the original Spring service with the Add validation group excluded.",
+  "basis": "The unchanged service returns its validated argument. The named upstream test expects an otherwise invalid registration to pass with Add excluded. An ordinary valid registration supplies a companion. The original service fixture, annotations, callback and Spring AOP configuration are compiled on both revisions.",
+  "cases": [
+    {
+      "args": [
+        "BEIJING"
+      ],
+      "expected": {
+        "return": "3/BEIJING"
+      }
+    },
+    {
+      "args": [
+        "LA1234"
+      ],
+      "expected": {
+        "return": "3/LA1234"
+      }
+    }
+  ]
+}

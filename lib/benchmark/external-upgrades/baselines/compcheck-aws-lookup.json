@@ -1,0 +1,40 @@
+{
+  "disclosedCase": "CompSuite i-19 with AWS SDK/Joda-Time",
+  "source": "https://github.com/compsuite-team/CompCheck/tree/937d1d1495c4ff5449443183b70f465d1fe0b4d0",
+  "archiveSha256": "bf657aa970fbd87ac98f086aea7628492f0d6b84a17c694ef4a5176b4a3871f8",
+  "callsite": {
+    "id": "c15-2",
+    "API": "org.joda.time.format.DateTimeFormatter.parseMillis(Ljava/lang/String;)J",
+    "lib": "joda-time:joda-time",
+    "version": "2.8.1",
+    "client": "aws-sdk-java",
+    "sha": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+    "url": "https://github.com/aws/aws-sdk-java",
+    "submodule": "aws-java-sdk-core",
+    "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+    "line": "104"
+  },
+  "inputSelection": "Selected the native registry ID for the actual production parseMillis(temp) operation on the SDK maximum-year workaround. Source line 104 in AWS SDK 28f5c5f31ae04a20d9256f05bb306ecda5196867. The historical test calls parseDateTime directly on the formatter through a separate registry entry c14-1.",
+  "lookupFunction": "compcheck/utils.py::findKnowledgeByAPI",
+  "implementationSha256": "b72b898a60f1c6f287ba9be356bc133152cdc9fff587758f8db6c75c1168c1c7",
+  "recordedUtc": "2026-11-20T23:26Z",
+  "operator": "Independent calibration reviewer selected callsite; isolated curator ran the pinned lookup twice. No other record contents left its process.",
+  "normal": {
+    "records": 24,
+    "bytes": 29727,
+    "sha256": "81b2f6d2327df2cbac7c59de66842f682892b74bc0f4f9e7f12e74dc33674240",
+    "lookup": "AWS k15-1"
+  },
+  "leaveIssue233Out": {
+    "records": 22,
+    "bytes": 27783,
+    "sha256": "6fa3a92bc3d13069a7c3cb7fc1cfc78a77eb44dac3a859ad8c10d45f8655b3bc",
+    "lookup": null,
+    "removed": [
+      "k14-1",
+      "k15-1"
+    ],
+    "basis": "Same client, old/new library pair and AWS issue-233 tests. Other clients and incidents retain their original data and order."
+  },
+  "endToEnd": "These results cover API knowledge lookup only. The paired stock CLI runs have a separate record."
+}
