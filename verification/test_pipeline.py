@@ -179,8 +179,10 @@ class PipelineTest(unittest.TestCase):
         self.assertTrue((kept / result["$schema"]).resolve().samefile(self.repo.dir / "verification/schema/result.schema.json"))
         self.assertEqual(self.repo.result(flat)["status"], "passed")
         self.assertFalse((self.repo.dir / "verification/results" / sharded).exists())
-        index = json.loads((self.repo.dir / "verification/results/index.json").read_text())["results"]
-        self.assertEqual({e["id"]: e["result"] for e in index}, {flat: f"{flat}/result.json", sharded: f"{day}/{sharded}/result.json"})
+        index = json.loads((self.repo.dir / "verification/results/index.json").read_text())  # the flat ones, and where the rest are
+        self.assertEqual(({e["id"]: e["result"] for e in index["results"]}, index["shards"]), ({flat: f"{flat}/result.json"}, [day]))
+        of_day = json.loads((self.repo.dir / "verification/results" / day / "index.json").read_text())
+        self.assertEqual((of_day["shard"], {e["id"]: e["result"] for e in of_day["results"]}), (day, {sharded: f"{day}/{sharded}/result.json"}))
         status = self.repo.pipeline("status", "--rev", "HEAD").stdout
         self.assertIn("collected: 2", status)
         self.assertIn("pending: 0", status)

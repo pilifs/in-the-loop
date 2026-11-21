@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T19:46:40.997Z",
-  "duration_seconds": 10159,
+  "ended": "2026-11-21T19:49:16.181Z",
+  "duration_seconds": 10314,
   "stats": {
     "turns": 6,
-    "api_calls": 487,
-    "tool_calls": 559,
+    "api_calls": 493,
+    "tool_calls": 565,
     "tool_errors": 12,
     "compactions": 2,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 974,
-      "output_tokens": 695242,
-      "cache_read_input_tokens": 146507468,
-      "cache_creation_input_tokens": 1399146
+      "input_tokens": 986,
+      "output_tokens": 699828,
+      "cache_read_input_tokens": 148622882,
+      "cache_creation_input_tokens": 1406040
     }
   },
   "tools": {
-    "Bash": 466,
+    "Bash": 472,
     "Read": 44,
     "Edit": 32,
     "Write": 17
@@ -88,24 +88,24 @@
     {
       "index": 2,
       "started": "2026-11-21T19:12:09.670Z",
-      "ended": "2026-11-21T19:46:40.997Z",
+      "ended": "2026-11-21T19:49:16.181Z",
       "turns": 1,
-      "api_calls": 186,
+      "api_calls": 192,
       "usage": {
-        "input_tokens": 372,
-        "output_tokens": 142354,
-        "cache_read_input_tokens": 39179159,
-        "cache_creation_input_tokens": 334490
+        "input_tokens": 384,
+        "output_tokens": 146940,
+        "cache_read_input_tokens": 41294573,
+        "cache_creation_input_tokens": 341384
       },
-      "peak_context_tokens": 349395
+      "peak_context_tokens": 356289
     }
   ],
   "log": {
-    "sha256": "fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3",
-    "bytes": 11939995,
-    "lines": 4236,
-    "gzip_bytes": 1901405,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3.jsonl.gz"
+    "sha256": "cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d",
+    "bytes": 12017750,
+    "lines": 4282,
+    "gzip_bytes": 1909506,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -228,6 +228,14 @@
       "summary": "Queue the selector route of example 345 on the commit that packs a run's per-case output (verification pending)",
       "body": "Job 20261121-194629-345-native-selectors-again-the-run-packs: the four parent-fix tasks of example 345 by complete native case analysis, as job 20261120-213848-345-parent-fix-exhaust-native-selector-b ran them, now that a selector run replaces each cases/ folder of its record with cases.tar.gz at its end and the validator reads a case from the folder or the pack. Its second step fails if any per-case folder is left loose or the records are over their budget; its third reads the example's claim history and fails if it cites no record of the run or reports a case missing, altered or unreadable. About 3 minutes and 140 MiB by the earlier run.\n\nWhy a job: the checker is a proof-tier tool and does not run inline. Until the result is in, the packing at the end of a run rests on the pack's own tests and on the five examples packed after the fact; the results page says so.",
       "log_sha256": "fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3"
+    },
+    {
+      "change_id": "quxwpwrrzunutolvroryuwnnyttlursk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep the verification results index by day for results kept by day",
+      "body": "The brief's 'partition the result index': verification/results/index.json lists the results kept flat and names, under shards, each day that has results of its own; such a day has its own index.json with the same lines for its results. So once new jobs go by day the first file stops growing, and is the complete index of everything collected before the switch; a day's index is rewritten only by that day's collects. With no sharded result, as today, the file is byte for byte what the writer produced before (checked on the real 986 results: identical, 1,158,583 bytes).",
+      "log_sha256": "cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d"
     }
   ],
   "logs": {
@@ -301,6 +309,12 @@
       "bytes": 7482500,
       "lines": 2140,
       "gzip_bytes": 1316084,
+      "url": null
+    },
+    "cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d": {
+      "bytes": 12017750,
+      "lines": 4282,
+      "gzip_bytes": 1909506,
       "url": null
     },
     "f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5": {

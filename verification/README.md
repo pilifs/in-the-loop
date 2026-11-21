@@ -46,7 +46,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | `results/ID/logs/` | each step's console output, whole if under 2 MB, else its head and tail | `collect` |
 | `results/ID/changes.diff` | the job's outputs against its commit; over 1 MiB, the most a commit takes, it is kept gzipped as `changes.diff.gz`, or as `changes.stat`, the files it changes, when that is still over (`collected.changesDiff` says which) | `collect` |
 | `results/ID/outputs/` | outputs that were not applied: the job did not pass, or the file changed since | `collect` |
-| `results/index.json` | one line per result, newest first | `collect` |
+| `results/index.json` | one line per result kept flat, newest first, and under `shards` the days that have an index of their own (`results/YYYY/MM/DD/index.json`, the same lines for that day's results) | `collect` |
 | [`findings.md`](findings.md) | what the runs found that needs a person, and the decisions taken, open first, each with what closes it | the managing agent, by hand |
 | `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
 | [`pipeline.toml`](pipeline.toml) | the runner's defaults; `~/.config/in-the-loop/pipeline.local.toml` overrides them for the machine, and `pipeline.local.toml` (not committed) for one checkout | |
@@ -72,8 +72,10 @@ kept under the UTC day it was submitted, which its id begins with: `jobs/YYYY/MM
 - **Readers take both**, through [`layout.py`](layout.py) and nothing else: `pipeline.py` (the queue, `status`,
   `collect`, `commit-paths`, `report`, `resubmit`, `prioritize`, `validate`, results recorded on other heads), the
   loops' statistics in `sync.py`, the test cost inventory, the conductor and the brief's watcher, example acceptance
-  and claim history, the capture of originals, and a promotion's inventory. `results/index.json` gives each result's
-  path under `results/`, whichever layout it has.
+  and claim history, the capture of originals, and a promotion's inventory. `results/index.json` lists the results kept flat and names, under `shards`, each day
+  that has results; a day's own `index.json` lists those, so the first file stops growing once new jobs go by day
+  and is then the complete index of everything collected before the switch. Every line gives its result's path
+  under `results/`.
 - **One id, two records.** Identical copies resolve to the flat one, always. Copies that differ are a problem
   `pipeline.py validate` names, and readers still get the flat one.
 - **Where new jobs go** is `WRITE` in `layout.py`: `"flat"` today. Switching it to `"shards"` is one line, for the

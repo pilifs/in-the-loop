@@ -1716,8 +1716,11 @@ def collect_totals(tally, jobs):
 
 
 def write_index():
+    """One line a result, newest first: results/index.json for the results kept flat, and an index.json in each
+    day's folder for the ones kept there, which the first names under "shards". So the complete index stops growing
+    when new results go by day, and a day's index is rewritten only on that day's collects."""
     tree = ROOT / RESULTS
-    entries = []
+    entries, days = [], {}
     for p in layout.results(ROOT).values():
         f = p / "result.json"
         r = json.loads(f.read_text())
@@ -1729,9 +1732,15 @@ def write_index():
                         "peakMemoryBytes": (r.get("usage") or {}).get("peakMemoryBytes"),
                         "estimate": r.get("estimate"), "host": r["runner"]["host"],
                         "result": f"{p.relative_to(tree).as_posix()}/result.json"})
-    entries.sort(key=lambda e: e["finishedAt"] or "", reverse=True)
+        if p.parent != tree:
+            days.setdefault(p.parent, []).append(entries.pop())
+    newest = lambda rows: sorted(rows, key=lambda e: e["finishedAt"] or "", reverse=True)
     if entries or tree.exists():
-        write_json(tree / "index.json", {"schema": "verification-results-index/v1", "results": entries})
+        shards = {"shards": sorted(d.relative_to(tree).as_posix() for d in days)} if days else {}
+        write_json(tree / "index.json", {"schema": "verification-results-index/v1", **shards, "results": newest(entries)})
+    for folder, rows in days.items():
+        write_json(folder / "index.json", {"schema": "verification-results-index/v1", "shard": folder.relative_to(tree).as_posix(),
+                                           "results": newest(rows)})
 
 
 def result_rel(job_id):
