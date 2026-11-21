@@ -34,6 +34,10 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   wrote it is wrong is the agent's work.
 - **Needs**: the agent of the next run, in the same session, to correct the receipt or the code that produced it, and
   rerun the default test run.
+- **Organic campaign follow-up, 2026-11-21:** the previous campaign tip `590002b6` already kept this original attempt under
+  `records/initial-attempts`. The merge restored a second copy under active receipts. All fourteen files matched the archive's
+  recorded SHA-256. Restoring the pre-merge active directory retained the original failed native evidence and the independent
+  finite refutation. The acceptance suite and all 66 default test groups passed on the campaign line.
 - **Closes when**: `test_acceptance.py` passes on the default line.
 
 ### VF-051: a second runner in the agent's workspace killed the watcher's runs of the same six jobs

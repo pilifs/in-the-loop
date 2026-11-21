@@ -1,0 +1,120 @@
+{
+  "revision": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
+  "side": "fix",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/pom.xml",
+      "-pl",
+      "mapred",
+      "-am",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 1,
+    "seconds": 25.63,
+    "logSha256": "a32467c4489f2dc22f970487407af31c507a0ebc2504d0a2b6d388e7759b8750",
+    "errors": [
+      "[ERROR] -------------------------------------------------",
+      "[ERROR] ",
+      "[ERROR] BUILD FAILURE",
+      "[ERROR] Plugin org.apache.maven.plugins:maven-clean-plugin:3.5.0 or one of its dependencies could not be resolved:",
+      "[ERROR] \tThe following artifacts could not be resolved: org.apache.maven.plugins:maven-clean-plugin:pom:3.5.0 (absent): Could not transfer artifact org.apache.maven.plugins:maven-clean-plugin:pom:3.5.0 from/to central (https://repo.maven.apache.org/maven2): repo.maven.apache.org",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
+    ],
+    "tail": [
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+      "[ERROR] ",
+      "[ERROR] After correcting the problems, you can resume the build with the command",
+      "[ERROR]   mvn <args> -rf :avro"
+    ]
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "lang/java/pom.xml",
+        "-pl",
+        "mapred",
+        "-am",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 74.93,
+      "logSha256": "2d1f97ee2027c0fc2fc4d0bfae65a23e5d70cfffa17bbf2b2ade1e2a52ec16e3",
+      "errors": [
+        "[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.384 s <<< FAILURE! -- in org.apache.avro.hadoop.io.TestAvroDatumConverterFactory",
+        "[ERROR] org.apache.avro.hadoop.io.TestAvroDatumConverterFactory.convertBytesWritableRespectsLogicalLength -- Time elapsed: 0.366 s <<< ERROR!",
+        "[ERROR] Errors: ",
+        "[ERROR]   TestAvroDatumConverterFactory.setup:51 \u00bb Runtime java.io.IOException: Invalid UID, could not determine effective user",
+        "[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0",
+        "[ERROR] Apache Avro Mapred API ............................. FAILURE [ 16.012 s]",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project avro-mapred: ",
+        "[ERROR] ",
+        "[ERROR] See /project/lang/java/mapred/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]"
+      ],
+      "tail": [
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :avro-mapred"
+      ]
+    },
+    "testSourceSha256": {
+      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java": "42314e365583fe4fe30c9f1d1ce6ff0017bada3b8a5add89d964320ea468b5bb"
+    },
+    "transplant": [],
+    "named": {
+      "TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength": [
+        {
+          "status": "error",
+          "class": "org.apache.avro.hadoop.io.TestAvroDatumConverterFactory",
+          "method": "convertBytesWritableRespectsLogicalLength",
+          "xmlSha256": "1a7bf353eddcbece16b5f4c2fe090a33b717c656499a00b8e664cf7f102c4a26"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 2758
+  }
+}

@@ -1,0 +1,238 @@
+{
+  "plan": {
+    "example": "354",
+    "task": "width-five-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "width-five-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+      "file": "claims/width-five.json",
+      "sha256": "ed826e094f98b6eb79c146d605babb25964e3c5c392b026ef65b99e94786af54",
+      "property": "width-five",
+      "claimKind": "property",
+      "statement": "At width five the pair is preserved before the ellipsis.",
+      "assume": "code >= 1 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "8e0f84b4b3b7cc40d16da048d3515ce6f12b67bb7634e5cdb68647728fac4a07"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SurrogateCuts#abbreviate(I)I",
+        "mapping": "At width five the pair is preserved before the ellipsis. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 1515
+      },
+      "key": "8226a4e55a92ce0b"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "26031cf6c75b40deecc3435baede53c63b71adf6ffb1b3122d4ecd2ad3a7a2d6"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/width-five-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-091854-354-baseline-native-checks-on-the-origin/examples/354-commons-lang-surrogate-cuts",
+    "network": true
+  },
+  "inputs": {
+    "example": "354",
+    "task": "width-five-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "width-five-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+      "file": "claims/width-five.json",
+      "sha256": "ed826e094f98b6eb79c146d605babb25964e3c5c392b026ef65b99e94786af54",
+      "property": "width-five",
+      "claimKind": "property",
+      "statement": "At width five the pair is preserved before the ellipsis.",
+      "assume": "code >= 1 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "8e0f84b4b3b7cc40d16da048d3515ce6f12b67bb7634e5cdb68647728fac4a07"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.SurrogateCuts#abbreviate(I)I",
+        "mapping": "At width five the pair is preserved before the ellipsis. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 1515
+      },
+      "key": "8226a4e55a92ce0b"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "26031cf6c75b40deecc3435baede53c63b71adf6ffb1b3122d4ecd2ad3a7a2d6"
+        },
+        "adapters": [
+          "adapter/organic/SurrogateCuts.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/SurrogateCuts.java",
+        "sha256": "cbe0ae15444393462b5d1f2b538ec4ab16ed55b1a08194208782690d5df4314e"
+      }
+    ]
+  },
+  "key": "15a99f8e734ba55b9136e7d245b42f6b1ca92521c05d6c089c859d42c266c72e"
+}

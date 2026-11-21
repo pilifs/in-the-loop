@@ -43,7 +43,10 @@ def module_args(case, module):
 
 
 def build_args(case):
-    return [*OPTIONS, *module_args(case, case["module"]), "-Dmaven.test.skip=true", "install"]
+    # The Avro reactor publishes test JARs for its dependents. Package them while leaving the
+    # separate invoker cross-JDK compatibility suite to upstream CI.
+    flags = ["-DskipTests", "-Dinvoker.skip=true"] if case["module"] == "mapred" else ["-Dmaven.test.skip=true"]
+    return [*OPTIONS, *module_args(case, case["module"]), *flags, "install"]
 
 
 def toolchains(command, case, work, jdk26):
@@ -59,6 +62,14 @@ def toolchains(command, case, work, jdk26):
         if digest(homes["26"] / "lib/modules") != pin["moduleImageSha256"]:
             raise ValueError("Guava compiler differs from the pinned Temurin 26 module image")
     mounts, identities = [], {}
+    if case["module"] == "mapred":
+        # Hadoop's original Job.getInstance uses UnixLoginModule during its JUnit setup.
+        # Supply the isolated build's actual UID in its own passwd database.
+        uid, gid = os.geteuid(), os.getegid()
+        (work / "passwd").write_text(f"builder:x:{uid}:{gid}:Build user:/work/home:/bin/sh\n")
+        (work / "group").write_text(f"builder:x:{gid}:\n")
+        for name in ("passwd", "group"):
+            mounts.extend(["--ro-bind", str(work / name), "/etc/" + name])
     document = ET.Element("toolchains")
     for version, home in homes.items():
         if home is None:
@@ -179,8 +190,15 @@ def tests(case, side, project, command, scratch, out):
     changed = set(git(project, "diff", "--name-only", "HEAD").decode().splitlines())
     if (side == "fix" and changed) or not changed.issubset(sources):
         raise ValueError("the production checkout changed outside the parent test transplant")
-    args = [*OPTIONS, *module_args(case, case["testModule"]), "-Dsurefire.failIfNoSpecifiedTests=false",
-            "-Dtest=" + ",".join(case["tests"]), "test"]
+    # The Guava testlib's Java 9 descriptor needs the packaged multi-release Guava JAR.
+    # A reactor stopped at the test phase substitutes target/classes and loses its descriptor.
+    support = None
+    selection = module_args(case, case["testModule"])
+    if case["module"] == "guava":
+        support = maven(command, [*OPTIONS, "-f", "guava-testlib/pom.xml", "-Dmaven.test.skip=true", "install"],
+                        scratch, "install-original-testlib")
+        selection = ["-f", "guava-tests/pom.xml"]
+    args = [*OPTIONS, *selection, "-Dsurefire.failIfNoSpecifiedTests=false", "-Dtest=" + ",".join(case["tests"]), "test"]
     run = maven(command, args, scratch, "upstream-tests")
     found = {name: [] for name in case["tests"]}
     for xml in project.glob("**/target/surefire-reports/TEST-*.xml"):
@@ -188,10 +206,15 @@ def tests(case, side, project, command, scratch, out):
             name = t.get("classname", "").split(".")[-1] + "#" + t.get("name", "").split("(")[0]
             if name in found:
                 status = next((s for s in ("failure", "error", "skipped") if t.find(s) is not None), "passed")
-                found[name].append({"status": status, "class": t.get("classname"), "method": t.get("name"),
-                                    "xmlSha256": digest(xml)})
+                row = {"status": status, "class": t.get("classname"), "method": t.get("name"), "xmlSha256": digest(xml)}
+                failure = t.find(status) if status in ("failure", "error") else None
+                if failure is not None:
+                    row.update(failureType=failure.get("type"), message=failure.get("message", "")[:600],
+                               atNamedTest=(t.get("classname") + "." + t.get("name") + "(") in (failure.text or ""))
+                found[name].append(row)
                 (out / (side + "-" + xml.name + ".gz")).write_bytes(gzip.compress(xml.read_bytes(), mtime=0))
-    return {"execution": run, "testSourceSha256": sources, "transplant": sorted(changed), "named": found}
+    return {"execution": run, "packagedTestSupport": support, "testSourceSha256": sources,
+            "transplant": sorted(changed), "named": found}
 
 
 def run_side(case, side, args):
@@ -242,18 +265,44 @@ def run_side(case, side, args):
     write(out / (side + "-upstream.json"), status)
     expected = {"failure", "error"} if side == "parent" else {"passed"}
     return "artifact" in status and all(len(rows) == 1 and rows[0]["status"] in expected
-                                        for rows in status["upstreamTest"]["named"].values())
+            and (side == "fix" or rows[0].get("atNamedTest"))
+            for rows in status["upstreamTest"]["named"].values())
+
+
+def bind(case, output):
+    """Bind both verified Maven products to the existing public target for offline replay."""
+    folder = ROOT / "examples" / case["folder"]
+    spec = folder / "target.json"
+    target = json.loads(spec.read_text())
+    captures = {}
+    for side in ("parent", "fix"):
+        path = output.resolve() / ("build-" + side + ".json")
+        record = json.loads(path.read_text())
+        recipe = {"tool": "maven", "argv": ["mvn", *build_args(case)], "jdk": "21"}
+        upstream_artifact.products(record, {"repository": case["repository"], "commit": case[side],
+                                           "parent": case["parent"] if side == "fix" else None, **recipe})
+        if record["build"]["outputs"]["selectedClass"] != case["productionClass"].replace(".", "/") + ".class":
+            raise ValueError("the build captured another production class")
+        captures[side] = path.relative_to(folder).as_posix()
+    target["preparation"].update(build=recipe, capturedBuilds=captures)
+    write(spec, target)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("example", choices=CASES)
     parser.add_argument("--repos", type=Path, help="local clones holding the original public commits")
-    parser.add_argument("--maven-cache", type=Path, required=True)
+    parser.add_argument("--maven-cache", type=Path)
+    parser.add_argument("--bind-existing", action="store_true", help="bind both collected build records to target.json")
     parser.add_argument("--maven", type=Path, default=Path.home() / ".sdkman/candidates/maven/current")
     parser.add_argument("--jdk26", type=Path, help="pinned Guava build compiler")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    if args.bind_existing:
+        bind(CASES[args.example], args.output)
+        return 0
+    if not args.maven_cache:
+        parser.error("a shared --maven-cache is required for original builds")
     results = []
     for side in ("parent", "fix"):
         try:

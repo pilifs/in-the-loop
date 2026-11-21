@@ -1,0 +1,435 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "62555c2d3abf7aaf",
+    "format": 1,
+    "example": "358",
+    "statement": {
+      "approach": "target",
+      "task": "bytes-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "bytes-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+        "file": "claims/bytes.json",
+        "sha256": "a160ed6ca0b8be33263ecc233aac152b6a6c39c0acf4ef1cefebbad5064c0ca8",
+        "property": "bytes",
+        "claimKind": "property",
+        "statement": "For every four-character word and all eight contiguous partitions the sink receives the exact two decoded bytes.",
+        "assume": "code >= 0 && code < 2048",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 8192
+        },
+        "explicitBounds": {
+          "unwind": 96,
+          "maxArrayLength": 8192
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/organic/Cases.java",
+            "sha256": "871bea8f2645637d2b998642ad7c5206541245d2cf54cf513042e8b48423307a"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "d3ac02404060a843c54d8cbfdcadc975a8426f9b8abe04dba072eda5827fddde"
+          }
+        ],
+        "adapter": {
+          "entry": "organic.HexWrites#bytes(I)I",
+          "mapping": "For every four-character word and all eight contiguous partitions the sink receives the exact two decoded bytes. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2051
+        },
+        "key": "958dd16eba464cf2"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8192
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "bytes-fix",
+      "sidecar": "51b1de7fdee1a2a538d2653decedcf213d35f198f4954fd083e8177a2ef1950e",
+      "revisions": {
+        "fix": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "601357f5f10ad7a227bcc6eaccf6992fb04a723258bd41594795927957bd577c"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/organic/HexWrites.java": "aac5f02364e3f9a9f686bb0095d39bb9baa6a435b02f64cb38de7f4e3b2fb349",
+        "claims/bytes.json": "a160ed6ca0b8be33263ecc233aac152b6a6c39c0acf4ef1cefebbad5064c0ca8",
+        "controls/table.json": "d3ac02404060a843c54d8cbfdcadc975a8426f9b8abe04dba072eda5827fddde",
+        "driver/organic/Cases.java": "871bea8f2645637d2b998642ad7c5206541245d2cf54cf513042e8b48423307a"
+      },
+      "claimKey": "958dd16eba464cf2"
+    }
+  },
+  "attempt": {
+    "id": "20261121T092736Z-8cc385ef",
+    "claim": "62555c2d3abf7aaf",
+    "startedAt": "2026-11-21T09:27:36+00:00",
+    "seconds": 0.3,
+    "engine": "native",
+    "options": [
+      "prove",
+      "organic.HexWrites#bytes(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/commons-codec-1.16-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 2048",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "8192",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "32fac40beac568a7843a9d632e7d336051965d9f38f5e50bd07722564dd2d5c1",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261121-091855-358-baseline-native-checks-on-the-origin",
+      "sourceCommit": "5e41cd71ab872a626179c02914aaae9f812c2c8c",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-091855-358-baseline-native-checks-on-the-origin"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.219,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.065,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 96,
+      "maxArrayLength": 8192,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "62555c2d3abf7aaf",
+    "attempt": "20261121T092736Z-8cc385ef",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 2048",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13 (java.io.ByteArrayOutputStream.<init>() at organic.HexWrites.decode:35). With --gaps assume it assumes instead that java.io.ByteArrayOutputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.047,
+            "properties": 1,
+            "unwind": 96,
+            "maxArrayLength": 8192,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.045,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.017,
+                  "encoding": 0.005,
+                  "solving": 0.023,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 4557,
+                  "clauses": 15720
+                }
+              }
+            ],
+            "native": {
+              "paths": 258,
+              "merges": 0,
+              "solverCalls": 258,
+              "solvingSeconds": 0.022958081,
+              "gatesEvaluated": 391,
+              "evaluatingSeconds": 0.000130844,
+              "divisions": 1,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 4557,
+              "clauses": 15720,
+              "seconds": 0.045027415,
+              "loadingSeconds": 0.000151621,
+              "decodingSeconds": 0.000165471,
+              "encodingSeconds": 0.004560984,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.io.ByteArrayOutputStream.<init>()",
+                "sites": [
+                  "organic.HexWrites.decode:35"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 2048",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13 (java.io.ByteArrayOutputStream.<init>() at organic.HexWrites.decode:35). With --gaps assume it assumes instead that java.io.ByteArrayOutputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 2048"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "96698c900c14915ba961b8589c9ac0f7496b56cf83dad7d5956d2edc552b148e",
+        "bytes": 735724
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "484672ceb2249f330b0c870268ae8dd46574f8a83b45b103253b04246043a5d1",
+        "bytes": 529
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "a441570a38fad1cb5b767bf3e1762288f9f32ffddc5a5145e34ee6c74009eb8d",
+        "bytes": 1950
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+        "bytes": 205571
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "77be8bf624386496a0085c7cc89b5c1945e61294c1583db446a8e25d15eebfb7",
+        "bytes": 524288
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "836bc077310bdc6179decb841a77bfd7ade96d100fbbdc97a8d9cbfd1c7d17df",
+        "bytes": 6172
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "72fcd490bb6b429e5bdfa42cd376864952911af7b2b5ab5773e4ba754b4b19ed",
+        "bytes": 16823
+      }
+    ]
+  }
+}

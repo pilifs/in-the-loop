@@ -1,0 +1,244 @@
+{
+  "plan": {
+    "example": "356",
+    "task": "token-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "token-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+      "file": "claims/token.json",
+      "sha256": "a149bd78b4ba37765c73ec245975faffbe03242ed6aae77eecafba8ecec28c33",
+      "property": "token",
+      "claimKind": "property",
+      "statement": "peek classifies every valid number and rejects both invalid leading-zero controls.",
+      "assume": "code >= 0 && code < 13",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "e377aecb1db5609739dd2db1b9e0c5e7ba6005395ae6bd1585b8cc15d63499f2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "fc21f26f288ae1065bfa7230ce65e6f2e324f3bcfa70284a2c7a0e57ed61dedd"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.OverflowNumber#token(I)I",
+        "mapping": "peek classifies every valid number and rejects both invalid leading-zero controls. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 13
+      },
+      "key": "ba4b15c3ccf9c518"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "5a200e54cc18d98362f4f53c84d5424e33ca1d2f75cbd778d75d6e1a6dfeccc1"
+        },
+        "adapters": [
+          "adapter/organic/OverflowNumber.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/token-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261121-091854-356-baseline-native-checks-on-the-origin/examples/356-gson-overflowing-number",
+    "network": true
+  },
+  "inputs": {
+    "example": "356",
+    "task": "token-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "token-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#peek()Lcom/google/gson/stream/JsonToken;",
+      "file": "claims/token.json",
+      "sha256": "a149bd78b4ba37765c73ec245975faffbe03242ed6aae77eecafba8ecec28c33",
+      "property": "token",
+      "claimKind": "property",
+      "statement": "peek classifies every valid number and rejects both invalid leading-zero controls.",
+      "assume": "code >= 0 && code < 13",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 1024
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "e377aecb1db5609739dd2db1b9e0c5e7ba6005395ae6bd1585b8cc15d63499f2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "fc21f26f288ae1065bfa7230ce65e6f2e324f3bcfa70284a2c7a0e57ed61dedd"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.OverflowNumber#token(I)I",
+        "mapping": "peek classifies every valid number and rejects both invalid leading-zero controls. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 13
+      },
+      "key": "ba4b15c3ccf9c518"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/google/gson",
+        "commit": "ed2397502708ebaba53643e5c3d60e0974d7045f",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "gson",
+            "-am",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/upstream/build-parent.json",
+          "sha256": "5a200e54cc18d98362f4f53c84d5424e33ca1d2f75cbd778d75d6e1a6dfeccc1"
+        },
+        "adapters": [
+          "adapter/organic/OverflowNumber.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/OverflowNumber.java",
+        "sha256": "c3e71d9f3fa73233e6b5f42f1e0d7e326b09f00bd7e0fa51c17dfd74c9301fdc"
+      }
+    ]
+  },
+  "key": "62a5b35f872ccd17ecf251f4e16db4162d342b0a4a89695ab10b539abbb281c3"
+}

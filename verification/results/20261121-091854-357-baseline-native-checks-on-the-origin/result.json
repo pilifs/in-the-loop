@@ -1,0 +1,752 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-091854-357-baseline-native-checks-on-the-origin",
+  "title": "357 baseline native checks on the original gson public calls",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 8.8s, peak 147.0 MiB (estimated 5m00s, 3.0 GiB); 74 output file(s) changed",
+  "attention": [
+    "step 1 (Run the public task plan) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-091854-357-baseline-native-checks-on-the-origin.json",
+    "sha256": "4de226d8070033166357f8c0ce30e37875c3d14b4884c9f5834e3cf76c158bab",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-091854-357-baseline-native-checks-on-the-origin",
+      "title": "357 baseline native checks on the original gson public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/google/gson#3137 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "357"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:18:54+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 357 --route native --stage baseline --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/357-gson-repeated-bom/records/baseline-native"
+      ]
+    }
+  },
+  "sourceCommit": "46dbef9d6deb46a5777f3285baa30c01e550858c",
+  "startedAt": "2026-11-21T09:27:15+00:00",
+  "finishedAt": "2026-11-21T09:27:38+00:00",
+  "wallSeconds": 23.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3588938,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 154157056,
+    "wallSeconds": 8.8,
+    "cpuSeconds": 10.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 357 --route native --stage baseline --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 8.823,
+      "cpuSeconds": 10.115,
+      "cpuThrottledSeconds": 0.005,
+      "peakMemoryBytes": 154157056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 522,
+        "sha256": "28a410543bda9034d6df2ea25f8919b34ef3f67ca0c1b5de05d5000cc6603566",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"357\", \"route\": \"native\", \"stage\": \"baseline\", \"workflowExit\": 1, \"seconds\": 8.479, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"chunked-parent\", \"chunked-fix\", \"plain-parent\", \"plain-fix\"], \"verifierCommit\": \"5e41cd71ab872a626179c02914aaae9f812c2c8c\", \"checkerSha256\": \"47a6041ce8aefcb52ab"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c21c6bf4b7a02618e2fdc7ebd5fd68f2d60c01bd9f67ae1e12aadfbadafafe31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/plan.json",
+      "change": "added",
+      "bytes": 7318,
+      "sha256": "b953e3862fc70e8b17d3ce8b15669203a4eb43c3e86938bd42830e751c0c9fde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1194,
+      "sha256": "3d4e08293599e8455f51a5ae6dec0e4bce66a76d20db576aaae97c125348dda1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/controls.json",
+      "change": "added",
+      "bytes": 7678,
+      "sha256": "9bf6b22f7d892ca7bd181a4d8898b57e570edcf76b30320ecc963eda4b069a3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/execution.json",
+      "change": "added",
+      "bytes": 26195,
+      "sha256": "0ac8d35b31f3dc7a28a62c3fd0715f09d6c760b3ed5454ae05cc733c65d43611",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "acdd31f076cdbd00ea283b1ca1900a62540874f2113089e636c32d65410e3647",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 557,
+      "sha256": "7da921d60aaab4ccfb814433590eccb8a9734bb3437790e2d4933f1def493876",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier.json",
+      "change": "added",
+      "bytes": 18312,
+      "sha256": "467cc3f994c161d28699d818777169aa9d7e831509daa0ae38b06efe04ed8a82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6274,
+      "sha256": "5dd42f7900bfc13913f7ecf37e26f3a1f4c821330f5183c8daa0a4068e7c08ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/result.json",
+      "change": "added",
+      "bytes": 15117,
+      "sha256": "53b59584bb87abf53c2d4c25ac413ccb582457109cbc0c5e06c6594cdce4a19a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/executions/20261121T092735Z-eb9bf738/attempt.json",
+      "change": "added",
+      "bytes": 14980,
+      "sha256": "5590da5517f42f310a4dbd39e555b17d31e78f2d3fefe04ca93669deb23a6b65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/executions/20261121T092735Z-eb9bf738/checker.json",
+      "change": "added",
+      "bytes": 7716,
+      "sha256": "8dc98ff48311d089aa4d49ba7327ae59223d031a6647e921ab505adb1117918d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/executions/20261121T092735Z-eb9bf738/correspondence.json",
+      "change": "added",
+      "bytes": 1316,
+      "sha256": "9292bec91702866c4e97474b7e21b196ea72c53a466d67f2dbf07571fc6e0f10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "838ca611efd40fd630f953514d9c0163b0b4f236e39a11fc7ee3cc867e170b46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/plan.json",
+      "change": "added",
+      "bytes": 7223,
+      "sha256": "1996d6def745a3da1ede2d18a39f27051cd9766d29d799f043c5a4ca778a60eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "17c746a4a02c11018ef558e3c3112b8f06e7d82b462872cb08c39418127a8a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/controls.json",
+      "change": "added",
+      "bytes": 7660,
+      "sha256": "11ee7d7298bd9b468bc1108728cc41a623fa4ec9f9416776077199c01191c67a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/execution.json",
+      "change": "added",
+      "bytes": 26222,
+      "sha256": "1707af793fdb0ff51302869f29df4ca3549e3d22688fa1866b691e210ffc33d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "71fbad04c0754cd846028eed72a1a4937210df72fc1f8ac4f4cf49d9140de9c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 557,
+      "sha256": "7da921d60aaab4ccfb814433590eccb8a9734bb3437790e2d4933f1def493876",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier.json",
+      "change": "added",
+      "bytes": 18372,
+      "sha256": "472a92c65e773e9b5631271fb3b4e8bd9ea9d3576c637de5cb66844cdc21d562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6271,
+      "sha256": "28210acdf8491f7bab9933d9258da6cc7fbe7c01100273092e7468eea0ec9971",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/result.json",
+      "change": "added",
+      "bytes": 15171,
+      "sha256": "d0e3ca1c31de001acf0f54c31f7b84c5d9834725b9138b9a860b6dd3d418269d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/executions/20261121T092735Z-67d5fe03/attempt.json",
+      "change": "added",
+      "bytes": 15046,
+      "sha256": "ef90592629d58b633e40bf94ae7a2e165f53bf34544e2b857b424f21f70a96c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/executions/20261121T092735Z-67d5fe03/checker.json",
+      "change": "added",
+      "bytes": 7725,
+      "sha256": "b3fba5c04263159b7334050d131b49a50a0a77965148cdbf01f5ea0f286bbc16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/executions/20261121T092735Z-67d5fe03/correspondence.json",
+      "change": "added",
+      "bytes": 1319,
+      "sha256": "eb28b8a69f5001aa048e54ecc87a71ebd00bd51ada834c5628b5b6735b399ab6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "c5f58a6140848b56d5ff5109d84591e4b4ba3704ca6d2bf71e36efc6c82e7b79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/plan.json",
+      "change": "added",
+      "bytes": 7260,
+      "sha256": "02fbae7221589ff51e287b0b97a989e561abf4e322b85a312fcaab587f44bd45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1194,
+      "sha256": "3d4e08293599e8455f51a5ae6dec0e4bce66a76d20db576aaae97c125348dda1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/controls.json",
+      "change": "added",
+      "bytes": 7674,
+      "sha256": "cdff2a470ab63e8eed656bbb2249a21b59f742425ddf5fa91eaf6a3177ed60b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/execution.json",
+      "change": "added",
+      "bytes": 26144,
+      "sha256": "1898dffa0f43cc39a0f2b2804d28003cb12e32b5d221854da411d08ab817eea4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "34f428b20a0ed2c5526b647143da7d90d29f885f0f372e1afbedf87ecac45a5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 555,
+      "sha256": "9b3265b3fa328832fe324d11e7781c60d92bad4e6af1dfd60097c4686a94cc46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier.json",
+      "change": "added",
+      "bytes": 18257,
+      "sha256": "b62aaf9e9ea0430e41ecdf5640fc2123c515b6993ba5294cb162245bf5a5f054",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6267,
+      "sha256": "209b45469f7508d7ef413373aa38ec346efa121ec02075dd2f758bf2b96d33dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/result.json",
+      "change": "added",
+      "bytes": 15083,
+      "sha256": "6f350f96a81aa19c0b3d33e0b9dae983a6023311f35d8de405d84fe6004690c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/executions/20261121T092737Z-39e55dd7/attempt.json",
+      "change": "added",
+      "bytes": 14933,
+      "sha256": "432359470a181c8d1334cdeca3794a3f4a76de1ef3fa45065c1787994e3cb93b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/executions/20261121T092737Z-39e55dd7/checker.json",
+      "change": "added",
+      "bytes": 7707,
+      "sha256": "cac846cda7f0842eb81c42d05eb92b0027ad62cd4536aba2d95e9aaf5b5711a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/executions/20261121T092737Z-39e55dd7/correspondence.json",
+      "change": "added",
+      "bytes": 1305,
+      "sha256": "e823ae3ea93ce176681b5f0fb3f9acf2c572b69cb5062289a5b74a7deccfae10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8312bc5cb1fb6e7df37d135048307c8765fb6d0ef1afd1539d7b32cd171559f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/plan.json",
+      "change": "added",
+      "bytes": 7169,
+      "sha256": "4338dfd2b1c92d36c2fe96f2cc82a2d8b8994575f9570843125219a772e194b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "17c746a4a02c11018ef558e3c3112b8f06e7d82b462872cb08c39418127a8a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/controls.json",
+      "change": "added",
+      "bytes": 7656,
+      "sha256": "a5fe109e1235aa5fa59fd2f0541c95f8a6e60a049c6fc9b505da6015cefd8309",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/execution.json",
+      "change": "added",
+      "bytes": 26176,
+      "sha256": "d7bb216194760ec634d23547e03b62283a6d7ad89029a61178b6acc73bf09aa3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "fc71c12ad78f85efff4441970c57ac74a3e7dadeba1de51e2fc01978f152082d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 555,
+      "sha256": "9b3265b3fa328832fe324d11e7781c60d92bad4e6af1dfd60097c4686a94cc46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier.json",
+      "change": "added",
+      "bytes": 18322,
+      "sha256": "209ecfe9ae510f16306e2cad5a55f3d4e9959f4d42cf59b2b9b902d59f46d205",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6268,
+      "sha256": "1f7c9c335f440ba713ca0f953c607a722e6a34572272a06b9d51a981e2fc3b79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/result.json",
+      "change": "added",
+      "bytes": 15142,
+      "sha256": "6692896b15549bb498baed61139119a04dde0f536ed3c4c5d352afcf0ca82e42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/executions/20261121T092736Z-922a0861/attempt.json",
+      "change": "added",
+      "bytes": 15002,
+      "sha256": "edd19be8a3f9162a4972c4084e3d4bd75a56ba51529368ad459bc175f09f6c0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/executions/20261121T092736Z-922a0861/checker.json",
+      "change": "added",
+      "bytes": 7720,
+      "sha256": "84a7420481c0b37994e4e18608dba16bce444315bbe5cc36d7212f7e09fb937c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/executions/20261121T092736Z-922a0861/correspondence.json",
+      "change": "added",
+      "bytes": 1308,
+      "sha256": "eb99f10ac3aa42ee3892adabc8ac78306531f0987ac79be2578ca368488a77fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cd7d46756ca5f07e831e9bae1231d1fd37ef6014bcc33de22dcaf7ec714f45c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/plan.json",
+      "change": "added",
+      "bytes": 7959,
+      "sha256": "62a2952e7c912acd5c7c2574ddfaf5f0320609d003da819fc7915adb2c9ab5a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1194,
+      "sha256": "3d4e08293599e8455f51a5ae6dec0e4bce66a76d20db576aaae97c125348dda1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "ec341ca45c97f06cf8ad47c4f06971301e333ce75c76af5f9fceeb83d0465562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "17c746a4a02c11018ef558e3c3112b8f06e7d82b462872cb08c39418127a8a12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/controls.json",
+      "change": "added",
+      "bytes": 15270,
+      "sha256": "8ffe69545e5b14e1d05530c64db1bfa942cdccb87605a76efca6692829103f01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/execution.json",
+      "change": "added",
+      "bytes": 14831,
+      "sha256": "0889034a09430f732988f4fb814fbef1ae17ff4df7df660c7fe6d8c9fabb457d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/streams.json",
+      "change": "added",
+      "bytes": 1715,
+      "sha256": "1d23aa01bcb6ace4c538b093f42d6d11b7ae463350143d10315e1fcb19a2b188",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/summary.txt",
+      "change": "added",
+      "bytes": 332,
+      "sha256": "2ce51c3581a91608f3ab402b210ed94647403fe9e961f9855555577b6c100ac4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/result.json",
+      "change": "added",
+      "bytes": 8609,
+      "sha256": "5bfa1e90780a7d97e89e77b52b8ea054368b5f7d648f26f5442631ca2f0b84bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/replay/executions/20261121T092729Z-da19bef0/attempt.json",
+      "change": "added",
+      "bytes": 6353,
+      "sha256": "ddcbc1065e4d18db7a763f9f38e50405e625ba3590161ca0db3246d2759d6f38",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/run.json",
+      "change": "added",
+      "bytes": 580,
+      "sha256": "50becb9cac5f6a6ef0a2fc3b810e4b96c1694c51248d1f59bdf1733ac79adf84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/357-gson-repeated-bom/records/baseline-native/workflow.log",
+      "change": "added",
+      "bytes": 1093,
+      "sha256": "94cae9b8460376b7ede40426e5d126918fa6851b1b0afa3961f84193e86c089c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:28:00+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/completion.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/plan.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/control-fix-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/control-fix-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/controls.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/execution.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/streams.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/20261121T092735Z-eb9bf738/result.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/executions/20261121T092735Z-eb9bf738/attempt.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/executions/20261121T092735Z-eb9bf738/checker.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-fix/executions/20261121T092735Z-eb9bf738/correspondence.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/completion.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/plan.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/control-parent-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/control-parent-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/controls.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/execution.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/streams.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/20261121T092735Z-67d5fe03/result.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/executions/20261121T092735Z-67d5fe03/attempt.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/executions/20261121T092735Z-67d5fe03/checker.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/chunked-parent/executions/20261121T092735Z-67d5fe03/correspondence.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/completion.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/plan.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/control-fix-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/control-fix-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/controls.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/execution.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/streams.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/20261121T092737Z-39e55dd7/result.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/executions/20261121T092737Z-39e55dd7/attempt.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/executions/20261121T092737Z-39e55dd7/checker.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-fix/executions/20261121T092737Z-39e55dd7/correspondence.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/completion.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/plan.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/control-parent-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/control-parent-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/controls.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/execution.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/streams.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier-output.txt",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/records/verifier.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/20261121T092736Z-922a0861/result.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/executions/20261121T092736Z-922a0861/attempt.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/executions/20261121T092736Z-922a0861/checker.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/plain-parent/executions/20261121T092736Z-922a0861/correspondence.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/completion.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/plan.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-fix-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-fix-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-parent-jdk21.stderr",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/control-parent-jdk21.stdout",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/controls.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/execution.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/streams.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/records/summary.txt",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/20261121T092729Z-da19bef0/result.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/replay/executions/20261121T092729Z-da19bef0/attempt.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/run.json",
+      "examples/357-gson-repeated-bom/records/baseline-native/workflow.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff"
+}

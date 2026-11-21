@@ -1,0 +1,581 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "bd845fc79468dfab",
+    "format": 1,
+    "example": "356",
+    "statement": {
+      "approach": "target",
+      "task": "lexeme-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "lexeme-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "com.google.gson.stream.JsonReader#nextString()Ljava/lang/String;",
+        "file": "claims/lexeme.json",
+        "sha256": "a5cbb0d77159a6db6a7f5bdcae047376d0945694994798d9ebb9c08ba1fd232a",
+        "property": "lexeme",
+        "claimKind": "property",
+        "statement": "After the successful NUMBER peek, nextString returns the complete original lexeme on that very reader.",
+        "assume": "code >= 0 && code < 13",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 1024
+        },
+        "explicitBounds": {
+          "unwind": 96,
+          "maxArrayLength": 1024
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/organic/Cases.java",
+            "sha256": "e377aecb1db5609739dd2db1b9e0c5e7ba6005395ae6bd1585b8cc15d63499f2"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "fc21f26f288ae1065bfa7230ce65e6f2e324f3bcfa70284a2c7a0e57ed61dedd"
+          }
+        ],
+        "adapter": {
+          "entry": "organic.OverflowNumber#lexeme(I)I",
+          "mapping": "After the successful NUMBER peek, nextString returns the complete original lexeme on that very reader. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 13
+        },
+        "key": "ea9be5f7391036b0"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 1024
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "lexeme-parent",
+      "sidecar": "4e17ea60cb7e19439f6302a6597fb5b3438a03fc265eb3e7c7f11828acdad0bd",
+      "revisions": {
+        "parent": "ed2397502708ebaba53643e5c3d60e0974d7045f"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "9f53783f032278697d45b977cc8b2bbfc9b1f63c84b2db75159b277b0e2f2f5c"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "cfcfa1d9743b181a0a1dd7eee9904120541b1855b52f115dde6b6098ece6c0a5"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "8878e0cef9943f813b0ae91bd74d226c5222a51fab7e9876c2e3b85b79fd655b"
+        },
+        {
+          "revision": "parent",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "3b1003e51b8ae56fdbd7c71073e81d1683b97e6c4dff5a9151164d59b769d13c",
+          "coordinates": "com.google.errorprone:error_prone_annotations:2.49.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/organic/OverflowNumber.java": "c3e71d9f3fa73233e6b5f42f1e0d7e326b09f00bd7e0fa51c17dfd74c9301fdc",
+        "claims/lexeme.json": "a5cbb0d77159a6db6a7f5bdcae047376d0945694994798d9ebb9c08ba1fd232a",
+        "controls/table.json": "fc21f26f288ae1065bfa7230ce65e6f2e324f3bcfa70284a2c7a0e57ed61dedd",
+        "driver/organic/Cases.java": "e377aecb1db5609739dd2db1b9e0c5e7ba6005395ae6bd1585b8cc15d63499f2"
+      },
+      "claimKey": "ea9be5f7391036b0"
+    }
+  },
+  "attempt": {
+    "id": "20261121T092737Z-82e1c0c1",
+    "claim": "bd845fc79468dfab",
+    "startedAt": "2026-11-21T09:27:37+00:00",
+    "seconds": 0.4,
+    "engine": "native",
+    "options": [
+      "prove",
+      "organic.OverflowNumber#lexeme(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/gson-2.14.1-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0.jar",
+      "--assume",
+      "code >= 0 && code < 13",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "1024",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "7e9d7051891f2b990aeb174d6e32aaedd08e31028ec071797c7a5938364e0771",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261121-091854-356-baseline-native-checks-on-the-origin",
+      "sourceCommit": "5e41cd71ab872a626179c02914aaae9f812c2c8c",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261121-091854-356-baseline-native-checks-on-the-origin"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.167,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.219,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 96,
+      "maxArrayLength": 1024,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "bd845fc79468dfab",
+    "attempt": "20261121T092737Z-82e1c0c1",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 13",
+          "verdict": "violation",
+          "domain": "code: int",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as lexeme(code=4), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain code: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "lexeme(code=0)",
+            "contract": "result == 1",
+            "actual": "0",
+            "found": "lexeme(code=4)",
+            "shrinkRuns": 1,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 0
+                }
+              ],
+              "foundInputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 4
+                }
+              ],
+              "call": {
+                "class": "organic.OverflowNumber",
+                "classFile": "organic/OverflowNumber.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "lexeme",
+                "descriptor": "(I)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "code",
+                    "type": "int",
+                    "value": 0,
+                    "from": "code"
+                  }
+                ],
+                "revision": "parent"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.14,
+            "properties": 1,
+            "unwind": 96,
+            "maxArrayLength": 1024,
+            "stage": "[0:20]",
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.135,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.002,
+                  "lowering": 0.001,
+                  "symbolic": 0.053,
+                  "encoding": 0.079,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 582,
+                  "clauses": 1820
+                }
+              }
+            ],
+            "native": {
+              "paths": 4,
+              "merges": 0,
+              "solverCalls": 26,
+              "solvingSeconds": 0.000472739,
+              "gatesEvaluated": 452,
+              "evaluatingSeconds": 2.7944e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 582,
+              "clauses": 1820,
+              "seconds": 0.1352452,
+              "loadingSeconds": 0.002005844,
+              "decodingSeconds": 0.000719903,
+              "encodingSeconds": 0.079270226,
+              "witnessSeconds": 1.9005e-05
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 13",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "lexeme(code=0)",
+        "contract": "result == 1",
+        "actual": "0",
+        "found": "lexeme(code=4)",
+        "shrinkRuns": 1,
+        "witness": {
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 4
+            }
+          ],
+          "call": {
+            "class": "organic.OverflowNumber",
+            "classFile": "organic/OverflowNumber.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "lexeme",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 0,
+                "from": "code"
+              }
+            ],
+            "revision": "parent"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20] as lexeme(code=4), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain code: int",
+    "problem": null,
+    "domain": "code: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 13"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 13",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "cb1613a5300608962165fe804068341501aa9c36595a39b3cbf6abda55d8e1b4",
+        "bytes": 27990
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "02f2fb775483086454f2381444ccc68db7f338a1ce090faeaa31d6e4ae905161",
+        "bytes": 581
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "d438df6d55c485ea6708524b6ce3938f9b782c1ea2dfc5e16a7e8cf6d084fe6d",
+        "bytes": 1967
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "9572a63f0e88743bfc67183f5432e7972a5fa623661661b1664c9fbd94fb3d5b",
+        "bytes": 2123
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "8b72e10371322ebf8f33fd95be9c1faaec916234aba4337260abbb3c9a174e6f",
+        "bytes": 8052
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "54dcbe3c43bd631f7725095d429755b19ded08b2b45f450d09da22a67c6c2165",
+        "bytes": 5973
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "fd8fe9d5f11e19fa716b2bfce7c11607ec22a8bbd0cc9d8b6d01cffa52963779",
+        "bytes": 17234
+      }
+    ]
+  }
+}

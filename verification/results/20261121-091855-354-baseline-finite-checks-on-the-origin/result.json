@@ -1,0 +1,262 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-091855-354-baseline-finite-checks-on-the-origin",
+  "title": "354 baseline finite checks on the original commons-lang public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 32.6s, peak 245.2 MiB (estimated 5m00s, 3.0 GiB); 13 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-091855-354-baseline-finite-checks-on-the-origin.json",
+    "sha256": "f9615b5121e74edac5602aa777b21dfd4ed796b79a523b1fc0222274a2dbbc21",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-091855-354-baseline-finite-checks-on-the-origin",
+      "title": "354 baseline finite checks on the original commons-lang public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/commons-lang#1719 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:finite"
+      ],
+      "links": {
+        "examples": [
+          "354"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:18:55+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 354 --route finite --stage baseline --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/354-commons-lang-surrogate-cuts/records/baseline-finite"
+      ]
+    }
+  },
+  "sourceCommit": "46dbef9d6deb46a5777f3285baa30c01e550858c",
+  "startedAt": "2026-11-21T09:27:15+00:00",
+  "finishedAt": "2026-11-21T09:27:59+00:00",
+  "wallSeconds": 44.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3588938,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 257069056,
+    "wallSeconds": 32.6,
+    "cpuSeconds": 48.3,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 354 --route finite --stage baseline --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 32.604,
+      "cpuSeconds": 48.333,
+      "cpuThrottledSeconds": 2.227,
+      "peakMemoryBytes": 257069056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 633,
+        "sha256": "683a912885e41b30148c3ba90a7f818e89dc43ffbb4ba5d8396f07f4aa4cdeed",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"354\", \"route\": \"finite\", \"stage\": \"baseline\", \"workflowExit\": 0, \"seconds\": 32.281, \"checkerSeconds\": 180, \"tasks\": [\"fixed-cut-parent\", \"fixed-cut-fix\", \"truncate-parent\", \"truncate-fix\", \"abbreviate-parent\", \"abbreviate-fix\", \"intact-parent\", \"intact-fix\", \"width-five-parent\", \"width-"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/abbreviate-fix.json",
+      "change": "added",
+      "bytes": 5930,
+      "sha256": "e2e20e321652ea7d2244d0ea739943f4eb098052ee254e544f3dff84b0141464",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/abbreviate-parent.json",
+      "change": "added",
+      "bytes": 8375,
+      "sha256": "0e6b5a952cb3d2c9e8fec5a5f082b6ed04210648c6ef5ae1db06ccaf1dd9e842",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/batch.json",
+      "change": "added",
+      "bytes": 5839,
+      "sha256": "4343566edfb91d5715e50022228e500838a6ee3e652f75915df05b070ad58f80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/fixed-cut-fix.json",
+      "change": "added",
+      "bytes": 11796,
+      "sha256": "0398581805cf53780a1677d86970fef62fb58e90c777a39fb5d5989b79678964",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/fixed-cut-parent.json",
+      "change": "added",
+      "bytes": 14287,
+      "sha256": "87800a5218a2153163af7da498adc0c60f1604e9feb18b4c9e568bc3c4ce5b65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/intact-fix.json",
+      "change": "added",
+      "bytes": 5722,
+      "sha256": "6213cf25b6dc1fef1d98b941415ad3b6a20526aadf7288ea7eb756a40bc35bac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/intact-parent.json",
+      "change": "added",
+      "bytes": 5743,
+      "sha256": "7e3e83ae3defd2517ef791c567eb8e9ab8487904f49c4d9a79eeaaaec313d526",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/truncate-fix.json",
+      "change": "added",
+      "bytes": 269610,
+      "sha256": "785ccfb05f15afdf13982d912e31dfe8247c17bcd2e0d720270ac08bd0a1b827",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/truncate-parent.json",
+      "change": "added",
+      "bytes": 272616,
+      "sha256": "b25b99f5f825abed0fc0525e98582c80c76f68558010069eebaacfda045b7fb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/width-five-fix.json",
+      "change": "added",
+      "bytes": 5712,
+      "sha256": "dc44c5bef4c6265e3572010d4852528b86620e0195da77755e6f08fee1ab2c22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/width-five-parent.json",
+      "change": "added",
+      "bytes": 5734,
+      "sha256": "041913445ab3ec080c78583585a5cb6f5ac5bfed73f5aa24e651b50f467cadfb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/run.json",
+      "change": "added",
+      "bytes": 711,
+      "sha256": "1b81f5f459a30b1318e55be18545255156183d5da4ea38155ffda918810423f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/workflow.log",
+      "change": "added",
+      "bytes": 427,
+      "sha256": "5d8b9356eea7589bf130e044b61f7abab8d9efbdaf2c2ce9751c05be164ef2d1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:32:47+00:00",
+    "applied": [
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/abbreviate-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/abbreviate-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/batch.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/fixed-cut-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/fixed-cut-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/intact-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/intact-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/truncate-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/truncate-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/width-five-fix.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/20261121T092727Z-b7e3b822/width-five-parent.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/run.json",
+      "examples/354-commons-lang-surrogate-cuts/records/baseline-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

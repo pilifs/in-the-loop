@@ -1,0 +1,436 @@
+{
+  "task": "ten-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract",
+      "prove",
+      "organic.HexWrites#bytes(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/commons-codec-1.16-SNAPSHOT.jar",
+      "--assume",
+      "code >= 2048 && code < 2049",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "8192",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.056,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2",
+      "commit": "5e41cd71ab872a626179c02914aaae9f812c2c8c",
+      "libTree": "b2f0b7d7545840162684362d2144c6d4a0d63c22",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 8192
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+        "method": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+        "revisions": {
+          "fix": {
+            "commit": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb",
+            "loadedFrom": "built/commons-codec-1.16-SNAPSHOT.jar",
+            "classSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb",
+            "origin": "built by maven from https://github.com/apache/commons-codec at 7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb: target/commons-codec-1.16-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "out",
+                "doEncode"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "organic.HexWrites#bytes(I)I",
+          "mapping": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2051
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-codec-1.16-SNAPSHOT.jar",
+            "sha256": "07afcf1d61d9057c92209936c4732bfdc8ce12c98614c74997500715af5f9326",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "organic.HexWrites#bytes(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "organic.HexWrites#bytes(I)I",
+          "classSha256": "d8e5adb0751742996c74b162467987628ba6d6860f15cade63ef800744b4cdbc",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+          "subjectClassSha256": "880362420bdff7d1ee0d95c1e6f69a57eca319b9ad17b93aac990fbcd656cbfb"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.codec.binary.Base16OutputStream#<init>(Ljava/io/OutputStream;Z)V",
+        "checkedEntry": "organic.HexWrites#bytes(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 2048 && code < 2049"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "8192"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "organic.HexWrites#bytes(I)I",
+          "mapping": "The original ten-character input decodes to ABCDE under the 3+4+3 writes. The selector identifies the input and direct public observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2051
+        }
+      },
+      "commits": {
+        "fix": "7ccbc3d0c39aaf49ff70f19d85f173f98550d0fb"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "6656",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx4300m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/.cache/in-the-loop/external-upgrades/47a6041ce8aefcb52ab19187ba6a82060e06f41f5b24efbd13b5b044b1e1dcb2/jvmcontract",
+            "gaps",
+            "--target",
+            "organic.HexWrites#bytes(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/built/commons-codec-1.16-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.037,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.ByteArrayOutputStream.<init>()",
+              "sites": [
+                "organic.HexWrites.decode:35"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.io.FilterOutputStream.<init>(Ljava/io/OutputStream;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.FilterOutputStream.<init>(java.io.OutputStream)",
+              "sites": [
+                "org.apache.commons.codec.binary.BaseNCodecOutputStream.<init>:58"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.OutputStream.close()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.OutputStream.close()",
+              "sites": [
+                "org.apache.commons.codec.binary.BaseNCodecOutputStream.close:79"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.OutputStream.flush()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.OutputStream.flush()",
+              "sites": [
+                "org.apache.commons.codec.binary.BaseNCodecOutputStream.flush:128"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.OutputStream.write([BII)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.OutputStream.write(byte[], int, int)",
+              "sites": [
+                "org.apache.commons.codec.binary.BaseNCodecOutputStream.flush:124"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+              "sites": [
+                "organic.HexWrites.decode:36"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0377,
+        "peakRssBytes": 154779648,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "organic.HexWrites#bytes(int)",
+        "domain": "code: int",
+        "assume": "code >= 2048 && code < 2049",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13 (java.io.ByteArrayOutputStream.<init>() at organic.HexWrites.decode:35). With --gaps assume it assumes instead that java.io.ByteArrayOutputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "organic.HexWrites#bytes(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13 (java.io.ByteArrayOutputStream.<init>() at organic.HexWrites.decode:35). With --gaps assume it assumes instead that java.io.ByteArrayOutputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 49
+          }
+        ],
+        "output": "✗ organic.HexWrites#bytes(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13 (java.io.ByteArrayOutputStream.<init>() at organic.HexWrites.decode:35). With --gaps assume it assumes instead that java.io.ByteArrayOutputStream.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.010076738,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 8192,
+          "stage": null,
+          "native": {
+            "paths": 3,
+            "merges": 0,
+            "solver_calls": 3,
+            "solving_seconds": 6.2938e-05,
+            "gates_evaluated": 132,
+            "evaluating_seconds": 7.744e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 214,
+            "clauses": 595,
+            "seconds": 0.008349536,
+            "loading_seconds": 0.000192931,
+            "decoding_seconds": 0.000179968,
+            "encoding_seconds": 0.000197699,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.ByteArrayOutputStream.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.ByteArrayOutputStream.<init>()",
+              "sites": [
+                "organic.HexWrites.decode:35"
+              ],
+              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.008,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.008,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 214,
+                "clauses": 595
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.038,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.008,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.027
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 2048 && code < 2049",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261121-091855-358-baseline-native-checks-on-the-origin/.build-py/examples-xws0ezl3/targets/358/ten-fix/20261121T092737Z-e1a9485f",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261121-091855-358-baseline-native-checks-on-the-origin/.build-py/examples-xws0ezl3/targets/358/ten-fix/20261121T092737Z-e1a9485f"
+  }
+}

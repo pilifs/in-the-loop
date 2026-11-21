@@ -1,0 +1,997 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-091855-358-baseline-native-checks-on-the-origin",
+  "title": "358 baseline native checks on the original commons-codec public calls",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 11.4s, peak 166.4 MiB (estimated 5m00s, 3.0 GiB); 104 output file(s) changed",
+  "attention": [
+    "step 1 (Run the public task plan) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-091855-358-baseline-native-checks-on-the-origin.json",
+    "sha256": "2e81fa51682169edf59e0ae65c88b7152d878dedc4fe06a1547703212b922086",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-091855-358-baseline-native-checks-on-the-origin",
+      "title": "358 baseline native checks on the original commons-codec public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/commons-codec#135 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "358"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:18:55+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 358 --route native --stage baseline --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/358-commons-codec-partitioned-base16/records/baseline-native"
+      ]
+    }
+  },
+  "sourceCommit": "46dbef9d6deb46a5777f3285baa30c01e550858c",
+  "startedAt": "2026-11-21T09:27:15+00:00",
+  "finishedAt": "2026-11-21T09:27:41+00:00",
+  "wallSeconds": 26.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3588938,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 174456832,
+    "wallSeconds": 11.4,
+    "cpuSeconds": 13.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 358 --route native --stage baseline --seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 11.435,
+      "cpuSeconds": 13.19,
+      "cpuThrottledSeconds": 0.009,
+      "peakMemoryBytes": 174456832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 550,
+        "sha256": "36662d1d8233569cd5d1814780c4fb6698b8e26c5a02c1ca73f2c089924b0ffd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"358\", \"route\": \"native\", \"stage\": \"baseline\", \"workflowExit\": 1, \"seconds\": 11.005, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"bytes-parent\", \"bytes-fix\", \"ten-parent\", \"ten-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"5e41cd71ab872a626179c02914aaae9f812c2c8c\", \"checkerS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "414316b9b0ddff60a1abc52e12929ba098308d5f32bab5705e2e0801df7657b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/plan.json",
+      "change": "added",
+      "bytes": 7373,
+      "sha256": "d708ee949ab5ab27cd29d3879113cbd862516dbaeb50ce1d0b13ec32ad393b83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "77be8bf624386496a0085c7cc89b5c1945e61294c1583db446a8e25d15eebfb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/execution.json",
+      "change": "added",
+      "bytes": 735724,
+      "sha256": "96698c900c14915ba961b8589c9ac0f7496b56cf83dad7d5956d2edc552b148e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "a441570a38fad1cb5b767bf3e1762288f9f32ffddc5a5145e34ee6c74009eb8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 529,
+      "sha256": "484672ceb2249f330b0c870268ae8dd46574f8a83b45b103253b04246043a5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier.json",
+      "change": "added",
+      "bytes": 16823,
+      "sha256": "72fcd490bb6b429e5bdfa42cd376864952911af7b2b5ab5773e4ba754b4b19ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6172,
+      "sha256": "836bc077310bdc6179decb841a77bfd7ade96d100fbbdc97a8d9cbfd1c7d17df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/result.json",
+      "change": "added",
+      "bytes": 14719,
+      "sha256": "8f2de06b10e2dfe10e491f3e6332e8bb338658cc3f7cd46856b8fb5b8d1f09de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/executions/20261121T092736Z-8cc385ef/attempt.json",
+      "change": "added",
+      "bytes": 13218,
+      "sha256": "fe1d7d1157aa40694a39eb3c68adf1e736fb76b82e2d4c6a7da154f7f2b0a8ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/executions/20261121T092736Z-8cc385ef/checker.json",
+      "change": "added",
+      "bytes": 7493,
+      "sha256": "12da327ec23cdd6a36a90311bd1d21a26a6c27b590963c1f28db4731c40d665d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/executions/20261121T092736Z-8cc385ef/correspondence.json",
+      "change": "added",
+      "bytes": 1365,
+      "sha256": "b7622aa79f0a116420cf44105ddd84a045ef7a27791dbf68a163bde17ea1949d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8c3183884bd43bf35c90d983eb1760e973ccb8d81fe8c2bccc9a378c1f54ad8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/plan.json",
+      "change": "added",
+      "bytes": 7278,
+      "sha256": "e5a8db94102cde253f2ef3845d74644ae92801656e9fb24fc7d460edd70ade64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "2c9e2fe1f7f6147d370db550ea182e01f3a44234e6a782402aa90d6ae5c16102",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/execution.json",
+      "change": "added",
+      "bytes": 731066,
+      "sha256": "80a7278998b05934d126d6bd828d5e112536be54b70212a3a695a9401c488c8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "923f6bba2cc6b2915daa3a43c2e69a4ccbdcb4415b9cc3b1ea1f3c1440840c80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 529,
+      "sha256": "484672ceb2249f330b0c870268ae8dd46574f8a83b45b103253b04246043a5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier.json",
+      "change": "added",
+      "bytes": 16878,
+      "sha256": "5a95d7ba2bfa93ac5b404320de2aac3db57a0a4c1f75a97b69f8e0a05f8544ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6171,
+      "sha256": "026d347b4c519c378d3f3f287322109f44a38cebbfa7fe48981685fc4071f46b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/result.json",
+      "change": "added",
+      "bytes": 14768,
+      "sha256": "baf87eace3952750188de3fa0fd06cfd654ccc6fdc28660536cdbef13fa79281",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/executions/20261121T092735Z-bc849ca1/attempt.json",
+      "change": "added",
+      "bytes": 13276,
+      "sha256": "34246cf1c45bed580ef97d826c1f811dd8dddf6d6c6d23888d464cba79fee706",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/executions/20261121T092735Z-bc849ca1/checker.json",
+      "change": "added",
+      "bytes": 7501,
+      "sha256": "465b44a10fb07f2f11042b8181ea5e638615ebea4255f7d2f43a0de6826aeacd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/executions/20261121T092735Z-bc849ca1/correspondence.json",
+      "change": "added",
+      "bytes": 1368,
+      "sha256": "37e3678b05b1e8f6d72d165bfb0042d16b4f4850ebdec5e3fb1fb6c8d6b99d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "02eb62073a1894b2d7be8e9e8c501c1f27d3552001a9bc35e5a36cf82231d935",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/plan.json",
+      "change": "added",
+      "bytes": 7186,
+      "sha256": "74981ae3e7dd0a0bc5941044e1b1376b897500f3d8d455db485b4add41d45a10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "88a41d9d40e004284d1029b4990eafa5ec3ada01e274e30d2abe4df93ff479e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/execution.json",
+      "change": "added",
+      "bytes": 735557,
+      "sha256": "5b176ac9997f54d31e09ebbd0a7a0e90ec385bd7cf86d302eee6ac421815625a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "be2dac2073c148a58c1e787d5563233a3326e35bbaf4c18522b5690d0e5b470c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 529,
+      "sha256": "484672ceb2249f330b0c870268ae8dd46574f8a83b45b103253b04246043a5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier.json",
+      "change": "added",
+      "bytes": 16662,
+      "sha256": "944e676cdce85bf921a4798cac7faf1147640c3ab2f53065f6073df7788cce0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6161,
+      "sha256": "89b1e33842fd9e7244ae97ddf21caca39e2630bd315accf40a96e76ed3d13051",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/result.json",
+      "change": "added",
+      "bytes": 14625,
+      "sha256": "c555b8275cf7de3d273695f03d9e534d34ef4895a5a5407196adc3bb0a10120d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/executions/20261121T092739Z-85f56523/attempt.json",
+      "change": "added",
+      "bytes": 13064,
+      "sha256": "a3c5ecf664c032e504526e6b97ad973832c9e810fc96b83ef7ea9c069cdc2daf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/executions/20261121T092739Z-85f56523/checker.json",
+      "change": "added",
+      "bytes": 7485,
+      "sha256": "af6f1680794b9ffe297cd0b7873b98a15a376bce788ed809fd33ba4d966345bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/executions/20261121T092739Z-85f56523/correspondence.json",
+      "change": "added",
+      "bytes": 1310,
+      "sha256": "9fe25bf4d888052f154a183a12e0d121373e2adaa350267184cb71c865aca852",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b82cbd149d74409f3cf9aac0745793ed4a5dde9e072e13f2acb52f776273f92e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/plan.json",
+      "change": "added",
+      "bytes": 7095,
+      "sha256": "c727e90ee2679408e919fc6b4ab927d83a7b3ab2b154960ace4aabc9c0f23666",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "e73f9aa2a6fd0756f6437c338f9ad01246d6f07fbef6855f05d093eba21ef4f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/execution.json",
+      "change": "added",
+      "bytes": 730901,
+      "sha256": "7f45a009ba6b59e3dd47719affbc3c54480bf666a99aaa328327ed30699272d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "919bf5985f87c8434e5c3cc295604694001da6521a72be71f5e90c2b5311f2c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 529,
+      "sha256": "484672ceb2249f330b0c870268ae8dd46574f8a83b45b103253b04246043a5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier.json",
+      "change": "added",
+      "bytes": 16719,
+      "sha256": "ff8105342dd5f6404f206774de83f9bdee271ae836216fbcd78f9a5b651273c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6163,
+      "sha256": "dbaf758898a5c67125ae0ff5198b7825cd55d2b7150968f1016d7b0faa9a9427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/result.json",
+      "change": "added",
+      "bytes": 14678,
+      "sha256": "d9553024709b21378b5a3a31b60f1a0b408b2a6246afda4b2a0863eb8667db6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/executions/20261121T092738Z-bf4f4ea0/attempt.json",
+      "change": "added",
+      "bytes": 13125,
+      "sha256": "8840fea46e3383755fdb6049bb10fd6266896dc9428fd9ace57bc35fea81ce33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/executions/20261121T092738Z-bf4f4ea0/checker.json",
+      "change": "added",
+      "bytes": 7494,
+      "sha256": "4c0ca57ee118d3a4f578a64f9da13353c66177cf19dbc8d633b85eafc47053e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/executions/20261121T092738Z-bf4f4ea0/correspondence.json",
+      "change": "added",
+      "bytes": 1313,
+      "sha256": "4d2c31ded09c7e4d82461d43ea408b0a776859d2fea0967cabf3059201c8c709",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ec551095d02716e4599eef41a7852809b27a42e5e277a91a8a482394a7690c67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/plan.json",
+      "change": "added",
+      "bytes": 7854,
+      "sha256": "4c79f20c2f1cfc25e82e998ae3d418475a53509ec97919571fb951a8b7fecf4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "6376b1ba217831ea3bd44750f44cbdd3c68f2a679741f0facbdea06bb4fd5711",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/execution.json",
+      "change": "added",
+      "bytes": 418294,
+      "sha256": "f391b552170aded7380c874aa4e5cae8acb9e334ae9ea694aa1bd62a4860f756",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/streams.json",
+      "change": "added",
+      "bytes": 1717,
+      "sha256": "6e4e24a9268cd387947d91c55c35d4fac5a2f08e87cd2b75e30a93d8bf701809",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/summary.txt",
+      "change": "added",
+      "bytes": 5929,
+      "sha256": "3809dc0557e713d08b9e9aa0b8d2298fec83467ee290418b216dd328f26cf2de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/result.json",
+      "change": "added",
+      "bytes": 47864,
+      "sha256": "38b3d3ce42f27ada3ce6a42c41c01d5770d76b477e0d99484a932eede34bbe36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/executions/20261121T092729Z-e19a42d9/attempt.json",
+      "change": "added",
+      "bytes": 5566,
+      "sha256": "18ccb97a9af049510972093085ec1db5541353982632c88fd53c7b7898287fb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/run.json",
+      "change": "added",
+      "bytes": 616,
+      "sha256": "efaacc087595ca7891a0d9f7da611889653e45411a4d3b6099974bd4ec1beb3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d49e06257307f35b118a149bbec5edd7ff1d61d0e2cf0fb4a0bce3ee93cdedc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/plan.json",
+      "change": "added",
+      "bytes": 7205,
+      "sha256": "b15449c382a200a101632397ebd7074560e41583d4572c04356bfe76237191b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "1f12b0e9340202f6a1178c5d303990721a19e158d53ab73567ecbfffdff8543f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/execution.json",
+      "change": "added",
+      "bytes": 735600,
+      "sha256": "98d55326b41c3fff0b5eb4006db88dc349058cfedf29038989892df8cb259c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "9976040889df1969453567eb50cc278848af294ad3e00c8cf9aed4741801fc0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 529,
+      "sha256": "484672ceb2249f330b0c870268ae8dd46574f8a83b45b103253b04246043a5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier.json",
+      "change": "added",
+      "bytes": 16695,
+      "sha256": "0b6bfe3d828c42fef2b5efc216e84c80cc22bd8c8e6f0e4f9e2717ca3f91a52e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6161,
+      "sha256": "1fae26f4ae3d341b68acb217b606cb542da182a51321346201d10cb6037b973d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/result.json",
+      "change": "added",
+      "bytes": 14626,
+      "sha256": "750dbac70427ccb9410c5273cb4717bb485b711b443fbaf723cde788ff2b5b0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/executions/20261121T092737Z-e1a9485f/attempt.json",
+      "change": "added",
+      "bytes": 13103,
+      "sha256": "d413f0907c6c8da71e6cbfbb662a93e0e34f659c52f1a1b38329ea3bc0c11bb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/executions/20261121T092737Z-e1a9485f/checker.json",
+      "change": "added",
+      "bytes": 7485,
+      "sha256": "c396cac1c1d0f22d9e1d25cdb768bff2d82035905c57bdd6b5b2e39a3d11944f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/executions/20261121T092737Z-e1a9485f/correspondence.json",
+      "change": "added",
+      "bytes": 1326,
+      "sha256": "1266c62dfb4802454ab7a91f3b68f0cb0ddfb7fdcce86b2f0b59744f2133f517",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d4d4ac951c91dc593905ce8b85ffb08acc56c973bd592b0a1a5c1e2553b97e8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/plan.json",
+      "change": "added",
+      "bytes": 7110,
+      "sha256": "c8dce5e1e8e6eb0a30ad2b5d6ccf4f307a464b0ba711bb99ecb4af1129fc82f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "716cd580bf161016ea52c133e6dfdcdcccd8ccb5a9197aecebb9d2f45a5cbf27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/execution.json",
+      "change": "added",
+      "bytes": 730946,
+      "sha256": "3e2ce48a8861098a7f972bda8e7c5e94d00d018481d8cda4e9e6cf0683dfdaaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "c7259828fe34f2632272d53977ba3cf6c3115ad0c7df54bb53c642091dbf95ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 529,
+      "sha256": "484672ceb2249f330b0c870268ae8dd46574f8a83b45b103253b04246043a5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier.json",
+      "change": "added",
+      "bytes": 16754,
+      "sha256": "5f96262f31a5b335108737b5abd7eb334a27220c535f27a24cdf741cbeddd61e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6163,
+      "sha256": "793d7b60cef90403e05f18aa17966606233492d9e9c769ac824558326354df8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/result.json",
+      "change": "added",
+      "bytes": 14678,
+      "sha256": "5e1a9942fbb50e04959eee9d04bcf262a136c4e6d84deab2cb2b3659c7e80798",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/executions/20261121T092737Z-3df96a15/attempt.json",
+      "change": "added",
+      "bytes": 13163,
+      "sha256": "1363390103edefb9b59d333efcb7f4ba56ed20cac6ad44de9865e31c26deee6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/executions/20261121T092737Z-3df96a15/checker.json",
+      "change": "added",
+      "bytes": 7496,
+      "sha256": "4d34232da7307c2d34734255b341b70a4924a28f53a26bb11875ea2cde85ee40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/executions/20261121T092737Z-3df96a15/correspondence.json",
+      "change": "added",
+      "bytes": 1329,
+      "sha256": "9af3822bc19d3c89a7a27f61f2759ad5138f144678e7c11cb8ab9876338a0953",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/baseline-native/workflow.log",
+      "change": "added",
+      "bytes": 1742,
+      "sha256": "938d54df8e4ea3746d10be8c6193142c6890166b4700713c895573a9c712b92e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:28:00+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/20261121T092736Z-8cc385ef/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/executions/20261121T092736Z-8cc385ef/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/executions/20261121T092736Z-8cc385ef/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-fix/executions/20261121T092736Z-8cc385ef/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/20261121T092735Z-bc849ca1/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/executions/20261121T092735Z-bc849ca1/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/executions/20261121T092735Z-bc849ca1/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/bytes-parent/executions/20261121T092735Z-bc849ca1/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/20261121T092739Z-85f56523/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/executions/20261121T092739Z-85f56523/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/executions/20261121T092739Z-85f56523/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-fix/executions/20261121T092739Z-85f56523/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/20261121T092738Z-bf4f4ea0/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/executions/20261121T092738Z-bf4f4ea0/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/executions/20261121T092738Z-bf4f4ea0/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/controls-parent/executions/20261121T092738Z-bf4f4ea0/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/records/summary.txt",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/20261121T092729Z-e19a42d9/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/replay/executions/20261121T092729Z-e19a42d9/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/run.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/20261121T092737Z-e1a9485f/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/executions/20261121T092737Z-e1a9485f/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/executions/20261121T092737Z-e1a9485f/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-fix/executions/20261121T092737Z-e1a9485f/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/20261121T092737Z-3df96a15/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/executions/20261121T092737Z-3df96a15/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/executions/20261121T092737Z-3df96a15/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/ten-parent/executions/20261121T092737Z-3df96a15/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/baseline-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 2592659,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "changesDiff": "changes.diff.gz"
+}
