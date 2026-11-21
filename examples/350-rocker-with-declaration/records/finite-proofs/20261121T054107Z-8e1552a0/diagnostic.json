@@ -1,0 +1,661 @@
+{
+  "status": "refuted",
+  "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+  "inputs": 2,
+  "differences": 1,
+  "sides": {
+    "old": {
+      "commit": "823d8c375411c26044b21d4a47b3f57ca4c13b9c",
+      "entry": {
+        "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+        "classSha256": "1bbeccd14c6baf60457a25dd6eafefcc616016c86e6ab8b82242ffe7abd7265a",
+        "loadedFrom": "adapter-old.jar",
+        "subject": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+        "subjectClassSha256": "1a71194d1c719e6d129dc85f7d4d59b8e2dc6e95f1147526cea8c15a9506a96b"
+      },
+      "classpath": [
+        {
+          "path": "adapter-old.jar",
+          "sha256": "fff3d2d96a8366e246a358eb44c208f651d0850140276a7976c445e4d771eb34",
+          "role": "adapter"
+        },
+        {
+          "path": "lib/com.fizzed/rocker-compiler-1.2.1.jar",
+          "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04",
+          "role": "original"
+        },
+        {
+          "path": "lib/com.fizzed/rocker-runtime-1.2.1.jar",
+          "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.antlr/antlr4-runtime-4.5.3.jar",
+          "sha256": "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-lang3-3.3.2.jar",
+          "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.slf4j/slf4j-api-1.7.7.jar",
+          "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "valid",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nboolean valid = args[0].equals(\"1\");\nif (!((true) && !(false))) { System.out.println(\"outside\"); return; }\njava.lang.String result = null;\nThrowable failure = null;\ntry { result = calibration.Projection.diagnostic(valid); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? result == null ? \"null\" : java.util.Arrays.toString(result.chars().toArray()) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "12634b089b0222e8e6366b28e0630057c045cf330a32dddd34f7228c1fe5644a",
+      "stdoutSha256": "55a04cddc1e25be21487a8b7ee641b1e4ab3f20a7d1981a162c6a7df90a41629",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+      ],
+      "interval": [
+        0,
+        1
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "observations": [
+            [
+              116,
+              101,
+              109,
+              112,
+              108,
+              97,
+              116,
+              101,
+              45,
+              112,
+              97,
+              116,
+              104,
+              58,
+              91,
+              49,
+              44,
+              49,
+              56,
+              93,
+              32,
+              109,
+              105,
+              115,
+              115,
+              105,
+              110,
+              103,
+              32,
+              65,
+              82,
+              71,
+              85,
+              77,
+              69,
+              78,
+              84,
+              32,
+              97,
+              116,
+              32,
+              39,
+              60,
+              69,
+              79,
+              70,
+              62,
+              39
+            ],
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "observations": [
+            [
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              32,
+              115,
+              61,
+              34,
+              116,
+              101,
+              115,
+              116,
+              34
+            ],
+            null
+          ]
+        }
+      ],
+      "seconds": 0.20500000000000002,
+      "cpuSeconds": 0.3116,
+      "peakRssBytes": 62676992,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children",
+      "chunks": [
+        {
+          "interval": [
+            0,
+            0
+          ],
+          "seconds": 0.093,
+          "cpuSeconds": 0.1478,
+          "peakRssBytes": 62676992,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "interval": [
+            1,
+            1
+          ],
+          "seconds": 0.112,
+          "cpuSeconds": 0.1638,
+          "peakRssBytes": 62676992,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ]
+    },
+    "new": {
+      "commit": "1cdb2748723454cde4c4d2366a261ba4a24a23d3",
+      "entry": {
+        "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+        "classSha256": "1bbeccd14c6baf60457a25dd6eafefcc616016c86e6ab8b82242ffe7abd7265a",
+        "loadedFrom": "adapter-new.jar",
+        "subject": "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+        "subjectClassSha256": "1a71194d1c719e6d129dc85f7d4d59b8e2dc6e95f1147526cea8c15a9506a96b"
+      },
+      "classpath": [
+        {
+          "path": "adapter-new.jar",
+          "sha256": "fff3d2d96a8366e246a358eb44c208f651d0850140276a7976c445e4d771eb34",
+          "role": "adapter"
+        },
+        {
+          "path": "lib/com.fizzed/rocker-compiler-1.2.1.jar",
+          "sha256": "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04",
+          "role": "original"
+        },
+        {
+          "path": "lib/com.fizzed/rocker-runtime-1.2.1.jar",
+          "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.antlr/antlr4-runtime-4.7.2.jar",
+          "sha256": "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-lang3-3.3.2.jar",
+          "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.slf4j/slf4j-api-1.7.7.jar",
+          "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "valid",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nboolean valid = args[0].equals(\"1\");\nif (!((true) && !(false))) { System.out.println(\"outside\"); return; }\njava.lang.String result = null;\nThrowable failure = null;\ntry { result = calibration.Projection.diagnostic(valid); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? result == null ? \"null\" : java.util.Arrays.toString(result.chars().toArray()) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "12634b089b0222e8e6366b28e0630057c045cf330a32dddd34f7228c1fe5644a",
+      "stdoutSha256": "1640f9bbf2371720842f3fd76d11ffda690cec64e1f68e2a01ba6dd7cd382c6f",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+      ],
+      "interval": [
+        0,
+        1
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "observations": [
+            [
+              116,
+              101,
+              109,
+              112,
+              108,
+              97,
+              116,
+              101,
+              45,
+              112,
+              97,
+              116,
+              104,
+              58,
+              91,
+              49,
+              44,
+              49,
+              56,
+              93,
+              32,
+              101,
+              120,
+              116,
+              114,
+              97,
+              110,
+              101,
+              111,
+              117,
+              115,
+              32,
+              105,
+              110,
+              112,
+              117,
+              116,
+              32,
+              39,
+              60,
+              69,
+              79,
+              70,
+              62,
+              39,
+              32,
+              101,
+              120,
+              112,
+              101,
+              99,
+              116,
+              105,
+              110,
+              103,
+              32,
+              123,
+              65,
+              82,
+              71,
+              85,
+              77,
+              69,
+              78,
+              84,
+              95,
+              67,
+              79,
+              77,
+              77,
+              65,
+              44,
+              32,
+              65,
+              82,
+              71,
+              85,
+              77,
+              69,
+              78,
+              84,
+              125
+            ],
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "observations": [
+            [
+              83,
+              116,
+              114,
+              105,
+              110,
+              103,
+              32,
+              115,
+              61,
+              34,
+              116,
+              101,
+              115,
+              116,
+              34
+            ],
+            null
+          ]
+        }
+      ],
+      "seconds": 0.20400000000000001,
+      "cpuSeconds": 0.3086,
+      "peakRssBytes": 62676992,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children",
+      "chunks": [
+        {
+          "interval": [
+            0,
+            0
+          ],
+          "seconds": 0.092,
+          "cpuSeconds": 0.1475,
+          "peakRssBytes": 62676992,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        {
+          "interval": [
+            1,
+            1
+          ],
+          "seconds": 0.112,
+          "cpuSeconds": 0.1611,
+          "peakRssBytes": 62676992,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        }
+      ]
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "old",
+      "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+      "adapterSha256": "fff3d2d96a8366e246a358eb44c208f651d0850140276a7976c445e4d771eb34",
+      "adapterClassSha256": "1bbeccd14c6baf60457a25dd6eafefcc616016c86e6ab8b82242ffe7abd7265a",
+      "subject": {
+        "class": "com.fizzed.rocker.model.WithStatement",
+        "method": "parse",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+        "loadedFrom": "lib/com.fizzed/rocker-compiler-1.2.1.jar",
+        "classSha256": "1a71194d1c719e6d129dc85f7d4d59b8e2dc6e95f1147526cea8c15a9506a96b",
+        "adapterCalls": [
+          "com.fizzed.rocker.model.JavaVariable#getName()Ljava/lang/String;",
+          "com.fizzed.rocker.model.JavaVariable#getType()Ljava/lang/String;",
+          "com.fizzed.rocker.model.WithStatement#getVariables()Ljava/util/List;",
+          "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+          "com.fizzed.rocker.model.WithStatement$VariableWithExpression#getValueExpression()Ljava/lang/String;",
+          "com.fizzed.rocker.model.WithStatement$VariableWithExpression#getVariable()Lcom/fizzed/rocker/model/JavaVariable;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The runtime-only control uses the released old generated parser on both sides. Independent recompilation with both generators and four JVM substitutions distinguish its scope from the whole PR.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 2,
+      "disagreements": 0
+    },
+    {
+      "revision": "new",
+      "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+      "adapterSha256": "fff3d2d96a8366e246a358eb44c208f651d0850140276a7976c445e4d771eb34",
+      "adapterClassSha256": "1bbeccd14c6baf60457a25dd6eafefcc616016c86e6ab8b82242ffe7abd7265a",
+      "subject": {
+        "class": "com.fizzed.rocker.model.WithStatement",
+        "method": "parse",
+        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+        "loadedFrom": "lib/com.fizzed/rocker-compiler-1.2.1.jar",
+        "classSha256": "1a71194d1c719e6d129dc85f7d4d59b8e2dc6e95f1147526cea8c15a9506a96b",
+        "adapterCalls": [
+          "com.fizzed.rocker.model.JavaVariable#getName()Ljava/lang/String;",
+          "com.fizzed.rocker.model.JavaVariable#getType()Ljava/lang/String;",
+          "com.fizzed.rocker.model.WithStatement#getVariables()Ljava/util/List;",
+          "com.fizzed.rocker.model.WithStatement#parse(Ljava/lang/String;Ljava/lang/String;)Lcom/fizzed/rocker/model/WithStatement;",
+          "com.fizzed.rocker.model.WithStatement$VariableWithExpression#getValueExpression()Ljava/lang/String;",
+          "com.fizzed.rocker.model.WithStatement$VariableWithExpression#getVariable()Lcom/fizzed/rocker/model/JavaVariable;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The runtime-only control uses the released old generated parser on both sides. Independent recompilation with both generators and four JVM substitutions distinguish its scope from the whole PR.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 2,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 2.3673,
+  "controlSeconds": 0.2873,
+  "returnEncoding": "ordered UTF-16 code units or null",
+  "replay": {
+    "claimKey": "67574f4cda8fee13",
+    "entry": "calibration.Projection#diagnostic(Z)Ljava/lang/String;",
+    "inputs": [
+      {
+        "name": "valid",
+        "type": "boolean",
+        "value": false
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "old": {
+        "entryClassSha256": "1bbeccd14c6baf60457a25dd6eafefcc616016c86e6ab8b82242ffe7abd7265a",
+        "classpath": [
+          "fff3d2d96a8366e246a358eb44c208f651d0850140276a7976c445e4d771eb34",
+          "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04",
+          "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b",
+          "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752",
+          "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d",
+          "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nboolean valid = false;\nif (!((true) && !(false))) { System.out.println(\"outside\"); return; }\njava.lang.String result = null;\nThrowable failure = null;\ntry { result = calibration.Projection.diagnostic(valid); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? result == null ? \"null\" : java.util.Arrays.toString(result.chars().toArray()) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          [
+            116,
+            101,
+            109,
+            112,
+            108,
+            97,
+            116,
+            101,
+            45,
+            112,
+            97,
+            116,
+            104,
+            58,
+            91,
+            49,
+            44,
+            49,
+            56,
+            93,
+            32,
+            109,
+            105,
+            115,
+            115,
+            105,
+            110,
+            103,
+            32,
+            65,
+            82,
+            71,
+            85,
+            77,
+            69,
+            78,
+            84,
+            32,
+            97,
+            116,
+            32,
+            39,
+            60,
+            69,
+            79,
+            70,
+            62,
+            39
+          ],
+          null
+        ]
+      },
+      "new": {
+        "entryClassSha256": "1bbeccd14c6baf60457a25dd6eafefcc616016c86e6ab8b82242ffe7abd7265a",
+        "classpath": [
+          "fff3d2d96a8366e246a358eb44c208f651d0850140276a7976c445e4d771eb34",
+          "de16b344a7d7ad79ed9fb7b5d6ff4ce5abaaabddb5b2bb769a484710ef2a2c04",
+          "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b",
+          "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4",
+          "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d",
+          "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nboolean valid = false;\nif (!((true) && !(false))) { System.out.println(\"outside\"); return; }\njava.lang.String result = null;\nThrowable failure = null;\ntry { result = calibration.Projection.diagnostic(valid); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? result == null ? \"null\" : java.util.Arrays.toString(result.chars().toArray()) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          [
+            116,
+            101,
+            109,
+            112,
+            108,
+            97,
+            116,
+            101,
+            45,
+            112,
+            97,
+            116,
+            104,
+            58,
+            91,
+            49,
+            44,
+            49,
+            56,
+            93,
+            32,
+            101,
+            120,
+            116,
+            114,
+            97,
+            110,
+            101,
+            111,
+            117,
+            115,
+            32,
+            105,
+            110,
+            112,
+            117,
+            116,
+            32,
+            39,
+            60,
+            69,
+            79,
+            70,
+            62,
+            39,
+            32,
+            101,
+            120,
+            112,
+            101,
+            99,
+            116,
+            105,
+            110,
+            103,
+            32,
+            123,
+            65,
+            82,
+            71,
+            85,
+            77,
+            69,
+            78,
+            84,
+            95,
+            67,
+            79,
+            77,
+            77,
+            65,
+            44,
+            32,
+            65,
+            82,
+            71,
+            85,
+            77,
+            69,
+            78,
+            84,
+            125
+          ],
+          null
+        ]
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "wallSeconds": 4.8835,
+  "task": "diagnostic",
+  "sourceClaim": "67574f4cda8fee13",
+  "inputsKey": "f9981bdadf8c49353f1617572b692a8eb61c38fbe0add34057aed05450f86800",
+  "revisions": [
+    "old",
+    "new"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "old": "48e66c0a1395897425c38493743c58320ae8566a06f4326c06a92ac6ab963b20",
+    "new": "b886a44c8072b8134cf75c14bb6fbda825c9da801c46a08be34fd6fab246c34f"
+  }
+}
