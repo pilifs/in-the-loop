@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-062849-group-3-original-java-modules-for-caller",
+  "title": "Group 3 original Java modules for caller replays",
+  "description": "Rebuild both original Maven revisions and their processed resources for compsuite-i-29, compsuite-i-37, cucumber-reporting-1220, commons-vfs-55c96cfd. Record failures on the original build and both ordered runtime classpaths when available.",
+  "kind": "real-world",
+  "capabilities": [
+    "external-upgrade-evaluation"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T06:28:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "memoryLimit": "6G",
+    "timeout": "70m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild original Maven modules",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup-sources/repos.json\" --preparations \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/upgrade-followup/modules\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --output verification/external-upgrades/corpus-runs/early-failure-inputs/modules-3 --case compsuite-i-29 --case compsuite-i-37 --case cucumber-reporting-1220 --case commons-vfs-55c96cfd",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/external-upgrades/corpus-runs/early-failure-inputs/modules-3"
+  ]
+}

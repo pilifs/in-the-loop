@@ -7,6 +7,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
 
 /** Invoke one supplied caller scenario in a fresh JVM and preserve every UTF-16 code unit. */
 public final class UpgradeObservation {
@@ -46,20 +49,24 @@ public final class UpgradeObservation {
             String returned = (String) observe.invoke(null, (Object) inputs);
             output.write("UPGRADE-OBSERVATION return " + encode(returned) + "\n");
         } catch (InvocationTargetException exception) {
-            Throwable thrown = exception.getCause();
-            output.write("UPGRADE-OBSERVATION throw " + thrown.getClass().getName() + "\n");
-            StringBuilder detail = new StringBuilder();
-            Throwable cause = thrown;
-            for (int depth=0; cause!=null && depth<4; depth++, cause=cause.getCause()) {
-                if (depth>0) detail.append(" caused by ");
-                detail.append(cause.getClass().getName()).append(": ").append(cause.getMessage());
-                if (cause.getStackTrace().length != 0)
-                    detail.append(" at ").append(cause.getStackTrace()[0]);
-            }
-            output.write("UPGRADE-DETAIL " + encode(detail.toString()) + "\n");
-            for (StackTraceElement frame : thrown.getStackTrace()) {
-                output.write("UPGRADE-FRAME " + frame.getClassName() + "#" + frame.getMethodName() + "\n");
-            }
+            writeFailure(output, exception.getCause());
+        }
+    }
+
+    // The debugger binds this argument to the very object observed at a JVM exception event.
+    private static void writeFailure(BufferedWriter output, Throwable thrown) throws Exception {
+        output.write("UPGRADE-OBSERVATION throw " + thrown.getClass().getName() + "\n");
+        StringBuilder detail = new StringBuilder();
+        Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<Throwable, Boolean>());
+        for (Throwable cause = thrown; cause != null && seen.size() < 16 && seen.add(cause); cause = cause.getCause()) {
+            if (detail.length() > 0) detail.append(" caused by ");
+            detail.append(cause.getClass().getName()).append(": ").append(cause.getMessage());
+            if (cause.getStackTrace().length != 0) detail.append(" at ").append(cause.getStackTrace()[0]);
+            output.write("UPGRADE-CAUSE " + cause.getClass().getName() + "\n");
+        }
+        output.write("UPGRADE-DETAIL " + encode(detail.toString()) + "\n");
+        for (StackTraceElement frame : thrown.getStackTrace()) {
+            output.write("UPGRADE-FRAME " + frame.getClassName() + "#" + frame.getMethodName() + "\n");
         }
     }
 }

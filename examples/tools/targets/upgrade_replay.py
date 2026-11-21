@@ -52,29 +52,84 @@ def check_input(path, entry, dependency):
             "preparation": doc.get("scope"), "compiledClasses": doc.get("compiledClasses"), "resources": doc.get("resources")}
 
 
-def parse_output(text, caller, original, dependency, observation_text=None):
+def class_origins(text):
     loaded = {}
     for line in text.splitlines():
         if m := LOAD.match(line):
             name, url = (m[1], m[2]) if m[1] else (m[3], m[4])
             loaded.setdefault(name, set()).add(Path(unquote(urlsplit(url).path)).resolve())
-    if loaded.get(caller.split("#")[0]) != {original}:
-        raise ValueError("the JVM did not load the declared caller from the selected original client JAR")
-    operands = sorted(name for name, origins in loaded.items() if origins == {dependency})
-    records = (observation_text if observation_text is not None else text).splitlines()
+    return loaded
+
+
+def typed_outcome(records):
     messages = [line[len(MARK):] for line in records if line.startswith(MARK)]
     if len(messages) != 1:
         raise ValueError("the scenario did not produce exactly one return or exception")
     kind, _, value = messages[0].partition(" ")
     if kind == "return":
-        observation = {"return": None if value == "-" else base64.b64decode(value,validate=True).decode("utf-16-be","surrogatepass")}
-    elif kind == "throw":
-        if "UPGRADE-FRAME " + caller.split("(")[0] not in records:
-            raise ValueError("exception occurred outside the declared original caller")
-        observation = {"throws": value}
-    else:
-        raise ValueError("unknown observation record")
-    return observation, operands
+        return {"return": None if value == "-" else base64.b64decode(value,validate=True).decode("utf-16-be","surrogatepass")}
+    if kind == "throw" and value:
+        return {"throws": value}
+    raise ValueError("unknown observation record")
+
+
+def parse_output(text, caller, original, dependency, observation_text=None):
+    loaded = class_origins(text)
+    if loaded.get(caller.split("#")[0]) != {original}:
+        raise ValueError("the JVM did not load the declared caller from the selected original client JAR")
+    records = (observation_text if observation_text is not None else text).splitlines()
+    outcome = typed_outcome(records)
+    if "throws" in outcome and "UPGRADE-FRAME " + caller.split("(")[0] not in records:
+        raise ValueError("exception occurred outside the declared original caller")
+    return outcome, sorted(name for name, origins in loaded.items() if origins == {dependency})
+
+
+def early_failure(stack_file, loaded, files, artifact_hashes, dependency, records):
+    """Bind the JVM's live throw stack to unambiguous files on this side's ordered classpath."""
+    evidence = {"causes": [s.removeprefix("UPGRADE-CAUSE ") for s in records if s.startswith("UPGRADE-CAUSE ")],
+                "frames": [], "observerCodeIndex": None}
+    if not stack_file.is_file():
+        return evidence
+    for line in stack_file.read_text(encoding="utf-8").splitlines():
+        fields = line.split("\t")
+        if fields[0] == "observer":
+            evidence["observerCodeIndex"] = int(fields[1])
+            continue
+        entry, code_index, source_line = fields
+        origins = loaded.get(entry.partition("#")[0], set())
+        if len(origins) != 1:
+            continue
+        jar = next(iter(origins))
+        if jar not in files:
+            continue
+        index = files.index(jar)
+        evidence["frames"].append({"entry": entry, "codeIndex": int(code_index), "sourceLine": int(source_line),
+                                   "artifact": "client" if index == 0 else "upgrade" if jar == dependency else "classpath",
+                                   "classpathIndex": index, "jarSha256": artifact_hashes[index]})
+    return evidence
+
+
+def run_observation(run_dir, command, env, resources, deadline):
+    run_dir.mkdir()
+    for original, relative_file in resources:
+        destination = run_dir / "fixtures" / relative_file
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(original.read_bytes())
+    with subprocess.Popen(command, cwd=run_dir, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                          start_new_session=True) as child:
+        try:
+            stdout, stderr = child.communicate(timeout=max(0.01, deadline-time.monotonic()))
+        except subprocess.TimeoutExpired:
+            os.killpg(child.pid, signal.SIGKILL)
+            child.communicate()
+            raise
+    if child.returncode:
+        raise ValueError(f"JVM exit {child.returncode}: {stderr.decode(errors='replace')[-500:]}")
+    observation = run_dir / "observation.txt"
+    if not observation.is_file():
+        raise ValueError("the application stopped before producing its observation")
+    classes = stdout.decode(errors="replace") + "\n" + (run_dir / "child.stderr").read_text(errors="replace")
+    return classes, stderr.decode(errors="replace").splitlines(), observation.read_text(encoding="utf-8")
 
 
 def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None):
