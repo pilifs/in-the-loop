@@ -160,6 +160,7 @@ def sealed_run(root, state, job, attempt, source, run_dir, work, result):
         finally:
             arch.close()
         (Path(run_dir) / MARKER).write_text(json.dumps({"attempt": attempt, "occurrences": made}))
+        arts.kick()  # the transfer off this machine starts now, not at the next push
         return {"attempt": attempt, "occurrences": made}
     except Exception as e:
         _said(state, job["id"], "the run was not sealed; its run directory stays on this machine", e)
@@ -229,6 +230,7 @@ def after_collect(root, state, job_id, dest, result):
                                          "kept": len(collected.get("kept") or [])})
         finally:
             arch.close()
+        arts.kick()
         return record and record["id"]
     except Exception as e:
         _said(state, job_id, "the collected result was not sealed", e)

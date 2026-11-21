@@ -352,6 +352,29 @@ class Uploads(Case):
         self.assertEqual(artifacts.read_verified(self.stores["ordinary"], artifacts.object_key(part["digest"], part["encoding"]),
                                                  part["digest"], part["encoding"], part["raw_bytes"]), "mismatch")
 
+    def test_many_occurrences_go_up_on_several_threads_and_a_drain_stops_when_nothing_is_left(self):
+        made = [self.archive.capture(self.tree(f"t{i}", {"log": os.urandom(1 << 20) + bytes([i]), "small": b"s%d\n" % i}),
+                                     "job-logs", f"j{i}/logs", job=f"j{i}", attempt=1) for i in range(12)]
+        with mock.patch.object(artifacts, "store_for", lambda access, role="reader": self.stores[access]):
+            total = self.archive.drain(workers=4)
+        self.assertEqual((total["objects"], total["receipts"], total["intents"], total["errors"]),
+                         ({"remote_verified": 36}, 12, 12, []))
+        self.assertEqual(total["passes"], 2)  # the second found nothing to do
+        self.assertEqual({self.state(m["id"]) for m in made}, {"remote_verified"})
+        self.assertEqual(self.archive.db.execute("SELECT MAX(attempts) FROM objects").fetchone()[0], 1)  # each object put once
+
+    def test_a_second_uploader_leaves_the_spool_to_the_first(self):
+        import fcntl
+        with open(self.dir / "home/uploader.lock", "w") as held:
+            fcntl.flock(held, fcntl.LOCK_EX)
+            self.assertIsNone(Archive().drain())
+
+    def test_a_kick_is_refused_when_uploads_are_manual_or_capture_is_off(self):
+        with mock.patch.dict(os.environ, {"ITL_ORIGINALS_UPLOAD": "manual"}):
+            self.assertFalse(artifacts.kick())
+        with mock.patch.dict(os.environ, {"ITL_ORIGINALS_OFF": "1"}):
+            self.assertFalse(artifacts.kick())
+
     def test_a_gap_is_recorded_remotely_and_read_as_missing(self):
         gap = self.archive.missing("job-logs", "old/logs/3-prove.log", "shortened before capture existed", lost=True, job="old",
                                    derivatives=[{"what": "head and tail", "where": "verification/results/old/logs/3-prove.log", "sha256": "0" * 64}])

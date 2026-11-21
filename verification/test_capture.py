@@ -30,7 +30,7 @@ class CaptureTest(unittest.TestCase):
         self.tmp = Path(tempfile.mkdtemp(prefix="capture-test-"))
         self.env = {"ITL_ARTIFACTS": str(HERE.parent / "llm-dlc/tools/artifacts.py"), "ITL_ORIGINALS_HOME": str(self.tmp / "home"),
                     "ITL_ORIGINALS_CACHE": str(self.tmp / "cache"), "ITL_ORIGINALS_STORE": f"dir:{self.tmp / 'store'}",
-                    "ITL_ORIGINALS_RESERVE": "0", "ITL_ORIGINALS_OFF": ""}
+                    "ITL_ORIGINALS_RESERVE": "0", "ITL_ORIGINALS_OFF": "", "ITL_ORIGINALS_UPLOAD": "manual"}
         self.old = {k: os.environ.get(k) for k in self.env}
         os.environ.update(self.env)
         os.environ.pop("ITL_ORIGINALS_OFF")  # test_pipeline and the test runner switch capture off: here it is on

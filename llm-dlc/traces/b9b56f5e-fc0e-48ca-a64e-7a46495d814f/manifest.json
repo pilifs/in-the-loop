@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T17:25:29.536Z",
-  "duration_seconds": 1687,
+  "ended": "2026-11-21T17:34:33.913Z",
+  "duration_seconds": 2231,
   "stats": {
     "turns": 1,
-    "api_calls": 60,
-    "tool_calls": 72,
-    "tool_errors": 2,
+    "api_calls": 77,
+    "tool_calls": 90,
+    "tool_errors": 3,
     "compactions": 0,
-    "peak_context_tokens": 327032,
+    "peak_context_tokens": 378058,
     "usage": {
-      "input_tokens": 120,
-      "output_tokens": 139292,
-      "cache_read_input_tokens": 13283768,
-      "cache_creation_input_tokens": 315415
+      "input_tokens": 154,
+      "output_tokens": 172690,
+      "cache_read_input_tokens": 19224773,
+      "cache_creation_input_tokens": 366441
     }
   },
   "tools": {
-    "Bash": 49,
+    "Bash": 67,
     "Read": 19,
     "Write": 4
   },
@@ -43,24 +43,24 @@
     {
       "index": 0,
       "started": "2026-11-21T16:57:22.471Z",
-      "ended": "2026-11-21T17:25:29.536Z",
+      "ended": "2026-11-21T17:34:33.913Z",
       "turns": 1,
-      "api_calls": 60,
+      "api_calls": 77,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 139292,
-        "cache_read_input_tokens": 13283768,
-        "cache_creation_input_tokens": 315415
+        "input_tokens": 154,
+        "output_tokens": 172690,
+        "cache_read_input_tokens": 19224773,
+        "cache_creation_input_tokens": 366441
       },
-      "peak_context_tokens": 327032
+      "peak_context_tokens": 378058
     }
   ],
   "log": {
-    "sha256": "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f",
-    "bytes": 2519976,
-    "lines": 520,
-    "gzip_bytes": 522803,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f.jsonl.gz"
+    "sha256": "3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c",
+    "bytes": 2869473,
+    "lines": 668,
+    "gzip_bytes": 562430,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -73,20 +73,20 @@
       "log_sha256": "1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d"
     },
     {
-      "change_id": "uuxktmzymzmpzvqooxoxrsozrkrpmuxz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f"
-    },
-    {
       "change_id": "pktuwmqtlrqxwmlwtzrzvomkllpsutuu",
       "commit_id": null,
       "immutable": false,
       "summary": "Seal each verification run's originals before the pipeline cuts or removes them (shadow mode)",
       "body": "verification/capture.py hands what the runner and the collector produce to the private archive (llm-dlc/tools/artifacts.py) at the points where an original was lost until now: the whole step logs before they are cut to head and tail, the outputs with the declared ones that never materialized and the ones deleted, the whole changes.diff, what a failed job's work directory holds beyond its commit, the result as the runner wrote it, a collected result that a later collect replaces, a result staged by a runner that sealed nothing, and the result as collected with its conflicts. A run directory left by an attempt whose runner was killed is sealed as partial before the retry reuses its path, and each run of a job is a numbered attempt. result.json names the attempt and the occurrence ids under a new originals field (in the schema).\n\nIt is a shadow of the pipeline: verification/results holds what it held before, pipeline.py gains four calls and a loader, and a capture that fails (a full disk, say) fails no job and no collect, is said on stderr and in .state/capture.log, and makes collect set a staged result aside under .state/uncaptured instead of deleting it. The test runner and test_pipeline.py set ITL_ORIGINALS_OFF=1, so no test seals anything into this machine's archive. artifacts.capture gained sparse, for the work directory's rule.\n\nVerified by verification/test_capture.py (7 tests, each running the pipeline in a throwaway repository with its own spool and store): the middle of a log the result cut restores byte for byte from a fresh cache; a failed job's outputs, diff and work-directory additions restore, and its never-made output is recorded; collect seals the result it replaces and the one it writes, with conflicts; a disk-full capture leaves the job passed, the collect done and the staged files set aside. The tests the change selects passed (35 files, after updating the one that pins the runner's environment). verification/README.md, Originals, describes it.",
       "log_sha256": "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f"
+    },
+    {
+      "change_id": "vmvnyrxrzvzqpzwukkkpnqmxnoqxwvno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Inventory and protect what exists only on this VM; upload sealed originals in parallel",
+      "body": "llm-dlc/tools/vm_inventory.py is the brief's first step. measure prints numbers fit to publish (heads, unpushed commits, git and jj sizes, tracked files and the widest directories, the runner's state, transcripts, run records, what a push would send, the archive's custody), to be compared before and after each change to the plumbing. pin writes a git ref under refs/itl/pins/ for every local head origin lacks, a namespace jj neither imports nor moves. protect seals into the private archive the runner's run directories and kept work directories, the loops' private run records, the project's source transcripts (Claude Code's and Codex's, as append-only streams, with their side files) and the records of examples 340 to 359, and does not seal twice what has not changed. It names only this repository's folders: no other project's sessions, credential store or dependency cache is read.\n\nOn 2026-11-21 it sealed 1,182 occurrences on this VM in two minutes: 3.21 GB of originals as 541 MB in 2,522 objects, among them 910 run directories and the 23,000 record files of runs 5 to 7, whole, before any trim (VF-053). All 8 local heads are pinned. llm-dlc/loops/llm-dlc-process-plumbing-results.md has the measurements, what was left unsealed and why, and the known historical gaps.\n\nThe uploader now works on up to 8 threads, each with its own journal connection, writes an intent for each new occurrence first, and reads back every object and every receipt; upload --drain runs passes until nothing is left to do now, as the spool's one uploader (a lock), and artifacts.kick starts one in the background when a run or a collect seals something, so the transfer off the machine starts then. Verified by three new tests in test_artifacts.py (12 occurrences on 4 threads, each object put once; the lock; the kick's switches), test_vm_inventory.py (sealed once, again only on change; a dry run seals nothing; only this repository's transcript folders are named), and the tests the change selects (5 files, test_pipeline.py among them).",
+      "log_sha256": "3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c"
     }
   ],
   "logs": {
@@ -94,6 +94,12 @@
       "bytes": 2017364,
       "lines": 328,
       "gzip_bytes": 461633,
+      "url": null
+    },
+    "3a0c7f8827e434e54c4487c36d94354ffa9b2c1d1adc69243fe721a12906439c": {
+      "bytes": 2869473,
+      "lines": 668,
+      "gzip_bytes": 562430,
       "url": null
     },
     "6d9d7a007b937c47548d2dfdb9e0a57b717ec09c7489fd9263477b89fd45977f": {

@@ -33,8 +33,9 @@ Commands (python3 llm-dlc/tools/artifacts.py COMMAND ...):
                         seal a file, a folder, or (with --stream) what an append-only file gained
   missing --kind KIND --logical NAME --reason TEXT [...]
                         record an output that never materialized or was lost, with what is known of it
-  upload [--loop] [--limit N]
-                        put sealed objects in the store, read them back, write receipts
+  upload [--drain | --loop] [--limit N] [--workers N]
+                        put sealed objects in the store, read them back, write receipts: one pass, or
+                        (--drain) passes until nothing is left to do now, as the spool's one uploader
   status [--json]       custody: bytes and counts by state, oldest unverified, disk headroom, retries
   list [--run R] [--job J] [--attempt N] [--session S] [--source REV] [--digest D] [--kind K]
        [--include-attempts] [--remote-only] [--json]
@@ -93,7 +94,7 @@ CREDENTIAL_FILES = {"writer": "r2-originals-writer", "ordinary": "r2-originals-r
 # Kinds whose bytes every project agent may read. Any other kind is restricted until someone classifies it here:
 # unclassified bytes are received into restricted custody, never into ordinary.
 ORDINARY_KINDS = frozenset({
-    "job-logs", "job-outputs", "job-diff", "job-result", "job-workdir", "runner-state", "example-records",
+    "job-logs", "job-outputs", "job-diff", "job-result", "job-workdir", "job-run", "example-records",
     "selector-cases", "trace-log", "decisions", "canary",
 })
 RESTRICTED_KINDS = frozenset({"session-transcript", "run-record", "watcher-record", "canary-restricted"})
@@ -959,15 +960,18 @@ class Archive:
         return {**{k: record.get(k) for k in keep}, "raw": {"bytes": (record.get("raw") or {}).get("bytes")},
                 "custody": {"state": (record.get("custody") or {}).get("state", "pending")}}
 
-    def _put_json(self, store, key: str, doc: dict) -> None:
-        """Create a small immutable document, or agree with the one already there."""
+    def _put_json(self, store, key: str, doc: dict, read_back: bool = True) -> None:
+        """Create a small immutable document, or agree with the one already there. A receipt is read back whatever
+        the store answered; an intent only when the store says one is there already."""
         data = canonical(doc)
         tmp = self.tmp / f"doc.{os.getpid()}.{secrets.token_hex(6)}"
         tmp.write_bytes(data)
         try:
-            store.put_if_absent(key, tmp, hashlib.sha256(data).hexdigest())
+            made = store.put_if_absent(key, tmp, hashlib.sha256(data).hexdigest())
         finally:
             tmp.unlink(missing_ok=True)
+        if made and not read_back:
+            return
         there = read_all(store, key)
         if there is None:
             raise StoreError("the store accepted a record but does not return it")
@@ -980,73 +984,136 @@ class Archive:
         if row["access"] == "restricted":
             self._put_json(store("ordinary"), f"restricted/{key}", self.stub_of(receipt))
 
-    def upload(self, limit: int = 1000, stores: dict | None = None) -> dict:
-        """One pass: intents for what is new, then objects, then a receipt for each occurrence whose every object
-        is verified. Safe to run from several workers at once and to kill at any point."""
-        stores = stores or {}
-        store = lambda access: stores.get(access) or stores.setdefault(access, store_for(access, "writer"))
+    def _fan(self, items: list, work, workers: int) -> list:
+        """work(archive, item) for every item, on up to `workers` threads, each with a journal connection of its own."""
+        if workers <= 1 or len(items) <= 1:
+            return [work(self, item) for item in items]
+        import threading
+        from concurrent.futures import ThreadPoolExecutor
+        local, opened = threading.local(), []
+
+        def one(item):
+            if not hasattr(local, "archive"):
+                local.archive = Archive(self.root)
+                local.archive.worker = self.worker
+                opened.append(local.archive)
+            return work(local.archive, item)
+        try:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                return list(pool.map(one, items))
+        finally:
+            for archive in opened:
+                with contextlib.suppress(sqlite3.Error):
+                    archive.close()
+
+    def upload(self, limit: int = 1000, stores: dict | None = None, workers: int = 8) -> dict:
+        """One pass: an intent for each new occurrence (so that it is discoverable while pending, whatever happens to
+        this pass), then objects, then a receipt for each occurrence whose every object is verified. Safe to run
+        from several workers at once and to kill at any point."""
+        import threading
+        stores, guard = dict(stores or {}), threading.Lock()
+
+        def store(access):
+            with guard:
+                if access not in stores:
+                    stores[access] = store_for(access, "writer")
+                return stores[access]
         done = {"objects": {}, "receipts": 0, "intents": 0, "errors": []}
-        for row in self.db.execute("SELECT * FROM occurrences WHERE state IN ('locally_sealed','missing_input','retryable_error') "
-                                   "AND id NOT IN (SELECT subject FROM events WHERE event='intent written')").fetchall():
-            record = json.loads(row["record"])
+
+        def intend(archive, row):
             try:
-                self._put_json(store(row["access"]), f"intents/{id_date(row['id'])}/{row['id']}.json", record)
+                doc = json.loads(row["record"])
+                archive._put_json(store(row["access"]), f"intents/{id_date(row['id'])}/{row['id']}.json", doc, read_back=False)
                 if row["access"] == "restricted":
-                    self._put_json(store("ordinary"), f"restricted/intents/{id_date(row['id'])}/{row['id']}.json", self.stub_of(record))
-                self.event(row["id"], "intent written")
-                done["intents"] += 1
+                    archive._put_json(store("ordinary"), f"restricted/intents/{id_date(row['id'])}/{row['id']}.json",
+                                      archive.stub_of(doc), read_back=False)
+                with archive.transaction():
+                    archive.event(row["id"], "intent written")
+                return None
             except (StoreError, Unavailable) as e:
-                done["errors"].append(str(e))
-                break
-        for r in self._lease(limit):
+                return str(e)
+        new = self.db.execute("SELECT * FROM occurrences WHERE state NOT IN ('remote_verified','expected') AND id NOT IN "
+                              "(SELECT subject FROM events WHERE event IN ('intent written','gap recorded remotely'))").fetchall()
+        for error in self._fan(new, intend, workers):
+            done["intents"] += error is None
+            if error and error not in done["errors"]:
+                done["errors"].append(error)
+
+        def put(archive, r):
             try:
-                outcome = self.upload_object(r, store(r["access"]))
+                return archive.upload_object(r, store(r["access"]))
             except Unavailable as e:
-                self._settle_object(r, "retryable_error", str(e))
-                outcome = "retryable_error"
+                archive._settle_object(r, "retryable_error", str(e))
+                return "retryable_error"
+        for outcome in self._fan(self._lease(limit), put, workers):
             done["objects"][outcome] = done["objects"].get(outcome, 0) + 1
-        for row in self.db.execute("SELECT * FROM occurrences WHERE state NOT IN ('remote_verified','expected')").fetchall():
+
+        def settle(archive, row):
+            """One occurrence, from its objects' states: (receipts written, intents written, error)."""
+            db = archive.db
             if row["status"] == "missing":  # a gap: its record goes to the store, and there are no bytes to verify
-                if self.db.execute("SELECT 1 FROM events WHERE subject=? AND event='gap recorded remotely'", (row["id"],)).fetchone():
-                    continue
-                receipt = self.receipt_of(row)
+                if db.execute("SELECT 1 FROM events WHERE subject=? AND event='gap recorded remotely'", (row["id"],)).fetchone():
+                    return 0, None
+                receipt = archive.receipt_of(row)
                 receipt["custody"]["state"] = "missing_input"
                 try:
-                    self._finalize(store, row, receipt)
+                    archive._finalize(store, row, receipt)
                 except (StoreError, Unavailable) as e:
-                    done["errors"].append(str(e))
-                    continue
-                with self.transaction():
-                    self.db.execute("UPDATE occurrences SET verified_at=?, record=? WHERE id=?",
-                                    (iso(), json.dumps(receipt, sort_keys=True), row["id"]))
-                    self.event(row["id"], "gap recorded remotely")
-                done["receipts"] += 1
-                continue
-            states = [s[0] for s in self.db.execute(
+                    return 0, str(e)
+                with archive.transaction():
+                    db.execute("UPDATE occurrences SET verified_at=?, record=? WHERE id=?", (iso(), json.dumps(receipt, sort_keys=True), row["id"]))
+                    archive.event(row["id"], "gap recorded remotely")
+                return 1, None
+            states = [s[0] for s in db.execute(
                 "SELECT o.state FROM needs n JOIN objects o ON o.digest=n.digest AND o.encoding=n.encoding AND o.access=? "
                 "WHERE n.occurrence=?", (row["access"], row["id"]))]
-            new, error, record = row["state"], None, row["record"]
+            new, error, record, receipts = row["state"], None, row["record"], 0
             if "integrity_failure" in states:
                 new = "integrity_failure"
             elif all(s == "remote_verified" for s in states):
-                receipt = self.receipt_of(row)
+                receipt = archive.receipt_of(row)
                 try:  # the receipt is the last thing written: a store that has it has everything it names
-                    self._finalize(store, row, receipt)
-                    new, record = "remote_verified", json.dumps(receipt, sort_keys=True)
-                    done["receipts"] += 1
+                    archive._finalize(store, row, receipt)
+                    new, record, receipts = "remote_verified", json.dumps(receipt, sort_keys=True), 1
                 except (StoreError, Unavailable) as e:
                     new, error = "retryable_error", str(e)
-                    done["errors"].append(error)
             elif "retryable_error" in states:
                 new = "retryable_error"
             elif "transferring" in states:
                 new = "transferring"
-            if new != row["state"] or error:
-                with self.transaction():
-                    self.db.execute("UPDATE occurrences SET state=?, last_error=?, verified_at=?, record=? WHERE id=?",
-                                    (new, error, iso() if new == "remote_verified" else None, record, row["id"]))
-                    self.event(row["id"], new, error)
+            if new != row["state"] or (error and error != row["last_error"]):
+                with archive.transaction():
+                    db.execute("UPDATE occurrences SET state=?, last_error=?, verified_at=?, record=? WHERE id=?",
+                               (new, error, iso() if new == "remote_verified" else None, record, row["id"]))
+                    archive.event(row["id"], new, error)
+            return receipts, error
+        rows = self.db.execute("SELECT * FROM occurrences WHERE state NOT IN ('remote_verified','expected')").fetchall()
+        for receipts, error in self._fan(rows, settle, workers):
+            done["receipts"] += receipts
+            if error and error not in done["errors"]:
+                done["errors"].append(error)
         return done
+
+    def drain(self, workers: int = 8) -> dict | None:
+        """Upload until a pass finds nothing it can do now, as the one uploader of this spool: None when another
+        process holds that place already. What failed waits out its backoff for the next drain."""
+        import fcntl
+        with open(self.root / "uploader.lock", "w") as lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                return None
+            total = {"objects": {}, "receipts": 0, "intents": 0, "errors": [], "passes": 0}
+            while True:
+                done = self.upload(workers=workers)
+                total["passes"] += 1
+                for k, v in done["objects"].items():
+                    total["objects"][k] = total["objects"].get(k, 0) + v
+                total["receipts"] += done["receipts"]
+                total["intents"] += done["intents"]
+                total["errors"] = (total["errors"] + [e for e in done["errors"] if e not in total["errors"]])[:10]
+                if not (done["objects"] or done["receipts"] or done["intents"]) or done["errors"]:
+                    return total
 
     # ----- what custody looks like
 
@@ -1366,6 +1433,22 @@ class Reader:
         done.update(members=1, files=1, bytes=at, segments=len(chain))
 
 
+def kick() -> bool:
+    """Start an uploader for this spool in the background, unless one is at work or uploads are left to a person
+    (ITL_ORIGINALS_UPLOAD=manual): transfer starts when a capture seals, not at the next push. Whether one was
+    started. Its output goes to upload.log in the spool."""
+    import subprocess
+    if off() or os.environ.get("ITL_ORIGINALS_UPLOAD") == "manual":
+        return False
+    try:
+        with open(home() / "upload.log", "ab") as log:
+            subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "upload", "--drain"], stdin=subprocess.DEVNULL,
+                             stdout=log, stderr=log, start_new_session=True, cwd=str(home()))
+        return True
+    except OSError:
+        return False
+
+
 def analyze(occurrence: str, purpose: str, archive: Archive) -> dict:
     """Safe derived facts about an occurrence in restricted custody, for the watcher's private analysis: lengths,
     counts and digests, read from the journal and the sealed inventory on this machine. No member's bytes and no
@@ -1541,6 +1624,8 @@ def main(argv: list[str] | None = None) -> int:
     identity(c)
     c = sub.add_parser("upload")
     c.add_argument("--loop", action="store_true")
+    c.add_argument("--drain", action="store_true")
+    c.add_argument("--workers", type=int, default=8)
     c.add_argument("--limit", type=int, default=1000)
     c.add_argument("--interval", type=int, default=60)
     c = sub.add_parser("status")
@@ -1586,8 +1671,12 @@ def main(argv: list[str] | None = None) -> int:
             print(record["id"] if record else "capture is switched off")
         elif args.cmd == "upload":
             archive = Archive()
+            if args.drain:
+                done = archive.drain(args.workers)
+                print(f"{iso()} " + (json.dumps(done) if done else "another uploader is at work on this spool"), flush=True)
+                return 1 if done and (done["errors"] or done["objects"].get("integrity_failure")) else 0
             while True:
-                done = archive.upload(args.limit)
+                done = archive.upload(args.limit, workers=args.workers)
                 print(json.dumps(done), flush=True)
                 if not args.loop:
                     return 1 if done["errors"] or done["objects"].get("integrity_failure") else 0
