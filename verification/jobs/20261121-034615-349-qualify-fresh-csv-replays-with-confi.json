@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-034615-349-qualify-fresh-csv-replays-with-confi",
+  "title": "349 qualify fresh CSV replays with configured JVM temporary directory",
+  "description": "Repeat both full Commons Text replay tasks after fixing JDK version detection with a launcher-options banner. The first run after the reader fix already executed the driver on both releases and the mutant. The workflow must now bind the real JDK identity and qualify the same controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "349"
+    ]
+  },
+  "expected": "Both 156-field runs qualify on JDK 21 and the omission mutant is detected.",
+  "submitted": {
+    "at": "2026-11-21T03:46:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Qualify original and mutant CSV controls",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 349 --tasks replay,mutant-replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/349-commons-text-csv-upgrade/receipts/replay",
+    "examples/349-commons-text-csv-upgrade/receipts/mutant-replay"
+  ]
+}

@@ -1351,6 +1351,8 @@ CONTROL_TIMEOUT = 120  # seconds one control's JVM may run before it is killed a
 CONTROL_ENV = {"LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TZ": "UTC"}
 CONTROL_FLAGS = ("-Xmx512m", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8",
                  "-Duser.language=en", "-Duser.country=US", "-Duser.timezone=UTC")
+if os.environ.get("TMPDIR"):
+    CONTROL_FLAGS += (f"-Djava.io.tmpdir={Path(os.environ['TMPDIR']).resolve()}",)
 
 
 def _preparation_dir(prepared):

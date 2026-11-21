@@ -253,6 +253,15 @@ class JarTest(unittest.TestCase):
 
 
 class JdkTest(unittest.TestCase):
+    def test_launcher_banner_is_not_a_runtime_identity(self):
+        answer = subprocess.CompletedProcess([], 0, "", 'Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=/work\n'
+                                                   'openjdk version "21.0.13" 2026-10-20 LTS\n')
+        with tempfile.TemporaryDirectory() as home, mock.patch.object(subprocess, "run", return_value=answer):
+            self.assertEqual(runtime_jdk.identity(home)["version"], 'openjdk version "21.0.13" 2026-10-20 LTS')
+            answer.returncode = 1
+            runtime_jdk.identity.cache_clear()
+            self.assertEqual(runtime_jdk.identity(home)["version"], "")
+
     def test_installed_jdks_are_found_by_full_path(self):
         homes = runtime_jdk.homes()
         if not {"21", "25"} <= set(homes):

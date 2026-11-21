@@ -72,12 +72,13 @@ def home(feature_):
 
 @functools.lru_cache(maxsize=None)
 def identity(home_):
-    """What a record names the JDK by: its feature, `java -version`'s first line, its real home and release keys."""
+    """Identify the running JDK even when launcher options print diagnostics before its version."""
     home_ = Path(home_).resolve()
     info = release(home_)
     proc = subprocess.run([str(home_ / "bin/java"), "-version"], capture_output=True, text=True, timeout=60)
     lines = (proc.stderr + proc.stdout).strip().splitlines()
-    return {"feature": feature(info.get("JAVA_VERSION", "0")), "version": lines[0] if lines else "",
+    version = next((line for line in lines if line.startswith(('openjdk version "', 'java version "'))), "")
+    return {"feature": feature(info.get("JAVA_VERSION", "0")), "version": version if proc.returncode == 0 else "",
             "home": str(home_), "release": {k: info[k] for k in RELEASE_KEYS if k in info}}
 
 

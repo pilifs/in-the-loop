@@ -1,0 +1,381 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-033202-replay-both-commons-text-csv-tasks-after",
+  "title": "Replay both Commons Text CSV tasks after modified UTF-8 intake repair",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 6.6s, peak 156.7 MiB (estimated 2m00s, 2.0 GiB); 24 output file(s) changed; signals: example:task-unexpected×2",
+  "attention": [
+    "step 1 (Prepare and replay original and mutant sources) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-033202-replay-both-commons-text-csv-tasks-after.json",
+    "sha256": "783a43f99a181eaed0077138744a1eb06d160df80e20fd78c9f0bb9656a5c593",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-033202-replay-both-commons-text-csv-tasks-after",
+      "title": "Replay both Commons Text CSV tasks after modified UTF-8 intake repair",
+      "description": "Run the original CSV driver over all 156 fields on both Commons Lang releases. Then run the same driver on the quote-doubling mutant. Bind the original client methods on both sides and retain the fresh canonical replay receipts that V0 could not create.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "349"
+        ]
+      },
+      "expected": "Fresh original replay covers both versions. The sensitivity control detects the quote-doubling error.",
+      "submitted": {
+        "at": "2026-11-21T03:32:02+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Prepare and replay original and mutant sources",
+          "run": "export JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$TMPDIR\"; python3 examples/tools/build.py 349 --tasks replay,mutant-replay",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/349-commons-text-csv-upgrade/receipts/replay",
+        "examples/349-commons-text-csv-upgrade/receipts/mutant-replay"
+      ]
+    }
+  },
+  "sourceCommit": "8bc9f2b66b6f776e3a9a5032ec89492d9c74f9cb",
+  "startedAt": "2026-11-21T03:37:57+00:00",
+  "finishedAt": "2026-11-21T03:38:08+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2566609,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 164343808,
+    "wallSeconds": 6.6,
+    "cpuSeconds": 9.7,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prepare and replay original and mutant sources",
+      "run": "export JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$TMPDIR\"; python3 examples/tools/build.py 349 --tasks replay,mutant-replay",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 6.614,
+      "cpuSeconds": 9.683,
+      "cpuThrottledSeconds": 1.105,
+      "peakMemoryBytes": 164343808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prepare-and-replay-original-an.log",
+        "lines": 4,
+        "bytes": 519,
+        "sha256": "80ba4be8d7047df226ce2a7d679f321ae4fd830975bd48cbf22883b0c03ed6e0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "349-commons-text-csv-upgrade: task replay: none (invalid-output; NOT AS EXPECTED (the outcomes its pair's kind expects)), receipt receipts/replay/20261121T033801Z-9af91253/result.json",
+          "groups": [
+            "349",
+            "replay",
+            "none",
+            "the outcomes its pair's kind expects"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "349-commons-text-csv-upgrade: task mutant-replay: none (invalid-output; NOT AS EXPECTED (the outcomes its pair's kind expects)), receipt receipts/mutant-replay/20261121T033805Z-c6efb5c7/result.json",
+          "groups": [
+            "349",
+            "mutant-replay",
+            "none",
+            "the outcomes its pair's kind expects"
+          ]
+        }
+      ],
+      "tail": [
+        "349-commons-text-csv-upgrade: running task replay (target route)",
+        "349-commons-text-csv-upgrade: task replay: none (invalid-output; NOT AS EXPECTED (the outcomes its pair's kind expects)), receipt receipts/replay/20261121T033801Z-9af91253/result.json",
+        "349-commons-text-csv-upgrade: running task mutant-replay (target route)",
+        "349-commons-text-csv-upgrade: task mutant-replay: none (invalid-output; NOT AS EXPECTED (the outcomes its pair's kind expects)), receipt receipts/mutant-replay/20261121T033805Z-c6efb5c7/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9eb1370689e36d65e866d8906a4386d7fc1fe59c5c47dbd64f58238e09e285cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/plan.json",
+      "change": "added",
+      "bytes": 12198,
+      "sha256": "5ee99942709d4e47fc6160f51df11d0cc8cd7ca185dd5d4de76fd0775674b4d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-new-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-new-jdk21.stdout",
+      "change": "added",
+      "bytes": 8592,
+      "sha256": "edab64508ca680b4f16298106dee8d2b21c6dbf3db544a6b7acbb31ea6a1997a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-old-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-old-jdk21.stdout",
+      "change": "added",
+      "bytes": 8592,
+      "sha256": "edab64508ca680b4f16298106dee8d2b21c6dbf3db544a6b7acbb31ea6a1997a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/controls.json",
+      "change": "added",
+      "bytes": 73990,
+      "sha256": "9f14fa8912740816cd0109fb614a0528babebe4cfabfa192482cb588ef285f4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/execution.json",
+      "change": "added",
+      "bytes": 73422,
+      "sha256": "56b836e76cde87b4acc10564292df1ae5f42598a1450d2851d564a4b97119fff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/streams.json",
+      "change": "added",
+      "bytes": 1649,
+      "sha256": "8708551e469197d40b900b769749ac0ac5a46bdf7d3b47e7b143cc183e7aabc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/summary.txt",
+      "change": "added",
+      "bytes": 407,
+      "sha256": "ff235e83b07b45801740649d8eeb6c79329383cf1e71584a3245eb72a50010c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/result.json",
+      "change": "added",
+      "bytes": 8318,
+      "sha256": "48569c493ec15538b55e9f746a6cf8b6fadd7009e6dfef7a2f61e4c5a4285b5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/replay/executions/20261121T033801Z-9af91253/attempt.json",
+      "change": "added",
+      "bytes": 7563,
+      "sha256": "76730819a0b16f717db619682e7c3bda72e1bd95eccf7c68484b936100999b5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "78e5a86968fb16a100c3cb414c1dff5b9657747c028b88af869088ff3fc09163",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/plan.json",
+      "change": "added",
+      "bytes": 13727,
+      "sha256": "e65a03efff9ea18a7e58d105e51641a4bf44db3abf01e1df3bef5dd083a5207f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 8248,
+      "sha256": "c60823d093661d212c732a788d8be89dbd815a429256187fa6e046c757800207",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-new-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-new-jdk21.stdout",
+      "change": "added",
+      "bytes": 8592,
+      "sha256": "edab64508ca680b4f16298106dee8d2b21c6dbf3db544a6b7acbb31ea6a1997a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/controls.json",
+      "change": "added",
+      "bytes": 72732,
+      "sha256": "60bba08fb590d6c7b520be9cdbcd385b38313c5e0c66c1cea084312bba7e2eca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/execution.json",
+      "change": "added",
+      "bytes": 88279,
+      "sha256": "1039130776d59cab0d76cfdda8f0b7bd22ba20e3df6c9d6839f41d7202ed0a16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/streams.json",
+      "change": "added",
+      "bytes": 1667,
+      "sha256": "a8ea5e9e920e4255c4ddc7ff18e2e434f51b67fae1733ef397e2767e2b93a8a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/summary.txt",
+      "change": "added",
+      "bytes": 9454,
+      "sha256": "1d4440486b5a3d54151cac6f2674abef1f46767fb13531eff40f2f67095c33f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/result.json",
+      "change": "added",
+      "bytes": 30362,
+      "sha256": "8e97470e4b4ce32c60509b007270c30dfcf22f6369f1fae16d87e3742ced1aaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/executions/20261121T033805Z-c6efb5c7/attempt.json",
+      "change": "added",
+      "bytes": 7730,
+      "sha256": "2deddece6a78119018981f56db142b705f4ff814bff134294a157ba6c8103062",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T03:38:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/completion.json",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/plan.json",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-new-jdk21.stderr",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-new-jdk21.stdout",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-old-jdk21.stderr",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/control-old-jdk21.stdout",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/controls.json",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/execution.json",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/streams.json",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/records/summary.txt",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/20261121T033801Z-9af91253/result.json",
+      "examples/349-commons-text-csv-upgrade/receipts/replay/executions/20261121T033801Z-9af91253/attempt.json",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/completion.json",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/plan.json",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-mutant-jdk21.stderr",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-mutant-jdk21.stdout",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-new-jdk21.stderr",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/control-new-jdk21.stdout",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/controls.json",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/execution.json",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/streams.json",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/records/summary.txt",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/20261121T033805Z-c6efb5c7/result.json",
+      "examples/349-commons-text-csv-upgrade/receipts/mutant-replay/executions/20261121T033805Z-c6efb5c7/attempt.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff"
+}

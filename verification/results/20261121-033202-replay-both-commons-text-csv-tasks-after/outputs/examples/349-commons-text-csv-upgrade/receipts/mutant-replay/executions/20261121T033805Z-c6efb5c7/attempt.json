@@ -1,0 +1,152 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261121T033805Z-c6efb5c7",
+  "task": "mutant-replay",
+  "claimKey": "3372938f3a461e44",
+  "revisions": [
+    "new",
+    "mutant"
+  ],
+  "startedAt": "2026-11-21T03:38:05.814843+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": null,
+    "gaps": null
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261121-033202-replay-both-commons-text-csv-tasks-after",
+  "sourceCommit": "8bc9f2b66b6f776e3a9a5032ec89492d9c74f9cb",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "revision-prepared",
+      "elapsedSeconds": 0.001
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.82
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.0714
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.177
+    }
+  ],
+  "status": "invalid-output",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "new": {
+      "revision": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
+      "target": {
+        "class": "org.apache.commons.text.StringEscapeUtils",
+        "method": "escapeCsv",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+        "loadedFrom": "slice/new.jar",
+        "classSha256": "715a3b3a6402b0e10f1ff21f008a6303a4f73004a3db9dc70f1b5776f3986e6a"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "e887777ef2899fac78f9cb7ae2d4a0b9303c233d7ef6b7a7f9529f4ad559f58e",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "slice/new.jar",
+          "sha256": "e6d25208ca49fcd8b69782af7e68f078315af09276e65221dc0c46362c11ac86",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of a8e4f42ef23fe396a7c45df3124157401c0da17c: src/main/java/org/apache/commons/text/StringEscapeUtils.java, src/main/java/org/apache/commons/text/translate/AggregateTranslator.java, src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java, src/main/java/org/apache/commons/text/translate/CodePointTranslator.java, src/main/java/org/apache/commons/text/translate/CsvTranslators.java, src/main/java/org/apache/commons/text/translate/EntityArrays.java, src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java, src/main/java/org/apache/commons/text/translate/LookupTranslator.java, src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java, src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java, src/main/java/org/apache/commons/text/translate/OctalUnescaper.java, src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java, src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java, src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java, src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java, compiled by JDK 21 with --release 8 -encoding ISO-8859-1 -g -parameters"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-lang3-3.17.0.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+          "origin": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar"
+        }
+      ]
+    },
+    "mutant": {
+      "revision": "mutant:a8e4f42ef23fe396a7c45df3124157401c0da17c+56f789f47d8031267f58902c22ee310ac7d1ac8b50ef297a85c8ee939af93127",
+      "target": {
+        "class": "org.apache.commons.text.StringEscapeUtils",
+        "method": "escapeCsv",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/String;",
+        "loadedFrom": "slice/mutant.jar",
+        "classSha256": "715a3b3a6402b0e10f1ff21f008a6303a4f73004a3db9dc70f1b5776f3986e6a"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "Picked up JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "e887777ef2899fac78f9cb7ae2d4a0b9303c233d7ef6b7a7f9529f4ad559f58e",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "slice/mutant.jar",
+          "sha256": "587ddb47475288dfd741fe3df76ce8e3758c840208618cccd28d84318af6e9ab",
+          "role": "original",
+          "coordinates": null,
+          "origin": "constructed: the slice of a8e4f42ef23fe396a7c45df3124157401c0da17c (src/main/java/org/apache/commons/text/StringEscapeUtils.java, src/main/java/org/apache/commons/text/translate/AggregateTranslator.java, src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java, src/main/java/org/apache/commons/text/translate/CodePointTranslator.java, src/main/java/org/apache/commons/text/translate/CsvTranslators.java, src/main/java/org/apache/commons/text/translate/EntityArrays.java, src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java, src/main/java/org/apache/commons/text/translate/LookupTranslator.java, src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java, src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java, src/main/java/org/apache/commons/text/translate/OctalUnescaper.java, src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java, src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java, src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java, src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java) after the patch controls/omit-quote-doubling.patch (sha256 56f789f47d8031267f58902c22ee310ac7d1ac8b50ef297a85c8ee939af93127), compiled by JDK 21"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-lang3-3.17.0.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+          "origin": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "24b3b7995506fbf631f2c713b9fca2a8004925105deb9e7565e8829553cbb824",
+  "receipt": "receipts/mutant-replay/20261121T033805Z-c6efb5c7/result.json",
+  "preparedClaim": "ebbdc0281d81d7b7",
+  "firstBlocker": "revision new has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced; revision mutant has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced",
+  "missing": [
+    "eligible conclusion"
+  ],
+  "endedAt": "2026-11-21T03:38:07.991853+00:00"
+}
