@@ -232,6 +232,35 @@ class Transcripts(Case):
             ("session-transcript", "restricted", "s1", "claude/-made-up-project/s1/subagents/agent-a.jsonl", 0),
             ("session-transcript", "restricted", "s1", "claude/-made-up-project/s1.jsonl", 12)])
 
+    def test_a_workspaces_run_records_are_sealed_file_by_file_as_they_grow_and_a_tests_folder_is_not(self):
+        import sync
+        folder = self.dir / "made-up-workspace/llm-dlc/loop-summaries"
+        (folder / "single-made-up").mkdir(parents=True)
+        (folder / "2026-01-01-000000-made-up.md").write_text("cycle 1\n")
+        (folder / "single-made-up/events.jsonl").write_text('{"n": 1}\n')
+        with mock.patch.dict(os.environ, {"ITL_ORIGINALS_UPLOAD": "manual"}):
+            with mock.patch.object(sync, "LOOP_SUMMARIES", folder):       # as a test of sync points it: not this checkout's
+                self.assertEqual(sync.seal_run_records(), 0)
+            self.assertEqual(self.archive.rows(), [])
+            self.assertEqual(sync.seal_run_records(folder), 2)
+            with mock.patch.object(artifacts.Archive, "capture_stream", side_effect=AssertionError("opened an unchanged file")):
+                self.assertEqual(sync.seal_run_records(folder), 0)        # same sizes and times: no file is read
+            with open(folder / "single-made-up/events.jsonl", "a") as f:
+                f.write('{"n": 2}\n')
+            (folder / "2026-01-01-000000-made-up.md").write_text("cycle 1, rewritten\n")
+            self.assertEqual(sync.seal_run_records(folder), 2)
+        rows = [(r["kind"], r["access"], r["logical"], r["stream"]["key"], r["stream"]["generation"], r["stream"]["offset"])
+                for r in self.archive.rows()]
+        md, events = "2026-01-01-000000-made-up.md", "single-made-up/events.jsonl"
+        self.assertEqual(rows, [
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{md}", f"run-records/made-up-workspace/{md}", 1, 0),
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{events}", f"run-records/made-up-workspace/{events}", 1, 0),
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{md}", f"run-records/made-up-workspace/{md}", 2, 0),       # rewritten: whole again
+            ("run-record", "restricted", f"llm-dlc/loop-summaries/{events}", f"run-records/made-up-workspace/{events}", 1, 9)])  # appended: the gain
+        with mock.patch.object(artifacts, "home", side_effect=RuntimeError("made up")), mock.patch.object(sync, "log") as said:
+            self.assertEqual(sync.seal_run_records(folder), 0)            # and it never fails a sync
+        self.assertIn("made up", said.call_args[0][0])
+
     def test_sealing_never_fails_a_sync(self):
         import sync
         with mock.patch.object(artifacts, "transcript_key", side_effect=RuntimeError("made up")), mock.patch.object(sync, "log") as said:

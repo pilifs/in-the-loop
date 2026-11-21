@@ -1397,6 +1397,7 @@ def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCac
         errors.append(f"{sid}: metrics.json has unknown schema {doc.get('schema')}")
     elif rendered and doc.get("schema") != metrics.SCHEMA:
         errors.append(f"{sid}: metrics.json still holds its per-call tables (run sync)")
+        data = None   # said once: it cannot be what a rendering gives
     if not rendered:  # between two renderings the file describes an earlier log of the session (RENDERING)
         data = None
     if data is not None:
@@ -2663,6 +2664,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
             print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
         with perf.phase("seal transcripts"):
             seal_transcripts(synced)
+            seal_run_records()
         if render:
             with perf.phase("metrics elsewhere"):
                 here = {sid_of(p) for p in session_transcripts()}
@@ -2705,6 +2707,56 @@ def seal_transcripts(transcripts: list[Path]) -> None:
         artifacts.kick()
     except Exception:
         log(traceback.format_exc())
+
+
+OWN_LOOP_SUMMARIES = LOOP_SUMMARIES  # where this checkout's are, whatever a test points LOOP_SUMMARIES at
+
+
+def seal_run_records(folder: Path | None = None) -> int:
+    """Hand the loops' private run records of this workspace (llm-dlc/loop-summaries/: never committed, the redacted
+    copies under traces/ are what is published) to the private archive, in restricted custody. Each file is a stream
+    of its own: what it gained since it was last sealed, or the whole of it again when it was rewritten, so a cycle's
+    record leaves this machine with the commit that follows it and not at the next inventory. A file whose size and
+    time are those last sealed is not opened. Nothing here fails a sync: an error goes to the hook log. Returns how
+    many segments were sealed. Without `folder` it seals this checkout's own records and no others (a test's
+    folder is not this checkout's)."""
+    try:
+        import artifacts
+        if folder is None and LOOP_SUMMARIES != OWN_LOOP_SUMMARIES:
+            return 0
+        folder = LOOP_SUMMARIES if folder is None else Path(folder)
+        if artifacts.off() or not folder.is_dir():
+            return 0
+        memo_path = artifacts.home() / "run-records-sealed.json"
+        try:
+            memo = json.loads(memo_path.read_text())
+        except (OSError, ValueError):
+            memo = {}
+        workspace = folder.resolve().parents[1].name
+        todo = []
+        for path in sorted(p for p in folder.rglob("*") if p.is_file() and not p.is_symlink()):
+            rel, st = path.relative_to(folder).as_posix(), path.stat()
+            if memo.get(f"{workspace}/{rel}") != [st.st_size, st.st_mtime_ns]:
+                todo.append((rel, path, [st.st_size, st.st_mtime_ns]))
+        if not todo:
+            return 0
+        sealed, archive = 0, artifacts.Archive()
+        try:
+            for rel, path, mark in todo:
+                if archive.capture_stream(path, f"run-records/{workspace}/{rel}", "run-record", f"llm-dlc/loop-summaries/{rel}",
+                                          notes={"workspace": workspace, "stage": "sealed at a sync of the workspace"}):
+                    sealed += 1
+                memo[f"{workspace}/{rel}"] = mark
+        finally:
+            archive.close()
+            artifacts.write_durably(memo_path, json.dumps(memo, indent=1, sort_keys=True).encode())
+        perf.count("run record segments sealed", sealed)
+        if sealed:
+            artifacts.kick()
+        return sealed
+    except Exception:
+        log(traceback.format_exc())
+        return 0
 
 
 def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int:

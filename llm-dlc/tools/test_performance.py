@@ -911,7 +911,7 @@ class Checks(unittest.TestCase):
         sync.metrics_path("s1").write_text(metrics.dumps(whole))  # as every session's file was until 2026-11-21
         problems = lambda rendered: sync.metrics_problems("s1", m, data, self.r, rendered=rendered)[0]
         self.assertEqual(problems(False), [])                     # between two renderings it is read as it is
-        self.assertIn("s1: metrics.json still holds its per-call tables (run sync)", problems(True))
+        self.assertEqual(problems(True), ["s1: metrics.json still holds its per-call tables (run sync)"])
         with mock.patch("sys.stdout", io.StringIO()):
             self.assertEqual((sync.bound_metrics(), sync.bound_metrics()), (1, 0))  # no log is read for it
         self.assertEqual(sync.metrics_path("s1").read_text(), sync.session_metrics("s1", m, sync.log_entries(data), self.r))

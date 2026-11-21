@@ -207,7 +207,13 @@ verdict against the CLI of the same build.
 - Every `sync.py commit` rewrites four generated files (`llm-dlc/index.json`, `llm-dlc/traces/README.md`,
   `llm-dlc/traces/metrics.json`, the session table in `llm-dlc/README.md`), so two lines that both committed
   conflict in all four. After the merge run `python3 llm-dlc/tools/sync.py regenerate`, which rewrites them from
-  the session files and lists any other conflict; resolve only what it lists, never the four by hand.
+  the session files and lists any other conflict; resolve only what it lists, never the four by hand. (Since
+  2026-11-21 a commit writes its session's manifest alone and these files are rendered at a promotion, so two
+  lines conflict in them only when one of them rendered: by `sync.py sync`, a push, or tools from before.)
+- A session's own `metrics.json` or `summary.md` left conflicted by a merge is settled the same way, by rendering:
+  `python3 llm-dlc/tools/sync.py sync SESSION`, never by hand. The files are functions of the session's log and
+  manifest. It is to be expected once, when a line whose tools still write the per-call tables into
+  `metrics.json` meets one whose tools do not (2026-11-21).
 - `check` reads only the commits of `::@`, so a "session … has no manifest" error is not to be expected from
   another workspace's commits.
 - One case is known: a stream that merged another stream's commit into its line stamps that commit with its own
@@ -224,6 +230,18 @@ verdict against the CLI of the same build.
 
 **Why:** the four conflicts silenced every integration check after the streams' first commits in four runs, and
 in one that hid a real bug until the merge.
+
+## A test of the trace tools writes nowhere in the checkout
+
+A test that calls `sync.cmd_sync`, `cmd_push` or `cmd_regenerate` either points `sync.TRACES` (and what is
+derived from it) at a folder of its own, or stands in for every step that writes under `llm-dlc/traces/`.
+After running such tests, `jj st` should list nothing under `llm-dlc/traces/` that you did not mean; if it
+does, `jj restore --from @- llm-dlc/traces` puts the files back, and the test is what to fix.
+
+**Why:** `test_performance`'s `Sync` test stood in for some of a sync's steps and let the others run on the
+real tree. It went unseen while every commit kept the generated files current. Once rendering was deferred it
+rewrote the checkout's stale summaries on each run, and on 2026-11-21 a new rendering step rewrote all 207
+session files there in one test run (seen in `jj st` before the commit, and put back).
 
 ## Shell commands that set off the commit hook
 

@@ -12,26 +12,26 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T20:14:12.136Z",
-  "duration_seconds": 11810,
+  "ended": "2026-11-21T20:22:22.363Z",
+  "duration_seconds": 12300,
   "stats": {
     "turns": 10,
-    "api_calls": 576,
-    "tool_calls": 651,
+    "api_calls": 606,
+    "tool_calls": 688,
     "tool_errors": 13,
     "compactions": 3,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 1152,
-      "output_tokens": 790930,
-      "cache_read_input_tokens": 166065137,
-      "cache_creation_input_tokens": 1652310
+      "input_tokens": 1212,
+      "output_tokens": 820306,
+      "cache_read_input_tokens": 174096627,
+      "cache_creation_input_tokens": 1699720
     }
   },
   "tools": {
-    "Bash": 556,
+    "Bash": 588,
     "Read": 46,
-    "Edit": 32,
+    "Edit": 37,
     "Write": 17
   },
   "files_touched": [
@@ -40,6 +40,7 @@
     "examples/tools/targets/test_case_pack.py",
     "llm-dlc/loops/llm-dlc-process-plumbing-results.md",
     "llm-dlc/operating-notes.md",
+    "llm-dlc/specification.md",
     "llm-dlc/tools/artifacts.py",
     "llm-dlc/tools/checkpoint.py",
     "llm-dlc/tools/delegation.py",
@@ -51,6 +52,7 @@
     "llm-dlc/tools/test_promote.py",
     "llm-dlc/tools/vm_inventory.py",
     "verification/capture.py",
+    "verification/findings.md",
     "verification/layout.py",
     "verification/test_layout.py",
     "~/.cache/in-the-loop/tmp/plumbing/rehearse.py",
@@ -102,24 +104,24 @@
     {
       "index": 3,
       "started": "2026-11-21T19:59:50.287Z",
-      "ended": "2026-11-21T20:14:12.136Z",
+      "ended": "2026-11-21T20:22:22.363Z",
       "turns": 4,
-      "api_calls": 67,
+      "api_calls": 97,
       "usage": {
-        "input_tokens": 134,
-        "output_tokens": 77735,
-        "cache_read_input_tokens": 11590076,
-        "cache_creation_input_tokens": 227679
+        "input_tokens": 194,
+        "output_tokens": 107111,
+        "cache_read_input_tokens": 19621566,
+        "cache_creation_input_tokens": 275089
       },
-      "peak_context_tokens": 242584
+      "peak_context_tokens": 289994
     }
   ],
   "log": {
-    "sha256": "60554910c0e372249140b751c49cfede1aa78b8385e886a44fe4046d89d53648",
-    "bytes": 14125048,
-    "lines": 5045,
-    "gzip_bytes": 2293606,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/60554910c0e372249140b751c49cfede1aa78b8385e886a44fe4046d89d53648.jsonl.gz"
+    "sha256": "b74a672329cc25b47b77241d616134dd87c5a6bbf56030381145f18f55664d1b",
+    "bytes": 14617865,
+    "lines": 5298,
+    "gzip_bytes": 2353232,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/b74a672329cc25b47b77241d616134dd87c5a6bbf56030381145f18f55664d1b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -282,6 +284,14 @@
       "summary": "Keep a session's per-call rows out of its metrics file; warn on a result's oversized receipt; seal what was set aside from the runner",
       "body": "A session's metrics.json held a row for every model call and tool call: 48 MB of the 51 MB the 207 session files come to, 9 MB in one two-day session's file, rewritten whole each time it was rendered. The file is now llm-trace-metrics/v2 (metrics.bounded): everything else it held, plus what the readers of those rows took from them (the calls by day, and for each prompt its peak context, efforts and spend by model), and 'events', the row counts and the SHA-256 of the rows' text. The rows are the same function of the log, the manifest and the price list as the file, so they are stored nowhere: 'sync.py events SESSION [--to FILE]' builds them again from the log (this workspace's, or the public URL's, checked against its name) and says whether the text is the one the file names. The roll-up and the loops' statistics read the bounded file; the roll-up is v2 and its tool rows have no median over all sessions, which cannot be had from the sessions' own.\n\nNo session file changes in this commit: an old file is still read, and the next rendering (a promotion, a push, sync by hand) rewrites each without needing its log (sync.bound_metrics); check --rendered reports one that is left. On this tree, in memory: the 207 files go from 50.9 MB to 7.2 MB (largest 1.0 MB); loops.json and loops.md come out byte for byte the same; the roll-up differs only in its schema line and the 249 absent medians; for the 180 sessions whose log is stored here, the converted file equals what a rendering from the log gives.\n\nsync.py check warns about a verification result submitted since 2026-11-22 whose result.json is over 256 KiB (verification/layout.py, heavy_receipts). The list of outputs is left whole, since accept.py and claim_history.py verify kept outputs against every row; the receipts of 1.5 to 2.9 MB came from jobs that wrote two files a case, which the producer packs since the last cycle.\n\nvm_inventory.py protect --only set-aside seals what a person moved out of the runner's state into restricted custody: the folder without work/ as one tree, each work directory as what it holds beyond the commit its own result names, build output left out. Run here: 2 folders (7.5 MB) and 32 work directories (130 KB beyond their commits, of 2.2 GB on disk), uploaded and read back; the archive holds 1,250 occurrences, all verified in the store.\n\nFound on the way: test_performance's Sync test called a real rendering with only some of its steps stood in for, so since rendering was deferred it rewrote this checkout's stale summaries, and with this change every session file. It stands in for those steps now. Job 20261121-195020-345-native-selectors-with-the-built-chec passed with the built checker (collected on the default line): a selector run packs its own per-case output. Verified: the changed tests (31 files, all passed), the new unit tests of each part, and the comparisons above.",
       "log_sha256": "60554910c0e372249140b751c49cfede1aa78b8385e886a44fe4046d89d53648"
+    },
+    {
+      "change_id": "rtlrlwsnlsxqwozunlyvrykpuuolvomv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal a workspace's private run records at each sync; record cycle 3 and its rehearsal",
+      "body": "llm-dlc/loop-summaries/ is never committed (its redacted copies are what is published), so a loop's private records left this machine only when someone ran vm_inventory.py protect. A sync now hands each of its files to the private archive as a stream of its own, in restricted custody (sync.seal_run_records): what the file gained since it was last sealed, or the whole of it again when it was rewritten; a file whose size and time are those last sealed is not opened; a test's folder is not this checkout's and is not sealed; an error goes to the hook log and never fails a sync. Shown by test_artifacts.py on a disk store.\n\nThe results page records cycle 3: the per-call rows out of the session files, the receipt warning, the set-aside folders sealed (my cycle 1 reading of them was wrong: each work directory's own result names its commit), the job that shows a selector run packing its own output with the real checker, and a rehearsal of the whole line on a bare remote on disk: 23 one-commit checkpoints at a median of 0.90 s and a p95 of 2.30 s from eligible commit to the remote holding it, and a promotion of 36 commits whose record rewrote all 207 session files (51.0 MB on main, 8.3 MB with the roll-up in the promoted tree) with check --rendered at 0 errors.\n\nThe operating notes gain two rules: a session's metrics.json or summary.md left conflicted by a merge is settled by rendering the session again, and a test of the trace tools writes nowhere in the checkout (the test that did is fixed in the commit before this one). A rendered check reports a file that still holds its per-call tables once, not twice. Verified: the changed tests (23 files, all passed) and jj st clean of trace files after them.",
+      "log_sha256": "b74a672329cc25b47b77241d616134dd87c5a6bbf56030381145f18f55664d1b"
     }
   ],
   "logs": {
@@ -367,6 +377,12 @@
       "bytes": 6157526,
       "lines": 1651,
       "gzip_bytes": 1146434,
+      "url": null
+    },
+    "b74a672329cc25b47b77241d616134dd87c5a6bbf56030381145f18f55664d1b": {
+      "bytes": 14617865,
+      "lines": 5298,
+      "gzip_bytes": 2353232,
       "url": null
     },
     "b7b96e80f04d71245289ca1449aa420dae1bd4793e7f37f1a282f51bd80bdf37": {
