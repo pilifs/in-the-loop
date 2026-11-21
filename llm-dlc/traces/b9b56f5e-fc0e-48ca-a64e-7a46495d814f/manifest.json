@@ -1,0 +1,84 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "b9b56f5e-fc0e-48ca-a64e-7a46495d814f",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Review and implement `~/code/scripts/analysis/llm-dlc-process-plumbing-brief.md`. Use your judgment on how you approach the work to maximize quality and efficiency.\n\nThe brief for this work is `llm-dl",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.327"
+  },
+  "models": [
+    "claude-fable-5-2"
+  ],
+  "started": "2026-11-21T16:57:22.471Z",
+  "ended": "2026-11-21T17:13:29.697Z",
+  "duration_seconds": 967,
+  "stats": {
+    "turns": 1,
+    "api_calls": 34,
+    "tool_calls": 46,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 262456,
+    "usage": {
+      "input_tokens": 68,
+      "output_tokens": 93025,
+      "cache_read_input_tokens": 5552983,
+      "cache_creation_input_tokens": 250839
+    }
+  },
+  "tools": {
+    "Bash": 25,
+    "Read": 19,
+    "Write": 2
+  },
+  "files_touched": [
+    "llm-dlc/tools/artifacts.py",
+    "llm-dlc/tools/test_artifacts.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-21T16:57:22.471Z",
+      "ended": "2026-11-21T17:13:29.697Z",
+      "turns": 1,
+      "api_calls": 34,
+      "usage": {
+        "input_tokens": 68,
+        "output_tokens": 93025,
+        "cache_read_input_tokens": 5552983,
+        "cache_creation_input_tokens": 250839
+      },
+      "peak_context_tokens": 262456
+    }
+  ],
+  "log": {
+    "sha256": "1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d",
+    "bytes": 2017364,
+    "lines": 328,
+    "gzip_bytes": 461633,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "wvpwtwyomouqkxsnuyyukuorwqtoyqlu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add the private archive of original outputs: spool, journal, verified upload, list and fetch",
+      "body": "llm-dlc/tools/artifacts.py is the first piece of the process-plumbing brief (llm-dlc/loops/llm-dlc-process-plumbing.md, section 2). A producer hands the bytes it made to capture before it shortens, replaces or deletes them. They are sealed once into a spool on disk outside the checkout (~/.local/share/in-the-loop/originals), with a full private inventory of every member's path, type, mode, length and SHA-256, and acknowledged only after the intake record and a SQLite journal have them durably. Small files go into bounded packs, large ones into parts, and an append-only file into segments from which any past prefix restores. A restartable uploader commits each attempt before a byte moves, creates each object only if none is there, reads it back with a credential and compares the original bytes with their name, and writes an immutable receipt last, so a fresh machine can rebuild the catalog from the store alone. Ordinary and restricted originals go to separate private R2 buckets; a restricted occurrence is listed in the ordinary one by a stub with no path. list, show and fetch read with the reader's token into a private cache and work offline on a verified hit; missing, pending, restricted or damaged evidence gives a specific unavailable answer. Nothing in the tool deletes a byte, and ITL_ORIGINALS_OFF=1 switches capture off.\n\nVerified by 33 unit tests (llm-dlc/tools/test_artifacts.py): crashes before and after the intake record, after a put and before the receipt, a lease left by a dead worker, two workers on one object, a store that is offline, that loses its answer, that holds other bytes under the same key or a truncated object, a full disk, reused paths, gaps, unsafe manifests and links, and reads from an empty cache and offline. artifacts.py canary passed 11 of 11 checks on the real buckets on 2026-11-21: custody for both classes, a restore from an empty cache, and each token's limits (the ordinary token refused a restricted key, a PUT and a DELETE; the public Worker and the public traces' token read neither class). The contract is in llm-dlc/specification.md, Original outputs; llm-dlc/loops/llm-dlc-process-plumbing-results.md records where the run stands. Nothing calls capture yet: the runner and collector adapters come next.",
+      "log_sha256": "1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d"
+    }
+  ],
+  "logs": {
+    "1e85b253070c79043fc2d3497ba7105bc2aef2a4ee3e2de781ad9cbcbece4f3d": {
+      "bytes": 2017364,
+      "lines": 328,
+      "gzip_bytes": 461633,
+      "url": null
+    }
+  },
+  "redaction_policy": 5,
+  "generator": "llm-dlc/tools/sync.py"
+}
