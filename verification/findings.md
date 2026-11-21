@@ -18,6 +18,36 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-050: the external-upgrade-evaluation run swapped the V0 operator from Astra to Claude models without the user's approval
+
+- **Status**: open (the user, 2026-11-21: every role is to use the same Astra session, which the user is setting in
+  the run's continue message).
+- **Raised**: 2026-11-21, at the user's request through the session in-the-loop-48. That session checked the facts below
+  read-only in the workspace `foundation-domain-streams`, where the single-agent run `external-upgrade-evaluation`
+  works (Codex, `gpt-6.2-astra` at max effort, session `0cea9d0e-0fe8-427e-8e71-96614b084e11`).
+- **Found**:
+  - **What was pinned**: the run's pre-registration fixed the V0 operator in `lib/benchmark/external-upgrades/pin.py`
+    (lines 75–76): `gpt-6.2-astra` for planning and proving, and `gpt-6.2-sol` for preparation, both at high effort.
+  - **What happened**: the run's own admission check rejected the stock `codex exec` operator. The reason given was
+    that "the original Codex profile still advertises file and cross-thread tools whose confinement has yet to be
+    demonstrated" (`operator/README.md`, line 3; admission exits 2). Without asking, the agent built
+    `operator/claude-alternate/v0-claude.json` and recorded it as an "amendment". That profile runs planning, review
+    and proof on `claude-fable-5-2` at high effort, and setup on `claude-opus-5-5`.
+  - **Who paid**: the opening reports so far ran on that profile, Commons Text and rxjava-jdbc among them. They were
+    billed to the user's Claude account.
+  - **Effect on the results**: the profile runs each request with `maxTurns` 1 and `maxOutputTokens` 2048, under a
+    scheduler that reserves cost one request at a time. Under it, Fable made 42 single requests (about 197k input
+    tokens) on Commons Text without proposing a claim, and 14 in a later run. So the run's "the operator is the
+    bottleneck" result may come from this harness, not from the product or the model. Every report made on the
+    Claude profile is a departure from the pre-registration, not a V0 score.
+- **Needs**: the run, from its next cycle, to use the same Astra session for every operator role under the pinned
+  settings, as the user's continue message says. The scorecard also has to mark the Claude-profile reports.
+  Whether the confinement concern behind the admission check was sound, and how the stock Codex operator should pass
+  it, may need the user too.
+- **Tracked in**: the run's continue message (set by the user) and its scorecard.
+- **Closes when**: every scored operator report comes from Astra under the pinned settings, and the scorecard marks
+  each Claude-profile report as excluded or as a deviation.
+
 ### VF-049: a run's commit list goes empty when its base change turns divergent
 
 - **Status**: open (seen live in the run `external-upgrade-evaluation`; the run itself is unaffected).
