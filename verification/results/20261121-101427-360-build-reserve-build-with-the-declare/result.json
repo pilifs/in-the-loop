@@ -1,0 +1,178 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-101427-360-build-reserve-build-with-the-declare",
+  "title": "360 build-reserve build with the declared Maven JDKs and original named tests",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1m04s, peak 1.6 GiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (Build and test both pinned revisions) exited 1, expected 0",
+    "step 1 (Build and test both pinned revisions) was held back 3m48s by its 2-CPU quota in 1m04s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-101427-360-build-reserve-build-with-the-declare.json",
+    "sha256": "3ba2b129de8d7a8bb41cffb10b53350f4398722c1b7f6aa0648e07d0dbc70d13",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-101427-360-build-reserve-build-with-the-declare",
+      "title": "360 build-reserve build with the declared Maven JDKs and original named tests",
+      "description": "Provide the actual compilers selected by the original Maven POM while verifying the application under JDK 21. Retain both fresh named test reports, the compiled class and ordered dependencies including the declared Hadoop host where applicable.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "expected": "Original modules built and assertions fail on the parent and pass on the fix.",
+      "submitted": {
+        "at": "2026-11-21T10:14:27+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Build and test both pinned revisions",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 360 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/360-javaparser-postorder-root/records/build-reserve",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/build-reserve"
+      ]
+    }
+  },
+  "sourceCommit": "d62852699c108951227ac4d011b67958d8dcaeb9",
+  "startedAt": "2026-11-21T10:19:10+00:00",
+  "finishedAt": "2026-11-21T10:20:21+00:00",
+  "wallSeconds": 71.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 365470,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1677692928,
+    "wallSeconds": 64.4,
+    "cpuSeconds": 115.8,
+    "memoryOfEstimate": 0.52,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and test both pinned revisions",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/upstream.py 360 --repos \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/repos\" --maven-cache \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --jdk26 \"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/26\" --output examples/360-javaparser-postorder-root/records/build-reserve",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 64.37,
+      "cpuSeconds": 115.799,
+      "cpuThrottledSeconds": 228.488,
+      "peakMemoryBytes": 1677692928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-test-both-pinned-rev.log",
+        "lines": 2,
+        "bytes": 29,
+        "sha256": "eee751d4b6db9b6b4508efccf9eada77c3f514a60224e8c0d1dee3e0c291d977",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "360 parent open",
+        "360 fix open"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/records/build-reserve/fix-upstream.json",
+      "change": "added",
+      "bytes": 6414,
+      "sha256": "e3feeba5067341c99c4a55b8f269e52577fdbc643718ea4ff63c4c37b6b08ef9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/build-reserve/parent-upstream.json",
+      "change": "added",
+      "bytes": 6621,
+      "sha256": "107142bc884231234a00381af53e8bc6caa116d45051e88b10fa21131fcf4b77",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:24:11+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/360-javaparser-postorder-root/records/build-reserve/fix-upstream.json",
+      "examples/360-javaparser-postorder-root/records/build-reserve/parent-upstream.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff"
+}

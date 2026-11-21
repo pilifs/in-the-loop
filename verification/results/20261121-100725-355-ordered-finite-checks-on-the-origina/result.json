@@ -1,0 +1,302 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-100725-355-ordered-finite-checks-on-the-origina",
+  "title": "355 ordered finite checks on the original avro public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m05s, peak 537.1 MiB (estimated 5m00s, 3.0 GiB); 13 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-100725-355-ordered-finite-checks-on-the-origina.json",
+    "sha256": "052be83e9a5b8811e63749d4b20e09a5cfc0ed75ccc5ee518cddeb85cf6add03",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-100725-355-ordered-finite-checks-on-the-origina",
+      "title": "355 ordered finite checks on the original avro public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/avro#3878 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:finite"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T10:07:25+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 355 --route finite --stage ordered --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/355-avro-writable-buffer-limit/records/ordered-finite"
+      ]
+    }
+  },
+  "sourceCommit": "d62852699c108951227ac4d011b67958d8dcaeb9",
+  "startedAt": "2026-11-21T10:19:10+00:00",
+  "finishedAt": "2026-11-21T10:23:27+00:00",
+  "wallSeconds": 257.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 365470,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 563216384,
+    "wallSeconds": 65.8,
+    "cpuSeconds": 105.1,
+    "memoryOfEstimate": 0.17,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 184.832,
+      "cpuSeconds": 184.992,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2115895296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b54affef8f8564e8b7b1bbce054e3575eded16fbef002c059730aea0b724fce5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-100725-355-ordered-finite-checks-on-the-origina/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 04s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 355 --route finite --stage ordered --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 65.769,
+      "cpuSeconds": 105.148,
+      "cpuThrottledSeconds": 5.631,
+      "peakMemoryBytes": 563216384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 632,
+        "sha256": "84b5c82cb4453c3f84b725cc11a3b8bed0e1b5a802a4c7cfa37a850f6fd7c8de",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"355\", \"route\": \"finite\", \"stage\": \"ordered\", \"workflowExit\": 0, \"seconds\": 65.593, \"checkerSeconds\": 180, \"tasks\": [\"bounds-parent\", \"bounds-fix\", \"rejected-parent\", \"rejected-fix\", \"prefix-parent\", \"prefix-fix\", \"full-length-parent\", \"full-length-fix\", \"direct-limit-parent\", \"direct-li"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/batch.json",
+      "change": "added",
+      "bytes": 5839,
+      "sha256": "ca51fc07d5a67add90c9045f1f3082b5b7a8ede0916bf1a7d612e2576a1c40c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/bounds-fix.json",
+      "change": "added",
+      "bytes": 43908,
+      "sha256": "b502dece3a93e7d44e746e17577d1b330e5f272170b179c18f6cb762d79ecc75",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/bounds-parent.json",
+      "change": "added",
+      "bytes": 55736,
+      "sha256": "b478f139f2a65050b5f192b3e1d49c9ab1587b6e2d09c717828788a3365dbc28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/direct-limit-fix.json",
+      "change": "added",
+      "bytes": 43971,
+      "sha256": "77cee848b6a6370802d8bee858a0eed50c0a8f423b242337b8e0c33d29353def",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/direct-limit-parent.json",
+      "change": "added",
+      "bytes": 55811,
+      "sha256": "2c38031e885c17a8805c940dd8975318b3ea715ee446639d4f37de09adaf7374",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/full-length-fix.json",
+      "change": "added",
+      "bytes": 40386,
+      "sha256": "a37cdbcdd123507af3a72e8b4d4b41f0701511e42a82287a537665991429fc07",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/full-length-parent.json",
+      "change": "added",
+      "bytes": 40406,
+      "sha256": "03333e1663b6a2f672347d667a485714f9fabe6ea02309e253deb06c46d2f358",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/prefix-fix.json",
+      "change": "added",
+      "bytes": 43875,
+      "sha256": "ec8b4c9fec3c8ff438df946ac36c44390fb354f146cb6658928d2ba5cb38fa39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/prefix-parent.json",
+      "change": "added",
+      "bytes": 43898,
+      "sha256": "27484eb25599d70757d0b7385ca219751aa99aad90a9288af6bdc62106dd22f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/rejected-fix.json",
+      "change": "added",
+      "bytes": 43875,
+      "sha256": "93dccb024922567ae21c0b961713147747625a96c02d1d3940c471f2d94c1308",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/rejected-parent.json",
+      "change": "added",
+      "bytes": 55706,
+      "sha256": "166c0b26f46745470055b4e88abce915915ae33868ed0e1c38b5e1ada12594c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/run.json",
+      "change": "added",
+      "bytes": 710,
+      "sha256": "0d4819470630c83749cc57d6578cd2d031c2d1318b97886f6c0fa4fa8f051b66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/355-avro-writable-buffer-limit/records/ordered-finite/workflow.log",
+      "change": "added",
+      "bytes": 427,
+      "sha256": "7a3f313265a993da95c160f53053d176f0dbd5f22f32ff948647c3581e4488c3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:24:11+00:00",
+    "applied": [
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/batch.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/bounds-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/bounds-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/direct-limit-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/direct-limit-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/full-length-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/full-length-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/prefix-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/prefix-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/rejected-fix.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/20261121T102222Z-6432950c/rejected-parent.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/run.json",
+      "examples/355-avro-writable-buffer-limit/records/ordered-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "29638ca8c77223800afaa77c4804c9d191ecf8f9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/29638ca8c77223800afaa77c4804c9d191ecf8f9/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}
