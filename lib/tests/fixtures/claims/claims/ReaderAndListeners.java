@@ -45,6 +45,33 @@ public final class ReaderAndListeners {
         try { r.read(); return false; } catch (IOException expected) { return true; }
     }
 
+    public static boolean outputSlices(boolean shifted) throws IOException {
+        byte[] backing = {17, 34, 51, 68};
+        int start = shifted ? 1 : 0;
+        java.io.ByteArrayOutputStream sink = new java.io.ByteArrayOutputStream(2);
+        java.io.FilterOutputStream stream = new java.io.FilterOutputStream(sink) {};
+        stream.write(backing, start, 2);
+        byte[] snapshot = sink.toByteArray();
+        backing[start] = 0;
+        stream.write(backing, 2, 2);
+        stream.close();
+        byte[] joined = sink.toByteArray();
+        sink.reset();
+        sink.write(0xff);
+        return snapshot.length == 2 && snapshot[0] == (shifted ? 34 : 17)
+            && snapshot[1] == (shifted ? 51 : 34) && joined.length == 4
+            && joined[0] == snapshot[0] && joined[1] == snapshot[1] && joined[2] == 51 && joined[3] == 68
+            && sink.size() == 1 && sink.toByteArray()[0] == -1;
+    }
+
+    public static boolean wrongSnapshot() {
+        java.io.ByteArrayOutputStream sink = new java.io.ByteArrayOutputStream();
+        sink.write(17);
+        byte[] first = sink.toByteArray();
+        first[0] = 99;
+        return sink.toByteArray()[0] == 99;
+    }
+
     public static boolean buffered() throws IOException {
         byte[] bytes = {3, (byte) 255, 9};
         java.io.ByteArrayInputStream source = new java.io.ByteArrayInputStream(bytes);
@@ -127,6 +154,7 @@ public final class ReaderAndListeners {
     public static boolean unknownProperty() { return System.getProperty("test.reader.initial") == null; }
     public static boolean invalidRange() { "ab".getChars(0, 2, new char[1], 0); return true; }
     public static void main(String[] args) throws IOException {
+        if (!outputSlices(false) || !outputSlices(true) || wrongSnapshot()) throw new AssertionError();
         if (!chars(true) || !chars(false) || !buffered() || !listeners(true) || !listeners(false) || !mirrors() || !beans() || !cursor() || !propertyChanges(true) || !propertyChanges(false) || !nestedLock() || wrong()) throw new AssertionError();
     }
 }

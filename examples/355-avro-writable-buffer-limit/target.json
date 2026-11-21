@@ -11,11 +11,29 @@
     "repository": "https://github.com/apache/avro",
     "revisions": {
       "parent": {
-        "commit": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73"
+        "commit": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+        "orderedClasses": [
+          "org.apache.hadoop.security.authentication.server.package-info",
+          "org.apache.hadoop.yarn.api.resource.package-info",
+          "org.apache.hadoop.yarn.client.api.impl.package-info",
+          "org.apache.hadoop.yarn.client.api.package-info",
+          "org.apache.hadoop.yarn.factories.package-info",
+          "org.apache.hadoop.yarn.factory.providers.package-info",
+          "org.apache.hadoop.yarn.util.package-info"
+        ]
       },
       "fix": {
         "commit": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
-        "parent": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73"
+        "parent": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+        "orderedClasses": [
+          "org.apache.hadoop.security.authentication.server.package-info",
+          "org.apache.hadoop.yarn.api.resource.package-info",
+          "org.apache.hadoop.yarn.client.api.impl.package-info",
+          "org.apache.hadoop.yarn.client.api.package-info",
+          "org.apache.hadoop.yarn.factories.package-info",
+          "org.apache.hadoop.yarn.factory.providers.package-info",
+          "org.apache.hadoop.yarn.util.package-info"
+        ]
       }
     },
     "pairs": [
@@ -51,14 +69,19 @@
         "-Dspotbugs.skip=true",
         "-Dgpg.skip=true",
         "-f",
-        "lang/java/pom.xml",
+        "pom.xml",
         "-pl",
-        "mapred",
+        "lang/java/mapred",
         "-am",
-        "-Dmaven.test.skip=true",
+        "-DskipTests",
+        "-Dinvoker.skip=true",
         "install"
       ],
       "jdk": "21"
+    },
+    "capturedBuilds": {
+      "parent": "records/build-avro-root/build-parent.json",
+      "fix": "records/build-avro-root/build-fix.json"
     }
   },
   "tasks": [
