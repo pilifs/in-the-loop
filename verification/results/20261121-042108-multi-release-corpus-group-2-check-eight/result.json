@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-042108-multi-release-corpus-group-2-check-eight",
+  "title": "Multi-release corpus group 2 check eight original upgrade pairs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 28.7s, peak 533.5 MiB (estimated 8m00s, 2.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-042108-multi-release-corpus-group-2-check-eight.json",
+    "sha256": "0704cd2d77af2876630bb23e0d999d3083ff86c64254b26ba2b6e71bb505b884",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-042108-multi-release-corpus-group-2-check-eight",
+      "title": "Multi-release corpus group 2 check eight original upgrade pairs",
+      "description": "Repeat eight original native claims at the selected JDK release using both exact recorded runtime graphs, with the original operator entry and the same per-case check deadline. Full rerun includes compiler and resolver failures. Cases: compsuite-i-9, compsuite-i-4, compsuite-i-62, compsuite-i-94, compsuite-i-81, compsuite-i-39, compsuite-i-29, compsuite-i-36.",
+      "kind": "real-world",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Every case has a fresh report with its real outcome and exact artifact hashes when compilation succeeded.",
+      "submitted": {
+        "at": "2026-11-21T04:21:08+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "8m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Check eight original pairs",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/multi-release/02 --case compsuite-i-9 --case compsuite-i-4 --case compsuite-i-62 --case compsuite-i-94 --case compsuite-i-81 --case compsuite-i-39 --case compsuite-i-29 --case compsuite-i-36",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/multi-release/02"
+      ]
+    }
+  },
+  "sourceCommit": "e4da72478bf136ea79e8e8ebfa4fe718d852a2f6",
+  "startedAt": "2026-11-21T04:28:14+00:00",
+  "finishedAt": "2026-11-21T04:31:46+00:00",
+  "wallSeconds": 212.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3196002,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 559460352,
+    "wallSeconds": 28.7,
+    "cpuSeconds": 21.8,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check eight original pairs",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/multi-release/02 --case compsuite-i-9 --case compsuite-i-4 --case compsuite-i-62 --case compsuite-i-94 --case compsuite-i-81 --case compsuite-i-39 --case compsuite-i-29 --case compsuite-i-36",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 28.655,
+      "cpuSeconds": 21.842,
+      "cpuThrottledSeconds": 1.772,
+      "peakMemoryBytes": 559460352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-eight-original-pairs.log",
+        "lines": 8,
+        "bytes": 1775,
+        "sha256": "6c4670b05d3dab99bbd04f473c210ed5307c25bf867abea224e6338ca5d2a1b4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-9 current open original Maven classpath",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-62 current open original Maven classpath",
+        "compsuite-i-94 current open original Maven classpath",
+        "compsuite-i-81 current open original Maven classpath",
+        "compsuite-i-39 current open expected one method named transform, found 2: transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]), transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader); name one as transform(java.lang.ClassLoader, java.la",
+        "compsuite-i-29 current open runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
+        "compsuite-i-36 current open parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 8235,
+      "sha256": "d88b81302dfc9c2440b6b2eed95546e8018105564ae6aa6bc32968dd6baebd08",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 6640,
+      "sha256": "c94f78284b9f3b8fd2817639d7eb1b0b74662fabad9e8abdb43e8983a6f884fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 6502,
+      "sha256": "2f49db319fd09c1d4cffee6adf3cbc0f4392511c381baf0ac6d88f1b7e581a86",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 10288,
+      "sha256": "e828f68f3e3673fb1a7fd226e47ad664cf6b0a1541b78070f22c194bd4a6bd03",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 1489,
+      "sha256": "a625746c9b3a03f7c6deabc79ed5dec30f4b413221528813838c69599ae663d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 1496,
+      "sha256": "b74c7629789ec06ae0e847e97def55ebecc32938c9095e557063d6a43b9d2060",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 1452,
+      "sha256": "e73e5af36ca586c1bcbb2cb653adb03fe255f3272f09c2ba4c582673e048b09b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 1476,
+      "sha256": "2109ffbb8b07bdd867b6867646306d4037bfea02cb76dbc95bbaeefc6b0a2c45",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:35:41+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-29.json",
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-36.json",
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-39.json",
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-62.json",
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-81.json",
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-9.json",
+      "verification/external-upgrades/corpus-runs/multi-release/02/current/compsuite-i-94.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "8e5f43e7c7fe7226eea977e48edeb75d569ec504",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/8e5f43e7c7fe7226eea977e48edeb75d569ec504/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

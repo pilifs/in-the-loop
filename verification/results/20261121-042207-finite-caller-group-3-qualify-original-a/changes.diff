@@ -1,0 +1,701 @@
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/03/commons-text-775.json
+@@ -0,0 +1,226 @@
++{
++  "entry": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
++  "observer": "The exact capitalized string and separators returned for the specified ASCII words and delimiters.",
++  "domainBasis": "Within these explicitly listed inputs, lower-case each word and uppercase its initial. Empty strings and null pass through. UTC and English locale are fixed.",
++  "cases": [
++    {
++      "args": [
++        "hELLO wORLD",
++        " "
++      ],
++      "expected": {
++        "return": "Hello World"
++      }
++    },
++    {
++      "args": [
++        "rED,bLUE",
++        ","
++      ],
++      "expected": {
++        "return": "Red,Blue"
++      }
++    },
++    {
++      "args": [
++        "twO-FOLD nAME",
++        "- "
++      ],
++      "expected": {
++        "return": "Two-Fold Name"
++      }
++    },
++    {
++      "args": [
++        "",
++        ","
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        null,
++        " "
++      ],
++      "expected": {
++        "return": null
++      }
++    }
++  ],
++  "probeSha256": "d075eede429cd8b293b7c4b565618886e40721f9caaa8cafe1a4a8bcd3640ebc",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "2b02f079f088a41e5bda78274872b3af3863a560",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "classpath": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "dependency": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Hello World"
++            },
++            {
++              "return": "Hello World"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Red,Blue"
++            },
++            {
++              "return": "Red,Blue"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Two-Fold Name"
++            },
++            {
++              "return": "Two-Fold Name"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.StringUtils"
++      ]
++    },
++    "new": {
++      "commit": "267f1d14a96824e60451bcb3e8e1fb8a7e882a10",
++      "sourceSha256": "b37c96f1208269e4cd287e7e9147517ad4d7d025094c90c16bfe995eac895b9b",
++      "callerClassSha256": "60a039b01b5393a83e19cadecb2bc4522b774f78aa02f47361a7f48d7cd2c8a8",
++      "classpath": [
++        "7a9a079d5fe1d548bcb958d3fa46ff72ed3a52e8e4f2c8e46cb14fdebce882fb",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "ee704378a2125caffe1aad9aa9771e6869813d41b956437cc6315767e0243da4"
++      ],
++      "dependency": "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Hello World"
++            },
++            {
++              "return": "Hello World"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Red,Blue"
++            },
++            {
++              "return": "Red,Blue"
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Two-Fold Name"
++            },
++            {
++              "return": "Two-Fold Name"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 4,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.lang3.StringUtils"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalInvocation": "org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
++  "probeClasses": {
++    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
++    "UpgradeProbe": "d493ac559de33d9feb35ed18760fd1c91ad99df64f00f14dbe86ec6a0c6855ef",
++    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 10.86
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/03/commons-validator-86e32931.json
+@@ -0,0 +1,308 @@
++{
++  "entry": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;",
++  "observer": "Read a real JavaBean property through the validator and observe the returned string.",
++  "domainBasis": "Two public bean getters return the supplied string and integer 7. String conversion preserves the exact string or null and renders the integer in decimal.",
++  "cases": [
++    {
++      "args": [
++        "blue",
++        "title"
++      ],
++      "expected": {
++        "return": "blue"
++      }
++    },
++    {
++      "args": [
++        "",
++        "title"
++      ],
++      "expected": {
++        "return": ""
++      }
++    },
++    {
++      "args": [
++        "blue",
++        "quantity"
++      ],
++      "expected": {
++        "return": "7"
++      }
++    },
++    {
++      "args": [
++        null,
++        "title"
++      ],
++      "expected": {
++        "return": null
++      }
++    }
++  ],
++  "probeSha256": "88ebaea67083632bc13c88fe338eb30644861a16c311bc982bcc5c969e9645df",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "classpath": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "dependency": "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "blue"
++            },
++            {
++              "return": "blue"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "7"
++            },
++            {
++              "return": "7"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.beanutils.BeanAccessLanguageException",
++        "org.apache.commons.beanutils.BeanIntrospectionData",
++        "org.apache.commons.beanutils.BeanIntrospector",
++        "org.apache.commons.beanutils.BeanUtils",
++        "org.apache.commons.beanutils.BeanUtilsBean",
++        "org.apache.commons.beanutils.BeanUtilsBean$1",
++        "org.apache.commons.beanutils.ContextClassLoaderLocal",
++        "org.apache.commons.beanutils.ConversionException",
++        "org.apache.commons.beanutils.ConvertUtils",
++        "org.apache.commons.beanutils.ConvertUtilsBean",
++        "org.apache.commons.beanutils.Converter",
++        "org.apache.commons.beanutils.DefaultBeanIntrospector",
++        "org.apache.commons.beanutils.DefaultIntrospectionContext",
++        "org.apache.commons.beanutils.DynaBean",
++        "org.apache.commons.beanutils.IntrospectionContext",
++        "org.apache.commons.beanutils.MappedPropertyDescriptor",
++        "org.apache.commons.beanutils.MethodUtils",
++        "org.apache.commons.beanutils.NestedNullException",
++        "org.apache.commons.beanutils.PropertyUtils",
++        "org.apache.commons.beanutils.PropertyUtilsBean",
++        "org.apache.commons.beanutils.SuppressPropertiesBeanIntrospector",
++        "org.apache.commons.beanutils.WeakFastHashMap",
++        "org.apache.commons.beanutils.converters.AbstractConverter",
++        "org.apache.commons.beanutils.converters.ArrayConverter",
++        "org.apache.commons.beanutils.converters.BigDecimalConverter",
++        "org.apache.commons.beanutils.converters.BigIntegerConverter",
++        "org.apache.commons.beanutils.converters.BooleanConverter",
++        "org.apache.commons.beanutils.converters.ByteConverter",
++        "org.apache.commons.beanutils.converters.CalendarConverter",
++        "org.apache.commons.beanutils.converters.CharacterConverter",
++        "org.apache.commons.beanutils.converters.ClassConverter",
++        "org.apache.commons.beanutils.converters.ConverterFacade",
++        "org.apache.commons.beanutils.converters.DateConverter",
++        "org.apache.commons.beanutils.converters.DateTimeConverter",
++        "org.apache.commons.beanutils.converters.DoubleConverter",
++        "org.apache.commons.beanutils.converters.FileConverter",
++        "org.apache.commons.beanutils.converters.FloatConverter",
++        "org.apache.commons.beanutils.converters.IntegerConverter",
++        "org.apache.commons.beanutils.converters.LongConverter",
++        "org.apache.commons.beanutils.converters.NumberConverter",
++        "org.apache.commons.beanutils.converters.ShortConverter",
++        "org.apache.commons.beanutils.converters.SqlDateConverter",
++        "org.apache.commons.beanutils.converters.SqlTimeConverter",
++        "org.apache.commons.beanutils.converters.SqlTimestampConverter",
++        "org.apache.commons.beanutils.converters.StringConverter",
++        "org.apache.commons.beanutils.converters.URLConverter",
++        "org.apache.commons.beanutils.expression.DefaultResolver",
++        "org.apache.commons.beanutils.expression.Resolver"
++      ]
++    },
++    "new": {
++      "commit": "86e32931594e3437cd8614311f5da7bc0c62613c",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "classpath": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "dependency": "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "blue"
++            },
++            {
++              "return": "blue"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": ""
++            },
++            {
++              "return": ""
++            }
++          ]
++        },
++        {
++          "input": 2,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "7"
++            },
++            {
++              "return": "7"
++            }
++          ]
++        },
++        {
++          "input": 3,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": null
++            },
++            {
++              "return": null
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.apache.commons.beanutils.BeanAccessLanguageException",
++        "org.apache.commons.beanutils.BeanIntrospectionData",
++        "org.apache.commons.beanutils.BeanIntrospector",
++        "org.apache.commons.beanutils.BeanUtils",
++        "org.apache.commons.beanutils.BeanUtilsBean",
++        "org.apache.commons.beanutils.BeanUtilsBean$1",
++        "org.apache.commons.beanutils.ContextClassLoaderLocal",
++        "org.apache.commons.beanutils.ConversionException",
++        "org.apache.commons.beanutils.ConvertUtils",
++        "org.apache.commons.beanutils.ConvertUtilsBean",
++        "org.apache.commons.beanutils.Converter",
++        "org.apache.commons.beanutils.DefaultBeanIntrospector",
++        "org.apache.commons.beanutils.DefaultIntrospectionContext",
++        "org.apache.commons.beanutils.DynaBean",
++        "org.apache.commons.beanutils.IntrospectionContext",
++        "org.apache.commons.beanutils.MappedPropertyDescriptor",
++        "org.apache.commons.beanutils.MethodUtils",
++        "org.apache.commons.beanutils.NestedNullException",
++        "org.apache.commons.beanutils.PropertyUtils",
++        "org.apache.commons.beanutils.PropertyUtilsBean",
++        "org.apache.commons.beanutils.SuppressPropertiesBeanIntrospector",
++        "org.apache.commons.beanutils.WeakFastHashMap",
++        "org.apache.commons.beanutils.converters.AbstractConverter",
++        "org.apache.commons.beanutils.converters.ArrayConverter",
++        "org.apache.commons.beanutils.converters.BigDecimalConverter",
++        "org.apache.commons.beanutils.converters.BigIntegerConverter",
++        "org.apache.commons.beanutils.converters.BooleanConverter",
++        "org.apache.commons.beanutils.converters.ByteConverter",
++        "org.apache.commons.beanutils.converters.CalendarConverter",
++        "org.apache.commons.beanutils.converters.CharacterConverter",
++        "org.apache.commons.beanutils.converters.ClassConverter",
++        "org.apache.commons.beanutils.converters.ConverterFacade",
++        "org.apache.commons.beanutils.converters.DateConverter",
++        "org.apache.commons.beanutils.converters.DateTimeConverter",
++        "org.apache.commons.beanutils.converters.DoubleConverter",
++        "org.apache.commons.beanutils.converters.FileConverter",
++        "org.apache.commons.beanutils.converters.FloatConverter",
++        "org.apache.commons.beanutils.converters.IntegerConverter",
++        "org.apache.commons.beanutils.converters.LongConverter",
++        "org.apache.commons.beanutils.converters.NumberConverter",
++        "org.apache.commons.beanutils.converters.ShortConverter",
++        "org.apache.commons.beanutils.converters.SqlDateConverter",
++        "org.apache.commons.beanutils.converters.SqlTimeConverter",
++        "org.apache.commons.beanutils.converters.SqlTimestampConverter",
++        "org.apache.commons.beanutils.converters.StringConverter",
++        "org.apache.commons.beanutils.converters.URLConverter",
++        "org.apache.commons.beanutils.expression.DefaultResolver",
++        "org.apache.commons.beanutils.expression.Resolver"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalInvocation": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;",
++  "probeClasses": {
++    "UpgradeObservation": "cad0fe142d4f37e343f95b877e62613799d18783d6e4a02f869115920847a271",
++    "UpgradeProbe$Bean": "46c7d7bf0078f6c7dd2d75ccc25298cee16a7effae86e71b934ac74f623e321a",
++    "UpgradeProbe": "29f251615055a3877669f6b580eddddbaef55a7e5bc0f0650961e12902db9ab8",
++    "UpgradeTrace": "3097ff80d219c675c908f4331ecd9809c83fbea9c8190ed4b2e5e25e53e100be"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 10.399
++}
+--- /dev/null
++++ b/verification/external-upgrades/corpus-runs/finite-callers/03/compsuite-i-38.json
+@@ -0,0 +1,158 @@
++{
++  "entry": "com.esotericsoftware.reflectasm.MethodAccess#get(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;",
++  "observer": "Can the consumer construct an interface accessor, replace a value and read the map size? A plain Object supplies the companion.",
++  "domainBasis": "The original developer test expects the previous map value and two entries. Object declares no exported accessor methods in this adapter. The complete-module reference records both outcomes.",
++  "cases": [
++    {
++      "args": [
++        "map"
++      ],
++      "expected": {
++        "return": "one/2"
++      }
++    },
++    {
++      "args": [
++        "object"
++      ],
++      "expected": {
++        "return": "methods:0"
++      }
++    }
++  ],
++  "probeSha256": "a5fc665964da74cde80abecbdea54fc74c34b38d59ed6a6759fe931a53ed2a2d",
++  "launcherSha256": "b420ac37f3e2f52d24b786414d899a8cf08c9038eff8ceb6b8b6835bfc513bbb",
++  "tracerSha256": "dcd140900534a0c346400ea36150a79cd9e3cd34235f684197b19206a6706b0e",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
++      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
++      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
++      "classpath": [
++        "a7476f32e41def3b390ac14c59ad6c799dde874555c15d891667527bbd06e5d7",
++        "d2da399a9967c69f0a21739256fa79d284222c223082cacadc17372244764b54"
++      ],
++      "dependency": "d2da399a9967c69f0a21739256fa79d284222c223082cacadc17372244764b54",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "one/2"
++            },
++            {
++              "return": "one/2"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "methods:0"
++            },
++            {
++              "return": "methods:0"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.Edge",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Item",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.Type"
++      ]
++    },
++    "new": {
++      "commit": "5c636af1a65b92fa570582628a27aa1e7d29f24b",
++      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
++      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
++      "classpath": [
++        "a7476f32e41def3b390ac14c59ad6c799dde874555c15d891667527bbd06e5d7",
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672"
++      ],
++      "dependency": "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "throws": "java.lang.IllegalArgumentException"
++            },
++            {
++              "throws": "java.lang.IllegalArgumentException"
++            }
++          ]
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "methods:0"
++            },
++            {
++              "return": "methods:0"
++            }
++          ]
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.objectweb.asm.AnnotationVisitor",
++        "org.objectweb.asm.AnnotationWriter",
++        "org.objectweb.asm.Attribute",
++        "org.objectweb.asm.ByteVector",
++        "org.objectweb.asm.ClassTooLargeException",
++        "org.objectweb.asm.ClassVisitor",
++        "org.objectweb.asm.ClassWriter",
++        "org.objectweb.asm.CurrentFrame",
++        "org.objectweb.asm.Edge",
++        "org.objectweb.asm.FieldVisitor",
++        "org.objectweb.asm.FieldWriter",
++        "org.objectweb.asm.Frame",
++        "org.objectweb.asm.Handler",
++        "org.objectweb.asm.Label",
++        "org.objectweb.asm.MethodTooLargeException",
++        "org.objectweb.asm.MethodVisitor",
++        "org.objectweb.asm.MethodWriter",
++        "org.objectweb.asm.ModuleVisitor",
++        "org.objectweb.asm.ModuleWriter",
++        "org.objectweb.asm.Symbol",
++        "org.objectweb.asm.SymbolTable",
++        "org.objectweb.asm.SymbolTable$Entry",
++        "org.objectweb.asm.Type"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalInvocation": "com.esotericsoftware.reflectasm.MethodAccess#get(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;",
++  "probeClasses": {
++    "UpgradeObservation": "5824a9938269d5aa5d005789678cbb5ce8d067b3cbf20327a06546bdd521a681",
++    "UpgradeProbe": "b5badcc6bf33794a400cd34284b84bfdf4adc3426f5f13fb512bcb5bad597414",
++    "UpgradeTrace": "277b76611afd28946e5d4af6dec4e2e5e9cde0d4b9a5ffa433701743a03c339e"
++  },
++  "differences": [
++    0
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 4.399
++}

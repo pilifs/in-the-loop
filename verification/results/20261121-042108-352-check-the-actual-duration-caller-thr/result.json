@@ -1,0 +1,355 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-042108-352-check-the-actual-duration-caller-thr",
+  "title": "352 check the actual duration caller through the Java release-specific Jackson classes",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 45.5s, peak 131.7 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (Run original duration proof workflow) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261121-042108-352-check-the-actual-duration-caller-thr.json",
+    "sha256": "f7a0949bdf4d19d3f6f8240b4f2e400c7799138138c348cbe67c1d432055ae85",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-042108-352-check-the-actual-duration-caller-thr",
+      "title": "352 check the actual duration caller through the Java release-specific Jackson classes",
+      "description": "Rerun the frozen native preservation claim and its original controls on the two real Cucumber Reporting and Joda-Time classpaths. The previous class loader refused the Jackson release-specific copy. Retain the new checker output, qualified claims or first unsupported operation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "352"
+        ]
+      },
+      "expected": "The unchanged caller claim is verified. An unresolved outcome remains a failed native proof with its real diagnostic.",
+      "submitted": {
+        "at": "2026-11-21T04:21:08+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Run original duration proof workflow",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 352 --task format",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/352-cucumber-duration/receipts/format"
+      ]
+    }
+  },
+  "sourceCommit": "e4da72478bf136ea79e8e8ebfa4fe718d852a2f6",
+  "startedAt": "2026-11-21T04:28:14+00:00",
+  "finishedAt": "2026-11-21T04:32:03+00:00",
+  "wallSeconds": 229.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3196002,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 138092544,
+    "wallSeconds": 45.5,
+    "cpuSeconds": 48.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 177.612,
+      "cpuSeconds": 177.474,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2254856192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "871b46eca62f0f13c04cbaa3ae6618ee6980de89c5393e9f6a426a021fa0ce3a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-042108-352-check-the-actual-duration-caller-thr/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run original duration proof workflow",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" JAVA_TOOL_OPTIONS=\"-Djava.io.tmpdir=$HOME/.cache/in-the-loop/tmp\"; python3 examples/tools/build.py 352 --task format",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 45.495,
+      "cpuSeconds": 48.265,
+      "cpuThrottledSeconds": 0.559,
+      "peakMemoryBytes": 138092544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-original-duration-proof-wo.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "9569d92d00819a7d0a65effb564b0f09b0acac5da4692c11f343c769faab81e5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "352-cucumber-duration: task format: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/format/20261121T043118Z-595716fc/result.json",
+          "groups": [
+            "352",
+            "format",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "352-cucumber-duration: running task format (target route)",
+        "352-cucumber-duration: task format: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/format/20261121T043118Z-595716fc/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e4d0c9f6feaa894fa6aae79ede8bf21469e0febfab524a4570f0f2ba58c31ba9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/plan.json",
+      "change": "added",
+      "bytes": 14505,
+      "sha256": "c556e7fa956e72b30881405ee456fa048e6f18b9b2ebeb90fec89bb78a3b5f7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-new-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-new-jdk21.stdout",
+      "change": "added",
+      "bytes": 944,
+      "sha256": "1a2655cafe1a0d5b8154a0f96c2b06e1814c3a7667ae49b6930053d505f05343",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-old-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-old-jdk21.stdout",
+      "change": "added",
+      "bytes": 944,
+      "sha256": "1a2655cafe1a0d5b8154a0f96c2b06e1814c3a7667ae49b6930053d505f05343",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/controls.json",
+      "change": "added",
+      "bytes": 13090,
+      "sha256": "5a10aacd0495cfaffb388d9ed924bcd88ed2a993a0f2d1dd308f228d4ba21cd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/execution.json",
+      "change": "added",
+      "bytes": 875153,
+      "sha256": "f455dc0a64df849df390fe6ba19fad50518c4dd705daf1dbf7b2b842a647f518",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/streams.json",
+      "change": "added",
+      "bytes": 2618,
+      "sha256": "9a10d173c4cf0256f620308e247d970d9d8761790f8bd8718456cdfda3dbc166",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 201,
+      "sha256": "da7b52016d57372b7c09ca86ba5c019b951efe06e665c6af8841f4fa21b58d4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "ea411b559ba255dea2b5ca1a7b6c7ccfb7470d707cb8d0bfb3fee3e3e1f41cca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 906,
+      "sha256": "4a9140cda1001dd057e19b99bcbaaa03841a4c7658ee50af5055f2b1a84edff8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/result.json",
+      "change": "added",
+      "bytes": 14116,
+      "sha256": "79882e940913cea5bc27ffd63bdcac3c5b1759feddc4746373f22d075eba2cc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/executions/20261121T043118Z-595716fc/attempt.json",
+      "change": "added",
+      "bytes": 818268,
+      "sha256": "a9909f1f2c2d3e5cd8c5f7953eace5a90f7293e545d036d1b170a655a3dcff6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/executions/20261121T043118Z-595716fc/checker.json",
+      "change": "added",
+      "bytes": 3086,
+      "sha256": "ea9159a5795e962aee3118691ed34b74e327a01ccee03df479d749554233c24a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/352-cucumber-duration/receipts/format/executions/20261121T043118Z-595716fc/correspondence.json",
+      "change": "added",
+      "bytes": 2437,
+      "sha256": "4e57d446d1c72ca926148bb6270571d326f75074cd21e4a2be9fbfe897ca2912",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:35:41+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/completion.json",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/plan.json",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-new-jdk21.stderr",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-new-jdk21.stdout",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-old-jdk21.stderr",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/control-old-jdk21.stdout",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/controls.json",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/execution.json",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/streams.json",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier-output.txt",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier.json",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier.stderr",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/records/verifier.stdout",
+      "examples/352-cucumber-duration/receipts/format/20261121T043118Z-595716fc/result.json",
+      "examples/352-cucumber-duration/receipts/format/executions/20261121T043118Z-595716fc/attempt.json",
+      "examples/352-cucumber-duration/receipts/format/executions/20261121T043118Z-595716fc/checker.json",
+      "examples/352-cucumber-duration/receipts/format/executions/20261121T043118Z-595716fc/correspondence.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 2309880,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "8e5f43e7c7fe7226eea977e48edeb75d569ec504",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/8e5f43e7c7fe7226eea977e48edeb75d569ec504/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

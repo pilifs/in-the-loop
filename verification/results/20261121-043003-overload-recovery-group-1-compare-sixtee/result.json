@@ -1,0 +1,335 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-043003-overload-recovery-group-1-compare-sixtee",
+  "title": "Overload recovery group 1 compare sixteen original upgrades",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 27.3s, peak 458.2 MiB (estimated 10m00s, 2.0 GiB); 16 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-043003-overload-recovery-group-1-compare-sixtee.json",
+    "sha256": "b56aab753cf4ff2a80e502043b2e4e78606a6ef9166ba5720b72396949a8642d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-043003-overload-recovery-group-1-compare-sixtee",
+      "title": "Overload recovery group 1 compare sixteen original upgrades",
+      "description": "Run each common original overload at its exact JVM parameter types. The attempts share the case deadline. Preserve newly exposed receiver, parameter, dependency and proof diagnostics. Cases: compsuite-i-38, ea-async-27, whatjdk-12, incremental-analysis-28, compsuite-i-1, compsuite-i-70, compsuite-i-10, compsuite-i-85, compsuite-i-9, compsuite-i-4, compsuite-i-62, compsuite-i-94, compsuite-i-81, compsuite-i-39, compsuite-i-29, compsuite-i-36.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "external-upgrade-evaluation"
+      ],
+      "links": {},
+      "expected": "Every upgrade has a report. For an overloaded caller, the report records each prepared common signature and every checker outcome.",
+      "submitted": {
+        "at": "2026-11-21T04:30:03+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "10m",
+        "memoryLimit": "6G",
+        "timeout": "2h"
+      },
+      "steps": [
+        {
+          "name": "Run the exact-overload workflow",
+          "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/overloads/01 --case compsuite-i-38 --case ea-async-27 --case whatjdk-12 --case incremental-analysis-28 --case compsuite-i-1 --case compsuite-i-70 --case compsuite-i-10 --case compsuite-i-85 --case compsuite-i-9 --case compsuite-i-4 --case compsuite-i-62 --case compsuite-i-94 --case compsuite-i-81 --case compsuite-i-39 --case compsuite-i-29 --case compsuite-i-36",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/external-upgrades/corpus-runs/overloads/01"
+      ]
+    }
+  },
+  "sourceCommit": "90060227f35895614dcfbdb7713548b648bb6b6a",
+  "startedAt": "2026-11-21T04:39:20+00:00",
+  "finishedAt": "2026-11-21T04:43:36+00:00",
+  "wallSeconds": 256.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3438935,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 480419840,
+    "wallSeconds": 27.3,
+    "cpuSeconds": 29.0,
+    "memoryOfEstimate": 0.22,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 219.71,
+      "cpuSeconds": 219.987,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2134704128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "deb6f37d8d1d95ddd57a0fbdff94720d95b3ddabe002368dca343faa9aaee4b1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-043003-overload-recovery-group-1-compare-sixtee/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 39s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run the exact-overload workflow",
+      "run": "export TMPDIR=\"$HOME/.cache/in-the-loop/tmp\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --repositories \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/repos.json\" --work \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-engineering/builds\" --maven-cache \"$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/external-upgrades/corpus-runs/overloads/01 --case compsuite-i-38 --case ea-async-27 --case whatjdk-12 --case incremental-analysis-28 --case compsuite-i-1 --case compsuite-i-70 --case compsuite-i-10 --case compsuite-i-85 --case compsuite-i-9 --case compsuite-i-4 --case compsuite-i-62 --case compsuite-i-94 --case compsuite-i-81 --case compsuite-i-39 --case compsuite-i-29 --case compsuite-i-36",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 27.265,
+      "cpuSeconds": 28.98,
+      "cpuThrottledSeconds": 2.713,
+      "peakMemoryBytes": 480419840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-exact-overload-workflo.log",
+        "lines": 16,
+        "bytes": 3288,
+        "sha256": "533285f65a497eec966e0902c1153a9a82cc37788ad6319b313ca4740abeb29f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-38 current open parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "compsuite-i-1 current open convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponse",
+        "compsuite-i-70 current open getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lan",
+        "compsuite-i-10 current open original Maven classpath",
+        "compsuite-i-85 current open original classpath",
+        "compsuite-i-9 current open original Maven classpath",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-62 current open original Maven classpath",
+        "compsuite-i-94 current open original Maven classpath",
+        "compsuite-i-81 current open original Maven classpath",
+        "compsuite-i-39 current open review the recorded exact overloads",
+        "compsuite-i-29 current open runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
+        "compsuite-i-36 current open parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "ea-async-27 current open review the recorded exact overloads",
+        "whatjdk-12 current open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of",
+        "incremental-analysis-28 current open review the recorded exact overloads"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 7720,
+      "sha256": "381b79b8e28b689741af51255aea7af70e33e8e5cc100dd19f04e99be544aed9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-10.json",
+      "change": "added",
+      "bytes": 1461,
+      "sha256": "e57eb299ceaae993a65a8cf4325033d31f806f1a01260561d415fdc79617f774",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 8687,
+      "sha256": "7323f76c3d0bea6d40f0de73f645edbd9336cce512310a26df5631fbf4d2108f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 7524,
+      "sha256": "ca2ebe3b3b4a26f744189a8cfb47edf88f431a5ec17df1feee60994822320f59",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 4790,
+      "sha256": "6ab21f0427572a410d97f7499ea9415e90c3ceaec1a5e1c07db077b3a7b13916",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 13341,
+      "sha256": "c22b008067649c290a6a8f2edac43e46d2340f520f22e989acc3b38b13f38244",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 11198,
+      "sha256": "f157a6553bbc963011e070fb5cb68622d63d8118b81cfd4a91aa5a86b17e801e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 1489,
+      "sha256": "ccb2c62e2e7c5823829e2321c76caf0a6e5d9f3937a7a48d2b3a077381410b1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 9855,
+      "sha256": "339845e735c53f2a30149f6a7c08a99190fb880ca54fd9aa7128e44a9a32ce20",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 1496,
+      "sha256": "0135022a0d7f03b168ae2c85ca58fee8ece4d533473490bd9318fb26ffa90049",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-85.json",
+      "change": "added",
+      "bytes": 6657,
+      "sha256": "542063a5bc6aa702499c4bbdabd6289d8721b041fad2e894f3b8ae6a172d1405",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 1451,
+      "sha256": "f2c7ebcb36580d26321bd06bb6205286f70332a966c8e630695617f6f72574d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 1477,
+      "sha256": "2abe72033cc840136d9bc3361392831b8ee0a0a56c660d4975c1a2679b4f0e70",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/ea-async-27.json",
+      "change": "added",
+      "bytes": 12124,
+      "sha256": "949d1c93bc270e56b1a6f29b1b756753022afc4b7640b057b7c06174b8403b2d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 22183,
+      "sha256": "c2a3c58885de1c4e999675650ad59b81ac051f71edf9bcb904967c68a667e549",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/external-upgrades/corpus-runs/overloads/01/current/whatjdk-12.json",
+      "change": "added",
+      "bytes": 5796,
+      "sha256": "a08eeb8d3cc3503be88dadf298ab69fb6a9e872441ac022be6cf69de03655271",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T04:43:56+00:00",
+    "applied": [
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-1.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-10.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-29.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-36.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-38.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-39.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-4.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-62.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-70.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-81.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-85.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-9.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/compsuite-i-94.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/ea-async-27.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/incremental-analysis-28.json",
+      "verification/external-upgrades/corpus-runs/overloads/01/current/whatjdk-12.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3498044563ab24615aa42468438e8b7bec7d9a76",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3498044563ab24615aa42468438e8b7bec7d9a76/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}
