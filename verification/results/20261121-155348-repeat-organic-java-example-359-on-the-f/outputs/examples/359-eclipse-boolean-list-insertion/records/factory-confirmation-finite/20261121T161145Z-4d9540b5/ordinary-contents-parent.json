@@ -1,0 +1,138 @@
+{
+  "status": "established",
+  "entry": "organic.InsertBits#contents(I)I",
+  "inputs": 3,
+  "differences": 0,
+  "sides": {
+    "parent": {
+      "commit": "8a34cc65bd5449e4f45c9c39e75d7d92ec2717e6",
+      "entry": {
+        "entry": "organic.InsertBits#contents(I)I",
+        "classSha256": "cdb73de25194d5c18944fdc32edbe0bfc81b98278e21f671767fa030262fa64c",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+        "subjectClassSha256": "7cb4a953aff08027483998bb40e6b11ae1aaddcd878b67cd6b311c8f8aca71d1"
+      },
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "61eb265a42c5a186ab435a1d8dc5d9bc35fac20c327ec51094b84009ad3679f7",
+          "role": "adapter"
+        },
+        {
+          "path": "built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+          "sha256": "c628b4efe382d596b0fd41960019640d2b2be6c63690e5ee7cd82de580b88a8b",
+          "role": "original"
+        },
+        {
+          "path": "lib/org/eclipse/collections/eclipse-collections-api/12.0.0-SNAPSHOT/eclipse-collections-api-12.0.0-SNAPSHOT.jar",
+          "sha256": "5a95f8c6b49996fa0dfe81d930ea59ee13dc23b5bedf899988ee0446eafdf3ae",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 942 && code < 945)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.InsertBits.contents(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "53389a348edbb0f17fba3e2b80324e8c471c894755f02ba9a36cfe37f9657ea8",
+      "stdoutSha256": "a3a3cbed92ad458b39f6e7284994b909152995c1ccf77d9d62e90383e46d73eb",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+      ],
+      "interval": [
+        942,
+        944
+      ],
+      "rows": [
+        {
+          "value": 942,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 943,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 944,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.132,
+      "cpuSeconds": 0.2078,
+      "peakRssBytes": 77959168,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "organic.InsertBits#contents(I)I",
+      "adapterSha256": "61eb265a42c5a186ab435a1d8dc5d9bc35fac20c327ec51094b84009ad3679f7",
+      "adapterClassSha256": "cdb73de25194d5c18944fdc32edbe0bfc81b98278e21f671767fa030262fa64c",
+      "subject": {
+        "class": "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList",
+        "method": "addAllAtIndex",
+        "descriptor": "(I[Z)Z",
+        "loadedFrom": "built/eclipse-collections-12.0.0-SNAPSHOT.jar",
+        "classSha256": "7cb4a953aff08027483998bb40e6b11ae1aaddcd878b67cd6b311c8f8aca71d1",
+        "adapterCalls": [
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#<init>([Z)V",
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#addAllAtIndex(I[Z)Z",
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#get(I)Z",
+          "org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList#size()I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The three companion indices preserve their expected exact receiver state. Its original receiver and direct outcome are indexed in controls/table.json.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 2865,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0128,
+  "controlSeconds": 0.0663,
+  "wallSeconds": 0.7861,
+  "task": "ordinary-contents-parent",
+  "sourceClaim": "90632a187bad08e7",
+  "inputsKey": "de8bf879b4adc348f368b397bb86bfd8b89ac97d809218b0a989d82ca0da4b9e",
+  "revisions": [
+    "parent"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "parent": "dd0b08506291c6e2685ce29d81a3c5958b521287efff4d003d78fdc0b7946b4e"
+  }
+}

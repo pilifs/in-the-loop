@@ -4656,6 +4656,12 @@ change `pykmsttxywpy` · [log `10dd462d8e85`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 5 job(s); 1 declared or produced none; 3 kept under outputs/, not applied (the job didn't pass). 20261121-155347-prove-the-original-avro-factory-and-repl: passed: 5 passed step(s) in 2m07s, peak 1.3 GiB (estimated 5m00s, 3.0 GiB); 325 output file(s) changed Applied 325 output(s). 20261121-155347-repeat-organic-java-example-354-on-the-f: failed: 1 failed, 3 passed step(s) in 2m58s, peak 983.5 MiB (estimated 10m00s, 3.0 GiB); 3222 output file(s) changed 20261121-155347-repeat-organic-java-example-355-on-the-f: failed: 1 failed, 1 passed step(s) in 2m10s, peak 573.4 MiB (estimated 5m00s, 3.0 GiB); 177 output file(s) changed 20261121-155348-repeat-organic-java-example-360-on-the-f: failed: 1 failed, 4 passed step(s) in 59.1s, peak 185.6 MiB (estimated 5m00s, 3.0 GiB); 407 output file(s) changed 20261121-155808-check-proof-reuse-after-adding-utf-16-tr: passed: 1 passed step(s) in 4m20s, peak 2.5 GiB (estimated 5m00s, 3.0 GiB); signals: cargo:tests×1 Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `mnrnmqvmmrnu` · [log `10dd462d8e85`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/10dd462d8e85dee0a9441f0b3c67e2659d0be82cb65412632bfb34672ca287bf.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261121-155348-repeat-organic-java-example-359-on-the-f: failed: 1 failed, 3 passed step(s) in 5m59s, peak 842.9 MiB (estimated 10m00s, 3.0 GiB); 5896 output file(s) changed Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/10dd462d8e85dee0a9441f0b3c67e2659d0be82cb65412632bfb34672ca287bf.jsonl.gz) has every step in between: reasoning, tool calls and their results.
