@@ -160,17 +160,53 @@ fn each_version_is_given_its_own_copy_of_an_array() {
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
 }
 
-/// What the pair's property does not take is refused by name: an instance method, a method that declares checked
-/// exceptions (JBMC's refusal is a unit test of `pairing::refusal`).
+/// A missing receiver stays open. A declared checked exception can be compared through the paired harness.
 #[test]
 fn what_a_property_of_the_pair_does_not_take_is_refused_by_name() {
     jvmcontract::tool_tier!();
     let f = fixture();
-    for (target, why) in [("app.Entry#instance", "which takes a static method"), ("app.Entry#checked", "declares checked exceptions")] {
-        let o = equivalence::run(&options(&f.entries.0, &f.entries.1, target, &format!("refused-{}", &target[10..]))).unwrap();
-        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-        assert!(o.output.contains(why), "{}", o.output);
+    let instance = equivalence::run(&options(&f.entries.0, &f.entries.1, "app.Entry#instance", "refused-instance")).unwrap();
+    assert_eq!(instance.verdict, Verdict::Unverifiable, "{}", instance.output);
+    assert!(instance.output.contains("which takes a static method"), "{}", instance.output);
+    let declared = equivalence::run(&options(&f.entries.0, &f.entries.1, "app.Entry#checked", "declared-checked")).unwrap();
+    assert_eq!(declared.verdict, Verdict::Verified, "{}", declared.output);
+}
+
+/// A checked exception participates in the actual outcome, including a different concrete subclass.
+#[test]
+fn a_declared_checked_exception_is_compared_on_its_throwing_and_returning_paths() {
+    jvmcontract::tool_tier!();
+    let unit = |error: &str| format!(r#"package app;
+public class Checked {{
+    public static int read(int n) throws java.io.IOException {{
+        if (n == 0) throw new {error}();
+        return n;
+    }}
+    public static void main(String[] args) throws java.io.IOException {{
+        try {{ read(0); }} catch (java.io.IOException e) {{ System.out.println(e.getClass().getName()); }}
+        System.out.println(read(1));
+    }}
+}}"#);
+    let before = compile("checked-old", &[("app/Checked.java", unit("java.io.IOException"))], &[]);
+    let after = compile("checked-new", &[("app/Checked.java", unit("java.io.EOFException"))], &[]);
+    let mut pair = equivalence::Options::new(&before, &after, "app.Checked#read");
+    pair.engine = Engine::Native;
+    pair.jbmc = NO_JBMC.into();
+    pair.assume = Some("n >= 0 && n <= 1".into());
+    pair.shared_callees = false;
+    pair.work = Some(tmp("checked-exception-comparison"));
+    let changed = equivalence::run(&pair).unwrap();
+    assert_eq!(changed.verdict, Verdict::Violation, "{}", changed.output);
+    assert!(changed.output.contains("agree(n=0)"), "{}", changed.output);
+    for (classes, exception) in [(&before, "java.io.IOException"), (&after, "java.io.EOFException")] {
+        let replay = Command::new("java").arg("-cp").arg(classes).arg("app.Checked").output().unwrap();
+        assert!(replay.status.success());
+        assert_eq!(String::from_utf8(replay.stdout).unwrap(), format!("{exception}\n1\n"));
     }
+    pair.assume = Some("n == 1".into());
+    pair.work = Some(tmp("checked-return-comparison"));
+    let preserved = equivalence::run(&pair).unwrap();
+    assert_eq!(preserved.verdict, Verdict::Verified, "{}", preserved.output);
 }
 
 /// A library that asks about its surroundings by name: whether the class path has `lib.Extra`, its own class's
