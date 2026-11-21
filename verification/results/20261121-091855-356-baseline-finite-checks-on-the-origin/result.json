@@ -1,0 +1,230 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-091855-356-baseline-finite-checks-on-the-origin",
+  "title": "356 baseline finite checks on the original gson public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.5s, peak 138.2 MiB (estimated 5m00s, 3.0 GiB); 9 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-091855-356-baseline-finite-checks-on-the-origin.json",
+    "sha256": "ea06348c14b9381d0062541f9b0b8c0e9f059e1b8a9136ba63ec14ffc8a40f59",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-091855-356-baseline-finite-checks-on-the-origin",
+      "title": "356 baseline finite checks on the original gson public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/google/gson#3034 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:finite"
+      ],
+      "links": {
+        "examples": [
+          "356"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:18:55+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 356 --route finite --stage baseline --seconds 180",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/356-gson-overflowing-number/records/baseline-finite"
+      ]
+    }
+  },
+  "sourceCommit": "46dbef9d6deb46a5777f3285baa30c01e550858c",
+  "startedAt": "2026-11-21T09:27:15+00:00",
+  "finishedAt": "2026-11-21T09:27:46+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3588938,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 144863232,
+    "wallSeconds": 17.5,
+    "cpuSeconds": 26.7,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 356 --route finite --stage baseline --seconds 180",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 17.452,
+      "cpuSeconds": 26.726,
+      "cpuThrottledSeconds": 0.825,
+      "peakMemoryBytes": 144863232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 546,
+        "sha256": "29460c80d7f4dd986ada00173ce21107111d0ee20ee6088b8cdd8819c2633a24",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"356\", \"route\": \"finite\", \"stage\": \"baseline\", \"workflowExit\": 0, \"seconds\": 17.05, \"checkerSeconds\": 180, \"tasks\": [\"token-parent\", \"token-fix\", \"lexeme-parent\", \"lexeme-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"5e41cd71ab872a626179c02914aaae9f812c2c8c\", \"checkerSha25"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/batch.json",
+      "change": "added",
+      "bytes": 3673,
+      "sha256": "d953a615ba137d73dbd4dab03c924e9fa3d384550f134704059e07c8e69ad696",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/controls-fix.json",
+      "change": "added",
+      "bytes": 5285,
+      "sha256": "5dc1bbb0e4acacfe953f31ed9c3071a4fe9400c6e667affaa48a72339ff568f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/controls-parent.json",
+      "change": "added",
+      "bytes": 5305,
+      "sha256": "9d423c17b062dc254c6d7484c6f61b545924987fba7d622b26407b6544b2ac78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/lexeme-fix.json",
+      "change": "added",
+      "bytes": 7025,
+      "sha256": "04870fef1f681d1f22bc224f619a6568a72c579219097a6da30fef8fd25fd443",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/lexeme-parent.json",
+      "change": "added",
+      "bytes": 9083,
+      "sha256": "d056b2b6a1653de33195759225ef110cd1335fea81190d7805bf997f63d38737",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/token-fix.json",
+      "change": "added",
+      "bytes": 7020,
+      "sha256": "0805e6d668638fab89a2d5fe2992f181915a2df7bcf810d926fd1c8c085dcae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/token-parent.json",
+      "change": "added",
+      "bytes": 9074,
+      "sha256": "24d7824823f6eab75ac17ef4a5cfa9a03b5ed5eb275dd8654925421fa8419b24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/run.json",
+      "change": "added",
+      "bytes": 608,
+      "sha256": "9ba99a886fd27cd6d9dca8711e40fcd8a7f42678e3738c194d29c78629475b07",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/356-gson-overflowing-number/records/baseline-finite/workflow.log",
+      "change": "added",
+      "bytes": 241,
+      "sha256": "12b7a199eba86073b41113939e06482ba333d184cbdfc34ae90b8a2b775fbff0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T09:28:00+00:00",
+    "applied": [
+      "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/batch.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/controls-fix.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/controls-parent.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/lexeme-fix.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/lexeme-parent.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/token-fix.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/20261121T092729Z-e0295533/token-parent.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/run.json",
+      "examples/356-gson-overflowing-number/records/baseline-finite/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
