@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T19:49:16.181Z",
-  "duration_seconds": 10314,
+  "ended": "2026-11-21T19:50:31.830Z",
+  "duration_seconds": 10389,
   "stats": {
     "turns": 6,
-    "api_calls": 493,
-    "tool_calls": 565,
+    "api_calls": 499,
+    "tool_calls": 571,
     "tool_errors": 12,
     "compactions": 2,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 986,
-      "output_tokens": 699828,
-      "cache_read_input_tokens": 148622882,
-      "cache_creation_input_tokens": 1406040
+      "input_tokens": 998,
+      "output_tokens": 705766,
+      "cache_read_input_tokens": 150775193,
+      "cache_creation_input_tokens": 1414935
     }
   },
   "tools": {
-    "Bash": 472,
+    "Bash": 478,
     "Read": 44,
     "Edit": 32,
     "Write": 17
@@ -88,24 +88,24 @@
     {
       "index": 2,
       "started": "2026-11-21T19:12:09.670Z",
-      "ended": "2026-11-21T19:49:16.181Z",
+      "ended": "2026-11-21T19:50:31.830Z",
       "turns": 1,
-      "api_calls": 192,
+      "api_calls": 198,
       "usage": {
-        "input_tokens": 384,
-        "output_tokens": 146940,
-        "cache_read_input_tokens": 41294573,
-        "cache_creation_input_tokens": 341384
+        "input_tokens": 396,
+        "output_tokens": 152878,
+        "cache_read_input_tokens": 43446884,
+        "cache_creation_input_tokens": 350279
       },
-      "peak_context_tokens": 356289
+      "peak_context_tokens": 365184
     }
   ],
   "log": {
-    "sha256": "cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d",
-    "bytes": 12017750,
-    "lines": 4282,
-    "gzip_bytes": 1909506,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d.jsonl.gz"
+    "sha256": "dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e",
+    "bytes": 12112065,
+    "lines": 4331,
+    "gzip_bytes": 1920308,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -236,6 +236,14 @@
       "summary": "Keep the verification results index by day for results kept by day",
       "body": "The brief's 'partition the result index': verification/results/index.json lists the results kept flat and names, under shards, each day that has results of its own; such a day has its own index.json with the same lines for its results. So once new jobs go by day the first file stops growing, and is the complete index of everything collected before the switch; a day's index is rewritten only by that day's collects. With no sharded result, as today, the file is byte for byte what the writer produced before (checked on the real 986 results: identical, 1,158,583 bytes).",
       "log_sha256": "cab8a8886cd012ad5489f2968644439f6875768132845bb2599fa7d2cab1a48d"
+    },
+    {
+      "change_id": "vlmlnqvukxummxomvsnromzonsswtruu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue example 345's selector route again, requiring the built checker (verification pending)",
+      "body": "Job 20261121-195020-345-native-selectors-with-the-built-chec replaces 20261121-194629-345-native-selectors-again-the-run-packs, whose pass shows nothing: I had not declared that the job requires jvmcontract, so its run ended in 0.4 s with 'no built native checker', and its three checks accepted that (an exit of 1 is also what a real run with refuted claims ends with, and the newest record cited by the claim history was an old one). The new job requires java, javac and jvmcontract, and its first step fails unless the run left a record newer than the newest the commit holds, with the page task's result in it; the second fails unless that record holds a pack and no loose per-case folder; the third fails unless the claim history cites that record and reports no case missing, altered or unreadable.\n\nThe results page names the first job's pass for what it is. The packing at the end of a selector run stays unshown by a real run of the checker until this job is in.",
+      "log_sha256": "dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e"
     }
   ],
   "logs": {
@@ -315,6 +323,12 @@
       "bytes": 12017750,
       "lines": 4282,
       "gzip_bytes": 1909506,
+      "url": null
+    },
+    "dfb2ee0284896d923cf8aa009b8df678ed243669d8b0bfd92d962aeb087caa5e": {
+      "bytes": 12112065,
+      "lines": 4331,
+      "gzip_bytes": 1920308,
       "url": null
     },
     "f03571c4e241b27db07d75528271dc49ccc7d7e91450de122e29391b903769a5": {
