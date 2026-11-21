@@ -99,7 +99,14 @@ def run_side(case, side, repo, args, out):
                 nearest=next((p for p in paths[0].parents if (p/"pom.xml").is_file() and p.is_relative_to(project)),None)
                 if nearest:module=nearest.relative_to(project)
         reactor = ["-pl",module.as_posix(),"-am"] if module!=Path(".") and (project/"pom.xml").is_file() else []
-        goals=[*reactor,"verify"]
+        if args.focused:
+            if not named:
+                raise ValueError("a focused historical run needs a registered developer testcase")
+            goals = [*reactor, "-Dtest="+"#".join(named), "-DfailIfNoTests=false",
+                     "-Dsurefire.failIfNoSpecifiedTests=false", "test"]
+            record["selectedLifecycle"] = "original Maven test lifecycle focused on the registered developer testcase"
+        else:
+            goals = [*reactor, "verify"]
         record.update(module=module.as_posix(),goals=goals,jdkReleaseSha256=digest(jdk/"release"),
                       mavenHome=maven.name,network="isolated client and serialized Maven Central mirror")
         out.mkdir(parents=True)
@@ -112,6 +119,8 @@ def run_side(case, side, repo, args, out):
                 status=124
             record["resolver"]=dict(counters)
         text=log.read_text(errors="replace")
+        tail = [line for line in text.splitlines() if not re.match(r"(Progress |Download(?:ed|ing) (?:from|at))", line)]
+        (out/"maven-tail.txt").write_text("\n".join(tail[-45:])+"\n")
         reports=fresh_reports(project,named,out)
         record.update(exit=status,seconds=round(time.monotonic()-start,2),logSha256=digest(log),freshReports=reports)
         if status or not reports["tests"]:
@@ -121,6 +130,8 @@ def run_side(case, side, repo, args, out):
             record["namedTestExecuted"]=any(r["outcome"]!="skipped" for r in reports["named"])
         record["disposition"]=("timed out" if status==124 else "failed before tests" if status and not reports["tests"]
                                else "tests or lifecycle failed" if status else "zero tests" if not reports["tests"] else "passed")
+        if args.focused and status == 0 and not record.get("namedTestExecuted"):
+            record["disposition"] = "named testcase not executed"
         (out/"summary.json").write_text(json.dumps(record,indent=2)+"\n")
     return record
 
@@ -136,6 +147,7 @@ def main():
     ap.add_argument("--jdk21",type=Path,default=home/".sdkman/candidates/java/21.0.13.0+9-tem")
     ap.add_argument("--jdk8",type=Path,default=home/".sdkman/candidates/java/8.0.512.0+9-tem")
     ap.add_argument("--seconds",type=int,default=600)
+    ap.add_argument("--focused",action="store_true")
     a=ap.parse_args()
     repos=read(a.repositories);cases={c["id"]:c for c in read(HERE.parent/"corpus.json")["cases"]}
     for cid in a.case:

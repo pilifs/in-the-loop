@@ -19,6 +19,7 @@ import tarfile
 import tempfile
 import time
 import zipfile
+import xml.etree.ElementTree as ET
 from types import SimpleNamespace
 
 from pin import OPERATOR, ROOT, digest
@@ -50,11 +51,35 @@ def dependency_file(case, side):
     return Path(*group.split("."), artifact, version, f"{artifact}-{version}.jar")
 
 
+def resolved_operand(repository, case, side):
+    """Follow the original published Maven relocation POMs to the actual runtime operand."""
+    group, artifact = case["dependency"].split(":")
+    version = case["versions"][side]
+    seen, relocations = set(), []
+    while (group, artifact, version) not in seen:
+        seen.add((group, artifact, version))
+        if any(not re.fullmatch(r"[A-Za-z0-9_+.-]+", s) or ".." in s or s.startswith(".")
+               for s in (group, artifact, version)):
+            raise ValueError("Maven relocation needs resolved, literal coordinates")
+        base = repository / Path(*group.split("."), artifact, version, f"{artifact}-{version}")
+        jar, pom = Path(str(base)+".jar"), Path(str(base)+".pom")
+        if not pom.is_file():
+            return jar, relocations
+        element = ET.parse(pom).getroot().find("{*}distributionManagement/{*}relocation")
+        if element is None:
+            return jar, relocations
+        next_gav = tuple((element.findtext("{*}"+tag) or old).strip()
+                         for tag,old in zip(("groupId","artifactId","version"), (group,artifact,version)))
+        relocations.append({"from":":".join((group,artifact,version)), "to":":".join(next_gav), "pomSha256":digest(pom)})
+        group, artifact, version = next_gav
+    raise ValueError("cyclic Maven dependency relocation")
+
+
 def failure(output):
     clean = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", output)
     lines = [line.strip() for line in clean.splitlines() if line.strip()]
     lines = [line for line in lines if line not in ("[ERROR]", "[WARNING]", "[INFO]")
-             and not re.search(r"Re-run Maven|full stack trace|For more information|Help [0-9]|Picked up JAVA_TOOL_OPTIONS", line)]
+             and not re.search(r"Re-run Maven|full stack trace|For more information|Picked up JAVA_TOOL_OPTIONS", line)]
     causes = [line for line in lines if re.search(r"non-resolvable|could not|cannot|not found|failed to|error:|exception|unsupported|unverifiable|fatal", line, re.I)]
     return (causes or lines or ["no diagnostic was emitted"])[:5]
 
@@ -141,7 +166,9 @@ def prepare_side(case, side, repo, args, jdk, out):
             return dict(record, stage="original Maven classpath", exit=code, diagnostic=failure(log))
         deps = [Path(s) for s in cp_file.read_text().strip().split(os.pathsep) if s]
         runtime_deps = [Path(s) for s in runtime_cp.read_text().strip().split(os.pathsep) if s]
-        expected = args.maven_cache / dependency_file(case, side)
+        expected, relocations = resolved_operand(args.maven_cache, case, side)
+        if relocations:
+            record["dependencyRelocations"] = relocations
         if expected not in runtime_deps:
             return dict(record, stage="original classpath", diagnostic=["The selected module did not resolve the changed coordinate on its runtime classpath."])
         source = src / case["source"]

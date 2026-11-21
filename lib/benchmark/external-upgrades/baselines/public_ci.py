@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -53,14 +54,14 @@ def guest(arguments):
     settings.write_text(f"<settings><localRepository>/work/repository</localRepository>"
                         f"<mirrors><mirror><id>isolated-central</id><mirrorOf>*</mirrorOf>"
                         f"<url>http://127.0.0.1:{port}/</url></mirror></mirrors></settings>\n")
-    if arguments == ["--stock-compcheck", "c15-2"]:
+    if len(arguments) == 2 and arguments[0] == "--stock-compcheck" and re.fullmatch(r"c[0-9]+-[0-9]+", arguments[1]):
         default = Path("/work/home/.m2")
         default.mkdir(exist_ok=True)
         shutil.copyfile(settings, default / "settings.xml")
         # The stock tool locates JARs under ~/.m2/repository, and Maven writes into /work/repository.
         (default / "repository").symlink_to("/work/repository", target_is_directory=True)
         os.environ["MAVEN_OPTS"] += " -Dmaven.artifact.threads=1 -Daether.connector.basic.threads=1 -Daether.metadataResolver.threads=1"
-        return subprocess.call(["python3", "main.py", "--check", "--id", "c15-2"], cwd="/project/compcheck")
+        return subprocess.call(["python3", "main.py", "--check", "--id", arguments[1]], cwd="/project/compcheck")
     if arguments[:1] == ["--stock-compsuite"]:
         default = Path("/work/home/.m2")
         default.mkdir(exist_ok=True)

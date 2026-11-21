@@ -32,7 +32,7 @@ def artifact_path(request):
         return path if len(path.parts) >= 2 else None
     if len(path.parts) < 4 or not base.startswith(path.parts[-3] + "-"):
         return None
-    return path if base.endswith((".pom", ".jar", ".xml", ".zip", ".war", ".module", ".tar.gz")) else None
+    return path if base.endswith((".pom", ".jar", ".xml", ".zip", ".war", ".module", ".tar.gz", ".signature")) else None
 
 
 class QuietHandler(BaseHTTPRequestHandler):
