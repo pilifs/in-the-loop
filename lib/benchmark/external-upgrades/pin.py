@@ -91,6 +91,8 @@ def snapshot(args, revision, *, historical=False):
         archive_inputs = ("baselines/restore_archived.py", "baselines/archived-releases.json")
         if output("git", "ls-tree", "--name-only", revision, "--", prefix + archive_inputs[0]):
             inputs += archive_inputs
+        if output("git", "ls-tree", "--name-only", revision, "--", prefix + "baselines/jdbc_selection.py"):
+            inputs += ("baselines/jdbc_selection.py",)
         lock["engineeringInputs"] = {path: output("git", "rev-parse", f"{revision}:{prefix}{path}")
                                      for path in inputs}
     return lock

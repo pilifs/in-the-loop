@@ -1,0 +1,374 @@
+{
+  "entry": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
+  "observer": "The original VFS FTP client classifies a file, a directory and an absent path on a real loopback FTP server.",
+  "domainBasis": "The server root contains one actual file and one actual directory. The Apache FTPServer and MINA versions come from the original project test environment and are held fixed on both sides. Each observation has its own temporary root and listener. The FTPServer parent POM specifies SLF4J API 1.7.36. It is supplied on both sides.",
+  "cases": [
+    {
+      "args": [
+        "entry.dat"
+      ],
+      "expected": {
+        "return": "file"
+      }
+    },
+    {
+      "args": [
+        "folder"
+      ],
+      "expected": {
+        "return": "folder"
+      }
+    },
+    {
+      "args": [
+        "absent"
+      ],
+      "expected": {
+        "return": "missing"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "4ea04f15b63a8780eaf0579017f7ae0de05e47676e90654504bfe1047e8e2d33",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "763bd3db216f9c24f6471a2499ab64b3322814f5fa5a015c86d0c74d2bd962a0",
+  "lookupSha256": "30971c39575b8efb44b21922c700ac183160fcfa8c8dfd090f17e7f427d96ae0",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
+      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
+      "callerClassSha256": "56e3fe517109be83901bf58f67aa716564d59d5b71484f4dd531ba8979561462",
+      "classpath": [
+        "bfd7c51763d0d156a80183e0e681bb5ccee4bac899450b507a285ab93b4516b7",
+        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
+        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
+        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
+        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
+        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
+        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
+        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
+        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
+        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
+        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
+        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
+        "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec",
+        "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07",
+        "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62",
+        "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
+      ],
+      "dependency": "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 361,
+      "resources": 6,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "f47ef83b1923fc5b052d13c6e95f65f7bf259daea6f596d03a2e01661d78c543",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "file"
+            },
+            {
+              "return": "file"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            },
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "folder"
+            },
+            {
+              "return": "folder"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            },
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "missing"
+            },
+            {
+              "return": "missing"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            },
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.net.DefaultSocketFactory",
+        "org.apache.commons.net.MalformedServerReplyException",
+        "org.apache.commons.net.ProtocolCommandListener",
+        "org.apache.commons.net.ProtocolCommandSupport",
+        "org.apache.commons.net.SocketClient",
+        "org.apache.commons.net.ftp.Configurable",
+        "org.apache.commons.net.ftp.DeflateSocket",
+        "org.apache.commons.net.ftp.DelegateSocket",
+        "org.apache.commons.net.ftp.DurationUtils",
+        "org.apache.commons.net.ftp.FTP",
+        "org.apache.commons.net.ftp.FTPClient",
+        "org.apache.commons.net.ftp.FTPClient$HostnameResolver",
+        "org.apache.commons.net.ftp.FTPClient$NatServerResolverImpl",
+        "org.apache.commons.net.ftp.FTPClient$PropertiesSingleton",
+        "org.apache.commons.net.ftp.FTPClientConfig",
+        "org.apache.commons.net.ftp.FTPCmd",
+        "org.apache.commons.net.ftp.FTPConnectionClosedException",
+        "org.apache.commons.net.ftp.FTPFile",
+        "org.apache.commons.net.ftp.FTPFileEntryParser",
+        "org.apache.commons.net.ftp.FTPFileEntryParserImpl",
+        "org.apache.commons.net.ftp.FTPFileFilter",
+        "org.apache.commons.net.ftp.FTPFileFilters",
+        "org.apache.commons.net.ftp.FTPListParseEngine",
+        "org.apache.commons.net.ftp.FTPReply",
+        "org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl",
+        "org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory",
+        "org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory",
+        "org.apache.commons.net.ftp.parser.FTPTimestampParser",
+        "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+        "org.apache.commons.net.ftp.parser.ParserInitializationException",
+        "org.apache.commons.net.ftp.parser.RegexFTPFileEntryParserImpl",
+        "org.apache.commons.net.ftp.parser.UnixFTPEntryParser",
+        "org.apache.commons.net.io.CRLFLineReader",
+        "org.apache.commons.net.io.CopyStreamListener",
+        "org.apache.commons.net.io.FromNetASCIIInputStream",
+        "org.apache.commons.net.io.SocketInputStream",
+        "org.apache.commons.net.io.SocketOutputStream",
+        "org.apache.commons.net.io.ToNetASCIIOutputStream",
+        "org.apache.commons.net.util.ListenerList"
+      ]
+    },
+    "new": {
+      "commit": "55c96cfd2bdabe455058826ad86788f120b1425d",
+      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
+      "callerClassSha256": "56e3fe517109be83901bf58f67aa716564d59d5b71484f4dd531ba8979561462",
+      "classpath": [
+        "bfd7c51763d0d156a80183e0e681bb5ccee4bac899450b507a285ab93b4516b7",
+        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
+        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
+        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
+        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
+        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
+        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
+        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
+        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
+        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
+        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
+        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
+        "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec",
+        "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07",
+        "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62",
+        "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
+      ],
+      "dependency": "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 361,
+      "resources": 6,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "f47ef83b1923fc5b052d13c6e95f65f7bf259daea6f596d03a2e01661d78c543",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "file"
+            },
+            {
+              "return": "file"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            },
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "folder"
+            },
+            {
+              "return": "folder"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            },
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "missing"
+            },
+            {
+              "return": "missing"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            },
+            {
+              "observerCodeIndex": 279,
+              "dispatchedTo": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.net.DefaultSocketFactory",
+        "org.apache.commons.net.MalformedServerReplyException",
+        "org.apache.commons.net.ProtocolCommandListener",
+        "org.apache.commons.net.ProtocolCommandSupport",
+        "org.apache.commons.net.SocketClient",
+        "org.apache.commons.net.ftp.Configurable",
+        "org.apache.commons.net.ftp.DeflateSocket",
+        "org.apache.commons.net.ftp.DelegateSocket",
+        "org.apache.commons.net.ftp.DurationUtils",
+        "org.apache.commons.net.ftp.FTP",
+        "org.apache.commons.net.ftp.FTPClient",
+        "org.apache.commons.net.ftp.FTPClient$HostnameResolver",
+        "org.apache.commons.net.ftp.FTPClient$NatServerResolverImpl",
+        "org.apache.commons.net.ftp.FTPClient$PropertiesSingleton",
+        "org.apache.commons.net.ftp.FTPClientConfig",
+        "org.apache.commons.net.ftp.FTPCmd",
+        "org.apache.commons.net.ftp.FTPConnectionClosedException",
+        "org.apache.commons.net.ftp.FTPFile",
+        "org.apache.commons.net.ftp.FTPFileEntryParser",
+        "org.apache.commons.net.ftp.FTPFileEntryParserImpl",
+        "org.apache.commons.net.ftp.FTPFileFilter",
+        "org.apache.commons.net.ftp.FTPFileFilters",
+        "org.apache.commons.net.ftp.FTPListParseEngine",
+        "org.apache.commons.net.ftp.FTPReply",
+        "org.apache.commons.net.ftp.parser.ConfigurableFTPFileEntryParserImpl",
+        "org.apache.commons.net.ftp.parser.DefaultFTPFileEntryParserFactory",
+        "org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory",
+        "org.apache.commons.net.ftp.parser.FTPTimestampParser",
+        "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+        "org.apache.commons.net.ftp.parser.ParserInitializationException",
+        "org.apache.commons.net.ftp.parser.RegexFTPFileEntryParserImpl",
+        "org.apache.commons.net.ftp.parser.UnixFTPEntryParser",
+        "org.apache.commons.net.io.CRLFLineReader",
+        "org.apache.commons.net.io.CopyStreamListener",
+        "org.apache.commons.net.io.FromNetASCIIInputStream",
+        "org.apache.commons.net.io.SocketInputStream",
+        "org.apache.commons.net.io.SocketOutputStream",
+        "org.apache.commons.net.io.ToNetASCIIOutputStream",
+        "org.apache.commons.net.util.ListenerList"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [
+    {
+      "mavenPath": "org/apache/ftpserver/ftpserver-core/1.2.1/ftpserver-core-1.2.1.jar",
+      "sha256": "18279abb21abd74e10bb60d5ac6fa044044cc40f1b34d62418e906f50d4212ec"
+    },
+    {
+      "mavenPath": "org/apache/ftpserver/ftplet-api/1.2.1/ftplet-api-1.2.1.jar",
+      "sha256": "36e47834dfa4225448aaaa5460b304f26e99e837c4a80ef5b41d090735be9b07"
+    },
+    {
+      "mavenPath": "org/apache/mina/mina-core/2.2.5/mina-core-2.2.5.jar",
+      "sha256": "b75036dc5102d3aad419e74cc7c0c2f573dded48b8c97c6b070d5daed1ed0c62"
+    },
+    {
+      "mavenPath": "org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
+      "sha256": "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0"
+    }
+  ],
+  "observerInvocation": {
+    "declaration": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
+    "codeIndices": [
+      279
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "b152a2d98466a1ede5c9d7a33ab9d60b78ccc63e944f5906b6106e104d0e65f3",
+    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+    "UpgradeTrace": "1c44f80f45191364933b96d932494bb88b3b1fd469de9e4d34ac155f5fb35266",
+    "org/apache/commons/vfs2/provider/ftp/UpgradeProbe": "49b259f48e5ade10907dd4ac4fc96972ade025016dbbe5f42933126a30256edb"
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 12.882,
+  "specSha256": "583609b96f9eaf85d3c4ec59877a5ac8ca50a9f96b906cb49e31e2389882727d"
+}

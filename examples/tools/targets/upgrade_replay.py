@@ -20,7 +20,7 @@ import tempfile
 import time
 from urllib.parse import unquote, urlsplit
 
-from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_linkage
+from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_jdbc, upgrade_linkage
 
 
 LAUNCHER = Path(__file__).with_name("java") / "UpgradeObservation.java"
@@ -35,8 +35,7 @@ def sha(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def check_input(path, entry, dependency):
-    doc = json.loads(path.read_text())
+def checked_classpath(path, doc, dependency):
     files = []
     for item in doc["classpath"]:
         jar = (path.parent / item["file"]).resolve()
@@ -46,6 +45,12 @@ def check_input(path, entry, dependency):
     hashes = [row["sha256"] for row in doc["classpath"]]
     if not files or dependency not in hashes:
         raise ValueError("upgraded artifact missing from the ordered classpath")
+    return files, files[hashes.index(dependency)], hashes
+
+
+def check_input(path, entry, dependency):
+    doc = json.loads(path.read_text())
+    files, operand, hashes = checked_classpath(path, doc, dependency)
     owner, method, descriptor = runtime_jar.parse_target(entry)
     data = runtime_jar.read_class(files[0], runtime_jar.internal(owner))
     if not data or (method, descriptor) not in runtime_jar.methods(data):
@@ -64,7 +69,7 @@ def check_input(path, entry, dependency):
                 or doc.get("operandScope") != "runtime" or not doc.get("modulePomSha256")):
             raise ValueError("framework fixtures must follow the original production runtime and operand")
         binding["frameworkFixtures"] = fixture
-    return files, files[hashes.index(dependency)], binding
+    return files, operand, binding
 
 
 def class_origins(text):
@@ -86,6 +91,14 @@ def typed_outcome(records):
     if kind == "throw" and value:
         return {"throws": value}
     raise ValueError("unknown observation record")
+
+
+def exception_types(escaping, causes):
+    # Frameworks throw ClassNotFoundException while scanning optional components. The
+    # fresh class lookups already check that cause without suspending every class load.
+    if causes and causes[-1] not in (escaping, "java.lang.ClassNotFoundException"):
+        return escaping + "," + causes[-1]
+    return escaping
 
 
 def parse_output(text, caller, original, dependency, observation_text=None, *, escape=None):
@@ -134,6 +147,9 @@ def bound_throw_stack(encoded, loaded, files, artifact_hashes, dependency, *, in
             continue
         if fields[0] == "escape":
             events[-1]["escapingMember"] = fields[1]
+            continue
+        if fields[0] == "runtimeLocation":
+            events[-1]["runtimeThrowLocation"] = {"entry": fields[1], "codeIndex": int(fields[2]), "sourceLine": int(fields[3])}
             continue
         if fields[0] == "methodBytes":
             if "throwLocation" in events[-1]:
@@ -191,12 +207,11 @@ def compare_before_entry(sides, domain):
             root = observed[0].get("rootThrow")
             binding = sides["new"]
             runtime_count = binding.get("frameworkFixtures", {}).get("runtimeCount", len(binding["classpath"]))
-            if root and root["observerCodeIndex"] is not None and binding.get("operandScope", "runtime") == "runtime":
-                for frame in root["frames"]:
-                    if (0 < frame["classpathIndex"] < runtime_count and frame["jarSha256"] not in sides["old"]["classpath"]):
-                        result["changedRuntimeCause"] = {"type": observed[0]["causes"][-1], "frame": frame,
-                                                         "observerCodeIndex": root["observerCodeIndex"]}
-                        break
+            frame = root.get("throwLocation") if root else None
+            if (frame and root["observerCodeIndex"] is not None and binding.get("operandScope", "runtime") == "runtime"
+                    and 0 < frame["classpathIndex"] < runtime_count and frame["jarSha256"] not in sides["old"]["classpath"]):
+                result["changedRuntimeCause"] = {"type": observed[0]["causes"][-1], "frame": frame,
+                                                 "observerCodeIndex": root["observerCodeIndex"]}
         comparisons.append(result)
     return comparisons
 
@@ -366,8 +381,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     report["stoppedAt"] = {"side": side, "input": index, "repetition": trial+1}
                     previous = early or trials
                     trace_exception = previous[0].get("throws", "") if previous else ""
-                    if early and len(early[0]["causes"]) > 1:
-                        trace_exception += "," + early[0]["causes"][-1]
+                    if early:
+                        trace_exception = exception_types(trace_exception, early[0]["causes"])
                     child_output, marks, observation_text = run(run_dir, trace_exception)
                     detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
@@ -384,7 +399,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                             run_dir = temp / f"{side}-{index}-{trial}-throw"
                             cause_names = [line[len("UPGRADE-CAUSE "):] for line in observation_text.splitlines()
                                            if line.startswith("UPGRADE-CAUSE ")] or [outcome["throws"]]
-                            child_output, marks, observation_text = run(run_dir, ",".join(dict.fromkeys([outcome["throws"], cause_names[-1]])))
+                            child_output, marks, observation_text = run(run_dir, exception_types(outcome["throws"], cause_names))
                         if (typed_outcome(observation_text.splitlines()) != outcome or "UPGRADE-HIT " + caller in marks
                                 or (trace_exception and trace_exception.split(",")[0] != outcome["throws"])):
                             raise ValueError(f"{side} input {index}: inconsistent failure before the original caller")
@@ -448,6 +463,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             report["beforeEntryComparison"] = compare_before_entry(report["sides"], domain)
             upgrade_linkage.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
                                      temp, env, start+timeout)
+            upgrade_jdbc.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
+                                  temp, env, start+timeout)
             report["elapsedSeconds"] = round(time.monotonic()-start, 3)
             return report
         report.pop("stoppedAt", None)

@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_replay
+from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_jdbc, upgrade_replay
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
 from cost_tier import cost
 sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
@@ -231,6 +231,12 @@ class UpgradeReviewTest(unittest.TestCase):
             raw = (root / "old/app/Real.class").read_bytes()
             self.assertIsNone(runtime_jar.member_at_code_index(raw, "prepare", "()I", loc["codeIndex"],
                               code_sha256=loc["methodCodeSha256"], pool_sha256="different pool"))
+            # A changed runtime may appear deeper in a stack whose throwing instruction belongs to the client.
+            for attempt in result["sides"]["new"]["trials"][0]["beforeEntry"]:
+                attempt["rootThrow"]["frames"].append({"entry": "dep.Number#dispatch()V", "classpathIndex": 1,
+                                                       "jarSha256": dependencies[1], "artifact": "upgrade"})
+            compared = upgrade_replay.compare_before_entry(result["sides"], result["cases"])
+            self.assertNotIn("changedRuntimeCause", compared[0])
 
     @cost("tool")
     def test_old_loaded_type_is_absent_on_the_new_jvm_and_a_string_is_not_a_type_reference(self):
@@ -284,6 +290,20 @@ class UpgradeReviewTest(unittest.TestCase):
             upgrade_replay.parse_output(failed, entry, client, library)
         with self.assertRaisesRegex(ValueError, "outside"):
             upgrade_replay.parse_output(failed + "UPGRADE-FRAME app.Client#read", entry, client, library)
+
+    def test_driver_message_from_application_code_cannot_diagnose_a_jdk_connection_failure(self):
+        self.assertEqual(upgrade_replay.exception_types("app.Failure", ["app.Failure", "java.lang.ClassNotFoundException"]), "app.Failure")
+        self.assertEqual(upgrade_replay.exception_types("app.Failure", ["app.Failure", "java.sql.SQLException"]),
+                         "app.Failure,java.sql.SQLException")
+        expected = {"return": "row"}
+        failed = {"causes": ["java.sql.SQLException"], "lastCauseMessage": "No suitable driver found for jdbc:sample:test",
+                  "throwLocation": {"entry": "app.Store#getConnection()V"}}
+        old = {"qualifiedMethodEntries": 2, "observations": [expected, expected], "loadedUpgradeOnEachReplay": True}
+        new = {"repeatableBeforeEntry": True, "beforeEntry": [failed, failed]}
+        report = {"cases": [{"expected": expected}], "beforeEntryComparison": [{"input": 0}],
+                  "sides": {"old": {"trials": [old]}, "new": {"trials": [new]}}}
+        upgrade_jdbc.diagnose(report, {}, {}, 8, None, None, None, {}, 0)
+        self.assertNotIn("jdbcDriverEvidence", report)
 
 
 if __name__ == "__main__":

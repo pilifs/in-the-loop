@@ -6,6 +6,18 @@ import java.lang.invoke.MethodType;
 /** Check which original JAR supplies a reported missing type, without initializing it. */
 public final class UpgradeClassLookup {
     public static void main(String[] args) throws Exception {
+        if (args.length == 1 && args[0].equals("--jdbc-driver")) {
+            String url = new java.io.BufferedReader(new java.io.InputStreamReader(System.in, "UTF-8")).readLine();
+            try {
+                Class<?> type = java.sql.DriverManager.getDriver(url).getClass();
+                CodeSource source = type.getProtectionDomain().getCodeSource();
+                String origin = source == null ? "runtime" : source.getLocation().toURI().toASCIIString();
+                System.out.println("UPGRADE-DRIVER selected " + type.getName() + " " + origin);
+            } catch (java.sql.SQLException e) {
+                System.out.println("UPGRADE-DRIVER " + ("08001".equals(e.getSQLState()) ? "none " : "unresolved ") + e.getSQLState());
+            }
+            return;
+        }
         if (args.length == 4) {
             lookupMember(args[0], args[1], args[2], args[3]);
             return;

@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 import time
 from urllib.parse import unquote, urlsplit
 import zipfile
@@ -12,11 +13,13 @@ import zipfile
 from targets import runtime_jar
 
 
-def lookup(arguments, marker, files, jdk, helpers, temp, env, deadline):
-    proc = subprocess.run([str(jdk/"bin/java"), "-Xmx64m", "-Djava.io.tmpdir="+str(temp),
-                           "-classpath", os.pathsep.join(map(str, [helpers, *files])), "UpgradeClassLookup", *arguments],
-                          cwd=temp, env=env, capture_output=True, text=True, check=True,
-                          timeout=max(0.01, deadline - time.monotonic()))
+def lookup(arguments, marker, files, jdk, helpers, temp, env, deadline, *, stdin=None):
+    with tempfile.TemporaryDirectory(dir=temp, prefix="lookup-") as trial:
+        proc = subprocess.run([str(jdk/"bin/java"), "-Xmx64m", "-Djava.io.tmpdir="+trial, "-Duser.home="+trial,
+                               "-Duser.timezone=UTC", "-Duser.language=en", "-Duser.country=US",
+                               "-classpath", os.pathsep.join(map(str, [helpers, *files])), "UpgradeClassLookup", *arguments],
+                              cwd=trial, env=dict(env, TMPDIR=trial, HOME=trial), input=stdin, capture_output=True,
+                              text=True, check=True, timeout=max(0.01, deadline - time.monotonic()))
     marks = [s[len(marker):] for s in proc.stdout.splitlines() if s.startswith(marker)]
     if len(marks) != 1:
         raise ValueError("the fresh JVM did not report exactly one lookup")

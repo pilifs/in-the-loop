@@ -112,6 +112,10 @@ public final class UpgradeTrace {
             // A class loaded by two class loaders cannot be attributed by a name in the JVM load log.
             if (event.virtualMachine().classesByName(type.name()).size() == 1) {
                 String origin = result.isEmpty() && location.equals(event.location()) ? "location\t" : "";
+                if (!origin.isEmpty() && (type.classLoader() == null || (type.classLoader().referenceType().classLoader() == null
+                        && type.classLoader().referenceType().name().equals("jdk.internal.loader.ClassLoaders$PlatformClassLoader")))) {
+                    result.add("runtimeLocation\t" + member + "\t" + location.codeIndex() + "\t" + location.lineNumber());
+                }
                 result.add(origin + member + "\t" + location.codeIndex() + "\t" + location.lineNumber());
                 if (!origin.isEmpty() && !method.isNative() && event.virtualMachine().canGetBytecodes()
                         && event.virtualMachine().canGetConstantPool()) {
