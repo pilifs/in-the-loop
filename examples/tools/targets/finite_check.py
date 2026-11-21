@@ -139,10 +139,12 @@ def run_claim(plan, work, shared, launcher_classes, seconds, case_limit=LIMIT):
         raise ValueError(recipe.describe())
     claim = plan.claim
     if (plan.kind not in ("prove", "equivalence") or claim.get("observations") != ["result", "exception"]
-            or any(claim.get(k) for k in ("models", "namedModels", "observedInitializers", "boundEnvironment", "assumptions", "allowedChange",
+            or any(claim.get(k) for k in ("models", "namedModels", "observedInitializers", "boundEnvironment", "assumptions",
                                             "contracts", "plan", "throws", "nullable", "mayAlias"))
             or not replay_candidate.supported(recipe.entry, claim)):
         raise ValueError("a supported static entry with return and exception observations is required")
+    if claim.get("allowedChange") and claim["allowedChange"].strip() != "false":
+        raise ValueError("a conditional allowed-change region needs a separately qualified finite scope")
     owner, method, desc = runtime_jar.parse_target(recipe.entry)
     if not desc.startswith(("(I)", "(Z)")):
         raise ValueError("the finite execution strategy needs one int or boolean parameter")
