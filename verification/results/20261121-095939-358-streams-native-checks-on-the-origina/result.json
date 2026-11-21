@@ -1,0 +1,1051 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-095939-358-streams-native-checks-on-the-origina",
+  "title": "358 streams native checks on the original commons-codec public calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.0s, peak 574.5 MiB (estimated 5m00s, 3.0 GiB); 106 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-095939-358-streams-native-checks-on-the-origina.json",
+    "sha256": "93351ec135fc395a4684d77a7980159cdfb81266c0bc36eeb75e02046fa2ab32",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-095939-358-streams-native-checks-on-the-origina",
+      "title": "358 streams native checks on the original commons-codec public calls",
+      "description": "Execute each preserved and changed public observation from real PR https://github.com/apache/commons-codec#135 with exact pinned original artifacts. Retain bounded scope, classpath, stdout and each original attempt including an open result.",
+      "kind": "real-world",
+      "capabilities": [
+        "organic-java-pr",
+        "organic:native"
+      ],
+      "links": {
+        "examples": [
+          "358"
+        ]
+      },
+      "expected": "Each replay or selected claim has the frozen expected verdict, with any original refusal recorded.",
+      "submitted": {
+        "at": "2026-11-21T09:59:39+00:00",
+        "session": "0cea9d0e-0fe8-427e-8e71-96614b084e11"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "memoryLimit": "7G",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Run the public task plan",
+          "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 358 --route native --stage streams --seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/358-commons-codec-partitioned-base16/records/streams-native"
+      ]
+    }
+  },
+  "sourceCommit": "f17fd1cbb210b30a1f647e45b9abafa2328dc69e",
+  "startedAt": "2026-11-21T10:06:47+00:00",
+  "finishedAt": "2026-11-21T10:09:40+00:00",
+  "wallSeconds": 173.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 134298,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 7516192768,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 602447872,
+    "wallSeconds": 7.0,
+    "cpuSeconds": 9.9,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 161.459,
+      "cpuSeconds": 161.799,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2182340608,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "ba8d8d106f4dba1041481d24395a0eef89c1ecb3e3d2d479ef35e15178ac0251",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-095939-358-streams-native-checks-on-the-origina/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 41s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run the public task plan",
+      "run": "export TMPDIR=\"/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr\"; python3 lib/benchmark/organic-java/run.py 358 --route native --stage streams --seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 7.02,
+      "cpuSeconds": 9.886,
+      "cpuThrottledSeconds": 0.369,
+      "peakMemoryBytes": 602447872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-public-task-plan.log",
+        "lines": 1,
+        "bytes": 548,
+        "sha256": "ad2b1dfd981d7c68408d11b48ca959e09afb03cdc7195b241ea23b8c7bbf9a86",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"358\", \"route\": \"native\", \"stage\": \"streams\", \"workflowExit\": 0, \"seconds\": 6.842, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"bytes-parent\", \"bytes-fix\", \"ten-parent\", \"ten-fix\", \"controls-parent\", \"controls-fix\"], \"verifierCommit\": \"f17fd1cbb210b30a1f647e45b9abafa2328dc69e\", \"checkerSha"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a4a9830e6ea0f8297fbdd7bbdb6a80ba572517883b22d8aee09680960d2a4550",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/plan.json",
+      "change": "added",
+      "bytes": 7373,
+      "sha256": "84db7b1716338037c8657e532df295e1455b9827b1fb5b7a31593710107b36d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "963815285c509291b3a4ece6562982745981ec0938ab4ea0f137b6c008ccbdbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/execution.json",
+      "change": "added",
+      "bytes": 733593,
+      "sha256": "c8c46e5a37df54eebf6bbf1e667c1d5b5ae093877dc81894ecb78c2113dc2f8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "0b521078ca83240e2166ec2509beb2c6e1b34905c17061973948830ea9f9d7b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "7855a6073f3b8a4309953a300010595f3f011fe47ba7c523ddd827ab7d288e5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier.json",
+      "change": "added",
+      "bytes": 14738,
+      "sha256": "5def5d6e20ff85526c809e68e9bd2f7108a0a5f62c30abc611874ebd84d57472",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5268,
+      "sha256": "5c85ddd049571382d2b1291bccd7a5f25be503803afcd87b8c17a9eb5a3c791e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/result.json",
+      "change": "added",
+      "bytes": 16596,
+      "sha256": "2fc7d90b8d23929f1d9368cc802916bd15e809e138819fc864f24e89b5c4cbd5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/executions/20261121T100937Z-7ae2a929/attempt.json",
+      "change": "added",
+      "bytes": 11563,
+      "sha256": "6eef0f710fbe0710cd45b9b27e8ac53e756ae5534d89524ad07ed7e4d7e7e605",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/executions/20261121T100937Z-7ae2a929/checker.json",
+      "change": "added",
+      "bytes": 6601,
+      "sha256": "e8c38719aadfd985745d2cbfac401baac24d5e2154eafe151e3440c4cf9f78d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/executions/20261121T100937Z-7ae2a929/correspondence.json",
+      "change": "added",
+      "bytes": 1365,
+      "sha256": "b7622aa79f0a116420cf44105ddd84a045ef7a27791dbf68a163bde17ea1949d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a1b136d1dd1830cf4b5c154545b148a392cc2c3b14f4d0a2d1c0e5cef6d98c86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/plan.json",
+      "change": "added",
+      "bytes": 7278,
+      "sha256": "a25e2ed1f3b8f0743c044c4414be13bbcbfc44e5b568d6346f7d8cde75397b1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "88075699e83b70eae5929e270f0a383b74b5feec63d8508d696508f893510887",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/execution.json",
+      "change": "added",
+      "bytes": 732244,
+      "sha256": "9963ebb043156af4573bf42c0596f6885944337ea44c7dc0f515c61261de3ef5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "43224f1c0bec01244bb1f9aedd576e1ee4fff9f91ee7655800be78ed635be5e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 589,
+      "sha256": "1a93f652a3b04c268412fff94951e90a6506b7c42d7ef6a054e47bde2834ce59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier.json",
+      "change": "added",
+      "bytes": 15606,
+      "sha256": "39b6bbfaf8748db77375b9d0b1481e15ed6ae82aad9177ed38e3715ece2470fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5997,
+      "sha256": "a8029697f0d8fd1f20b006e693c12d2ce5167af21b35176e8e8b1b1a5082937d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/result.json",
+      "change": "added",
+      "bytes": 17939,
+      "sha256": "7cb473c16bb6c280ab0d3b579f221052bd6eec8fc01d66ba82c845b04dd4193a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/attempt.json",
+      "change": "added",
+      "bytes": 11742,
+      "sha256": "49dda35b665acf81fbf600e8728432bc657b3e3934f1aaf57924bfe54e894089",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/checker.json",
+      "change": "added",
+      "bytes": 7380,
+      "sha256": "559555ba1b9396409fdf8ea8d9d5baaf60b306259bf1822e9c003005a7190816",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/correspondence.json",
+      "change": "added",
+      "bytes": 1368,
+      "sha256": "37e3678b05b1e8f6d72d165bfb0042d16b4f4850ebdec5e3fb1fb6c8d6b99d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/replay.json",
+      "change": "added",
+      "bytes": 1936,
+      "sha256": "e6b06da9d374806758f096d2a3fd785d7fdfa17d1f2e068c5c96802aa696dbcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e96f1ec79b9140dae39c21f88fe1bee744e2adf93f7e4514af570186f41232a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/plan.json",
+      "change": "added",
+      "bytes": 7186,
+      "sha256": "26a7a3176ef3536503371b5b3956a10472a312994d2f9262f51c5a71120841c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "3fe4c00ddcf4670a3cd03c7c07fa34d1a8d0c3adfc453ebde9b332f8581545f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/execution.json",
+      "change": "added",
+      "bytes": 733431,
+      "sha256": "a5b6491053b5a9a504f53649980b1d123e997180d3ace23b47d26d4c53313dd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "83c7de734232ff3ad1dc440b7350076513a182bd65d96958afb40343935ab58b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "1d57aec381fadd419f1f4537e05470ad1a6d9bbefa6a97961f7d9319fe2df759",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier.json",
+      "change": "added",
+      "bytes": 14582,
+      "sha256": "fbc75e5b549d7d243a0ab2a392c2494980e4f5596d679d3f48b313705a66eb7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5263,
+      "sha256": "755e1d51cf5dc4859d0a5edab9f784070232ce5441a2ef8ab0f0e3bee0aadd16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/result.json",
+      "change": "added",
+      "bytes": 16510,
+      "sha256": "bfc2d2506a5808cae1bc9c17bca7f2dd332bc8f25a1bf1839f567100d49a9d17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/executions/20261121T100940Z-376730bc/attempt.json",
+      "change": "added",
+      "bytes": 11408,
+      "sha256": "cd627db3be9363f79a74655bde95d218b4f4b33e774f5801672bbd3be9f699fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/executions/20261121T100940Z-376730bc/checker.json",
+      "change": "added",
+      "bytes": 6599,
+      "sha256": "e7eb5108d900d92e94bc3fb3ce83ae14c8a5934d15318a252cc5eca35b052c2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/executions/20261121T100940Z-376730bc/correspondence.json",
+      "change": "added",
+      "bytes": 1310,
+      "sha256": "9fe25bf4d888052f154a183a12e0d121373e2adaa350267184cb71c865aca852",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "975416ce86e92721f7d0917568f9ec38044c0da90b060f3272c097979a21c8e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/plan.json",
+      "change": "added",
+      "bytes": 7095,
+      "sha256": "ff90b39623d7a0908f6cabf90eb554c49f4f32c5ad682d9769f026ddb97d1907",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "ab59ca18b5a779d3c5677c45a4998038e01318fee7364882fef1f4ef3cebe61c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/execution.json",
+      "change": "added",
+      "bytes": 728772,
+      "sha256": "80a71e1393abbefd3a22f6e7be4f9ac3b54e6f28634ab22bb4f27e9307a08e36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "50a3600c8954012da33417ce1dfdf3a113f75ab6ac80a63843084b0f18b3544a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "1d57aec381fadd419f1f4537e05470ad1a6d9bbefa6a97961f7d9319fe2df759",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier.json",
+      "change": "added",
+      "bytes": 14636,
+      "sha256": "8f54f8590f636d1ea2b569856fe9df1752fa62823a13c9a3d32509ddaf011faf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5261,
+      "sha256": "cb87a743d2da5441cc14ac28aa867e005c9a3f4412bda1ec6f492d20b1819e9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/result.json",
+      "change": "added",
+      "bytes": 16563,
+      "sha256": "a14a17a1ccd7eeead42867db3f5540a02a5fe3a2bbbb05f2e71928ccc4c42b9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/executions/20261121T100939Z-dc28992e/attempt.json",
+      "change": "added",
+      "bytes": 11466,
+      "sha256": "70a920903b1b1f94014169f442bc9b62ab426d069dd504f5fc420af6af4cd432",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/executions/20261121T100939Z-dc28992e/checker.json",
+      "change": "added",
+      "bytes": 6606,
+      "sha256": "1ccdcfdf8206ff499dd50c36a16892e2e6571aff5725b93aee8d86118ab3096e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/executions/20261121T100939Z-dc28992e/correspondence.json",
+      "change": "added",
+      "bytes": 1313,
+      "sha256": "4d2c31ded09c7e4d82461d43ea408b0a776859d2fea0967cabf3059201c8c709",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "32fde1619b3e90a1b30d45e0dbc283979931cf71b30e81dc3224df886c9cd788",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/plan.json",
+      "change": "added",
+      "bytes": 7854,
+      "sha256": "7e7285d6fe3b91009dda26cd01d59e8bd360993b1f897d486e09678d89786212",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "352cfb7173ce9ef147c37b483fa29d3f49d434ae321bebfb988d24ff30a47da4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/execution.json",
+      "change": "added",
+      "bytes": 418294,
+      "sha256": "10b19bd37b699f4db8a47492071fdd3439d7bedbffada33ae9cd736b50888174",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/streams.json",
+      "change": "added",
+      "bytes": 1717,
+      "sha256": "53afd19df4280a3c7c2c69df200a10de89a737c89b1d7379d3bb82edbff5dcc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/summary.txt",
+      "change": "added",
+      "bytes": 5929,
+      "sha256": "3809dc0557e713d08b9e9aa0b8d2298fec83467ee290418b216dd328f26cf2de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/result.json",
+      "change": "added",
+      "bytes": 47864,
+      "sha256": "467bfba5216563e14737e01676def66d1f34ace3a5d02484f311f042a8ddef25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/executions/20261121T100933Z-f22890e6/attempt.json",
+      "change": "added",
+      "bytes": 5567,
+      "sha256": "566fe02eb84b8179ed682dd9e9648f2b58d94794040307c64a46aa634d0f225d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/run.json",
+      "change": "added",
+      "bytes": 614,
+      "sha256": "25acdfb040864b6e7e22d427448d40e9a071d45376e01687372790ef87bd6de5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ab78e8d82a7d5e264b98d1e0fdac35e1098b5243ddd9e94d9547af544e54c27e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/plan.json",
+      "change": "added",
+      "bytes": 7205,
+      "sha256": "9fa2cdf61750013ec1d18d35e6ceb8812e26ca755b0e1aa2ef8e45c05e4b4e46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 205571,
+      "sha256": "652cdba539d2f0f648da7bd926d5e13834214d0fa842d12cf7613e35e8e6102e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "5728fd1671287acbd4d3b5cfd9b3a13860c15011af290bcbaa1d93aa4f4122a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/execution.json",
+      "change": "added",
+      "bytes": 733472,
+      "sha256": "9b52fefe97d157512a53ade4c2a9c07023ad6d0ea5a909629127a24c71ddbb06",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/streams.json",
+      "change": "added",
+      "bytes": 1950,
+      "sha256": "20865c204af6bb4140b3566fab0ffced88845afc92dc3d84cfc9c2ff26ce82b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "597246c13eb18593f5888c0b314f0768ab4f9fa4b24c54c51ae14fd64e02ecab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier.json",
+      "change": "added",
+      "bytes": 14613,
+      "sha256": "e14cc811f54d7931a038359c28a0b2e6baedc5d42cfbc440f46d22b41f720438",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5261,
+      "sha256": "601731181f4f6fe6dbe6a4ae69437ccca18665b620287f79651fc4b7deb27abd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/result.json",
+      "change": "added",
+      "bytes": 16510,
+      "sha256": "43da116dc2ca897a9fc91e376cf3d69e697b5b1c3c055aedef554f54d6d7d099",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/executions/20261121T100939Z-8d8a31b0/attempt.json",
+      "change": "added",
+      "bytes": 11446,
+      "sha256": "28fee015e57c97a22e199b6ed6df037e3bf320d6d06c9cd2c9da8c0b38ec0401",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/executions/20261121T100939Z-8d8a31b0/checker.json",
+      "change": "added",
+      "bytes": 6597,
+      "sha256": "0a775ee38e3bb196f9c9f07519c3cfa493bb6da5fae7748f8aa5fb0e51046d6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/executions/20261121T100939Z-8d8a31b0/correspondence.json",
+      "change": "added",
+      "bytes": 1326,
+      "sha256": "1266c62dfb4802454ab7a91f3b68f0cb0ddfb7fdcce86b2f0b59744f2133f517",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f19ca18205299fc3714a0ad2478e79ecf22c84da34c5c9c451e16598849b58d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/plan.json",
+      "change": "added",
+      "bytes": 7110,
+      "sha256": "7dd209a205e2fd2caed7a9ddba5cf7a925ee0834d15e29f8af33451fb3dc5380",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 204704,
+      "sha256": "a4cf600051f2edf0661d26fa42c2b010a8753a7214ccc5cc90062e166c0cd7c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/controls.json",
+      "change": "added",
+      "bytes": 524288,
+      "sha256": "741b7dfab60312cf51310b4d522948ff91a342af9925c019ad73f10f98be250b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/execution.json",
+      "change": "added",
+      "bytes": 731890,
+      "sha256": "4861e453b23220652ca8cfbb0569def96ae132cea2b727bf1cdea7791b07ac41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/streams.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "01bea8c2086b2e56259023ca358a0280654b0173e9631d2447960bed0ba60e7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 525,
+      "sha256": "65c43ff083b5c3e2623b4a9832bee2882bd0d855c4c1ce93949b99cc4f0d53ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier.json",
+      "change": "added",
+      "bytes": 15173,
+      "sha256": "31bcf431098c061756ee4d5bccd707a4d9ada6592bcc1825ed58249d50dd10fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5713,
+      "sha256": "d62c99f27fdec82b2df894db6a0e255d5c2a32c71cc2cc1a9b5a57b415757a0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/result.json",
+      "change": "added",
+      "bytes": 17319,
+      "sha256": "ccc6d8b7b57d5a824add8ab91982381e14c574cd4d8e6fb728589da8fe99bc0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/attempt.json",
+      "change": "added",
+      "bytes": 11627,
+      "sha256": "54703290d22ca644663282f638cfd3480da2dabf7457122eae42f5adf162ad63",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/checker.json",
+      "change": "added",
+      "bytes": 7083,
+      "sha256": "eb3d11e0168c5c36be66cb2d542f66c1cae7d2559fa795e50e8c2b7e76e6b6ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/correspondence.json",
+      "change": "added",
+      "bytes": 1329,
+      "sha256": "9af3822bc19d3c89a7a27f61f2759ad5138f144678e7c11cb8ab9876338a0953",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/replay.json",
+      "change": "added",
+      "bytes": 2003,
+      "sha256": "ea89403675311bd7695b2e5e497c02e90ca76850bdcacb27856d5577915aa49f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/358-commons-codec-partitioned-base16/records/streams-native/workflow.log",
+      "change": "added",
+      "bytes": 1640,
+      "sha256": "6f2816d21470190b2c531d1b0bd137de9a59648ce0c5db49b2a83fcccc13e375",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-21T10:10:00+00:00",
+    "applied": [
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/20261121T100937Z-7ae2a929/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/executions/20261121T100937Z-7ae2a929/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/executions/20261121T100937Z-7ae2a929/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-fix/executions/20261121T100937Z-7ae2a929/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/20261121T100936Z-abeeb875/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/bytes-parent/executions/20261121T100936Z-abeeb875/replay.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/20261121T100940Z-376730bc/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/executions/20261121T100940Z-376730bc/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/executions/20261121T100940Z-376730bc/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-fix/executions/20261121T100940Z-376730bc/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/20261121T100939Z-dc28992e/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/executions/20261121T100939Z-dc28992e/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/executions/20261121T100939Z-dc28992e/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/controls-parent/executions/20261121T100939Z-dc28992e/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/records/summary.txt",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/20261121T100933Z-f22890e6/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/replay/executions/20261121T100933Z-f22890e6/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/run.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/control-fix-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/control-fix-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/20261121T100939Z-8d8a31b0/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/executions/20261121T100939Z-8d8a31b0/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/executions/20261121T100939Z-8d8a31b0/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-fix/executions/20261121T100939Z-8d8a31b0/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/completion.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/plan.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/control-parent-jdk21.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/control-parent-jdk21.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/controls.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/execution.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/streams.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier-output.txt",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier.stderr",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/records/verifier.stdout",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/20261121T100938Z-bfe38413/result.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/attempt.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/checker.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/correspondence.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/ten-parent/executions/20261121T100938Z-bfe38413/replay.json",
+      "examples/358-commons-codec-partitioned-base16/records/streams-native/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2580598,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "456837dab49068939e3b4cdc4b82f89f89b73520",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/456837dab49068939e3b4cdc4b82f89f89b73520/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

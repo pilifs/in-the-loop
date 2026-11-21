@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-21 04:29 UTC (5272 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -3819,6 +3819,12 @@ Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the j
 change `qltpkqnzxzyl` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
 
 Outputs applied for 4 of the 4 job(s). 20261121-090451-354-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m42s, peak 1.7 GiB (estimated 8m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261121-090452-356-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m27s, peak 1.6 GiB (estimated 8m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-090452-357-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m31s, peak 1.6 GiB (estimated 8m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261121-090452-358-build-both-original-modules-and-exec: passed: 1 passed step(s) in 2m06s, peak 956.6 MiB (estimated 8m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `qpqlkuyxzxyq` · [log `ff4c580f8499`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/ff4c580f8499f919a482f1a73f86eaff4b06733c60d16c5df58d9acfc73e4bb5.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-095939-358-streams-native-checks-on-the-origina: passed: 1 passed step(s) in 7.0s, peak 574.5 MiB (estimated 5m00s, 3.0 GiB); 106 output file(s) changed Applied 106 output(s). Collected by the watcher of the organic-java-pr-campaign run, which keeps the queue while the run is under way.
 
 ## Conversation
 

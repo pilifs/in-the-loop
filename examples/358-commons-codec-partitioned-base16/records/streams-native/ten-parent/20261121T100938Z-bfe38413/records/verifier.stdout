@@ -1,0 +1,186 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "organic.HexWrites#bytes(int)",
+    "domain": "code: int",
+    "assume": "code >= 2048 && code < 2049",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "bytes(code=2048)",
+      "outcome": "0",
+      "values": [
+        "2048"
+      ],
+      "shrink_runs": 12,
+      "inputs": [
+        {
+          "name": "code",
+          "type": "int",
+          "value": 2048
+        }
+      ],
+      "call": {
+        "class": "organic.HexWrites",
+        "class_file": "organic/HexWrites.class",
+        "classes": "after",
+        "method": "bytes",
+        "descriptor": "(I)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "code",
+            "type": "int",
+            "value": 2048,
+            "from": "code"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of organic.HexWrites#bytes(int) violated: `result == 1` where code >= 2048 && code < 2049:\n  bytes(code=2048)\n    outcome: 0",
+        "uri": null,
+        "line": 49
+      }
+    ],
+    "output": "✗ Property of organic.HexWrites#bytes(int) violated: `result == 1` where code >= 2048 && code < 2049:\n  bytes(code=2048)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [-100000:100000], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.00715957,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 8192,
+      "stage": "[-100000:100000]",
+      "native": {
+        "paths": 3,
+        "merges": 0,
+        "solver_calls": 7,
+        "solving_seconds": 0.000084818,
+        "gates_evaluated": 132,
+        "evaluating_seconds": 6.552e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 400,
+        "clauses": 1238,
+        "seconds": 0.005940612,
+        "loading_seconds": 0.001155618,
+        "decoding_seconds": 0.000464014,
+        "encoding_seconds": 0.000640523,
+        "witness_seconds": 0.000014478
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.006,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 400,
+            "clauses": 1238
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.028,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.006,
+        "replay": 0.007,
+        "jvm": 0.0,
+        "other": 0.013
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 2048 && code < 2049",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

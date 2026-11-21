@@ -1,0 +1,65 @@
+[
+  {
+    "claimKey": "2263e8645181900d",
+    "entry": "organic.HexWrites#bytes(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 2048
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "d8e5adb0751742996c74b162467987628ba6d6860f15cade63ef800744b4cdbc",
+        "classpath": [
+          "2b501c036884e28525ad4a2f00b07bfb1bd85de923f345483d247b43d9f6240c",
+          "d7c85c44b0fe1606e37d16c5420853802b5afefe450cdb30c02f6a9c56a81f78"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 2048;\nif (!(code >= 2048 && code < 2049)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.HexWrites.bytes(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 2048,
+      "input": {
+        "hex": "4142434445",
+        "writes": [
+          3,
+          4,
+          3
+        ]
+      },
+      "field": "bytes",
+      "direct": {
+        "parent": {
+          "bytes": [
+            65,
+            66,
+            67,
+            68
+          ]
+        }
+      },
+      "tableSha256": "d3ac02404060a843c54d8cbfdcadc975a8426f9b8abe04dba072eda5827fddde"
+    }
+  }
+]
