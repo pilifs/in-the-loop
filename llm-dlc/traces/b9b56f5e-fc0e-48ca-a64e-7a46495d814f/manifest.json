@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-21T16:57:22.471Z",
-  "ended": "2026-11-21T19:45:01.232Z",
-  "duration_seconds": 10059,
+  "ended": "2026-11-21T19:46:40.997Z",
+  "duration_seconds": 10159,
   "stats": {
     "turns": 6,
-    "api_calls": 480,
-    "tool_calls": 552,
+    "api_calls": 487,
+    "tool_calls": 559,
     "tool_errors": 12,
     "compactions": 2,
     "peak_context_tokens": 566444,
     "usage": {
-      "input_tokens": 960,
-      "output_tokens": 687429,
-      "cache_read_input_tokens": 144110115,
-      "cache_creation_input_tokens": 1387538
+      "input_tokens": 974,
+      "output_tokens": 695242,
+      "cache_read_input_tokens": 146507468,
+      "cache_creation_input_tokens": 1399146
     }
   },
   "tools": {
-    "Bash": 459,
+    "Bash": 466,
     "Read": 44,
     "Edit": 32,
     "Write": 17
@@ -88,24 +88,24 @@
     {
       "index": 2,
       "started": "2026-11-21T19:12:09.670Z",
-      "ended": "2026-11-21T19:45:01.232Z",
+      "ended": "2026-11-21T19:46:40.997Z",
       "turns": 1,
-      "api_calls": 179,
+      "api_calls": 186,
       "usage": {
-        "input_tokens": 358,
-        "output_tokens": 134541,
-        "cache_read_input_tokens": 36781806,
-        "cache_creation_input_tokens": 322882
+        "input_tokens": 372,
+        "output_tokens": 142354,
+        "cache_read_input_tokens": 39179159,
+        "cache_creation_input_tokens": 334490
       },
-      "peak_context_tokens": 337787
+      "peak_context_tokens": 349395
     }
   ],
   "log": {
-    "sha256": "94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09",
-    "bytes": 11840133,
-    "lines": 4180,
-    "gzip_bytes": 1890055,
-    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09.jsonl.gz"
+    "sha256": "fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3",
+    "bytes": 11939995,
+    "lines": 4236,
+    "gzip_bytes": 1901405,
+    "path": "llm-dlc/traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/logs/fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -220,6 +220,14 @@
       "summary": "Record the run report; a promotion stopped by a fault of the tools says so; Codex may not switch delegation on",
       "body": "The results page of the plumbing run gains its report at the end of cycle 2: no real promotion was made (it is at the user's word; origin/main is unchanged and origin/develop holds cycle 1 since the watcher's first checkpoint), the archive's inventory and the restores shown, timings before and after, the custody gaps still open, and the paths and commands a later reorganisation has to keep. It also records a second rehearsal of the whole line against a bare remote on disk, with the record rendered in the candidate by the new code: 27 commits checkpointed in one scan of 12.7 s, the commit that packs the records opened and scanned in 3.0 s, a dry run with no blocker, and a promotion whose record of 15 files put main and develop at the same commit; check --rendered in the candidate reported 0 errors.\n\nTwo small changes came out of that rehearsal and the review of the leftovers. promote.py: when the candidate's side stops on an exception that is not a refusal, the promotion's state now records it as the reason, as it does for a refusal, and the same command continues the same promotion (the first attempt of the rehearsal stopped on the harness's own outdated stand-in and left no reason). .codex/rules: switching delegated redaction on is forbidden to Codex as it is to Claude Code; the watcher's own forms stay open.",
       "log_sha256": "94cd9f3b5d1a988e0b238bce67ec6c2a0282dbad6d32f8166235033903b0bd09"
+    },
+    {
+      "change_id": "nntstxwyznuznrxvoxvrsoupzulwrktt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the selector route of example 345 on the commit that packs a run's per-case output (verification pending)",
+      "body": "Job 20261121-194629-345-native-selectors-again-the-run-packs: the four parent-fix tasks of example 345 by complete native case analysis, as job 20261120-213848-345-parent-fix-exhaust-native-selector-b ran them, now that a selector run replaces each cases/ folder of its record with cases.tar.gz at its end and the validator reads a case from the folder or the pack. Its second step fails if any per-case folder is left loose or the records are over their budget; its third reads the example's claim history and fails if it cites no record of the run or reports a case missing, altered or unreadable. About 3 minutes and 140 MiB by the earlier run.\n\nWhy a job: the checker is a proof-tier tool and does not run inline. Until the result is in, the packing at the end of a run rests on the pack's own tests and on the five examples packed after the fact; the results page says so.",
+      "log_sha256": "fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3"
     }
   ],
   "logs": {
@@ -299,6 +307,12 @@
       "bytes": 6319528,
       "lines": 1717,
       "gzip_bytes": 1168437,
+      "url": null
+    },
+    "fa971ac374ec4365dfa8aa85f91525e955913451546686939599322c49f985a3": {
+      "bytes": 11939995,
+      "lines": 4236,
+      "gzip_bytes": 1901405,
       "url": null
     },
     "ff8515617c6f9d13a7d1e30182310a73ba53b46734492af5fa0e44f5985a8dad": {
