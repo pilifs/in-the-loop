@@ -1,0 +1,135 @@
+{
+  "revision": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
+  "side": "fix",
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/pom.xml",
+      "-pl",
+      "mapred",
+      "-am",
+      "-DskipTests",
+      "-Dinvoker.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 91.51,
+    "logSha256": "df4350e58e21b38a8492881be6a8e51ef0b9ae77d938a044b4bcdd8e59fda2ea",
+    "errors": [],
+    "tail": [
+      "[INFO] Apache Avro IPC .................................... SUCCESS [ 13.904 s]",
+      "[INFO] Apache Avro IPC Jetty .............................. SUCCESS [  4.104 s]",
+      "[INFO] Apache Avro Mapred API ............................. SUCCESS [ 17.704 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  01:28 min",
+      "[INFO] Finished at: 2026-11-21T09:44:27Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/mapred/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/lang/java/mapred/target/organic-runtime.txt"
+    ],
+    "exit": 1,
+    "seconds": 5.2,
+    "logSha256": "bcb4e3e4c2bc39cf7883da8076f0bddf8de31efa7fda5a550c694c9ed752b4b1",
+    "errors": [
+      "[ERROR] BUILD FAILURE",
+      "[ERROR] Failed to execute goal on project avro-mapred: Could not collect dependencies for project org.apache.avro:avro-mapred:bundle:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro-ipc-jetty:jar:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro-ipc:jar:tests:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro-ipc:jar:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro:jar:tests:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] "
+    ],
+    "tail": [
+      "[ERROR] Failed to read artifact descriptor for org.apache.avro:avro:jar:tests:1.13.0-SNAPSHOT",
+      "[ERROR] \tCaused by: The following artifacts could not be resolved: org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT (absent): Could not find artifact org.apache.avro:avro-toplevel:pom:1.13.0-SNAPSHOT",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
+    ]
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "lang/java/pom.xml",
+        "-pl",
+        "mapred",
+        "-am",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 5.64,
+      "logSha256": "c174115f7e230c82d8e4940e8c4c5cb8ba87cdd0cec17d16cea62c45225305a4",
+      "errors": [],
+      "tail": [
+        "[INFO] Apache Avro IPC .................................... SUCCESS [  0.175 s]",
+        "[INFO] Apache Avro IPC Jetty .............................. SUCCESS [  0.008 s]",
+        "[INFO] Apache Avro Mapred API ............................. SUCCESS [  0.017 s]",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  3.219 s",
+        "[INFO] Finished at: 2026-11-21T09:44:38Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testSourceSha256": {
+      "lang/java/mapred/src/test/java/org/apache/avro/hadoop/io/TestAvroDatumConverterFactory.java": "42314e365583fe4fe30c9f1d1ce6ff0017bada3b8a5add89d964320ea468b5bb"
+    },
+    "transplant": [],
+    "named": {
+      "TestAvroDatumConverterFactory#convertBytesWritableRespectsLogicalLength": []
+    }
+  },
+  "mirror": {
+    "cachedRequests": 2774
+  }
+}

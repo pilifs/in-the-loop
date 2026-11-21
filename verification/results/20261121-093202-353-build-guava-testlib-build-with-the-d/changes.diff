@@ -1,0 +1,855 @@
+--- /dev/null
++++ b/examples/353-guava-saturated-sum/records/build-guava-testlib/build-fix.json
+@@ -0,0 +1,233 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/google/guava",
++    "commit": "ee548013ec9aa94394c9bca2761edaca3be5e1ed",
++    "class": "com.google.common.collect.Multisets",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "guava",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    },
++    "parent": "117b5277123e3a2cb1cad35ec8e47c852a3a8858"
++  },
++  "artifacts": [
++    {
++      "path": "built/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++      "sha256": "476a3dd890483145fdb77c93190689870e824774a62e5a5e094cf3152c94956f",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/google/guava at ee548013ec9aa94394c9bca2761edaca3be5e1ed: guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
++      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
++      "role": "dependency",
++      "coordinates": "com.google.guava:failureaccess:1.0.3",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
++      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++      "role": "dependency",
++      "coordinates": "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++      "role": "dependency",
++      "coordinates": "org.jspecify:jspecify:1.0.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
++      "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
++      "role": "dependency",
++      "coordinates": "com.google.errorprone:error_prone_annotations:2.50.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar",
++      "sha256": "84d3a150518485f8140ea99b8a985656749629f6433c92b80c75b36aba3b099b",
++      "role": "dependency",
++      "coordinates": "com.google.j2objc:j2objc-annotations:3.1",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "ee548013ec9aa94394c9bca2761edaca3be5e1ed",
++      "tree": "b4a61d6719977a668a9b52f51c760388b5ca8f0a",
++      "parents": [
++        "117b5277123e3a2cb1cad35ec8e47c852a3a8858"
++      ],
++      "fetchedFrom": "https://github.com/google/guava",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++          "sha256": "476a3dd890483145fdb77c93190689870e824774a62e5a5e094cf3152c94956f",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "com/google/common/collect/Multisets.class",
++      "selectedClassSha256": "d4c568560fa8ca03d89c670f692993b957e38d6160a498c06f7a37d219bebbb9",
++      "sourceSha256": "c7b7d8f76394bfcfb0e4ca3247372c7f01c793f8f8c918c475ddbccd0375f2b1"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      },
++      "declaredCompilers": {
++        "11": {
++          "feature": "11",
++          "version": "openjdk version \"11.0.33\" 2026-10-20",
++          "home": "/home/filip/.sdkman/candidates/java/11.0.33.0+10-tem",
++          "release": {
++            "JAVA_VERSION": "11.0.33",
++            "JAVA_RUNTIME_VERSION": "11.0.33+10",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-11.0.33+10",
++            "OS_ARCH": "x86_64"
++          }
++        },
++        "17": {
++          "feature": "17",
++          "version": "openjdk version \"17.0.21\" 2026-10-20",
++          "home": "/home/filip/.sdkman/candidates/java/17.0.21.0+9-tem",
++          "release": {
++            "JAVA_VERSION": "17.0.21",
++            "JAVA_RUNTIME_VERSION": "17.0.21+9",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-17.0.21+9",
++            "OS_ARCH": "x86_64"
++          }
++        },
++        "21": {
++          "feature": "21",
++          "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++          "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++          "release": {
++            "JAVA_VERSION": "21.0.13",
++            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++            "OS_ARCH": "x86_64"
++          }
++        },
++        "26": {
++          "feature": "26",
++          "version": "openjdk version \"26.0.2.1\" 2026-08-18",
++          "home": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/jdk-26.0.2.1+1",
++          "release": {
++            "JAVA_VERSION": "26.0.2.1",
++            "JAVA_RUNTIME_VERSION": "26.0.2.1+1",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-26.0.2.1+1",
++            "OS_ARCH": "x86_64"
++          }
++        }
++      }
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "-pl",
++          "guava",
++          "-am",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 36.44,
++        "logSha256": "d22c60cd7ceec99ec7ad28a57f79cbd61a655e9540497bee1935fb67975ed6bd",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] Guava Maven Parent ................................. SUCCESS [  0.792 s]",
++          "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 30.581 s]",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  34.869 s",
++          "[INFO] Finished at: 2026-11-21T09:43:23Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "guava/pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/guava/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 5.1,
++        "logSha256": "62e4a0f6ef84272a4060864cfbc019dcff7696ed119d4a7631c1d1953ff8b76d",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ guava ---",
++          "[INFO] Wrote classpath file '/project/guava/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  3.577 s",
++          "[INFO] Finished at: 2026-11-21T09:43:28Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+--- /dev/null
++++ b/examples/353-guava-saturated-sum/records/build-guava-testlib/build-parent.json
+@@ -0,0 +1,230 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/google/guava",
++    "commit": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
++    "class": "com.google.common.collect.Multisets",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "guava",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    }
++  },
++  "artifacts": [
++    {
++      "path": "built/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++      "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/google/guava at 117b5277123e3a2cb1cad35ec8e47c852a3a8858: guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
++      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
++      "role": "dependency",
++      "coordinates": "com.google.guava:failureaccess:1.0.3",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
++      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++      "role": "dependency",
++      "coordinates": "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++      "role": "dependency",
++      "coordinates": "org.jspecify:jspecify:1.0.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
++      "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a",
++      "role": "dependency",
++      "coordinates": "com.google.errorprone:error_prone_annotations:2.50.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar",
++      "sha256": "84d3a150518485f8140ea99b8a985656749629f6433c92b80c75b36aba3b099b",
++      "role": "dependency",
++      "coordinates": "com.google.j2objc:j2objc-annotations:3.1",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
++      "tree": "cf59f75237d61049b785a219c736664c84d7c019",
++      "parents": [],
++      "fetchedFrom": "https://github.com/google/guava",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++          "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "com/google/common/collect/Multisets.class",
++      "selectedClassSha256": "a404f0170144858d2796a5134071598f35aa5fb1d4e8054d7ae21da5d26b6075",
++      "sourceSha256": "7bc4ae3902f7ecb63729a6ed5120ccc0403927d5de366292cca829c6ab76875b"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      },
++      "declaredCompilers": {
++        "11": {
++          "feature": "11",
++          "version": "openjdk version \"11.0.33\" 2026-10-20",
++          "home": "/home/filip/.sdkman/candidates/java/11.0.33.0+10-tem",
++          "release": {
++            "JAVA_VERSION": "11.0.33",
++            "JAVA_RUNTIME_VERSION": "11.0.33+10",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-11.0.33+10",
++            "OS_ARCH": "x86_64"
++          }
++        },
++        "17": {
++          "feature": "17",
++          "version": "openjdk version \"17.0.21\" 2026-10-20",
++          "home": "/home/filip/.sdkman/candidates/java/17.0.21.0+9-tem",
++          "release": {
++            "JAVA_VERSION": "17.0.21",
++            "JAVA_RUNTIME_VERSION": "17.0.21+9",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-17.0.21+9",
++            "OS_ARCH": "x86_64"
++          }
++        },
++        "21": {
++          "feature": "21",
++          "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++          "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++          "release": {
++            "JAVA_VERSION": "21.0.13",
++            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++            "OS_ARCH": "x86_64"
++          }
++        },
++        "26": {
++          "feature": "26",
++          "version": "openjdk version \"26.0.2.1\" 2026-08-18",
++          "home": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr/toolchains/jdk-26.0.2.1+1",
++          "release": {
++            "JAVA_VERSION": "26.0.2.1",
++            "JAVA_RUNTIME_VERSION": "26.0.2.1+1",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "IMPLEMENTOR_VERSION": "Temurin-26.0.2.1+1",
++            "OS_ARCH": "x86_64"
++          }
++        }
++      }
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "-pl",
++          "guava",
++          "-am",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 34.75,
++        "logSha256": "585ea6b115c76e0288ebab7ee98c4558c0434f7851a4ffec165b872eb1560e42",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] Guava Maven Parent ................................. SUCCESS [  0.888 s]",
++          "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 28.670 s]",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  33.096 s",
++          "[INFO] Finished at: 2026-11-21T09:41:27Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "guava/pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/guava/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 5.34,
++        "logSha256": "0334f793415f1e63e0cff3f235cb7dfa3253ee5234ed9efd4635804c00a4d020",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ guava ---",
++          "[INFO] Wrote classpath file '/project/guava/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  3.780 s",
++          "[INFO] Finished at: 2026-11-21T09:41:32Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+Binary file examples/353-guava-saturated-sum/records/build-guava-testlib/fix-TEST-com.google.common.collect.MultisetsTest.xml.gz changed
+--- /dev/null
++++ b/examples/353-guava-saturated-sum/records/build-guava-testlib/fix-upstream.json
+@@ -0,0 +1,177 @@
++{
++  "revision": "ee548013ec9aa94394c9bca2761edaca3be5e1ed",
++  "side": "fix",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "guava",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 36.44,
++    "logSha256": "d22c60cd7ceec99ec7ad28a57f79cbd61a655e9540497bee1935fb67975ed6bd",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] Guava Maven Parent ................................. SUCCESS [  0.792 s]",
++      "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 30.581 s]",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  34.869 s",
++      "[INFO] Finished at: 2026-11-21T09:43:23Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "guava/pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/guava/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 5.1,
++    "logSha256": "62e4a0f6ef84272a4060864cfbc019dcff7696ed119d4a7631c1d1953ff8b76d",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ guava ---",
++      "[INFO] Wrote classpath file '/project/guava/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  3.577 s",
++      "[INFO] Finished at: 2026-11-21T09:43:28Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++        "sha256": "476a3dd890483145fdb77c93190689870e824774a62e5a5e094cf3152c94956f",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "com/google/common/collect/Multisets.class",
++    "selectedClassSha256": "d4c568560fa8ca03d89c670f692993b957e38d6160a498c06f7a37d219bebbb9",
++    "sourceSha256": "c7b7d8f76394bfcfb0e4ca3247372c7f01c793f8f8c918c475ddbccd0375f2b1"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "guava-tests/pom.xml",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=MultisetsTest#testSumCountOverflow,MultisetsTest#testSumEntryIteratorOverflow",
++        "test"
++      ],
++      "exit": 0,
++      "seconds": 37.09,
++      "logSha256": "cb5dc8cbc1330c6d6ff8fae6879bbfa34efaae85d45a9704b23f5e9afc429bfe",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- animal-sniffer:1.27:check (check-java-version-compatibility) @ guava-tests ---",
++        "[INFO] Checking unresolved references to org.codehaus.mojo.signature:java18:1.0",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  35.559 s",
++        "[INFO] Finished at: 2026-11-21T09:44:37Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ]
++    },
++    "packagedTestSupport": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "guava-testlib/pom.xml",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 31.36,
++      "logSha256": "2c038110f3f3851ac3e17921e51ab1f536c6eec9d748ab87e3ebf4390585f89a",
++      "errors": [],
++      "tail": [
++        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT.jar",
++        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-sources.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-sources.jar",
++        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-test-sources.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-test-sources.jar",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  29.862 s",
++        "[INFO] Finished at: 2026-11-21T09:43:59Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ]
++    },
++    "testSourceSha256": {
++      "guava-tests/test/com/google/common/collect/MultisetsTest.java": "7d5872a7f7f27ee360a916a14580c9daf4ad437d0e6afece43306745985c21cf"
++    },
++    "transplant": [],
++    "named": {
++      "MultisetsTest#testSumCountOverflow": [
++        {
++          "status": "passed",
++          "class": "com.google.common.collect.MultisetsTest",
++          "method": "testSumCountOverflow",
++          "xmlSha256": "4401835f2c533c7879a903f61d1c29e49934589f7869d3e5d327aa33ed66425d"
++        }
++      ],
++      "MultisetsTest#testSumEntryIteratorOverflow": [
++        {
++          "status": "passed",
++          "class": "com.google.common.collect.MultisetsTest",
++          "method": "testSumEntryIteratorOverflow",
++          "xmlSha256": "4401835f2c533c7879a903f61d1c29e49934589f7869d3e5d327aa33ed66425d"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1744
++  }
++}
+Binary file examples/353-guava-saturated-sum/records/build-guava-testlib/parent-TEST-com.google.common.collect.MultisetsTest.xml.gz changed
+--- /dev/null
++++ b/examples/353-guava-saturated-sum/records/build-guava-testlib/parent-upstream.json
+@@ -0,0 +1,201 @@
++{
++  "revision": "117b5277123e3a2cb1cad35ec8e47c852a3a8858",
++  "side": "parent",
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "guava",
++      "-am",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 34.75,
++    "logSha256": "585ea6b115c76e0288ebab7ee98c4558c0434f7851a4ffec165b872eb1560e42",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] Guava Maven Parent ................................. SUCCESS [  0.888 s]",
++      "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 28.670 s]",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  33.096 s",
++      "[INFO] Finished at: 2026-11-21T09:41:27Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "guava/pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/guava/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 5.34,
++    "logSha256": "0334f793415f1e63e0cff3f235cb7dfa3253ee5234ed9efd4635804c00a4d020",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ guava ---",
++      "[INFO] Wrote classpath file '/project/guava/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  3.780 s",
++      "[INFO] Finished at: 2026-11-21T09:41:32Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar",
++        "sha256": "90ca918ca4eeea6f9b7d43e9eb560a6b4190a44d64866550078cb021645791c5",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "com/google/common/collect/Multisets.class",
++    "selectedClassSha256": "a404f0170144858d2796a5134071598f35aa5fb1d4e8054d7ae21da5d26b6075",
++    "sourceSha256": "7bc4ae3902f7ecb63729a6ed5120ccc0403927d5de366292cca829c6ab76875b"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "guava-tests/pom.xml",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=MultisetsTest#testSumCountOverflow,MultisetsTest#testSumEntryIteratorOverflow",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 39.25,
++      "logSha256": "5171fbee7e06925e5e90d6595a1231e0ff9cc72aff208b0af377668851dc7a14",
++      "errors": [
++        "[ERROR] Tests run: 2, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.116 s <<< FAILURE! -- in com.google.common.collect.MultisetsTest",
++        "[ERROR] com.google.common.collect.MultisetsTest.testSumEntryIteratorOverflow -- Time elapsed: 0.015 s <<< ERROR!",
++        "[ERROR] com.google.common.collect.MultisetsTest.testSumCountOverflow -- Time elapsed: 0.071 s <<< FAILURE!",
++        "[ERROR] Failures: ",
++        "[ERROR]   MultisetsTest.testSumCountOverflow:182 value of: count(...)",
++        "[ERROR] Errors: ",
++        "[ERROR]   MultisetsTest.testSumEntryIteratorOverflow:172 \u00bb IllegalArgument count cannot be negative but was: -2147483648",
++        "[ERROR] Tests run: 2, Failures: 1, Errors: 1, Skipped: 0",
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.6:test (default-test) on project guava-tests: There are test failures.",
++        "[ERROR] ",
++        "[ERROR] See /project/guava-tests/target/surefire-reports for the individual test results."
++      ],
++      "tail": [
++        "[ERROR] See /project/guava-tests/target/surefire-reports for the individual test results.",
++        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ]
++    },
++    "packagedTestSupport": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-f",
++        "guava-testlib/pom.xml",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 33.85,
++      "logSha256": "3b3165cd362f76a9e470d43e22dcdfb812025b1fdaccd99fce38dd54574843c3",
++      "errors": [],
++      "tail": [
++        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT.jar",
++        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-sources.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-sources.jar",
++        "[INFO] Installing /project/guava-testlib/target/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-test-sources.jar to /work/repository/com/google/guava/guava-testlib/999.0.0-HEAD-jre-SNAPSHOT/guava-testlib-999.0.0-HEAD-jre-SNAPSHOT-test-sources.jar",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  32.385 s",
++        "[INFO] Finished at: 2026-11-21T09:42:06Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ]
++    },
++    "testSourceSha256": {
++      "guava-tests/test/com/google/common/collect/MultisetsTest.java": "7d5872a7f7f27ee360a916a14580c9daf4ad437d0e6afece43306745985c21cf"
++    },
++    "transplant": [
++      "guava-tests/test/com/google/common/collect/MultisetsTest.java"
++    ],
++    "named": {
++      "MultisetsTest#testSumCountOverflow": [
++        {
++          "status": "failure",
++          "class": "com.google.common.collect.MultisetsTest",
++          "method": "testSumCountOverflow",
++          "xmlSha256": "386834df43d0584fdf03313412a67021c34120718fe984d5edb8fdf302576e9e",
++          "failureType": "value of",
++          "message": "value of: count(...)\nexpected: 2147483647\nbut was : -2147483648",
++          "atNamedTest": true
++        }
++      ],
++      "MultisetsTest#testSumEntryIteratorOverflow": [
++        {
++          "status": "error",
++          "class": "com.google.common.collect.MultisetsTest",
++          "method": "testSumEntryIteratorOverflow",
++          "xmlSha256": "386834df43d0584fdf03313412a67021c34120718fe984d5edb8fdf302576e9e",
++          "failureType": "java.lang.IllegalArgumentException",
++          "message": "count cannot be negative but was: -2147483648",
++          "atNamedTest": true
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1640,
++    "from https://repo.maven.apache.org/maven2/": 104,
++    "downloadedBytes": 5970980,
++    "downloadedFiles": 104
++  }
++}
