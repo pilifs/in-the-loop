@@ -1,0 +1,214 @@
+{
+  "status": "refuted",
+  "entry": "organic.SurrogateCuts#abbreviate(I)I",
+  "inputs": 2,
+  "differences": 1,
+  "sides": {
+    "parent": {
+      "commit": "2c2ed9d80dac4b46e9426041c091ddcaadb4df2b",
+      "entry": {
+        "entry": "organic.SurrogateCuts#abbreviate(I)I",
+        "classSha256": "68f9e7122fe2a60f22dd458930f528c332defe2b686fe8d24203c61f70bd0cfb",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+        "subjectClassSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525"
+      },
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "fc50e33bc999cd3f10244dd2fef4324705732e7d49e611951cdf6d0f81520df4",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+          "role": "original"
+        },
+        {
+          "path": "lib/net/bytebuddy/byte-buddy/1.17.5/byte-buddy-1.17.5.jar",
+          "sha256": "71568c9f8396677219f650268fbf6493ded484edcdbdf2dae6129ca5be81e8db",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/objenesis/objenesis/3.4/objenesis-3.4.jar",
+          "sha256": "95488102feaf2e2858adf6b299353677dac6c15294006f8ed1c5556f8e3cd251",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/mockito/mockito-inline/4.11.0/mockito-inline-4.11.0.jar",
+          "sha256": "ee52e1c299a632184fba274a9370993e09140429f5e516e6c5570fd6574b297f",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar",
+          "sha256": "4b909690cab288c761eb94c0bf0e814496cf3921d8affac84cd87774530351e5",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar",
+          "sha256": "3a70240de7cdcde04e7c504c2327d7035b9c25ae0206881e3bf4e6798a273ed8",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.SurrogateCuts.abbreviate(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "0c64d713d6251ba039e349a566da81d762245fa0bb8d462f74b479b5ed2a5be9",
+      "stdoutSha256": "d7ec951f527a9da20bacd3bdbe6b45c5ff9866ca137c572378fad267ba1e132b",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/organic-java-pr"
+      ],
+      "interval": [
+        0,
+        1
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.083,
+      "cpuSeconds": 0.1125,
+      "peakRssBytes": 79634432,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "organic.SurrogateCuts#abbreviate(I)I",
+      "adapterSha256": "fc50e33bc999cd3f10244dd2fef4324705732e7d49e611951cdf6d0f81520df4",
+      "adapterClassSha256": "68f9e7122fe2a60f22dd458930f528c332defe2b686fe8d24203c61f70bd0cfb",
+      "subject": {
+        "class": "org.apache.commons.lang3.StringUtils",
+        "method": "abbreviate",
+        "descriptor": "(Ljava/lang/String;I)Ljava/lang/String;",
+        "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+        "classSha256": "0c55f85f2cd2bbe3f2f925396104a9e970721a56c4a803dbb0393a67d2157525",
+        "adapterCalls": [
+          "org.apache.commons.lang3.StringUtils#abbreviate(Ljava/lang/String;I)Ljava/lang/String;",
+          "org.apache.commons.lang3.StringUtils#truncate(Ljava/lang/String;II)Ljava/lang/String;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "At width four abbreviation yields three dots. At width five it yields the intact pair and three dots. The selector identifies the input and direct public observation in controls/table.json.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 1515,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 2.2388,
+  "controlSeconds": 0.0261,
+  "replay": {
+    "claimKey": "2fa890611a2477a7",
+    "entry": "organic.SurrogateCuts#abbreviate(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "68f9e7122fe2a60f22dd458930f528c332defe2b686fe8d24203c61f70bd0cfb",
+        "classpath": [
+          "fc50e33bc999cd3f10244dd2fef4324705732e7d49e611951cdf6d0f81520df4",
+          "a72622f4c9439d585e2b73bc063fb0141bc404b2055a5fb944580779a5c5e62a",
+          "71568c9f8396677219f650268fbf6493ded484edcdbdf2dae6129ca5be81e8db",
+          "95488102feaf2e2858adf6b299353677dac6c15294006f8ed1c5556f8e3cd251",
+          "ee52e1c299a632184fba274a9370993e09140429f5e516e6c5570fd6574b297f",
+          "4b909690cab288c761eb94c0bf0e814496cf3921d8affac84cd87774530351e5",
+          "3a70240de7cdcde04e7c504c2327d7035b9c25ae0206881e3bf4e6798a273ed8"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.SurrogateCuts.abbreviate(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": {
+        "units": [],
+        "start": 0,
+        "width": 0
+      },
+      "field": "abbreviate",
+      "direct": {
+        "parent": {
+          "truncate": [],
+          "fixedCut": [],
+          "abbreviate": [
+            55357,
+            46,
+            46,
+            46
+          ]
+        }
+      },
+      "tableSha256": "893be29259c6de48212890bf7220ad49e219cadc2bf7c8aec5549c72f31dc632"
+    }
+  },
+  "wallSeconds": 3.7197,
+  "task": "abbreviate-parent",
+  "sourceClaim": "2fa890611a2477a7",
+  "inputsKey": "a439715a4ba2f72f699634d988a6a93ea35fa212b63400333d08c1e0b50323b5",
+  "revisions": [
+    "parent"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "parent": "cc08a4ac1a1073925dd519c21359843243ce45287323e0150d8c2f745c15d392"
+  }
+}
