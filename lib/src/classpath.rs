@@ -837,6 +837,21 @@ impl ClassPath {
         Some((class, method))
     }
 
+    /// Ordinary instance bytecode on an exact, freshly constructed queue. A path reaching a
+    /// VarHandle still needs the JDK's actual atomic operation; the empty path reads neither handle.
+    pub(crate) fn linked_queue_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        const QUEUE: &str = "java/util/concurrent/ConcurrentLinkedQueue";
+        if receiver != QUEUE || special && owner != QUEUE { return None; }
+        if !matches!((name, desc), ("<init>", "()V") | ("peek", "()Ljava/lang/Object;") | ("isEmpty", "()Z")
+            | ("first", "()Ljava/util/concurrent/ConcurrentLinkedQueue$Node;")
+            | ("updateHead", "(Ljava/util/concurrent/ConcurrentLinkedQueue$Node;Ljava/util/concurrent/ConcurrentLinkedQueue$Node;)V")) {
+            return None;
+        }
+        let Loaded { class, origin: Origin::Jdk } = self.load(QUEUE).ok()?? else { return None };
+        let method = class.method(name, desc)?.clone();
+        (!method.is_static() && method.code.is_some()).then_some((class, method))
+    }
+
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
     pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
@@ -1006,6 +1021,10 @@ impl ClassPath {
     /// Ordinary single-threaded JDK objects whose instance and static fields both engines
     /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
     pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node") {
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return class.method("<clinit>", "()V").is_none().then_some(class);
+        }
         if name == "java/util/EventObject" {
             if self.runs_model(name) { return None; }
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };

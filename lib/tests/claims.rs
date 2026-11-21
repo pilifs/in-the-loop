@@ -1396,7 +1396,7 @@ fn enum_tables_and_sequential_collectors_use_the_actual_iterator() {
     assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.IteratorCollection").status().unwrap().success());
     let cp = jvmcontract::witness::classpath([classes]).unwrap();
     let mut machine = Machine::new(&cp);
-    for name in ["enums", "collected", "erased", "erroneous"] {
+    for name in ["emptyQueues", "enums", "collected", "erased", "erroneous"] {
         proved(classes, &format!("claims.IteratorCollection#{name}"), 4);
         assert_eq!(machine.call_static("claims/IteratorCollection", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     }

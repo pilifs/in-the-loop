@@ -148,6 +148,25 @@ fn a_joint_snapshot_refuses_opaque_reads_and_overlapping_roots() {
 }
 
 #[test]
+fn an_unobserved_reference_can_cross_an_application_constructor_until_inspected() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(&c.app).args(["oc.JointStartup", "carry"]).output().unwrap();
+    assert!(jvm.status.success());
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true");
+    for (method, verdict) in [("carried", Verdict::Verified), ("inspectsCarried", Verdict::Unverifiable)] {
+        let mut o = proving(&format!("oc.JointStartup#{method}"), "result", method);
+        o.observed_initializers = vec!["oc.JointStartup$Root".into()];
+        o.observed_runtime.preinitialize_together = true;
+        let run = property::run(&o).unwrap();
+        assert_eq!(run.verdict, verdict, "{}", run.output);
+        if verdict == Verdict::Unverifiable {
+            assert!(run.output.contains("Store.opaque") && run.output.contains("inspectsCarried"), "{}", run.output);
+        }
+    }
+}
+
+#[test]
 fn observed_enum_constants_keep_their_aliases_and_both_declaring_classes_fields() {
     jvmcontract::tool_tier!();
     let Some(c) = classes() else { return };

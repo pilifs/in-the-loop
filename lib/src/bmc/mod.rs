@@ -642,6 +642,8 @@ enum Val {
     J(Bits),
     R(Option<usize>),
     C(Rc<Choice>),
+    /// A reference from a qualified JVM snapshot whose referent is unavailable. Only transport is executable.
+    Unobserved(Rc<str>),
 }
 
 impl Val {
@@ -1039,6 +1041,7 @@ fn join_key(path: &Path, loops: bool) -> JoinKey {
 /// The value that is `x` where `g` holds and `y` where it doesn't: bits chosen bit by bit, references a
 /// [`Choice`] of both's options. `None` when the two are not of one kind ([`mergeable`]).
 fn choose(b: &mut Blaster, g: Lit, x: &Val, y: &Val) -> Option<Val> {
+    if matches!((x, y), (Val::Unobserved(a), Val::Unobserved(c)) if a == c) { return Some(x.clone()); }
     match (x, y) {
         (Val::I(p), Val::I(q)) => Some(Val::I(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
         (Val::J(p), Val::J(q)) => Some(Val::J(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
@@ -1083,6 +1086,7 @@ fn substitute(path: &mut Path, choice: &Rc<Choice>, target: Option<usize>) {
 /// are a [`Choice`] by the condition where they differ.
 fn mergeable(a: &Val, b: &Val) -> bool {
     matches!((a, b), (Val::I(_), Val::I(_)) | (Val::J(_), Val::J(_)) | (Val::R(_) | Val::C(_), Val::R(_) | Val::C(_)))
+        || matches!((a, b), (Val::Unobserved(x), Val::Unobserved(y)) if x == y)
 }
 
 /// Whether two paths at the same join point have states of one shape, so that they can be merged slot by slot and
@@ -3003,7 +3007,7 @@ impl<'a> Engine<'a> {
                 }
                 let value = match self.pop(path)? {
                     Val::I(b) | Val::J(b) => b,
-                    Val::R(_) | Val::C(_) => return unsupported("arrays of references"),
+                    Val::R(_) | Val::C(_) | Val::Unobserved(_) => return unsupported("arrays of references"),
                 };
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
@@ -3642,6 +3646,11 @@ impl<'a> Engine<'a> {
         let frame = path.frames.last().expect("a frame");
         let insn = frame.code.insns[frame.at].clone();
         let class = frame.class.clone();
+        if !self.observed.is_empty() {
+            if let Some(reason) = frame.stack.iter().find_map(|v| match v { Val::Unobserved(s) => Some(s.clone()), _ => None }) {
+                if let Some(step) = self.transport_unobserved(path, &class, &insn, &reason) { return step; }
+            }
+        }
         if matches!(insn, Insn::Load(Kind::Int, _)) {
             if let Some(step) = self.fill_loop(path) { return step; }
         }
@@ -5260,6 +5269,13 @@ impl<'a> Engine<'a> {
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
+            if !path.objects[o].assumed && !path.objects[o].given {
+                if let Some((cf, method)) = self.cp.linked_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
+            }
             if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
                 && !path.objects[o].assumed && !path.objects[o].given && ClassPath::heap_buffer_owner(&member.owner) {
                 let target = if special { member.owner.clone() } else {
@@ -5934,7 +5950,7 @@ impl<'a> Engine<'a> {
         }
         let bits = |v: &Val| match v {
             Val::I(b) | Val::J(b) => Some(b.clone()),
-            Val::R(_) | Val::C(_) => None,
+            Val::R(_) | Val::C(_) | Val::Unobserved(_) => None,
         };
         let a: Vec<Bits> = match args.iter().map(bits).collect::<Option<Vec<_>>>() {
             Some(a) => a,

@@ -275,11 +275,11 @@ impl Engine<'_> {
         let mut queue: Vec<usize> = Vec::new();
         key.push(frame.locals.len() as i64);
         for local in &frame.locals {
-            self.value(&mut key, local.as_ref(), &mut numbers, &mut queue);
+            self.value(&mut key, local.as_ref(), &mut numbers, &mut queue)?;
         }
         key.push(frame.stack.len() as i64);
         for v in &frame.stack {
-            self.value(&mut key, Some(v), &mut numbers, &mut queue);
+            self.value(&mut key, Some(v), &mut numbers, &mut queue)?;
         }
         let mut statics: Vec<(String, String, &Val)> = path.statics.iter().filter(|((c, _), _)| read(c)).map(|((c, n), v)| (unprefixed(c, &previous), n.clone(), v)).collect();
         statics.sort_by(|x, y| (&x.0, &x.1).cmp(&(&y.0, &y.1)));
@@ -290,7 +290,7 @@ impl Engine<'_> {
         for (class, name, v) in statics {
             let (c, n) = (self.ties.name(&class), self.ties.name(&name));
             key.extend([c, n]);
-            self.value(&mut key, Some(v), &mut numbers, &mut queue);
+            self.value(&mut key, Some(v), &mut numbers, &mut queue)?;
         }
         let mut classes: Vec<(String, ClassState)> = path.classes.iter().filter(|(c, _)| read(c)).map(|(c, s)| (unprefixed(c, &previous), *s)).collect();
         classes.sort_by(|x, y| x.0.cmp(&y.0));
@@ -318,7 +318,7 @@ impl Engine<'_> {
             for (name, v) in &obj.fields {
                 let n = self.ties.name(&unprefixed(name, &previous));
                 key.push(n);
-                self.value(&mut key, Some(v), &mut numbers, &mut queue);
+                self.value(&mut key, Some(v), &mut numbers, &mut queue)?;
             }
             match &obj.array {
                 None => key.push(-1),
@@ -336,7 +336,7 @@ impl Engine<'_> {
                     }
                     key.push(array.refs.len() as i64);
                     for r in &array.refs {
-                        self.value(&mut key, Some(r), &mut numbers, &mut queue);
+                        self.value(&mut key, Some(r), &mut numbers, &mut queue)?;
                     }
                 }
             }
@@ -351,8 +351,9 @@ impl Engine<'_> {
         Some((id, by_allocation))
     }
 
-    fn value(&mut self, key: &mut Vec<i64>, v: Option<&Val>, numbers: &mut HashMap<usize, i64>, queue: &mut Vec<usize>) {
+    fn value(&mut self, key: &mut Vec<i64>, v: Option<&Val>, numbers: &mut HashMap<usize, i64>, queue: &mut Vec<usize>) -> Option<()> {
         match v {
+            Some(Val::Unobserved(_)) => return None,
             None => key.push(0),
             Some(Val::I(bits)) => {
                 key.push(1);
@@ -376,6 +377,7 @@ impl Engine<'_> {
                 }
             }
         }
+        Some(())
     }
 
     /// The key of the code of `class`'s method `name``descriptor`: its fingerprint, with a previous version's copy
@@ -777,7 +779,7 @@ impl Engine<'_> {
                 shape.extend([5, n, string as i64, element, array.length.len() as i64]);
                 inputs.push(Input::Content { length: array.length.clone(), cells: array.cells.clone() });
             }
-            Val::C(_) => return None,
+            Val::C(_) | Val::Unobserved(_) => return None,
         }
         Some(())
     }

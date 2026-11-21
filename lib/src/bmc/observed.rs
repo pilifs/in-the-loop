@@ -51,7 +51,12 @@ impl Engine<'_> {
                     Err(what) => {
                         // A partially filled map or array cannot become visible through a second alias.
                         made.retain(|_, object| *object < start);
-                        Rc::make_mut(&mut path.unheld_statics).insert(key, what);
+                        if observed.joint_fields.is_some() && matches!(field.descriptor.as_bytes().first(), Some(b'L' | b'[')) {
+                            let reason = format!("the observed static field {}.{} holds {what}. The snapshot supplies no referent to inspect", owner.replace('/', "."), field.name);
+                            path.statics.insert(key, Val::Unobserved(reason.into()));
+                        } else {
+                            Rc::make_mut(&mut path.unheld_statics).insert(key, what);
+                        }
                     }
                 }
             }
@@ -61,6 +66,44 @@ impl Engine<'_> {
         self.assumption_ids.insert(text.clone(), format!("observed-initializer:{}:{}:{}", class.replace('/', "."), observed.on.sha256, observed.state_sha256));
         self.assumed.insert(text);
         Ok(())
+    }
+
+    /// Java locals and application fields can carry an unavailable reference without examining it.
+    /// All other uses stop before dispatch, even a null test or an identity comparison. In particular
+    /// a constructor receiving the value runs its selected application bytecode, including exceptions.
+    pub(super) fn transport_unobserved(&mut self, path: &mut Path, class: &ClassFile, insn: &Insn, reason: &str) -> Option<Step> {
+        let stack = &path.frames.last()?.stack;
+        match insn {
+            Insn::Load(..) | Insn::Store(Kind::Ref, _) | Insn::Nop | Insn::Pop | Insn::Dup | Insn::Swap => return None,
+            Insn::PutField(i) if matches!(stack.as_slice(), [.., Val::R(Some(_)), Val::Unobserved(_)]) => {
+                if let Ok(m) = class.pool.member(*i) {
+                    if self.cp.is_application(&m.owner) && Type::parse(&m.descriptor).is_ok_and(|t| t.is_reference()) { return None; }
+                }
+            }
+            Insn::InvokeSpecial(i) => {
+                if let Ok(m) = class.pool.member(*i) {
+                    if let Some(step) = self.unobserved_constructor(path, &m) { return Some(step); }
+                }
+            }
+            _ => {}
+        }
+        Some(unsupported(format!("{reason} ({insn:?} in {}.{})", class.name.replace('/', "."), path.frames.last()?.method)))
+    }
+
+    fn unobserved_constructor(&mut self, path: &mut Path, member: &crate::classfile::MemberRef) -> Option<Step> {
+        if member.name != "<init>" { return None; }
+        let cf = self.cp.application(&member.owner).ok()??;
+        let body = cf.method("<init>", &member.descriptor).filter(|b| b.code.is_some() && !b.is_static())?.clone();
+        let desc = MethodDescriptor::parse(&member.descriptor).ok()?;
+        let stack = &mut path.frames.last_mut()?.stack;
+        let start = stack.len().checked_sub(desc.params.len() + 1)?;
+        let Val::R(Some(o)) = stack[start] else { return None };
+        if !self.cp.is_subtype(&path.objects[o].class, &member.owner)
+            || desc.params.iter().zip(&stack[start + 1..]).any(|(ty, v)| matches!(v, Val::Unobserved(_)) && !ty.is_reference()) {
+            return None;
+        }
+        let args = stack.split_off(start);
+        Some(self.enter_method(path, &member.owner, cf, body, args))
     }
 
     /// Why a read of the static field is refused, where the observation of its class's initializer holds no value

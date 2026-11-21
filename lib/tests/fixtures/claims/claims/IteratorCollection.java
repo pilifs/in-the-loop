@@ -124,5 +124,11 @@ public final class IteratorCollection {
         try { view.add(root); return false; } catch (UnsupportedOperationException expected) { return true; }
     }
 
+    public static boolean emptyQueues() {
+        java.util.Queue<String> first = new java.util.concurrent.ConcurrentLinkedQueue<>();
+        java.util.Queue<String> second = new java.util.concurrent.ConcurrentLinkedQueue<>();
+        return first != second && first.isEmpty() && first.peek() == null && second.peek() == null;
+    }
+
     public static void main(String[] args) { if (!enums() || !erroneous() || !erased() || !collected() || !discard(false) || !discard(true) || !reset(true) || !reset(false) || !stackFrames(false) || !stackFrames(true) || wrong()) throw new AssertionError(); }
 }

@@ -51,7 +51,8 @@
 //! - With `--observed-runtime '{"preinitializeTogether":true}'`, startup precedes the checked entry. The named
 //!   root and its successfully initialized application classes are captured in one JVM with a shared object
 //!   table. The checker binds every class file, installs the fields and all represented aliases, and refuses
-//!   overlapping captures, absent application supertypes and reads of opaque state. This scope includes any
+//!   overlapping captures, absent application supertypes and operations that inspect opaque state. A reference
+//!   can pass through an application constructor into a field until such an operation. This scope includes any
 //!   cross-class registration the JVM made. It assumes that unrecorded external state and aliases do not affect
 //!   the checked call. The ordinary first-use observation still compares each transitive class independently.
 //! - The default locale: one whose language is Turkish, Azeri or Lithuanian is refused, since the check takes the

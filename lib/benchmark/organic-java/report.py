@@ -160,7 +160,7 @@ def startup_companions(folder, example, target, frozen_tasks):
             continue
         attempts = []
         seen = set()
-        for stage in ("enum-snapshot", "traversal-boundaries", "observed-process", "joint-startup", "workflow"):
+        for stage in ("enum-snapshot", "traversal-boundaries", "observed-process", "joint-startup", "constructor-transport", "workflow"):
             result = native(folder, task, [stage], plan)
             if not result.get("receipt"):
                 continue
