@@ -1,0 +1,433 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-032239-qualify-ordinary-jackson-table-startup-o",
+  "title": "Qualify ordinary Jackson table startup on both Avro changes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.0s, peak 260.3 MiB (estimated 3m00s, 3.0 GiB); 28 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-032239-qualify-ordinary-jackson-table-startup-o.json",
+    "sha256": "17e53c6b69afcf4028a455e86669d03916ab58492486b97acf190590d5e469b8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-032239-qualify-ordinary-jackson-table-startup-o",
+      "title": "Qualify ordinary Jackson table startup on both Avro changes",
+      "description": "Use all four original Avro classpaths and compare the pilot and new checker on every ASCII input to the real Jackson charToHex method. Run the original 64 unwind and a separate 512-iteration producer proof. Check the different 0x141 result on the two Jackson releases and the next ordinary JsonFactory producer at both bounds. Each result binds the actual class bytes and fresh JVM output.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "355",
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T03:22:39+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check ASCII, the release-specific input and the real factory",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/jackson_tables.py --pilot --output verification/domain-foundations/jackson-tables",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/jackson-tables"
+      ]
+    }
+  },
+  "sourceCommit": "05a2bb772876a679c847e5fafb1ef8779a83fab1",
+  "startedAt": "2026-11-22T03:33:49+00:00",
+  "finishedAt": "2026-11-22T03:37:38+00:00",
+  "wallSeconds": 229.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 661403,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 272986112,
+    "wallSeconds": 15.0,
+    "cpuSeconds": 22.3,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check ASCII, the release-specific input and the real factory",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/jackson_tables.py --pilot --output verification/domain-foundations/jackson-tables",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 15.04,
+      "cpuSeconds": 22.343,
+      "cpuThrottledSeconds": 1.388,
+      "peakMemoryBytes": 272986112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-ascii-the-release-specif.log",
+        "lines": 48,
+        "bytes": 7182,
+        "sha256": "06518d4cfe96f01ea2025e8c028aea2e2973ff7796b4d186463ba1d055eb6441",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.",
+        "SLF4J(W): Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.",
+        "SLF4J(W): Ignoring binding found at [jar:file:/home/filip/.cache/in-the-loop/targets/sha256/ae/ae6fdd5c9547896114d5ec7fa7503733b7d2890573d3886fb548b3119c4d3f67!/org/slf4j/impl/StaticLoggerBinder.class]",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.",
+        "355 parent pilot JacksonHex#ascii unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.",
+        "355 parent frozen JacksonHex#ascii unverifiable outside the fragment: arraycopy of summarized array cells",
+        "355 parent table JacksonHex#ascii verified None",
+        "355 parent table JacksonHex#upperByte violation None",
+        "355 parent frozen BytesSchema#firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "355 parent table BytesSchema#firstFactory unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.currentTimeMillis()J@jdk-21.0.13 (java.lang.System.currentTimeMillis() at com.fasterxml.jacks",
+        "SLF4J(W): No SLF4J providers were found.",
+        "SLF4J(W): Defaulting to no-operation (NOP) logger implementation",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.",
+        "SLF4J(W): Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.",
+        "SLF4J(W): Ignoring binding found at [jar:file:/home/filip/.cache/in-the-loop/targets/sha256/ae/ae6fdd5c9547896114d5ec7fa7503733b7d2890573d3886fb548b3119c4d3f67!/org/slf4j/impl/StaticLoggerBinder.class]",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.",
+        "SLF4J(W): No SLF4J providers were found.",
+        "SLF4J(W): Defaulting to no-operation (NOP) logger implementation",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.",
+        "SLF4J(W): Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.",
+        "SLF4J(W): Ignoring binding found at [jar:file:/home/filip/.cache/in-the-loop/targets/sha256/ae/ae6fdd5c9547896114d5ec7fa7503733b7d2890573d3886fb548b3119c4d3f67!/org/slf4j/impl/StaticLoggerBinder.class]",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.",
+        "355 fix pilot JacksonHex#ascii unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<cl",
+        "355 fix frozen JacksonHex#ascii unverifiable outside the fragment: arraycopy of summarized array cells",
+        "355 fix table JacksonHex#ascii verified None",
+        "355 fix table JacksonHex#upperByte violation None",
+        "355 fix frozen BytesSchema#firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "355 fix table BytesSchema#firstFactory unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.currentTimeMillis()J@jdk-21.0.13 (java.lang.System.currentTimeMillis() at com.fasterxml.jackson.",
+        "361 parent pilot JacksonHex#ascii unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.",
+        "361 parent frozen JacksonHex#ascii unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 parent table JacksonHex#ascii verified None",
+        "361 parent table JacksonHex#upperByte verified None",
+        "361 parent frozen BytesSchema#firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 parent table BytesSchema#firstFactory unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.currentTimeMillis()J@jdk-21.0.13 (java.lang.System.currentTimeMillis() at com.fasterxml.jacks",
+        "361 fix pilot JacksonHex#ascii unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<cl",
+        "361 fix frozen JacksonHex#ascii unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 fix table JacksonHex#ascii verified None",
+        "361 fix table JacksonHex#upperByte verified None",
+        "361 fix frozen BytesSchema#firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 fix table BytesSchema#firstFactory unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.currentTimeMillis()J@jdk-21.0.13 (java.lang.System.currentTimeMillis() at com.fasterxml.jackson."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/fix/evidence.json",
+      "change": "added",
+      "bytes": 13950,
+      "sha256": "f1da5c59255b1011dc64b1c7c9b322fea2353b827be94ea0e33f461ac826d8bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/fix/frozen-ascii.native.json",
+      "change": "added",
+      "bytes": 4769,
+      "sha256": "0e345b336b5048c2cce9f0d611e989a487b20e57708b5eaca2a354b0f417e4c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/fix/frozen-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4494,
+      "sha256": "089a2bcac415b5f6c0f113df31f0cd4f1c197ac6f85c05ace103cb7a7ab2eec2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/fix/pilot-ascii.native.json",
+      "change": "added",
+      "bytes": 6077,
+      "sha256": "0a5b2c3fa36f11ae4389cfa905a0af20cd4c9ba38324c65b2d49821cb056703b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/fix/table-ascii.native.json",
+      "change": "added",
+      "bytes": 5359,
+      "sha256": "ab5b9363df68bd7b025135c6280ce4686459217ea6c1b374de4edc17231c19c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/fix/table-firstFactory.native.json",
+      "change": "added",
+      "bytes": 5894,
+      "sha256": "632a9c3ec350ffa5ac4cefc6e2fa2ece523c6be599b4b449346aae1b233ccb81",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/fix/table-upperByte.native.json",
+      "change": "added",
+      "bytes": 5130,
+      "sha256": "1b59c3c8604625ffbac9033bbbf8ef0d77c946e1e958552258ce6f29f293cab3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/parent/evidence.json",
+      "change": "added",
+      "bytes": 13955,
+      "sha256": "7df92de91740b87e87bdf67deb70ad44abf8318e8cc9df266ce8b3f0717624c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/parent/frozen-ascii.native.json",
+      "change": "added",
+      "bytes": 4769,
+      "sha256": "64be003827e490f5ed73c8e9ff4c1b22642529a09a7eae2677710a74ac72a7a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/parent/frozen-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4495,
+      "sha256": "3ccdd10487ddfedfe38c732ed16d5663e5ea2b9355e2d2b6bdc77dafe8541eb8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/parent/pilot-ascii.native.json",
+      "change": "added",
+      "bytes": 6076,
+      "sha256": "ff477a1b294d213ff68d7a55b3829e4c94e86227696c2ce6048280e8acdb0b12",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/parent/table-ascii.native.json",
+      "change": "added",
+      "bytes": 5358,
+      "sha256": "fd5c332fde16d78b47a248f36b1db34a2db2442bff9f05ecd866046b5f6ec1cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/parent/table-firstFactory.native.json",
+      "change": "added",
+      "bytes": 5892,
+      "sha256": "c1b6891440fa5a2aaf562b08cf7ac6b4711a39ae3a0d0c6ba78568bb49769224",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/355/parent/table-upperByte.native.json",
+      "change": "added",
+      "bytes": 5127,
+      "sha256": "d28995bb297b9f9c5ae334132c2a211d82e1c12c8bd29b9c17ba55ce7b4f9c8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/fix/evidence.json",
+      "change": "added",
+      "bytes": 5440,
+      "sha256": "448f655170e0af03940eabbcdd0c397fd3b4a0e428efd6adf2474ec31a2aeb64",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/fix/frozen-ascii.native.json",
+      "change": "added",
+      "bytes": 4771,
+      "sha256": "430a148272ebfed411a8d44f206961d3a0c67601a00560119acd9f610c7d1489",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/fix/frozen-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4493,
+      "sha256": "e5874c85686c800a03927bc0014cbb92cc00844eb4d33071ede5ec227e35266a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/fix/pilot-ascii.native.json",
+      "change": "added",
+      "bytes": 6076,
+      "sha256": "914b913519965125f9275a912ef2e262b117dffa61dacb1ecc50c6ef61f71ded",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/fix/table-ascii.native.json",
+      "change": "added",
+      "bytes": 5360,
+      "sha256": "2bed294bd0bc939cc910951eef74ff6107011b687e3f898503f649d29971b0e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/fix/table-firstFactory.native.json",
+      "change": "added",
+      "bytes": 5901,
+      "sha256": "b977998c45d5613b1fbc3e779372e45451664ba8cd88b9c73f5b680e746754d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/fix/table-upperByte.native.json",
+      "change": "added",
+      "bytes": 4357,
+      "sha256": "8aa47dda31c4a43f2e849c6e21f18529d0dd9a8c98466bd23ff22c079274e279",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/parent/evidence.json",
+      "change": "added",
+      "bytes": 5447,
+      "sha256": "ec4083faee977ce28461e4f723a0aab87150b685c22d7c34f044bcc0dc1ce9f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/parent/frozen-ascii.native.json",
+      "change": "added",
+      "bytes": 4770,
+      "sha256": "3e1688f9d4f576f26be70e7d4d7e8532a502e2d08223be8cf2bae4a15102f142",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/parent/frozen-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4493,
+      "sha256": "35a9a954f9ca3867e0bc85108e57b52e7cea3401dc4aacf5b3d3b45a522ec526",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/parent/pilot-ascii.native.json",
+      "change": "added",
+      "bytes": 6077,
+      "sha256": "e2b2c5579a8ef847415a08a144188ecefb28831c5327edd0462c36a6e986e342",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/parent/table-ascii.native.json",
+      "change": "added",
+      "bytes": 5361,
+      "sha256": "9e961a2f8eb24fabfa4036aa0a21b88b6f4222a31a1cec80c2539ed5ac14d831",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/parent/table-firstFactory.native.json",
+      "change": "added",
+      "bytes": 5902,
+      "sha256": "634e36bb16a1c172766b5f8b9a214ffd642905fe0fb5d0dc63c8d1b82b1b02df",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/jackson-tables/361/parent/table-upperByte.native.json",
+      "change": "added",
+      "bytes": 4358,
+      "sha256": "268c2951bad0ba6e2b8c60d27df70d2888a550c630f7d13b9cdc27a338bd96dd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T03:38:02+00:00",
+    "applied": [
+      "verification/domain-foundations/jackson-tables/355/fix/evidence.json",
+      "verification/domain-foundations/jackson-tables/355/fix/frozen-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/355/fix/frozen-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/355/fix/pilot-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/355/fix/table-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/355/fix/table-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/355/fix/table-upperByte.native.json",
+      "verification/domain-foundations/jackson-tables/355/parent/evidence.json",
+      "verification/domain-foundations/jackson-tables/355/parent/frozen-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/355/parent/frozen-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/355/parent/pilot-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/355/parent/table-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/355/parent/table-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/355/parent/table-upperByte.native.json",
+      "verification/domain-foundations/jackson-tables/361/fix/evidence.json",
+      "verification/domain-foundations/jackson-tables/361/fix/frozen-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/361/fix/frozen-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/361/fix/pilot-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/361/fix/table-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/361/fix/table-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/361/fix/table-upperByte.native.json",
+      "verification/domain-foundations/jackson-tables/361/parent/evidence.json",
+      "verification/domain-foundations/jackson-tables/361/parent/frozen-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/361/parent/frozen-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/361/parent/pilot-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/361/parent/table-ascii.native.json",
+      "verification/domain-foundations/jackson-tables/361/parent/table-firstFactory.native.json",
+      "verification/domain-foundations/jackson-tables/361/parent/table-upperByte.native.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5f16739e2a3796d20fe4150398cdb6305cf959c3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5f16739e2a3796d20fe4150398cdb6305cf959c3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T033738Z-783353eba3d79f71",
+      "outputs": "20261122T033738Z-808490808015fb02",
+      "diff": "20261122T033738Z-831538892576638b"
+    }
+  }
+}
