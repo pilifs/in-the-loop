@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-001607-prove-real-avro-registration-and-writabl",
+  "title": "Prove real Avro registration and writable producer contracts",
+  "description": "Check original superclass initialization, a prior installation and a second accessor installation on both PR classpaths. Verify writable backing identity, size, contents and the growth control separately with ordinary and recorded startup. Each property has a fresh JVM control and a strict raw native receipt.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355",
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T00:16:07+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "18m"
+  },
+  "steps": [
+    {
+      "name": "Check both revisions of both consumers",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/producers.py --output verification/domain-foundations/producers",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/producers"
+  ]
+}

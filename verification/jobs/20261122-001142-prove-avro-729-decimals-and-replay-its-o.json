@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-001142-prove-avro-729-decimals-and-replay-its-o",
+  "title": "Prove Avro 729 decimals and replay its original parent failures",
+  "description": "Check cursor and the two signed decimal results on both historical revisions after the recorded LogicalTypes and Schema startup. Use the actual JDK heap duplicate and numeric constructors. Reproduce both native parent witnesses on fresh JVMs at the original entry.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer",
+    "jvm:counterexample"
+  ],
+  "links": {
+    "examples": [
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T00:11:42+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Decide all four conditional obligations",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route native --stage decimal-startup --tasks cursor-parent-startup,cursor-fix-startup,decimals-parent-startup,decimals-fix-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Reproduce cursor-parent on the original parent",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 examples/tools/build.py 361 --original-witness cursor-parent --from-task cursor-parent-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Reproduce decimals-parent on the original parent",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 examples/tools/build.py 361 --original-witness decimals-parent --from-task decimals-parent-startup",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native",
+    "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup",
+    "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup",
+    "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup",
+    "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup",
+    "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions",
+    "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions",
+    "examples/361-avro-decimal-buffer-cursor/records/original-witnesses"
+  ]
+}

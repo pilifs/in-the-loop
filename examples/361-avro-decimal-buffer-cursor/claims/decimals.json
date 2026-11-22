@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "decimals",
+  "statement": "Two conversions of the same buffer return the independently decoded signed integer and scale both times.",
+  "assume": "code >= 0 && code < 12",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.DecimalWindow#decimals(I)I",
+    "mapping": "Two conversions of the same buffer return the independently decoded signed integer and scale both times. Each selector maps to its original observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 12
+  }
+}

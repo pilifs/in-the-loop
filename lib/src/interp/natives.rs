@@ -901,6 +901,12 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         }
         ("equals", "(Ljava/lang/Object;)Z") => return Ok(Some(Value::bool(native_equals(m, r, args[0])?))),
         ("hashCode", "()I") => return Ok(Some(Value::Int(native_hash(m, r)?))),
+        ("intern", "()Ljava/lang/String;") if matches!(native, Native::String(_)) => {
+            if m.interned.values().any(|&known| known == r) {
+                return Ok(Some(Value::Ref(r)));
+            }
+            return unsupported("String.intern on a receiver not established as a canonical literal");
+        }
         // A String's toString is the String itself, which `==` sees.
         ("toString", "()Ljava/lang/String;") if matches!(native, Native::String(_)) => return Ok(Some(Value::Ref(r))),
         ("toString", "()Ljava/lang/String;") => {

@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-233929-check-the-prepared-avro-729-baseline-on",
+  "title": "Check the prepared Avro 729 baseline on both original products",
+  "description": "Run both frozen properties on both fully prepared original products, including the exhaustive JVM controls, with the pre-foundation verifier. Supersedes the baseline job announced by a temporary revision during a scoped commit.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvm:finite-domain"
+  ],
+  "links": {
+    "examples": [
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T23:39:29+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Freeze native outcomes",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route native",
+      "cwd": "."
+    },
+    {
+      "name": "Check all finite JVM inputs",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route finite",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native",
+    "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite"
+  ]
+}

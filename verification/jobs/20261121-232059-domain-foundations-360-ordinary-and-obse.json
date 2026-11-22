@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-232059-domain-foundations-360-ordinary-and-obse",
+  "title": "Domain foundations 360 ordinary and observed startup",
+  "description": "Compare the frozen strict native obligations and their recorded JVM startup companions on the post-architecture verifier. Retain refusals and the actual checker, bounds and artifact identities.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T23:20:59+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "revision": "3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d",
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check foundation-baseline",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage foundation-baseline --tasks postorder-fix,terminal-fix,preorder-parent,preorder-fix,nonempty-parent,nonempty-fix --seconds 60",
+      "cwd": "."
+    },
+    {
+      "name": "Check foundation-baseline-observed",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage foundation-baseline-observed --tasks postorder-fix-node-startup,postorder-parent-node-startup,postorder-fix-observed --seconds 60",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/360-javaparser-postorder-root/records/foundation-baseline-native",
+    "examples/360-javaparser-postorder-root/records/foundation-baseline-observed-native"
+  ]
+}

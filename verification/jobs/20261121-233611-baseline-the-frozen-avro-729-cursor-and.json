@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-233611-baseline-the-frozen-avro-729-cursor-and",
+  "title": "Baseline the frozen Avro 729 cursor and decimal claims",
+  "description": "Use the original Maven artifacts, independent twelve-window oracle and strict native checker before buffer support changes. Repeat the bounded calls on the original JVMs. Record a native refusal as a baseline, preserving the successful replay and finite results.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvm:finite-domain"
+  ],
+  "links": {
+    "examples": [
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T23:36:11+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Freeze native outcomes",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route native",
+      "cwd": "."
+    },
+    {
+      "name": "Check all finite JVM inputs",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --stage adoption-baseline --route finite",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-native",
+    "examples/361-avro-decimal-buffer-cursor/records/adoption-baseline-finite"
+  ]
+}

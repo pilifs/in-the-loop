@@ -892,10 +892,6 @@ fn made_in(cp: &ClassPath, name: &str, within: &mut Vec<String>, framed: bool) -
     if cf.is_interface() || cf.is_abstract() || cf.is_enum() {
         return Ok(Err(format!("{java} is {}; only a concrete class made by its constructor is", if cf.is_interface() { "an interface" } else if cf.is_enum() { "an enum" } else { "abstract" })));
     }
-    let expected_super = if cf.is_record() { "java/lang/Record" } else { "java/lang/Object" };
-    if cf.super_class.as_deref() != Some(expected_super) {
-        return Ok(Err(format!("{java} extends {}; a class made by its constructor must extend Object directly", cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
-    }
     let constructors: Vec<_> = cf.methods.iter().filter(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic()).collect();
     let constructor = match constructors.as_slice() {
         [one] => *one,
@@ -963,13 +959,31 @@ fn fields_in(cp: &ClassPath, name: &str, within: &mut Vec<String>, framed: bool)
     if cf.is_interface() {
         return Ok(Ok(crate::given::fields(cp, name)?));
     }
-    let expected_super = if cf.is_record() { "java/lang/Record" } else { "java/lang/Object" };
-    if cf.super_class.as_deref() != Some(expected_super) {
-        return Ok(Err(format!("{java} extends {}; the fields of a class that extends another are not supported yet", cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
+    // Keep the actual constructor chain. Its invokespecial calls, initialization order
+    // and virtual dispatch execute on the same concrete receiver as the target method.
+    let terminal = if cf.is_record() { "java/lang/Record" } else { "java/lang/Object" };
+    let mut hierarchy = vec![cf];
+    loop {
+        let Some(parent) = hierarchy.last().and_then(|c| c.super_class.as_deref()) else {
+            return Ok(Err(format!("{java} has an incomplete superclass chain")));
+        };
+        if parent == terminal { break; }
+        if hierarchy.iter().any(|c| c.name == parent) {
+            return Ok(Err(format!("{java} has a cyclic superclass chain")));
+        }
+        let Some(base) = cp.application(parent)? else {
+            return Ok(Err(format!("{java} has a superclass {} outside the application; its construction and fields are not bound", parent.replace('/', "."))));
+        };
+        hierarchy.push(base);
     }
     within.push(name.to_string());
     let mut fields = Vec::new();
-    for f in cf.fields.iter().filter(|f| !f.is_static()) {
+    let mut names = std::collections::HashSet::new();
+    for (owner, f) in hierarchy.iter().flat_map(|c| c.fields.iter().filter(|f| !f.is_static()).map(move |f| (&c.name, f))) {
+        if !names.insert(&f.name) || (owner != name && cp.resolve_field(name, &f.name, &f.descriptor).as_ref() != Some(owner)) {
+            within.pop();
+            return Ok(Err(format!("{java} hides the inherited field {}; a field path must identify one declaration", f.name)));
+        }
         let ft = Type::parse(&f.descriptor)?;
         let kind = match &ft {
             ft if ft.is_primitive() => harness::FieldKind::Value(ft.clone()),

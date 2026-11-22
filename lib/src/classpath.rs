@@ -1206,6 +1206,7 @@ impl ClassPath {
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !Self::heap_buffer_owner(owner) || !matches!(name, "<init>" | "position" | "limit" | "capacity" | "remaining"
             | "hasRemaining" | "flip" | "rewind" | "clear" | "compact" | "discardMark" | "checkScope"
+            | "duplicate" | "markValue" | "checkSession" | "session"
             | "array" | "hasArray" | "arrayOffset" | "ix" | "isReadOnly" | "isDirect" | "nextGetIndex" | "nextPutIndex"
             | "get" | "put" | "checkIndex" | "createLimitException" | "createPositionException" | "mark" | "reset") { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
@@ -1365,9 +1366,18 @@ impl ClassPath {
             | ("java/lang/FdLibm$Hypot", "compute", "(DD)D")
             | ("java/lang/FdLibm", "__HI" | "__LO", "(D)I" | "(DI)D")
             | ("java/lang/Math", "powerOfTwoD" | "primPowerOfTwoD", "(I)D")
+            | ("java/lang/Integer", "bitCount" | "lowestOneBit", "(I)I")
             | ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
-            | ("java/math/BigInteger", "<init>", "(J)V")
+            | ("java/math/BigInteger", "<init>", "(J)V" | "([B)V" | "([BII)V")
             | ("java/math/BigInteger", "toMagArray", "(J)[I")
+            | ("java/math/BigInteger", "makePositive" | "stripLeadingZeroBytes", "(I[BII)[I" | "([BII)[I")
+            | ("java/math/BigInteger", "bitLengthForInt" | "getInt", "(I)I")
+            | ("java/math/BigInteger", "bitLength" | "magBitLength" | "intValue" | "intValueExact" | "signInt" | "firstNonzeroIntNum" | "numberOfTrailingZeroInts", "()I")
+            | ("java/math/BigDecimal", "<init>", "(Ljava/math/BigInteger;I)V")
+            | ("java/math/BigDecimal", "compactValFor", "(Ljava/math/BigInteger;)J")
+            | ("java/math/BigDecimal", "toStrictBigInteger", "(Ljava/math/BigInteger;)Ljava/math/BigInteger;")
+            | ("java/math/BigDecimal", "scale", "()I")
+            | ("java/math/BigDecimal", "unscaledValue" | "inflated", "()Ljava/math/BigInteger;")
             | ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;")
             | ("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;")
             | ("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;")

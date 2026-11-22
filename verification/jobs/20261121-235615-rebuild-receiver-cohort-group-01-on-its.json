@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-235615-rebuild-receiver-cohort-group-01-on-its",
+  "title": "Rebuild receiver cohort group 01 on its original Maven classpaths",
+  "description": "Repeat the original complete-module recipes for this portion of the fixed 32-pair corpus, including generated classes, processed resources and each original test or provided scope. Serialize dependency acquisition through the common Maven cache. Preserve preparation failures beside successful class hashes.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-21T23:56:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "3G",
+    "duration": "9m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Prepare original Maven modules compsuite-i-1, compsuite-i-4, compsuite-i-70",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/01 --phase package --case compsuite-i-1 --case compsuite-i-4 --case compsuite-i-70",
+      "cwd": "."
+    },
+    {
+      "name": "Prepare original Maven modules compsuite-i-38",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/01 --phase compile --case compsuite-i-38",
+      "cwd": "."
+    },
+    {
+      "name": "Prepare original Maven modules compsuite-i-81",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/baselines/complete_client.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/modules\" --seconds 900 --output verification/domain-foundations/receiver-builds/01 --phase compile --operand-scope provided --case compsuite-i-81",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/domain-foundations/receiver-builds/01"
+  ]
+}

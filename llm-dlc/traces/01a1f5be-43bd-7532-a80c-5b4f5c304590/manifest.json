@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-21T16:30:25.817Z",
-  "duration_seconds": 154376,
+  "ended": "2026-11-22T00:49:52.264Z",
+  "duration_seconds": 184342,
   "stats": {
-    "turns": 23,
-    "api_calls": 7371,
-    "tool_calls": 18426,
-    "tool_errors": 550,
-    "compactions": 23,
+    "turns": 25,
+    "api_calls": 7757,
+    "tool_calls": 19341,
+    "tool_errors": 577,
+    "compactions": 25,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 12673335,
-      "output_tokens": 3913313,
-      "cache_read_input_tokens": 2252824704,
+      "input_tokens": 13291146,
+      "output_tokens": 4141783,
+      "cache_read_input_tokens": 2388510848,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 10536,
-    "exec": 6841,
-    "apply_patch": 699,
+    "Bash": 11060,
+    "exec": 7215,
+    "apply_patch": 708,
     "send_message": 148,
+    "wait": 83,
     "sleep": 82,
-    "wait": 75,
     "wait_agent": 14,
     "send_message_to_user_async": 10,
     "followup_task": 8,
@@ -145,6 +145,11 @@
     "examples/tools/targets/workflow_refusal.py",
     "examples/tools/test_build.py",
     "lib/Cargo.toml",
+    "lib/benchmark/domain-foundations/BufferSites.java",
+    "lib/benchmark/domain-foundations/buffer_fact.py",
+    "lib/benchmark/domain-foundations/dependencies.py",
+    "lib/benchmark/domain-foundations/producers.py",
+    "lib/benchmark/domain-foundations/startup.py",
     "lib/benchmark/external-upgrades/README.md",
     "lib/benchmark/external-upgrades/baselines/compcheck-aws.md",
     "lib/benchmark/external-upgrades/baselines/compcheck_aws.py",
@@ -179,6 +184,7 @@
     "lib/benchmark/external-upgrades/test_engineering.py",
     "lib/benchmark/external-upgrades/test_scorecard.py",
     "lib/benchmark/organic-java/README.md",
+    "lib/benchmark/organic-java/domains.py",
     "lib/benchmark/organic-java/public_observations.py",
     "lib/benchmark/organic-java/report.py",
     "lib/benchmark/organic-java/run.py",
@@ -207,6 +213,7 @@
     "lib/src/bmc/runtime.rs",
     "lib/src/bmc/sat.rs",
     "lib/src/bmc/strings.rs",
+    "lib/src/bmc/throwables.rs",
     "lib/src/bmc/trig.rs",
     "lib/src/classpath.rs",
     "lib/src/equivalence.rs",
@@ -214,6 +221,7 @@
     "lib/src/interp/mod.rs",
     "lib/src/interp/natives.rs",
     "lib/src/interp/value.rs",
+    "lib/src/jvm_witness.rs",
     "lib/src/models.rs",
     "lib/src/observed.rs",
     "lib/src/observed/ObservedInitializer.java",
@@ -260,6 +268,7 @@
     "lib/tests/pairing.rs",
     "lib/tests/setting_countermodels.rs",
     "lib/tests/values.rs",
+    "llm-dlc/loops/domain-foundations-strategy.md",
     "llm-dlc/loops/external-upgrade-evaluation-results.md",
     "llm-dlc/loops/foundation-and-python-results.md",
     "llm-dlc/operating-notes.md",
@@ -679,24 +688,52 @@
     {
       "index": 23,
       "started": "2026-11-21T14:25:42.920Z",
-      "ended": "2026-11-21T16:30:25.817Z",
+      "ended": "2026-11-21T16:38:42.544Z",
       "turns": 2,
-      "api_calls": 357,
+      "api_calls": 382,
       "usage": {
-        "input_tokens": 1099979,
-        "output_tokens": 221211,
-        "cache_read_input_tokens": 127834240,
+        "input_tokens": 1115267,
+        "output_tokens": 235160,
+        "cache_read_input_tokens": 141414656,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 536922
+      "peak_context_tokens": 550543
+    },
+    {
+      "index": 24,
+      "started": "2026-11-21T16:38:42.555Z",
+      "ended": "2026-11-21T16:41:22.996Z",
+      "turns": 0,
+      "api_calls": 8,
+      "usage": {
+        "input_tokens": 24504,
+        "output_tokens": 4311,
+        "cache_read_input_tokens": 236800,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 37431
+    },
+    {
+      "index": 25,
+      "started": "2026-11-21T16:41:23.003Z",
+      "ended": "2026-11-22T00:49:52.264Z",
+      "turns": 2,
+      "api_calls": 353,
+      "usage": {
+        "input_tokens": 578019,
+        "output_tokens": 210210,
+        "cache_read_input_tokens": 121868928,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 524723
     }
   ],
   "log": {
-    "sha256": "7b59aad03b126881b01cc4678f352abb20554321dbadcc64585e552a0ada97ce",
-    "bytes": 168041527,
-    "lines": 58138,
-    "gzip_bytes": 67058470,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/7b59aad03b126881b01cc4678f352abb20554321dbadcc64585e552a0ada97ce.jsonl.gz"
+    "sha256": "5990b539514a7813d5a32893d3895122b650a0bdc630a5042a75e262fdf193e3",
+    "bytes": 177714416,
+    "lines": 61145,
+    "gzip_bytes": 70829649,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/5990b539514a7813d5a32893d3895122b650a0bdc630a5042a75e262fdf193e3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3190,43 +3227,147 @@
     },
     {
       "change_id": "nmyusuwoxrvqlopkoqnzykvlsyqtmosw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "525ea6593eacbf51d380c2905d337c14cd71f940",
+      "immutable": true,
       "summary": "Execute JDK map-backed sets and fresh concurrent key views (verification pending)",
       "body": "The verifier and interpreter execute Collections.newSetFromMap on the selected JDK. Its backing map controls mutation, validation and iteration. A freshly constructed exact ConcurrentHashMap runs the JDK count and key-view methods with its own fields and cached view identity. Explicitly modeled or uninitialized maps cannot borrow that representation.\n\nThe physical JVM, interpreter and strict checker passed the shared-map mutation, nonempty and null rejection, and concurrent view identity controls on Temurin 21.0.13 and 25.0.5. The changed selection passed all 58 Rust test binaries. The original bounded Avro factory progressed through its map-backed set to Hadoop Configuration.REGISTRY with the previous three-root startup digest. Job 20261121-145625-follow-the-original-avro-factory-through repeats the claim on the original 124-entry closure.",
       "log_sha256": "c3e3835dfbe60c51e4e173afe6615ac0c745b83e85037907f016dbe402c4854e"
     },
     {
       "change_id": "rnwoytzkzkwytqstmtqtmkzymrnmrnpl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6eb868c487a2a5f491ee1c82c7d9b07d8c98e7c4",
+      "immutable": true,
       "summary": "Verify null-valued weak registries across JVM startup (verification pending)",
       "body": "An opt-in joint snapshot retains the identity of exact WeakHashMaps whose current values are all null. Collection can remove keys while preserving that invariant. On qualified JDK images the checker can read or register a null value with a key that inherits Object.equals and hashCode. It still refuses membership, iteration, callbacks and a non-null write. Earlier startup digests remain reproducible. The campaign recount now discovers each recorded native stage.\n\nPhysical and native controls on Temurin 21 and 25 checked shared aliases, a nonempty registry, repeated registration, a deliberately false result and unsupported operations. All 46 changed test groups passed, the cost inventory lint passed and example 355 replayed both revisions on all 21 inputs. The original factory progressed through Configuration.REGISTRY to Credentials startup. Explicitly initializing Credentials as a fourth root reached Configuration.deprecationContext in the actual property lookup. Job 20261121-151148-verify-the-real-avro-factory-with-its-ob repeats both newly registered scopes.",
       "log_sha256": "21018089ba52014bbc2d819c1675f899c2f7c3c118f209bf0f8988adc162f910"
     },
     {
       "change_id": "uxpllquntupsmrxvlplprytzmmotttsm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "48c0842b87a8b336d6bad5752947043992d00117",
+      "immutable": true,
       "summary": "Bind selected startup receivers and their configuration lookup tables (verification pending)",
       "body": "A joint JVM observation can bind explicitly named application objects, their complete inherited field layouts, references back to themselves, and their aliases. An exact atomic reference retains its shared cell. An exact HashMap captures all String and null keys for read-only lookups, including a present key with a null or opaque value. An unsupported mutation or inspection stops the proof. The previous side of a pair retains its own relocated object and field types.\n\nPhysical JVM and native controls on Temurin 21 and 25 covered cycles, field hiding, mutation through receiver aliases, atomic cell updates, colliding strings, an isolated surrogate and present-null versus absent entries. All 34 selected test groups passed and the Avro example validated with a fresh two-revision replay. Both original Avro closures independently produced the same 220-class, 1079-object state. The factory passed the deprecation context cell and reached String.trim. Job 20261121-153140-check-avro-factory-lookups-using-the-cap repeats both frozen factory claims.",
       "log_sha256": "8056c7bc608ebed2e72d126ea28618e284d1b03ad3dda40d79c1a7a198a7c52e"
     },
     {
       "change_id": "snonotymzrsrttuquntzlktxuynumxot",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "66bb7a4a37baa918273e3d0cee490b801d7958c7",
+      "immutable": true,
       "summary": "Verify the original Hadoop properties path and Avro factory (verification pending)",
       "body": "The native checker trims bounded UTF-16 strings at code units up to U+0020 and preserves the unchanged receiver. It refuses an identity comparison for equal changed text when the JVM can choose the returned object. The values-conformance inventory and String model identity cover the new operation. Exact fresh Properties objects run the selected JDK constructors, defaults, key lookups, entry iteration and bulk copy. On qualified Temurin builds a single-thread constructor fence, a compare-and-set on the map's own sizeCtl and an in-bounds read of the typed node array preserve the actual JDK allocation and iteration.\n\nThe fixed public Avro factory proved the bounds contract on all 21 admitted inputs after the registered startup. The native parent check found code=1 on the original artifact. JVM, interpreter and native controls checked trimming, source identity, default properties, key exceptions, empty and self copies, and rejection of a lost nonempty input. Both Temurin 21 and 25 passed the focused tests. All 18 values-conformance tests, all 308 library tests, the cost inventory, job validation and all seven changed-test groups passed after updating the string operation count.\n\nJob 20261121-155347-prove-the-original-avro-factory-and-repl checks all eight factory and both nested converter obligations and independently replays the three parent violations at their original ambient entries. Jobs 20261121-155347-repeat-organic-java-example-353-on-the-f through 20261121-155348-repeat-organic-java-example-360-on-the-f recheck all eight upstream pairs on one verifier, including the finite domains, Lang and Eclipse native selectors and JavaParser startup scopes. Job 20261121-155808-check-proof-reuse-after-adding-utf-16-tr runs the integrated proof-cache regression.",
       "log_sha256": "c29e0e0a97c0e4ef5590a5193afdbaf9f793a9e2fbe246f052f2854a135ee41e"
     },
     {
       "change_id": "yqkptkvsvvsvyrmvrotqovxvtlxtnnvo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a6e224e91fea0539a764e6e3e331aa5d0a75accd",
+      "immutable": true,
       "summary": "Record the public Avro factory proofs and the common eight-PR confirmation",
       "body": "The original JobConf(false) factory now has native decisions for all eight obligations under its registered four-root JVM startup. Six properties held and both expected parent violations were found. At capacity one and logical length zero the parent exposed its byte. Independent original JVMs reproduced the bounds and rejected-index witnesses without early initialization. The nested converter and its original parent witness also repeated. The factory proof and its two ambient replays took 100.0 seconds at 1380.1 MiB peak.\n\nAll eight upstream pairs repeated their native and finite checks on verifier 35ba19a31d97. The six primary PRs advanced from 17/46 at baseline and 37/46 in the preceding campaign to 39/46 original-scope native decisions, with 26 establishments and all 13 refutations. Seven Avro universal results retain startup conditions. All 46 primary finite obligations and all 16 transfer finite obligations qualified. The Commons Lang 1515-window and Eclipse Collections 2865-input selector proofs are available through their collector archives. The ambient startup refusals and single-query time limits remain visible.\n\nChecked the 13 collected jobs and all 10599 output hashes against their committed sources. Recounted the original JVM streams on both revisions of all eight PRs, all ten conditional Avro receipts, the original classpaths and the three fresh ambient witnesses. The proof-cache job passed. All eight examples validated, the normal handoffs found both archived selector batches, all 37 documentation links resolved, and the changed test selection passed all 42 groups. The result index covers all 986 collected jobs.",
       "log_sha256": "7b59aad03b126881b01cc4678f352abb20554321dbadcc64585e552a0ada97ce"
+    },
+    {
+      "change_id": "uptrkmuwxsqstrtoxzvznowpvxwrkoos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze the domain foundations baseline (verification pending)",
+      "body": "Bound the historical campaign to its original classpaths, JVM counterexample replays and raw job receipts. Preserve the six-PR and transfer populations, and preselect receiver examples from different libraries before changing the verifier. The archived scorecard recount passed at 39/46 original native outcomes, all five ambient replay digests matched, both changed test groups passed and the job schema validated.\n\nJobs 20261121-232059-domain-foundations-355-ordinary-and-obse and 20261121-232059-domain-foundations-360-ordinary-and-obse repeat strict startup checks on the post-architecture head. Jobs 20261121-232059-domain-foundations-354-larger-unsplit-di and 20261121-232059-domain-foundations-359-larger-unsplit-di measure one 180-second unsplit query per historical timeout at unchanged bounds.",
+      "log_sha256": "299ccb5dc0ca588df276253368b29b2afcf9d1922d6670fd5bc94e7699006b7c"
+    },
+    {
+      "change_id": "mormrttqxpxovtpxvrkwspoqswtwtwmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Pin the original Avro decimal upgrade (verification pending)",
+      "body": "Register Avro #729 as a separate adoption cohort. Pin its first-parent pair, nested DecimalConversion class, original Maven build and landed JUnit method without widening the original campaign population. Checked both historical source and test blobs in the upstream Git repository, the original first-parent link, the six plus two frozen populations, four runner tests, and the job schema.\n\nJob 20261121-232627-build-avro-729-decimal-conversion-on-bot builds both original modules and runs the landed decimal test on each. Their verified artifact receipts will make the frozen public example executable.",
+      "log_sha256": "56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56"
+    },
+    {
+      "change_id": "okprpnmlzynkmuxlurpyskkvmnmkqowm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Trace startup dependencies on original JVMs (verification pending)",
+      "body": "Pair each ordinary JVM call with a nontransforming JVMTI observer on the same checked Maven JARs. Record static and selected receiver reads and writes by method and bytecode offset, actual class status and unbound classes. Inspect class bytes offline to distinguish static declarations and candidate writers from the paths that actually ran. Include CPU, directory, resource, separator, changed-observer and throwing-initializer controls.\n\nOn Temurin 21.0.13 the Avro writer-schema observer returned BYTES and the identical object twice. The JavaParser separator observer returned LF, failed at initialization after the property was cleared, and failed again with an erroneous class. Instrumented and ordinary JVM outputs matched. The static scanner checked instruction offsets against the original classfile labels and lengths, including 180 Avro-path classes in the smoke test. Both jobs validated. Jobs 20261121-233322-trace-original-startup-and-field-depende and 20261121-233332-trace-javaparser-field-and-property-depe run the full profile matrix on both revisions.",
+      "log_sha256": "5295706a5915d99f963f96d32739d2f7c862d30c7bd70c0608826d413d211c81"
+    },
+    {
+      "change_id": "mlynmynnnmzqnskkupukntkrskpxwlzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze Avro decimal cursor and result claims (verification pending)",
+      "body": "Example 361 exercises the public DecimalConversion.fromBytes twice on the same buffer. Twelve original windows include signed values, nonzero positions, prefix and suffix bytes, and two scales. A separate Python big-endian oracle checks cursor, both unscaled integers and both scales. The parent consumed every window and the second conversion raised NumberFormatException. The fixed bytecode preserved every window and matched all expected values.\n\nVerified both complete Maven build receipts and the named upstream JUnit failure and pass. All three wrong-result controls were rejected. All five tasks planned, both sides replayed on Temurin 21, the example validator passed and all 32 selected test groups passed. Job 20261121-233929-check-the-prepared-avro-729-baseline-on measures the frozen native and finite claims on these products. It supersedes 20261121-233611-baseline-the-frozen-avro-729-cursor-and, announced before the example landed.",
+      "log_sha256": "80eb49ef33c908e32b3e959c992c5b1ea9c1c450fe1656e6748d4396004fdd18"
+    },
+    {
+      "change_id": "wpzslruusvsqrurktplvzusposoqutnw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Restore the frozen receiver cohort (verification pending)",
+      "body": "The earlier run removed its temporary caller trees after recording the results. Reuse the serial public-source acquisition and validate the original selected caller blob under each old and new revision. Exercise the first-parent and source-byte checks on the historical Avro repository. Job 20261121-234853-restore-the-original-receiver-cohort-bef validates all 32 previously selected pairs before the native rescore.",
+      "log_sha256": "812523e5d899d25340aed08d46a014ef059a476a7f2423f7288e015574cc33c0"
+    },
+    {
+      "change_id": "nqnyztymkmykoyotrrlxqltmsntpyusy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Prove independent cursors for duplicate heap buffers (verification pending)",
+      "body": "On an exact heap buffer the native checker now runs the selected JDK duplicate, markValue and session bytecode. The new buffer shares the same array and inherits the mark, position, limit and capacity, while reads and position changes remain local. The existing boundary on foreign sessions still applies. A strict probe established the duplicate and bulk-read contract on symbolic bytes up to length six and all valid windows. The previous checker refused duplicate. A deliberately shared-cursor assertion was refuted, both Temurin 21 and 25 passed the focused regression, and all 49 selected test groups passed.\n\nThe domain pilot binds actual historical wrap operands and the identity of the returned buffer entering decimal conversion. Job 20261121-234701-qualify-bounded-heap-buffer-facts-across measures fresh and reused proofs with current JDK, model, bounds and call-site validation. The two-PR smoke tests observed all 21 writable inputs and all 12 decimal inputs. Collected and digest-checked the earlier startup, upstream build and single-query comparison results. Both larger unsplit queries established their original claims. The ordinary Avro and JavaParser startup refusals and the premature decimal job remain recorded.",
+      "log_sha256": "142623adec2ef066cfd69e4ae973297bf97e09fd11be06f476938d2cce0f82a4"
+    },
+    {
+      "change_id": "vmvtypuyykqkmmqukqmwmylxwsyyznqz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Rebuild the original receiver classpaths (verification pending)",
+      "body": "All 32 original source pairs were recovered across 28 repositories. Hash-checked the collector receipt and all selected caller blobs. Reuse the historical build phase and dependency scopes for the 18 complete-module callers, with the shared serial Maven cache. The remaining 14 use their original source slice recipes. The seven groups have disjoint case sets and all job files validated.\n\nJobs 20261121-235615-rebuild-receiver-cohort-group-01-on-its through 20261121-235615-rebuild-receiver-cohort-group-07-on-its reproduce the original complete-module operands before the native receiver rescore.",
+      "log_sha256": "12d48dbf67f9f46fd18a6b2c23a297f36e62e4573771f9a4d82136a80eb3850b"
+    },
+    {
+      "change_id": "nruuunkupqkqkrylqvrwqmomstsqlqzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Construct bounded receivers through application superclasses (verification pending)",
+      "body": "Construct the actual concrete receiver, run its original superconstructor chain and observe inherited fields by the JVM field lookup. Refuse a hidden or ambiguous field, an unavailable superclass and a constructor with an external static effect. The JVM witness harness now includes the declaring owner of an inherited field read. A private parent field mutation thereby reproduces on the JVM with the same virtual dispatch during construction.\n\nAll 23 object construction tests passed, including wrong inherited state, constructor failure, hidden fields and the external registration control. The changed suite passed all four groups and the cost inventory lint passed. All 36 original complete-module preparations returned artifacts ready. Jobs 20261122-000446-rescore-receiver-group-01-with-inherited through 20261122-000447-rescore-receiver-group-07-with-inherited recheck all 32 pairs and repeat the six preselected real caller paths.",
+      "log_sha256": "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107"
+    },
+    {
+      "change_id": "qtorxnxzxnpwxxzltsruzyptnyopwtkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind upgrade callers to the native class reader (verification pending)",
+      "body": "The post-architecture class extractor takes the checker’s logical JAR entries. The original upgrade runner still passed an integer release and stopped before every native check. Ask the running checker once for both callers, check the selected provider and digest, and extract the entries it named. Preserve the original V0 base-class reader and the pinned V1–V3 release selection. A binding refusal is retained as an intake result.\n\nChecked the historical old and new caller byte hashes through both the modern reader and pinned V3 path. The six engineering tests passed, including a versioned-entry and mismatched-digest control, and the tier inventory and queue validated. All seven first attempts and six physical caller controls are retained. Jobs 20261122-001933-confirm-receiver-targets-01-using-the-se through 20261122-001934-confirm-receiver-targets-07-using-the-se repeat the full 32-pair rescore.",
+      "log_sha256": "d6a35e8d53cde3dc9b4ef1ba5af3a582e964924f101f858d04e1e7e9fa9edd4b"
+    },
+    {
+      "change_id": "vxmnmnmnxvqxxwtknpulztsstlyypuot",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify signed Avro decimals and initializer failures (verification pending)",
+      "body": "Run the selected JDK signed-byte BigInteger and BigDecimal construction, scale, exact integer conversion and related magnitude helpers on exact initialized receivers. Canonical String literals keep their identity through intern. A receiver with unestablished pool identity is refused. The native class initializer wrapper now preserves its original throwable. On the original Avro decimal fix the strict probe proved both decimal results on all twelve windows after the registered LogicalTypes and Schema startup. The parent supplied a counterexample. On a fresh classpath the actual Avro JsonProperties superclass installed its accessor and an earlier installation produced the original IllegalStateException cause and an erroneous class on the next use.\n\nFocused numeric, literal and identity regressions passed on Temurin 21 and 25. The pinned value-conformance suite passed all 18 tests on Temurin 25. All 53 changed test groups and the nine-task example validation with a fresh two-sided JVM replay passed. The receipt-bound dependency tables cover original class bytes, field writers and consumer bytecode on both revisions of Avro and JavaParser. Both writable growth and shrink probes held under the registered startup. The heap-window adoption cost was 8.22 seconds fresh and 8.51 with reuse, including validation.\n\nJobs 20261122-001142-prove-avro-729-decimals-and-replay-its-o and 20261122-001142-confirm-the-ordinary-avro-729-native-and check the conditional and ordinary decimal contracts and original witnesses. Job 20261122-001607-prove-real-avro-registration-and-writabl qualifies reusable producer facts on both historical pairs. Job 20261122-001142-check-cache-identity-after-canonical-lit repeats the integrated proof-cache checks.",
+      "log_sha256": "76c368850c5f7c1fde3a03510c9f3ea9f67d6c5b5b2756ac44ec607237bac040"
+    },
+    {
+      "change_id": "ksywtmxxuvwlvzqoolrozslqwonzzyly",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Use caller-selected constructors on inherited receivers (verification pending)",
+      "body": "The property and equivalence construction-plan path now uses the same inherited field binding and actual superconstructor execution as automatic construction. A two-constructor fixture selected the real no-argument path. The 32-pair rescore reached nine specific later dependencies among the 23 original receiver refusals. One advanced to parameter construction, and the remaining native checks still stopped before the changed dependency. Four preselected ordinary JVM caller checks were preserved, with the JDBC and injector controls retaining their earlier failures.\n\nThe regular explicit-constructor regression passed and the five selected test groups passed. All 64 original caller class hashes match the historical records. The two Commons Configuration caller plans choose their actual no-argument constructors with the usual array bound of eight. Job 20261122-003204-check-actual-no-argument-json-and-yaml-c checks both choices and repeats their original JVM callers under the stated plan scope.",
+      "log_sha256": "8423c0658a83c0516668af43ce88585d434cd4b05d36fc819215670d134fdd5f"
+    },
+    {
+      "change_id": "rrwzkzwozpyoqvutkyppntspolsonsxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record Avro domain proofs and original witnesses (verification pending)",
+      "body": "All four native obligations on the original Avro decimal method were decided under its two-root startup. Fresh JVMs reproduced the cursor-parent witness at selector 10 and the decimals-parent witness at selector 9 from ordinary entry. Both fixed properties held across all twelve windows, and all four finite obligations qualified. All twelve ordinary schema-accessor producer checks held across both Avro PRs and both revisions. The four scoped Hadoop backing/growth proofs held. Ordinary writable startup still refused at Hadoop Configuration. The cache regression passed.\n\nChecked every collected output hash and validated examples 355, 360 and 361 through the normal router and task plans. Jobs 20261122-003850-confirm-final-startup-scopes-for-origina and 20261122-003911-confirm-javaparser-ordinary-and-observed repeat all seven plus six previously open ordinary claims and all eighteen startup companions on the exact decimal-proof checker.",
+      "log_sha256": "af2c83c7dd619738993d295e445023c5591355c4f9d409c9029e347e73f544b8"
+    },
+    {
+      "change_id": "ulyyrvwttznpovrqzsomwvswoznyqyso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Report the domain foundations pilot on both historical consumers",
+      "body": "The final decimal verifier repeated all seven Avro and six JavaParser original startup refusals and decided all eighteen observed-startup companions. The original primary score remains 39/46 and JavaParser remains 2/8. Separately, Avro 729 advances to two original parent refutations, four conditional native decisions and four finite outcomes. The report documents unconditional schema registration, the conditional Hadoop backing-array fact, ordinary failure controls, field and bytecode locations, proof costs, and replay commands.\n\nAll 32 receiver pairs were rescored. Nine passed the previous superclass refusal, one reached parameter construction and none gained an original-scope native verdict. The real no-argument JSON and YAML callers both advanced to the same named Commons Logging static write. The two previously timed-out whole-domain queries completed at 180 seconds. Verified reuse avoided one solver call but had no measured end-to-end savings. All 39 jobs and 1,222 output hashes were reconciled. The recount, cost inventory, job validation and 43 local links passed. All three affected examples validated. The final changed selection passed all 59 Rust test binaries and its selected Python tests.",
+      "log_sha256": "5990b539514a7813d5a32893d3895122b650a0bdc630a5042a75e262fdf193e3"
     }
   ],
   "logs": {
@@ -3325,6 +3466,18 @@
       "lines": 9201,
       "gzip_bytes": 10815383,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e.jsonl.gz"
+    },
+    "12d48dbf67f9f46fd18a6b2c23a297f36e62e4573771f9a4d82136a80eb3850b": {
+      "bytes": 173609422,
+      "lines": 59571,
+      "gzip_bytes": 69129362,
+      "url": null
+    },
+    "142623adec2ef066cfd69e4ae973297bf97e09fd11be06f476938d2cce0f82a4": {
+      "bytes": 173326515,
+      "lines": 59483,
+      "gzip_bytes": 69024892,
+      "url": null
     },
     "14f65b0b765d379a983d9ecb73a87bff12f742ffc510b48368eb6e87f18a6118": {
       "bytes": 56980960,
@@ -3427,6 +3580,12 @@
       "lines": 4817,
       "gzip_bytes": 5731519,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622.jsonl.gz"
+    },
+    "299ccb5dc0ca588df276253368b29b2afcf9d1922d6670fd5bc94e7699006b7c": {
+      "bytes": 170299437,
+      "lines": 58595,
+      "gzip_bytes": 67887008,
+      "url": null
     },
     "2b74ccd0896e706b0e6b806c635e8b18ecd249faa4c2dda036303e65618d8586": {
       "bytes": 93799135,
@@ -3554,11 +3713,35 @@
       "gzip_bytes": 15038998,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/526f2d0930321d156b4c1ffed3bcf9c6e0ed4197dfc4b063de4820f0e00e2b1d.jsonl.gz"
     },
+    "5295706a5915d99f963f96d32739d2f7c862d30c7bd70c0608826d413d211c81": {
+      "bytes": 171540758,
+      "lines": 58967,
+      "gzip_bytes": 68351010,
+      "url": null
+    },
+    "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107": {
+      "bytes": 174697103,
+      "lines": 59981,
+      "gzip_bytes": 69561448,
+      "url": null
+    },
+    "56f36a4a51869eaae6e73442e7a6558220edb54787cf045fd442c5a8917afa56": {
+      "bytes": 171048511,
+      "lines": 58808,
+      "gzip_bytes": 68179248,
+      "url": null
+    },
     "589aa07b4a5185a7db1230a84f2bc5f73237804cef1e0ec0f32cca7f8ac5eadc": {
       "bytes": 56899679,
       "lines": 18687,
       "gzip_bytes": 21518872,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/589aa07b4a5185a7db1230a84f2bc5f73237804cef1e0ec0f32cca7f8ac5eadc.jsonl.gz"
+    },
+    "5990b539514a7813d5a32893d3895122b650a0bdc630a5042a75e262fdf193e3": {
+      "bytes": 177714416,
+      "lines": 61145,
+      "gzip_bytes": 70829649,
+      "url": null
     },
     "59d7dd3632007f1c3fac629218f25ffcde0ae96782d7e5c8e43e5a143e96ec2e": {
       "bytes": 116081662,
@@ -3710,6 +3893,12 @@
       "gzip_bytes": 642567,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/76a45a701c36edd4949aba85d9b5d1a0d8a171b1c63f7fe79f579bd769bf7740.jsonl.gz"
     },
+    "76c368850c5f7c1fde3a03510c9f3ea9f67d6c5b5b2756ac44ec607237bac040": {
+      "bytes": 176266276,
+      "lines": 60549,
+      "gzip_bytes": 70185798,
+      "url": null
+    },
     "771fd74c3bca8cd1aaa58f6c6813130df3bc3670dab1b7d587e6e6a143a8bd2c": {
       "bytes": 3340116,
       "lines": 796,
@@ -3738,6 +3927,18 @@
       "bytes": 164689102,
       "lines": 56712,
       "gzip_bytes": 65500688,
+      "url": null
+    },
+    "80eb49ef33c908e32b3e959c992c5b1ea9c1c450fe1656e6748d4396004fdd18": {
+      "bytes": 172012877,
+      "lines": 59101,
+      "gzip_bytes": 68545833,
+      "url": null
+    },
+    "812523e5d899d25340aed08d46a014ef059a476a7f2423f7288e015574cc33c0": {
+      "bytes": 172875526,
+      "lines": 59347,
+      "gzip_bytes": 68849825,
       "url": null
     },
     "818cfeaa59d542ab7b60c904cdc111151bd6fb56ba5fb430862a63dbd47f698c": {
@@ -3769,6 +3970,12 @@
       "lines": 16046,
       "gzip_bytes": 18565770,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/840d0d5ea4e759994d8ffff8928e7b2841da1697550f44d608fb9251f2ac3525.jsonl.gz"
+    },
+    "8423c0658a83c0516668af43ce88585d434cd4b05d36fc819215670d134fdd5f": {
+      "bytes": 176779878,
+      "lines": 60760,
+      "gzip_bytes": 70395730,
+      "url": null
     },
     "85c6e6448d58f611bef96a62d5b50ed367220f8e7c27b337b62efae3996640b8": {
       "bytes": 139798208,
@@ -3913,6 +4120,12 @@
       "lines": 10275,
       "gzip_bytes": 12032918,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/adc9df7b1abe6444d11d83e6a8cbca9f7bb051b363a62850c09f4c681bc008c4.jsonl.gz"
+    },
+    "af2c83c7dd619738993d295e445023c5591355c4f9d409c9029e347e73f544b8": {
+      "bytes": 177185428,
+      "lines": 60915,
+      "gzip_bytes": 70593127,
+      "url": null
     },
     "b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b": {
       "bytes": 21911173,
@@ -4064,6 +4277,12 @@
       "gzip_bytes": 62157342,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/d5b537034daa29cfbcefa570c161aad5c8106eb21fd82653eccf4e390361d002.jsonl.gz"
     },
+    "d6a35e8d53cde3dc9b4ef1ba5af3a582e964924f101f858d04e1e7e9fa9edd4b": {
+      "bytes": 175675654,
+      "lines": 60332,
+      "gzip_bytes": 69932859,
+      "url": null
+    },
     "d92e3ef2b35400f865f99dfb43e73c81ab5561ccd93dde994745f2540581c118": {
       "bytes": 101904320,
       "lines": 35221,
@@ -4198,5 +4417,6 @@
     }
   },
   "redaction_policy": 5,
-  "generator": "llm-dlc/tools/sync.py"
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
 }

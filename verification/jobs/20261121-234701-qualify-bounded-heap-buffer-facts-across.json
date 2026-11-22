@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261121-234701-qualify-bounded-heap-buffer-facts-across",
+  "title": "Qualify bounded heap buffer facts across two historical Avro changes",
+  "description": "Prove the selected JDK heap-window theorem on symbolic bytes, then check every original wrap operand and the receiving decimal buffer at the actual call sites. Compare disabled, clean and reused checks, validate stale and unrelated-change controls, and prove duplicate cursor independence and contents.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "proof:reuse"
+  ],
+  "links": {
+    "examples": [
+      "355",
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-21T23:47:01+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Certify the common JDK fact and validate both Avro call sites",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/buffer_fact.py --output verification/domain-foundations/buffer-adoption",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/buffer-adoption"
+  ]
+}

@@ -252,14 +252,29 @@ fn open_classes(out: &Path, harness_class: &str, calls: &[DirectCall], entries: 
     let bytes = std::fs::read(&harness).map_err(|e| format!("cannot read {}: {e}", harness.display()))?;
     let mut names = crate::relocate::referenced_classes(&bytes).map_err(|e| format!("cannot read {}: {e}", harness.display()))?;
     names.extend(calls.iter().map(|c| c.owner.clone()));
-    names.sort();
-    names.dedup();
     // Every application class of the run, for whether a package-private instance method may be opened: not where
     // a class of another package that extends its class declares the same method (`relocate::opened_with`).
     let mut cp = crate::classpath::ClassPath::new();
     for e in entries.iter().filter(|e| e.exists()) {
         cp.add(e).map_err(|e| e.to_string())?;
     }
+    // A field reference through a constructed subclass can resolve to a private
+    // declaration in an ancestor. Open the declaring class for that harness read.
+    let harness = crate::classfile::ClassFile::parse(&bytes).map_err(|e| e.to_string())?;
+    let mut inherited = std::collections::BTreeSet::new();
+    for code in harness.methods.iter().filter_map(|m| m.code.as_ref()) {
+        for (_, insn) in code.instructions().map_err(|e| e.to_string())? {
+            if let crate::classfile::Insn::GetField(index) = insn {
+                let field = harness.pool.member(index).map_err(|e| e.to_string())?;
+                if let Some(owner) = cp.resolve_field(&field.owner, &field.name, &field.descriptor) {
+                    if owner != field.owner { inherited.insert(owner); }
+                }
+            }
+        }
+    }
+    names.extend(inherited.iter().cloned());
+    names.sort();
+    names.dedup();
     let classes = cp.application_classes().unwrap_or_default();
     let package = |n: &str| n.rsplit_once('/').map(|(p, _)| p.to_string()).unwrap_or_default();
     let extends = |c: &crate::classfile::ClassFile, ancestor: &str| {
@@ -279,8 +294,8 @@ fn open_classes(out: &Path, harness_class: &str, calls: &[DirectCall], entries: 
     };
     let mut wrote = false;
     for name in names.iter().filter(|n| n.as_str() != harness_class) {
-        let Some(path) = find(name) else { continue };
-        let bytes = std::fs::read(&path).map_err(|e| format!("cannot read {}: {e}", path.display()))?;
+        if find(name).is_none() && !inherited.contains(name) { continue; }
+        let Some(bytes) = cp.application_bytes(name).map_err(|e| e.to_string())? else { continue };
         let may_open = |m: &str, d: &str| {
             !classes.values().any(|c| c.name != *name && package(&c.name) != package(name) && extends(c, name) && c.methods.iter().any(|x| x.name == m && x.descriptor == d && !x.is_static() && !x.is_private()))
         };

@@ -537,9 +537,6 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
     if cf.is_interface() || cf.is_abstract() || cf.is_enum() {
         return Err(gap(format!("node {id}'s class {} is not a concrete class made by its constructor", n.class)));
     }
-    if cf.super_class.as_deref() != Some("java/lang/Object") {
-        return Err(gap(format!("node {id}'s class {} extends {}; a class that extends another is not supported yet", n.class, cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
-    }
     let constructors: Vec<String> = cf.methods.iter().filter(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic()).map(|m| m.descriptor.clone()).collect();
     let Some(constructor) = cf.methods.iter().find(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic() && m.descriptor == *descriptor) else {
         return Err(gap(format!("node {id}'s class {} has no constructor {descriptor} a caller can use; it has {}", n.class, if constructors.is_empty() { "none".to_string() } else { constructors.join(", ") })));
@@ -677,7 +674,7 @@ pub(crate) fn side_effect(cp: &crate::classpath::ClassPath, class: &str, name: &
 /// so in turn, and dependencies of application interfaces passed null, observed by its fields after the call. Asked
 /// where a regression or property check meets an instance method of a class that is not a record of primitive
 /// components. A class outside that is refused by name: a constructor argument not made yet (a String) says so,
-/// and what no plan of this wave makes (several constructors without a choice, a superclass, a cycle) is a boundary
+/// and what no plan of this wave makes (several constructors without a choice, an unbound superclass, a cycle) is a boundary
 /// of its own.
 pub fn receiver(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::harness::RecordType, Unsupported> {
     receiver_in(cp, class, false)

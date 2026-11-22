@@ -1036,3 +1036,57 @@ fn o2_a_replay_that_cannot_run_one_version_is_no_reproduction() {
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.replay.as_ref().is_some_and(|r| !r.reproduced), "{:?}", o.replay);
 }
+
+/// A parent constructor calls an override before the child's field initializers run.
+/// A difference in an inherited private field alone must survive comparison and JVM replay.
+#[test]
+fn a_subclass_receiver_runs_its_real_superconstructor_and_observes_inherited_state() {
+    jvmcontract::tool_tier!();
+    let source = r#"package state;
+class Base {
+    private int cell;
+    Base(int seed) {
+        if (seed < 0) throw new IllegalArgumentException();
+        cell = adjust(seed);
+    }
+    int adjust(int n) { return 99; }
+    void increment() { cell++; }
+    int read() { return cell; }
+}
+public final class Counter extends Base {
+    private int extra = 2;
+    public Counter(int seed) { super(seed); }
+    int adjust(int n) { return n + extra; }
+    public int value() { return read() + extra; }
+    public void bump() { increment(); }
+    public static void main(String[] args) {
+        if (new Counter(3).value() != 5) throw new AssertionError();
+        try { new Counter(-1); throw new AssertionError(); }
+        catch (IllegalArgumentException expected) { }
+    }
+}"#;
+    let class = "state/Counter.java";
+    let original = compile("subclass-original", &[(class, source)]);
+    assert!(Command::new("java").arg("-cp").arg(&original).arg("state.Counter").status().unwrap().success());
+    let proof = prove("subclass-read", &original, "state.Counter#value", None, "result == this.cell + 2");
+    assert_eq!(proof.verdict, Verdict::Verified, "{}", proof.output);
+    let edited = compile("subclass-defect", &[(class, &source.replace("cell++;", "cell += 2;"))]);
+    let diff = regression("subclass-bump", &original, &edited, "state.Counter#bump");
+    assert_eq!(diff.verdict, Verdict::Violation, "{}", diff.output);
+    assert!(diff.replay.as_ref().is_some_and(|r| r.reproduced) && diff.counterexample.as_ref().is_some_and(|c| c.jvm.is_some()),
+        "{}", diff.output);
+    let overloaded = source.replace("public Counter(int seed)", "public Counter() { this(3); } public Counter(int seed)");
+    let selected = compile("subclass-selected", &[(class, &overloaded)]);
+    let noarg = r#"{"nodes":[{"id":0,"class":"state.Counter","maker":{"kind":"constructor","descriptor":"()V"},"args":[]}],
+        "roots":[{"name":"this","value":{"kind":"node","id":0}}],"bounds":{"nodes":1,"max_array_length":0,"setup_calls":0}}"#;
+    let planned = planned("subclass-selected", &selected, &selected, "state.Counter#value", plans(noarg, noarg));
+    assert_eq!(planned.verdict, Verdict::Verified, "{}", planned.output);
+    let hidden = compile("subclass-hidden", &[(class, &source.replace("private int extra", "private int cell; private int extra"))]);
+    let gap = prove("subclass-hidden", &hidden, "state.Counter#value", None, "true");
+    assert!(gap.problem.as_deref().unwrap_or_default().contains("hides the inherited field cell"), "{}", gap.output);
+    let effect = source.replace("private int cell;", "static int registrations; private int cell;")
+        .replace("cell = adjust(seed);", "registrations++; cell = adjust(seed);");
+    let external = compile("subclass-effect", &[(class, &effect)]);
+    let gap = prove("subclass-effect", &external, "state.Counter#value", None, "true");
+    assert!(gap.problem.as_deref().unwrap_or_default().contains("registrations"), "{}", gap.output);
+}

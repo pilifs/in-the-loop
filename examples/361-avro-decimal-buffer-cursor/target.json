@@ -1,0 +1,198 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "avro-decimal-buffer-cursor",
+    "family": "avro",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/avro",
+    "revisions": {
+      "parent": {
+        "commit": "afbda0798a4fe662bd5379cf535da79800c4e840"
+      },
+      "fix": {
+        "commit": "ce9032a4123e262341a3e746e6eb2b8476eae1ae",
+        "parent": "afbda0798a4fe662bd5379cf535da79800c4e840"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/organic/DecimalWindow.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "lang/java/avro/pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "11"
+    },
+    "capturedBuilds": {
+      "parent": "records/build-historical/build-parent.json",
+      "fix": "records/build-historical/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;"
+    },
+    {
+      "id": "cursor-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/cursor.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "cursor-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/cursor.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "decimals-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/decimals.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "decimals-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/decimals.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "cursor-parent-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/cursor-startup.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "cursor-fix-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/cursor-startup.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "decimals-parent-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/decimals-startup.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "decimals-fix-startup",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "claim": "claims/decimals-startup.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/organic/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

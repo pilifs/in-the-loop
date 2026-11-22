@@ -17,6 +17,7 @@ public final class IteratorCollection {
     public static boolean erroneous() {
         try { new EnumMap<Bad, String>(Bad.class); return false; }
         catch (ExceptionInInitializerError first) {
+            if (!(first.getCause() instanceof IllegalArgumentException) || first.getMessage() != null) return false;
             try { EnumSet.noneOf(Bad.class); return false; }
             catch (NoClassDefFoundError next) { return true; }
         }

@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-001934-confirm-receiver-targets-05-using-the-se",
+  "title": "Confirm receiver targets 05 using the selected class bindings",
+  "description": "Rescore the frozen original native overloads after repairing the post-architecture caller extraction. The running verifier selects each original class and JAR entry. Repeat the preselected physical caller controls once the input is prepared.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-22T00:19:34+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Recheck all original native overloads",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/05 --case commons-beanutils-440 --case commons-csv-8993be87 --case commons-fileupload-377 --case compsuite-i-94 --case cucumber-reporting-1198 --case reflector-35",
+      "cwd": "."
+    },
+    {
+      "name": "Check the preselected real caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/caller-confirmation/05 --case commons-csv-8993be87",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/domain-foundations/receiver-confirmation/05",
+    "verification/domain-foundations/caller-confirmation/05"
+  ]
+}

@@ -65,7 +65,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("trim", "()Ljava/lang/String;") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("intern" | "trim", "()Ljava/lang/String;") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
