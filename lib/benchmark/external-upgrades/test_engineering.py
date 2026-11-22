@@ -20,6 +20,28 @@ from restore_archived import restore
 
 
 class OriginalInputs(unittest.TestCase):
+    def test_native_extraction_uses_the_entry_bound_by_the_running_checker(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            jar = root / "client.jar"
+            entry = "META-INF/versions/21/p/Caller.class"
+            with zipfile.ZipFile(jar, "w") as archive:
+                archive.writestr("p/Caller.class", b"base")
+                archive.writestr(entry, b"selected")
+            sha = hashlib.sha256(b"selected").hexdigest()
+            binding = {"class": "p.Caller", "provider": str(jar), "entry": entry, "sha256": sha, "selected_by": "version"}
+            entries = {"manifest": "enabled", "entries": {"p/Caller.class": entry}}
+            reply = {"old": {"bindings": [binding], "entries": {"0": entries}}}
+            paths = {"old": [jar]}
+            with patch.object(engineering.class_binding, "ask", return_value=(reply, 21)):
+                data, logical = engineering.selected_originals("current", root / "checker", "current-build",
+                    {"JVMCONTRACT_JAR_RELEASE": "21"}, root, paths, "p.Caller", "read", engineering.runtime_jar)
+                self.assertEqual((data["old"], logical["old"]), (b"selected", entries))
+                binding["sha256"] = hashlib.sha256(b"base").hexdigest()
+                with self.assertRaisesRegex(ValueError, "binding|checker|preparation|prepared"):
+                    engineering.selected_originals("current", root / "checker", "current-build",
+                        {"JVMCONTRACT_JAR_RELEASE": "21"}, root, paths, "p.Caller", "read", engineering.runtime_jar)
+
     def test_pinned_archive_is_checked_before_installation_and_on_reuse(self):
         name = "group/tool/1/tool-1.jar"
         archive = "https://example.invalid/"

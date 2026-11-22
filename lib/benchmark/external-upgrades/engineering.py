@@ -25,7 +25,7 @@ from types import SimpleNamespace
 from pin import OPERATOR, ROOT, digest
 
 sys.path.insert(0, str(ROOT / "examples/tools"))
-from targets import runtime, upgrade_claims
+from targets import class_binding, runtime, runtime_jar, upgrade_claims
 
 
 HERE = Path(__file__).resolve().parent
@@ -214,13 +214,50 @@ def reader(build, work):
     return module, hashlib.sha256(raw).hexdigest()
 
 
+def selected_originals(build, checker, checker_sha, env, work, paths, owner, method, parser):
+    """Return the bound caller bytes and the checker's logical JAR entries for extraction."""
+    internal = owner.replace(".", "/")
+    if build == "V0":
+        return {side: parser.read_class(cp[0], internal) for side, cp in paths.items()}, None
+    feature = int(env["JVMCONTRACT_JAR_RELEASE"])
+    if checker_sha == read(HERE / "v3.json")["sha256"]["jvmcontract"]:
+        # V1–V3 share this pinned binary, predating the class-bindings command.
+        # Reproduce their recorded release selection, including its manifest refusal.
+        data, logical = {}, {}
+        for side, cp in paths.items():
+            with zipfile.ZipFile(cp[0]) as jar:
+                selected = runtime_jar.effective_entries(jar, feature)
+                manifest = jar.read("META-INF/MANIFEST.MF") if "META-INF/MANIFEST.MF" in jar.namelist() else b""
+                logical[side] = {"manifest": runtime_jar.multi_release(manifest),
+                                 "entries": {name: item.filename for name, item in selected.items()}}
+                item = selected.get(internal + ".class")
+                data[side] = jar.read(item) if item else None
+        return data, logical
+    request = {side: {"classpath": list(map(str, cp)), "classes": [{"class": owner, "method": method}],
+                      "listEntries": [0]} for side, cp in paths.items()}
+    reply, release = class_binding.ask(checker, env, work, request)
+    if release != feature:
+        raise ValueError("checker selected a different JAR release")
+    data, logical = {}, {}
+    for side, cp in paths.items():
+        bound, = reply[side]["bindings"]
+        if "refused" in bound:
+            raise ValueError(f"{side} caller binding refused: {bound['refused']}")
+        raw = class_binding.read(cp[0], internal, bound["entry"])
+        error = class_binding.disagreement(owner, bound, str(cp[0]), hashlib.sha256(raw).hexdigest())
+        if error:
+            raise ValueError(error)
+        data[side] = raw
+        logical[side] = reply[side]["entries"]["0"]
+    return data, logical
+
+
 def screen(case, inputs, build, checker, args):
     parser, reader_sha = reader(build, args.work)
     report = {"id": case["id"], "build": build, "operator": OPERATOR, "entry": case["entry"],
               "observer": case["observer"], "revisions": case["revisions"], "result": "open",
               "readerSha256": reader_sha, "checkerSha256": digest(checker), "sides": {}}
     paths = {}
-    caller_bytes = {}
     owner, method = case["entry"].split("#")
     for side, prepared in inputs.items():
         evidence = {k: v for k, v in prepared.items() if k != "classpath"}
@@ -231,19 +268,6 @@ def screen(case, inputs, build, checker, args):
         cp = prepared["classpath"]
         evidence["orderedSha256"] = [r["sha256"] for r in cp]
         paths[side] = [Path(r["file"]) for r in cp]
-        try:
-            data = parser.read_class(paths[side][0], owner.replace(".", "/"))
-            if not data:
-                raise ValueError("the original artifact does not contain the selected caller class")
-            caller_bytes[side] = data
-            evidence["callerClassSha256"] = hashlib.sha256(data).hexdigest()
-            names = sorted(d for n,d in parser.methods(data) if n == method)
-            if not names:
-                raise ValueError("original class does not declare " + method)
-            evidence["descriptors"] = names
-        except (ValueError, KeyError, OSError) as exc:
-            evidence["diagnostic"] = [str(exc)]
-            report.setdefault("firstBlocker", "original caller declaration")
     if "firstBlocker" in report:
         return report
     env = dict(os.environ, JAVA_HOME=str(args.verifier_jdk), TZ="UTC", LC_ALL="C.UTF-8",
@@ -257,11 +281,23 @@ def screen(case, inputs, build, checker, args):
         originals = {s: [SimpleNamespace(path=cp[0].name, sha256=inputs[s]["classpath"][0]["sha256"])]
                      for s, cp in paths.items()}
         sides = {s: (cp[0].parent, None, originals[s]) for s, cp in paths.items()}
-        feature = int(env["JVMCONTRACT_JAR_RELEASE"]) if build != "V0" else None
-        bindings = {side: {"entry": case["entry"], "classSha256": row["callerClassSha256"]}
-                    for side, row in report["sides"].items()}
-        directories = runtime._class_dirs(sides, work, work, {s: [{"path": a[0].path}] for s,a in originals.items()},
-                                          feature, bindings if feature is not None else None)
+        try:
+            caller_bytes, logical = selected_originals(build, checker, report["checkerSha256"], env, work,
+                                                       paths, owner, method, parser)
+            for side, data in caller_bytes.items():
+                if not data:
+                    raise ValueError(f"{side} original artifact does not contain {owner}")
+                names = sorted(d for n, d in parser.methods(data) if n == method)
+                if not names:
+                    raise ValueError(f"{side} original class does not declare {method}")
+                report["sides"][side].update(callerClassSha256=hashlib.sha256(data).hexdigest(), descriptors=names)
+            bindings = {side: {"entry": case["entry"], "classSha256": row["callerClassSha256"]}
+                        for side, row in report["sides"].items()}
+            directories = runtime._class_dirs(sides, work, work, {s: [{"path": a[0].path}] for s, a in originals.items()},
+                                              logical=logical, entry_bindings=bindings if logical is not None else None)
+        except (ValueError, KeyError, OSError, subprocess.SubprocessError, runtime.Refused) as exc:
+            report.update(firstBlocker="original caller declaration or class binding", diagnostic=str(exc))
+            return report
         targets = [case.get("checkerTarget", case["entry"])]
         if build == "current":
             overloads = upgrade_claims.named_overloads(caller_bytes["old"], caller_bytes["new"], method)

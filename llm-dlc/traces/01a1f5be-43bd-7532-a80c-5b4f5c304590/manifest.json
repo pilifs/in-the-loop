@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-22T00:08:26.089Z",
-  "duration_seconds": 181856,
+  "ended": "2026-11-22T00:20:48.118Z",
+  "duration_seconds": 182598,
   "stats": {
     "turns": 25,
-    "api_calls": 7600,
-    "tool_calls": 19023,
-    "tool_errors": 570,
+    "api_calls": 7649,
+    "tool_calls": 19124,
+    "tool_errors": 577,
     "compactions": 25,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 13140687,
-      "output_tokens": 4050304,
-      "cache_read_input_tokens": 2316471808,
+      "input_tokens": 13191862,
+      "output_tokens": 4078179,
+      "cache_read_input_tokens": 2336503296,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 10902,
-    "exec": 7058,
-    "apply_patch": 705,
+    "Bash": 10953,
+    "exec": 7107,
+    "apply_patch": 706,
     "send_message": 148,
     "wait": 83,
     "sleep": 82,
@@ -211,6 +211,7 @@
     "lib/src/bmc/runtime.rs",
     "lib/src/bmc/sat.rs",
     "lib/src/bmc/strings.rs",
+    "lib/src/bmc/throwables.rs",
     "lib/src/bmc/trig.rs",
     "lib/src/classpath.rs",
     "lib/src/equivalence.rs",
@@ -712,24 +713,24 @@
     {
       "index": 25,
       "started": "2026-11-21T16:41:23.003Z",
-      "ended": "2026-11-22T00:08:26.089Z",
+      "ended": "2026-11-22T00:20:48.118Z",
       "turns": 2,
-      "api_calls": 196,
+      "api_calls": 245,
       "usage": {
-        "input_tokens": 427560,
-        "output_tokens": 118731,
-        "cache_read_input_tokens": 49829888,
+        "input_tokens": 478735,
+        "output_tokens": 146606,
+        "cache_read_input_tokens": 69861376,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 385106
+      "peak_context_tokens": 432781
     }
   ],
   "log": {
-    "sha256": "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107",
-    "bytes": 174697103,
-    "lines": 59981,
-    "gzip_bytes": 69561448,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107.jsonl.gz"
+    "sha256": "d6a35e8d53cde3dc9b4ef1ba5af3a582e964924f101f858d04e1e7e9fa9edd4b",
+    "bytes": 175675654,
+    "lines": 60332,
+    "gzip_bytes": 69932859,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/d6a35e8d53cde3dc9b4ef1ba5af3a582e964924f101f858d04e1e7e9fa9edd4b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3318,20 +3319,28 @@
       "log_sha256": "12d48dbf67f9f46fd18a6b2c23a297f36e62e4573771f9a4d82136a80eb3850b"
     },
     {
-      "change_id": "ymuxosvrmmluotowvrzlzxnuzlrsqrpm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107"
-    },
-    {
       "change_id": "nruuunkupqkqkrylqvrwqmomstsqlqzn",
       "commit_id": null,
       "immutable": false,
       "summary": "Construct bounded receivers through application superclasses (verification pending)",
       "body": "Construct the actual concrete receiver, run its original superconstructor chain and observe inherited fields by the JVM field lookup. Refuse a hidden or ambiguous field, an unavailable superclass and a constructor with an external static effect. The JVM witness harness now includes the declaring owner of an inherited field read. A private parent field mutation thereby reproduces on the JVM with the same virtual dispatch during construction.\n\nAll 23 object construction tests passed, including wrong inherited state, constructor failure, hidden fields and the external registration control. The changed suite passed all four groups and the cost inventory lint passed. All 36 original complete-module preparations returned artifacts ready. Jobs 20261122-000446-rescore-receiver-group-01-with-inherited through 20261122-000447-rescore-receiver-group-07-with-inherited recheck all 32 pairs and repeat the six preselected real caller paths.",
       "log_sha256": "53b2b13c3e3e78ddd2ade964899e49ffc9b20dcc1e68e0a3f9af8ee5c2720107"
+    },
+    {
+      "change_id": "ruvwwqyyqzuoqpnvumoultpqknkzztyu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "d6a35e8d53cde3dc9b4ef1ba5af3a582e964924f101f858d04e1e7e9fa9edd4b"
+    },
+    {
+      "change_id": "qtorxnxzxnpwxxzltsruzyptnyopwtkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind upgrade callers to the native class reader (verification pending)",
+      "body": "The post-architecture class extractor takes the checker’s logical JAR entries. The original upgrade runner still passed an integer release and stopped before every native check. Ask the running checker once for both callers, check the selected provider and digest, and extract the entries it named. Preserve the original V0 base-class reader and the pinned V1–V3 release selection. A binding refusal is retained as an intake result.\n\nChecked the historical old and new caller byte hashes through both the modern reader and pinned V3 path. The six engineering tests passed, including a versioned-entry and mismatched-digest control, and the tier inventory and queue validated. All seven first attempts and six physical caller controls are retained. Jobs 20261122-001933-confirm-receiver-targets-01-using-the-se through 20261122-001934-confirm-receiver-targets-07-using-the-se repeat the full 32-pair rescore.",
+      "log_sha256": "d6a35e8d53cde3dc9b4ef1ba5af3a582e964924f101f858d04e1e7e9fa9edd4b"
     }
   ],
   "logs": {
@@ -4216,6 +4225,12 @@
       "lines": 54057,
       "gzip_bytes": 62157342,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/d5b537034daa29cfbcefa570c161aad5c8106eb21fd82653eccf4e390361d002.jsonl.gz"
+    },
+    "d6a35e8d53cde3dc9b4ef1ba5af3a582e964924f101f858d04e1e7e9fa9edd4b": {
+      "bytes": 175675654,
+      "lines": 60332,
+      "gzip_bytes": 69932859,
+      "url": null
     },
     "d92e3ef2b35400f865f99dfb43e73c81ab5561ccd93dde994745f2540581c118": {
       "bytes": 101904320,
