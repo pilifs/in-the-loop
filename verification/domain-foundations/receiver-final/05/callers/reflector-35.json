@@ -1,0 +1,791 @@
+{
+  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;",
+  "observer": "Generate and invoke an empty-constructor adapter on two actual classes.",
+  "domainBasis": "Both selected classes have accessible argument-free constructors. A working public generator should produce a fresh instance with each requested class identity. An original runtime that cannot create the adapter remains open.",
+  "cases": [
+    {
+      "args": [
+        "object"
+      ],
+      "expected": {
+        "return": "java.lang.Object"
+      }
+    },
+    {
+      "args": [
+        "example"
+      ],
+      "expected": {
+        "return": "UpgradeProbe$Example"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "e6e071ee6216c086f33481aa4506a9c90dea09339d664622a50365b5f37cfe86",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
+      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
+      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
+      "classpath": [
+        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
+        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
+        "71c4f78e437b8fdcd9cc0dfd2abea8c089eb677005a6a5cff320206cc52b46cc",
+        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
+        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
+        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
+      ],
+      "dependency": "71c4f78e437b8fdcd9cc0dfd2abea8c089eb677005a6a5cff320206cc52b46cc",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 65,
+      "resources": 0,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "0a79648e8047a78b589e226fe1a3bb55113de63987ced9d6ca7e0ae1b5fae880",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            },
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": false,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            },
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": false,
+          "repeatableBeforeEntry": true
+        }
+      ],
+      "loadedDependencyClasses": []
+    },
+    "new": {
+      "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
+      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
+      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
+      "classpath": [
+        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
+        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
+        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
+        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
+        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
+        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
+      ],
+      "dependency": "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 65,
+      "resources": 0,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "a691fcb106d7da9532cec061f88a06a6eb085fc89fdd404323960f3c7e416833",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            },
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": false,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            },
+            {
+              "throws": "java.lang.ExceptionInInitializerError",
+              "causes": [
+                "java.lang.ExceptionInInitializerError",
+                "java.lang.NullPointerException"
+              ],
+              "frames": [
+                {
+                  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                  "codeIndex": 15,
+                  "sourceLine": 26,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              ],
+              "observerCodeIndex": 30,
+              "lastCauseMessage": "value is marked @NonNull but is null",
+              "throwLocation": {
+                "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                "codeIndex": 15,
+                "sourceLine": 26,
+                "artifact": "client",
+                "classpathIndex": 0,
+                "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+              },
+              "subsequentRethrows": [],
+              "rootThrow": {
+                "frames": [
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                    "codeIndex": 13,
+                    "sourceLine": 10,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.IncrementingNameIdGeneratedClassNameSupplier#<clinit>()V",
+                    "codeIndex": 18,
+                    "sourceLine": 31,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  },
+                  {
+                    "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#<init>(Lru/progrm_jarvis/reflector/bytecode/asm/ClassDefiner;)V",
+                    "codeIndex": 15,
+                    "sourceLine": 26,
+                    "artifact": "client",
+                    "classpathIndex": 0,
+                    "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                  }
+                ],
+                "observerCodeIndex": 30,
+                "throwLocation": {
+                  "entry": "ru.progrm_jarvis.reflector.util.ObjectUtil#orDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": 13,
+                  "sourceLine": 10,
+                  "artifact": "client",
+                  "classpathIndex": 0,
+                  "jarSha256": "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e"
+                }
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": false,
+          "repeatableBeforeEntry": true
+        }
+      ],
+      "loadedDependencyClasses": []
+    }
+  },
+  "status": "open",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;",
+    "codeIndices": [
+      36
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe$Example": "a281cf0d889fcfd18518dd6ec1cfae895ab2c7afd504675348dfb8d52a366d2b",
+    "UpgradeProbe": "ec049071a82ba41fe8b7debc2419feee209a9e54b328c646f036724c2b89eefa",
+    "UpgradeTrace": "bd0cf2e9519310ef6edfbcded4927ae58f877b0e508794f6ca46e27da1348fa0"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 2",
+    "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
+    "adapterClassSha256": "040e4da5b850faa9c943869b22368fb22c425ec654c18fda47321c62dd93fa3c",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
+        "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
+        "orderedClasspathSha256": [
+          "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
+          "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
+          "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+          "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+          "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+          "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+          "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+          "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+          "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+          "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
+          "71c4f78e437b8fdcd9cc0dfd2abea8c089eb677005a6a5cff320206cc52b46cc",
+          "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
+          "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
+          "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String; (java.lang.String.replace(char, char) at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<clinit>:17). With --gaps assume it assumes instead that java.lang.String.replace(char, char) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "d0f66573ab6ccf15b61e87cdca80014022d5c13ba44dbbc1f08a9c8af2f08568",
+        "seconds": 0.096
+      },
+      "new": {
+        "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
+        "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
+        "orderedClasspathSha256": [
+          "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
+          "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
+          "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+          "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+          "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+          "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+          "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+          "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+          "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+          "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
+          "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
+          "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
+          "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
+          "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String; (java.lang.String.replace(char, char) at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<clinit>:17). With --gaps assume it assumes instead that java.lang.String.replace(char, char) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "2c8a4a40b77abf582451ccbedbbec96b710edbe636565c4c88a167af675926b3",
+        "seconds": 0.098
+      }
+    }
+  },
+  "stoppedAt": {
+    "side": "old",
+    "input": 0,
+    "repetition": 1,
+    "exception": "java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.reflector.util.ObjectUtil.orDefault(ObjectUtil.java:10)"
+  },
+  "reason": "old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvis.reflector.util.ObjectUtil.orDefault(ObjectUtil.java:10)",
+  "beforeEntryComparison": [
+    {
+      "input": 0,
+      "status": "stopped before entry on both revisions"
+    },
+    {
+      "input": 1,
+      "status": "stopped before entry on both revisions"
+    }
+  ],
+  "elapsedSeconds": 8.161,
+  "specSha256": "02fe49c91ac7610570f3904d6a10aa4c8fcddc17c1df53c3df28b7573cccbdf7"
+}

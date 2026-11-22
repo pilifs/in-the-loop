@@ -1,0 +1,347 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044516-01-receiver-rescore-after-literal-decodi",
+  "title": "01 receiver rescore after literal decoding",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 42.4s, peak 372.3 MiB (estimated 5m00s, 3.0 GiB); 20 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-044516-01-receiver-rescore-after-literal-decodi.json",
+    "sha256": "01820c3d150f2edaddb01af3e3a8c871a428ae63215bae6343cc92ba6f3dc114",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044516-01-receiver-rescore-after-literal-decodi",
+      "title": "01 receiver rescore after literal decoding",
+      "description": "Repeat all frozen overloads and the original caller on both revisions after the recurring Base64 and Boolean intake fixes. Compare the same registered inputs, subject runtime, constructor path, observed outputs and full original classpaths with the first receiver run.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T04:45:16+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check the bound overloads and original caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 01",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/receiver-final/01"
+      ]
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:46:15+00:00",
+  "finishedAt": "2026-11-22T04:51:10+00:00",
+  "wallSeconds": 295.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 390410240,
+    "wallSeconds": 42.4,
+    "cpuSeconds": 45.9,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 01",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 42.422,
+      "cpuSeconds": 45.937,
+      "cpuThrottledSeconds": 2.6,
+      "peakMemoryBytes": 390410240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-overloads-and.log",
+        "lines": 20,
+        "bytes": 4055,
+        "sha256": "6a08b5955a36a53e2f64a2404f7d445b21aa31b5e9e05e14c27db225a065163e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-38 current open parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "compsuite-i-1 current open convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponse",
+        "compsuite-i-70 current open getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lan",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-81 current open parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet",
+        "preserved retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
+        "compsuite-i-1 preserved",
+        "changed com.esotericsoftware.reflectasm.MethodAccess#get(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;",
+        "compsuite-i-38 changed",
+        "open new input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused b",
+        "compsuite-i-4 open",
+        "open new input 0: the original caller method was never entered. java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303)",
+        "compsuite-i-70 open",
+        "changed org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+        "compsuite-i-81 changed",
+        "compsuite-i-1 preserved ['unverifiable', 'unverifiable']",
+        "compsuite-i-38 changed ['unverifiable', 'unverifiable']",
+        "compsuite-i-4 open ['unverifiable', 'unverifiable']",
+        "compsuite-i-70 open ['unverifiable', 'unverifiable']",
+        "compsuite-i-81 changed ['unverifiable', 'unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-1-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6131,
+      "sha256": "02dab10ba4a6da3daeb8babe51258181bf394cd9eee985b426e4f49a52278787",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-1-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6132,
+      "sha256": "acb7e6893f7dd628e24a4c0066d80c61e04100259ea4a85834ee0caad500116b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 23883,
+      "sha256": "7241c3fbd571b800b45c6029179a699c7d43056a05a3597ffd628b88634d5a66",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-38-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6114,
+      "sha256": "a81481394cc870ff20e91dbb292c143f237d045e076eb4d481fa72cdcd5cb800",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-38-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6115,
+      "sha256": "4a23c5ad603f0bc4c38b471288ab7b0cef6d05a61d07f7f7d0d13af1151fa4c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 15563,
+      "sha256": "c9d4f0fc9ea8f901ad476bdda57a99f66705453289f3b6c66398115774146815",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-4-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6404,
+      "sha256": "9d7699ea2ed8f77db617a8f8a1a468e1b6b97628b7f5817ea635c47345df147f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-4-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6401,
+      "sha256": "f9de178b55c6d991f4e99b407ce7d96ab9094ef4b89b95c2d1b50c0f54fb8f08",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 111865,
+      "sha256": "21bcbc9124d4dc25ac9b0ce2ad806001e7cd68157e1f0ad9fc7e190580507a15",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-70-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6322,
+      "sha256": "1cec23733026f0992c4386eb0e4ddb79c5feee1b7837d1d1f115a2cbac680349",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-70-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6321,
+      "sha256": "4e9081d6442628cde19c284641a7a0d2c13ed0d7563162efd2764c4b97ef1443",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 42225,
+      "sha256": "9c4544fe8f71ef2a0e561f67e49f36b76c9d14be39931b74868df10e6a7c6b24",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-81-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6243,
+      "sha256": "5e62abf52fe470e0d01a91d17c6789593d52529e38c34d153666e52435210e3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-81-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6245,
+      "sha256": "20b8c90ce6b2ecfabbeba8d3771b913ffcb87ecfdf2188ab07fc9e9847b5c192",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/callers/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 24181,
+      "sha256": "e5b71fdcfedf63b6c69f505838f26c56d20769ce68bb1b7dfbe25c12d719b9f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 7866,
+      "sha256": "90f5c5dba4b8c42fc4d04e76f9486033dc91c9abaab19b3672c765b46ae8a20a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 6069,
+      "sha256": "ce34cb0b45816b9cf97c87aa047f7eeabf5650adf87bf82bd9c7525106410121",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 9860,
+      "sha256": "8d5eb22911a01e5dc7fea96ca5d639f8613ca29275e829497c0f194fb90c51dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 8530,
+      "sha256": "f6e5e774906ac67e30de74ef603014d6df9389a3640b154fc018d2fdb767968c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 7542,
+      "sha256": "dfe47e20d31d15b40643b8f0579523b51b05e6c4fe1c4d7aec50056b6c8f72d3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:18+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-1-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-1-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-1.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-38-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-38-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-38.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-4-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-4-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-4.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-70-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-70-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-70.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-81-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-81-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/01/callers/compsuite-i-81.json",
+      "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-1.json",
+      "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-38.json",
+      "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-4.json",
+      "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-70.json",
+      "verification/domain-foundations/receiver-final/01/overloads/current/compsuite-i-81.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045110Z-10761340b0381c05",
+      "outputs": "20261122T045110Z-158027c04b3e5ebf",
+      "diff": "20261122T045110Z-186317ad9c26ae1d"
+    }
+  }
+}

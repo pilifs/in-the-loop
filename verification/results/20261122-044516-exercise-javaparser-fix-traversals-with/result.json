@@ -1,0 +1,233 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044516-exercise-javaparser-fix-traversals-with",
+  "title": "Exercise JavaParser fix traversals with supplied separator",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m23s, peak 315.8 MiB (estimated 6m00s, 3.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-044516-exercise-javaparser-fix-traversals-with.json",
+    "sha256": "5b2a7c374f752636825f7f6f3759dec21a1d4781851fae178ab397577dbe8549",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044516-exercise-javaparser-fix-traversals-with",
+      "title": "Exercise JavaParser fix traversals with supplied separator",
+      "description": "Check all four registered traversal obligations on this original revision for every supplied separator of length zero through two UTF-16 units. Also check absent startup and the larger text domain. The underlying shared HashSet constructor and Node initialization run normally; counterexamples replay in a fresh JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:45:16+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Check text and complete traversal set",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --all-traversals --side fix --output verification/domain-foundations/complete-separator",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/complete-separator/fix"
+      ],
+      "supersedes": "20261122-042450-exercise-javaparser-fix-traversals-with",
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:50:52+00:00",
+  "finishedAt": "2026-11-22T04:53:32+00:00",
+  "wallSeconds": 160.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 331128832,
+    "wallSeconds": 143.5,
+    "cpuSeconds": 144.6,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.4
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check text and complete traversal set",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --all-traversals --side fix --output verification/domain-foundations/complete-separator",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 143.492,
+      "cpuSeconds": 144.623,
+      "cpuThrottledSeconds": 0.317,
+      "peakMemoryBytes": 331128832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-text-and-complete-traver.log",
+        "lines": 6,
+        "bytes": 205,
+        "sha256": "91af4d2b498fa129159b936980891d5dc1c546240da53af944fee66f2062c5b7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fix current text verified None",
+        "fix current absent verified None",
+        "fix current postorder verified None",
+        "fix current nonempty verified None",
+        "fix current preorder verified None",
+        "fix current terminal verified None"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/complete-separator/fix/current-absent.native.json",
+      "change": "added",
+      "bytes": 4686,
+      "sha256": "021a14d107648165c0c45ddbd5962204e779cb624fdd81a333720ab34e765510",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator/fix/current-nonempty.native.json",
+      "change": "added",
+      "bytes": 6618,
+      "sha256": "ec478503fb6886c06425a27f429b737f8c4acc94e4e18e95687eb9c1d6f71036",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator/fix/current-postorder.native.json",
+      "change": "added",
+      "bytes": 6617,
+      "sha256": "921dbb04eeb56b2704a551f35187afba3a41134580d3baa129378e1167228c8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator/fix/current-preorder.native.json",
+      "change": "added",
+      "bytes": 6612,
+      "sha256": "06d4ff96dfd28c89b74bc523eeddcbb8ffb39995bfe57093b72c487b3cd3d7bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator/fix/current-terminal.native.json",
+      "change": "added",
+      "bytes": 6613,
+      "sha256": "3642e8023f346683a75516f46bdddfc566240f1a3fbb86c4cdf83f7162ac68d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator/fix/current-text.native.json",
+      "change": "added",
+      "bytes": 8071,
+      "sha256": "3174070e5cc98fdde40085b9a32f3150351dbab549f2ded70d8cb89eebd64cbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator/fix/evidence.json",
+      "change": "added",
+      "bytes": 5319,
+      "sha256": "2f02c3da5e772ec0179883bc8124be1ada908b50f006e8ffb5a78470449547c3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:18+00:00",
+    "applied": [
+      "verification/domain-foundations/complete-separator/fix/current-absent.native.json",
+      "verification/domain-foundations/complete-separator/fix/current-nonempty.native.json",
+      "verification/domain-foundations/complete-separator/fix/current-postorder.native.json",
+      "verification/domain-foundations/complete-separator/fix/current-preorder.native.json",
+      "verification/domain-foundations/complete-separator/fix/current-terminal.native.json",
+      "verification/domain-foundations/complete-separator/fix/current-text.native.json",
+      "verification/domain-foundations/complete-separator/fix/evidence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045332Z-68471829c4371b14",
+      "outputs": "20261122T045332Z-7114697cb97ff999",
+      "diff": "20261122T045332Z-731073d5c5be1ff5"
+    }
+  }
+}

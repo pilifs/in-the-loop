@@ -1,0 +1,551 @@
+{
+  "entry": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+  "observer": "Transform and execute the developer\u2019s simple await shape and read the resulting task value.",
+  "domainBasis": "The input bytecode awaits and returns its completed Task argument. Its class bytes are fixed on the original ASM version. The upstream test expects hello; the second input verifies that the returned value follows its own argument.",
+  "cases": [
+    {
+      "args": [
+        "yv66vgAAADQAGQEAC1NpbXBsZUFzeW5jBwABAQAQamF2YS9sYW5nL09iamVjdAcAAwEAGlVwZ3JhZGVQcm9iZSRBc3luY0Z1bmN0aW9uBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQAnKExqYXZhL2xhbmcvT2JqZWN0OylMY29tL2VhL2FzeW5jL1Rhc2s7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWNvbS9lYS9hc3luYy9UYXNrBwAPAQASY29tL2VhL2FzeW5jL0FzeW5jBwARAQAFYXdhaXQBADwoTGphdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRhYmxlRnV0dXJlOylMamF2YS9sYW5nL09iamVjdDsMABMAFAoAEgAVAQAEQ29kZQEACkV4Y2VwdGlvbnMAIQACAAQAAQAGAAAAAgABAAcACAABABcAAAARAAEAAQAAAAUqtwAKsQAAAAAAAQALAAwAAgAXAAAAGQABAAIAAAANK8AAELgAFlcrwAAQsAAAAAAAGAAAAAQAAQAOAAA=",
+        "hello"
+      ],
+      "expected": {
+        "return": "hello"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAGQEAC1NpbXBsZUFzeW5jBwABAQAQamF2YS9sYW5nL09iamVjdAcAAwEAGlVwZ3JhZGVQcm9iZSRBc3luY0Z1bmN0aW9uBwAFAQAGPGluaXQ+AQADKClWDAAHAAgKAAQACQEABWFwcGx5AQAnKExqYXZhL2xhbmcvT2JqZWN0OylMY29tL2VhL2FzeW5jL1Rhc2s7AQATamF2YS9sYW5nL0V4Y2VwdGlvbgcADQEAEWNvbS9lYS9hc3luYy9UYXNrBwAPAQASY29tL2VhL2FzeW5jL0FzeW5jBwARAQAFYXdhaXQBADwoTGphdmEvdXRpbC9jb25jdXJyZW50L0NvbXBsZXRhYmxlRnV0dXJlOylMamF2YS9sYW5nL09iamVjdDsMABMAFAoAEgAVAQAEQ29kZQEACkV4Y2VwdGlvbnMAIQACAAQAAQAGAAAAAgABAAcACAABABcAAAARAAEAAQAAAAUqtwAKsQAAAAAAAQALAAwAAgAXAAAAGQABAAIAAAANK8AAELgAFlcrwAAQsAAAAAAAGAAAAAQAAQAOAAA=",
+        "second"
+      ],
+      "expected": {
+        "return": "second"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "a6f2e71a5b4e0203f1a33c59e4d34bef705fe438d427d9a15e1ac8960be9db91",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "3a60b3ceb9ddd8647aa5ea5f6c72c7c99d85eefb",
+      "sourceSha256": "6f67f62d60cfed87ac0398391d4e20f732d977e74de91484543b8d46236b2478",
+      "callerClassSha256": "b62d20499b1eb5f9689ac5638e8cf2a9b107394d60c28374a80e6834121d14b7",
+      "classpath": [
+        "e05741302abb8c0d52a56fd317ed28b00772c705598212c9bade7df3410ac6eb",
+        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
+        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
+        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+      ],
+      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 24,
+      "resources": 1,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "dcedca940dc508edc8a468d164c1a513a7c4d436627a211580083161c4c0401a",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "hello"
+            },
+            {
+              "return": "hello"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "second"
+            },
+            {
+              "return": "second"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassTooLargeException",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.Context",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Handle",
+        "org.objectweb.asm.Handler",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodTooLargeException",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Opcodes",
+        "org.objectweb.asm.Symbol",
+        "org.objectweb.asm.SymbolTable",
+        "org.objectweb.asm.SymbolTable$Entry",
+        "org.objectweb.asm.Type"
+      ]
+    },
+    "new": {
+      "commit": "af90a83ddee0489e2fb4f3f8bf7b300d578fa1fc",
+      "sourceSha256": "6f67f62d60cfed87ac0398391d4e20f732d977e74de91484543b8d46236b2478",
+      "callerClassSha256": "b62d20499b1eb5f9689ac5638e8cf2a9b107394d60c28374a80e6834121d14b7",
+      "classpath": [
+        "e05741302abb8c0d52a56fd317ed28b00772c705598212c9bade7df3410ac6eb",
+        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
+        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
+        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+      ],
+      "dependency": "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 24,
+      "resources": 1,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "e25344604544a76e809b2d9c79da2ff78d305f6e0ebd14c4977d5869c1543569",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "hello"
+            },
+            {
+              "return": "hello"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "second"
+            },
+            {
+              "return": "second"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Lsun/misc/Launcher$AppClassLoader;@1",
+                  "Lorg/objectweb/asm/ClassReader;@2"
+                ],
+                "fields": {
+                  "com.ea.async.instrumentation.Transformer#errorListener:Ljava/util/function/Consumer;": "null"
+                },
+                "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 14,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/ea/async/instrumentation/Transformer;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            },
+            {
+              "observerCodeIndex": 30,
+              "dispatchedTo": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassTooLargeException",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.Context",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Handle",
+        "org.objectweb.asm.Handler",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodTooLargeException",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Opcodes",
+        "org.objectweb.asm.Symbol",
+        "org.objectweb.asm.SymbolTable",
+        "org.objectweb.asm.SymbolTable$Entry",
+        "org.objectweb.asm.Type"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [
+    {
+      "kind": "java",
+      "file": "Task.java",
+      "source": "async/src/test/java/com/ea/async/Task.java",
+      "sha256": "c7a40dc32645fe0c0cef73545226447f70a78e4e7c8639411da112120373626a",
+      "class": "com.ea.async.Task"
+    }
+  ],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+    "codeIndices": [
+      30
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe$1": "92bfade61d193455621fb76ee748ede8d628742399186ac09c23973742a90a52",
+    "UpgradeProbe$AsyncFunction": "b5dbcaafe32dfc4873a8d6ce7d550167db630aaf26bcd42d5438cb2667d4c486",
+    "UpgradeProbe$Loader": "bcd4964dc7db401ce64a641504489e0e13b9ed1db46b9b34cd7a87a9ce840b83",
+    "UpgradeProbe": "8c14b036e81b500d47d811016d770271d2c03951b7acf3695056496ee2784841",
+    "UpgradeTrace": "bd0cf2e9519310ef6edfbcded4927ae58f877b0e508794f6ca46e27da1348fa0",
+    "com/ea/async/Task": "6a0e02b8b0bf954ce5a8bb913c793d404f742f791fcfd4b93080229ad872f6e8"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 2",
+    "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
+    "adapterClassSha256": "8ca93d6049851638a5486c3d8a691f54581bcc2d2dbc09ab1d839059b2da531a",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "3a60b3ceb9ddd8647aa5ea5f6c72c7c99d85eefb",
+        "callerClassSha256": "b62d20499b1eb5f9689ac5638e8cf2a9b107394d60c28374a80e6834121d14b7",
+        "orderedClasspathSha256": [
+          "e05741302abb8c0d52a56fd317ed28b00772c705598212c9bade7df3410ac6eb",
+          "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+          "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
+          "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
+          "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
+          "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+          "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.WeakHashMap.<init>()V (java.util.WeakHashMap.<init>() at com.ea.async.instrumentation.Transformer.<clinit>:136). With --gaps assume it assumes instead that java.util.WeakHashMap.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "f6c9930505226310738d85aa3cd7ac1e6901ddb95e8454d4b74ed9ddcbd20689",
+        "seconds": 0.096
+      },
+      "new": {
+        "commit": "af90a83ddee0489e2fb4f3f8bf7b300d578fa1fc",
+        "callerClassSha256": "b62d20499b1eb5f9689ac5638e8cf2a9b107394d60c28374a80e6834121d14b7",
+        "orderedClasspathSha256": [
+          "e05741302abb8c0d52a56fd317ed28b00772c705598212c9bade7df3410ac6eb",
+          "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+          "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
+          "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
+          "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
+          "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+          "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.WeakHashMap.<init>()V (java.util.WeakHashMap.<init>() at com.ea.async.instrumentation.Transformer.<clinit>:136). With --gaps assume it assumes instead that java.util.WeakHashMap.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "49aa8a7e8bdd17a8e3d269dc9d91fc5ee9ea16c70262f14515c67f7fff1d9312",
+        "seconds": 0.085
+      }
+    }
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 7.547,
+  "specSha256": "908362f5dd84d6b57fa1b03d43f93ff8c9fa529c0bec829d6e65259c7d9d08b8"
+}

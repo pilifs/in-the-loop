@@ -1,0 +1,1328 @@
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/new/baseline.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++    "domain": null,
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "uri": null,
++        "line": 266
++      }
++    ],
++    "output": "✗ com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-1s3scbwk/baseline"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/new/current.native.json
+@@ -0,0 +1,159 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++    "domain": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts in 0.0 s; loops unwound 64 times with unwinding assertions",
++    "problem": null,
++    "statement": "/home/filip/.cache/in-the-loop/tmp/receiver-property-1s3scbwk/current/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle satisfies `result == null` on every input of constructor-made objects (jvmcontract's own checker (CaDiCaL): 1 properties proved over this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-1s3scbwk/current",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.026633198,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 66,
++        "clauses": 1,
++        "seconds": 0.006658958,
++        "loading_seconds": 0.000213341,
++        "decoding_seconds": 0.0000699,
++        "encoding_seconds": 1.222e-6,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.007,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 66,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.059,
++        "setup": 0.002,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.007,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.05
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "this",
++            "type": "com.monitorjbl.xlsx.impl.StreamingCell",
++            "kind": "object",
++            "null": false,
++            "components": [
++              "columnIndex: int",
++              "rowIndex: int",
++              "use1904Dates: boolean"
++            ]
++          }
++        ],
++        "shared_arrays": false,
++        "text": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++        "input_objects": [
++          1,
++          1
++        ]
++      },
++      "assumptions": [
++        {
++          "kind": "constructible",
++          "text": "the constructor StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean) accepts the arguments of this: an input it rejects is skipped, so the property is about the objects it makes",
++          "basis": "harness"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == null",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/new/negative.native.json
+@@ -0,0 +1,242 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++    "domain": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++    "assume": null,
++    "assert": "result != null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "getCellStyle(this=new StreamingCell(0, 0, false))",
++      "outcome": "null",
++      "values": [
++        "0",
++        "0",
++        "false"
++      ],
++      "found": "getCellStyle(this=new StreamingCell(20, 20, true))",
++      "shrink_runs": 3,
++      "inputs": [
++        {
++          "name": "this.columnIndex",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "this.rowIndex",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "this.use1904Dates",
++          "type": "boolean",
++          "value": false
++        }
++      ],
++      "found_inputs": [
++        {
++          "name": "this.columnIndex",
++          "type": "int",
++          "value": 20
++        },
++        {
++          "name": "this.rowIndex",
++          "type": "int",
++          "value": 20
++        },
++        {
++          "name": "this.use1904Dates",
++          "type": "boolean",
++          "value": true
++        }
++      ],
++      "call": {
++        "class": "com.monitorjbl.xlsx.impl.StreamingCell",
++        "class_file": "com/monitorjbl/xlsx/impl/StreamingCell.class",
++        "classes": "after",
++        "method": "getCellStyle",
++        "descriptor": "()Lorg/apache/poi/ss/usermodel/CellStyle;",
++        "static": false,
++        "receiver": {
++          "name": "this",
++          "type": "com.monitorjbl.xlsx.impl.StreamingCell",
++          "components": [
++            {
++              "name": "columnIndex",
++              "type": "int",
++              "value": 0,
++              "from": "this.columnIndex"
++            },
++            {
++              "name": "rowIndex",
++              "type": "int",
++              "value": 0,
++              "from": "this.rowIndex"
++            },
++            {
++              "name": "use1904Dates",
++              "type": "boolean",
++              "value": false,
++              "from": "this.use1904Dates"
++            }
++          ]
++        },
++        "arguments": []
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as getCellStyle(this=new StreamingCell(20, 20, true)), shrunk to the input above in 3 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++    "problem": null,
++    "statement": "/home/filip/.cache/in-the-loop/tmp/receiver-property-1s3scbwk/negative/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle violated: `result != null`:\n  getCellStyle(this=new StreamingCell(0, 0, false))\n    outcome: null",
++        "uri": null,
++        "line": 266
++      }
++    ],
++    "output": "✗ Property of com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle violated: `result != null`:\n  getCellStyle(this=new StreamingCell(0, 0, false))\n    outcome: null\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as getCellStyle(this=new StreamingCell(20, 20, true)), shrunk to the input above in 3 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-1s3scbwk/negative",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.030948484,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 8,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000022933,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 199,
++        "clauses": 462,
++        "seconds": 0.007529734,
++        "loading_seconds": 0.000356891,
++        "decoding_seconds": 0.000062728,
++        "encoding_seconds": 0.000129736,
++        "witness_seconds": 0.000014445
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.008,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.007,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 199,
++            "clauses": 462
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.693,
++        "setup": 0.002,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.008,
++        "replay": 0.006,
++        "jvm": 0.58,
++        "other": 0.097
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "this",
++            "type": "com.monitorjbl.xlsx.impl.StreamingCell",
++            "kind": "object",
++            "null": false,
++            "components": [
++              "columnIndex: int",
++              "rowIndex: int",
++              "use1904Dates: boolean"
++            ]
++          }
++        ],
++        "shared_arrays": false,
++        "text": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++        "input_objects": [
++          1,
++          1
++        ]
++      },
++      "assumptions": [
++        {
++          "kind": "constructible",
++          "text": "the constructor StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean) accepts the arguments of this: an input it rejects is skipped, so the property is about the objects it makes",
++          "basis": "harness"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result != null",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/new/result.json
+@@ -0,0 +1,51 @@
++{
++  "claims": {
++    "baseline": {
++      "assertion": "result == null",
++      "checkerSha256": "a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb",
++      "firstOutstanding": "getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "raw": "baseline.native.json",
++      "sha256": "b6db6d7a27731d7e2a8366608c19c3187a13269ded705bf4086a51b7d3d03094",
++      "verdict": "unverifiable"
++    },
++    "current": {
++      "assertion": "result == null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": null,
++      "raw": "current.native.json",
++      "sha256": "bd4ba399fc2065332fbb4713793be317283b941299e38414928520ed9262de12",
++      "verdict": "verified"
++    },
++    "negative": {
++      "assertion": "result != null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": null,
++      "raw": "negative.native.json",
++      "sha256": "b439885c58fc61b99d2585e6744a6e0c9aac28e4b4716b87424154a90567f256",
++      "verdict": "violation"
++    }
++  },
++  "commit": "eed036e11b5aecaeb5889fae26505e9409bdc438",
++  "nativeSubjectJdk": "21.0.13",
++  "orderedClasspathSha256": [
++    "60e1cf1dd74d9a612a3de9f7d2a7fa23298c45780d14f0aaf397e4b1b20bd1d1",
++    "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++    "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++    "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++    "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++    "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++    "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++    "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++    "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++    "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++    "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++    "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++    "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++    "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++    "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++    "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++  ],
++  "originalControlSourceSha256": "0f66d1627d628492b0b1e4cd78272530e035b96f81adba3edae5390a59d791cb",
++  "publicConstructor": "new com.monitorjbl.xlsx.impl.StreamingCell(2,3,false)",
++  "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle"
++}
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/old/baseline.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++    "domain": null,
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "uri": null,
++        "line": 266
++      }
++    ],
++    "output": "✗ com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-mwmci24b/baseline"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/old/current.native.json
+@@ -0,0 +1,159 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++    "domain": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts in 0.0 s; loops unwound 64 times with unwinding assertions",
++    "problem": null,
++    "statement": "/home/filip/.cache/in-the-loop/tmp/receiver-property-mwmci24b/current/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle satisfies `result == null` on every input of constructor-made objects (jvmcontract's own checker (CaDiCaL): 1 properties proved over this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-mwmci24b/current",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.022492009,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 66,
++        "clauses": 1,
++        "seconds": 0.005881708,
++        "loading_seconds": 0.000197551,
++        "decoding_seconds": 0.000044032,
++        "encoding_seconds": 1.173e-6,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.006,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 66,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.051,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.006,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.043
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "this",
++            "type": "com.monitorjbl.xlsx.impl.StreamingCell",
++            "kind": "object",
++            "null": false,
++            "components": [
++              "columnIndex: int",
++              "rowIndex: int",
++              "use1904Dates: boolean"
++            ]
++          }
++        ],
++        "shared_arrays": false,
++        "text": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++        "input_objects": [
++          1,
++          1
++        ]
++      },
++      "assumptions": [
++        {
++          "kind": "constructible",
++          "text": "the constructor StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean) accepts the arguments of this: an input it rejects is skipped, so the property is about the objects it makes",
++          "basis": "harness"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == null",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/old/negative.native.json
+@@ -0,0 +1,242 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++    "domain": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++    "assume": null,
++    "assert": "result != null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "getCellStyle(this=new StreamingCell(0, 0, false))",
++      "outcome": "null",
++      "values": [
++        "0",
++        "0",
++        "false"
++      ],
++      "found": "getCellStyle(this=new StreamingCell(20, 20, true))",
++      "shrink_runs": 3,
++      "inputs": [
++        {
++          "name": "this.columnIndex",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "this.rowIndex",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "this.use1904Dates",
++          "type": "boolean",
++          "value": false
++        }
++      ],
++      "found_inputs": [
++        {
++          "name": "this.columnIndex",
++          "type": "int",
++          "value": 20
++        },
++        {
++          "name": "this.rowIndex",
++          "type": "int",
++          "value": 20
++        },
++        {
++          "name": "this.use1904Dates",
++          "type": "boolean",
++          "value": true
++        }
++      ],
++      "call": {
++        "class": "com.monitorjbl.xlsx.impl.StreamingCell",
++        "class_file": "com/monitorjbl/xlsx/impl/StreamingCell.class",
++        "classes": "after",
++        "method": "getCellStyle",
++        "descriptor": "()Lorg/apache/poi/ss/usermodel/CellStyle;",
++        "static": false,
++        "receiver": {
++          "name": "this",
++          "type": "com.monitorjbl.xlsx.impl.StreamingCell",
++          "components": [
++            {
++              "name": "columnIndex",
++              "type": "int",
++              "value": 0,
++              "from": "this.columnIndex"
++            },
++            {
++              "name": "rowIndex",
++              "type": "int",
++              "value": 0,
++              "from": "this.rowIndex"
++            },
++            {
++              "name": "use1904Dates",
++              "type": "boolean",
++              "value": false,
++              "from": "this.use1904Dates"
++            }
++          ]
++        },
++        "arguments": []
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as getCellStyle(this=new StreamingCell(20, 20, true)), shrunk to the input above in 3 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++    "problem": null,
++    "statement": "/home/filip/.cache/in-the-loop/tmp/receiver-property-mwmci24b/negative/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle violated: `result != null`:\n  getCellStyle(this=new StreamingCell(0, 0, false))\n    outcome: null",
++        "uri": null,
++        "line": 266
++      }
++    ],
++    "output": "✗ Property of com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle violated: `result != null`:\n  getCellStyle(this=new StreamingCell(0, 0, false))\n    outcome: null\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as getCellStyle(this=new StreamingCell(20, 20, true)), shrunk to the input above in 3 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-mwmci24b/negative",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.021868908,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 8,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000014858,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 199,
++        "clauses": 462,
++        "seconds": 0.006085712,
++        "loading_seconds": 0.000242596,
++        "decoding_seconds": 0.000045085,
++        "encoding_seconds": 0.000072855,
++        "witness_seconds": 0.000011063
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.006,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 199,
++            "clauses": 462
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.666,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.006,
++        "replay": 0.006,
++        "jvm": 0.574,
++        "other": 0.079
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "this",
++            "type": "com.monitorjbl.xlsx.impl.StreamingCell",
++            "kind": "object",
++            "null": false,
++            "components": [
++              "columnIndex: int",
++              "rowIndex: int",
++              "use1904Dates: boolean"
++            ]
++          }
++        ],
++        "shared_arrays": false,
++        "text": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
++        "input_objects": [
++          1,
++          1
++        ]
++      },
++      "assumptions": [
++        {
++          "kind": "constructible",
++          "text": "the constructor StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean) accepts the arguments of this: an input it rejects is skipped, so the property is about the objects it makes",
++          "basis": "harness"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result != null",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-70/old/result.json
+@@ -0,0 +1,51 @@
++{
++  "claims": {
++    "baseline": {
++      "assertion": "result == null",
++      "checkerSha256": "a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb",
++      "firstOutstanding": "getCellStyle is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "raw": "baseline.native.json",
++      "sha256": "2c41b0d3e31b45c5514a3eb9d3687d4d8b0788c91941306515a035d5fa7d7632",
++      "verdict": "unverifiable"
++    },
++    "current": {
++      "assertion": "result == null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": null,
++      "raw": "current.native.json",
++      "sha256": "ac2d65ced06b515d2d11234d7cf1d61deb599742359675d23bed7958167634ad",
++      "verdict": "verified"
++    },
++    "negative": {
++      "assertion": "result != null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": null,
++      "raw": "negative.native.json",
++      "sha256": "fe4c5ac292af7223cd37118bedc60a56226cb829adc9038924582848a03eb34c",
++      "verdict": "violation"
++    }
++  },
++  "commit": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++  "nativeSubjectJdk": "21.0.13",
++  "orderedClasspathSha256": [
++    "60e1cf1dd74d9a612a3de9f7d2a7fa23298c45780d14f0aaf397e4b1b20bd1d1",
++    "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++    "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++    "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++    "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++    "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++    "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++    "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++    "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++    "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++    "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++    "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++    "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++    "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++    "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++    "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++  ],
++  "originalControlSourceSha256": "0f66d1627d628492b0b1e4cd78272530e035b96f81adba3edae5390a59d791cb",
++  "publicConstructor": "new com.monitorjbl.xlsx.impl.StreamingCell(2,3,false)",
++  "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle"
++}
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/new/baseline.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate",
++    "domain": null,
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "uri": null,
++        "line": 57
++      }
++    ],
++    "output": "✗ com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-pzkiiqnp/baseline"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/new/current.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate",
++    "domain": null,
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++        "uri": null,
++        "line": 57
++      }
++    ],
++    "output": "✗ com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-pzkiiqnp/current"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/new/negative.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate",
++    "domain": null,
++    "assume": null,
++    "assert": "result != null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++        "uri": null,
++        "line": 57
++      }
++    ],
++    "output": "✗ com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-pzkiiqnp/negative"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/new/result.json
+@@ -0,0 +1,84 @@
++{
++  "claims": {
++    "baseline": {
++      "assertion": "result == null",
++      "checkerSha256": "a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb",
++      "firstOutstanding": "getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "raw": "baseline.native.json",
++      "sha256": "ac61979a5b311d0c04e22e9f509e4ff64f1c6f35dc036f9b8b5ca6fd17cb0e01",
++      "verdict": "unverifiable"
++    },
++    "current": {
++      "assertion": "result == null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++      "raw": "current.native.json",
++      "sha256": "046fa381c7db3b138ab1ebacfe3160816881de3cd2bd35058926a3e75b5f1783",
++      "verdict": "unverifiable"
++    },
++    "negative": {
++      "assertion": "result != null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++      "raw": "negative.native.json",
++      "sha256": "b12497f5afbb3b6b56baa788b516321d1060fc7b5840f3f01367eb252cde584d",
++      "verdict": "unverifiable"
++    }
++  },
++  "commit": "0b844ff015dc31a24e3d85e1f66ee50fdc7f39f9",
++  "nativeSubjectJdk": "21.0.13",
++  "orderedClasspathSha256": [
++    "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
++    "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
++    "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
++    "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
++    "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
++    "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
++    "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
++    "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
++    "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
++    "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
++    "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
++    "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++    "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
++    "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
++    "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
++    "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
++    "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++    "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
++    "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
++    "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
++    "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
++    "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
++    "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
++    "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
++    "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
++    "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
++    "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
++    "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
++    "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
++    "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
++    "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
++    "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
++    "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
++    "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
++    "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++    "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
++    "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
++    "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
++    "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
++    "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
++    "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
++    "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
++    "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
++    "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++    "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
++    "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
++    "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
++    "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
++    "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
++  ],
++  "originalControlSourceSha256": "8ff87e7e1d5bd2123b01fa9fda58377d6a7610667f40964fb284fe0e4c1c88be",
++  "publicConstructor": "new com.alibaba.citrus.service.form.impl.validation.DateValidator()",
++  "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate"
++}
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/old/baseline.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate",
++    "domain": null,
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "uri": null,
++        "line": 57
++      }
++    ],
++    "output": "✗ com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-whqrvwqn/baseline"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/old/current.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate",
++    "domain": null,
++    "assume": null,
++    "assert": "result == null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++        "uri": null,
++        "line": 57
++      }
++    ],
++    "output": "✗ com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-whqrvwqn/current"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/old/negative.native.json
+@@ -0,0 +1,26 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate",
++    "domain": null,
++    "assume": null,
++    "assert": "result != null",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++    "statement": null,
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++        "uri": null,
++        "line": 57
++      }
++    ],
++    "output": "✗ com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-whqrvwqn/negative"
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/receiver-properties/compsuite-i-94/old/result.json
+@@ -0,0 +1,84 @@
++{
++  "claims": {
++    "baseline": {
++      "assertion": "result == null",
++      "checkerSha256": "a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb",
++      "firstOutstanding": "getMinDate is an instance method, whose receiver is outside the objects a property check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "raw": "baseline.native.json",
++      "sha256": "5b4a121f2b618b03857b5620ec13068b4cc8db58032189e87cfb9db07eb85d87",
++      "verdict": "unverifiable"
++    },
++    "current": {
++      "assertion": "result == null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++      "raw": "current.native.json",
++      "sha256": "f7431435bf0fe532f823e7e2add5f3f480d10e40b545134ee41573ea95ec6abd",
++      "verdict": "unverifiable"
++    },
++    "negative": {
++      "assertion": "result != null",
++      "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
++      "firstOutstanding": "the property is not well-formed: in the assertion: parameter result has type java.lang.String; only integral and boolean parameters can appear in the expression",
++      "raw": "negative.native.json",
++      "sha256": "e65ac8c3bb52951dfe3f78db99663424c4d6ad112c130f99c1facd5a3ae76f28",
++      "verdict": "unverifiable"
++    }
++  },
++  "commit": "f728a4f1995343460ffb6df027775d61553d7c7e",
++  "nativeSubjectJdk": "21.0.13",
++  "orderedClasspathSha256": [
++    "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
++    "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
++    "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
++    "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
++    "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
++    "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
++    "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
++    "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
++    "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
++    "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
++    "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
++    "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++    "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
++    "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
++    "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
++    "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
++    "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++    "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
++    "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
++    "48da368bc3b457e6e7e08c71c36bddb208f5fcdd028848c85c4867ec4927abf5",
++    "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
++    "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
++    "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
++    "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
++    "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
++    "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
++    "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
++    "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
++    "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
++    "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
++    "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
++    "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
++    "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
++    "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
++    "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++    "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
++    "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
++    "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
++    "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
++    "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
++    "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
++    "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
++    "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
++    "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++    "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
++    "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
++    "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
++    "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
++    "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
++  ],
++  "originalControlSourceSha256": "8ff87e7e1d5bd2123b01fa9fda58377d6a7610667f40964fb284fe0e4c1c88be",
++  "publicConstructor": "new com.alibaba.citrus.service.form.impl.validation.DateValidator()",
++  "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate"
++}

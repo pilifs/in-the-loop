@@ -1,0 +1,1055 @@
+{
+  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+  "observer": "Exact bytes and byte count from a single ordinary MIME part, including empty, binary and multiline bodies.",
+  "domainBasis": "The framing and headers are fixed and syntactically separate from the independently supplied payload. The expected count is the number of payload bytes and their encoding is lossless.",
+  "cases": [
+    {
+      "args": [
+        ""
+      ],
+      "expected": {
+        "return": "0:"
+      }
+    },
+    {
+      "args": [
+        "aGVsbG8="
+      ],
+      "expected": {
+        "return": "5:aGVsbG8="
+      }
+    },
+    {
+      "args": [
+        "bGluZTENCmxpbmUy"
+      ],
+      "expected": {
+        "return": "12:bGluZTENCmxpbmUy"
+      }
+    },
+    {
+      "args": [
+        "AP8NCgE="
+      ],
+      "expected": {
+        "return": "5:AP8NCgE="
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "9f6de3d93cdb33bf38a5394aff4698342312446d9ef5a98077c58c05d16ca898",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
+      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
+      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
+      "classpath": [
+        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
+        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
+      ],
+      "dependency": "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 13,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "0:"
+            },
+            {
+              "return": "0:"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:aGVsbG8="
+            },
+            {
+              "return": "5:aGVsbG8="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            },
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:AP8NCgE="
+            },
+            {
+              "return": "5:AP8NCgE="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.Charsets",
+        "org.apache.commons.io.CloseableURLConnection",
+        "org.apache.commons.io.IOUtils",
+        "org.apache.commons.io.StandardLineSeparator",
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
+        "org.apache.commons.io.output.AppendableWriter",
+        "org.apache.commons.io.output.ByteArrayOutputStream",
+        "org.apache.commons.io.output.NullOutputStream",
+        "org.apache.commons.io.output.NullWriter",
+        "org.apache.commons.io.output.QueueOutputStream",
+        "org.apache.commons.io.output.StringBuilderWriter",
+        "org.apache.commons.io.output.ThresholdingOutputStream",
+        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
+      ]
+    },
+    "new": {
+      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
+      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
+      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
+      "classpath": [
+        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
+        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+      ],
+      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 13,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "0:"
+            },
+            {
+              "return": "0:"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:aGVsbG8="
+            },
+            {
+              "return": "5:aGVsbG8="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            },
+            {
+              "return": "12:bGluZTENCmxpbmUy"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "5:AP8NCgE="
+            },
+            {
+              "return": "5:AP8NCgE="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/io/ByteArrayOutputStream;@1"
+                ],
+                "fields": {
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundary:[B": "[B@2",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryLength:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#boundaryTable:[I": "[I@3",
+                  "org.apache.commons.fileupload2.core.MultipartInput#bufSize:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#buffer:[B": "[B@4",
+                  "org.apache.commons.fileupload2.core.MultipartInput#head:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#headerCharset:Ljava/nio/charset/Charset;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#input:Ljava/io/InputStream;": "Ljava/io/ByteArrayInputStream;@5",
+                  "org.apache.commons.fileupload2.core.MultipartInput#keepRegion:I": "I",
+                  "org.apache.commons.fileupload2.core.MultipartInput#notifier:Lorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;": "null",
+                  "org.apache.commons.fileupload2.core.MultipartInput#tail:I": "I"
+                },
+                "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;[BILorg/apache/commons/fileupload2/core/MultipartInput$ProgressNotifier;)V",
+                  "calledBy": "org.apache.commons.fileupload2.core.MultipartInput$Builder#get()Lorg/apache/commons/fileupload2/core/MultipartInput;",
+                  "codeIndex": 20,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "[B@2",
+                      "I",
+                      "null"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/fileupload2/core/MultipartInput;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            },
+            {
+              "observerCodeIndex": 116,
+              "dispatchedTo": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.Charsets",
+        "org.apache.commons.io.CloseableURLConnection",
+        "org.apache.commons.io.IOUtils",
+        "org.apache.commons.io.StandardLineSeparator",
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.CharSequenceReader",
+        "org.apache.commons.io.output.AbstractByteArrayOutputStream",
+        "org.apache.commons.io.output.AppendableWriter",
+        "org.apache.commons.io.output.ByteArrayOutputStream",
+        "org.apache.commons.io.output.NullOutputStream",
+        "org.apache.commons.io.output.NullWriter",
+        "org.apache.commons.io.output.QueueOutputStream",
+        "org.apache.commons.io.output.StringBuilderWriter",
+        "org.apache.commons.io.output.ThresholdingOutputStream",
+        "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+    "codeIndices": [
+      116
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
+    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+    "UpgradeProbe": "afd54c7ed179e8fc6721d5cb242348a31c510182995d5a7f7378e6153bc9f909",
+    "UpgradeTrace": "d5359fa3264eeb31b99378b21d4102bd39c3733b454baf875712a8b2f0e0283c"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 4",
+    "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
+    "adapterClassSha256": "621e0627fc3b0a91c2970d72c3d28ffc12ec0df390a31bc8ff454c23213ea7fe",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
+        "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
+        "orderedClasspathSha256": [
+          "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
+          "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ThreadLocal.withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;@jdk-21.0.13 (java.lang.ThreadLocal.withInitial(java.util.function.Supplier) at org.apache.commons.io.IOUtils.<clinit>:205). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "205988e4123dbce73fa65688281bff6e4003365e0d4e73e2a34587a0d452e620",
+        "seconds": 0.04
+      },
+      "new": {
+        "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
+        "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
+        "orderedClasspathSha256": [
+          "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
+          "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ThreadLocal.withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;@jdk-21.0.13 (java.lang.ThreadLocal.withInitial(java.util.function.Supplier) at org.apache.commons.io.IOUtils.<clinit>:206). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "cd4af6ef86b39440df18e35cdb91d6d27d41b9606d884de90b8cd4ca6b49eeda",
+        "seconds": 0.04
+      }
+    }
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 12.565,
+  "specSha256": "82ca90561de07cc179ce2e8f21e86b5a8bad62056e61de6c43debb43795e2024"
+}

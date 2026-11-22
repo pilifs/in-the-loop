@@ -1,0 +1,246 @@
+{
+  "plan": {
+    "example": "362",
+    "task": "cursor-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "cursor-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "file": "claims/cursor.json",
+      "sha256": "27e30f2587d09586b3b393dad351148d01e13b6e4cd1a632deb8fb52b339dac9",
+      "property": "cursor",
+      "claimKind": "property",
+      "statement": "One write preserves the source position and limit.",
+      "assume": "code >= 0 && code < 16",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "25a61bca512b5cb12e8ebaf0b2c4590431106c94647d47bf9649309d438c1c22"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "9fdd5808da619a51f921d2dff76e1fee4ade20474498187e491c1411abac9ffe"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.EncoderWindow#cursor(I)I",
+        "mapping": "One write preserves the source position and limit. Each selector maps to its independent raw JVM observation.",
+        "correspondence": "finite-oracle",
+        "cases": 16
+      },
+      "key": "ed772c9e5fe9c4d5"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "c9f2c49241397fb3967bd281225f7cce353c32fc",
+        "parent": "0b74bd5e7a37ccdb42918a0ab7768e9292df5dab",
+        "orderedClasses": [
+          "org.apache.avro.GuavaClasses"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "8"
+        },
+        "capturedBuild": {
+          "path": "records/build-packaged/build-fix.json",
+          "sha256": "f29a2211e7a515deaee1893d443dc7be76d849a4cf2fdd3dc316212304a9d86d"
+        },
+        "adapters": [
+          "adapter/organic/EncoderWindow.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/cursor-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-avro-198-encoder-current-on-packaged-art/examples/362-avro-buffered-encoder-cursor",
+    "network": true
+  },
+  "inputs": {
+    "example": "362",
+    "task": "cursor-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "cursor-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "file": "claims/cursor.json",
+      "sha256": "27e30f2587d09586b3b393dad351148d01e13b6e4cd1a632deb8fb52b339dac9",
+      "property": "cursor",
+      "claimKind": "property",
+      "statement": "One write preserves the source position and limit.",
+      "assume": "code >= 0 && code < 16",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "25a61bca512b5cb12e8ebaf0b2c4590431106c94647d47bf9649309d438c1c22"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "9fdd5808da619a51f921d2dff76e1fee4ade20474498187e491c1411abac9ffe"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.EncoderWindow#cursor(I)I",
+        "mapping": "One write preserves the source position and limit. Each selector maps to its independent raw JVM observation.",
+        "correspondence": "finite-oracle",
+        "cases": 16
+      },
+      "key": "ed772c9e5fe9c4d5"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "c9f2c49241397fb3967bd281225f7cce353c32fc",
+        "parent": "0b74bd5e7a37ccdb42918a0ab7768e9292df5dab",
+        "orderedClasses": [
+          "org.apache.avro.GuavaClasses"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "8"
+        },
+        "capturedBuild": {
+          "path": "records/build-packaged/build-fix.json",
+          "sha256": "f29a2211e7a515deaee1893d443dc7be76d849a4cf2fdd3dc316212304a9d86d"
+        },
+        "adapters": [
+          "adapter/organic/EncoderWindow.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/EncoderWindow.java",
+        "sha256": "f8db624992f925d673bb0fc4cd6e75727f6f2416e20035b2c5ddb6cb0e6823dc"
+      }
+    ]
+  },
+  "key": "7a02640945aa4767c83336b80a3ee8240224fa427831893d0805a5c68f0d1e57"
+}

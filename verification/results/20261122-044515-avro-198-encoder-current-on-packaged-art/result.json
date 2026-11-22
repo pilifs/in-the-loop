@@ -1,0 +1,866 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044515-avro-198-encoder-current-on-packaged-art",
+  "title": "Avro 198 encoder-current on packaged artifacts",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 19.9s, peak 153.2 MiB (estimated 4m00s, 3.0 GiB); 81 output file(s) changed",
+  "attention": [
+    "step 2 (native) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-044515-avro-198-encoder-current-on-packaged-art.json",
+    "sha256": "01967983ac55dd6bcb089be25f637ba22233f01dfdf22df7c7bdb952dec7a7c8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044515-avro-198-encoder-current-on-packaged-art",
+      "title": "Avro 198 encoder-current on packaged artifacts",
+      "description": "Check the four frozen cursor and repeated-byte observations on both original shaded products. Each run binds the same sixteen inputs, expected bytes, both manifests and the executable digest. Native refusals remain recorded in the comparison.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "362"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:45:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "16m"
+      },
+      "steps": [
+        {
+          "name": "finite",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/run.py 362 --stage encoder-current --route finite",
+          "cwd": "."
+        },
+        {
+          "name": "native",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/run.py 362 --stage encoder-current --route native",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite",
+        "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native"
+      ],
+      "supersedes": "20261122-042450-avro-198-encoder-current-on-packaged-art",
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:46:15+00:00",
+  "finishedAt": "2026-11-22T04:50:47+00:00",
+  "wallSeconds": 272.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 160686080,
+    "wallSeconds": 19.9,
+    "cpuSeconds": 31.4,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "finite",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/run.py 362 --stage encoder-current --route finite",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 11.44,
+      "cpuSeconds": 19.232,
+      "cpuThrottledSeconds": 1.341,
+      "peakMemoryBytes": 160686080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-finite.log",
+        "lines": 1,
+        "bytes": 524,
+        "sha256": "435d29b3be7ae0fdc3a4ba8804981b2ef8c13a7e31e5b615b289934877532e07",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"362\", \"route\": \"finite\", \"stage\": \"encoder-current\", \"workflowExit\": 0, \"seconds\": 11.266, \"checkerSeconds\": 60, \"tasks\": [\"cursor-parent\", \"cursor-fix\", \"repeated-parent\", \"repeated-fix\"], \"verifierCommit\": \"86716cadfd3780697fcfaa0fc8f66fb1d518b22b\", \"checkerSha256\": \"04a932337f4cef4ad"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "native",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/run.py 362 --stage encoder-current --route native",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 8.444,
+      "cpuSeconds": 12.124,
+      "cpuThrottledSeconds": 0.57,
+      "peakMemoryBytes": 145772544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-native.log",
+        "lines": 1,
+        "bytes": 533,
+        "sha256": "9586daf4cee968c9ad82668404be782905725a3dcc7d731bea5dc340699b62e9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"362\", \"route\": \"native\", \"stage\": \"encoder-current\", \"workflowExit\": 1, \"seconds\": 8.254, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"cursor-parent\", \"cursor-fix\", \"repeated-parent\", \"repeated-fix\"], \"verifierCommit\": \"86716cadfd3780697fcfaa0fc8f66fb1d518b22b\", \"checkerSha256\": \"04a93233"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/batch.json",
+      "change": "added",
+      "bytes": 2627,
+      "sha256": "435e4b2497dd013275b5ab01acf4da652ffae7bf7cd325a132538d472696556e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/cursor-fix.json",
+      "change": "added",
+      "bytes": 10884,
+      "sha256": "58e7cbd4188a3c190ceb473a80eae00acd6c32c7b12aa1b193d8b70bc8108805",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/cursor-parent.json",
+      "change": "added",
+      "bytes": 14041,
+      "sha256": "9e358fd5ac34cbdc7391465529112b019200e90f776ed1eea8622f557324cb06",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/repeated-fix.json",
+      "change": "added",
+      "bytes": 10894,
+      "sha256": "ad8c0d1cf0ef729ab60eed84b4a46443ac2e6254ae2200a613bab08f61126d57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/repeated-parent.json",
+      "change": "added",
+      "bytes": 14056,
+      "sha256": "40f3c3d5b5126e581e6805639237109b4b61f770de539f9f53e169f2ca32f8b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/run.json",
+      "change": "added",
+      "bytes": 578,
+      "sha256": "3b1b99dcf2b0471625e18a7874d10ea900da44fd2bd92e9085f9f84878f49127",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/workflow.log",
+      "change": "added",
+      "bytes": 162,
+      "sha256": "52e17e2fe1b419ed66d3e6b32f46f44273524b1d0f97144a8e448e478333119e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "12eee67d4d48f482a8a2df424c8dd34b1a8c0be989cbd78362f140b1d287f614",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/plan.json",
+      "change": "added",
+      "bytes": 7232,
+      "sha256": "506616178685bce8d23261a89a69cca3c354e3576f26f3ef77b72af47941d37e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3262,
+      "sha256": "9b4b0899bdcbc239015cf2a1bec2cf26f73b59c8cca638cfe4d530130e2e79dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/controls.json",
+      "change": "added",
+      "bytes": 18527,
+      "sha256": "a8968d5b8a7df7e07325ce3d059f2b065ad0aba327926c2bb90b3477c3a328d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/execution.json",
+      "change": "added",
+      "bytes": 45527,
+      "sha256": "f8f8c57d0a27ad8371188bbecded15432fe481bb5f453aa4d037a99598cf1f0f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "e2fd9d187975eaa684e54af1b4d9bdc063378c1b242615e324bc0de5852cfd91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 547,
+      "sha256": "3baf664e490cdf18f857d390e9ece2efe585b6d563ef17d80025bff46a33e1e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier.json",
+      "change": "added",
+      "bytes": 26449,
+      "sha256": "831bb1c345f1cb427d459c7a51ef1e9e40216d0fd129713d4080ed0bdb7fefb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6366,
+      "sha256": "d134369b40214b5b55b5ca58428075e000378caca5e192761199d2da22de2947",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/result.json",
+      "change": "added",
+      "bytes": 18795,
+      "sha256": "3491d3ffae81367c82a650e67596c2e0657d9372472496536bab6d5d6330d946",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/executions/20261122T045045Z-702d2ef0/attempt.json",
+      "change": "added",
+      "bytes": 27939,
+      "sha256": "d79dc639ad2ff321163b4f9f4560a9520059b15204b972ad0c9434637e61b319",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/executions/20261122T045045Z-702d2ef0/checker.json",
+      "change": "added",
+      "bytes": 8841,
+      "sha256": "deb2102848a19429d43efe6af704cdf0dcc8062a0b5c5334c38c59cc83d0664d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/executions/20261122T045045Z-702d2ef0/correspondence.json",
+      "change": "added",
+      "bytes": 2486,
+      "sha256": "bb009c5dea2dd8cd0f2545639702a3b56c7c86f70ac6196deb263911d8cdeacd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2c9d41037e51443ca3027f709c8a24a2364132fb34ddec55c6de6f42908ba213",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/plan.json",
+      "change": "added",
+      "bytes": 7137,
+      "sha256": "037e2a48357306a6aea6dd493c30d63ec5c16c14fc961dc3391cc6d6e21642e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3155,
+      "sha256": "dff74de6247112ca84ae0157709314b80449f20de8ae61dc8922a5dbf0ffe183",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/controls.json",
+      "change": "added",
+      "bytes": 17934,
+      "sha256": "11dea7fe0de95cfb275aa214e7a2d6be068f48ab641e21d5460e7edd1dd06545",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/execution.json",
+      "change": "added",
+      "bytes": 44968,
+      "sha256": "4af1e29468616680d67adc2b01a4512939758de30fba8d89d847bd3e01d698f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "c350e48902b596ba9f0c5c6c19bd57cff02e65d11cff19b0f6220ad9ba57c870",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 547,
+      "sha256": "3baf664e490cdf18f857d390e9ece2efe585b6d563ef17d80025bff46a33e1e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier.json",
+      "change": "added",
+      "bytes": 26500,
+      "sha256": "3ead2aae18fdd928ee20d6bcadac617ebb128c7eeaaaf45b7b199b565afe5bfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6369,
+      "sha256": "e0ad5a693d55dd3199e389aadaccc3c93bc5d9c8efc4df7b09d606663baba0f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/result.json",
+      "change": "added",
+      "bytes": 18913,
+      "sha256": "6f619c8bd4a9870524e0344e0a7f4d7a66f1602df6068d3ef14b0f137fd4ca05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/executions/20261122T045044Z-df8a42f7/attempt.json",
+      "change": "added",
+      "bytes": 27992,
+      "sha256": "17616c99e6c071ee2bf83605344ed4c698b1ce5e6d4cade015fdd80a3fcd8c64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/executions/20261122T045044Z-df8a42f7/checker.json",
+      "change": "added",
+      "bytes": 8886,
+      "sha256": "417dfcab022130bbd5a77bd2a04a8d06b4074d36a49d71dae702b0ca3d0156ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/executions/20261122T045044Z-df8a42f7/correspondence.json",
+      "change": "added",
+      "bytes": 2489,
+      "sha256": "21e9f556067f1daed0a0d61587e47af8752c442db2b514606c9427cacf38cbab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e550dac1285068d413f495117dfc9b390f7a75d8d35e30235e3b999e5116de49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/plan.json",
+      "change": "added",
+      "bytes": 7250,
+      "sha256": "c258b0f404461398d7b065e70b2ada6eade0bf7361a1a4b7d2266d3ac46b8485",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3262,
+      "sha256": "9b4b0899bdcbc239015cf2a1bec2cf26f73b59c8cca638cfe4d530130e2e79dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/controls.json",
+      "change": "added",
+      "bytes": 18529,
+      "sha256": "1cb3aa944641175f550a99547074512ee3d24f46cb53f6b0de04947154174c1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/execution.json",
+      "change": "added",
+      "bytes": 45439,
+      "sha256": "7dc233e310f0ac2ba7f3121d108866e233e850fc79b94d466995bd02a514f2f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "547cccda67a13ad8aa6bd0f1265e856dd4c49d877a98196a70e9aae51da89ff9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 549,
+      "sha256": "134d6d01b599d9a32e5b0eeba7f80709ae970430a6c9b0176bc1f79b8255950b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier.json",
+      "change": "added",
+      "bytes": 26371,
+      "sha256": "51de53144296c775aa6576761ed1688a940660a5389d647b4a1209ebf0993302",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6373,
+      "sha256": "2e44348d8f60e4e5079ec84990e202acbec006b014478d3b468fd2ba26405b29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/result.json",
+      "change": "added",
+      "bytes": 18807,
+      "sha256": "34be1e645a46bd9cef47e5f2743166acaf06030f18106b2e615d517d24c31462",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/executions/20261122T045046Z-7a9d69c7/attempt.json",
+      "change": "added",
+      "bytes": 27854,
+      "sha256": "bb52a7b4d21ce3a406fdeddc11bd998754c67918114c7e4d7a05626024a2415e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/executions/20261122T045046Z-7a9d69c7/checker.json",
+      "change": "added",
+      "bytes": 8850,
+      "sha256": "608ad1bbbe7877dc4b36c56318c83ac9faf24a3d3d084cacc190fe55371a7ccc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/executions/20261122T045046Z-7a9d69c7/correspondence.json",
+      "change": "added",
+      "bytes": 2487,
+      "sha256": "e01994ff98a088d0f8cd35241496105d0b2d5786f85158b53cd7be2d7d540e70",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6c7c1eb42ba713829dcfeac791c288eca09b96882b6c4e31c8d51d167f3628da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/plan.json",
+      "change": "added",
+      "bytes": 7155,
+      "sha256": "b86be8cf1ad11153e16c73febfddf4973453e3ff9090af85e130e264f6828a3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3155,
+      "sha256": "dff74de6247112ca84ae0157709314b80449f20de8ae61dc8922a5dbf0ffe183",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/controls.json",
+      "change": "added",
+      "bytes": 17938,
+      "sha256": "af274990494006f4bcd0c604f34053a1851c47d0168e267575af66a5c83ba7a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/execution.json",
+      "change": "added",
+      "bytes": 44880,
+      "sha256": "893a7ec6400aef013b9b4965bf31ea67edf6e4e1ae10e42aeaa60c1d313e7ea3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "e2bcd671816bbee0b4174dfcc2ad35b44882eeb672575a3f1027a6677f586288",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 549,
+      "sha256": "134d6d01b599d9a32e5b0eeba7f80709ae970430a6c9b0176bc1f79b8255950b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier.json",
+      "change": "added",
+      "bytes": 26420,
+      "sha256": "5c4a761f9131855c2860c15c1ce939ddd75bce9325bc09171b08f3f6212f9e7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6374,
+      "sha256": "f355ab9506ab6c1147e0a142a9fc9376ba40f6582c452a6556db091c7d69071b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/result.json",
+      "change": "added",
+      "bytes": 18927,
+      "sha256": "74f332763c687e6127017acb7decb2eb15bce0508058772fac7e4c30305e2ac0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/executions/20261122T045045Z-ed5f108b/attempt.json",
+      "change": "added",
+      "bytes": 27909,
+      "sha256": "e9a5af710258ed4cb499c1ea8c79f7c5992f00cb2fb6d9733426c6d4bee37e43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/executions/20261122T045045Z-ed5f108b/checker.json",
+      "change": "added",
+      "bytes": 8893,
+      "sha256": "c8ae03a200103ef478143cccd1ac3a51e8d16ca9ae977e8d97a326b88751824a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/executions/20261122T045045Z-ed5f108b/correspondence.json",
+      "change": "added",
+      "bytes": 2490,
+      "sha256": "e95abfb58fcb4faa0c1893337baeeb0f6ca2eb580c936482ed6e69782594f4db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dd79cd3c9a709bea2e4b7e81ec2fe5d37826d7063fbf38092e316b8da4edb0db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/plan.json",
+      "change": "added",
+      "bytes": 8202,
+      "sha256": "72898e6dceb8a697b1732f8bc8f55d80433e3198531272f4a2149c5e2beec9f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3262,
+      "sha256": "9b4b0899bdcbc239015cf2a1bec2cf26f73b59c8cca638cfe4d530130e2e79dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3155,
+      "sha256": "dff74de6247112ca84ae0157709314b80449f20de8ae61dc8922a5dbf0ffe183",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/controls.json",
+      "change": "added",
+      "bytes": 36397,
+      "sha256": "2e2d7566ce16eced440317ae453f13c141f68f6a0cac4d3f57cfc82974d04e73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/execution.json",
+      "change": "added",
+      "bytes": 36086,
+      "sha256": "953a9beb75d8cc7b74f80b45da9f9cbbfcbae5c4342c80b821996f26af2ddce2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/streams.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "80b21c592397973ecfaab14608c98ffbabfd1adc8a436e4a0234cd2f1b05517c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/summary.txt",
+      "change": "added",
+      "bytes": 370,
+      "sha256": "d71a379b36b5c4db4b0589bb51c155f7d5291d6d583aecffe008b0987ec9cee7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/result.json",
+      "change": "added",
+      "bytes": 14163,
+      "sha256": "7e39766aab60f3e4a005211d5b0f17a6792b1808c6cd8c01152b4d1ec04449c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/executions/20261122T045039Z-1df7274a/attempt.json",
+      "change": "added",
+      "bytes": 16889,
+      "sha256": "f6bd3ee44425164b9d0b671e3950fc216e32e07f606a7c73d0885098001bb174",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/run.json",
+      "change": "added",
+      "bytes": 591,
+      "sha256": "f51b85e7bb6ea764fd63bd18749063474b7b769690c172d373dc27749d8835fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/workflow.log",
+      "change": "added",
+      "bytes": 1211,
+      "sha256": "cc7fb6bbbe26684d4e9c87fc903172a30d7cafda67bf07291b39c37459739e87",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:18+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/batch.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/cursor-fix.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/cursor-parent.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/repeated-fix.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/20261122T045027Z-c890078f/repeated-parent.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/run.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite/workflow.log",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/completion.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/plan.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/control-fix-jdk21.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/control-fix-jdk21.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/controls.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/execution.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/streams.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier-output.txt",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/records/verifier.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/20261122T045045Z-702d2ef0/result.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/executions/20261122T045045Z-702d2ef0/attempt.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/executions/20261122T045045Z-702d2ef0/checker.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-fix/executions/20261122T045045Z-702d2ef0/correspondence.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/completion.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/plan.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/control-parent-jdk21.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/control-parent-jdk21.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/controls.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/execution.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/streams.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier-output.txt",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/records/verifier.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/20261122T045044Z-df8a42f7/result.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/executions/20261122T045044Z-df8a42f7/attempt.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/executions/20261122T045044Z-df8a42f7/checker.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/cursor-parent/executions/20261122T045044Z-df8a42f7/correspondence.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/completion.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/plan.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/control-fix-jdk21.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/control-fix-jdk21.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/controls.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/execution.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/streams.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier-output.txt",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/records/verifier.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/20261122T045046Z-7a9d69c7/result.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/executions/20261122T045046Z-7a9d69c7/attempt.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/executions/20261122T045046Z-7a9d69c7/checker.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-fix/executions/20261122T045046Z-7a9d69c7/correspondence.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/completion.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/plan.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/control-parent-jdk21.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/control-parent-jdk21.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/controls.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/execution.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/streams.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier-output.txt",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/records/verifier.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/20261122T045045Z-ed5f108b/result.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/executions/20261122T045045Z-ed5f108b/attempt.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/executions/20261122T045045Z-ed5f108b/checker.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/repeated-parent/executions/20261122T045045Z-ed5f108b/correspondence.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/completion.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/plan.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-fix-jdk21.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-fix-jdk21.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-parent-jdk21.stderr",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/control-parent-jdk21.stdout",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/controls.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/execution.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/streams.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/records/summary.txt",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/20261122T045039Z-1df7274a/result.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/replay/executions/20261122T045039Z-1df7274a/attempt.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/run.json",
+      "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native/workflow.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045047Z-6554699f9118b6de",
+      "outputs": "20261122T045047Z-7668117f095aedd7",
+      "diff": "20261122T045047Z-804080318f0433ff",
+      "workdir": "20261122T045126Z-781870ac0f42429c"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-avro-198-encoder-current-on-packaged-art"
+}
