@@ -1,0 +1,308 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-045304-complete-avro-361-startup-and-reducer-ev",
+  "title": "Complete Avro 361 startup and reducer evidence",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.6s, peak 102.7 MiB (estimated 3m00s, 3.0 GiB); 12 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-045304-complete-avro-361-startup-and-reducer-ev.json",
+    "sha256": "5e8af75480ed39d4a0affe189dc752733594bb8a9909bd9ec2618672fd0bacc1",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-045304-complete-avro-361-startup-and-reducer-ev",
+      "title": "Complete Avro 361 startup and reducer evidence",
+      "description": "Repeat every original producer on both classpaths with the identical built verifier. Preserve its one-class-loader premise wherever present, including diagnostic refusals. Keep strict no-premise qualification for the Jackson factory and bind every named capture on a Hadoop verdict.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:53:04+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Record the original methods and their actual premises",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; pinned=\"$(dirname \"$(dirname \"$JVMCONTRACT\")\")/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract\"; test \"$(sha256sum \"$pinned\" | cut -d \" \" -f 1)\" = 04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80 || exit 2; export JVMCONTRACT=\"$pinned\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 361 --output verification/domain-foundations/startup-confirmed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/startup-confirmed/361"
+      ]
+    }
+  },
+  "sourceCommit": "612e42395dbe35200ef3e34b0de1318423ef12f9",
+  "startedAt": "2026-11-22T04:54:11+00:00",
+  "finishedAt": "2026-11-22T04:58:22+00:00",
+  "wallSeconds": 251.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 107646976,
+    "wallSeconds": 2.6,
+    "cpuSeconds": 3.9,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 178.644,
+      "cpuSeconds": 179.046,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2268971008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "334f63ba37fe98c0763ad2703ebfda36cdda0efaeead7766b67599c4952a3de2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-045304-complete-avro-361-startup-and-reducer-ev/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 58s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Record the original methods and their actual premises",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; pinned=\"$(dirname \"$(dirname \"$JVMCONTRACT\")\")/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract\"; test \"$(sha256sum \"$pinned\" | cut -d \" \" -f 1)\" = 04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80 || exit 2; export JVMCONTRACT=\"$pinned\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 361 --output verification/domain-foundations/startup-confirmed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 2.614,
+      "cpuSeconds": 3.878,
+      "cpuThrottledSeconds": 0.241,
+      "peakMemoryBytes": 107646976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-record-the-original-methods-an.log",
+        "lines": 10,
+        "bytes": 2321,
+        "sha256": "a759e7d85e6f46ca8f62a8ba44a9f69f5408e21c94d31028ff8ef0bbe902f0b5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "361 parent 64 firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 parent 64 typed unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 parent 512 firstFactory verified None",
+        "361 parent 512 mapper unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Collections.emptyIterator()Ljava/util/Iterator;@jdk-21.0.13 (java.util.Collections.emptyIterator() at com.fasterxml.jack",
+        "361 parent 512 typed unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Collections.emptyIterator()Ljava/util/Iterator;@jdk-21.0.13 (java.util.Collections.emptyIterator() at com.fasterxml.jacks",
+        "361 fix 64 firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 fix 64 typed unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 fix 512 firstFactory verified None",
+        "361 fix 512 mapper unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Collections.emptyIterator()Ljava/util/Iterator;@jdk-21.0.13 (java.util.Collections.emptyIterator() at com.fasterxml.jackson",
+        "361 fix 512 typed unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Collections.emptyIterator()Ljava/util/Iterator;@jdk-21.0.13 (java.util.Collections.emptyIterator() at com.fasterxml.jackson."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/fix/jackson.json",
+      "change": "added",
+      "bytes": 5203,
+      "sha256": "277c97159d0baa5c9c5f1311dc84caf24d2edc13c7abb19f537691da47d2eca6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/fix/unwind-512-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4379,
+      "sha256": "3b09c00efbb4729d4d72ef2ab53ce5f04ab059b617f3cd2bc62c9d00b8f52bdb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/fix/unwind-512-mapper.native.json",
+      "change": "added",
+      "bytes": 6515,
+      "sha256": "f34aaae55cc7d587b3b55ce48d8644d697228ced6e1532d1cf68f09b446aa457",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/fix/unwind-512-typed.native.json",
+      "change": "added",
+      "bytes": 6510,
+      "sha256": "20a25ba5d7beacc95d72681fb2ae187976cc6345ec54833a4070cf0aae4dc939",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/fix/unwind-64-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4504,
+      "sha256": "82fe4c81ead5be85c0d34be0633c26ad706f776ba92608a14e51078bd54468cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/fix/unwind-64-typed.native.json",
+      "change": "added",
+      "bytes": 4472,
+      "sha256": "1423f62b2a81252f453d338a1e2401919fbfed56ba2644e917036a91bd8c66f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/parent/jackson.json",
+      "change": "added",
+      "bytes": 5206,
+      "sha256": "91c7bc771de8d62ce76297ab6cec28d6834a886e68dacd55e4dcc6d00511debe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/parent/unwind-512-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4377,
+      "sha256": "e237f94842f1ec6a8cec653c5e93201734bf71af1401bfbeea861d784f3dfffb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/parent/unwind-512-mapper.native.json",
+      "change": "added",
+      "bytes": 6515,
+      "sha256": "cce44c8db7217028df407226a3e1331bcac5c248840025f11a90b54fbe4ea3c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/parent/unwind-512-typed.native.json",
+      "change": "added",
+      "bytes": 6510,
+      "sha256": "57d18d86e66afb6ae908f61eb0ebf3270c815c673e72a6b755783bdd9675b7a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/parent/unwind-64-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4505,
+      "sha256": "2b925794e7ddd28952e0d501326aaa6f1690639ac3e5c432365c29520cf7c46a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-confirmed/361/parent/unwind-64-typed.native.json",
+      "change": "added",
+      "bytes": 4473,
+      "sha256": "5b039a3c0324682d72cc15be4e782c561638650cbb2aef913c36453a0faabe11",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:58:54+00:00",
+    "applied": [
+      "verification/domain-foundations/startup-confirmed/361/fix/jackson.json",
+      "verification/domain-foundations/startup-confirmed/361/fix/unwind-512-firstFactory.native.json",
+      "verification/domain-foundations/startup-confirmed/361/fix/unwind-512-mapper.native.json",
+      "verification/domain-foundations/startup-confirmed/361/fix/unwind-512-typed.native.json",
+      "verification/domain-foundations/startup-confirmed/361/fix/unwind-64-firstFactory.native.json",
+      "verification/domain-foundations/startup-confirmed/361/fix/unwind-64-typed.native.json",
+      "verification/domain-foundations/startup-confirmed/361/parent/jackson.json",
+      "verification/domain-foundations/startup-confirmed/361/parent/unwind-512-firstFactory.native.json",
+      "verification/domain-foundations/startup-confirmed/361/parent/unwind-512-mapper.native.json",
+      "verification/domain-foundations/startup-confirmed/361/parent/unwind-512-typed.native.json",
+      "verification/domain-foundations/startup-confirmed/361/parent/unwind-64-firstFactory.native.json",
+      "verification/domain-foundations/startup-confirmed/361/parent/unwind-64-typed.native.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d5ff399becb47350b4593a92711c0250626cd43b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d5ff399becb47350b4593a92711c0250626cd43b/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045822Z-489097c9189b4c4a",
+      "outputs": "20261122T045822Z-5106100ec6b52e04",
+      "diff": "20261122T045822Z-52805264391b2c0a"
+    }
+  }
+}
