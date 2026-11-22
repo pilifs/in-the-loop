@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "beans",
+  "statement": "Both children retain their identities and expose the independently specified name and count after every edit.",
+  "assume": "code >= 0 && code < 12",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "springwork.BindingChecks#beans(I)I",
+    "mapping": "Six permutations on distinct children, followed by the same six on a shared child.",
+    "correspondence": "finite-oracle",
+    "cases": 12
+  }
+}

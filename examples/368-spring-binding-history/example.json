@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "368",
+  "title": "Successive Spring edits preserve bean identity and binding errors",
+  "summary": "A single DataBinder accepts valid writes after an invalid nested count and keeps the field error across later edits.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Spring Framework",
+    "file": "application/springwork/BindingHistory.java",
+    "symbol": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "A single DataBinder accepts valid writes after an invalid nested count and keeps the field error across later edits."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims",
+  "notes": [
+    "Spring Framework 6.2.3. The 12 histories contain 36 observed prefixes. A fresh binder over the same bean clears its own error history. A caller that stops editing after an error is rejected."
+  ]
+}

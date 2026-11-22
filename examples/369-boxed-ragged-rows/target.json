@@ -1,0 +1,128 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "boxed-ragged-rows",
+    "family": "boxed-ragged-rows",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-lang",
+    "revisions": {
+      "landed": {
+        "fixture": "application",
+        "compileLibraries": [
+          "commons-lang-1635-landed"
+        ],
+        "runtimeLibraries": [
+          "commons-lang-1635-landed"
+        ]
+      },
+      "release317": {
+        "fixture": "application",
+        "compileLibraries": [
+          "commons-lang3-317"
+        ],
+        "runtimeLibraries": [
+          "commons-lang3-317"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "compatibility",
+        "kind": "positive",
+        "before": "landed",
+        "after": "release317"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "libraryCatalog": "controls/libraries.json",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/datawork/RowChecks.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "pair": "compatibility"
+    },
+    {
+      "id": "values-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "revision": "landed",
+      "claim": "claims/values.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "fresh-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "revision": "landed",
+      "claim": "claims/fresh.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "values-release317",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "revision": "release317",
+      "claim": "claims/values.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "fresh-release317",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "revision": "release317",
+      "claim": "claims/fresh.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/datawork/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "spring-binding-history",
+    "family": "spring-binding-history",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "revisions": {
+      "release": {
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-context",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons"
+        ],
+        "runtimeLibraries": [
+          "spring-context",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons"
+        ]
+      },
+      "combined": {
+        "fixture": "application",
+        "compileLibraries": [
+          "combined-spring-security-core",
+          "combined-spring-security-crypto",
+          "combined-spring-aop",
+          "combined-spring-beans",
+          "combined-spring-core",
+          "combined-spring-jcl",
+          "combined-spring-expression",
+          "combined-micrometer-observation",
+          "combined-micrometer-commons",
+          "combined-spring-context"
+        ],
+        "runtimeLibraries": [
+          "combined-spring-security-core",
+          "combined-spring-security-crypto",
+          "combined-spring-aop",
+          "combined-spring-beans",
+          "combined-spring-core",
+          "combined-spring-jcl",
+          "combined-spring-expression",
+          "combined-micrometer-observation",
+          "combined-micrometer-commons",
+          "combined-spring-context"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "compatibility",
+        "kind": "positive",
+        "before": "release",
+        "after": "combined"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "libraryCatalog": "controls/libraries.json",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/springwork/BindingChecks.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "pair": "compatibility"
+    },
+    {
+      "id": "beans-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "revision": "release",
+      "claim": "claims/beans.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "ledger-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "revision": "release",
+      "claim": "claims/ledger.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "beans-combined",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "revision": "combined",
+      "claim": "claims/beans.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "ledger-combined",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "revision": "combined",
+      "claim": "claims/ledger.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/springwork/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

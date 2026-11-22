@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "values",
+  "statement": "Every output row has the original width and ordered signed int values, with malformed, null and overflowing tokens mapped to zero.",
+  "assume": "code >= 0 && code < 187",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "datawork.RowChecks#values(I)I",
+    "mapping": "Selector zero is an empty matrix. Six layouts each use every width-zero, width-one and width-two word from the five-token alphabet.",
+    "correspondence": "finite-oracle",
+    "cases": 187
+  }
+}

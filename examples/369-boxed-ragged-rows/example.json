@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "369",
+  "title": "Boxed parsing into fresh ragged rows",
+  "summary": "A compiled stream applies NumberUtils.toInt to each token and allocates independent boxed output rows even where inputs alias.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "numeric-code",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Lang",
+    "file": "application/datawork/RowMapper.java",
+    "symbol": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "A compiled stream applies NumberUtils.toInt to each token and allocates independent boxed output rows even where inputs alias."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims",
+  "notes": [
+    "The primary grid has 187 explicitly specified matrices of up to three rows. The larger named fixture checks all 28 pairs of rows, sibling isolation, and a value-correct memoizer that violates freshness."
+  ]
+}

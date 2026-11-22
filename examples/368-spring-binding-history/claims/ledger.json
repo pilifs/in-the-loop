@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "ledger",
+  "statement": "At each prefix the error count, field, rejected value and counts on both children match the ordered edit history.",
+  "assume": "code >= 0 && code < 12",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "springwork.BindingChecks#ledger(I)I",
+    "mapping": "Each invocation starts a fresh bean and binder. The same binder executes every edit in its selected permutation.",
+    "correspondence": "finite-oracle",
+    "cases": 12
+  }
+}

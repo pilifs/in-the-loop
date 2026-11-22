@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "fresh",
+  "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+  "assume": "code >= 0 && code < 187",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "datawork.RowChecks#fresh(I)I",
+    "mapping": "The six layouts include repeated rows, equal clones and distinct ragged rows. The observer writes each output cell and checks the separate invocation.",
+    "correspondence": "finite-oracle",
+    "cases": 187
+  }
+}

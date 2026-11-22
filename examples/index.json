@@ -18695,6 +18695,195 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 367 TASK"
       }
+    },
+    {
+      "id": "368",
+      "path": "examples/368-spring-binding-history",
+      "title": "Successive Spring edits preserve bean identity and binding errors",
+      "summary": "A single DataBinder accepts valid writes after an invalid nested count and keeps the field error across later edits.",
+      "origin": "constructed",
+      "system": "Spring Framework",
+      "symbol": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Spring Framework 6.2.3. The 12 histories contain 36 observed prefixes. A fresh binder over the same bean clears its own error history. A caller that stops editing after an error is rejected."
+      ],
+      "source": null,
+      "target": {
+        "family": "spring-binding-history",
+        "role": "control",
+        "case": "spring-binding-history",
+        "tasks": [
+          "replay",
+          "beans-release",
+          "ledger-release",
+          "beans-combined",
+          "ledger-combined"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "beans-release": "scaffolded",
+          "ledger-release": "scaffolded",
+          "beans-combined": "scaffolded",
+          "ledger-combined": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "beans-release": "established",
+          "ledger-release": "established",
+          "beans-combined": "established",
+          "ledger-combined": "established"
+        },
+        "claims": {
+          "beans-release": null,
+          "ledger-release": null,
+          "beans-combined": null,
+          "ledger-combined": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T160241Z-6e156454/result.json",
+            "attempt": "20261122T160241Z-6e156454",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 368 TASK"
+      }
+    },
+    {
+      "id": "369",
+      "path": "examples/369-boxed-ragged-rows",
+      "title": "Boxed parsing into fresh ragged rows",
+      "summary": "A compiled stream applies NumberUtils.toInt to each token and allocates independent boxed output rows even where inputs alias.",
+      "origin": "constructed",
+      "system": "Apache Commons Lang",
+      "symbol": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities",
+          "numeric-code"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The primary grid has 187 explicitly specified matrices of up to three rows. The larger named fixture checks all 28 pairs of rows, sibling isolation, and a value-correct memoizer that violates freshness."
+      ],
+      "source": null,
+      "target": {
+        "family": "boxed-ragged-rows",
+        "role": "control",
+        "case": "boxed-ragged-rows",
+        "tasks": [
+          "replay",
+          "values-landed",
+          "fresh-landed",
+          "values-release317",
+          "fresh-release317"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "values-landed": "scaffolded",
+          "fresh-landed": "scaffolded",
+          "values-release317": "scaffolded",
+          "fresh-release317": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "values-landed": "established",
+          "fresh-landed": "established",
+          "values-release317": "established",
+          "fresh-release317": "established"
+        },
+        "claims": {
+          "values-landed": null,
+          "fresh-landed": null,
+          "values-release317": null,
+          "fresh-release317": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T160246Z-725ba044/result.json",
+            "attempt": "20261122T160246Z-725ba044",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 369 TASK"
+      }
     }
   ]
 }
