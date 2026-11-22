@@ -1,0 +1,178 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-165839-bind-the-loaded-spring-and-data-classes",
+  "title": "Bind the loaded Spring and data classes on every original graph",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 34.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-165839-bind-the-loaded-spring-and-data-classes.json",
+    "sha256": "1e91909ccf4ecee0c1e73c6b591aba423ce68e79b3ccbde43f14d601626415c7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-165839-bind-the-loaded-spring-and-data-classes",
+      "title": "Bind the loaded Spring and data classes on every original graph",
+      "description": "Trace class loading in each unchanged public JVM driver, require agreement with its original observations, and bind each class to an entry in the ordered pinned JARs. Compare the two NumberUtils consumers by class digest.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "369"
+        ]
+      },
+      "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+      "submitted": {
+        "at": "2026-11-22T16:58:39+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Bind the loaded Spring and data classes on every original graph",
+          "run": "python3 -B lib/benchmark/spring-java-data/providers.py --output verification/spring-java-data/public-providers",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/spring-java-data/public-providers"
+      ]
+    }
+  },
+  "sourceCommit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
+  "startedAt": "2026-11-22T17:28:03+00:00",
+  "finishedAt": "2026-11-22T17:28:46+00:00",
+  "wallSeconds": 43.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3828558,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 231215104,
+    "wallSeconds": 34.0,
+    "cpuSeconds": 61.2,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Bind the loaded Spring and data classes on every original graph",
+      "run": "python3 -B lib/benchmark/spring-java-data/providers.py --output verification/spring-java-data/public-providers",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 33.987,
+      "cpuSeconds": 61.234,
+      "cpuThrottledSeconds": 4.067,
+      "peakMemoryBytes": 231215104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-bind-the-loaded-spring-and-dat.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/spring-java-data/public-providers/classes.json",
+      "change": "added",
+      "bytes": 78946,
+      "sha256": "b7288e03b190c4bd2e5b41a3e2d652f5ed69c5c0e44cb50d2f4f030711185968",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T17:30:02+00:00",
+    "applied": [
+      "verification/spring-java-data/public-providers/classes.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T172846Z-8752277d97b62cae",
+      "outputs": "20261122T172846Z-896589f59ef8cbf4",
+      "diff": "20261122T172846Z-9131017b0738f6d7"
+    }
+  }
+}

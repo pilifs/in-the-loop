@@ -1,0 +1,1902 @@
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-qualified/before.log
+@@ -0,0 +1,2 @@
++legacy-names-before open, 1/32 admitted selectors
++legacy-decision-before open, 1/32 admitted selectors
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-qualified/landed.log
+@@ -0,0 +1,4 @@
++legacy-names-landed open, 1/32 admitted selectors
++legacy-decision-landed open, 1/32 admitted selectors
++fluent-names-landed open, 1/32 admitted selectors
++fluent-decision-landed open, 1/32 admitted selectors
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-qualified/run.json
+@@ -0,0 +1,61 @@
++{
++  "job": "20261122-165838-qualified-check-literal-authority-subset",
++  "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++  "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
++  "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++  "targetSha256": "a4d8aadcf77351ef163b1559a120b32e8e1b453b0769e2d20b3bd416c3c6326c",
++  "tasks": {
++    "legacy-names-before": {
++      "status": "open",
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "receipt": "records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/result.json",
++      "sha256": "fef4cf2a3c1e05e81ef14e7b645da8269d83fef8005fa817c7ecf84af7a29caa"
++    },
++    "legacy-decision-before": {
++      "status": "open",
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "receipt": "records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/result.json",
++      "sha256": "9a4cda5a5ddd976a9c5a25b60a1e4e1cfbc1fffc89fd60ecce6ee9704ee8243f"
++    },
++    "legacy-names-landed": {
++      "status": "open",
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "receipt": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/result.json",
++      "sha256": "6e98b20a6884a89d0b94257513e44393675f1c2ba0509a86068af4541e047966"
++    },
++    "legacy-decision-landed": {
++      "status": "open",
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "receipt": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/result.json",
++      "sha256": "a201bec1e549d8adb9f72115ef07cc047c0170cf95c637a2602bf7194928b473"
++    },
++    "fluent-names-landed": {
++      "status": "open",
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "receipt": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/result.json",
++      "sha256": "973766c01fd84bb4f818fed2f0157e582c7b77d81633dc64bd1b238c7249688b"
++    },
++    "fluent-decision-landed": {
++      "status": "open",
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "receipt": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/result.json",
++      "sha256": "c1db9a21622681d2f030832492cd643ea8d2d9fd8718ee36aef27be89b67d2ab"
++    }
++  },
++  "batches": {
++    "before": {
++      "exit": 1,
++      "seconds": 6.4045,
++      "peakRssBytes": 121868288,
++      "log": "before.log",
++      "logSha256": "689bdadd06e160ba5c23105369a8c05791d1fb133e7d46c26dc1a8ec3f14d689"
++    },
++    "landed": {
++      "exit": 1,
++      "seconds": 7.6302,
++      "peakRssBytes": 126664704,
++      "log": "landed.log",
++      "logSha256": "945f3f5ad6494264b2d5f93ba450700f1697b5f67eae78ec585492fbc707bb1e"
++    }
++  }
++}
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/Calls.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.RoleChecks.legacyDecision(0); }
++public static int p1() throws Throwable { return springwork.RoleChecks.legacyDecision(1); }
++public static int p2() throws Throwable { return springwork.RoleChecks.legacyDecision(2); }
++public static int p3() throws Throwable { return springwork.RoleChecks.legacyDecision(3); }
++public static int p4() throws Throwable { return springwork.RoleChecks.legacyDecision(4); }
++public static int p5() throws Throwable { return springwork.RoleChecks.legacyDecision(5); }
++public static int p6() throws Throwable { return springwork.RoleChecks.legacyDecision(6); }
++public static int p7() throws Throwable { return springwork.RoleChecks.legacyDecision(7); }
++public static int p8() throws Throwable { return springwork.RoleChecks.legacyDecision(8); }
++public static int p9() throws Throwable { return springwork.RoleChecks.legacyDecision(9); }
++public static int p10() throws Throwable { return springwork.RoleChecks.legacyDecision(10); }
++public static int p11() throws Throwable { return springwork.RoleChecks.legacyDecision(11); }
++public static int p12() throws Throwable { return springwork.RoleChecks.legacyDecision(12); }
++public static int p13() throws Throwable { return springwork.RoleChecks.legacyDecision(13); }
++public static int p14() throws Throwable { return springwork.RoleChecks.legacyDecision(14); }
++public static int p15() throws Throwable { return springwork.RoleChecks.legacyDecision(15); }
++public static int p16() throws Throwable { return springwork.RoleChecks.legacyDecision(16); }
++public static int p17() throws Throwable { return springwork.RoleChecks.legacyDecision(17); }
++public static int p18() throws Throwable { return springwork.RoleChecks.legacyDecision(18); }
++public static int p19() throws Throwable { return springwork.RoleChecks.legacyDecision(19); }
++public static int p20() throws Throwable { return springwork.RoleChecks.legacyDecision(20); }
++public static int p21() throws Throwable { return springwork.RoleChecks.legacyDecision(21); }
++public static int p22() throws Throwable { return springwork.RoleChecks.legacyDecision(22); }
++public static int p23() throws Throwable { return springwork.RoleChecks.legacyDecision(23); }
++public static int p24() throws Throwable { return springwork.RoleChecks.legacyDecision(24); }
++public static int p25() throws Throwable { return springwork.RoleChecks.legacyDecision(25); }
++public static int p26() throws Throwable { return springwork.RoleChecks.legacyDecision(26); }
++public static int p27() throws Throwable { return springwork.RoleChecks.legacyDecision(27); }
++public static int p28() throws Throwable { return springwork.RoleChecks.legacyDecision(28); }
++public static int p29() throws Throwable { return springwork.RoleChecks.legacyDecision(29); }
++public static int p30() throws Throwable { return springwork.RoleChecks.legacyDecision(30); }
++public static int p31() throws Throwable { return springwork.RoleChecks.legacyDecision(31); }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/Calls.jvm-bytecode changed
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/cases.tar.gz changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/Calls.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.RoleChecks.legacyNames(0); }
++public static int p1() throws Throwable { return springwork.RoleChecks.legacyNames(1); }
++public static int p2() throws Throwable { return springwork.RoleChecks.legacyNames(2); }
++public static int p3() throws Throwable { return springwork.RoleChecks.legacyNames(3); }
++public static int p4() throws Throwable { return springwork.RoleChecks.legacyNames(4); }
++public static int p5() throws Throwable { return springwork.RoleChecks.legacyNames(5); }
++public static int p6() throws Throwable { return springwork.RoleChecks.legacyNames(6); }
++public static int p7() throws Throwable { return springwork.RoleChecks.legacyNames(7); }
++public static int p8() throws Throwable { return springwork.RoleChecks.legacyNames(8); }
++public static int p9() throws Throwable { return springwork.RoleChecks.legacyNames(9); }
++public static int p10() throws Throwable { return springwork.RoleChecks.legacyNames(10); }
++public static int p11() throws Throwable { return springwork.RoleChecks.legacyNames(11); }
++public static int p12() throws Throwable { return springwork.RoleChecks.legacyNames(12); }
++public static int p13() throws Throwable { return springwork.RoleChecks.legacyNames(13); }
++public static int p14() throws Throwable { return springwork.RoleChecks.legacyNames(14); }
++public static int p15() throws Throwable { return springwork.RoleChecks.legacyNames(15); }
++public static int p16() throws Throwable { return springwork.RoleChecks.legacyNames(16); }
++public static int p17() throws Throwable { return springwork.RoleChecks.legacyNames(17); }
++public static int p18() throws Throwable { return springwork.RoleChecks.legacyNames(18); }
++public static int p19() throws Throwable { return springwork.RoleChecks.legacyNames(19); }
++public static int p20() throws Throwable { return springwork.RoleChecks.legacyNames(20); }
++public static int p21() throws Throwable { return springwork.RoleChecks.legacyNames(21); }
++public static int p22() throws Throwable { return springwork.RoleChecks.legacyNames(22); }
++public static int p23() throws Throwable { return springwork.RoleChecks.legacyNames(23); }
++public static int p24() throws Throwable { return springwork.RoleChecks.legacyNames(24); }
++public static int p25() throws Throwable { return springwork.RoleChecks.legacyNames(25); }
++public static int p26() throws Throwable { return springwork.RoleChecks.legacyNames(26); }
++public static int p27() throws Throwable { return springwork.RoleChecks.legacyNames(27); }
++public static int p28() throws Throwable { return springwork.RoleChecks.legacyNames(28); }
++public static int p29() throws Throwable { return springwork.RoleChecks.legacyNames(29); }
++public static int p30() throws Throwable { return springwork.RoleChecks.legacyNames(30); }
++public static int p31() throws Throwable { return springwork.RoleChecks.legacyNames(31); }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/Calls.jvm-bytecode changed
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/cases.tar.gz changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/Admission.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 32) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 32) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 32) ? 1 : 0; }
++public static int p3() { return ((3) >= 0 && (3) < 32) ? 1 : 0; }
++public static int p4() { return ((4) >= 0 && (4) < 32) ? 1 : 0; }
++public static int p5() { return ((5) >= 0 && (5) < 32) ? 1 : 0; }
++public static int p6() { return ((6) >= 0 && (6) < 32) ? 1 : 0; }
++public static int p7() { return ((7) >= 0 && (7) < 32) ? 1 : 0; }
++public static int p8() { return ((8) >= 0 && (8) < 32) ? 1 : 0; }
++public static int p9() { return ((9) >= 0 && (9) < 32) ? 1 : 0; }
++public static int p10() { return ((10) >= 0 && (10) < 32) ? 1 : 0; }
++public static int p11() { return ((11) >= 0 && (11) < 32) ? 1 : 0; }
++public static int p12() { return ((12) >= 0 && (12) < 32) ? 1 : 0; }
++public static int p13() { return ((13) >= 0 && (13) < 32) ? 1 : 0; }
++public static int p14() { return ((14) >= 0 && (14) < 32) ? 1 : 0; }
++public static int p15() { return ((15) >= 0 && (15) < 32) ? 1 : 0; }
++public static int p16() { return ((16) >= 0 && (16) < 32) ? 1 : 0; }
++public static int p17() { return ((17) >= 0 && (17) < 32) ? 1 : 0; }
++public static int p18() { return ((18) >= 0 && (18) < 32) ? 1 : 0; }
++public static int p19() { return ((19) >= 0 && (19) < 32) ? 1 : 0; }
++public static int p20() { return ((20) >= 0 && (20) < 32) ? 1 : 0; }
++public static int p21() { return ((21) >= 0 && (21) < 32) ? 1 : 0; }
++public static int p22() { return ((22) >= 0 && (22) < 32) ? 1 : 0; }
++public static int p23() { return ((23) >= 0 && (23) < 32) ? 1 : 0; }
++public static int p24() { return ((24) >= 0 && (24) < 32) ? 1 : 0; }
++public static int p25() { return ((25) >= 0 && (25) < 32) ? 1 : 0; }
++public static int p26() { return ((26) >= 0 && (26) < 32) ? 1 : 0; }
++public static int p27() { return ((27) >= 0 && (27) < 32) ? 1 : 0; }
++public static int p28() { return ((28) >= 0 && (28) < 32) ? 1 : 0; }
++public static int p29() { return ((29) >= 0 && (29) < 32) ? 1 : 0; }
++public static int p30() { return ((30) >= 0 && (30) < 32) ? 1 : 0; }
++public static int p31() { return ((31) >= 0 && (31) < 32) ? 1 : 0; }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/result.json
+@@ -0,0 +1,224 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "d4338c80d571b69c",
++    "inputsKey": "ac750a9c8127f36d2643b1d2bc08c6bc8d0bf9854ee351cf6b3367587c21fbc8",
++    "revisions": [
++      "before"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "before": "c5c91672556874eb7d52d6c9cc0771e81ae79f1243fb4262d84bc6a45e99d26c"
++    }
++  },
++  "task": "legacy-decision-before",
++  "revision": "before",
++  "entry": "springwork.RoleChecks#legacyDecision(I)I",
++  "guard": "code >= 0 && code < 32",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    31
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2,
++    3,
++    4,
++    5,
++    6,
++    7,
++    8,
++    9,
++    10,
++    11,
++    12,
++    13,
++    14,
++    15,
++    16,
++    17,
++    18,
++    19,
++    20,
++    21,
++    22,
++    23,
++    24,
++    25,
++    26,
++    27,
++    28,
++    29,
++    30,
++    31
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-before.jar",
++      "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "role": "adapter"
++    },
++    {
++      "path": "before.jar",
++      "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9",
++      "role": "original"
++    },
++    {
++      "path": "libraries/spring-security-14196-before.jar",
++      "sha256": "cdbc30986e169dd235ce624cfb96b746b553c94de265f57bbde233f25a1955e3",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-security-crypto.jar",
++      "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "before",
++      "entry": "springwork.RoleChecks#legacyDecision(I)I",
++      "adapterSha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "adapterClassSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
++      "subject": {
++        "class": "springwork.RoleApplication",
++        "method": "decide",
++        "descriptor": "(IZZ)Z",
++        "loadedFrom": "before.jar",
++        "classSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5",
++        "adapterCalls": [
++          "springwork.RoleApplication#decide(IZZ)Z",
++          "springwork.RoleApplication#name(Ljava/lang/String;I)Ljava/lang/String;",
++          "springwork.RoleApplication#prefix(I)Ljava/lang/String;",
++          "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 32,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/legacy-decision-before/Admission.jvm-bytecode",
++  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
++  "callsClass": "calls/96b8d0c2f1f1abb33d24/Calls.jvm-bytecode",
++  "callsSha256": "be0326f4bf5112877b9ab4b14942c0fd6c245bd52ab539dac84031d2158602eb",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.031,
++      "usage": {
++        "cpuSeconds": 0.0264,
++        "peakRssBytes": 81190912,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "4d47c38cf0511d7c86ad39136e6f8dfdd8cb6a482a048a90f82bcd9ff73903ec",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "raw": "calls/96b8d0c2f1f1abb33d24/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++  "wallSeconds": 0.03199,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 2.97165,
++    "checkerWallSeconds": 0.031,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 3.00366,
++    "peakNativeRssBytes": 81190912
++  }
++}
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/Admission.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 32) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 32) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 32) ? 1 : 0; }
++public static int p3() { return ((3) >= 0 && (3) < 32) ? 1 : 0; }
++public static int p4() { return ((4) >= 0 && (4) < 32) ? 1 : 0; }
++public static int p5() { return ((5) >= 0 && (5) < 32) ? 1 : 0; }
++public static int p6() { return ((6) >= 0 && (6) < 32) ? 1 : 0; }
++public static int p7() { return ((7) >= 0 && (7) < 32) ? 1 : 0; }
++public static int p8() { return ((8) >= 0 && (8) < 32) ? 1 : 0; }
++public static int p9() { return ((9) >= 0 && (9) < 32) ? 1 : 0; }
++public static int p10() { return ((10) >= 0 && (10) < 32) ? 1 : 0; }
++public static int p11() { return ((11) >= 0 && (11) < 32) ? 1 : 0; }
++public static int p12() { return ((12) >= 0 && (12) < 32) ? 1 : 0; }
++public static int p13() { return ((13) >= 0 && (13) < 32) ? 1 : 0; }
++public static int p14() { return ((14) >= 0 && (14) < 32) ? 1 : 0; }
++public static int p15() { return ((15) >= 0 && (15) < 32) ? 1 : 0; }
++public static int p16() { return ((16) >= 0 && (16) < 32) ? 1 : 0; }
++public static int p17() { return ((17) >= 0 && (17) < 32) ? 1 : 0; }
++public static int p18() { return ((18) >= 0 && (18) < 32) ? 1 : 0; }
++public static int p19() { return ((19) >= 0 && (19) < 32) ? 1 : 0; }
++public static int p20() { return ((20) >= 0 && (20) < 32) ? 1 : 0; }
++public static int p21() { return ((21) >= 0 && (21) < 32) ? 1 : 0; }
++public static int p22() { return ((22) >= 0 && (22) < 32) ? 1 : 0; }
++public static int p23() { return ((23) >= 0 && (23) < 32) ? 1 : 0; }
++public static int p24() { return ((24) >= 0 && (24) < 32) ? 1 : 0; }
++public static int p25() { return ((25) >= 0 && (25) < 32) ? 1 : 0; }
++public static int p26() { return ((26) >= 0 && (26) < 32) ? 1 : 0; }
++public static int p27() { return ((27) >= 0 && (27) < 32) ? 1 : 0; }
++public static int p28() { return ((28) >= 0 && (28) < 32) ? 1 : 0; }
++public static int p29() { return ((29) >= 0 && (29) < 32) ? 1 : 0; }
++public static int p30() { return ((30) >= 0 && (30) < 32) ? 1 : 0; }
++public static int p31() { return ((31) >= 0 && (31) < 32) ? 1 : 0; }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/result.json
+@@ -0,0 +1,224 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "80faa217ef0e1aed",
++    "inputsKey": "e9b39c550ba30e22c1d518d0ec03bee13aaf02e611630ab2f5d81bc81b99529a",
++    "revisions": [
++      "before"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "before": "c5c91672556874eb7d52d6c9cc0771e81ae79f1243fb4262d84bc6a45e99d26c"
++    }
++  },
++  "task": "legacy-names-before",
++  "revision": "before",
++  "entry": "springwork.RoleChecks#legacyNames(I)I",
++  "guard": "code >= 0 && code < 32",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    31
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2,
++    3,
++    4,
++    5,
++    6,
++    7,
++    8,
++    9,
++    10,
++    11,
++    12,
++    13,
++    14,
++    15,
++    16,
++    17,
++    18,
++    19,
++    20,
++    21,
++    22,
++    23,
++    24,
++    25,
++    26,
++    27,
++    28,
++    29,
++    30,
++    31
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-before.jar",
++      "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "role": "adapter"
++    },
++    {
++      "path": "before.jar",
++      "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9",
++      "role": "original"
++    },
++    {
++      "path": "libraries/spring-security-14196-before.jar",
++      "sha256": "cdbc30986e169dd235ce624cfb96b746b553c94de265f57bbde233f25a1955e3",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-security-crypto.jar",
++      "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "before",
++      "entry": "springwork.RoleChecks#legacyNames(I)I",
++      "adapterSha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "adapterClassSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
++      "subject": {
++        "class": "springwork.RoleApplication",
++        "method": "reachable",
++        "descriptor": "(IZ)Ljava/util/Collection;",
++        "loadedFrom": "before.jar",
++        "classSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5",
++        "adapterCalls": [
++          "springwork.RoleApplication#decide(IZZ)Z",
++          "springwork.RoleApplication#name(Ljava/lang/String;I)Ljava/lang/String;",
++          "springwork.RoleApplication#prefix(I)Ljava/lang/String;",
++          "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 32,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/legacy-names-before/Admission.jvm-bytecode",
++  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
++  "callsClass": "calls/d530b980c6a66ab50e2d/Calls.jvm-bytecode",
++  "callsSha256": "9addceed4c6dfad0aebd0cb75bacae22084d7295a63fd809f0883e50b42f850e",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.032,
++      "usage": {
++        "cpuSeconds": 0.0256,
++        "peakRssBytes": 81190912,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "be2d0fedb3c4d414d3e8e9508eaf8bd8e6ff2cbf3f00d76533dd64018a83eef2",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "raw": "calls/d530b980c6a66ab50e2d/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++  "wallSeconds": 0.03291,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 3.09324,
++    "checkerWallSeconds": 0.032,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 3.12616,
++    "peakNativeRssBytes": 81190912
++  }
++}
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/Calls.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.RoleChecks.legacyNames(0); }
++public static int p1() throws Throwable { return springwork.RoleChecks.legacyNames(1); }
++public static int p2() throws Throwable { return springwork.RoleChecks.legacyNames(2); }
++public static int p3() throws Throwable { return springwork.RoleChecks.legacyNames(3); }
++public static int p4() throws Throwable { return springwork.RoleChecks.legacyNames(4); }
++public static int p5() throws Throwable { return springwork.RoleChecks.legacyNames(5); }
++public static int p6() throws Throwable { return springwork.RoleChecks.legacyNames(6); }
++public static int p7() throws Throwable { return springwork.RoleChecks.legacyNames(7); }
++public static int p8() throws Throwable { return springwork.RoleChecks.legacyNames(8); }
++public static int p9() throws Throwable { return springwork.RoleChecks.legacyNames(9); }
++public static int p10() throws Throwable { return springwork.RoleChecks.legacyNames(10); }
++public static int p11() throws Throwable { return springwork.RoleChecks.legacyNames(11); }
++public static int p12() throws Throwable { return springwork.RoleChecks.legacyNames(12); }
++public static int p13() throws Throwable { return springwork.RoleChecks.legacyNames(13); }
++public static int p14() throws Throwable { return springwork.RoleChecks.legacyNames(14); }
++public static int p15() throws Throwable { return springwork.RoleChecks.legacyNames(15); }
++public static int p16() throws Throwable { return springwork.RoleChecks.legacyNames(16); }
++public static int p17() throws Throwable { return springwork.RoleChecks.legacyNames(17); }
++public static int p18() throws Throwable { return springwork.RoleChecks.legacyNames(18); }
++public static int p19() throws Throwable { return springwork.RoleChecks.legacyNames(19); }
++public static int p20() throws Throwable { return springwork.RoleChecks.legacyNames(20); }
++public static int p21() throws Throwable { return springwork.RoleChecks.legacyNames(21); }
++public static int p22() throws Throwable { return springwork.RoleChecks.legacyNames(22); }
++public static int p23() throws Throwable { return springwork.RoleChecks.legacyNames(23); }
++public static int p24() throws Throwable { return springwork.RoleChecks.legacyNames(24); }
++public static int p25() throws Throwable { return springwork.RoleChecks.legacyNames(25); }
++public static int p26() throws Throwable { return springwork.RoleChecks.legacyNames(26); }
++public static int p27() throws Throwable { return springwork.RoleChecks.legacyNames(27); }
++public static int p28() throws Throwable { return springwork.RoleChecks.legacyNames(28); }
++public static int p29() throws Throwable { return springwork.RoleChecks.legacyNames(29); }
++public static int p30() throws Throwable { return springwork.RoleChecks.legacyNames(30); }
++public static int p31() throws Throwable { return springwork.RoleChecks.legacyNames(31); }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/Calls.jvm-bytecode changed
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/cases.tar.gz changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/Calls.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.RoleChecks.fluentDecision(0); }
++public static int p1() throws Throwable { return springwork.RoleChecks.fluentDecision(1); }
++public static int p2() throws Throwable { return springwork.RoleChecks.fluentDecision(2); }
++public static int p3() throws Throwable { return springwork.RoleChecks.fluentDecision(3); }
++public static int p4() throws Throwable { return springwork.RoleChecks.fluentDecision(4); }
++public static int p5() throws Throwable { return springwork.RoleChecks.fluentDecision(5); }
++public static int p6() throws Throwable { return springwork.RoleChecks.fluentDecision(6); }
++public static int p7() throws Throwable { return springwork.RoleChecks.fluentDecision(7); }
++public static int p8() throws Throwable { return springwork.RoleChecks.fluentDecision(8); }
++public static int p9() throws Throwable { return springwork.RoleChecks.fluentDecision(9); }
++public static int p10() throws Throwable { return springwork.RoleChecks.fluentDecision(10); }
++public static int p11() throws Throwable { return springwork.RoleChecks.fluentDecision(11); }
++public static int p12() throws Throwable { return springwork.RoleChecks.fluentDecision(12); }
++public static int p13() throws Throwable { return springwork.RoleChecks.fluentDecision(13); }
++public static int p14() throws Throwable { return springwork.RoleChecks.fluentDecision(14); }
++public static int p15() throws Throwable { return springwork.RoleChecks.fluentDecision(15); }
++public static int p16() throws Throwable { return springwork.RoleChecks.fluentDecision(16); }
++public static int p17() throws Throwable { return springwork.RoleChecks.fluentDecision(17); }
++public static int p18() throws Throwable { return springwork.RoleChecks.fluentDecision(18); }
++public static int p19() throws Throwable { return springwork.RoleChecks.fluentDecision(19); }
++public static int p20() throws Throwable { return springwork.RoleChecks.fluentDecision(20); }
++public static int p21() throws Throwable { return springwork.RoleChecks.fluentDecision(21); }
++public static int p22() throws Throwable { return springwork.RoleChecks.fluentDecision(22); }
++public static int p23() throws Throwable { return springwork.RoleChecks.fluentDecision(23); }
++public static int p24() throws Throwable { return springwork.RoleChecks.fluentDecision(24); }
++public static int p25() throws Throwable { return springwork.RoleChecks.fluentDecision(25); }
++public static int p26() throws Throwable { return springwork.RoleChecks.fluentDecision(26); }
++public static int p27() throws Throwable { return springwork.RoleChecks.fluentDecision(27); }
++public static int p28() throws Throwable { return springwork.RoleChecks.fluentDecision(28); }
++public static int p29() throws Throwable { return springwork.RoleChecks.fluentDecision(29); }
++public static int p30() throws Throwable { return springwork.RoleChecks.fluentDecision(30); }
++public static int p31() throws Throwable { return springwork.RoleChecks.fluentDecision(31); }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/Calls.jvm-bytecode changed
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/cases.tar.gz changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/Calls.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.RoleChecks.legacyDecision(0); }
++public static int p1() throws Throwable { return springwork.RoleChecks.legacyDecision(1); }
++public static int p2() throws Throwable { return springwork.RoleChecks.legacyDecision(2); }
++public static int p3() throws Throwable { return springwork.RoleChecks.legacyDecision(3); }
++public static int p4() throws Throwable { return springwork.RoleChecks.legacyDecision(4); }
++public static int p5() throws Throwable { return springwork.RoleChecks.legacyDecision(5); }
++public static int p6() throws Throwable { return springwork.RoleChecks.legacyDecision(6); }
++public static int p7() throws Throwable { return springwork.RoleChecks.legacyDecision(7); }
++public static int p8() throws Throwable { return springwork.RoleChecks.legacyDecision(8); }
++public static int p9() throws Throwable { return springwork.RoleChecks.legacyDecision(9); }
++public static int p10() throws Throwable { return springwork.RoleChecks.legacyDecision(10); }
++public static int p11() throws Throwable { return springwork.RoleChecks.legacyDecision(11); }
++public static int p12() throws Throwable { return springwork.RoleChecks.legacyDecision(12); }
++public static int p13() throws Throwable { return springwork.RoleChecks.legacyDecision(13); }
++public static int p14() throws Throwable { return springwork.RoleChecks.legacyDecision(14); }
++public static int p15() throws Throwable { return springwork.RoleChecks.legacyDecision(15); }
++public static int p16() throws Throwable { return springwork.RoleChecks.legacyDecision(16); }
++public static int p17() throws Throwable { return springwork.RoleChecks.legacyDecision(17); }
++public static int p18() throws Throwable { return springwork.RoleChecks.legacyDecision(18); }
++public static int p19() throws Throwable { return springwork.RoleChecks.legacyDecision(19); }
++public static int p20() throws Throwable { return springwork.RoleChecks.legacyDecision(20); }
++public static int p21() throws Throwable { return springwork.RoleChecks.legacyDecision(21); }
++public static int p22() throws Throwable { return springwork.RoleChecks.legacyDecision(22); }
++public static int p23() throws Throwable { return springwork.RoleChecks.legacyDecision(23); }
++public static int p24() throws Throwable { return springwork.RoleChecks.legacyDecision(24); }
++public static int p25() throws Throwable { return springwork.RoleChecks.legacyDecision(25); }
++public static int p26() throws Throwable { return springwork.RoleChecks.legacyDecision(26); }
++public static int p27() throws Throwable { return springwork.RoleChecks.legacyDecision(27); }
++public static int p28() throws Throwable { return springwork.RoleChecks.legacyDecision(28); }
++public static int p29() throws Throwable { return springwork.RoleChecks.legacyDecision(29); }
++public static int p30() throws Throwable { return springwork.RoleChecks.legacyDecision(30); }
++public static int p31() throws Throwable { return springwork.RoleChecks.legacyDecision(31); }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/Calls.jvm-bytecode changed
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/cases.tar.gz changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/Calls.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.RoleChecks.fluentNames(0); }
++public static int p1() throws Throwable { return springwork.RoleChecks.fluentNames(1); }
++public static int p2() throws Throwable { return springwork.RoleChecks.fluentNames(2); }
++public static int p3() throws Throwable { return springwork.RoleChecks.fluentNames(3); }
++public static int p4() throws Throwable { return springwork.RoleChecks.fluentNames(4); }
++public static int p5() throws Throwable { return springwork.RoleChecks.fluentNames(5); }
++public static int p6() throws Throwable { return springwork.RoleChecks.fluentNames(6); }
++public static int p7() throws Throwable { return springwork.RoleChecks.fluentNames(7); }
++public static int p8() throws Throwable { return springwork.RoleChecks.fluentNames(8); }
++public static int p9() throws Throwable { return springwork.RoleChecks.fluentNames(9); }
++public static int p10() throws Throwable { return springwork.RoleChecks.fluentNames(10); }
++public static int p11() throws Throwable { return springwork.RoleChecks.fluentNames(11); }
++public static int p12() throws Throwable { return springwork.RoleChecks.fluentNames(12); }
++public static int p13() throws Throwable { return springwork.RoleChecks.fluentNames(13); }
++public static int p14() throws Throwable { return springwork.RoleChecks.fluentNames(14); }
++public static int p15() throws Throwable { return springwork.RoleChecks.fluentNames(15); }
++public static int p16() throws Throwable { return springwork.RoleChecks.fluentNames(16); }
++public static int p17() throws Throwable { return springwork.RoleChecks.fluentNames(17); }
++public static int p18() throws Throwable { return springwork.RoleChecks.fluentNames(18); }
++public static int p19() throws Throwable { return springwork.RoleChecks.fluentNames(19); }
++public static int p20() throws Throwable { return springwork.RoleChecks.fluentNames(20); }
++public static int p21() throws Throwable { return springwork.RoleChecks.fluentNames(21); }
++public static int p22() throws Throwable { return springwork.RoleChecks.fluentNames(22); }
++public static int p23() throws Throwable { return springwork.RoleChecks.fluentNames(23); }
++public static int p24() throws Throwable { return springwork.RoleChecks.fluentNames(24); }
++public static int p25() throws Throwable { return springwork.RoleChecks.fluentNames(25); }
++public static int p26() throws Throwable { return springwork.RoleChecks.fluentNames(26); }
++public static int p27() throws Throwable { return springwork.RoleChecks.fluentNames(27); }
++public static int p28() throws Throwable { return springwork.RoleChecks.fluentNames(28); }
++public static int p29() throws Throwable { return springwork.RoleChecks.fluentNames(29); }
++public static int p30() throws Throwable { return springwork.RoleChecks.fluentNames(30); }
++public static int p31() throws Throwable { return springwork.RoleChecks.fluentNames(31); }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/Calls.jvm-bytecode changed
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/cases.tar.gz changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/Admission.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 32) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 32) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 32) ? 1 : 0; }
++public static int p3() { return ((3) >= 0 && (3) < 32) ? 1 : 0; }
++public static int p4() { return ((4) >= 0 && (4) < 32) ? 1 : 0; }
++public static int p5() { return ((5) >= 0 && (5) < 32) ? 1 : 0; }
++public static int p6() { return ((6) >= 0 && (6) < 32) ? 1 : 0; }
++public static int p7() { return ((7) >= 0 && (7) < 32) ? 1 : 0; }
++public static int p8() { return ((8) >= 0 && (8) < 32) ? 1 : 0; }
++public static int p9() { return ((9) >= 0 && (9) < 32) ? 1 : 0; }
++public static int p10() { return ((10) >= 0 && (10) < 32) ? 1 : 0; }
++public static int p11() { return ((11) >= 0 && (11) < 32) ? 1 : 0; }
++public static int p12() { return ((12) >= 0 && (12) < 32) ? 1 : 0; }
++public static int p13() { return ((13) >= 0 && (13) < 32) ? 1 : 0; }
++public static int p14() { return ((14) >= 0 && (14) < 32) ? 1 : 0; }
++public static int p15() { return ((15) >= 0 && (15) < 32) ? 1 : 0; }
++public static int p16() { return ((16) >= 0 && (16) < 32) ? 1 : 0; }
++public static int p17() { return ((17) >= 0 && (17) < 32) ? 1 : 0; }
++public static int p18() { return ((18) >= 0 && (18) < 32) ? 1 : 0; }
++public static int p19() { return ((19) >= 0 && (19) < 32) ? 1 : 0; }
++public static int p20() { return ((20) >= 0 && (20) < 32) ? 1 : 0; }
++public static int p21() { return ((21) >= 0 && (21) < 32) ? 1 : 0; }
++public static int p22() { return ((22) >= 0 && (22) < 32) ? 1 : 0; }
++public static int p23() { return ((23) >= 0 && (23) < 32) ? 1 : 0; }
++public static int p24() { return ((24) >= 0 && (24) < 32) ? 1 : 0; }
++public static int p25() { return ((25) >= 0 && (25) < 32) ? 1 : 0; }
++public static int p26() { return ((26) >= 0 && (26) < 32) ? 1 : 0; }
++public static int p27() { return ((27) >= 0 && (27) < 32) ? 1 : 0; }
++public static int p28() { return ((28) >= 0 && (28) < 32) ? 1 : 0; }
++public static int p29() { return ((29) >= 0 && (29) < 32) ? 1 : 0; }
++public static int p30() { return ((30) >= 0 && (30) < 32) ? 1 : 0; }
++public static int p31() { return ((31) >= 0 && (31) < 32) ? 1 : 0; }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/result.json
+@@ -0,0 +1,219 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "6192effcca91108a",
++    "inputsKey": "af5bbd30f3461798870b72320ed9bc455d93b00545819aa502bdf56cb23f0cf3",
++    "revisions": [
++      "landed"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "landed": "45e61dec2ff677f16e6ccc3c4ad08ff3ac5f9d376e74a322de2038d6baebb268"
++    }
++  },
++  "task": "fluent-decision-landed",
++  "revision": "landed",
++  "entry": "springwork.RoleChecks#fluentDecision(I)I",
++  "guard": "code >= 0 && code < 32",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    31
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2,
++    3,
++    4,
++    5,
++    6,
++    7,
++    8,
++    9,
++    10,
++    11,
++    12,
++    13,
++    14,
++    15,
++    16,
++    17,
++    18,
++    19,
++    20,
++    21,
++    22,
++    23,
++    24,
++    25,
++    26,
++    27,
++    28,
++    29,
++    30,
++    31
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "role": "adapter"
++    },
++    {
++      "path": "landed.jar",
++      "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9",
++      "role": "original"
++    },
++    {
++      "path": "libraries/spring-security-14196-landed.jar",
++      "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-security-crypto.jar",
++      "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "landed",
++      "entry": "springwork.RoleChecks#fluentDecision(I)I",
++      "adapterSha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "adapterClassSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
++      "subject": {
++        "class": "springwork.RoleApplication",
++        "method": "decide",
++        "descriptor": "(IZZ)Z",
++        "loadedFrom": "landed.jar",
++        "classSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5",
++        "adapterCalls": [
++          "springwork.RoleApplication#decide(IZZ)Z",
++          "springwork.RoleApplication#name(Ljava/lang/String;I)Ljava/lang/String;",
++          "springwork.RoleApplication#prefix(I)Ljava/lang/String;",
++          "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 32,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/fluent-decision-landed/Admission.jvm-bytecode",
++  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
++  "callsClass": "calls/9d06cfdbb5d35cafffb8/Calls.jvm-bytecode",
++  "callsSha256": "d02f3da26901ab43074d0f78ae54a0b8dd8ffb6e6ea6b92874f3f990ff31257d",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.031,
++      "usage": {
++        "cpuSeconds": 0.0273,
++        "peakRssBytes": 69046272,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "2907915301667b290479f956c10b092b7c1c0c847e738dedb411220020bdbb79",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "raw": "calls/9d06cfdbb5d35cafffb8/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++  "wallSeconds": 0.03142,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 0.78697,
++    "checkerWallSeconds": 0.031,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 0.8184,
++    "peakNativeRssBytes": 69046272
++  }
++}
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/Admission.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 32) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 32) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 32) ? 1 : 0; }
++public static int p3() { return ((3) >= 0 && (3) < 32) ? 1 : 0; }
++public static int p4() { return ((4) >= 0 && (4) < 32) ? 1 : 0; }
++public static int p5() { return ((5) >= 0 && (5) < 32) ? 1 : 0; }
++public static int p6() { return ((6) >= 0 && (6) < 32) ? 1 : 0; }
++public static int p7() { return ((7) >= 0 && (7) < 32) ? 1 : 0; }
++public static int p8() { return ((8) >= 0 && (8) < 32) ? 1 : 0; }
++public static int p9() { return ((9) >= 0 && (9) < 32) ? 1 : 0; }
++public static int p10() { return ((10) >= 0 && (10) < 32) ? 1 : 0; }
++public static int p11() { return ((11) >= 0 && (11) < 32) ? 1 : 0; }
++public static int p12() { return ((12) >= 0 && (12) < 32) ? 1 : 0; }
++public static int p13() { return ((13) >= 0 && (13) < 32) ? 1 : 0; }
++public static int p14() { return ((14) >= 0 && (14) < 32) ? 1 : 0; }
++public static int p15() { return ((15) >= 0 && (15) < 32) ? 1 : 0; }
++public static int p16() { return ((16) >= 0 && (16) < 32) ? 1 : 0; }
++public static int p17() { return ((17) >= 0 && (17) < 32) ? 1 : 0; }
++public static int p18() { return ((18) >= 0 && (18) < 32) ? 1 : 0; }
++public static int p19() { return ((19) >= 0 && (19) < 32) ? 1 : 0; }
++public static int p20() { return ((20) >= 0 && (20) < 32) ? 1 : 0; }
++public static int p21() { return ((21) >= 0 && (21) < 32) ? 1 : 0; }
++public static int p22() { return ((22) >= 0 && (22) < 32) ? 1 : 0; }
++public static int p23() { return ((23) >= 0 && (23) < 32) ? 1 : 0; }
++public static int p24() { return ((24) >= 0 && (24) < 32) ? 1 : 0; }
++public static int p25() { return ((25) >= 0 && (25) < 32) ? 1 : 0; }
++public static int p26() { return ((26) >= 0 && (26) < 32) ? 1 : 0; }
++public static int p27() { return ((27) >= 0 && (27) < 32) ? 1 : 0; }
++public static int p28() { return ((28) >= 0 && (28) < 32) ? 1 : 0; }
++public static int p29() { return ((29) >= 0 && (29) < 32) ? 1 : 0; }
++public static int p30() { return ((30) >= 0 && (30) < 32) ? 1 : 0; }
++public static int p31() { return ((31) >= 0 && (31) < 32) ? 1 : 0; }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/result.json
+@@ -0,0 +1,219 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "acbbca7210cad938",
++    "inputsKey": "19072cb3658892e845934526c15c88f86a100fa70d5f403acde28a5ff793a121",
++    "revisions": [
++      "landed"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "landed": "45e61dec2ff677f16e6ccc3c4ad08ff3ac5f9d376e74a322de2038d6baebb268"
++    }
++  },
++  "task": "fluent-names-landed",
++  "revision": "landed",
++  "entry": "springwork.RoleChecks#fluentNames(I)I",
++  "guard": "code >= 0 && code < 32",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    31
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2,
++    3,
++    4,
++    5,
++    6,
++    7,
++    8,
++    9,
++    10,
++    11,
++    12,
++    13,
++    14,
++    15,
++    16,
++    17,
++    18,
++    19,
++    20,
++    21,
++    22,
++    23,
++    24,
++    25,
++    26,
++    27,
++    28,
++    29,
++    30,
++    31
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "role": "adapter"
++    },
++    {
++      "path": "landed.jar",
++      "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9",
++      "role": "original"
++    },
++    {
++      "path": "libraries/spring-security-14196-landed.jar",
++      "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-security-crypto.jar",
++      "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "landed",
++      "entry": "springwork.RoleChecks#fluentNames(I)I",
++      "adapterSha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "adapterClassSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
++      "subject": {
++        "class": "springwork.RoleApplication",
++        "method": "reachable",
++        "descriptor": "(IZ)Ljava/util/Collection;",
++        "loadedFrom": "landed.jar",
++        "classSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5",
++        "adapterCalls": [
++          "springwork.RoleApplication#decide(IZZ)Z",
++          "springwork.RoleApplication#name(Ljava/lang/String;I)Ljava/lang/String;",
++          "springwork.RoleApplication#prefix(I)Ljava/lang/String;",
++          "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 32,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/fluent-names-landed/Admission.jvm-bytecode",
++  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
++  "callsClass": "calls/fe7bf83a1621d4fa2e75/Calls.jvm-bytecode",
++  "callsSha256": "fb7b0f65a4d2d4796d0db96fb71469c847a19b66d018a55735c23f0928988701",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.031,
++      "usage": {
++        "cpuSeconds": 0.0249,
++        "peakRssBytes": 69046272,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "4b4a1de6409b5b3a3467d73f98eb0e033de636a8b1566486e584cffab21d14d2",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "raw": "calls/fe7bf83a1621d4fa2e75/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++  "wallSeconds": 0.03167,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 0.78504,
++    "checkerWallSeconds": 0.031,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 0.81672,
++    "peakNativeRssBytes": 69046272
++  }
++}
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/Admission.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 32) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 32) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 32) ? 1 : 0; }
++public static int p3() { return ((3) >= 0 && (3) < 32) ? 1 : 0; }
++public static int p4() { return ((4) >= 0 && (4) < 32) ? 1 : 0; }
++public static int p5() { return ((5) >= 0 && (5) < 32) ? 1 : 0; }
++public static int p6() { return ((6) >= 0 && (6) < 32) ? 1 : 0; }
++public static int p7() { return ((7) >= 0 && (7) < 32) ? 1 : 0; }
++public static int p8() { return ((8) >= 0 && (8) < 32) ? 1 : 0; }
++public static int p9() { return ((9) >= 0 && (9) < 32) ? 1 : 0; }
++public static int p10() { return ((10) >= 0 && (10) < 32) ? 1 : 0; }
++public static int p11() { return ((11) >= 0 && (11) < 32) ? 1 : 0; }
++public static int p12() { return ((12) >= 0 && (12) < 32) ? 1 : 0; }
++public static int p13() { return ((13) >= 0 && (13) < 32) ? 1 : 0; }
++public static int p14() { return ((14) >= 0 && (14) < 32) ? 1 : 0; }
++public static int p15() { return ((15) >= 0 && (15) < 32) ? 1 : 0; }
++public static int p16() { return ((16) >= 0 && (16) < 32) ? 1 : 0; }
++public static int p17() { return ((17) >= 0 && (17) < 32) ? 1 : 0; }
++public static int p18() { return ((18) >= 0 && (18) < 32) ? 1 : 0; }
++public static int p19() { return ((19) >= 0 && (19) < 32) ? 1 : 0; }
++public static int p20() { return ((20) >= 0 && (20) < 32) ? 1 : 0; }
++public static int p21() { return ((21) >= 0 && (21) < 32) ? 1 : 0; }
++public static int p22() { return ((22) >= 0 && (22) < 32) ? 1 : 0; }
++public static int p23() { return ((23) >= 0 && (23) < 32) ? 1 : 0; }
++public static int p24() { return ((24) >= 0 && (24) < 32) ? 1 : 0; }
++public static int p25() { return ((25) >= 0 && (25) < 32) ? 1 : 0; }
++public static int p26() { return ((26) >= 0 && (26) < 32) ? 1 : 0; }
++public static int p27() { return ((27) >= 0 && (27) < 32) ? 1 : 0; }
++public static int p28() { return ((28) >= 0 && (28) < 32) ? 1 : 0; }
++public static int p29() { return ((29) >= 0 && (29) < 32) ? 1 : 0; }
++public static int p30() { return ((30) >= 0 && (30) < 32) ? 1 : 0; }
++public static int p31() { return ((31) >= 0 && (31) < 32) ? 1 : 0; }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/result.json
+@@ -0,0 +1,224 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "d4338c80d571b69c",
++    "inputsKey": "229fa4138f067c52a6bf5ba1310df13ecd5a3e012f6ebf09db60fb7626a40965",
++    "revisions": [
++      "landed"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "landed": "45e61dec2ff677f16e6ccc3c4ad08ff3ac5f9d376e74a322de2038d6baebb268"
++    }
++  },
++  "task": "legacy-decision-landed",
++  "revision": "landed",
++  "entry": "springwork.RoleChecks#legacyDecision(I)I",
++  "guard": "code >= 0 && code < 32",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    31
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2,
++    3,
++    4,
++    5,
++    6,
++    7,
++    8,
++    9,
++    10,
++    11,
++    12,
++    13,
++    14,
++    15,
++    16,
++    17,
++    18,
++    19,
++    20,
++    21,
++    22,
++    23,
++    24,
++    25,
++    26,
++    27,
++    28,
++    29,
++    30,
++    31
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "role": "adapter"
++    },
++    {
++      "path": "landed.jar",
++      "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9",
++      "role": "original"
++    },
++    {
++      "path": "libraries/spring-security-14196-landed.jar",
++      "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-security-crypto.jar",
++      "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "landed",
++      "entry": "springwork.RoleChecks#legacyDecision(I)I",
++      "adapterSha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "adapterClassSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
++      "subject": {
++        "class": "springwork.RoleApplication",
++        "method": "decide",
++        "descriptor": "(IZZ)Z",
++        "loadedFrom": "landed.jar",
++        "classSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5",
++        "adapterCalls": [
++          "springwork.RoleApplication#decide(IZZ)Z",
++          "springwork.RoleApplication#name(Ljava/lang/String;I)Ljava/lang/String;",
++          "springwork.RoleApplication#prefix(I)Ljava/lang/String;",
++          "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 32,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/legacy-decision-landed/Admission.jvm-bytecode",
++  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
++  "callsClass": "calls/a458fcf304df5916b043/Calls.jvm-bytecode",
++  "callsSha256": "be0326f4bf5112877b9ab4b14942c0fd6c245bd52ab539dac84031d2158602eb",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.031,
++      "usage": {
++        "cpuSeconds": 0.0241,
++        "peakRssBytes": 69046272,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "6b019424a8ce9210ef902725810694712dea692f0c370d6b12d3c8217966161e",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "raw": "calls/a458fcf304df5916b043/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++  "wallSeconds": 0.03186,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 2.72094,
++    "checkerWallSeconds": 0.031,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 2.75282,
++    "peakNativeRssBytes": 69046272
++  }
++}
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/Admission.java
+@@ -0,0 +1,35 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 32) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 32) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 32) ? 1 : 0; }
++public static int p3() { return ((3) >= 0 && (3) < 32) ? 1 : 0; }
++public static int p4() { return ((4) >= 0 && (4) < 32) ? 1 : 0; }
++public static int p5() { return ((5) >= 0 && (5) < 32) ? 1 : 0; }
++public static int p6() { return ((6) >= 0 && (6) < 32) ? 1 : 0; }
++public static int p7() { return ((7) >= 0 && (7) < 32) ? 1 : 0; }
++public static int p8() { return ((8) >= 0 && (8) < 32) ? 1 : 0; }
++public static int p9() { return ((9) >= 0 && (9) < 32) ? 1 : 0; }
++public static int p10() { return ((10) >= 0 && (10) < 32) ? 1 : 0; }
++public static int p11() { return ((11) >= 0 && (11) < 32) ? 1 : 0; }
++public static int p12() { return ((12) >= 0 && (12) < 32) ? 1 : 0; }
++public static int p13() { return ((13) >= 0 && (13) < 32) ? 1 : 0; }
++public static int p14() { return ((14) >= 0 && (14) < 32) ? 1 : 0; }
++public static int p15() { return ((15) >= 0 && (15) < 32) ? 1 : 0; }
++public static int p16() { return ((16) >= 0 && (16) < 32) ? 1 : 0; }
++public static int p17() { return ((17) >= 0 && (17) < 32) ? 1 : 0; }
++public static int p18() { return ((18) >= 0 && (18) < 32) ? 1 : 0; }
++public static int p19() { return ((19) >= 0 && (19) < 32) ? 1 : 0; }
++public static int p20() { return ((20) >= 0 && (20) < 32) ? 1 : 0; }
++public static int p21() { return ((21) >= 0 && (21) < 32) ? 1 : 0; }
++public static int p22() { return ((22) >= 0 && (22) < 32) ? 1 : 0; }
++public static int p23() { return ((23) >= 0 && (23) < 32) ? 1 : 0; }
++public static int p24() { return ((24) >= 0 && (24) < 32) ? 1 : 0; }
++public static int p25() { return ((25) >= 0 && (25) < 32) ? 1 : 0; }
++public static int p26() { return ((26) >= 0 && (26) < 32) ? 1 : 0; }
++public static int p27() { return ((27) >= 0 && (27) < 32) ? 1 : 0; }
++public static int p28() { return ((28) >= 0 && (28) < 32) ? 1 : 0; }
++public static int p29() { return ((29) >= 0 && (29) < 32) ? 1 : 0; }
++public static int p30() { return ((30) >= 0 && (30) < 32) ? 1 : 0; }
++public static int p31() { return ((31) >= 0 && (31) < 32) ? 1 : 0; }
++}
+Binary file examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/result.json
+@@ -0,0 +1,224 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "80faa217ef0e1aed",
++    "inputsKey": "c7d6e747f340163aec55c5cccc940f6e28629f1ef8ed1c6970d5f25cb0c34097",
++    "revisions": [
++      "landed"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "landed": "45e61dec2ff677f16e6ccc3c4ad08ff3ac5f9d376e74a322de2038d6baebb268"
++    }
++  },
++  "task": "legacy-names-landed",
++  "revision": "landed",
++  "entry": "springwork.RoleChecks#legacyNames(I)I",
++  "guard": "code >= 0 && code < 32",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    31
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2,
++    3,
++    4,
++    5,
++    6,
++    7,
++    8,
++    9,
++    10,
++    11,
++    12,
++    13,
++    14,
++    15,
++    16,
++    17,
++    18,
++    19,
++    20,
++    21,
++    22,
++    23,
++    24,
++    25,
++    26,
++    27,
++    28,
++    29,
++    30,
++    31
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "role": "adapter"
++    },
++    {
++      "path": "landed.jar",
++      "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9",
++      "role": "original"
++    },
++    {
++      "path": "libraries/spring-security-14196-landed.jar",
++      "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-security-crypto.jar",
++      "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
++      "role": "dependency"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "landed",
++      "entry": "springwork.RoleChecks#legacyNames(I)I",
++      "adapterSha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
++      "adapterClassSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
++      "subject": {
++        "class": "springwork.RoleApplication",
++        "method": "reachable",
++        "descriptor": "(IZ)Ljava/util/Collection;",
++        "loadedFrom": "landed.jar",
++        "classSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5",
++        "adapterCalls": [
++          "springwork.RoleApplication#decide(IZZ)Z",
++          "springwork.RoleApplication#name(Ljava/lang/String;I)Ljava/lang/String;",
++          "springwork.RoleApplication#prefix(I)Ljava/lang/String;",
++          "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 32,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/legacy-names-landed/Admission.jvm-bytecode",
++  "admissionSha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
++  "callsClass": "calls/03a39a90df0047e403bc/Calls.jvm-bytecode",
++  "callsSha256": "9addceed4c6dfad0aebd0cb75bacae22084d7295a63fd809f0883e50b42f850e",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.032,
++      "usage": {
++        "cpuSeconds": 0.0249,
++        "peakRssBytes": 69046272,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "be28878895f54785942ad7a48c7e7744140a9da20699d4f2e08bc920e09b72ef",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++      "raw": "calls/03a39a90df0047e403bc/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
++  "wallSeconds": 0.03246,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 3.03193,
++    "checkerWallSeconds": 0.032,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 3.0644,
++    "peakNativeRssBytes": 69046272
++  }
++}
