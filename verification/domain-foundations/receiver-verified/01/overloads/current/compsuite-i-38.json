@@ -1,0 +1,118 @@
+{
+  "id": "compsuite-i-38",
+  "build": "current",
+  "operator": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "entry": "com.esotericsoftware.reflectasm.MethodAccess#get",
+  "observer": "Construct an interface method accessor and invoke replace on a populated concurrent map.",
+  "revisions": {
+    "old": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
+    "new": "5c636af1a65b92fa570582628a27aa1e7d29f24b"
+  },
+  "result": "open",
+  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
+  "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+  "sides": {
+    "old": {
+      "commit": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
+      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
+      "scope": "complete original Maven production module",
+      "module": "pom.xml",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "05d9e23b42ae6295045f32eaaa3505a4c24b9a73afb23d4d3eee7799361e0571",
+      "operandScope": "runtime",
+      "subjectJdk": "8.0.512.0+9-tem",
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "goals": [
+        "-Dmaven.test.skip=true",
+        "-DincludeScope=runtime",
+        "-Dmdep.outputFile=target/upgrade-runtime.cp",
+        "compile",
+        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
+      ],
+      "declaredReleaseRepositories": [],
+      "stage": "artifacts ready",
+      "compiledClasses": 5,
+      "resources": 0,
+      "seconds": 5.82,
+      "orderedSha256": [
+        "f1096718f17cb745076a8ecd170eb2aaeafe60820b8c095d1e087606d6c3a980",
+        "d2da399a9967c69f0a21739256fa79d284222c223082cacadc17372244764b54"
+      ],
+      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
+      "descriptors": [
+        "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
+      ]
+    },
+    "new": {
+      "commit": "5c636af1a65b92fa570582628a27aa1e7d29f24b",
+      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
+      "scope": "complete original Maven production module",
+      "module": "pom.xml",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "522183c18105ec2f25fa9e7dc804c9cf92d04dbea1b167f28eb529208d305e00",
+      "operandScope": "runtime",
+      "subjectJdk": "8.0.512.0+9-tem",
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "goals": [
+        "-Dmaven.test.skip=true",
+        "-DincludeScope=runtime",
+        "-Dmdep.outputFile=target/upgrade-runtime.cp",
+        "compile",
+        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
+      ],
+      "declaredReleaseRepositories": [],
+      "stage": "artifacts ready",
+      "compiledClasses": 5,
+      "resources": 0,
+      "seconds": 5.65,
+      "orderedSha256": [
+        "f1096718f17cb745076a8ecd170eb2aaeafe60820b8c095d1e087606d6c3a980",
+        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672"
+      ],
+      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
+      "descriptors": [
+        "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
+      ]
+    }
+  },
+  "declarations": {
+    "common": [
+      "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
+    ],
+    "removed": [],
+    "added": []
+  },
+  "native": {
+    "target": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
+    "exit": 1,
+    "seconds": 0.006,
+    "outputSha256": "c6ba8e67056908969860095996d4d08a9f356e592edbf55888a6a5c5063aa35e",
+    "outcome": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
+      "domain": null,
+      "counterexample": null,
+      "proof": null,
+      "problem": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
+      "statement": null,
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class) cannot be verified: parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
+          "uri": null,
+          "line": 84
+        }
+      ],
+      "output": "\u2717 com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class) cannot be verified: parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
+      "work": "$WORK/checker-pjcurcyr/overload-0"
+    },
+    "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+  },
+  "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
+  "elapsedSeconds": 0.079,
+  "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80"
+}

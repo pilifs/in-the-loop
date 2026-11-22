@@ -1,0 +1,264 @@
+{
+  "plan": {
+    "example": "355",
+    "task": "full-length-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "full-length-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+      "file": "claims/full-length.json",
+      "sha256": "2fa25624f5134c0d830914f2307fd4fb25f4356f3e1d59f52ee3f7e82778da11",
+      "property": "full-length",
+      "claimKind": "property",
+      "statement": "A full five-byte buffer retains its full extent.",
+      "assume": "code >= 20 && code < 21",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "d3518c5a8aea6a4bc8fe83669ecaa90a91fd773c9e24846791e9ba475fb8ee6d"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d6ea6da9d85dc5f130a1dde089ab92aed7b30701a5b331431f79fa0737db67f0"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.WritableBuffer#bounds(I)I",
+        "mapping": "A full five-byte buffer retains its full extent. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 21
+      },
+      "key": "b5ded2bd67bb4436"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+        "orderedClasses": [
+          "org.apache.hadoop.security.authentication.server.package-info",
+          "org.apache.hadoop.yarn.api.resource.package-info",
+          "org.apache.hadoop.yarn.client.api.impl.package-info",
+          "org.apache.hadoop.yarn.client.api.package-info",
+          "org.apache.hadoop.yarn.factories.package-info",
+          "org.apache.hadoop.yarn.factory.providers.package-info",
+          "org.apache.hadoop.yarn.util.package-info"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "lang/java/mapred",
+            "-am",
+            "-DskipTests",
+            "-Dinvoker.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-avro-root/build-parent.json",
+          "sha256": "77ea572171a14e3623e4ff44ea7a882ace7a8afd6c5d0ca185304a6a7da32164"
+        },
+        "adapters": [
+          "adapter/organic/WritableBuffer.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/full-length-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-050024-final-original-avro-and-javaparser-scope/examples/355-avro-writable-buffer-limit",
+    "network": true
+  },
+  "inputs": {
+    "example": "355",
+    "task": "full-length-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "full-length-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.hadoop.io.AvroDatumConverterFactory#create(Ljava/lang/Class;)Lorg/apache/avro/hadoop/io/AvroDatumConverter;",
+      "file": "claims/full-length.json",
+      "sha256": "2fa25624f5134c0d830914f2307fd4fb25f4356f3e1d59f52ee3f7e82778da11",
+      "property": "full-length",
+      "claimKind": "property",
+      "statement": "A full five-byte buffer retains its full extent.",
+      "assume": "code >= 20 && code < 21",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "d3518c5a8aea6a4bc8fe83669ecaa90a91fd773c9e24846791e9ba475fb8ee6d"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "d6ea6da9d85dc5f130a1dde089ab92aed7b30701a5b331431f79fa0737db67f0"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.WritableBuffer#bounds(I)I",
+        "mapping": "A full five-byte buffer retains its full extent. The selector identifies the input and direct public observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 21
+      },
+      "key": "b5ded2bd67bb4436"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+        "orderedClasses": [
+          "org.apache.hadoop.security.authentication.server.package-info",
+          "org.apache.hadoop.yarn.api.resource.package-info",
+          "org.apache.hadoop.yarn.client.api.impl.package-info",
+          "org.apache.hadoop.yarn.client.api.package-info",
+          "org.apache.hadoop.yarn.factories.package-info",
+          "org.apache.hadoop.yarn.factory.providers.package-info",
+          "org.apache.hadoop.yarn.util.package-info"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "lang/java/mapred",
+            "-am",
+            "-DskipTests",
+            "-Dinvoker.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-avro-root/build-parent.json",
+          "sha256": "77ea572171a14e3623e4ff44ea7a882ace7a8afd6c5d0ca185304a6a7da32164"
+        },
+        "adapters": [
+          "adapter/organic/WritableBuffer.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/WritableBuffer.java",
+        "sha256": "b104a923ceae282544fce0f642e5bdf197eb962c5b3cee8595fcfa965b0c65b1"
+      }
+    ]
+  },
+  "key": "d4b9eb32419dfd016eeeabc898ce91875667442ab769c148f9706c14e153bb0d"
+}

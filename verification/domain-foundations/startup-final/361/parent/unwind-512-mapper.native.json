@@ -1,0 +1,160 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "foundation.BytesSchema#mapper",
+    "domain": "",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-mapper/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "foundation.BytesSchema#mapper cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "uri": null,
+        "line": 12
+      }
+    ],
+    "output": "✗ foundation.BytesSchema#mapper cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-mapper",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.023125052,
+      "properties": 1,
+      "unwind": 512,
+      "max_array_length": 128,
+      "stage": null,
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 5,
+        "solving_seconds": 0.0,
+        "gates_evaluated": 0,
+        "evaluating_seconds": 0.0,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 443,
+        "clauses": 1069,
+        "seconds": 0.017168084,
+        "loading_seconds": 0.003702695,
+        "decoding_seconds": 0.000922177,
+        "encoding_seconds": 0.002056863,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+        ]
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.Class.getDeclaredConstructor(java.lang.Class[])",
+          "sites": [
+            "com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.017,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.004,
+            "lowering": 0.001,
+            "symbolic": 0.01,
+            "encoding": 0.002,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 443,
+            "clauses": 1069
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.036,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.017,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.018
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 512,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

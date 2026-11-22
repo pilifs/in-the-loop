@@ -1,0 +1,2164 @@
+{
+  "entry": "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(Lcom/alibaba/citrus/service/form/Validator$Context;Ljava/lang/String;)Z",
+  "observer": "Submit the original form through its servlet test client and read validity and message for the date field.",
+  "domainBasis": "The configured minimum is 1911-10-10. The original developer assertions accept the minimum and following day and require the preceding date to return the field-specific validation message. The request traverses the original form service and validator.",
+  "cases": [
+    {
+      "args": [
+        " 1911-10-10 "
+      ],
+      "expected": {
+        "return": "true|null"
+      }
+    },
+    {
+      "args": [
+        " 1911-10-11 "
+      ],
+      "expected": {
+        "return": "true|null"
+      }
+    },
+    {
+      "args": [
+        " 1911-10-9 "
+      ],
+      "expected": {
+        "return": "false|field3 should be after 1911-10-10"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "992df33e8142e47b90b52b9089a71bd22bb0fa1485fdc779cdb593529838dc3e",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "f728a4f1995343460ffb6df027775d61553d7c7e",
+      "sourceSha256": "928c9c139602c9bc9ad0515da40d9223a980d92bb501a49d110a7857d775eae3",
+      "callerClassSha256": "c0cb143359d146b906eb134409d32c53712268f5d99f870d29433049c550e287",
+      "classpath": [
+        "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
+        "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
+        "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
+        "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
+        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+        "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
+        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
+        "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
+        "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
+        "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
+        "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
+        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
+        "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
+        "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+        "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
+        "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
+        "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
+        "48da368bc3b457e6e7e08c71c36bddb208f5fcdd028848c85c4867ec4927abf5",
+        "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
+        "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
+        "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+        "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
+        "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
+        "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
+        "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
+        "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
+        "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
+        "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
+        "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
+        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
+        "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
+        "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
+        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+        "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
+        "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
+        "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
+        "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
+        "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
+        "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
+        "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
+        "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
+        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
+        "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
+        "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
+        "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
+        "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
+        "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
+      ],
+      "dependency": "48da368bc3b457e6e7e08c71c36bddb208f5fcdd028848c85c4867ec4927abf5",
+      "preparation": "original production runtime followed by original Maven test classes, resources and companions",
+      "compiledClasses": 122,
+      "resources": 28,
+      "operandScope": "runtime",
+      "declaredDependencyScope": null,
+      "modulePomSha256": "2becbcf2e69b257ed588eb6a504dcb2d8dc08b83a3032aca56530b1d57e3c123",
+      "frameworkFixtures": {
+        "runtimeCount": 33,
+        "testClassesSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+      },
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true|null"
+            },
+            {
+              "return": "true|null"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Lcom/alibaba/citrus/service/form/impl/ValidatorContextImpl;@1",
+                  "Ljava/lang/String;@2"
+                ],
+                "fields": {
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#dateFormatStr:Ljava/lang/String;": "Ljava/lang/String;@3",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDate:Ljava/util/Date;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDateStr:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDate:Ljava/util/Date;": "Ljava/util/Date;@4",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDateStr:Ljava/lang/String;": "Ljava/lang/String;@5",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#id:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#message:Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;": "Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;@6",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageCode:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageSource:Lorg/springframework/context/MessageSource;": "Lcom/alibaba/citrus/service/resource/support/context/ResourceLoadingXmlApplicationContext;@7",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanInterface:Ljava/lang/Class;": "null",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanName:Ljava/lang/String;": "Ljava/lang/String;@8",
+                  "com.alibaba.citrus.springext.support.BeanSupport#initialized:Z": "Z"
+                },
+                "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "sun.reflect.NativeConstructorAccessorImpl#newInstance0(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": -1,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Lcom/alibaba/citrus/service/form/impl/ValidatorContextImpl;@1",
+                  "Ljava/lang/String;@2"
+                ],
+                "fields": {
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#dateFormatStr:Ljava/lang/String;": "Ljava/lang/String;@3",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDate:Ljava/util/Date;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDateStr:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDate:Ljava/util/Date;": "Ljava/util/Date;@4",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDateStr:Ljava/lang/String;": "Ljava/lang/String;@5",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#id:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#message:Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;": "Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;@6",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageCode:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageSource:Lorg/springframework/context/MessageSource;": "Lcom/alibaba/citrus/service/resource/support/context/ResourceLoadingXmlApplicationContext;@7",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanInterface:Ljava/lang/Class;": "null",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanName:Ljava/lang/String;": "Ljava/lang/String;@8",
+                  "com.alibaba.citrus.springext.support.BeanSupport#initialized:Z": "Z"
+                },
+                "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "sun.reflect.NativeConstructorAccessorImpl#newInstance0(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": -1,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 23,
+              "dispatchedTo": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 23,
+              "dispatchedTo": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "true|null"
+            },
+            {
+              "return": "true|null"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Lcom/alibaba/citrus/service/form/impl/ValidatorContextImpl;@1",
+                  "Ljava/lang/String;@2"
+                ],
+                "fields": {
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#dateFormatStr:Ljava/lang/String;": "Ljava/lang/String;@3",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDate:Ljava/util/Date;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDateStr:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDate:Ljava/util/Date;": "Ljava/util/Date;@4",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDateStr:Ljava/lang/String;": "Ljava/lang/String;@5",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#id:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#message:Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;": "Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;@6",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageCode:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageSource:Lorg/springframework/context/MessageSource;": "Lcom/alibaba/citrus/service/resource/support/context/ResourceLoadingXmlApplicationContext;@7",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanInterface:Ljava/lang/Class;": "null",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanName:Ljava/lang/String;": "Ljava/lang/String;@8",
+                  "com.alibaba.citrus.springext.support.BeanSupport#initialized:Z": "Z"
+                },
+                "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "sun.reflect.NativeConstructorAccessorImpl#newInstance0(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": -1,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Lcom/alibaba/citrus/service/form/impl/ValidatorContextImpl;@1",
+                  "Ljava/lang/String;@2"
+                ],
+                "fields": {
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#dateFormatStr:Ljava/lang/String;": "Ljava/lang/String;@3",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDate:Ljava/util/Date;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDateStr:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDate:Ljava/util/Date;": "Ljava/util/Date;@4",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDateStr:Ljava/lang/String;": "Ljava/lang/String;@5",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#id:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#message:Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;": "Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;@6",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageCode:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageSource:Lorg/springframework/context/MessageSource;": "Lcom/alibaba/citrus/service/resource/support/context/ResourceLoadingXmlApplicationContext;@7",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanInterface:Ljava/lang/Class;": "null",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanName:Ljava/lang/String;": "Ljava/lang/String;@8",
+                  "com.alibaba.citrus.springext.support.BeanSupport#initialized:Z": "Z"
+                },
+                "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "sun.reflect.NativeConstructorAccessorImpl#newInstance0(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": -1,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 23,
+              "dispatchedTo": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 23,
+              "dispatchedTo": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "false|field3 should be after 1911-10-10"
+            },
+            {
+              "return": "false|field3 should be after 1911-10-10"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Lcom/alibaba/citrus/service/form/impl/ValidatorContextImpl;@1",
+                  "Ljava/lang/String;@2"
+                ],
+                "fields": {
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#dateFormatStr:Ljava/lang/String;": "Ljava/lang/String;@3",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDate:Ljava/util/Date;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDateStr:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDate:Ljava/util/Date;": "Ljava/util/Date;@4",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDateStr:Ljava/lang/String;": "Ljava/lang/String;@5",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#id:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#message:Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;": "Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;@6",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageCode:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageSource:Lorg/springframework/context/MessageSource;": "Lcom/alibaba/citrus/service/resource/support/context/ResourceLoadingXmlApplicationContext;@7",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanInterface:Ljava/lang/Class;": "null",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanName:Ljava/lang/String;": "Ljava/lang/String;@8",
+                  "com.alibaba.citrus.springext.support.BeanSupport#initialized:Z": "Z"
+                },
+                "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "sun.reflect.NativeConstructorAccessorImpl#newInstance0(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": -1,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Lcom/alibaba/citrus/service/form/impl/ValidatorContextImpl;@1",
+                  "Ljava/lang/String;@2"
+                ],
+                "fields": {
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#dateFormatStr:Ljava/lang/String;": "Ljava/lang/String;@3",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDate:Ljava/util/Date;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#maxDateStr:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDate:Ljava/util/Date;": "Ljava/util/Date;@4",
+                  "com.alibaba.citrus.service.form.impl.validation.DateValidator#minDateStr:Ljava/lang/String;": "Ljava/lang/String;@5",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#id:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#message:Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;": "Lcom/alibaba/citrus/service/form/support/AbstractValidator$Message;@6",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageCode:Ljava/lang/String;": "null",
+                  "com.alibaba.citrus.service.form.support.AbstractValidator#messageSource:Lorg/springframework/context/MessageSource;": "Lcom/alibaba/citrus/service/resource/support/context/ResourceLoadingXmlApplicationContext;@7",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanInterface:Ljava/lang/Class;": "null",
+                  "com.alibaba.citrus.springext.support.BeanSupport#beanName:Ljava/lang/String;": "Ljava/lang/String;@8",
+                  "com.alibaba.citrus.springext.support.BeanSupport#initialized:Z": "Z"
+                },
+                "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "()V",
+                  "calledBy": "sun.reflect.NativeConstructorAccessorImpl#newInstance0(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;",
+                  "codeIndex": -1,
+                  "frame": {
+                    "arguments": [],
+                    "fields": {},
+                    "this": "Lcom/alibaba/citrus/service/form/impl/validation/DateValidator;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 23,
+              "dispatchedTo": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 23,
+              "dispatchedTo": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.springframework.web.context.request.AbstractRequestAttributes",
+        "org.springframework.web.context.request.RequestAttributes",
+        "org.springframework.web.context.request.RequestContextHolder",
+        "org.springframework.web.context.request.ServletRequestAttributes"
+      ]
+    },
+    "new": {
+      "commit": "0b844ff015dc31a24e3d85e1f66ee50fdc7f39f9",
+      "sourceSha256": "928c9c139602c9bc9ad0515da40d9223a980d92bb501a49d110a7857d775eae3",
+      "callerClassSha256": "c0cb143359d146b906eb134409d32c53712268f5d99f870d29433049c550e287",
+      "classpath": [
+        "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
+        "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
+        "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
+        "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
+        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+        "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
+        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
+        "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
+        "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
+        "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
+        "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
+        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
+        "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
+        "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+        "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
+        "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
+        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+        "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
+        "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
+        "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+        "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
+        "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
+        "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+        "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
+        "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
+        "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
+        "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
+        "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
+        "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
+        "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
+        "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
+        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
+        "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
+        "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
+        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+        "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
+        "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
+        "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
+        "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
+        "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
+        "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
+        "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
+        "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
+        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
+        "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
+        "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
+        "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
+        "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
+        "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
+      ],
+      "dependency": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+      "preparation": "original production runtime followed by original Maven test classes, resources and companions",
+      "compiledClasses": 122,
+      "resources": 28,
+      "operandScope": "runtime",
+      "declaredDependencyScope": null,
+      "modulePomSha256": "2cab6031d5d224cf6f0632d26a80d3adc3034b9abd19267d7962f7ab0006f720",
+      "frameworkFixtures": {
+        "runtimeCount": 33,
+        "testClassesSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+      },
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.NoSuchFieldError",
+              "causes": [
+                "java.lang.NoSuchFieldError"
+              ],
+              "frames": [
+                {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 0,
+                  "sourceLine": 429,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 284,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                  "codeIndex": 140,
+                  "sourceLine": 278,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                  "codeIndex": 343,
+                  "sourceLine": 180,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                  "codeIndex": 12,
+                  "sourceLine": 131,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                  "codeIndex": 5,
+                  "sourceLine": 127,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                  "codeIndex": 428,
+                  "sourceLine": 161,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                  "codeIndex": 4,
+                  "sourceLine": 95,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                  "codeIndex": 6,
+                  "sourceLine": 91,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                }
+              ],
+              "observerCodeIndex": 23,
+              "lastCauseMessage": "STANDARD_NUMBER_TYPES",
+              "throwLocation": {
+                "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                "codeIndex": 41,
+                "sourceLine": 57,
+                "artifact": "upgrade",
+                "classpathIndex": 19,
+                "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+              },
+              "subsequentRethrows": [
+                {
+                  "frames": [
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 0,
+                      "sourceLine": 429,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                      "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                      "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 2,
+                      "sourceLine": 284,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                      "codeIndex": 140,
+                      "sourceLine": 278,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                      "codeIndex": 343,
+                      "sourceLine": 180,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                      "codeIndex": 12,
+                      "sourceLine": 131,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                      "codeIndex": 5,
+                      "sourceLine": 127,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                      "codeIndex": 428,
+                      "sourceLine": 161,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                      "codeIndex": 4,
+                      "sourceLine": 95,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                      "codeIndex": 6,
+                      "sourceLine": 91,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    }
+                  ],
+                  "observerCodeIndex": 23,
+                  "throwLocation": {
+                    "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                    "codeIndex": 0,
+                    "sourceLine": 429,
+                    "artifact": "classpath",
+                    "classpathIndex": 22,
+                    "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                    "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                    "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                  }
+                },
+                {
+                  "frames": [],
+                  "observerCodeIndex": 39
+                }
+              ],
+              "memberInstruction": {
+                "opcode": "getstatic",
+                "owner": "org.springframework.util.NumberUtils",
+                "name": "STANDARD_NUMBER_TYPES",
+                "descriptor": "Ljava/util/Set;",
+                "referenceKind": "field",
+                "location": {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+                "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+              }
+            },
+            {
+              "throws": "java.lang.NoSuchFieldError",
+              "causes": [
+                "java.lang.NoSuchFieldError"
+              ],
+              "frames": [
+                {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 0,
+                  "sourceLine": 429,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 284,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                  "codeIndex": 140,
+                  "sourceLine": 278,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                  "codeIndex": 343,
+                  "sourceLine": 180,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                  "codeIndex": 12,
+                  "sourceLine": 131,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                  "codeIndex": 5,
+                  "sourceLine": 127,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                  "codeIndex": 428,
+                  "sourceLine": 161,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                  "codeIndex": 4,
+                  "sourceLine": 95,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                  "codeIndex": 6,
+                  "sourceLine": 91,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                }
+              ],
+              "observerCodeIndex": 23,
+              "lastCauseMessage": "STANDARD_NUMBER_TYPES",
+              "throwLocation": {
+                "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                "codeIndex": 41,
+                "sourceLine": 57,
+                "artifact": "upgrade",
+                "classpathIndex": 19,
+                "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+              },
+              "subsequentRethrows": [
+                {
+                  "frames": [
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 0,
+                      "sourceLine": 429,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                      "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                      "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 2,
+                      "sourceLine": 284,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                      "codeIndex": 140,
+                      "sourceLine": 278,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                      "codeIndex": 343,
+                      "sourceLine": 180,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                      "codeIndex": 12,
+                      "sourceLine": 131,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                      "codeIndex": 5,
+                      "sourceLine": 127,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                      "codeIndex": 428,
+                      "sourceLine": 161,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                      "codeIndex": 4,
+                      "sourceLine": 95,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                      "codeIndex": 6,
+                      "sourceLine": 91,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    }
+                  ],
+                  "observerCodeIndex": 23,
+                  "throwLocation": {
+                    "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                    "codeIndex": 0,
+                    "sourceLine": 429,
+                    "artifact": "classpath",
+                    "classpathIndex": 22,
+                    "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                    "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                    "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                  }
+                },
+                {
+                  "frames": [],
+                  "observerCodeIndex": 39
+                }
+              ],
+              "memberInstruction": {
+                "opcode": "getstatic",
+                "owner": "org.springframework.util.NumberUtils",
+                "name": "STANDARD_NUMBER_TYPES",
+                "descriptor": "Ljava/util/Set;",
+                "referenceKind": "field",
+                "location": {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+                "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.NoSuchFieldError",
+              "causes": [
+                "java.lang.NoSuchFieldError"
+              ],
+              "frames": [
+                {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 0,
+                  "sourceLine": 429,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 284,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                  "codeIndex": 140,
+                  "sourceLine": 278,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                  "codeIndex": 343,
+                  "sourceLine": 180,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                  "codeIndex": 12,
+                  "sourceLine": 131,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                  "codeIndex": 5,
+                  "sourceLine": 127,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                  "codeIndex": 428,
+                  "sourceLine": 161,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                  "codeIndex": 4,
+                  "sourceLine": 95,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                  "codeIndex": 6,
+                  "sourceLine": 91,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                }
+              ],
+              "observerCodeIndex": 23,
+              "lastCauseMessage": "STANDARD_NUMBER_TYPES",
+              "throwLocation": {
+                "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                "codeIndex": 41,
+                "sourceLine": 57,
+                "artifact": "upgrade",
+                "classpathIndex": 19,
+                "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+              },
+              "subsequentRethrows": [
+                {
+                  "frames": [
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 0,
+                      "sourceLine": 429,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                      "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                      "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 2,
+                      "sourceLine": 284,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                      "codeIndex": 140,
+                      "sourceLine": 278,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                      "codeIndex": 343,
+                      "sourceLine": 180,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                      "codeIndex": 12,
+                      "sourceLine": 131,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                      "codeIndex": 5,
+                      "sourceLine": 127,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                      "codeIndex": 428,
+                      "sourceLine": 161,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                      "codeIndex": 4,
+                      "sourceLine": 95,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                      "codeIndex": 6,
+                      "sourceLine": 91,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    }
+                  ],
+                  "observerCodeIndex": 23,
+                  "throwLocation": {
+                    "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                    "codeIndex": 0,
+                    "sourceLine": 429,
+                    "artifact": "classpath",
+                    "classpathIndex": 22,
+                    "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                    "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                    "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                  }
+                },
+                {
+                  "frames": [],
+                  "observerCodeIndex": 39
+                }
+              ],
+              "memberInstruction": {
+                "opcode": "getstatic",
+                "owner": "org.springframework.util.NumberUtils",
+                "name": "STANDARD_NUMBER_TYPES",
+                "descriptor": "Ljava/util/Set;",
+                "referenceKind": "field",
+                "location": {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+                "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+              }
+            },
+            {
+              "throws": "java.lang.NoSuchFieldError",
+              "causes": [
+                "java.lang.NoSuchFieldError"
+              ],
+              "frames": [
+                {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 0,
+                  "sourceLine": 429,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 284,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                  "codeIndex": 140,
+                  "sourceLine": 278,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                  "codeIndex": 343,
+                  "sourceLine": 180,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                  "codeIndex": 12,
+                  "sourceLine": 131,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                  "codeIndex": 5,
+                  "sourceLine": 127,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                  "codeIndex": 428,
+                  "sourceLine": 161,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                  "codeIndex": 4,
+                  "sourceLine": 95,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                  "codeIndex": 6,
+                  "sourceLine": 91,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                }
+              ],
+              "observerCodeIndex": 23,
+              "lastCauseMessage": "STANDARD_NUMBER_TYPES",
+              "throwLocation": {
+                "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                "codeIndex": 41,
+                "sourceLine": 57,
+                "artifact": "upgrade",
+                "classpathIndex": 19,
+                "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+              },
+              "subsequentRethrows": [
+                {
+                  "frames": [
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 0,
+                      "sourceLine": 429,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                      "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                      "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 2,
+                      "sourceLine": 284,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                      "codeIndex": 140,
+                      "sourceLine": 278,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                      "codeIndex": 343,
+                      "sourceLine": 180,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                      "codeIndex": 12,
+                      "sourceLine": 131,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                      "codeIndex": 5,
+                      "sourceLine": 127,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                      "codeIndex": 428,
+                      "sourceLine": 161,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                      "codeIndex": 4,
+                      "sourceLine": 95,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                      "codeIndex": 6,
+                      "sourceLine": 91,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    }
+                  ],
+                  "observerCodeIndex": 23,
+                  "throwLocation": {
+                    "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                    "codeIndex": 0,
+                    "sourceLine": 429,
+                    "artifact": "classpath",
+                    "classpathIndex": 22,
+                    "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                    "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                    "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                  }
+                },
+                {
+                  "frames": [],
+                  "observerCodeIndex": 39
+                }
+              ],
+              "memberInstruction": {
+                "opcode": "getstatic",
+                "owner": "org.springframework.util.NumberUtils",
+                "name": "STANDARD_NUMBER_TYPES",
+                "descriptor": "Ljava/util/Set;",
+                "referenceKind": "field",
+                "location": {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+                "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true,
+          "repeatableBeforeEntry": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 0,
+          "observations": [],
+          "beforeEntry": [
+            {
+              "throws": "java.lang.NoSuchFieldError",
+              "causes": [
+                "java.lang.NoSuchFieldError"
+              ],
+              "frames": [
+                {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 0,
+                  "sourceLine": 429,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 284,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                  "codeIndex": 140,
+                  "sourceLine": 278,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                  "codeIndex": 343,
+                  "sourceLine": 180,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                  "codeIndex": 12,
+                  "sourceLine": 131,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                  "codeIndex": 5,
+                  "sourceLine": 127,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                  "codeIndex": 428,
+                  "sourceLine": 161,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                  "codeIndex": 4,
+                  "sourceLine": 95,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                  "codeIndex": 6,
+                  "sourceLine": 91,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                }
+              ],
+              "observerCodeIndex": 23,
+              "lastCauseMessage": "STANDARD_NUMBER_TYPES",
+              "throwLocation": {
+                "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                "codeIndex": 41,
+                "sourceLine": 57,
+                "artifact": "upgrade",
+                "classpathIndex": 19,
+                "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+              },
+              "subsequentRethrows": [
+                {
+                  "frames": [
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 0,
+                      "sourceLine": 429,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                      "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                      "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 2,
+                      "sourceLine": 284,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                      "codeIndex": 140,
+                      "sourceLine": 278,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                      "codeIndex": 343,
+                      "sourceLine": 180,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                      "codeIndex": 12,
+                      "sourceLine": 131,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                      "codeIndex": 5,
+                      "sourceLine": 127,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                      "codeIndex": 428,
+                      "sourceLine": 161,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                      "codeIndex": 4,
+                      "sourceLine": 95,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                      "codeIndex": 6,
+                      "sourceLine": 91,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    }
+                  ],
+                  "observerCodeIndex": 23,
+                  "throwLocation": {
+                    "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                    "codeIndex": 0,
+                    "sourceLine": 429,
+                    "artifact": "classpath",
+                    "classpathIndex": 22,
+                    "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                    "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                    "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                  }
+                },
+                {
+                  "frames": [],
+                  "observerCodeIndex": 39
+                }
+              ],
+              "memberInstruction": {
+                "opcode": "getstatic",
+                "owner": "org.springframework.util.NumberUtils",
+                "name": "STANDARD_NUMBER_TYPES",
+                "descriptor": "Ljava/util/Set;",
+                "referenceKind": "field",
+                "location": {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+                "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+              }
+            },
+            {
+              "throws": "java.lang.NoSuchFieldError",
+              "causes": [
+                "java.lang.NoSuchFieldError"
+              ],
+              "frames": [
+                {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 0,
+                  "sourceLine": 429,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                  "codeIndex": 2,
+                  "sourceLine": 284,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                  "codeIndex": 140,
+                  "sourceLine": 278,
+                  "artifact": "classpath",
+                  "classpathIndex": 22,
+                  "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                  "codeIndex": 343,
+                  "sourceLine": 180,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                  "codeIndex": 12,
+                  "sourceLine": 131,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                  "codeIndex": 5,
+                  "sourceLine": 127,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                  "codeIndex": 428,
+                  "sourceLine": 161,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                  "codeIndex": 4,
+                  "sourceLine": 95,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                },
+                {
+                  "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                  "codeIndex": 6,
+                  "sourceLine": 91,
+                  "artifact": "classpath",
+                  "classpathIndex": 33,
+                  "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                }
+              ],
+              "observerCodeIndex": 23,
+              "lastCauseMessage": "STANDARD_NUMBER_TYPES",
+              "throwLocation": {
+                "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                "codeIndex": 41,
+                "sourceLine": 57,
+                "artifact": "upgrade",
+                "classpathIndex": 19,
+                "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+              },
+              "subsequentRethrows": [
+                {
+                  "frames": [
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 0,
+                      "sourceLine": 429,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                      "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                      "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#bind(Ljavax/servlet/http/HttpServletRequest;)V",
+                      "codeIndex": 2,
+                      "sourceLine": 284,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#getRequestContext(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Lcom/alibaba/citrus/service/requestcontext/RequestContext;",
+                      "codeIndex": 140,
+                      "sourceLine": 278,
+                      "artifact": "classpath",
+                      "classpathIndex": 22,
+                      "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokeServlet(Lorg/springframework/context/ApplicationContext;Lcom/meterware/httpunit/WebRequest;[[Ljava/lang/Object;)V",
+                      "codeIndex": 343,
+                      "sourceLine": 180,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost(Lorg/springframework/context/ApplicationContext;[[Ljava/lang/Object;)V",
+                      "codeIndex": 12,
+                      "sourceLine": 131,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.AbstractFormServiceTests#invokePost([[Ljava/lang/Object;)V",
+                      "codeIndex": 5,
+                      "sourceLine": 127,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([[Ljava/lang/Object;Z[Ljava/lang/Object;)V",
+                      "codeIndex": 428,
+                      "sourceLine": 161,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#requestWithExtra([[Ljava/lang/Object;[Ljava/lang/Object;)V",
+                      "codeIndex": 4,
+                      "sourceLine": 95,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    },
+                    {
+                      "entry": "com.alibaba.citrus.service.form.impl.validation.AbstractValidatorTests#request([Ljava/lang/Object;)V",
+                      "codeIndex": 6,
+                      "sourceLine": 91,
+                      "artifact": "classpath",
+                      "classpathIndex": 33,
+                      "jarSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
+                    }
+                  ],
+                  "observerCodeIndex": 23,
+                  "throwLocation": {
+                    "entry": "com.alibaba.citrus.service.requestcontext.impl.RequestContextChainingServiceImpl#setupSpringWebEnvironment(Ljavax/servlet/http/HttpServletRequest;)V",
+                    "codeIndex": 0,
+                    "sourceLine": 429,
+                    "artifact": "classpath",
+                    "classpathIndex": 22,
+                    "jarSha256": "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+                    "methodCodeSha256": "56fd22347f0a71c76ad3fb43fa03aa52172aa9df5f3dbbf2ac81508bec426040",
+                    "constantPoolSha256": "27d8d5dd13636a526653c206aa4a4a3cb155257956f470f7459be25b1bc046b6"
+                  }
+                },
+                {
+                  "frames": [],
+                  "observerCodeIndex": 39
+                }
+              ],
+              "memberInstruction": {
+                "opcode": "getstatic",
+                "owner": "org.springframework.util.NumberUtils",
+                "name": "STANDARD_NUMBER_TYPES",
+                "descriptor": "Ljava/util/Set;",
+                "referenceKind": "field",
+                "location": {
+                  "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+                  "codeIndex": 41,
+                  "sourceLine": 57,
+                  "artifact": "upgrade",
+                  "classpathIndex": 19,
+                  "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+                  "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+                  "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+                },
+                "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+                "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+              }
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true,
+          "repeatableBeforeEntry": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.springframework.web.context.request.AbstractRequestAttributes",
+        "org.springframework.web.context.request.RequestAttributes",
+        "org.springframework.web.context.request.RequestContextHolder",
+        "org.springframework.web.context.request.ServletRequestAttributes"
+      ]
+    }
+  },
+  "status": "open",
+  "originalFixtures": [
+    {
+      "kind": "resource",
+      "file": "src/test/config/services-form-validators.xml",
+      "source": "service/form/src/test/config/services-form-validators.xml",
+      "sha256": "f95702217fa96f95316b02717ca553b6d7eaa9119c1f076a6427dc3b6c3a7a70"
+    }
+  ],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;",
+    "codeIndices": [
+      23
+    ]
+  },
+  "workingDirectory": "fixtures",
+  "originalInvocation": "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(Lcom/alibaba/citrus/service/form/Validator$Context;Ljava/lang/String;)Z",
+  "invocationVia": "UpgradeProbe$FormRequest#submit(Ljava/lang/String;)Ljava/lang/String;",
+  "probeClasses": {
+    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe$FormRequest": "3637c34118651d678e8f1900aad4009bd7d436cdb546d0eba454b1853305e728",
+    "UpgradeProbe": "ba78a26bf4717f5ef0613ad18d79398ea9950926b657f79642a6d11c39674881",
+    "UpgradeTrace": "bd0cf2e9519310ef6edfbcded4927ae58f877b0e508794f6ca46e27da1348fa0"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 3",
+    "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+    "adapterClassSha256": "e9302203066848c58bd1eb6e132f881f987b1eab460d34bf88d530f9defd5e4d",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "f728a4f1995343460ffb6df027775d61553d7c7e",
+        "callerClassSha256": "c0cb143359d146b906eb134409d32c53712268f5d99f870d29433049c550e287",
+        "orderedClasspathSha256": [
+          "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
+          "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
+          "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
+          "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
+          "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+          "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
+          "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
+          "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
+          "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
+          "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
+          "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
+          "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
+          "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
+          "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+          "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
+          "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
+          "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+          "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
+          "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
+          "48da368bc3b457e6e7e08c71c36bddb208f5fcdd028848c85c4867ec4927abf5",
+          "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
+          "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
+          "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+          "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
+          "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
+          "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
+          "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
+          "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
+          "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
+          "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
+          "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
+          "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
+          "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
+          "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
+          "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+          "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
+          "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
+          "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
+          "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
+          "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
+          "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
+          "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
+          "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
+          "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
+          "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
+          "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
+          "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
+          "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
+          "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>()V (com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() at UpgradeProbe.observe:12). With --gaps assume it assumes instead that com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 3",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "23e0c47a1bb5d089c9030fd4df727b4250e4f5750c97a01c09ef10bd93a46f2d",
+        "seconds": 0.114
+      },
+      "new": {
+        "commit": "0b844ff015dc31a24e3d85e1f66ee50fdc7f39f9",
+        "callerClassSha256": "c0cb143359d146b906eb134409d32c53712268f5d99f870d29433049c550e287",
+        "orderedClasspathSha256": [
+          "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
+          "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
+          "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
+          "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
+          "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
+          "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
+          "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
+          "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
+          "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
+          "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
+          "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
+          "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
+          "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
+          "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+          "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
+          "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
+          "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
+          "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
+          "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
+          "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+          "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
+          "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
+          "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
+          "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
+          "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
+          "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
+          "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
+          "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
+          "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
+          "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
+          "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
+          "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
+          "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
+          "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
+          "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+          "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
+          "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
+          "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
+          "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
+          "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
+          "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
+          "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
+          "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
+          "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
+          "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
+          "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
+          "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
+          "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
+          "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>()V (com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() at UpgradeProbe.observe:12). With --gaps assume it assumes instead that com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 3",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "1a228fd06cde61968db3683c77780c87a55a8d2efa6dcaec3d4e1bedbe91f7d7",
+        "seconds": 0.122
+      }
+    }
+  },
+  "stoppedAt": {
+    "side": "new",
+    "input": 0,
+    "repetition": 1,
+    "exception": "java.lang.NoSuchFieldError: STANDARD_NUMBER_TYPES at org.springframework.web.context.request.ServletRequestAttributes.<clinit>(ServletRequestAttributes.java:57)"
+  },
+  "reason": "new input 0: the original caller method was never entered. java.lang.NoSuchFieldError: STANDARD_NUMBER_TYPES at org.springframework.web.context.request.ServletRequestAttributes.<clinit>(ServletRequestAttributes.java:57)",
+  "beforeEntryComparison": [
+    {
+      "input": 0,
+      "status": "reproduced earlier failure",
+      "before": {
+        "return": "true|null"
+      },
+      "after": {
+        "throws": "java.lang.NoSuchFieldError"
+      },
+      "memberLinkage": {
+        "reason": "the member at the throwing instruction is absent",
+        "instruction": {
+          "opcode": "getstatic",
+          "owner": "org.springframework.util.NumberUtils",
+          "name": "STANDARD_NUMBER_TYPES",
+          "descriptor": "Ljava/util/Set;",
+          "referenceKind": "field",
+          "location": {
+            "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+            "codeIndex": 41,
+            "sourceLine": 57,
+            "artifact": "upgrade",
+            "classpathIndex": 19,
+            "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+            "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+            "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+          },
+          "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+          "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+        },
+        "sides": {
+          "old": {
+            "lookup": "missing",
+            "ownerKind": "class",
+            "classpathIndex": 13,
+            "jarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+            "executingClassSha256": "5e6b089c8537906f890c2241627930092850fe9101e060c183be260a38c8e390",
+            "referenceKinds": []
+          },
+          "new": {
+            "lookup": "missing",
+            "ownerKind": "class",
+            "classpathIndex": 13,
+            "jarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+            "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+            "referenceKinds": [
+              "field"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "input": 1,
+      "status": "reproduced earlier failure",
+      "before": {
+        "return": "true|null"
+      },
+      "after": {
+        "throws": "java.lang.NoSuchFieldError"
+      },
+      "memberLinkage": {
+        "reason": "the member at the throwing instruction is absent",
+        "instruction": {
+          "opcode": "getstatic",
+          "owner": "org.springframework.util.NumberUtils",
+          "name": "STANDARD_NUMBER_TYPES",
+          "descriptor": "Ljava/util/Set;",
+          "referenceKind": "field",
+          "location": {
+            "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+            "codeIndex": 41,
+            "sourceLine": 57,
+            "artifact": "upgrade",
+            "classpathIndex": 19,
+            "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+            "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+            "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+          },
+          "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+          "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+        },
+        "sides": {
+          "old": {
+            "lookup": "missing",
+            "ownerKind": "class",
+            "classpathIndex": 13,
+            "jarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+            "executingClassSha256": "5e6b089c8537906f890c2241627930092850fe9101e060c183be260a38c8e390",
+            "referenceKinds": []
+          },
+          "new": {
+            "lookup": "missing",
+            "ownerKind": "class",
+            "classpathIndex": 13,
+            "jarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+            "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+            "referenceKinds": [
+              "field"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "input": 2,
+      "status": "reproduced earlier failure",
+      "before": {
+        "return": "false|field3 should be after 1911-10-10"
+      },
+      "after": {
+        "throws": "java.lang.NoSuchFieldError"
+      },
+      "memberLinkage": {
+        "reason": "the member at the throwing instruction is absent",
+        "instruction": {
+          "opcode": "getstatic",
+          "owner": "org.springframework.util.NumberUtils",
+          "name": "STANDARD_NUMBER_TYPES",
+          "descriptor": "Ljava/util/Set;",
+          "referenceKind": "field",
+          "location": {
+            "entry": "org.springframework.web.context.request.ServletRequestAttributes#<clinit>()V",
+            "codeIndex": 41,
+            "sourceLine": 57,
+            "artifact": "upgrade",
+            "classpathIndex": 19,
+            "jarSha256": "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
+            "methodCodeSha256": "c2e9cde20eeba3e00aa11e3c6344f725090494c0c72f5f445dd7001dea3cfcf1",
+            "constantPoolSha256": "b8c813ce07b4c3677a9179ec0baa7c8719d2da3322155b8f15d3cc7af940b930"
+          },
+          "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+          "ownerJarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226"
+        },
+        "sides": {
+          "old": {
+            "lookup": "missing",
+            "ownerKind": "class",
+            "classpathIndex": 13,
+            "jarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+            "executingClassSha256": "5e6b089c8537906f890c2241627930092850fe9101e060c183be260a38c8e390",
+            "referenceKinds": []
+          },
+          "new": {
+            "lookup": "missing",
+            "ownerKind": "class",
+            "classpathIndex": 13,
+            "jarSha256": "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
+            "executingClassSha256": "9325810aa0e88757828cfd14d71798bd23be73f72f9455a6e1bbd81103504753",
+            "referenceKinds": [
+              "field"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "elapsedSeconds": 38.686,
+  "specSha256": "9b321023a1fc334b1e58af029af41482b7d5d68ae80565d5c60f886ad9c3cac3"
+}

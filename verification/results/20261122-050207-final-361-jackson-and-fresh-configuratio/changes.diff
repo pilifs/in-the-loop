@@ -1,0 +1,1726 @@
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/fix/jackson.json
+@@ -0,0 +1,97 @@
++{
++  "adapterSha256": "431b579c5505811496a3bef557f8084517ba495715ecdcf18f2ff388fde0ef25",
++  "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++  "claims": {
++    "512-firstFactory": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": null,
++      "guard": null,
++      "libraryPremises": [],
++      "matchedExpectation": true,
++      "raw": "unwind-512-firstFactory.native.json",
++      "seconds": 0.046,
++      "sha256": "c4bc61cb5e2432e49c0730141da30bd01b734770b18e01fcaeb34949ff734f36",
++      "target": "foundation.BytesSchema#firstFactory",
++      "unwind": 512,
++      "verdict": "verified"
++    },
++    "512-mapper": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++      "guard": null,
++      "libraryPremises": [
++        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++      ],
++      "matchedExpectation": true,
++      "raw": "unwind-512-mapper.native.json",
++      "seconds": 0.049,
++      "sha256": "72a132f9a34de4e73bd620f62c24479e051b80ac3cc3d3f52cf559c8bfa24ab9",
++      "target": "foundation.BytesSchema#mapper",
++      "unwind": 512,
++      "verdict": "unverifiable"
++    },
++    "512-typed": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++      "guard": null,
++      "libraryPremises": [
++        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++      ],
++      "matchedExpectation": true,
++      "raw": "unwind-512-typed.native.json",
++      "seconds": 0.048,
++      "sha256": "a6063884b75cb16cae98b41668afa61bd626829f101d95563dd9a1e890bdc505",
++      "target": "foundation.BytesSchema#typed",
++      "unwind": 512,
++      "verdict": "unverifiable"
++    },
++    "64-firstFactory": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "outside the fragment: arraycopy of summarized array cells",
++      "guard": null,
++      "libraryPremises": [],
++      "matchedExpectation": true,
++      "raw": "unwind-64-firstFactory.native.json",
++      "seconds": 0.052,
++      "sha256": "94a53c3e7413c1fb0154c84443daa25c4860a909d817a43f5bc09e6cd1578063",
++      "target": "foundation.BytesSchema#firstFactory",
++      "unwind": 64,
++      "verdict": "unverifiable"
++    },
++    "64-typed": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "outside the fragment: arraycopy of summarized array cells",
++      "guard": null,
++      "libraryPremises": [],
++      "matchedExpectation": true,
++      "raw": "unwind-64-typed.native.json",
++      "seconds": 0.05,
++      "sha256": "7b67da04fd9371ddf44aac0990a14074aea5bd9458dbc941d910b8b80bcf5036",
++      "target": "foundation.BytesSchema#typed",
++      "unwind": 64,
++      "verdict": "unverifiable"
++    }
++  },
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "physical": [
++    "firstFactory",
++    "mapper",
++    "typed"
++  ],
++  "source": {
++    "build": "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-fix.json",
++    "buildSha256": "9cefb3c81c5a7a869a15579a16af485e3b02adb616450847fcffc628e0a93128",
++    "orderedJars": [
++      "e4ca6c32cc7a32b0f8bcdf6190feccea129ff11bb4bf955826cf8376d3444cbd",
++      "69e7695b1e40834fa1242fc328a4010607911ced3706ab79abc769d451197513",
++      "8e6c566c67fc61a96c5dfc4a71d430f2565765778ec9a6ef216c5460a9911b60",
++      "77a0846219774a8269bc1b38cc00294908d34e77f8a9da34d97673982f75853d",
++      "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++      "7eea31c0a25d35cd092d8aec08bed04f22152409b58d63d43839074a9ab7ab97",
++      "8c7964b36fe3f0cbe644b04fcbff84e491ce81917db2f5bfa0cba8e9548aff5d",
++      "8370149f5bd16a83d27240a8ce5a64204f3c70647ed180801dcf95f7be27ef87",
++      "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++    ],
++    "revision": "ce9032a4123e262341a3e746e6eb2b8476eae1ae"
++  }
++}
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/fix/unwind-512-firstFactory.native.json
+@@ -0,0 +1,138 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "foundation.BytesSchema#firstFactory",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 512 times with unwinding assertions",
++    "problem": null,
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-512-firstFactory/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ foundation.BytesSchema#firstFactory satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 512 times with unwinding assertions)\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-512-firstFactory",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.02559464,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 443,
++        "clauses": 1069,
++        "seconds": 0.018662971,
++        "loading_seconds": 0.00205902,
++        "decoding_seconds": 0.001042454,
++        "encoding_seconds": 0.002895443,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.019,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.001,
++            "symbolic": 0.013,
++            "encoding": 0.003,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 443,
++            "clauses": 1069
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.042,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.019,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.022
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/fix/unwind-512-mapper.native.json
+@@ -0,0 +1,160 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#mapper",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-512-mapper/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#mapper cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 12
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#mapper cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-512-mapper",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.026969633,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 443,
++        "clauses": 1069,
++        "seconds": 0.0199614,
++        "loading_seconds": 0.00421453,
++        "decoding_seconds": 0.000994978,
++        "encoding_seconds": 0.00294059,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.lang.Class.getDeclaredConstructor(java.lang.Class[])",
++          "sites": [
++            "com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571"
++          ],
++          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.02,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.012,
++            "encoding": 0.003,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 443,
++            "clauses": 1069
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.046,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.02,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.024
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/fix/unwind-512-typed.native.json
+@@ -0,0 +1,160 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#typed",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-512-typed/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#typed cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 20
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#typed cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-512-typed",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.027961676,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 443,
++        "clauses": 1069,
++        "seconds": 0.020790257,
++        "loading_seconds": 0.004664126,
++        "decoding_seconds": 0.001054442,
++        "encoding_seconds": 0.002136629,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.lang.Class.getDeclaredConstructor(java.lang.Class[])",
++          "sites": [
++            "com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571"
++          ],
++          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.021,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.013,
++            "encoding": 0.002,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 443,
++            "clauses": 1069
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.043,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.021,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.021
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/fix/unwind-64-firstFactory.native.json
+@@ -0,0 +1,145 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#firstFactory",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-64-firstFactory/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#firstFactory cannot be verified: outside the fragment: arraycopy of summarized array cells",
++        "uri": null,
++        "line": 9
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#firstFactory cannot be verified: outside the fragment: arraycopy of summarized array cells\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-64-firstFactory",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.028097742,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 25,
++        "merges": 0,
++        "solver_calls": 49,
++        "solving_seconds": 0.001676366,
++        "gates_evaluated": 22003,
++        "evaluating_seconds": 0.000457739,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 4561,
++        "clauses": 8932,
++        "seconds": 0.020647028,
++        "loading_seconds": 0.001522718,
++        "decoding_seconds": 0.000905367,
++        "encoding_seconds": 0.003279423,
++        "witness_seconds": 0.0,
++        "loops": [
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 103",
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 188",
++          "java.util.Arrays.fill at pc 5"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.021,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.001,
++            "symbolic": 0.013,
++            "encoding": 0.003,
++            "solving": 0.002,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 4561,
++            "clauses": 8932
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.047,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.021,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.025
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/fix/unwind-64-typed.native.json
+@@ -0,0 +1,145 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#typed",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-64-typed/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#typed cannot be verified: outside the fragment: arraycopy of summarized array cells",
++        "uri": null,
++        "line": 20
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#typed cannot be verified: outside the fragment: arraycopy of summarized array cells\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-mht9m6gb/unwind-64-typed",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.028810671,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 25,
++        "merges": 0,
++        "solver_calls": 49,
++        "solving_seconds": 0.001415205,
++        "gates_evaluated": 22003,
++        "evaluating_seconds": 0.000375109,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 4561,
++        "clauses": 8932,
++        "seconds": 0.021433445,
++        "loading_seconds": 0.002159076,
++        "decoding_seconds": 0.000977578,
++        "encoding_seconds": 0.002815648,
++        "witness_seconds": 0.0,
++        "loops": [
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 103",
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 188",
++          "java.util.Arrays.fill at pc 5"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.021,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.001,
++            "symbolic": 0.014,
++            "encoding": 0.003,
++            "solving": 0.001,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 4561,
++            "clauses": 8932
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.046,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.021,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.023
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/parent/jackson.json
+@@ -0,0 +1,97 @@
++{
++  "adapterSha256": "431b579c5505811496a3bef557f8084517ba495715ecdcf18f2ff388fde0ef25",
++  "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++  "claims": {
++    "512-firstFactory": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": null,
++      "guard": null,
++      "libraryPremises": [],
++      "matchedExpectation": true,
++      "raw": "unwind-512-firstFactory.native.json",
++      "seconds": 0.037,
++      "sha256": "241abc066db3251113d72da0aeeeff0097a9486a1fb47dab72c3e5e8c977b559",
++      "target": "foundation.BytesSchema#firstFactory",
++      "unwind": 512,
++      "verdict": "verified"
++    },
++    "512-mapper": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++      "guard": null,
++      "libraryPremises": [
++        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++      ],
++      "matchedExpectation": true,
++      "raw": "unwind-512-mapper.native.json",
++      "seconds": 0.04,
++      "sha256": "d301131e94177a66a82aafe3bc6d6e50e6fc919ec1cd072bc272704eda299368",
++      "target": "foundation.BytesSchema#mapper",
++      "unwind": 512,
++      "verdict": "unverifiable"
++    },
++    "512-typed": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++      "guard": null,
++      "libraryPremises": [
++        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++      ],
++      "matchedExpectation": true,
++      "raw": "unwind-512-typed.native.json",
++      "seconds": 0.052,
++      "sha256": "e52335f03e1f0cb3ca240e2701f32ab1346a5732c2e8c0caebb0bb532bb1a0a1",
++      "target": "foundation.BytesSchema#typed",
++      "unwind": 512,
++      "verdict": "unverifiable"
++    },
++    "64-firstFactory": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "outside the fragment: arraycopy of summarized array cells",
++      "guard": null,
++      "libraryPremises": [],
++      "matchedExpectation": true,
++      "raw": "unwind-64-firstFactory.native.json",
++      "seconds": 0.04,
++      "sha256": "7944845ff345fa3fca4d270d53031d952efa7c850d9b83712917bc3a2bf2c061",
++      "target": "foundation.BytesSchema#firstFactory",
++      "unwind": 64,
++      "verdict": "unverifiable"
++    },
++    "64-typed": {
++      "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
++      "firstUnknown": "outside the fragment: arraycopy of summarized array cells",
++      "guard": null,
++      "libraryPremises": [],
++      "matchedExpectation": true,
++      "raw": "unwind-64-typed.native.json",
++      "seconds": 0.08,
++      "sha256": "4af24fd05154131efabafd9e9db6e190830173e0f49cf00d47bc59320914eb04",
++      "target": "foundation.BytesSchema#typed",
++      "unwind": 64,
++      "verdict": "unverifiable"
++    }
++  },
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "physical": [
++    "firstFactory",
++    "mapper",
++    "typed"
++  ],
++  "source": {
++    "build": "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-parent.json",
++    "buildSha256": "4af73543c38ee91923db1298bd2dc9dadccd7741c8a4ab895b5b361afb8b6cf5",
++    "orderedJars": [
++      "3a2263be9da55ab3c5219465b71411f83f4480e2ec5d076d0b43943043fc8280",
++      "69e7695b1e40834fa1242fc328a4010607911ced3706ab79abc769d451197513",
++      "8e6c566c67fc61a96c5dfc4a71d430f2565765778ec9a6ef216c5460a9911b60",
++      "77a0846219774a8269bc1b38cc00294908d34e77f8a9da34d97673982f75853d",
++      "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++      "7eea31c0a25d35cd092d8aec08bed04f22152409b58d63d43839074a9ab7ab97",
++      "8c7964b36fe3f0cbe644b04fcbff84e491ce81917db2f5bfa0cba8e9548aff5d",
++      "8370149f5bd16a83d27240a8ce5a64204f3c70647ed180801dcf95f7be27ef87",
++      "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++    ],
++    "revision": "afbda0798a4fe662bd5379cf535da79800c4e840"
++  }
++}
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/parent/unwind-512-firstFactory.native.json
+@@ -0,0 +1,138 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "foundation.BytesSchema#firstFactory",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 512 times with unwinding assertions",
++    "problem": null,
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-firstFactory/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ foundation.BytesSchema#firstFactory satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 512 times with unwinding assertions)\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-firstFactory",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.019196965,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 443,
++        "clauses": 1069,
++        "seconds": 0.013873636,
++        "loading_seconds": 0.001740328,
++        "decoding_seconds": 0.000853495,
++        "encoding_seconds": 0.002015853,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.014,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.001,
++            "symbolic": 0.009,
++            "encoding": 0.002,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 443,
++            "clauses": 1069
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.033,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.014,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.018
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/parent/unwind-512-mapper.native.json
+@@ -0,0 +1,160 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#mapper",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-mapper/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#mapper cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 12
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#mapper cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-mapper",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.023125052,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 443,
++        "clauses": 1069,
++        "seconds": 0.017168084,
++        "loading_seconds": 0.003702695,
++        "decoding_seconds": 0.000922177,
++        "encoding_seconds": 0.002056863,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.lang.Class.getDeclaredConstructor(java.lang.Class[])",
++          "sites": [
++            "com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571"
++          ],
++          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.017,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.01,
++            "encoding": 0.002,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 443,
++            "clauses": 1069
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.036,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.017,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.018
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/parent/unwind-512-typed.native.json
+@@ -0,0 +1,160 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#typed",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-typed/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#typed cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 20
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#typed cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13 (java.lang.Class.getDeclaredConstructor(java.lang.Class[]) at com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571). With --gaps assume it assumes instead that java.lang.Class.getDeclaredConstructor(java.lang.Class[]) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-512-typed",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.031394292,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 443,
++        "clauses": 1069,
++        "seconds": 0.023570128,
++        "loading_seconds": 0.005439044,
++        "decoding_seconds": 0.001096796,
++        "encoding_seconds": 0.003049669,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.lang.Class.getDeclaredConstructor(java.lang.Class[])",
++          "sites": [
++            "com.fasterxml.jackson.databind.util.ClassUtil.findConstructor:571"
++          ],
++          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.024,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.014,
++            "encoding": 0.003,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 443,
++            "clauses": 1069
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.048,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.024,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.023
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/parent/unwind-64-firstFactory.native.json
+@@ -0,0 +1,145 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#firstFactory",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-64-firstFactory/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#firstFactory cannot be verified: outside the fragment: arraycopy of summarized array cells",
++        "uri": null,
++        "line": 9
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#firstFactory cannot be verified: outside the fragment: arraycopy of summarized array cells\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-64-firstFactory",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.022062857,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 25,
++        "merges": 0,
++        "solver_calls": 49,
++        "solving_seconds": 0.001233184,
++        "gates_evaluated": 22003,
++        "evaluating_seconds": 0.000355898,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 4561,
++        "clauses": 8932,
++        "seconds": 0.015608675,
++        "loading_seconds": 0.001153338,
++        "decoding_seconds": 0.00078121,
++        "encoding_seconds": 0.002409637,
++        "witness_seconds": 0.0,
++        "loops": [
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 103",
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 188",
++          "java.util.Arrays.fill at pc 5"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.016,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.001,
++            "lowering": 0.001,
++            "symbolic": 0.01,
++            "encoding": 0.002,
++            "solving": 0.001,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 4561,
++            "clauses": 8932
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.036,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.016,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.019
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/domain-foundations/startup-final/361/parent/unwind-64-typed.native.json
+@@ -0,0 +1,145 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "foundation.BytesSchema#typed",
++    "domain": "",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-64-typed/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "foundation.BytesSchema#typed cannot be verified: outside the fragment: arraycopy of summarized array cells",
++        "uri": null,
++        "line": 20
++      }
++    ],
++    "output": "✗ foundation.BytesSchema#typed cannot be verified: outside the fragment: arraycopy of summarized array cells\n",
++    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-oxfgplb9/unwind-64-typed",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.040314547,
++      "properties": 1,
++      "unwind": 64,
++      "max_array_length": 128,
++      "stage": null,
++      "native": {
++        "paths": 25,
++        "merges": 0,
++        "solver_calls": 49,
++        "solving_seconds": 0.002187979,
++        "gates_evaluated": 22003,
++        "evaluating_seconds": 0.000576019,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 4561,
++        "clauses": 8932,
++        "seconds": 0.028875673,
++        "loading_seconds": 0.002517224,
++        "decoding_seconds": 0.001130643,
++        "encoding_seconds": 0.004475904,
++        "witness_seconds": 0.0,
++        "loops": [
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 103",
++          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 188",
++          "java.util.Arrays.fill at pc 5"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.029,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.019,
++            "encoding": 0.004,
++            "solving": 0.002,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 4561,
++            "clauses": 8932
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.073,
++        "setup": 0.004,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.029,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.04
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 64,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]

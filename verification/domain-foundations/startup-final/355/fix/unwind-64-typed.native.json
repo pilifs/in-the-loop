@@ -1,0 +1,145 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "foundation.BytesSchema#typed",
+    "domain": "",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "outside the fragment: arraycopy of summarized array cells",
+    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-5we1jcrm/unwind-64-typed/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "foundation.BytesSchema#typed cannot be verified: outside the fragment: arraycopy of summarized array cells",
+        "uri": null,
+        "line": 20
+      }
+    ],
+    "output": "✗ foundation.BytesSchema#typed cannot be verified: outside the fragment: arraycopy of summarized array cells\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-5we1jcrm/unwind-64-typed",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.096858864,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 128,
+      "stage": null,
+      "native": {
+        "paths": 25,
+        "merges": 0,
+        "solver_calls": 49,
+        "solving_seconds": 0.002071121,
+        "gates_evaluated": 22003,
+        "evaluating_seconds": 0.000671106,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 4561,
+        "clauses": 8932,
+        "seconds": 0.033582182,
+        "loading_seconds": 0.003134114,
+        "decoding_seconds": 0.001158757,
+        "encoding_seconds": 0.005148784,
+        "witness_seconds": 0.0,
+        "loops": [
+          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 128",
+          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 213",
+          "java.util.Arrays.fill at pc 5"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.034,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.003,
+            "lowering": 0.001,
+            "symbolic": 0.022,
+            "encoding": 0.005,
+            "solving": 0.002,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 4561,
+            "clauses": 8932
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.165,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.034,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.13
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

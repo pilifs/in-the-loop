@@ -1,0 +1,100 @@
+{
+  "id": "commons-csv-8993be87",
+  "build": "current",
+  "operator": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "entry": "org.apache.commons.csv.CSVParser#nextRecord",
+  "observer": "Read CSV records containing quoted separators and embedded line endings.",
+  "revisions": {
+    "old": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
+    "new": "8993be875a32fdc336780b1610a2e002d320571e"
+  },
+  "result": "open",
+  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
+  "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+  "sides": {
+    "old": {
+      "commit": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "orderedSha256": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "descriptors": [
+        "()Lorg/apache/commons/csv/CSVRecord;"
+      ]
+    },
+    "new": {
+      "commit": "8993be875a32fdc336780b1610a2e002d320571e",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "subjectJdk": "21.0.13.0+9-tem",
+      "stage": "artifacts ready",
+      "scope": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
+      "compilerClasspathSha256": [
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "orderedSha256": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "descriptors": [
+        "()Lorg/apache/commons/csv/CSVRecord;"
+      ]
+    }
+  },
+  "declarations": {
+    "common": [
+      "()Lorg/apache/commons/csv/CSVRecord;"
+    ],
+    "removed": [],
+    "added": []
+  },
+  "native": {
+    "target": "org.apache.commons.csv.CSVParser#nextRecord()",
+    "exit": 1,
+    "seconds": 0.016,
+    "outputSha256": "a6573fe62eb7517a1b604a4b05a5c59e8a6759058d593020a1333baceb6b03e1",
+    "outcome": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "org.apache.commons.csv.CSVParser#nextRecord()",
+      "domain": null,
+      "counterexample": null,
+      "proof": null,
+      "problem": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet",
+      "statement": null,
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "org.apache.commons.csv.CSVParser#nextRecord() cannot be verified: nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet",
+          "uri": null,
+          "line": 885
+        }
+      ],
+      "output": "\u2717 org.apache.commons.csv.CSVParser#nextRecord() cannot be verified: nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet\n",
+      "work": "$WORK/checker-fueyi3au/overload-0"
+    },
+    "firstBlocker": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet"
+  },
+  "firstBlocker": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet",
+  "elapsedSeconds": 0.07,
+  "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c"
+}

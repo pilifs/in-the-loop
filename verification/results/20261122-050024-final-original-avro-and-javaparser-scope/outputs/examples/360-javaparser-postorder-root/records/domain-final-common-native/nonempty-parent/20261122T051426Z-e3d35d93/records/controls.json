@@ -1,0 +1,142 @@
+{
+  "task": "nonempty-parent",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "parent",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp",
+        "-cp",
+        "driver.jar:adapter-parent.jar:built/javaparser-core-3.26.2-SNAPSHOT.jar",
+        "organic.Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.115,
+      "stdout": "controls/control-parent-jdk21.stdout",
+      "stderr": "controls/control-parent-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "87b9c6f47b572e0e9a3ba9d25e21e84cb5d6996bb7fc075ee33ba80473276c15",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f",
+            "role": "adapter"
+          },
+          {
+            "path": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+            "sha256": "cbe961009b6fafe13085b895a486660a470485ac34316043e20df41188f446a8",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "organic.Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/table.json",
+          "oracleSha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC",
+          "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "package": ""
+          },
+          "direct": {
+            "postorder": "java.util.EmptyStackException",
+            "preorder": [
+              "root"
+            ],
+            "terminal": "java.util.EmptyStackException"
+          },
+          "adapter": {
+            "postorder": 0,
+            "preorder": 1,
+            "terminal": 0
+          }
+        },
+        {
+          "id": 1,
+          "input": {
+            "package": "com"
+          },
+          "direct": {
+            "postorder": [
+              "name",
+              "package",
+              "root"
+            ],
+            "preorder": [
+              "root",
+              "package",
+              "name"
+            ],
+            "terminal": {
+              "nodes": [
+                "name",
+                "package",
+                "root"
+              ],
+              "exhausted": true
+            }
+          },
+          "adapter": {
+            "postorder": 1,
+            "preorder": 1,
+            "terminal": 1
+          }
+        }
+      ],
+      "control": "driver",
+      "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-050024-final-original-avro-and-javaparser-scope/.build-py/examples-m24dlnd5/targets/360/nonempty-parent/20261122T051426Z-e3d35d93",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-050024-final-original-avro-and-javaparser-scope/.build-py/examples-m24dlnd5/targets/360/preorder-parent/20261122T051424Z-48e9da10/prepare/parent"
+      }
+    }
+  ]
+}
