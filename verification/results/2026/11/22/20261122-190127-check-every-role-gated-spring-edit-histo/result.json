@@ -1,0 +1,256 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-190127-check-every-role-gated-spring-edit-histo",
+  "title": "Check every role-gated Spring edit history on the release JVM",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.8s, peak 130.3 MiB (estimated 2m00s, 768.0 MiB); 11 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-190127-check-every-role-gated-spring-edit-histo.json",
+    "sha256": "a0add25696b75856e802cbb4f4ee62be6c708fb4409fcaa5f19451b229dc1ec4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-190127-check-every-role-gated-spring-edit-histo",
+      "title": "Check every role-gated Spring edit history on the release JVM",
+      "description": "Run a fresh DataBinder and three real AuthorityAuthorizationManager decisions per history on Security 6.3.0 and Framework 6.1.7. Enumerate both bean layouts, both prefixes, six edit orders, and all 16 starting authority subsets independently at each step. Check every observed prefix first against the graph and bean model and separately against the A1 and A2 release receipts. Repeat in reverse order to measure equivalent workflows and retain two distinguishing wrong-caller witnesses.",
+      "kind": "real-world",
+      "capabilities": [
+        "original-jvm-replay",
+        "finite-oracle"
+      ],
+      "links": {
+        "examples": [
+          "368",
+          "370"
+        ]
+      },
+      "expected": "Each of four independent JVMs emits the same complete 98,304 histories, 294,912 prefix observations, and original loaded providers. All decisions, edit counts, bean values, alias identities, and field errors match each corresponding oracle. A wrong first submission changes only the final bean in one named witness and only the final ledger in the other.",
+      "submitted": {
+        "at": "2026-11-22T19:01:27+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "768M",
+        "duration": "2m",
+        "timeout": "10m",
+        "notes": "Four fresh 256 MiB-heap JVMs run sequentially. The raw prefixes share a dictionary for compression. Each route also recompares all 98,304 input identities and all public observations."
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/spring-java-data/gated_histories.py",
+          "run": "python3 -B lib/benchmark/spring-java-data/gated_histories.py --output verification/spring-java-data/gated-histories",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/spring-java-data/gated-histories"
+      ]
+    }
+  },
+  "sourceCommit": "a28ecb6f168c7d5c8175d3e25c79b6ddd242c6a3",
+  "startedAt": "2026-11-22T19:06:46+00:00",
+  "finishedAt": "2026-11-22T19:07:08+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 503775,
+    "workers": 1,
+    "cpus": 2.0,
+    "memoryBudgetBytes": 1207959552,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1207959552,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 805306368,
+    "durationSeconds": 120.0,
+    "notes": "Four fresh 256 MiB-heap JVMs run sequentially. The raw prefixes share a dictionary for compression. Each route also recompares all 98,304 input identities and all public observations."
+  },
+  "usage": {
+    "peakMemoryBytes": 136601600,
+    "wallSeconds": 10.8,
+    "cpuSeconds": 19.2,
+    "memoryOfEstimate": 0.17,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/spring-java-data/gated_histories.py",
+      "run": "python3 -B lib/benchmark/spring-java-data/gated_histories.py --output verification/spring-java-data/gated-histories",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 10.824,
+      "cpuSeconds": 19.21,
+      "cpuThrottledSeconds": 0.837,
+      "peakMemoryBytes": 136601600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-spring.log",
+        "lines": 1,
+        "bytes": 369,
+        "sha256": "3572385ba54b762b703273657b090ffbbda5aabe317e2fd96e7b3b804d7ce4da",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'histories': 98304, 'attempts': 294912, 'submittedEdits': 258048, 'declines': 36864, 'emptyAppliedPrefixes': 14016, 'nonemptyAppliedPrefixes': 280896, 'declinesWithEarlierError': 10752, 'historiesWithFinalError': 86016, 'observedStates': 16, 'decisionPatterns': {'DDD': 192, 'DDG': 1344, 'DGD': 1344"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/spring-java-data/gated-histories/control-1057.json",
+      "change": "added",
+      "bytes": 531,
+      "sha256": "eca58a99a5cd6d2765ea64d9b7c15278b6b997be57ebafd2c7072a568188b526",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/control-82977.json",
+      "change": "added",
+      "bytes": 502,
+      "sha256": "2b927eae92855716f16b39bf616e30c1ed044b0bf8d771fdd2f0f8e35495dbc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/fresh-1.bin.gz",
+      "change": "added",
+      "bytes": 267989,
+      "sha256": "ff40635c8958b965f5bb9eb3545b69c5cbe7e07009c010fe9da3ee5093ca23e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/fresh-1.stdout",
+      "change": "added",
+      "bytes": 2683,
+      "sha256": "1049935c1e047a7d4ad73f79415ea79263dcef7a05adf9fad604c17ef1c2faf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/fresh-2.bin.gz",
+      "change": "added",
+      "bytes": 267989,
+      "sha256": "ff40635c8958b965f5bb9eb3545b69c5cbe7e07009c010fe9da3ee5093ca23e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/fresh-2.stdout",
+      "change": "added",
+      "bytes": 2683,
+      "sha256": "1049935c1e047a7d4ad73f79415ea79263dcef7a05adf9fad604c17ef1c2faf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/measurement.json",
+      "change": "added",
+      "bytes": 7871,
+      "sha256": "463d2b69afe884915676d2ee3cf9e83a89c661022d0be285377b4da059a1e5e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/reuse-1.bin.gz",
+      "change": "added",
+      "bytes": 267989,
+      "sha256": "ff40635c8958b965f5bb9eb3545b69c5cbe7e07009c010fe9da3ee5093ca23e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/reuse-1.stdout",
+      "change": "added",
+      "bytes": 2683,
+      "sha256": "1049935c1e047a7d4ad73f79415ea79263dcef7a05adf9fad604c17ef1c2faf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/reuse-2.bin.gz",
+      "change": "added",
+      "bytes": 267989,
+      "sha256": "ff40635c8958b965f5bb9eb3545b69c5cbe7e07009c010fe9da3ee5093ca23e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/spring-java-data/gated-histories/reuse-2.stdout",
+      "change": "added",
+      "bytes": 2683,
+      "sha256": "1049935c1e047a7d4ad73f79415ea79263dcef7a05adf9fad604c17ef1c2faf2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T19:07:40+00:00",
+    "applied": [
+      "verification/spring-java-data/gated-histories/control-1057.json",
+      "verification/spring-java-data/gated-histories/control-82977.json",
+      "verification/spring-java-data/gated-histories/fresh-1.bin.gz",
+      "verification/spring-java-data/gated-histories/fresh-1.stdout",
+      "verification/spring-java-data/gated-histories/fresh-2.bin.gz",
+      "verification/spring-java-data/gated-histories/fresh-2.stdout",
+      "verification/spring-java-data/gated-histories/measurement.json",
+      "verification/spring-java-data/gated-histories/reuse-1.bin.gz",
+      "verification/spring-java-data/gated-histories/reuse-1.stdout",
+      "verification/spring-java-data/gated-histories/reuse-2.bin.gz",
+      "verification/spring-java-data/gated-histories/reuse-2.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T190708Z-120056063b26dcac",
+      "outputs": "20261122T190708Z-14527027caeabf1e",
+      "diff": "20261122T190708Z-159837b4a9d998b6"
+    }
+  }
+}
