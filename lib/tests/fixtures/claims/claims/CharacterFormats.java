@@ -107,6 +107,15 @@ public final class CharacterFormats {
         return (seed & 1) == 1 && ref.get() == null && System.identityHashCode(null) == 0;
     }
     public static boolean sameTime() { return System.currentTimeMillis() == System.currentTimeMillis(); }
+    public static boolean decoder() {
+        java.util.Base64.Decoder d = java.util.Base64.getDecoder();
+        byte[] a = d.decode("+/8="), b = d.decode("+/8"), c = d.decode("YQ==");
+        if (d != java.util.Base64.getDecoder() || a == b || a.length != 2 || a[0] != -5 || a[1] != -1
+                || b[1] != -1 || c.length != 1 || c[0] != 'a' || d.decode("").length != 0) return false;
+        a[0] = 0;
+        return b[0] == -5 && Boolean.parseBoolean("tRuE") && !Boolean.parseBoolean(null) && !Boolean.parseBoolean("yes");
+    }
+    public static boolean invalidBase64() { return java.util.Base64.getDecoder().decode("A=").length == 0; }
     static final class Copyable implements Cloneable {
         Copyable copy() throws CloneNotSupportedException { return (Copyable) super.clone(); }
     }
@@ -124,7 +133,7 @@ public final class CharacterFormats {
             if (!tableStartup(Boolean.parseBoolean(args[0]))) throw new AssertionError("table initialization");
             return;
         }
-        if (!clockSeed()) throw new AssertionError("clock and identity");
+        if (!clockSeed() || !decoder()) throw new AssertionError("clock, identity or decoder");
         for (int c = 0; c < 256; c++) if (!latinIdentifiers((char) c)) throw new AssertionError(c);
         if (outsideLatin1()) throw new AssertionError("U+0100 uses a different character table");
         if (!copiesAndFills(Integer.MIN_VALUE)) throw new AssertionError("array copy");

@@ -39,6 +39,36 @@
 
 use super::*;
 
+/// The canonical ASCII fragment of the JDK basic decoder. Padding is optional
+/// for a final group of two or three digits. Other inputs keep the JDK call boundary.
+pub(super) fn basic_base64_bytes(units: &[u16]) -> Option<Vec<u8>> {
+    let digits = units.iter().position(|&c| c == u16::from(b'=')).unwrap_or(units.len());
+    if !units[digits..].iter().all(|&c| c == u16::from(b'=')) ||
+        !matches!((digits % 4, units.len() - digits), (0, 0) | (2, 0 | 2) | (3, 0 | 1)) { return None; }
+    let mut decoded = Vec::with_capacity(digits * 3 / 4);
+    let mut bits = 0u16;
+    let mut count = 0;
+    for &unit in &units[..digits] {
+        let byte = u8::try_from(unit).ok()?;
+        let value = match byte {
+            b'A'..=b'Z' => byte - b'A',
+            b'a'..=b'z' => byte - b'a' + 26,
+            b'0'..=b'9' => byte - b'0' + 52,
+            b'+' => 62,
+            b'/' => 63,
+            _ => return None,
+        };
+        bits = (bits << 6) | u16::from(value);
+        count += 6;
+        if count >= 8 {
+            count -= 8;
+            decoded.push((bits >> count) as u8);
+            bits &= (1 << count) - 1;
+        }
+    }
+    (bits == 0).then_some(decoded)
+}
+
 const INTEGER: &str = "java/lang/Integer";
 const DIGEST: &str = "java/security/MessageDigest";
 const ARRAYS: &str = "java/util/Arrays";

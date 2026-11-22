@@ -1221,12 +1221,11 @@ fn a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity
     let stashing = framed("Stashing", "stashing");
     assert_eq!(stashing.verdict, Verdict::Unverifiable, "{}", stashing.output);
     assert!(stashing.problem.as_deref().unwrap_or_default().contains("writes a field of an object made before it was called and none of its inputs"), "{}", stashing.output);
-    // Without a write set the field is refused by name, as before.
+    // The plain property observes the assigned name. Its unrelated Map stays on the real receiver.
     let mut plain = options(classes, "claims.Frames$Mapped#setDisplayName", 3, "frames-map-plain");
     plain.assert = Some("this.displayName == name".into());
     let plain = run(&plain);
-    assert_eq!(plain.verdict, Verdict::Unverifiable, "{}", plain.output);
-    assert!(plain.problem.as_deref().unwrap_or_default().contains("the field extras of claims.Frames$Mapped has type java.util.Map"), "{}", plain.output);
+    assert_eq!(plain.verdict, Verdict::Verified, "{}", plain.output);
     // The effect contract at a call: proved, and named among what the result rests on.
     let app = |entry: &str, bean: &str| {
         let mut o = options(classes, &format!("claims.Frames#{entry}"), 3, &format!("effects-map-{bean}"));
@@ -1358,6 +1357,9 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
     let outside = run(&options(classes, "claims.CharacterFormats#outsideLatin1", 4, "outside-latin-table"));
     assert_ne!(outside.verdict, Verdict::Verified, "{}", outside.output);
     proved(classes, "claims.CharacterFormats#clockSeed", 4);
+    proved(classes, "claims.CharacterFormats#decoder", 4);
+    let invalid = run(&options(classes, "claims.CharacterFormats#invalidBase64", 4, "malformed-base64"));
+    assert_eq!(invalid.verdict, Verdict::Unverifiable, "{}", invalid.output);
     for (method, reason) in [("sameTime", "wall-clock reading"), ("copiedHash", "identity hash")] {
         let result = run(&options(classes, &format!("claims.CharacterFormats#{method}"), 4, method));
         assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
