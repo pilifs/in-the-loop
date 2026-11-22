@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-22T12:07:17.567Z",
-  "ended": "2026-11-22T12:49:37.285Z",
-  "duration_seconds": 2540,
+  "ended": "2026-11-22T12:59:32.361Z",
+  "duration_seconds": 3135,
   "stats": {
-    "turns": 16,
-    "api_calls": 21,
+    "turns": 22,
+    "api_calls": 28,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 119709,
+    "peak_context_tokens": 142438,
     "usage": {
-      "input_tokens": 117361,
-      "output_tokens": 2139,
-      "cache_read_input_tokens": 1365888,
+      "input_tokens": 141426,
+      "output_tokens": 2641,
+      "cache_read_input_tokens": 2281216,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-22T12:07:17.567Z",
-      "ended": "2026-11-22T12:49:37.285Z",
-      "turns": 16,
-      "api_calls": 21,
+      "ended": "2026-11-22T12:59:32.361Z",
+      "turns": 22,
+      "api_calls": 28,
       "usage": {
-        "input_tokens": 117361,
-        "output_tokens": 2139,
-        "cache_read_input_tokens": 1365888,
+        "input_tokens": 141426,
+        "output_tokens": 2641,
+        "cache_read_input_tokens": 2281216,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 119709
+      "peak_context_tokens": 142438
     }
   ],
   "log": {
-    "sha256": "761b45edef23641d6f05ece680ddccfe047ae5a8d1b78e831faf0e999ebdf29c",
-    "bytes": 1098277,
-    "lines": 254,
-    "gzip_bytes": 237044,
-    "path": "llm-dlc/traces/01a20324-1808-7960-b0aa-ed8a9c7b7090/logs/761b45edef23641d6f05ece680ddccfe047ae5a8d1b78e831faf0e999ebdf29c.jsonl.gz"
+    "sha256": "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89",
+    "bytes": 1361045,
+    "lines": 337,
+    "gzip_bytes": 280457,
+    "path": "llm-dlc/traces/01a20324-1808-7960-b0aa-ed8a9c7b7090/logs/b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -102,6 +102,54 @@
       "summary": "Check parser input boundaries on original JARs (verification pending)",
       "body": "Construct Jackson's concrete parser with a fresh recycler and compare the full token traces with the factory entry on all 128 schedules. Supply a conforming capped Reader to Commons CSV and compare fields on all fixtures. At caps one, two and three, 8, 2 and 8 fixed field vectors differ from StringReader. The 59 selected Rust binaries pass. Jobs 20261122-124440-jackson-logical-offsets-with-an-explicit and 20261122-124440-csv-short-reads-at-three-reader-caps run the narrower native queries.\n\nA scalar reader claim has a concrete search allocation limit and no array input parameter. Validate each at its own place in the proof receipt. The retained scalar proof passes the validator, and deliberately changing its search bound or completeness fails. Jobs 20261122-124846-trace-and-check-the-original-avro-reader and 20261122-124847-check-367-fast-reader-producers-and-call collect the remaining producer and recorded-startup evidence.",
       "log_sha256": "761b45edef23641d6f05ece680ddccfe047ae5a8d1b78e831faf0e999ebdf29c"
+    },
+    {
+      "change_id": "vvxrrvrplwruoowonksxxruqmkrrxtuo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 1 of the 3 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261122-123421-final-java-domain-366-commons-csv-delimi: passed: 1 passed step(s) in 27.8s, peak 139.4 MiB (estimated 3m00s, 3.0 GiB); 85 output file(s) changed Applied 85 output(s). 20261122-123422-trace-and-check-the-original-avro-reader: failed: 1 failed step(s) in 1.8s, peak 111.1 MiB (estimated 5m00s, 4.0 GiB); 13 output file(s) changed 20261122-123429-check-367-fast-reader-producers-and-call: failed: 1 failed step(s) in 1.6s, peak 116.0 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89"
+    },
+    {
+      "change_id": "mvyqkuyvuoqlyuxpwrvrrumqskwltzxo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 4 of the 4 job(s). 20261122-123421-final-java-domain-363-parquet-nested-bin: passed: 1 passed step(s) in 4m56s, peak 465.7 MiB (estimated 9m00s, 5.0 GiB); 110 output file(s) changed Applied 110 output(s). 20261122-123421-final-java-domain-364-avro-enum-namespac: passed: 1 passed step(s) in 47.5s, peak 225.1 MiB (estimated 3m00s, 3.0 GiB); 110 output file(s) changed Applied 110 output(s). 20261122-123421-final-java-domain-365-jackson-async-toke: passed: 1 passed step(s) in 47.6s, peak 252.5 MiB (estimated 3m00s, 3.0 GiB); 110 output file(s) changed Applied 110 output(s). 20261122-123422-final-java-domain-367-avro-union-array-d: passed: 1 passed step(s) in 1m09s, peak 271.4 MiB (estimated 3m00s, 3.0 GiB); 110 output file(s) changed Applied 110 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89"
+    },
+    {
+      "change_id": "zoovnurtprxvytoonrrklpkqukrzlxvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261122-123429-price-the-avro-buffer-fact-at-the-parque: passed: 1 passed step(s) in 6m38s, peak 1.6 GiB (estimated 7m00s, 4.0 GiB); 52 output file(s) changed Applied 52 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89"
+    },
+    {
+      "change_id": "qrkmpoutryxpyvllzpzskowzwtxrrkyw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261122-124440-csv-short-reads-at-three-reader-caps: passed: 1 passed step(s) in 5.6s, peak 96.1 MiB (estimated 3m00s, 3.0 GiB); 58 output file(s) changed Applied 58 output(s). 20261122-124440-jackson-logical-offsets-with-an-explicit: passed: 1 passed step(s) in 1.8s, peak 99.7 MiB (estimated 3m00s, 3.0 GiB); 22 output file(s) changed Applied 22 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89"
+    },
+    {
+      "change_id": "wvrmtxqymzzkvkktsntwqwolrqytyvlm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261122-124846-trace-and-check-the-original-avro-reader: passed: 1 passed step(s) in 17.4s, peak 140.3 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed Applied 46 output(s). 20261122-124847-check-367-fast-reader-producers-and-call: passed: 1 passed step(s) in 19.8s, peak 147.5 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed Applied 46 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89"
+    },
+    {
+      "change_id": "yruzyvnrkyqtzxxwrpkvqmxzzozqrquy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Price checked reuse on a decided Parquet claim (verification pending)",
+      "body": "Recount all twenty before-and-after obligations and validate the actual native selector partitions. Six final establishments and two original-JVM refutations cover Parquet and Commons CSV. The finite JVM decides all twenty. Price the same successful fixed Parquet obligation with and without checked transfer in job 20261122-125536-price-checked-avro-reuse-on-the-decided.\n\nThe original reader traces reach the decoder and record lookups on four classpaths. Job 20261122-125537-qualify-avro-enum-actions-and-the-utf8-d measures the original enum resolver and the older one-byte decoder with its Utf8 startup captured. Physical enum-action controls pass on both JARs. The selected tests and scorecard check pass.",
+      "log_sha256": "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89"
     }
   ],
   "logs": {
@@ -121,6 +169,12 @@
       "bytes": 280262,
       "lines": 66,
       "gzip_bytes": 58141,
+      "url": null
+    },
+    "b19e67e437a355670eaef5bfe1a7d6eab0b72ab4f3cb349c6e5b5f838f543a89": {
+      "bytes": 1361045,
+      "lines": 337,
+      "gzip_bytes": 280457,
       "url": null
     },
     "efc9a494f35fd133055698ac80253e441bf567a750c6e35cf5050abebfe3298b": {

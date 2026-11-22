@@ -1,0 +1,242 @@
+{
+  "plan": {
+    "example": "365",
+    "task": "tokens-fix",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "tokens-fix",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "file": "claims/tokens.json",
+      "sha256": "b7140576a6c1df26f830b256370ee971711a7fd551c258e917715cfded17bd7d",
+      "property": "tokens",
+      "claimKind": "property",
+      "statement": "The original parser emits exactly START_ARRAY, VALUE_TRUE and END_ARRAY, in order, then terminates at final EOF. A suspended feed may return NOT_AVAILABLE.",
+      "assume": "code >= 0 && code < 128",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.AsyncTokens#tokens(I)I",
+        "mapping": "The original parser emits exactly START_ARRAY, VALUE_TRUE and END_ARRAY, in order, then terminates at final EOF. A suspended feed may return NOT_AVAILABLE. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 128
+      },
+      "key": "970af27183869920"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "596fd82955080ba7207b4adc54100781b5024a61",
+        "parent": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-fix.json",
+          "sha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/tokens-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-365-jackson-async-toke/examples/365-jackson-async-token-offsets",
+    "network": true
+  },
+  "inputs": {
+    "example": "365",
+    "task": "tokens-fix",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "tokens-fix",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "file": "claims/tokens.json",
+      "sha256": "b7140576a6c1df26f830b256370ee971711a7fd551c258e917715cfded17bd7d",
+      "property": "tokens",
+      "claimKind": "property",
+      "statement": "The original parser emits exactly START_ARRAY, VALUE_TRUE and END_ARRAY, in order, then terminates at final EOF. A suspended feed may return NOT_AVAILABLE.",
+      "assume": "code >= 0 && code < 128",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.AsyncTokens#tokens(I)I",
+        "mapping": "The original parser emits exactly START_ARRAY, VALUE_TRUE and END_ARRAY, in order, then terminates at final EOF. A suspended feed may return NOT_AVAILABLE. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 128
+      },
+      "key": "970af27183869920"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "596fd82955080ba7207b4adc54100781b5024a61",
+        "parent": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-fix.json",
+          "sha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/AsyncTokens.java",
+        "sha256": "06e1c9eee95e7efab1d4ae0f55f2c854d680d55f0ee375f33d4434f6ed7b77e7"
+      }
+    ]
+  },
+  "key": "33c124e348738dd7447c9cdc911b060c8945eda5d7cd1216e8869928c2dfa78c"
+}

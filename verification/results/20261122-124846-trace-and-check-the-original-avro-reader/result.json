@@ -1,0 +1,537 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-124846-trace-and-check-the-original-avro-reader",
+  "title": "Trace and check the original Avro reader producers 364",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.4s, peak 140.3 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-124846-trace-and-check-the-original-avro-reader.json",
+    "sha256": "52045417efdd6a43f827f7d376887940f00d81ef5e0a8252cf87a1a99e6a6822",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-124846-trace-and-check-the-original-avro-reader",
+      "title": "Trace and check the original Avro reader producers 364",
+      "description": "Trace the byte decoder and named-field lookups reached by the unmodified reader, bind code and providers on each revision, and check one-byte decoding, schema construction, earlier Jackson startup and the public reader with three recorded initializer roots. Retain every refusal and its precise scope.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "364"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:48:46+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Qualify the two original Avro classpaths",
+          "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 364 --output examples/364-avro-enum-namespace/records/reader-foundations",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/364-avro-enum-namespace/records/reader-foundations"
+      ],
+      "supersedes": "20261122-123422-trace-and-check-the-original-avro-reader"
+    }
+  },
+  "sourceCommit": "f040551d5639e5dec7cfa4f66e5c1cd360372592",
+  "startedAt": "2026-11-22T12:49:50+00:00",
+  "finishedAt": "2026-11-22T12:53:39+00:00",
+  "wallSeconds": 229.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 303280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 147148800,
+    "wallSeconds": 17.4,
+    "cpuSeconds": 26.0,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualify the two original Avro classpaths",
+      "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 364 --output examples/364-avro-enum-namespace/records/reader-foundations",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 17.433,
+      "cpuSeconds": 26.028,
+      "cpuThrottledSeconds": 3.005,
+      "peakMemoryBytes": 147148800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-the-two-original-avro.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/bytes-schema.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/bytes-schema.stdout",
+      "change": "added",
+      "bytes": 5888,
+      "sha256": "3ae043ab1eeeb9f916554cd65164073dc80d45dbc661d66caad1094d1063de6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/compile.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/compile.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/configured-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/configured-byte.stdout",
+      "change": "added",
+      "bytes": 6341,
+      "sha256": "9147044916f9e4b110254a81b36a91da5623912c7bda46c80e3f2df3fba995c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/factory.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/factory.stdout",
+      "change": "added",
+      "bytes": 4287,
+      "sha256": "3e335002422ad8872365035ce52555005da41280fe0a78b6a07177e93001a593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields-recorded.stdout",
+      "change": "added",
+      "bytes": 25122,
+      "sha256": "8938318c0852e071453f279ccb1dd2dc0c9603cd1f6c3093a5110b5988906436",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields.stdout",
+      "change": "added",
+      "bytes": 6208,
+      "sha256": "2b3a987eec5031b1b65ae42ed10d0684622fc0fcd33b973b15bb528a9a5a3184",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/measurement.json",
+      "change": "added",
+      "bytes": 55050,
+      "sha256": "75d2726a2e05f5a69a478b4a3619c5896f7b17e06c13b1a242a61026f4e737f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/one-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/one-byte.stdout",
+      "change": "added",
+      "bytes": 5958,
+      "sha256": "d8cf08d0b52d240bb22f09bf890968109f10390d1820c6d21d4a94f71f666051",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/ordinary-jvm.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/ordinary-jvm.stdout",
+      "change": "added",
+      "bytes": 248,
+      "sha256": "217afb3dbceaadf7b9b75b77dd3c13e496184468a77bbfe9a490653f20401c68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/preserved-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/preserved-recorded.stdout",
+      "change": "added",
+      "bytes": 25155,
+      "sha256": "22475c23b5150defcfceb4db8accd469d5b4d9d72a486d2fe25c9115278138d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/renamed-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/renamed-recorded.stdout",
+      "change": "added",
+      "bytes": 25151,
+      "sha256": "1fc6251f1372d6166df687b0136f1cdb54a15ae7e1299c12628375169ecbe96e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/traced-jvm.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/fix/traced-jvm.stdout",
+      "change": "added",
+      "bytes": 4592,
+      "sha256": "add5f04445f976e890edbf98d6df9020b8de2e264ca962146084565cb0c0d2ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stdout",
+      "change": "added",
+      "bytes": 5888,
+      "sha256": "b78982ef2da924132fede03ff78c8d219bdaf405a39f3d140a84191aef40b488",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stdout",
+      "change": "added",
+      "bytes": 6346,
+      "sha256": "a0967d1984959d14423b505602a1fe967e916e8af29f847e6675de9e8ca1303d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stdout",
+      "change": "added",
+      "bytes": 4286,
+      "sha256": "39048c737cf7a98812dfb4b90b81787300f96b07fdf9425ce7f32cb9e9590cff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields-recorded.stdout",
+      "change": "added",
+      "bytes": 25125,
+      "sha256": "d21788ef555aab5b557f3ebceea8c9aff24eb007188e64d13110a0973b34d9f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stdout",
+      "change": "added",
+      "bytes": 6208,
+      "sha256": "16e0b78794018ff7ffe909204018a53d8c6c9551b633d17238e248f62cef023b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/measurement.json",
+      "change": "added",
+      "bytes": 51812,
+      "sha256": "3360ee82b9d2d9c01150ab64742bf89084c6156a9512a229fbc2461e2ad3a32c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stdout",
+      "change": "added",
+      "bytes": 5959,
+      "sha256": "69666535e182020041bb60cbbb796c44d50082fdb8bb9e4df715f117f7f89ae2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/ordinary-jvm.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/ordinary-jvm.stdout",
+      "change": "added",
+      "bytes": 376,
+      "sha256": "1838e75327f11d7c46855902a92613164009289bd4630a50ee0699a1667e13cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/preserved-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/preserved-recorded.stdout",
+      "change": "added",
+      "bytes": 25154,
+      "sha256": "6a4a6dd7e83a85a6f5b399fc3fce9ac795b0da4657c7866b030964f1b54dad48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/renamed-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/renamed-recorded.stdout",
+      "change": "added",
+      "bytes": 25144,
+      "sha256": "0bdc0c4026de21c7f0e7d92e275eb3a32cc96f78d5e6d685a1d327d86392c480",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/traced-jvm.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/traced-jvm.stdout",
+      "change": "added",
+      "bytes": 2548,
+      "sha256": "d6eee6a6fef15d33582a78645d6f0730dba669441b6eb0278b2231fae4095f58",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:54:01+00:00",
+    "applied": [
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/bytes-schema.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/bytes-schema.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/compile.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/compile.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/configured-byte.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/configured-byte.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/factory.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/factory.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/fields.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/measurement.json",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/one-byte.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/one-byte.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/ordinary-jvm.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/ordinary-jvm.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/preserved-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/preserved-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/renamed-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/renamed-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/traced-jvm.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/fix/traced-jvm.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/measurement.json",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/ordinary-jvm.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/ordinary-jvm.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/preserved-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/preserved-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/renamed-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/renamed-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/traced-jvm.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/traced-jvm.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c0abc875ddf18e776e940703bf3e322d26d6d631",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c0abc875ddf18e776e940703bf3e322d26d6d631/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T125339Z-269697b19b463a72",
+      "outputs": "20261122T125339Z-300262f332cf9c10",
+      "diff": "20261122T125339Z-32507551b9bc598a"
+    }
+  }
+}

@@ -1,0 +1,152 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "foundation.BytesSchema#typed",
+    "domain": "",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "statement": "/tmp/avro-reader-facts-u8z6jf_c/bytes-schema/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "foundation.BytesSchema#typed cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "uri": null,
+        "line": 20
+      }
+    ],
+    "output": "✗ foundation.BytesSchema#typed cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+    "work": "/tmp/avro-reader-facts-u8z6jf_c/bytes-schema",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.031360513,
+      "properties": 1,
+      "unwind": 512,
+      "max_array_length": 16384,
+      "stage": null,
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 6,
+        "solving_seconds": 0.0,
+        "gates_evaluated": 0,
+        "evaluating_seconds": 0.0,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 254,
+        "clauses": 535,
+        "seconds": 0.022062901,
+        "loading_seconds": 0.004213867,
+        "decoding_seconds": 0.002040743,
+        "encoding_seconds": 0.002597593,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13",
+          "kind": "jdk-constructor",
+          "call": "java.lang.ThreadLocal.<init>()",
+          "sites": [
+            "org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21"
+          ],
+          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.022,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.004,
+            "lowering": 0.002,
+            "symbolic": 0.013,
+            "encoding": 0.003,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 254,
+            "clauses": 535
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.047,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.022,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.024
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 512,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

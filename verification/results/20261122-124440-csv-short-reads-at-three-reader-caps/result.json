@@ -1,0 +1,632 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-124440-csv-short-reads-at-three-reader-caps",
+  "title": "CSV short reads at three reader caps",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.6s, peak 96.1 MiB (estimated 3m00s, 3.0 GiB); 58 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-124440-csv-short-reads-at-three-reader-caps.json",
+    "sha256": "50eed53ba4b964cd32e2aadfbbe9babd21868f996fe21e670c3e1b53bdef78b8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-124440-csv-short-reads-at-three-reader-caps",
+      "title": "CSV short reads at three reader caps",
+      "description": "The original parser gets a real Reader returning one to three characters per read. Certify its progress, EOF and buffer-range contract. Measure changes from the StringReader observations for every fixture without moving those obligations into the primary grid.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "java-input-segmentation"
+      ],
+      "links": {
+        "examples": [
+          "366"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:44:40+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Check the separate parser entry on paired original modules",
+          "run": "python3 -B lib/benchmark/java-domain-proof/window_experiments.py 366 --output examples/366-commons-csv-delimiter-lookahead/records/input-segmentation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation"
+      ]
+    }
+  },
+  "sourceCommit": "f040551d5639e5dec7cfa4f66e5c1cd360372592",
+  "startedAt": "2026-11-22T12:49:50+00:00",
+  "finishedAt": "2026-11-22T12:53:27+00:00",
+  "wallSeconds": 217.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 303280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 100732928,
+    "wallSeconds": 5.6,
+    "cpuSeconds": 8.8,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the separate parser entry on paired original modules",
+      "run": "python3 -B lib/benchmark/java-domain-proof/window_experiments.py 366 --output examples/366-commons-csv-delimiter-lookahead/records/input-segmentation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 5.612,
+      "cpuSeconds": 8.771,
+      "cpuThrottledSeconds": 1.025,
+      "peakMemoryBytes": 100732928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-separate-parser-entr.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/CappedFields.java",
+      "change": "added",
+      "bytes": 2992,
+      "sha256": "81b256226a12d8f9bc1d87a5123965a93749321a82bf733943649bcf0f5859ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/Cases.java",
+      "change": "added",
+      "bytes": 1364,
+      "sha256": "6937b5193c0bc2ee86ee509856625a7fb0ca93cfa49c81dce26cee7e0700a636",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/controls.stdout",
+      "change": "added",
+      "bytes": 2859,
+      "sha256": "ccc9c9dceaf2fd3084a3397f9391780ded5a883cea9ce1605070f983dae33046",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/experiment.json",
+      "change": "added",
+      "bytes": 4389,
+      "sha256": "fd662b16ee08347be4ace69034199f3afd149525ac6ce1ecf663d34851c44c03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/fields.stdout",
+      "change": "added",
+      "bytes": 5778,
+      "sha256": "92725e0b8bf1ad149ac350ae1c537f32b565ea2fd57c159472e8cf83f7cded6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/prefixes.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/prefixes.stdout",
+      "change": "added",
+      "bytes": 5317,
+      "sha256": "fa28828e17f34ed133d036ee4311388a18688631d6550e0f4dd6604fac9c6970",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/short-read-contract.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/short-read-contract.stdout",
+      "change": "added",
+      "bytes": 5319,
+      "sha256": "b4fe3ac1e1dc9717159bb67c9eaf6ae00cbcdb4e2b3860f1ad63401c225c939f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/CappedFields.java",
+      "change": "added",
+      "bytes": 2992,
+      "sha256": "4085e450717909965543f01d795bc0a45af57b24d15fca7618b7efe30f79daaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/Cases.java",
+      "change": "added",
+      "bytes": 1364,
+      "sha256": "340cc7feaa86e9ba281d535c0af7b64bab0fe16848133ce779f3db93684577b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/controls.stdout",
+      "change": "added",
+      "bytes": 2853,
+      "sha256": "ba89c0f6abf43701d90f44c406b25f28b568fa719b735a656fcf70c1ffec79f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/experiment.json",
+      "change": "added",
+      "bytes": 3224,
+      "sha256": "a54347fe586f749582a442865a9494474300cdaaac1f31c30448d73cdfad3181",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/fields.stdout",
+      "change": "added",
+      "bytes": 5774,
+      "sha256": "4b09a32fe7b2ec5da31e16fad26ec7658402e2051808607a6c116f28c4f47d9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/prefixes.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/prefixes.stdout",
+      "change": "added",
+      "bytes": 5317,
+      "sha256": "335afa31473a870647fc37553083a713d186393539e2b548a108ab6d1a75bad6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/CappedFields.java",
+      "change": "added",
+      "bytes": 2992,
+      "sha256": "694870922b00a8a575e5ef49c385b9fb70d9c92adf14b9edd5fe85121605cef7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/Cases.java",
+      "change": "added",
+      "bytes": 1364,
+      "sha256": "9a11aa201e2c35613d781dd53587a4e8b799ee5bd661bce114a11f1a962ac3e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/controls.stdout",
+      "change": "added",
+      "bytes": 2859,
+      "sha256": "667eb253c970271b111e31a61165ffc2773f7f354d8c94e87bc1b455926f95a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/experiment.json",
+      "change": "added",
+      "bytes": 3336,
+      "sha256": "2e4cd6fb879a7a6fb9ed33a3c4b04238b82e85ea36bfdac8be301964b7c18d44",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/fields.stdout",
+      "change": "added",
+      "bytes": 5779,
+      "sha256": "4b00be7341c35024a86ab66f43df6473d02008001ee91d96b39ba02ea0c26daa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/prefixes.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/prefixes.stdout",
+      "change": "added",
+      "bytes": 5316,
+      "sha256": "2134f38f27839c33276c96169e0f8cf79172d10333e52b8434f0c52d250212fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/CappedFields.java",
+      "change": "added",
+      "bytes": 2992,
+      "sha256": "81b256226a12d8f9bc1d87a5123965a93749321a82bf733943649bcf0f5859ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/Cases.java",
+      "change": "added",
+      "bytes": 1364,
+      "sha256": "6937b5193c0bc2ee86ee509856625a7fb0ca93cfa49c81dce26cee7e0700a636",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/controls.stdout",
+      "change": "added",
+      "bytes": 2847,
+      "sha256": "5a615e59abfb2a7055fe9fe0239a80a93ea7cc2634af64cbd4d0258cc520b601",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/experiment.json",
+      "change": "added",
+      "bytes": 4444,
+      "sha256": "2c9e746b14826528573fdd1f922f7b3eab00e2272b89cfbe722aea3619086d13",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/fields.stdout",
+      "change": "added",
+      "bytes": 5769,
+      "sha256": "4838bc5bce34ef680518562b9d4b55e469e062f75b8d1757ca22a2febc9dd2e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/prefixes.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/prefixes.stdout",
+      "change": "added",
+      "bytes": 5318,
+      "sha256": "202fdab3a3b475d2dbb0d02d380464ed756e420cc228fc972f9d8bebbd23106b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/short-read-contract.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/short-read-contract.stdout",
+      "change": "added",
+      "bytes": 5320,
+      "sha256": "d52a419896099873aaaf193698f043d64b70fced15ba3aad0701912e84d72add",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/CappedFields.java",
+      "change": "added",
+      "bytes": 2992,
+      "sha256": "4085e450717909965543f01d795bc0a45af57b24d15fca7618b7efe30f79daaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/Cases.java",
+      "change": "added",
+      "bytes": 1364,
+      "sha256": "340cc7feaa86e9ba281d535c0af7b64bab0fe16848133ce779f3db93684577b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/controls.stdout",
+      "change": "added",
+      "bytes": 2831,
+      "sha256": "f0df902cd7c0c82bad98758b82b92fe607d348615be9a25a5079067bd0d4049a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/experiment.json",
+      "change": "added",
+      "bytes": 3317,
+      "sha256": "28bcdfd913d24b3d342a8cb770651d55a9c6cca9b73a49853504629ec7fab49a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/fields.stdout",
+      "change": "added",
+      "bytes": 5770,
+      "sha256": "94d1677d4760d71663e055badd0729aa1c6a80a393ffb9e7b3c19ed40650e7c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/prefixes.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/prefixes.stdout",
+      "change": "added",
+      "bytes": 5318,
+      "sha256": "76700c62cd699f8c102dd0577f99e4f4f1ef273057a75ae5ecbd57cd6f14d820",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/CappedFields.java",
+      "change": "added",
+      "bytes": 2992,
+      "sha256": "694870922b00a8a575e5ef49c385b9fb70d9c92adf14b9edd5fe85121605cef7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/Cases.java",
+      "change": "added",
+      "bytes": 1364,
+      "sha256": "9a11aa201e2c35613d781dd53587a4e8b799ee5bd661bce114a11f1a962ac3e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/controls.stdout",
+      "change": "added",
+      "bytes": 2841,
+      "sha256": "2834b485d0495a0e51e29226a553a971dd412c04496f56c1fbcb93d00e2c571a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/experiment.json",
+      "change": "added",
+      "bytes": 3392,
+      "sha256": "c7c11709148bc6acb7d636419457c51aa6c3b55be25bbafaa4deb82f4c32923d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/fields.stdout",
+      "change": "added",
+      "bytes": 5769,
+      "sha256": "ff7067459ec7522918d20e627ef94d0924143330a37101ea0bcb21112b7cbd7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/prefixes.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/prefixes.stdout",
+      "change": "added",
+      "bytes": 5317,
+      "sha256": "8371fb5db77c44e4cab083aa5cd503df54120aa0320452ecd4ef55598bda378a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:53:32+00:00",
+    "applied": [
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/CappedFields.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/Cases.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/controls.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/controls.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/experiment.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/fields.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/fields.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/prefixes.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/prefixes.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/short-read-contract.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/short-read-contract.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/CappedFields.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/Cases.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/controls.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/controls.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/experiment.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/fields.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/fields.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/prefixes.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/prefixes.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/CappedFields.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/Cases.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/controls.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/controls.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/experiment.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/fields.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/fields.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/prefixes.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/prefixes.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/CappedFields.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/Cases.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/controls.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/controls.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/experiment.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/fields.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/fields.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/prefixes.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/prefixes.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/short-read-contract.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/short-read-contract.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/CappedFields.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/Cases.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/controls.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/controls.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/experiment.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/fields.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/fields.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/prefixes.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/prefixes.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/CappedFields.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/Cases.java",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/controls.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/controls.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/experiment.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/fields.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/fields.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/prefixes.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/prefixes.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c0abc875ddf18e776e940703bf3e322d26d6d631",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c0abc875ddf18e776e940703bf3e322d26d6d631/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T125327Z-42973858602a23f6",
+      "outputs": "20261122T125327Z-45240779486b208e",
+      "diff": "20261122T125327Z-47130137ff09b140"
+    }
+  }
+}

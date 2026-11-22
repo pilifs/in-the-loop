@@ -1,0 +1,321 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-123422-trace-and-check-the-original-avro-reader",
+  "title": "Trace and check the original Avro reader producers 364",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.8s, peak 111.1 MiB (estimated 5m00s, 4.0 GiB); 13 output file(s) changed",
+  "attention": [
+    "step 1 (Qualify the two original Avro classpaths) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-123422-trace-and-check-the-original-avro-reader.json",
+    "sha256": "1d6a1a48ccadb682fa4fcac90ad9aa108783acfa77d1b6e072421bb500db23ab",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-123422-trace-and-check-the-original-avro-reader",
+      "title": "Trace and check the original Avro reader producers 364",
+      "description": "Trace the byte decoder and named-field lookups reached by the unmodified reader, bind code and providers on each revision, and check one-byte decoding, schema construction, earlier Jackson startup and the public reader with three recorded initializer roots. Retain every refusal and its precise scope.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "364"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:34:22+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Qualify the two original Avro classpaths",
+          "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 364 --output examples/364-avro-enum-namespace/records/reader-foundations",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/364-avro-enum-namespace/records/reader-foundations"
+      ]
+    }
+  },
+  "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+  "startedAt": "2026-11-22T12:42:29+00:00",
+  "finishedAt": "2026-11-22T12:45:56+00:00",
+  "wallSeconds": 207.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 303280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 116547584,
+    "wallSeconds": 1.8,
+    "cpuSeconds": 2.7,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 183.669,
+      "cpuSeconds": 183.781,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2264125440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b284e2acc714527534de66874767bec6668d42bef8e76663a7ff73f4a9c4aa39",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-123422-trace-and-check-the-original-avro-reader/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 03s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Qualify the two original Avro classpaths",
+      "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 364 --output examples/364-avro-enum-namespace/records/reader-foundations",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 1.805,
+      "cpuSeconds": 2.745,
+      "cpuThrottledSeconds": 0.217,
+      "peakMemoryBytes": 116547584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-the-two-original-avro.log",
+        "lines": 10,
+        "bytes": 1011,
+        "sha256": "385211b8df4c5869c4e1eee452a3b16d2f798ee6d45e8c7957ba938e48775e4b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-123422-trace-and-check-the-original-avro-reader/lib/benchmark/java-domain-proof/companions.py\", line 183, in <module>",
+        "    avro(args.example,side,args.output.resolve()/side)",
+        "    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-123422-trace-and-check-the-original-avro-reader/lib/benchmark/java-domain-proof/companions.py\", line 162, in avro",
+        "    report[\"proofs\"][label] = proof(checker,classes,jars,work,env,target,method,label,guard,assertion,roots)",
+        "                              ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-123422-trace-and-check-the-original-avro-reader/lib/benchmark/java-domain-proof/companions.py\", line 59, in proof",
+        "    raise ValueError(f\"{label}: incomplete proof\")",
+        "ValueError: factory: incomplete proof"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stdout",
+      "change": "added",
+      "bytes": 5889,
+      "sha256": "9316415e35428dab09328e06950a7bdd9852e75da90301083a239a990da044fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stdout",
+      "change": "added",
+      "bytes": 6346,
+      "sha256": "ebc7b74087206ca3e92db12d2c26d21d5d713b19ee3ec52f9d270e52468a0fa7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stdout",
+      "change": "added",
+      "bytes": 4288,
+      "sha256": "2e76200b61dec8ffb66f18c6c3cb5e6b8825842b53f1073500b1f37994f1bafc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stdout",
+      "change": "added",
+      "bytes": 6208,
+      "sha256": "8d2f370a64e762121f7d9a25bfef4a88c9f33c995f51b5d418d767f5e22f8c90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/measurement.json",
+      "change": "added",
+      "bytes": 8619,
+      "sha256": "61cd556685d87e06ed48e72aff56574b913615b1c46e6e0616a372dfa1f562a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stdout",
+      "change": "added",
+      "bytes": 5956,
+      "sha256": "db253aa2328ef12a470e8eb70c64a90256762425d24674158fb74a51b579d72c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:46:42+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/bytes-schema.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/compile.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/configured-byte.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/factory.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/fields.stdout",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/measurement.json",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stderr",
+      "examples/364-avro-enum-namespace/records/reader-foundations/parent/one-byte.stdout"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d0076816bcae8681f74d3349ba50ca57c350f3cd/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T124556Z-780228e0c550327f",
+      "outputs": "20261122T124556Z-8034389865248dd3",
+      "diff": "20261122T124556Z-8254286ece686a24",
+      "workdir": "20261122T124616Z-34406398cbf8d618"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123422-trace-and-check-the-original-avro-reader"
+}

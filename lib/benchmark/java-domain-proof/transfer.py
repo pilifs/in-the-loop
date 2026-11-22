@@ -13,7 +13,7 @@ sys.path.insert(0, str(HERE.parent / "domain-foundations"))
 from buffer_fact import certify, dependencies, elapsed, execute, site_inputs, validate_producer
 from results import Job
 from startup import document, materialize, runtime_jdk, runtime_maven
-from public_run import measure, native
+from public_run import measure, native, partition
 from companions import proof
 
 HISTORICAL = "20261122-050534-confirm-avro-encoder-adoption-on-the-fin"
@@ -82,7 +82,25 @@ def parquet(side, work, jdk, env, previous_method):
             "costs":{"compile":build,"plain":natural,"debugger":trace}}
 
 
-def run(dest):
+def downstream(folder, destination, selectors):
+    destination.mkdir()
+    if selectors:
+        result = partition(folder, "363", ["extent-fix"], destination, 60)["extent-fix"]
+        row = json.loads((destination / result["receipt"]).read_bytes())
+        if result["status"] != "established" or len(row["checked"]) != 64:
+            raise ValueError("the successful public selector route did not reproduce")
+        return {**result["batch"], "receipt":result["receipt"], "status":result["status"],
+                "strategy":"native-selectors", "identity":row["identity"], "checker":row["checker"]["sha256"],
+                "classpath":[r["sha256"] for r in row["classpath"]], "checked":len(row["checked"]),
+                "checkerWallSeconds":row["cost"]["checkerWallSeconds"]}
+    result = native(folder, "extent-fix", [sys.executable, "examples/tools/build.py", "363"],
+                    destination, ["--checker-seconds", "60"])
+    row = json.loads((destination / result["receipt"]).read_bytes())
+    return {**result, "strategy":"symbolic", "identity":row["claim"]["id"],
+            "checker":row["attempt"]["tools"]["jvmcontract"], "classpath":row["claim"]["target"]["dependencies"]}
+
+
+def run(dest, selectors=False):
     jdk=Path(runtime_jdk.home("21")); checker=Path(os.environ["JVMCONTRACT"]).resolve()
     historical=Job(HISTORICAL)
     old=historical.single("encoder-adoption-final/wide-wrap.json")
@@ -139,10 +157,7 @@ def run(dest):
                             "value": small_key if r["backing"] <= 20 else wide_key,
                             "metadata": small_key if r["metadataBacking"] <= 20 else wide_key}
                            for r in leg["rows"]] for side, leg in sites.items()}
-                receipts = dest / route
-                receipts.mkdir()
-                public = native(folder, "extent-fix", [sys.executable, "examples/tools/build.py", "363"],
-                                receipts, ["--checker-seconds", "60"])
+                public = downstream(folder, dest / route, selectors)
                 routes[route]["publicWorkflow"] = public
                 routes[route]["endToEndSeconds"] = elapsed(begin)
             document(dest/"routes.json", routes)
@@ -150,15 +165,18 @@ def run(dest):
             if routes["disabled"]["sites"][side]["rows"]!=routes["reuse"]["sites"][side]["rows"]:
                 raise ValueError("the two downstream workflows used different public operands")
         fresh, reused = (routes[r]["publicWorkflow"] for r in ("disabled", "reuse"))
-        fresh_result, reuse_result = (json.loads((dest / r / run["receipt"]).read_bytes())
-                                      for r, run in (("disabled", fresh), ("reuse", reused)))
-        if (fresh_result["claim"] != reuse_result["claim"] or fresh["status"] != reused["status"]
-                or fresh_result["attempt"]["tools"] != reuse_result["attempt"]["tools"]):
+        if any(fresh[k] != reused[k] for k in ("identity","checker","classpath","strategy","status")):
             raise ValueError("the downstream public claim, verifier or decision changed between routes")
         for label,changed in (("bound",{"maxArrayLength":47}),("provider",{"jdkModules":"0"*64}),("observable",{"assert":"result == 0"})):
             try:validate_producer(certificate,certificate_key,{**identity,**changed},"wrap")
             except ValueError:pass
             else:raise ValueError("unsound reuse after changing "+label)
+        if selectors:
+            document(dest/"measurement.json", {"schema":"parquet-selector-transfer/v1","routes":routes,
+                     "source":os.environ["VERIFY_SOURCE_COMMIT"],"checkerSha256":SHA(checker),
+                     "historicalCertificate":key,"usedCertificate":certificate_key,"directHistoricalReuse":identity==old_identity,
+                     "invalidations":["bound","provider","observable"],"checkerImportsCertificate":False})
+            return
         _,compile_cost=execute([jdk/"bin/javac","-J-Djava.io.tmpdir="+tmp,"-g","-parameters","-d",work/"proof",HERE/"ReadOnlyChild.java"],work,env)
         child_path=dest/"read-only-child.native.json"
         child_cost=measure([checker,"prove","campaign.ReadOnlyChild#child","--classes",work/"proof","--engine","native",
@@ -201,4 +219,6 @@ def run(dest):
 
 if __name__=="__main__":
     p=argparse.ArgumentParser(description=__doc__);p.add_argument("--output",type=Path,required=True)
-    run(p.parse_args().output.resolve())
+    p.add_argument("--native-selectors",action="store_true",help="price the established 64-selector public obligation")
+    args = p.parse_args()
+    run(args.output.resolve(),args.native_selectors)

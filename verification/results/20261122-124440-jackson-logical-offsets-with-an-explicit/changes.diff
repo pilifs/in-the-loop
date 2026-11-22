@@ -1,0 +1,1789 @@
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/fix/Cases.java
+@@ -0,0 +1,17 @@
++package campaign;
++import java.util.Arrays;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    public static void main(String[] args) throws Exception {
++        long[] reference = DirectTokens.trace(0, 0);
++        if (!DirectTokens.correctOffsets(reference)) throw new AssertionError("unwindowed reference");
++        for (int code = 0; code < 128; code++) {
++            long[] t = DirectTokens.trace(code & 31, code >> 5);
++            row(code, fields("cuts", code & 31, "padding", code >> 5),
++                fields("offsets", fields("trace", t, "matchesUnpadded", Arrays.equals(t, reference)),
++                       "tokens", new long[]{t[0], t[3], t[6], t[9], t[10]}),
++                fields("offsets", DirectTokens.offsets(code), "tokens", DirectTokens.tokens(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/fix/DirectTokens.java
+@@ -0,0 +1,58 @@
++package campaign;
++
++import java.io.IOException;
++import com.fasterxml.jackson.core.JsonFactory;
++import com.fasterxml.jackson.core.JsonParser;
++import com.fasterxml.jackson.core.JsonToken;
++import com.fasterxml.jackson.core.async.ByteArrayFeeder;
++import com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase;
++
++public final class DirectTokens {
++    // Three triples, the total number of tokens, and the terminal state (1 for final EOF).
++    static long[] trace(int mask, int padding) throws IOException {
++        byte[] document = {'[', 't', 'r', 'u', 'e', ']'};
++        long[] result = new long[11];
++        try (JsonParser parser = DirectParser.create()) {
++            ByteArrayFeeder feeder = (ByteArrayFeeder) parser.getNonBlockingInputFeeder();
++            int start = 0;
++            for (int end = 1; end <= document.length; end++) {
++                boolean last = end == document.length;
++                if (!last && (mask & (1 << (end - 1))) == 0) continue;
++                int width = end - start;
++                byte[] bytes = new byte[padding + width + 1];
++                for (int i = 0; i < padding; i++) bytes[i] = '!';
++                bytes[bytes.length - 1] = '?';
++                System.arraycopy(document, start, bytes, padding, width);
++                feeder.feedInput(bytes, padding, padding + width);
++                if (last) feeder.endOfInput();
++                while (true) {
++                    JsonToken token = ((NonBlockingUtf8JsonParserBase) parser).nextToken();
++                    if (token == null) {
++                        result[10] = last ? 1 : -1;
++                        return result;
++                    }
++                    if (token == JsonToken.NOT_AVAILABLE) break;
++                    int n = (int) result[9]++;
++                    if (n >= 3) return result;
++                    result[3 * n] = token.id();
++                    result[3 * n + 1] = parser.currentTokenLocation().getByteOffset();
++                    result[3 * n + 2] = parser.currentLocation().getByteOffset();
++                }
++                start = end;
++            }
++        }
++        return result;
++    }
++
++    static boolean correctOffsets(long[] t) {
++        return t[0] == 3 && t[1] == 1 && t[2] == 1 && t[3] == 9 && t[4] == 2 && t[5] == 5
++            && t[6] == 4 && t[7] == 5 && t[8] == 6 && t[9] == 3 && t[10] == 1;
++    }
++    public static int offsets(int code) throws IOException {
++        return correctOffsets(trace(code & 31, code >> 5)) ? 1 : 0;
++    }
++    public static int tokens(int code) throws IOException {
++        long[] t = trace(code & 31, code >> 5);
++        return t[0] == 3 && t[3] == 9 && t[6] == 4 && t[9] == 3 && t[10] == 1 ? 1 : 0;
++    }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/fix/controls.stdout
+@@ -0,0 +1,128 @@
++{"id":0,"input":{"cuts":0,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":1,"input":{"cuts":1,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":2,"input":{"cuts":2,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":3,"input":{"cuts":3,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":4,"input":{"cuts":4,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":5,"input":{"cuts":5,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":6,"input":{"cuts":6,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":7,"input":{"cuts":7,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":8,"input":{"cuts":8,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":9,"input":{"cuts":9,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":10,"input":{"cuts":10,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":11,"input":{"cuts":11,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":12,"input":{"cuts":12,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":13,"input":{"cuts":13,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":14,"input":{"cuts":14,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":15,"input":{"cuts":15,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":16,"input":{"cuts":16,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":17,"input":{"cuts":17,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":18,"input":{"cuts":18,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":19,"input":{"cuts":19,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":20,"input":{"cuts":20,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":21,"input":{"cuts":21,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":22,"input":{"cuts":22,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":23,"input":{"cuts":23,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":24,"input":{"cuts":24,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":25,"input":{"cuts":25,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":26,"input":{"cuts":26,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":27,"input":{"cuts":27,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":28,"input":{"cuts":28,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":29,"input":{"cuts":29,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":30,"input":{"cuts":30,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":31,"input":{"cuts":31,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":32,"input":{"cuts":0,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":33,"input":{"cuts":1,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":34,"input":{"cuts":2,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":35,"input":{"cuts":3,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":36,"input":{"cuts":4,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":37,"input":{"cuts":5,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":38,"input":{"cuts":6,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":39,"input":{"cuts":7,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":40,"input":{"cuts":8,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":41,"input":{"cuts":9,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":42,"input":{"cuts":10,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":43,"input":{"cuts":11,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":44,"input":{"cuts":12,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":45,"input":{"cuts":13,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":46,"input":{"cuts":14,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":47,"input":{"cuts":15,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":48,"input":{"cuts":16,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":49,"input":{"cuts":17,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":50,"input":{"cuts":18,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":51,"input":{"cuts":19,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":52,"input":{"cuts":20,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":53,"input":{"cuts":21,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":54,"input":{"cuts":22,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":55,"input":{"cuts":23,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":56,"input":{"cuts":24,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":57,"input":{"cuts":25,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":58,"input":{"cuts":26,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":59,"input":{"cuts":27,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":60,"input":{"cuts":28,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":61,"input":{"cuts":29,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":62,"input":{"cuts":30,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":63,"input":{"cuts":31,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":64,"input":{"cuts":0,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":65,"input":{"cuts":1,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":66,"input":{"cuts":2,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":67,"input":{"cuts":3,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":68,"input":{"cuts":4,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":69,"input":{"cuts":5,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":70,"input":{"cuts":6,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":71,"input":{"cuts":7,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":72,"input":{"cuts":8,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":73,"input":{"cuts":9,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":74,"input":{"cuts":10,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":75,"input":{"cuts":11,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":76,"input":{"cuts":12,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":77,"input":{"cuts":13,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":78,"input":{"cuts":14,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":79,"input":{"cuts":15,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":80,"input":{"cuts":16,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":81,"input":{"cuts":17,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":82,"input":{"cuts":18,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":83,"input":{"cuts":19,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":84,"input":{"cuts":20,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":85,"input":{"cuts":21,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":86,"input":{"cuts":22,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":87,"input":{"cuts":23,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":88,"input":{"cuts":24,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":89,"input":{"cuts":25,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":90,"input":{"cuts":26,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":91,"input":{"cuts":27,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":92,"input":{"cuts":28,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":93,"input":{"cuts":29,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":94,"input":{"cuts":30,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":95,"input":{"cuts":31,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":96,"input":{"cuts":0,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":97,"input":{"cuts":1,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":98,"input":{"cuts":2,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":99,"input":{"cuts":3,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":100,"input":{"cuts":4,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":101,"input":{"cuts":5,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":102,"input":{"cuts":6,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":103,"input":{"cuts":7,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":104,"input":{"cuts":8,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":105,"input":{"cuts":9,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":106,"input":{"cuts":10,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":107,"input":{"cuts":11,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":108,"input":{"cuts":12,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":109,"input":{"cuts":13,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":110,"input":{"cuts":14,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":111,"input":{"cuts":15,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":112,"input":{"cuts":16,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":113,"input":{"cuts":17,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":114,"input":{"cuts":18,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":115,"input":{"cuts":19,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":116,"input":{"cuts":20,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":117,"input":{"cuts":21,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":118,"input":{"cuts":22,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":119,"input":{"cuts":23,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":120,"input":{"cuts":24,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":121,"input":{"cuts":25,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":122,"input":{"cuts":26,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":123,"input":{"cuts":27,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":124,"input":{"cuts":28,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":125,"input":{"cuts":29,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":126,"input":{"cuts":30,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":127,"input":{"cuts":31,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/fix/experiment.json
+@@ -0,0 +1,130 @@
++{
++  "example": "365",
++  "side": "fix",
++  "cap": null,
++  "binding": {
++    "revision": "596fd82955080ba7207b4adc54100781b5024a61",
++    "build": "examples/365-jackson-async-token-offsets/records/qualified-build/build-fix.json",
++    "buildSha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21",
++    "orderedJars": [
++      "c192c74ad67290633866a01efec660f04875d8c011ee07557f265986e01c931b",
++      "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f"
++    ]
++  },
++  "rows": 128,
++  "ordinaryReceipt": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-fix-jdk21.stdout",
++  "ordinarySha256": "b1f1567fa3d123e4126496f1ebae727fee23c6d21b0f5705ec669d1efe530491",
++  "differencesFromOracle": {
++    "offsets": [],
++    "tokens": []
++  },
++  "differencesFromOriginalCaller": {
++    "offsets": [],
++    "tokens": []
++  },
++  "compiledSource": "1d3a0c87ca93e982292984c007828acefadf22bb95ebe8e167a721363116eb41",
++  "support": "7822a5d3eb007cbc302b2ea6e038da4628d080c865fef1eb9c32296e454891dc",
++  "proofs": {
++    "offsets": {
++      "exit": 1,
++      "seconds": 0.018335,
++      "peakRssBytes": 31932416,
++      "log": "offsets.stdout",
++      "stdout": "offsets.stdout",
++      "stderr": "offsets.stderr",
++      "stdoutSha256": "cadbb3a156eb94e3e317e79208d8d4cb4881ca2237df47a8dc3e769832329250",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.DirectTokens#offsets",
++      "guard": "code >= 0 && code < 128",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        512,
++        16384
++      ],
++      "verdict": "unverifiable",
++      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "tokens": {
++      "exit": 1,
++      "seconds": 0.019467,
++      "peakRssBytes": 31932416,
++      "log": "tokens.stdout",
++      "stdout": "tokens.stdout",
++      "stderr": "tokens.stderr",
++      "stdoutSha256": "d4844af97d2309637df8cb59bb9d79962199f62cdff46349e4f7a637930ce458",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.DirectTokens#tokens",
++      "guard": "code >= 0 && code < 128",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        512,
++        16384
++      ],
++      "verdict": "unverifiable",
++      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "one-refill": {
++      "exit": 1,
++      "seconds": 0.018624,
++      "peakRssBytes": 31932416,
++      "log": "one-refill.stdout",
++      "stdout": "one-refill.stdout",
++      "stderr": "one-refill.stderr",
++      "stdoutSha256": "31e7dd4732bbc2fb93db83adc2d7197382552c5655266da23d858e759f9d56de",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.DirectParser#oneRefill",
++      "guard": "padding >= 0 && padding < 4",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        512,
++        16384
++      ],
++      "verdict": "unverifiable",
++      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "padding >= 0 && padding < 4",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/fix/offsets.stdout
+@@ -0,0 +1,164 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.DirectTokens#offsets",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "statement": "/tmp/parser-windows-4l7rarkt/offsets/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.DirectTokens#offsets cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 52
++      }
++    ],
++    "output": "✗ campaign.DirectTokens#offsets cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
++    "work": "/tmp/parser-windows-4l7rarkt/offsets",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.005748761,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000022141,
++        "gates_evaluated": 72,
++        "evaluating_seconds": 3.817e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 104,
++        "clauses": 238,
++        "seconds": 0.004719589,
++        "loading_seconds": 0.000335901,
++        "decoding_seconds": 0.000115954,
++        "encoding_seconds": 0.000044284,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.concurrent.atomic.AtomicReferenceArray.<init>(int)",
++          "sites": [
++            "com.fasterxml.jackson.core.util.BufferRecycler.<init>:130"
++          ],
++          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.005,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 104,
++            "clauses": 238
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.015,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.005,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/fix/one-refill.stdout
+@@ -0,0 +1,164 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.DirectParser#oneRefill",
++    "domain": "padding: int",
++    "assume": "padding >= 0 && padding < 4",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "statement": "/tmp/parser-windows-4l7rarkt/one-refill/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.DirectParser#oneRefill cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 25
++      }
++    ],
++    "output": "✗ campaign.DirectParser#oneRefill cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
++    "work": "/tmp/parser-windows-4l7rarkt/one-refill",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.005612775,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000019958,
++        "gates_evaluated": 87,
++        "evaluating_seconds": 2.744e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 119,
++        "clauses": 288,
++        "seconds": 0.004609702,
++        "loading_seconds": 0.000334989,
++        "decoding_seconds": 0.000109735,
++        "encoding_seconds": 0.000044522,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.concurrent.atomic.AtomicReferenceArray.<init>(int)",
++          "sites": [
++            "com.fasterxml.jackson.core.util.BufferRecycler.<init>:130"
++          ],
++          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.005,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 119,
++            "clauses": 288
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.015,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.005,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "padding",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "padding: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "padding >= 0 && padding < 4",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/fix/tokens.stdout
+@@ -0,0 +1,164 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.DirectTokens#tokens",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "statement": "/tmp/parser-windows-4l7rarkt/tokens/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.DirectTokens#tokens cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 55
++      }
++    ],
++    "output": "✗ campaign.DirectTokens#tokens cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
++    "work": "/tmp/parser-windows-4l7rarkt/tokens",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.004848091,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000019146,
++        "gates_evaluated": 72,
++        "evaluating_seconds": 3.005e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 104,
++        "clauses": 238,
++        "seconds": 0.003834898,
++        "loading_seconds": 0.000297762,
++        "decoding_seconds": 0.00011311,
++        "encoding_seconds": 0.00004128,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.concurrent.atomic.AtomicReferenceArray.<init>(int)",
++          "sites": [
++            "com.fasterxml.jackson.core.util.BufferRecycler.<init>:130"
++          ],
++          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.004,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.003,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 104,
++            "clauses": 238
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.015,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.004,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.01
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/parent/Cases.java
+@@ -0,0 +1,17 @@
++package campaign;
++import java.util.Arrays;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    public static void main(String[] args) throws Exception {
++        long[] reference = DirectTokens.trace(0, 0);
++        if (!DirectTokens.correctOffsets(reference)) throw new AssertionError("unwindowed reference");
++        for (int code = 0; code < 128; code++) {
++            long[] t = DirectTokens.trace(code & 31, code >> 5);
++            row(code, fields("cuts", code & 31, "padding", code >> 5),
++                fields("offsets", fields("trace", t, "matchesUnpadded", Arrays.equals(t, reference)),
++                       "tokens", new long[]{t[0], t[3], t[6], t[9], t[10]}),
++                fields("offsets", DirectTokens.offsets(code), "tokens", DirectTokens.tokens(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/parent/DirectTokens.java
+@@ -0,0 +1,58 @@
++package campaign;
++
++import java.io.IOException;
++import com.fasterxml.jackson.core.JsonFactory;
++import com.fasterxml.jackson.core.JsonParser;
++import com.fasterxml.jackson.core.JsonToken;
++import com.fasterxml.jackson.core.async.ByteArrayFeeder;
++import com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase;
++
++public final class DirectTokens {
++    // Three triples, the total number of tokens, and the terminal state (1 for final EOF).
++    static long[] trace(int mask, int padding) throws IOException {
++        byte[] document = {'[', 't', 'r', 'u', 'e', ']'};
++        long[] result = new long[11];
++        try (JsonParser parser = DirectParser.create()) {
++            ByteArrayFeeder feeder = (ByteArrayFeeder) parser.getNonBlockingInputFeeder();
++            int start = 0;
++            for (int end = 1; end <= document.length; end++) {
++                boolean last = end == document.length;
++                if (!last && (mask & (1 << (end - 1))) == 0) continue;
++                int width = end - start;
++                byte[] bytes = new byte[padding + width + 1];
++                for (int i = 0; i < padding; i++) bytes[i] = '!';
++                bytes[bytes.length - 1] = '?';
++                System.arraycopy(document, start, bytes, padding, width);
++                feeder.feedInput(bytes, padding, padding + width);
++                if (last) feeder.endOfInput();
++                while (true) {
++                    JsonToken token = ((NonBlockingUtf8JsonParserBase) parser).nextToken();
++                    if (token == null) {
++                        result[10] = last ? 1 : -1;
++                        return result;
++                    }
++                    if (token == JsonToken.NOT_AVAILABLE) break;
++                    int n = (int) result[9]++;
++                    if (n >= 3) return result;
++                    result[3 * n] = token.id();
++                    result[3 * n + 1] = parser.currentTokenLocation().getByteOffset();
++                    result[3 * n + 2] = parser.currentLocation().getByteOffset();
++                }
++                start = end;
++            }
++        }
++        return result;
++    }
++
++    static boolean correctOffsets(long[] t) {
++        return t[0] == 3 && t[1] == 1 && t[2] == 1 && t[3] == 9 && t[4] == 2 && t[5] == 5
++            && t[6] == 4 && t[7] == 5 && t[8] == 6 && t[9] == 3 && t[10] == 1;
++    }
++    public static int offsets(int code) throws IOException {
++        return correctOffsets(trace(code & 31, code >> 5)) ? 1 : 0;
++    }
++    public static int tokens(int code) throws IOException {
++        long[] t = trace(code & 31, code >> 5);
++        return t[0] == 3 && t[3] == 9 && t[6] == 4 && t[9] == 3 && t[10] == 1 ? 1 : 0;
++    }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/parent/controls.stdout
+@@ -0,0 +1,128 @@
++{"id":0,"input":{"cuts":0,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":1,"input":{"cuts":1,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":2,"input":{"cuts":2,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":3,"input":{"cuts":3,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":4,"input":{"cuts":4,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":5,"input":{"cuts":5,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":6,"input":{"cuts":6,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":7,"input":{"cuts":7,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":8,"input":{"cuts":8,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":9,"input":{"cuts":9,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":10,"input":{"cuts":10,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":11,"input":{"cuts":11,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":12,"input":{"cuts":12,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":13,"input":{"cuts":13,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":14,"input":{"cuts":14,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":15,"input":{"cuts":15,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":16,"input":{"cuts":16,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":17,"input":{"cuts":17,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":18,"input":{"cuts":18,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":19,"input":{"cuts":19,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":20,"input":{"cuts":20,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":21,"input":{"cuts":21,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":22,"input":{"cuts":22,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":23,"input":{"cuts":23,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":24,"input":{"cuts":24,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":25,"input":{"cuts":25,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":26,"input":{"cuts":26,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":27,"input":{"cuts":27,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":28,"input":{"cuts":28,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":29,"input":{"cuts":29,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":30,"input":{"cuts":30,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":31,"input":{"cuts":31,"padding":0},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,5,6,3,1],"matchesUnpadded":true},"tokens":[3,9,4,3,1]},"adapter":{"offsets":1,"tokens":1}}
++{"id":32,"input":{"cuts":0,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":33,"input":{"cuts":1,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":34,"input":{"cuts":2,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":35,"input":{"cuts":3,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":36,"input":{"cuts":4,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":37,"input":{"cuts":5,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":38,"input":{"cuts":6,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":39,"input":{"cuts":7,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":40,"input":{"cuts":8,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":41,"input":{"cuts":9,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":42,"input":{"cuts":10,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":43,"input":{"cuts":11,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":44,"input":{"cuts":12,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":45,"input":{"cuts":13,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":46,"input":{"cuts":14,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":47,"input":{"cuts":15,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":48,"input":{"cuts":16,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":49,"input":{"cuts":17,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":50,"input":{"cuts":18,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":51,"input":{"cuts":19,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":52,"input":{"cuts":20,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":53,"input":{"cuts":21,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":54,"input":{"cuts":22,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":55,"input":{"cuts":23,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":56,"input":{"cuts":24,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":57,"input":{"cuts":25,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":58,"input":{"cuts":26,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":59,"input":{"cuts":27,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":60,"input":{"cuts":28,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":61,"input":{"cuts":29,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":62,"input":{"cuts":30,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":63,"input":{"cuts":31,"padding":1},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,6,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":64,"input":{"cuts":0,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":65,"input":{"cuts":1,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":66,"input":{"cuts":2,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":67,"input":{"cuts":3,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":68,"input":{"cuts":4,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":69,"input":{"cuts":5,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":70,"input":{"cuts":6,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":71,"input":{"cuts":7,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":72,"input":{"cuts":8,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":73,"input":{"cuts":9,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":74,"input":{"cuts":10,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":75,"input":{"cuts":11,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":76,"input":{"cuts":12,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":77,"input":{"cuts":13,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":78,"input":{"cuts":14,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":79,"input":{"cuts":15,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":80,"input":{"cuts":16,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":81,"input":{"cuts":17,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":82,"input":{"cuts":18,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":83,"input":{"cuts":19,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":84,"input":{"cuts":20,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":85,"input":{"cuts":21,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":86,"input":{"cuts":22,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":87,"input":{"cuts":23,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":88,"input":{"cuts":24,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":89,"input":{"cuts":25,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":90,"input":{"cuts":26,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":91,"input":{"cuts":27,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":92,"input":{"cuts":28,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":93,"input":{"cuts":29,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":94,"input":{"cuts":30,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":95,"input":{"cuts":31,"padding":2},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,7,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":96,"input":{"cuts":0,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":97,"input":{"cuts":1,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":98,"input":{"cuts":2,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":99,"input":{"cuts":3,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":100,"input":{"cuts":4,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":101,"input":{"cuts":5,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":102,"input":{"cuts":6,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":103,"input":{"cuts":7,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":104,"input":{"cuts":8,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":105,"input":{"cuts":9,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":106,"input":{"cuts":10,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":107,"input":{"cuts":11,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":108,"input":{"cuts":12,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":109,"input":{"cuts":13,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":110,"input":{"cuts":14,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":111,"input":{"cuts":15,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":112,"input":{"cuts":16,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":113,"input":{"cuts":17,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":114,"input":{"cuts":18,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":115,"input":{"cuts":19,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":116,"input":{"cuts":20,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":117,"input":{"cuts":21,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":118,"input":{"cuts":22,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":119,"input":{"cuts":23,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":120,"input":{"cuts":24,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":121,"input":{"cuts":25,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":122,"input":{"cuts":26,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":123,"input":{"cuts":27,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":124,"input":{"cuts":28,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":125,"input":{"cuts":29,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":126,"input":{"cuts":30,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
++{"id":127,"input":{"cuts":31,"padding":3},"direct":{"offsets":{"trace":[3,1,1,9,2,5,4,8,6,3,1],"matchesUnpadded":false},"tokens":[3,9,4,3,1]},"adapter":{"offsets":0,"tokens":1}}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/parent/experiment.json
+@@ -0,0 +1,227 @@
++{
++  "example": "365",
++  "side": "parent",
++  "cap": null,
++  "binding": {
++    "revision": "99f749d958a55013724571d825625e1032af9d4b",
++    "build": "examples/365-jackson-async-token-offsets/records/qualified-build/build-parent.json",
++    "buildSha256": "353c2b38d584c0ddb09510a39b574a343778b756df50d288d30ae52aeb42d44d",
++    "orderedJars": [
++      "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
++      "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f"
++    ]
++  },
++  "rows": 128,
++  "ordinaryReceipt": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-parent-jdk21.stdout",
++  "ordinarySha256": "00acc837dec516562b489d5af7af8a471ca2eb8904c9b69e92a89e7930026fca",
++  "differencesFromOracle": {
++    "offsets": [
++      32,
++      33,
++      34,
++      35,
++      36,
++      37,
++      38,
++      39,
++      40,
++      41,
++      42,
++      43,
++      44,
++      45,
++      46,
++      47,
++      48,
++      49,
++      50,
++      51,
++      52,
++      53,
++      54,
++      55,
++      56,
++      57,
++      58,
++      59,
++      60,
++      61,
++      62,
++      63,
++      64,
++      65,
++      66,
++      67,
++      68,
++      69,
++      70,
++      71,
++      72,
++      73,
++      74,
++      75,
++      76,
++      77,
++      78,
++      79,
++      80,
++      81,
++      82,
++      83,
++      84,
++      85,
++      86,
++      87,
++      88,
++      89,
++      90,
++      91,
++      92,
++      93,
++      94,
++      95,
++      96,
++      97,
++      98,
++      99,
++      100,
++      101,
++      102,
++      103,
++      104,
++      105,
++      106,
++      107,
++      108,
++      109,
++      110,
++      111,
++      112,
++      113,
++      114,
++      115,
++      116,
++      117,
++      118,
++      119,
++      120,
++      121,
++      122,
++      123,
++      124,
++      125,
++      126,
++      127
++    ],
++    "tokens": []
++  },
++  "differencesFromOriginalCaller": {
++    "offsets": [],
++    "tokens": []
++  },
++  "compiledSource": "1d3a0c87ca93e982292984c007828acefadf22bb95ebe8e167a721363116eb41",
++  "support": "7822a5d3eb007cbc302b2ea6e038da4628d080c865fef1eb9c32296e454891dc",
++  "proofs": {
++    "offsets": {
++      "exit": 1,
++      "seconds": 0.018237,
++      "peakRssBytes": 31895552,
++      "log": "offsets.stdout",
++      "stdout": "offsets.stdout",
++      "stderr": "offsets.stderr",
++      "stdoutSha256": "d3cbcb8487732098c0a955abed27054b77518ab98cb629d442892757315661fb",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.DirectTokens#offsets",
++      "guard": "code >= 0 && code < 128",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        512,
++        16384
++      ],
++      "verdict": "unverifiable",
++      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "tokens": {
++      "exit": 1,
++      "seconds": 0.014415,
++      "peakRssBytes": 31895552,
++      "log": "tokens.stdout",
++      "stdout": "tokens.stdout",
++      "stderr": "tokens.stderr",
++      "stdoutSha256": "b9a1bc5a7236b1d008f8ac4f2d624404d2d5c39cbf81cfe18c659cd310cfc36b",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.DirectTokens#tokens",
++      "guard": "code >= 0 && code < 128",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        512,
++        16384
++      ],
++      "verdict": "unverifiable",
++      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "one-refill": {
++      "exit": 1,
++      "seconds": 0.014182,
++      "peakRssBytes": 31895552,
++      "log": "one-refill.stdout",
++      "stdout": "one-refill.stdout",
++      "stderr": "one-refill.stderr",
++      "stdoutSha256": "c466ec1055291d9771b299667636959507e68fb70821ea382ed6c0fe69219c9b",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.DirectParser#oneRefill",
++      "guard": "padding >= 0 && padding < 4",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        512,
++        16384
++      ],
++      "verdict": "unverifiable",
++      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "padding >= 0 && padding < 4",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/parent/offsets.stdout
+@@ -0,0 +1,164 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.DirectTokens#offsets",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "statement": "/tmp/parser-windows-q8t_jbtq/offsets/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.DirectTokens#offsets cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 52
++      }
++    ],
++    "output": "✗ campaign.DirectTokens#offsets cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
++    "work": "/tmp/parser-windows-q8t_jbtq/offsets",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.0060358,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000020469,
++        "gates_evaluated": 72,
++        "evaluating_seconds": 3.146e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 104,
++        "clauses": 238,
++        "seconds": 0.004961142,
++        "loading_seconds": 0.000309761,
++        "decoding_seconds": 0.000119025,
++        "encoding_seconds": 0.000043703,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.concurrent.atomic.AtomicReferenceArray.<init>(int)",
++          "sites": [
++            "com.fasterxml.jackson.core.util.BufferRecycler.<init>:130"
++          ],
++          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.005,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 104,
++            "clauses": 238
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.015,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.005,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/parent/one-refill.stdout
+@@ -0,0 +1,164 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.DirectParser#oneRefill",
++    "domain": "padding: int",
++    "assume": "padding >= 0 && padding < 4",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "statement": "/tmp/parser-windows-q8t_jbtq/one-refill/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.DirectParser#oneRefill cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 25
++      }
++    ],
++    "output": "✗ campaign.DirectParser#oneRefill cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
++    "work": "/tmp/parser-windows-q8t_jbtq/one-refill",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.0037345,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000021891,
++        "gates_evaluated": 87,
++        "evaluating_seconds": 3.176e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 119,
++        "clauses": 288,
++        "seconds": 0.002854969,
++        "loading_seconds": 0.000319102,
++        "decoding_seconds": 0.000133883,
++        "encoding_seconds": 0.000045446,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.concurrent.atomic.AtomicReferenceArray.<init>(int)",
++          "sites": [
++            "com.fasterxml.jackson.core.util.BufferRecycler.<init>:130"
++          ],
++          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.003,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.002,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 119,
++            "clauses": 288
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.012,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.003,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.008
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "padding",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "padding: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "padding >= 0 && padding < 4",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/input-segmentation/parent/tokens.stdout
+@@ -0,0 +1,164 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.DirectTokens#tokens",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "statement": "/tmp/parser-windows-q8t_jbtq/tokens/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.DirectTokens#tokens cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++        "uri": null,
++        "line": 55
++      }
++    ],
++    "output": "✗ campaign.DirectTokens#tokens cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13 (java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) at com.fasterxml.jackson.core.util.BufferRecycler.<init>:130). With --gaps assume it assumes instead that java.util.concurrent.atomic.AtomicReferenceArray.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
++    "work": "/tmp/parser-windows-q8t_jbtq/tokens",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.003866407,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000018393,
++        "gates_evaluated": 72,
++        "evaluating_seconds": 3.166e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 104,
++        "clauses": 238,
++        "seconds": 0.00298316,
++        "loading_seconds": 0.000309753,
++        "decoding_seconds": 0.000114547,
++        "encoding_seconds": 0.000041946,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.concurrent.atomic.AtomicReferenceArray.<init>(int)",
++          "sites": [
++            "com.fasterxml.jackson.core.util.BufferRecycler.<init>:130"
++          ],
++          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.003,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.002,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 104,
++            "clauses": 238
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.012,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.003,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.008
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]

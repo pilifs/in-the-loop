@@ -1,0 +1,208 @@
+{
+  "schema": "java-domain-public-run/v1",
+  "stage": "final",
+  "example": "365",
+  "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+  "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+  "checkerSha256": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+  "inventory": 2,
+  "fingerprint": "ce3fa6557c891982e69528dc54afbb737db0fae6e12b0a1261efff80cc49f1c6",
+  "subjectJdk": [
+    "21"
+  ],
+  "claims": {
+    "offsets-parent": {
+      "exit": 1,
+      "seconds": 2.562252,
+      "peakRssBytes": 110055424,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "365",
+        "--task",
+        "offsets-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "offsets-parent.log",
+      "status": "unresolved",
+      "receipt": "offsets-parent/20261122T124621Z-23f04e7c/result.json"
+    },
+    "offsets-fix": {
+      "exit": 1,
+      "seconds": 2.593116,
+      "peakRssBytes": 114814976,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "365",
+        "--task",
+        "offsets-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "offsets-fix.log",
+      "status": "unresolved",
+      "receipt": "offsets-fix/20261122T124623Z-c1c9be78/result.json"
+    },
+    "tokens-parent": {
+      "exit": 1,
+      "seconds": 2.746951,
+      "peakRssBytes": 111005696,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "365",
+        "--task",
+        "tokens-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "tokens-parent.log",
+      "status": "unresolved",
+      "receipt": "tokens-parent/20261122T124626Z-6187b535/result.json"
+    },
+    "tokens-fix": {
+      "exit": 1,
+      "seconds": 2.83986,
+      "peakRssBytes": 112041984,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "365",
+        "--task",
+        "tokens-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "tokens-fix.log",
+      "status": "unresolved",
+      "receipt": "tokens-fix/20261122T124629Z-20324fb0/result.json"
+    }
+  },
+  "artifacts": {
+    "parent": "353c2b38d584c0ddb09510a39b574a343778b756df50d288d30ae52aeb42d44d",
+    "fix": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+  },
+  "replay": {
+    "exit": 0,
+    "seconds": 5.190644,
+    "peakRssBytes": 112730112,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "365",
+      "--task",
+      "replay"
+    ],
+    "log": "replay.log",
+    "status": null,
+    "receipt": "replay/20261122T124555Z-488607ae/result.json"
+  },
+  "finite": {
+    "exit": 0,
+    "seconds": 20.690152,
+    "peakRssBytes": 221954048,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "365",
+      "--finite-domain",
+      "--tasks",
+      "offsets-parent,offsets-fix,tokens-parent,tokens-fix",
+      "--checker-seconds",
+      "60"
+    ],
+    "log": "finite.log"
+  },
+  "selectors": {
+    "offsets-parent": {
+      "status": "open",
+      "receipt": "selectors/parent/20261122T124632Z-1c29d759/tasks/offsets-parent/result.json",
+      "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:60); jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13 (java.lang.ref.ReferenceQueue.<init>() at com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.536853,
+        "peakRssBytes": 107761664,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "365",
+          "--native-selectors",
+          "offsets-parent,tokens-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "32"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "tokens-parent": {
+      "status": "open",
+      "receipt": "selectors/parent/20261122T124632Z-1c29d759/tasks/tokens-parent/result.json",
+      "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:60); jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13 (java.lang.ref.ReferenceQueue.<init>() at com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.536853,
+        "peakRssBytes": 107761664,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "365",
+          "--native-selectors",
+          "offsets-parent,tokens-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "32"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "offsets-fix": {
+      "status": "open",
+      "receipt": "selectors/fix/20261122T124637Z-96d457b7/tasks/offsets-fix/result.json",
+      "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:60); jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13 (java.lang.ref.ReferenceQueue.<init>() at com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.017363,
+        "peakRssBytes": 106328064,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "365",
+          "--native-selectors",
+          "offsets-fix,tokens-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "32"
+        ],
+        "log": "selectors-fix.log"
+      }
+    },
+    "tokens-fix": {
+      "status": "open",
+      "receipt": "selectors/fix/20261122T124637Z-96d457b7/tasks/tokens-fix/result.json",
+      "firstBlocker": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:60); jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13 (java.lang.ref.ReferenceQueue.<init>() at com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.017363,
+        "peakRssBytes": 106328064,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "365",
+          "--native-selectors",
+          "offsets-fix,tokens-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "32"
+        ],
+        "log": "selectors-fix.log"
+      }
+    }
+  }
+}

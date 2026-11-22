@@ -1,0 +1,462 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "b24b7da244703552",
+    "format": 1,
+    "example": "365",
+    "statement": {
+      "approach": "target",
+      "task": "offsets-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "offsets-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+        "file": "claims/offsets.json",
+        "sha256": "7e403105a2d744e4cd9bd21020a4df0cc3bccff2c33c525e3911f745f54be0ef",
+        "property": "offsets",
+        "claimKind": "property",
+        "statement": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+        "assume": "code >= 0 && code < 128",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 512,
+          "maxArrayLength": 16384
+        },
+        "explicitBounds": {
+          "unwind": 512,
+          "maxArrayLength": 16384
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/campaign/Cases.java",
+            "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+          }
+        ],
+        "adapter": {
+          "entry": "campaign.AsyncTokens#offsets(I)I",
+          "mapping": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 128
+        },
+        "key": "3451a7e7f8f361d0"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16384
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "offsets-fix",
+      "sidecar": "383fd699041fa8f5307168f51eafdb097ad3d6fc0cfcd74f536e80e5d03334d6",
+      "revisions": {
+        "fix": "596fd82955080ba7207b4adc54100781b5024a61"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "b13f56f75a5b842787d4dd138fbc8f3c296675d633d4d9b1e7777ddf108212d2"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "07e422a3cf15e72e28aae5d788e64b59c6f5d94d2c2efe52af9bf0aef434603a"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "c192c74ad67290633866a01efec660f04875d8c011ee07557f265986e01c931b"
+        },
+        {
+          "revision": "fix",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f",
+          "coordinates": "ch.randelshofer:fastdoubleparser:1.0.90"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/campaign/AsyncTokens.java": "06e1c9eee95e7efab1d4ae0f55f2c854d680d55f0ee375f33d4434f6ed7b77e7",
+        "claims/offsets.json": "7e403105a2d744e4cd9bd21020a4df0cc3bccff2c33c525e3911f745f54be0ef",
+        "controls/table.json": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f",
+        "driver/campaign/Cases.java": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+      },
+      "claimKey": "3451a7e7f8f361d0"
+    }
+  },
+  "attempt": {
+    "id": "20261122T124623Z-c1c9be78",
+    "claim": "b24b7da244703552",
+    "startedAt": "2026-11-22T12:46:23+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "campaign.AsyncTokens#offsets(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/jackson-core-2.19.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/ch/randelshofer/fastdoubleparser/1.0.90/fastdoubleparser-1.0.90.jar",
+      "--assume",
+      "code >= 0 && code < 128",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "512",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "29c8f5eecc0bb82791aa72c444a83555635fbbb7ab56715082feab80b16f01a7",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-123421-final-java-domain-365-jackson-async-toke",
+      "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-365-jackson-async-toke"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.165,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.042,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 512,
+      "maxArrayLength": 16384,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "b24b7da244703552",
+    "attempt": "20261122T124623Z-c1c9be78",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 128",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:60); jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13 (java.lang.ref.ReferenceQueue.<init>() at com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.025,
+            "properties": 1,
+            "unwind": 512,
+            "maxArrayLength": 16384,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.023,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.003,
+                  "lowering": 0.001,
+                  "symbolic": 0.015,
+                  "encoding": 0.003,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 364,
+                  "clauses": 784
+                }
+              }
+            ],
+            "native": {
+              "paths": 6,
+              "merges": 0,
+              "solverCalls": 11,
+              "solvingSeconds": 0.000172594,
+              "gatesEvaluated": 78,
+              "evaluatingSeconds": 4.568e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 364,
+              "clauses": 784,
+              "seconds": 0.022655803,
+              "loadingSeconds": 0.003103026,
+              "decodingSeconds": 0.00119696,
+              "encodingSeconds": 0.002871647,
+              "witnessSeconds": 0.0
+            },
+            "modelsAssume": [
+              "system properties use the standard JVM Properties table and the running JVM permits this property access"
+            ],
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.ThreadLocal.<init>()",
+                "sites": [
+                  "com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:60"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              },
+              {
+                "id": "jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.ref.ReferenceQueue.<init>()",
+                "sites": [
+                  "com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 128",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 512,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:60); jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13 (java.lang.ref.ReferenceQueue.<init>() at com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 128"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "4d7ab7e01cfe9b45db1148038c4066e8d179f36049fdc02d7d62259f5ce7aeb6",
+        "bytes": 128012
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "dd62d1ad8dfa6f566e4403e379f536f6bbcc11a2f71d67eb36b5b7f7e2e9fb6d",
+        "bytes": 626
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "32292af6d7b1502d5528a79665bb9726a8e7fcb81d2ae028c5a25fb6ad9c099a",
+        "bytes": 1947
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "b1f1567fa3d123e4126496f1ebae727fee23c6d21b0f5705ec669d1efe530491",
+        "bytes": 22506
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "b0a15787961302bf1fb6d91ef1a0067184cfec9142086c89d0d54c26a252cbdf",
+        "bytes": 92250
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "909ad8e5b44bfca3547458cabe4e536a8526e3e13945a667b8584f70ab1f3b8e",
+        "bytes": 7300
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "c4fe4ee438ff693b20d6fdd11c9b84ac17de1bb8da063389907798d8c3690799",
+        "bytes": 34930
+      }
+    ]
+  }
+}

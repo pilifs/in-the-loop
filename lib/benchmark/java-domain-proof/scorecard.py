@@ -153,6 +153,10 @@ def stage(job_id, folder, tasks, stage_name):
     if not job_id or layout.find_result(ROOT, job_id) is None:
         return {"state": "pending", "job": job_id, "claims": {}}
     job = Job(job_id)
+    spec = read(ROOT / job.record["job"]["path"])
+    require(spec == job.record["job"]["spec"] and
+            hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest() == job.record["job"]["sha256"],
+            "different managed job definition")
     paths = [p for p in job.files if p.parent.name.startswith(stage_name) and p.name == "run.json"]
     if not paths:
         return {"state": "blocked", "job": job_id, "jobResult": rel(job.folder / "result.json"),
@@ -173,6 +177,219 @@ def stage(job_id, folder, tasks, stage_name):
             "record": rel(job.output(path)), "claims": claims}
 
 
+READER_JOBS = {"364":"20261122-124846-trace-and-check-the-original-avro-reader",
+               "367":"20261122-124847-check-367-fast-reader-producers-and-call"}
+TRANSFER_JOB = "20261122-123429-price-the-avro-buffer-fact-at-the-parque"
+
+
+def reader_evidence(number, primary):
+    job = Job(READER_JOBS[number])
+    out = {"job":job.record["id"], "result":rel(job.folder/"result.json"), "sides":{}}
+    for side in ("parent","fix"):
+        found = [p for p in job.files if p.match(f"reader-foundations/{side}/measurement.json")]
+        if not found:
+            out["sides"][side] = {"blocker":job.record["summary"],"proofs":{}}
+            continue
+        base = found[0].parent
+        path = job.output(found[0])
+        data = read(path)
+        require(data["checker"] == primary["checkerSha256"] and data["binding"]["revision"] == PINS[number][side],
+                "reader producer changed verifier or revision")
+        proofs = {}
+        for name, p in data["proofs"].items():
+            body = job.output(base / p["stdout"])
+            require(sha(body) == p["stdoutSha256"], "different producer outcome")
+            stderr = job.output(base / p["stderr"])
+            require(sha(stderr) == p["stderrSha256"], "different producer diagnostic")
+            if p["verdict"] != "unavailable":
+                raw, = read(body)
+                require(raw["verdict"] == p["verdict"] and raw["target"] == p["target"], "different reader proof")
+                if raw["verdict"] == "verified":
+                    require(raw["stated"]["vacuity"]["status"] == "non-vacuous" and raw["stated"]["bounds"]["complete"]
+                            and set(p["states"]) == set(p["observedRoots"]), "unqualified producer")
+            proofs[name] = {k:p[k] for k in ("target", "guard", "assertion", "verdict", "blocker", "bounds",
+                                               "observedRoots", "seconds", "peakRssBytes")}
+            proofs[name].update(states=p.get("states",{}), premises=p.get("assumptions",[]), receipt=rel(body))
+        traces = data.get("callSites")
+        if traces:
+            for route in ("ordinary","traced"):
+                require(sha(job.output(base/traces[route]["stdout"])) == traces[route]["stdoutSha256"],
+                        "different traced reader events")
+        out["sides"][side] = {"binding":data["binding"],"providers":data["providers"],"jdkModules":data["jdkModules"],
+                              "producerClass":data["producerClass"],"callSiteRows":len(traces["rows"]) if traces else 0,
+                              "proofs":proofs,"measurement":rel(path)}
+    return out
+
+
+def transfer_evidence(primary):
+    job = Job(TRANSFER_JOB)
+    out = {"job":job.record["id"],"result":rel(job.folder/"result.json"),"experimentStatus":job.record["status"]}
+    docs = [p for p in job.files if p.match("parquet-transfer/measurement.json")]
+    if not docs:
+        out["blocker"] = job.record["summary"]
+        return out
+    path = job.output(docs[0])
+    data = read(path)
+    require(data["checkerSha256"] == primary["checkerSha256"], "different downstream checker")
+    for name in ("disabled","reuse"):
+        route = data["routes"][name]
+        actual = job.output(docs[0].parent / name / route["publicWorkflow"]["receipt"])
+        public = read(actual)
+        require(public["claim"]["statement"]["task"] == "extent-fix" and
+                public["attempt"]["tools"]["jvmcontract"] == data["checkerSha256"],"wrong downstream public claim")
+    routes = {}
+    for name,r in data["routes"].items():
+        routes[name] = {k:r[k] for k in ("seconds","smallProofOrValidationSeconds","siteSeconds","peakRssBytes")}
+        if name != "clean":
+            routes[name].update(wideProofSeconds=r["wideProof"]["seconds"], publicSeconds=r["publicWorkflow"]["seconds"],
+                                publicStatus=r["publicWorkflow"]["status"], endToEndSeconds=r["endToEndSeconds"])
+    out.update(measurement=rel(path), routes=routes, maximumBacking=data["maximumBacking"],
+               valueWrapsWithinTwenty=len(data["valueWrapsWithinTwenty"]),
+               metadataWrapsWithinTwenty=len(data["metadataWrapsWithinTwenty"]),
+               historicalCertificate=data["historicalCertificate"],usedCertificate=data["usedCertificate"],
+               directHistoricalReuse=data["directHistoricalReuse"],invalidations=data["invalidations"],
+               readOnlyChild=data["readOnlyChild"]["verdict"],readOnlyBlocker=data["readOnlyChild"]["firstBlocker"],
+               checkerImportsCertificate=data["checkerImportsCertificate"])
+    raw_child=job.output(docs[0].parent/"read-only-child.native.json")
+    require(sha(raw_child)==data["readOnlyChild"]["proofSha256"],"different read-only proof")
+    out["readOnlyReceipt"]=rel(raw_child)
+    out["serialized"]={}
+    for side in ("parent","fix"):
+        paths=[p for p in job.files if p.match(f"serialized-{side}/measurement.json")]
+        if paths:
+            d=read(job.output(paths[0]))
+            out["serialized"][side]={}
+            for name,r in d["proofs"].items():
+                raw=job.output(paths[0].parent/r["stdout"])
+                require(sha(raw)==r["stdoutSha256"],"different serialized companion result")
+                out["serialized"][side][name]={"verdict":r["verdict"],"blocker":r["blocker"],"receipt":rel(raw)}
+    return out
+
+
+def input_segments(number, job_id, primary):
+    job = Job(job_id)
+    results = {}
+    for p in job.files:
+        if p.name != "experiment.json" or "input-segmentation" not in p.parts:
+            continue
+        path = job.output(p)
+        data = read(path)
+        side = data["side"]
+        require(data["checker"] == primary["checkerSha256"] and data["binding"]["revision"] == PINS[number][side],
+                "different verifier or JAR for parser companion")
+        rows = [json.loads(line) for line in job.output(p.parent/"controls.stdout").read_text().splitlines()]
+        table = read(ROOT/"examples"/PINS[number]["folder"]/"controls/table.json")["cases"]
+        require(len(rows) == len(table), "incomplete parser control grid")
+        require(sha(ROOT/data["ordinaryReceipt"]) == data["ordinarySha256"], "changed primary control stream")
+        original = [json.loads(line) for line in (ROOT/data["ordinaryReceipt"]).read_text().splitlines()]
+        for field in table[0]["expected"]:
+            require([r["id"] for r,t in zip(rows,table,strict=True) if r["direct"][field] != t["expected"][field]]
+                    == data["differencesFromOracle"][field], "incorrect parser oracle comparison")
+            require([r["id"] for r,o in zip(rows,original,strict=True) if r["direct"][field] != o["direct"][field]]
+                    == data["differencesFromOriginalCaller"][field], "incorrect input-source comparison")
+        proofs={}
+        for name,r in data["proofs"].items():
+            raw_path=job.output(p.parent/r["stdout"])
+            require(sha(raw_path)==r["stdoutSha256"], "different parser companion proof")
+            raw,=read(raw_path)
+            require(raw["verdict"]==r["verdict"],"different parser verdict")
+            witness = None
+            if raw["verdict"]=="violation" and name in data["differencesFromOracle"]:
+                inputs = raw["counterexample"]["inputs"]
+                if len(inputs)==1 and inputs[0]["value"] in data["differencesFromOracle"][name]:
+                    witness=inputs
+            proofs[name]={"verdict":r["verdict"],"blocker":r["blocker"],"receipt":rel(raw_path),
+                          "matchingPhysicalRow":witness,"seconds":r["seconds"],"peakRssBytes":r["peakRssBytes"]}
+        results.setdefault(side,{})[str(data["cap"]) if data["cap"] else "explicit-context"] = {
+            "rows":data["rows"],"differencesFromOracle":data["differencesFromOracle"],
+            "differencesFromOriginalCaller":data["differencesFromOriginalCaller"],"proofs":proofs,"measurement":rel(path)}
+    return {"job":job_id,"result":rel(job.folder/"result.json"),"sides":results}
+
+
+def selector_price(primary):
+    name="20261122-125536-price-checked-avro-reuse-on-the-decided"
+    if layout.find_result(ROOT,name) is None:
+        return {"job":name,"state":"pending"}
+    job=Job(name)
+    paths=[p for p in job.files if p.match("parquet-selector-transfer/measurement.json")]
+    if not paths:
+        return {"job":name,"state":job.record["status"],"blocker":job.record["summary"],"result":rel(job.folder/"result.json")}
+    path=paths[0]; info=read(job.output(path))
+    require(info["checkerSha256"]==primary["checkerSha256"],"different checker on priced public claim")
+    folder=ROOT/"examples"/PINS["363"]["folder"]
+    ex=read(folder/"example.json")
+    plan=route.resolve(folder,ex,sidecar.load(folder,ex),"extent-fix")
+    priced={}
+    for label in ("disabled","reuse"):
+        r=info["routes"][label]; public=r["publicWorkflow"]
+        receipt=job.output(path.parent/label/public["receipt"])
+        checked=native_selectors.validate_result(folder,plan,receipt)
+        require(checked["status"]=="established" and checked["checked"]==64 and
+                public["checker"]==info["checkerSha256"],"unqualified downstream transfer")
+        priced[label]={"publicStatus":checked["status"],"admitted":checked["admitted"],
+                       "endToEndSeconds":r["endToEndSeconds"],"callSiteSeconds":r["siteSeconds"],
+                       "validationSeconds":r["smallProofOrValidationSeconds"],"wideProofSeconds":r["wideProof"]["seconds"],
+                       "publicWorkflowSeconds":public["seconds"],"publicCheckerSeconds":public["checkerWallSeconds"],
+                       "peakRssBytes":max(public["peakRssBytes"],r["peakRssBytes"]),"receipt":rel(receipt)}
+    return {"job":name,"state":"measured","result":rel(job.folder/"result.json"),"measurement":rel(job.output(path)),
+            "routes":priced,"cleanProducerSeconds":info["routes"]["clean"]["seconds"],
+            "recertificationSeconds":info["routes"]["clean"]["smallProofOrValidationSeconds"],
+            "directHistoricalReuse":info["directHistoricalReuse"],"checkerImportsCertificate":False}
+
+
+def enum_foundations(primary):
+    name="20261122-125537-qualify-avro-enum-actions-and-the-utf8-d"
+    if layout.find_result(ROOT,name) is None:
+        return {"job":name,"state":"pending"}
+    job=Job(name); sides={}
+    for p in job.files:
+        if not p.match("enum-producers/*/measurement.json"):
+            continue
+        data=read(job.output(p))
+        require(data["checker"]==primary["checkerSha256"] and data["revision"]==PINS["364"][p.parent.name],
+                "different enum checker or original revision")
+        results={}
+        for label,v in data["proofs"].items():
+            raw_path=job.output(p.parent/v["stdout"])
+            require(sha(raw_path)==v["stdoutSha256"],"different enum proof")
+            results[label]={k:v.get(k) for k in ("verdict","blocker","states","observedRoots","guard","seconds","peakRssBytes")}
+            results[label]["receipt"]=rel(raw_path)
+        sides[p.parent.name]=results
+    return {"job":name,"state":job.record["status"],"result":rel(job.folder/"result.json"),"sides":sides}
+
+
+def foundation_results(result):
+    readers = {}
+    for n, job in READER_JOBS.items():
+        primary = result["cases"][n]["finalRun"]
+        if primary.get("checkerSha256") and layout.find_result(ROOT, job):
+            readers[n] = reader_evidence(n, primary)
+    public = result["cases"]["363"]["finalRun"]
+    transfer = (transfer_evidence(public) if public.get("checkerSha256") and layout.find_result(ROOT, TRANSFER_JOB)
+                else {"job":TRANSFER_JOB,"experimentStatus":"pending"})
+    comparison = {}
+    if len(readers) == 2:
+        for side in ("parent","fix"):
+            first, later = [readers[n]["sides"][side] for n in ("364","367")]
+            if "providers" not in first or "providers" not in later:
+                continue
+            comparison[side] = {"sameProducerClass":first["producerClass"] == later["producerClass"],
+                                "sameJdkModules":first["jdkModules"] == later["jdkModules"],
+                                "sameOrderedJars":first["binding"]["orderedJars"] == later["binding"]["orderedJars"],
+                                "sameProviderClass":{n:c["class"] == later["providers"][n]["class"]
+                                                     for n,c in first["providers"].items()},
+                                "checkedAgain":sorted(first["proofs"].keys() & later["proofs"].keys())}
+    segments={}
+    for number,job in (("365","20261122-124440-jackson-logical-offsets-with-an-explicit"),
+                       ("366","20261122-124440-csv-short-reads-at-three-reader-caps")):
+        primary=result["cases"][number]["finalRun"]
+        if primary.get("checkerSha256") and layout.find_result(ROOT,job):
+            segments[number]=input_segments(number,job,primary)
+    return {"readers":readers,"avroClasspathComparison":comparison,"parquet":transfer,
+            "selectorTransfer":selector_price(public),"enumActions":enum_foundations(result["cases"]["364"]["finalRun"]),
+            "inputSegmentation":segments}
+
+
 def compile_scorecard():
     result = {"schema": "java-domain-scorecard/v1", "planned": 20, "cases": {},
               "earlierPopulations": {"sixPRs": {"ordinary": [39, 46], "finite": [46, 46]},
@@ -190,6 +407,13 @@ def compile_scorecard():
         final_job = final_specs[0].stem if final_specs else None
         opening = stage(opening_job, folder, tasks, "opening")
         final = stage(final_job, folder, tasks, "final")
+        if opening["claims"] and final["claims"]:
+            require(opening["builds"] == final["builds"], "the historical artifacts changed between measurements")
+            for name in opening["claims"].keys() & final["claims"].keys():
+                before, after = opening["claims"][name], final["claims"][name]
+                require(all(before[k] == after[k] for k in ("claimKey","binding","checkerBudgetSeconds")) and
+                        all(before["finite"][k] == after["finite"][k] for k in ("inputs","differences","status")),
+                        f"{name}: the two measurements differ in scope, inputs or JVM behavior")
         if final["claims"]:
             verifiers.add((final["source"], final["checkerSha256"], final["fingerprint"]))
         rows = {}
@@ -211,6 +435,7 @@ def compile_scorecard():
     require(len(verifiers) <= 1, "final claims were measured on different verifiers")
     require(all(sum(c.values()) == result["planned"] for c in counts.values()), "wrong campaign denominator")
     result["cases"]["367"]["jvmControls"] = default_controls()
+    result["foundations"] = foundation_results(result)
     result["totals"] = counts
     return result
 

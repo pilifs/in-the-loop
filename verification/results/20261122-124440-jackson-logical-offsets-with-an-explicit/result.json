@@ -1,0 +1,344 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-124440-jackson-logical-offsets-with-an-explicit",
+  "title": "Jackson logical offsets with an explicit parser context",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.8s, peak 99.7 MiB (estimated 3m00s, 3.0 GiB); 22 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-124440-jackson-logical-offsets-with-an-explicit.json",
+    "sha256": "bea08d1707e719d1221064e5425c0253657d26f77a4614f4e31b6ed2575ecc8d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-124440-jackson-logical-offsets-with-an-explicit",
+      "title": "Jackson logical offsets with an explicit parser context",
+      "description": "The same frozen nextToken loop uses the original concrete parser with an explicit context, fresh unpooled recycler and canonicalizer. Check a two-feed witness and all partitions. Compare each trace with the factory caller on both sides.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "java-input-segmentation"
+      ],
+      "links": {
+        "examples": [
+          "365"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:44:40+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Check the separate parser entry on paired original modules",
+          "run": "python3 -B lib/benchmark/java-domain-proof/window_experiments.py 365 --output examples/365-jackson-async-token-offsets/records/input-segmentation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/365-jackson-async-token-offsets/records/input-segmentation"
+      ]
+    }
+  },
+  "sourceCommit": "f040551d5639e5dec7cfa4f66e5c1cd360372592",
+  "startedAt": "2026-11-22T12:49:50+00:00",
+  "finishedAt": "2026-11-22T12:53:23+00:00",
+  "wallSeconds": 213.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 303280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104579072,
+    "wallSeconds": 1.8,
+    "cpuSeconds": 3.0,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the separate parser entry on paired original modules",
+      "run": "python3 -B lib/benchmark/java-domain-proof/window_experiments.py 365 --output examples/365-jackson-async-token-offsets/records/input-segmentation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 1.805,
+      "cpuSeconds": 2.982,
+      "cpuThrottledSeconds": 0.322,
+      "peakMemoryBytes": 104579072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-separate-parser-entr.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/Cases.java",
+      "change": "added",
+      "bytes": 817,
+      "sha256": "190c889e6e04c418f1c1c3b5fb5826c0eeaadecac2f0273098814c2ec1c982f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/DirectTokens.java",
+      "change": "added",
+      "bytes": 2691,
+      "sha256": "1d3a0c87ca93e982292984c007828acefadf22bb95ebe8e167a721363116eb41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/controls.stdout",
+      "change": "added",
+      "bytes": 22506,
+      "sha256": "b1f1567fa3d123e4126496f1ebae727fee23c6d21b0f5705ec669d1efe530491",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/experiment.json",
+      "change": "added",
+      "bytes": 5992,
+      "sha256": "eaea1e0d2ce6be04d00262708dbaf2ce95f8649e682daa5fe82427fe5f411f26",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/offsets.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/offsets.stdout",
+      "change": "added",
+      "bytes": 6558,
+      "sha256": "cadbb3a156eb94e3e317e79208d8d4cb4881ca2237df47a8dc3e769832329250",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/one-refill.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/one-refill.stdout",
+      "change": "added",
+      "bytes": 6587,
+      "sha256": "31e7dd4732bbc2fb93db83adc2d7197382552c5655266da23d858e759f9d56de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/tokens.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/tokens.stdout",
+      "change": "added",
+      "bytes": 6550,
+      "sha256": "d4844af97d2309637df8cb59bb9d79962199f62cdff46349e4f7a637930ce458",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/Cases.java",
+      "change": "added",
+      "bytes": 817,
+      "sha256": "190c889e6e04c418f1c1c3b5fb5826c0eeaadecac2f0273098814c2ec1c982f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/DirectTokens.java",
+      "change": "added",
+      "bytes": 2691,
+      "sha256": "1d3a0c87ca93e982292984c007828acefadf22bb95ebe8e167a721363116eb41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/controls.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/controls.stdout",
+      "change": "added",
+      "bytes": 22602,
+      "sha256": "00acc837dec516562b489d5af7af8a471ca2eb8904c9b69e92a89e7930026fca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/experiment.json",
+      "change": "added",
+      "bytes": 6993,
+      "sha256": "58f25ad64aab85b82aeb799384d3b48d259610986cdf97eb6d7f6b131f649397",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/offsets.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/offsets.stdout",
+      "change": "added",
+      "bytes": 6556,
+      "sha256": "d3cbcb8487732098c0a955abed27054b77518ab98cb629d442892757315661fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/one-refill.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/one-refill.stdout",
+      "change": "added",
+      "bytes": 6585,
+      "sha256": "c466ec1055291d9771b299667636959507e68fb70821ea382ed6c0fe69219c9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/tokens.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/tokens.stdout",
+      "change": "added",
+      "bytes": 6552,
+      "sha256": "b9a1bc5a7236b1d008f8ac4f2d624404d2d5c39cbf81cfe18c659cd310cfc36b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:53:32+00:00",
+    "applied": [
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/Cases.java",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/DirectTokens.java",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/controls.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/controls.stdout",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/experiment.json",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/offsets.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/offsets.stdout",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/one-refill.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/one-refill.stdout",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/tokens.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/fix/tokens.stdout",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/Cases.java",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/DirectTokens.java",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/controls.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/controls.stdout",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/experiment.json",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/offsets.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/offsets.stdout",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/one-refill.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/one-refill.stdout",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/tokens.stderr",
+      "examples/365-jackson-async-token-offsets/records/input-segmentation/parent/tokens.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c0abc875ddf18e776e940703bf3e322d26d6d631",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c0abc875ddf18e776e940703bf3e322d26d6d631/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T125323Z-571365fb847f3217",
+      "outputs": "20261122T125323Z-590435751c22c86a",
+      "diff": "20261122T125323Z-606121a33b5198f5"
+    }
+  }
+}

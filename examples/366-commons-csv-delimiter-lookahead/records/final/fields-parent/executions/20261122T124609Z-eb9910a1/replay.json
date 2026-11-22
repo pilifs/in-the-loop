@@ -1,0 +1,68 @@
+[
+  {
+    "claimKey": "d12184324cfff702",
+    "entry": "campaign.DelimitedFields#fields(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 3
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "14255dcf71d19b7e2e3f747b9631484f66ca2046f63cfc5adece53672eccc61c",
+        "classpath": [
+          "f20665c4f013f4ca1411e161c6abcc8a58071260339b2131aaff0f17886b07ec",
+          "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 3;\nif (!(code >= 0 && code < 14)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = campaign.DelimitedFields.fields(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 3,
+      "input": {
+        "delimiter": "||",
+        "source": "a||b||",
+        "controlDelimiter": "|~|",
+        "controlSource": "a|b"
+      },
+      "field": "fields",
+      "direct": {
+        "parent": {
+          "fields": [
+            [
+              "a",
+              "b|"
+            ]
+          ],
+          "prefixes": [
+            [
+              "a|b"
+            ]
+          ]
+        }
+      },
+      "tableSha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+    }
+  }
+]

@@ -1,0 +1,477 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "7e782e35db35c670",
+    "format": 1,
+    "example": "363",
+    "statement": {
+      "approach": "target",
+      "task": "fresh-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "fresh-parent",
+        "kind": "prove",
+        "relation": "preservation",
+        "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+        "file": "claims/fresh.json",
+        "sha256": "693b441caf7df45c2f45f5232fc2d46bbab455b0ae2379fa73c6b0045129b1b2",
+        "property": "fresh",
+        "claimKind": "property",
+        "statement": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there.",
+        "assume": "code >= 0 && code < 64",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 2048
+        },
+        "explicitBounds": {
+          "unwind": 96,
+          "maxArrayLength": 2048
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/campaign/Cases.java",
+            "sha256": "adbccc8d39f5d50f41b9d47d824008a512a8f7ff79f97fb23fe3e9aea393ef3b"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "0a6bd3a803c6e3fa2f78882ee301a5e7ce72ba737b1e3eb7c0f2e842d4371639"
+          }
+        ],
+        "adapter": {
+          "entry": "campaign.NestedBinary#fresh(I)I",
+          "mapping": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 64
+        },
+        "key": "fb12fa81463dd0af"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 2048
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "fresh-parent",
+      "sidecar": "38811e0e66b2d656984afffa97a2c0edadd7bc79dbacf04fafdfa13ed5ec7de5",
+      "revisions": {
+        "parent": "dfc025e17e21a326addaf0e43c493e085cbac8f4"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "e550bb0c68d30c86b23d8ed68e8fa0204befaf0c7d987a31be2c78beb1da9dff"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "7ee4a418859cef1554aafa991e7bcaa0f2a2b3dbe4344ae596c18dfcefae276e"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "3ef6cb525dfbc9546c958e595ae47e68be7d685d27d2747811375f9e1dae4f03"
+        },
+        {
+          "revision": "parent",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "5f6a25492d3f4e624d198cd7a616d9937650706ed96ec55d8c740b701871e609",
+          "coordinates": "org.apache.parquet:parquet-common:1.17.0-SNAPSHOT"
+        },
+        {
+          "revision": "parent",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "2dbc14d38d0a9c447f0340cf23bdd960881b2ac1765052b1730e15f36964bced",
+          "coordinates": "org.apache.parquet:parquet-format-structures:1.17.0-SNAPSHOT"
+        },
+        {
+          "revision": "parent",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
+          "coordinates": "javax.annotation:javax.annotation-api:1.3.2"
+        },
+        {
+          "revision": "parent",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "c080ebd102bd4c569d2acdbf47dfa1c43c40c6034a00bc4cb13e3ef28d7f1212",
+          "coordinates": "org.apache.parquet:parquet-column:1.17.0-SNAPSHOT"
+        },
+        {
+          "revision": "parent",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "38aa8df0835db985a41ca806cbeab196bbcbf105edb56addb54d5821b600f3cd",
+          "coordinates": "org.apache.parquet:parquet-encoding:1.17.0-SNAPSHOT"
+        },
+        {
+          "revision": "parent",
+          "position": 8,
+          "role": "dependency",
+          "sha256": "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf",
+          "coordinates": "org.locationtech.jts:jts-core:1.20.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/campaign/NestedBinary.java": "512b6213dd62fcd38a2cc2f737d4418745769383cd7e1bd25f2b443b16359903",
+        "claims/fresh.json": "693b441caf7df45c2f45f5232fc2d46bbab455b0ae2379fa73c6b0045129b1b2",
+        "controls/table.json": "0a6bd3a803c6e3fa2f78882ee301a5e7ce72ba737b1e3eb7c0f2e842d4371639",
+        "driver/campaign/Cases.java": "adbccc8d39f5d50f41b9d47d824008a512a8f7ff79f97fb23fe3e9aea393ef3b"
+      },
+      "claimKey": "fb12fa81463dd0af"
+    }
+  },
+  "attempt": {
+    "id": "20261122T124824Z-cb6f4064",
+    "claim": "7e782e35db35c670",
+    "startedAt": "2026-11-22T12:48:24+00:00",
+    "seconds": 60.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "campaign.NestedBinary#fresh(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/parquet-variant-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/org/apache/parquet/parquet-common/1.17.0-SNAPSHOT/parquet-common-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/org/apache/parquet/parquet-format-structures/1.17.0-SNAPSHOT/parquet-format-structures-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
+      "--classpath",
+      "prepare/parent/lib/org/apache/parquet/parquet-column/1.17.0-SNAPSHOT/parquet-column-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/org/apache/parquet/parquet-encoding/1.17.0-SNAPSHOT/parquet-encoding-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
+      "--assume",
+      "code >= 0 && code < 64",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "2048",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "3f34a0e21ab336735e74cf799ba8237e5cef6480eabcb86296d97859e495c54a",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-123421-final-java-domain-363-parquet-nested-bin",
+      "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-363-parquet-nested-bin"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 60.077,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 96,
+      "maxArrayLength": 2048,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "7e782e35db35c670",
+    "attempt": "20261122T124824Z-cb6f4064",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 64",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the engine did not finish within the time limit",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 60.044,
+            "properties": 1,
+            "unwind": 96,
+            "maxArrayLength": 2048,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 60.002,
+                "ended": "out-of-time",
+                "ending": "timeout",
+                "phases": {
+                  "loading": 0.003,
+                  "lowering": 0.0,
+                  "symbolic": 0.366,
+                  "encoding": 1.334,
+                  "solving": 58.3,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 291298,
+                  "clauses": 870883
+                }
+              }
+            ],
+            "native": {
+              "paths": 44,
+              "merges": 0,
+              "solverCalls": 2590,
+              "solvingSeconds": 58.299727442,
+              "gatesEvaluated": 29251,
+              "evaluatingSeconds": 0.009170266,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 291298,
+              "clauses": 870883,
+              "seconds": 60.002367468,
+              "loadingSeconds": 0.002601701,
+              "decodingSeconds": 0.000414928,
+              "encodingSeconds": 1.333895333,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 64",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the engine did not finish within the time limit",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 64"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "57db6adf430c4478ed985c2fa639a6ac5faf3df8d5a607731840098b7acde7c3",
+        "bytes": 81680
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "60bd680a76c6ec5a0673a10d8e68e9409e7d7eaba4c43adfad77305231400c66",
+        "bytes": 105
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "bfea29978b01b4ec18e00e948b0e35d133bf57d6cd7124fe50b59542fe7b943c",
+        "bytes": 1971
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "1b3080b0da3ac7c86f0c075b0fa319b9fb8fd3fa97f2fbf1841f332acde5b75f",
+        "bytes": 16196
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "437f271338fa3338a508c03bc88f60b135e51e92d0e60471394a0835cf465b21",
+        "bytes": 54770
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "aa583b916352cbdaf10cd5510ca80ba67d76fdb9c1562b1840abde4215d98c1c",
+        "bytes": 4443
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "f41714f9a51e95012bca98cc0da9186bf2361a0fd2cb6894f3fca866605f36b6",
+        "bytes": 26374
+      }
+    ]
+  }
+}

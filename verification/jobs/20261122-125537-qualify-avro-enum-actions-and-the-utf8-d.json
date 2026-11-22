@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-125537-qualify-avro-enum-actions-and-the-utf8-d",
+  "title": "Qualify Avro enum actions and the Utf8 decoder prerequisite",
+  "description": "Check Resolver.resolve on the unchanged enum pair, reversed symbol order and a different short name. The older binary decoder constructs Utf8 and stops at its initializer. The separately named companion captures just that initializer before checking all three wire bytes and EOF, to compare with the later reader's ordinary producer.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "avro-schema-resolution"
+  ],
+  "links": {
+    "examples": [
+      "364",
+      "367"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T12:55:37+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "14m"
+  },
+  "steps": [
+    {
+      "name": "Check enum actions and Utf8-conditioned decoding on parent and fix",
+      "run": "python3 -B lib/benchmark/java-domain-proof/enum_producers.py --output examples/364-avro-enum-namespace/records/enum-producers",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/364-avro-enum-namespace/records/enum-producers"
+  ]
+}
