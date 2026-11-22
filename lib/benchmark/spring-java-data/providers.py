@@ -31,7 +31,9 @@ def observe(number, side, folder, plan, out):
         target=runtime.prepare(plan,side,stage)
         if target.stage!="artifacts-ready":raise ValueError(target.diagnostic)
         driver,=[a for a in target.artifacts if a.role=="driver"]
-        paths=[stage/driver.path,*[stage/p for p in target.classpath]]
+        paths=[stage/p for p in target.classpath]
+        if not paths or paths[0] != stage/driver.path:
+            raise ValueError("the prepared control did not put its driver first")
         jdk=Path(runtime_jdk.home("21"))
         trace=work/"loads.log"
         package="springwork" if number in (368,370,372,374) else "datawork"
@@ -40,6 +42,11 @@ def observe(number, side, folder, plan, out):
                 capture_output=True,check=True)
         # The traced process must give every same observation as the uninstrumented public workflow.
         recorded=next(p for p in sorted(folder.glob("receipts/replay*/*/records/control-"+side+"-jdk21.stdout")) if p.is_file())
+        controls=read(recorded.parent/"execution.json")["records"]
+        prior,=[c for c in controls if c["revision"]==side]
+        ordered=[{"path":p.relative_to(stage).as_posix(),"sha256":digest(p)} for p in paths]
+        if ordered!=[{k:item[k] for k in ("path","sha256")} for item in prior["identities"]["classpath"]]:
+            raise ValueError("class logging used a different ordered public classpath")
         if run.stdout.splitlines()!=recorded.read_bytes().splitlines():raise ValueError("class logging changed the public result")
         lines=trace.read_text().splitlines()
         selected={}
@@ -57,7 +64,7 @@ def observe(number, side, folder, plan, out):
                 body=archive.read(member)
             if runtime_jar.this_class(body)!=resource[:-6]:raise ValueError("different class declaration")
             selected[name]={"jarIndex":index,"jarSha256":digest(jar),"entry":member.filename,"classSha256":hashlib.sha256(body).hexdigest()}
-        return {"commit":target.commit,"jdk":runtime_jdk.release(jdk),"orderedJars":[{"path":p.relative_to(stage).as_posix(),"sha256":digest(p)} for p in paths],
+        return {"commit":target.commit,"jdk":runtime_jdk.release(jdk),"orderedJars":ordered,
                 "classes":selected,"ordinaryRows":len(run.stdout.splitlines()),"ordinarySha256":digest(recorded),
                 "ordinary":recorded.relative_to(ROOT).as_posix()}
 

@@ -1,0 +1,1691 @@
+{
+  "schema": "spring-java-data-workstream/v1",
+  "workstream": "data",
+  "primary": 14,
+  "totals": {
+    "opening": {
+      "unresolved": 9,
+      "established": 5
+    },
+    "ordinary": {
+      "established": 8,
+      "refuted": 1,
+      "unresolved": 5
+    },
+    "finite": {
+      "established": 11,
+      "refuted": 3
+    }
+  },
+  "examples": {
+    "369": {
+      "example": 369,
+      "folder": "examples/369-boxed-ragged-rows",
+      "stages": {
+        "opening": {
+          "id": "20261122-161543-boxed-parser-values-and-independent-resu",
+          "status": "passed",
+          "source": "3089187967c7051c99429aa72a175d23e537accb",
+          "result": "verification/results/2026/11/22/20261122-161543-boxed-parser-values-and-independent-resu/result.json"
+        },
+        "nativeFinal": {
+          "id": "20261122-165838-qualified-prove-boxed-row-values-and-mut",
+          "status": "passed",
+          "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
+          "result": "verification/results/2026/11/22/20261122-165838-qualified-prove-boxed-row-values-and-mut/result.json"
+        }
+      },
+      "claims": {
+        "values-landed": {
+          "entry": "datawork.RowChecks#values(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 187",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Every output row has the original width and ordered signed int values, with malformed, null and overflowing tokens mapped to zero.",
+          "frozenInputs": 187,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/values-landed.json",
+            "inputs": 187,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "d34af32896d215e2",
+            "workflow": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/result.json",
+            "receipt": "examples/369-boxed-ragged-rows/receipts/values-landed/executions/20261122T161951Z-10b16b31/checker.json",
+            "binding": {
+              "entry": "datawork.RowChecks#values(I)I",
+              "classSha256": "80908a3f3f94481bf7d9fca63108746538d7f471f0e069d8a35b4e3c69323c73",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+              "subjectClassSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f",
+              "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+              "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.3005,
+            "peakRssBytes": 128036864,
+            "firstBlocker": "outside the fragment: a lambda whose call of org.apache.commons.lang3.math.NumberUtils.toInt needs an unsupported argument or result conversion"
+          },
+          "ordinary": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/values-landed/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/values-landed/result.json"
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/values-landed/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/values-landed/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 0,
+              "seconds": 13.2253,
+              "peakRssBytes": 112484352,
+              "log": "landed.log",
+              "logSha256": "1d21ed22c2a9873ad8918f1f8dac01b9ff6d4dacef38746f4ec6cf7e088e5867"
+            }
+          }
+        },
+        "fresh-landed": {
+          "entry": "datawork.RowChecks#fresh(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 187",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+          "frozenInputs": 187,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/fresh-landed.json",
+            "inputs": 187,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "488d28802bebf7ac",
+            "workflow": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/result.json",
+            "receipt": "examples/369-boxed-ragged-rows/receipts/fresh-landed/executions/20261122T161953Z-58f9079d/checker.json",
+            "binding": {
+              "entry": "datawork.RowChecks#fresh(I)I",
+              "classSha256": "80908a3f3f94481bf7d9fca63108746538d7f471f0e069d8a35b4e3c69323c73",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+              "subjectClassSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f",
+              "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+              "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.2829,
+            "peakRssBytes": 111706112,
+            "firstBlocker": "outside the fragment: a lambda whose call of org.apache.commons.lang3.math.NumberUtils.toInt needs an unsupported argument or result conversion"
+          },
+          "ordinary": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/fresh-landed/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/fresh-landed/result.json"
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/fresh-landed/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T172811Z-ed2a5912/tasks/fresh-landed/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 0,
+              "seconds": 13.2253,
+              "peakRssBytes": 112484352,
+              "log": "landed.log",
+              "logSha256": "1d21ed22c2a9873ad8918f1f8dac01b9ff6d4dacef38746f4ec6cf7e088e5867"
+            }
+          }
+        },
+        "values-release317": {
+          "entry": "datawork.RowChecks#values(I)I",
+          "revision": "release317",
+          "guard": "code >= 0 && code < 187",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Every output row has the original width and ordered signed int values, with malformed, null and overflowing tokens mapped to zero.",
+          "frozenInputs": 187,
+          "primary": false,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/values-release317.json",
+            "inputs": 187,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "d34af32896d215e2",
+            "workflow": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/result.json",
+            "receipt": "examples/369-boxed-ragged-rows/receipts/values-release317/executions/20261122T161955Z-9de30457/checker.json",
+            "binding": {
+              "entry": "datawork.RowChecks#values(I)I",
+              "classSha256": "80908a3f3f94481bf7d9fca63108746538d7f471f0e069d8a35b4e3c69323c73",
+              "loadedFrom": "adapter-release317.jar",
+              "subject": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+              "subjectClassSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f",
+              "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+              "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.3651,
+            "peakRssBytes": 126402560,
+            "firstBlocker": "outside the fragment: a lambda whose call of org.apache.commons.lang3.math.NumberUtils.toInt needs an unsupported argument or result conversion"
+          },
+          "ordinary": {
+            "status": "established",
+            "record": "records/native-selectors/release317/20261122T172825Z-2febf650/tasks/values-release317/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T172825Z-2febf650/tasks/values-release317/result.json"
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/release317/20261122T172825Z-2febf650/tasks/values-release317/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T172825Z-2febf650/tasks/values-release317/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 0,
+              "seconds": 13.3667,
+              "peakRssBytes": 125022208,
+              "log": "release317.log",
+              "logSha256": "841cd3a91a482fc04c8dfd138a4629643f86e0993eec5034a576005de878127d"
+            }
+          }
+        },
+        "fresh-release317": {
+          "entry": "datawork.RowChecks#fresh(I)I",
+          "revision": "release317",
+          "guard": "code >= 0 && code < 187",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+          "frozenInputs": 187,
+          "primary": false,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/fresh-release317.json",
+            "inputs": 187,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "488d28802bebf7ac",
+            "workflow": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/result.json",
+            "receipt": "examples/369-boxed-ragged-rows/receipts/fresh-release317/executions/20261122T161958Z-0678d878/checker.json",
+            "binding": {
+              "entry": "datawork.RowChecks#fresh(I)I",
+              "classSha256": "80908a3f3f94481bf7d9fca63108746538d7f471f0e069d8a35b4e3c69323c73",
+              "loadedFrom": "adapter-release317.jar",
+              "subject": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+              "subjectClassSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f",
+              "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+              "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.2864,
+            "peakRssBytes": 115765248,
+            "firstBlocker": "outside the fragment: a lambda whose call of org.apache.commons.lang3.math.NumberUtils.toInt needs an unsupported argument or result conversion"
+          },
+          "ordinary": {
+            "status": "established",
+            "record": "records/native-selectors/release317/20261122T172825Z-2febf650/tasks/fresh-release317/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T172825Z-2febf650/tasks/fresh-release317/result.json"
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/release317/20261122T172825Z-2febf650/tasks/fresh-release317/result.json",
+            "admitted": 187,
+            "checked": 187,
+            "firstBlocker": null,
+            "receipt": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T172825Z-2febf650/tasks/fresh-release317/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 0,
+              "seconds": 13.3667,
+              "peakRssBytes": 125022208,
+              "log": "release317.log",
+              "logSha256": "841cd3a91a482fc04c8dfd138a4629643f86e0993eec5034a576005de878127d"
+            }
+          }
+        }
+      },
+      "superseded": {
+        "id": "20261122-164436-prove-boxed-row-values-and-mutation-isol",
+        "status": "passed",
+        "source": "e6e2352c7ebb29b9288d354317c61a693e5251d0",
+        "result": "verification/results/2026/11/22/20261122-164436-prove-boxed-row-values-and-mutation-isol/result.json",
+        "reason": "The cached return arm used a bitwise complement in place of the SAT literal's negation. The corrected paired native reference choice is measured separately."
+      },
+      "loadedClasses": {
+        "record": "verification/spring-java-data/exact-classpaths/classes.json",
+        "managedComparison": "verification/spring-java-data/public-providers/classes.json",
+        "revisions": {
+          "landed": {
+            "commit": "fixture:application",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "8980056a169ad3fd9d43477138187a3dfc84832e255fd40630ee4e90f83a4fcd"
+              },
+              {
+                "path": "adapter-landed.jar",
+                "sha256": "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f"
+              },
+              {
+                "path": "landed.jar",
+                "sha256": "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395"
+              },
+              {
+                "path": "libraries/commons-lang-1635-landed.jar",
+                "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+              }
+            ],
+            "classes": {
+              "datawork.RowMapper": {
+                "jarIndex": 2,
+                "jarSha256": "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+                "entry": "datawork/RowMapper.class",
+                "classSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8"
+              },
+              "org.apache.commons.lang3.math.NumberUtils": {
+                "jarIndex": 3,
+                "jarSha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+                "entry": "org/apache/commons/lang3/math/NumberUtils.class",
+                "classSha256": "33f7877270f9c6f97571e9a1dec7465cbce61bcecc01c36a2fca69e09d884974"
+              }
+            },
+            "ordinaryRows": 187,
+            "ordinarySha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+            "ordinary": "examples/369-boxed-ragged-rows/receipts/replay/20261122T160246Z-725ba044/records/control-landed-jdk21.stdout"
+          },
+          "release317": {
+            "commit": "fixture:application",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "8980056a169ad3fd9d43477138187a3dfc84832e255fd40630ee4e90f83a4fcd"
+              },
+              {
+                "path": "adapter-release317.jar",
+                "sha256": "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f"
+              },
+              {
+                "path": "release317.jar",
+                "sha256": "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395"
+              },
+              {
+                "path": "libraries/commons-lang3-317.jar",
+                "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+              }
+            ],
+            "classes": {
+              "datawork.RowMapper": {
+                "jarIndex": 2,
+                "jarSha256": "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+                "entry": "datawork/RowMapper.class",
+                "classSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8"
+              },
+              "org.apache.commons.lang3.math.NumberUtils": {
+                "jarIndex": 3,
+                "jarSha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+                "entry": "org/apache/commons/lang3/math/NumberUtils.class",
+                "classSha256": "a507d3c7395eea9618ac4c804da27094b38099d5db95783541e6bc1f51de0ae9"
+              }
+            },
+            "ordinaryRows": 187,
+            "ordinarySha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+            "ordinary": "examples/369-boxed-ragged-rows/receipts/replay/20261122T160246Z-725ba044/records/control-release317-jdk21.stdout"
+          }
+        }
+      }
+    },
+    "371": {
+      "example": 371,
+      "folder": "examples/371-javaslang-matrix-transpose",
+      "stages": {
+        "opening": {
+          "id": "20261122-162530-vavr-matrix-coordinates-and-ragged-rejec",
+          "status": "passed",
+          "source": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+          "result": "verification/results/2026/11/22/20261122-162530-vavr-matrix-coordinates-and-ragged-rejec/result.json"
+        },
+        "nativeFinal": {
+          "id": "20261122-165838-qualified-check-rectangular-and-ragged-i",
+          "status": "passed",
+          "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
+          "result": "verification/results/2026/11/22/20261122-165838-qualified-check-rectangular-and-ragged-i/result.json"
+        }
+      },
+      "claims": {
+        "contract-parent": {
+          "entry": "datawork.Matrices#contract(I)I",
+          "revision": "parent",
+          "guard": "code >= 0 && code < 400",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Every rectangle returns its transposed cells and every ragged matrix throws exactly IllegalArgumentException.",
+          "frozenInputs": 400,
+          "primary": true,
+          "finite": {
+            "status": "refuted",
+            "receipt": "examples/371-javaslang-matrix-transpose/records/finite-proofs/20261122T164707Z-260774eb/contract-parent.json",
+            "inputs": 400,
+            "differences": 298,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "625c49969962925e",
+            "workflow": "examples/371-javaslang-matrix-transpose/receipts/contract-parent/20261122T164722Z-c3b8d3b3/result.json",
+            "receipt": "examples/371-javaslang-matrix-transpose/receipts/contract-parent/executions/20261122T164722Z-c3b8d3b3/checker.json",
+            "binding": {
+              "entry": "datawork.Matrices#contract(I)I",
+              "classSha256": "954175cb1d4d2dda3cfabbd4973a6074178dfb80a64ce8dc967dd984bb3aec64",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+              "subjectClassSha256": "8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "bd6e24ab0ce8e3a617a878d4ecab12c2614aab66d99d3aa97ddc3f4bb5b4dc0f",
+              "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.4299,
+            "peakRssBytes": 121532416,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at javaslang.collection.Collections.transposeIterables:318). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption"
+          },
+          "ordinary": {
+            "status": "refuted",
+            "record": "records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/result.json",
+            "admitted": 400,
+            "checked": 1,
+            "firstBlocker": null,
+            "receipt": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/result.json"
+          },
+          "nativeSelectors": {
+            "status": "refuted",
+            "record": "records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/result.json",
+            "admitted": 400,
+            "checked": 1,
+            "firstBlocker": null,
+            "receipt": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 0,
+              "seconds": 14.5247,
+              "peakRssBytes": 116633600,
+              "log": "parent.log",
+              "logSha256": "0cd7dda443f423e8c105de5655a970894cb5502055db8c66a14cb0d1ebb66f5e"
+            },
+            "witness": {
+              "inputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 9
+                }
+              ],
+              "values": [
+                0,
+                null
+              ]
+            }
+          }
+        },
+        "contract-landed": {
+          "entry": "datawork.Matrices#contract(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 400",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Every rectangle returns its transposed cells and every ragged matrix throws exactly IllegalArgumentException.",
+          "frozenInputs": 400,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/371-javaslang-matrix-transpose/records/finite-proofs/20261122T164707Z-260774eb/contract-landed.json",
+            "inputs": 400,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "established",
+            "claimKey": "625c49969962925e",
+            "workflow": "examples/371-javaslang-matrix-transpose/receipts/contract-landed/20261122T164725Z-3d1464f7/result.json",
+            "receipt": "examples/371-javaslang-matrix-transpose/receipts/contract-landed/executions/20261122T164725Z-3d1464f7/checker.json",
+            "binding": {
+              "entry": "datawork.Matrices#contract(I)I",
+              "classSha256": "954175cb1d4d2dda3cfabbd4973a6074178dfb80a64ce8dc967dd984bb3aec64",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+              "subjectClassSha256": "40f536c3cd74d9af576485094ec16e4a433eb5eb9c2e407f44ff7dce356b95ae"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "bd6e24ab0ce8e3a617a878d4ecab12c2614aab66d99d3aa97ddc3f4bb5b4dc0f",
+              "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.1044,
+            "peakRssBytes": 129626112,
+            "firstBlocker": null
+          },
+          "ordinary": {
+            "status": "established",
+            "receipt": "examples/371-javaslang-matrix-transpose/receipts/contract-landed/executions/20261122T164725Z-3d1464f7/checker.json",
+            "firstBlocker": null
+          }
+        },
+        "rectangle-parent": {
+          "entry": "datawork.Matrices#rectangle(I)I",
+          "revision": "parent",
+          "guard": "code >= 0 && code < 400",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "On rectangles values and dimensions agree and a positive-width double transpose restores the input.",
+          "frozenInputs": 400,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/371-javaslang-matrix-transpose/records/finite-proofs/20261122T164707Z-260774eb/rectangle-parent.json",
+            "inputs": 400,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "bf3f524cec580349",
+            "workflow": "examples/371-javaslang-matrix-transpose/receipts/rectangle-parent/20261122T164727Z-5788ed91/result.json",
+            "receipt": "examples/371-javaslang-matrix-transpose/receipts/rectangle-parent/executions/20261122T164727Z-5788ed91/checker.json",
+            "binding": {
+              "entry": "datawork.Matrices#rectangle(I)I",
+              "classSha256": "954175cb1d4d2dda3cfabbd4973a6074178dfb80a64ce8dc967dd984bb3aec64",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+              "subjectClassSha256": "8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "bd6e24ab0ce8e3a617a878d4ecab12c2614aab66d99d3aa97ddc3f4bb5b4dc0f",
+              "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.096,
+            "peakRssBytes": 132784128,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at javaslang.collection.Collections.transposeIterables:318). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption"
+          },
+          "ordinary": {
+            "status": "established",
+            "record": "records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/result.json",
+            "admitted": 400,
+            "checked": 400,
+            "firstBlocker": null,
+            "receipt": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/result.json"
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/result.json",
+            "admitted": 400,
+            "checked": 400,
+            "firstBlocker": null,
+            "receipt": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 0,
+              "seconds": 14.5247,
+              "peakRssBytes": 116633600,
+              "log": "parent.log",
+              "logSha256": "0cd7dda443f423e8c105de5655a970894cb5502055db8c66a14cb0d1ebb66f5e"
+            }
+          }
+        },
+        "rectangle-landed": {
+          "entry": "datawork.Matrices#rectangle(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 400",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "On rectangles values and dimensions agree and a positive-width double transpose restores the input.",
+          "frozenInputs": 400,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/371-javaslang-matrix-transpose/records/finite-proofs/20261122T164707Z-260774eb/rectangle-landed.json",
+            "inputs": 400,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "established",
+            "claimKey": "bf3f524cec580349",
+            "workflow": "examples/371-javaslang-matrix-transpose/receipts/rectangle-landed/20261122T164729Z-6bfff22a/result.json",
+            "receipt": "examples/371-javaslang-matrix-transpose/receipts/rectangle-landed/executions/20261122T164729Z-6bfff22a/checker.json",
+            "binding": {
+              "entry": "datawork.Matrices#rectangle(I)I",
+              "classSha256": "954175cb1d4d2dda3cfabbd4973a6074178dfb80a64ce8dc967dd984bb3aec64",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+              "subjectClassSha256": "40f536c3cd74d9af576485094ec16e4a433eb5eb9c2e407f44ff7dce356b95ae"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "bd6e24ab0ce8e3a617a878d4ecab12c2614aab66d99d3aa97ddc3f4bb5b4dc0f",
+              "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 2.611,
+            "peakRssBytes": 133857280,
+            "firstBlocker": null
+          },
+          "ordinary": {
+            "status": "established",
+            "receipt": "examples/371-javaslang-matrix-transpose/receipts/rectangle-landed/executions/20261122T164729Z-6bfff22a/checker.json",
+            "firstBlocker": null
+          }
+        }
+      },
+      "namedUpstream": {
+        "record": "examples/371-javaslang-matrix-transpose/records/setup/upstream-tests.json",
+        "sides": {
+          "parent": {
+            "source": "a8cace88bfb12a9a7e1977a5765753798962e942",
+            "jarSha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
+            "tests": 2,
+            "failures": 1,
+            "errors": 0,
+            "skipped": 0
+          },
+          "landed": {
+            "source": "84a4c690a009c55098ec8f7106c4867e0af747c0",
+            "jarSha256": "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e",
+            "tests": 2,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      },
+      "namedJVM": {
+        "record": "examples/371-javaslang-matrix-transpose/records/setup/named-matrices.json",
+        "inputs": 4
+      },
+      "loadedClasses": {
+        "record": "verification/spring-java-data/exact-classpaths/classes.json",
+        "managedComparison": "verification/spring-java-data/public-providers/classes.json",
+        "revisions": {
+          "parent": {
+            "commit": "a8cace88bfb12a9a7e1977a5765753798962e942",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "8c8a13e3c88aeb39979aa298450551d717eb8232def3ece31ff1a0244ae59697"
+              },
+              {
+                "path": "adapter-parent.jar",
+                "sha256": "bd6e24ab0ce8e3a617a878d4ecab12c2614aab66d99d3aa97ddc3f4bb5b4dc0f"
+              },
+              {
+                "path": "built/javaslang-2.1.0-SNAPSHOT.jar",
+                "sha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b"
+              }
+            ],
+            "classes": {
+              "javaslang.collection.List": {
+                "jarIndex": 2,
+                "jarSha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
+                "entry": "javaslang/collection/List.class",
+                "classSha256": "8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c"
+              },
+              "javaslang.collection.Collections": {
+                "jarIndex": 2,
+                "jarSha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
+                "entry": "javaslang/collection/Collections.class",
+                "classSha256": "1c8a78c4a2430c5d0b238468f9b208fb3da5665fc59f14e2181a3843861907e8"
+              },
+              "javaslang.collection.Iterator": {
+                "jarIndex": 2,
+                "jarSha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
+                "entry": "javaslang/collection/Iterator.class",
+                "classSha256": "6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f"
+              }
+            },
+            "ordinaryRows": 400,
+            "ordinarySha256": "7ce687267cc64b810eafdcdf3d24c07bdc65c9b781fdf295960a0a8b327d5809",
+            "ordinary": "examples/371-javaslang-matrix-transpose/receipts/replay/20261122T162019Z-9e17aa70/records/control-parent-jdk21.stdout"
+          },
+          "landed": {
+            "commit": "84a4c690a009c55098ec8f7106c4867e0af747c0",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "8c8a13e3c88aeb39979aa298450551d717eb8232def3ece31ff1a0244ae59697"
+              },
+              {
+                "path": "adapter-landed.jar",
+                "sha256": "bd6e24ab0ce8e3a617a878d4ecab12c2614aab66d99d3aa97ddc3f4bb5b4dc0f"
+              },
+              {
+                "path": "built/javaslang-2.1.0-SNAPSHOT.jar",
+                "sha256": "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e"
+              }
+            ],
+            "classes": {
+              "javaslang.collection.List": {
+                "jarIndex": 2,
+                "jarSha256": "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e",
+                "entry": "javaslang/collection/List.class",
+                "classSha256": "40f536c3cd74d9af576485094ec16e4a433eb5eb9c2e407f44ff7dce356b95ae"
+              },
+              "javaslang.collection.Collections": {
+                "jarIndex": 2,
+                "jarSha256": "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e",
+                "entry": "javaslang/collection/Collections.class",
+                "classSha256": "10618033b82bf305a02b62dd9dae9764a3b8c397dce51112b35144c58027ab01"
+              },
+              "javaslang.collection.Iterator": {
+                "jarIndex": 2,
+                "jarSha256": "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e",
+                "entry": "javaslang/collection/Iterator.class",
+                "classSha256": "6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f"
+              }
+            },
+            "ordinaryRows": 400,
+            "ordinarySha256": "85b6b7b6767eb1ed2392d80881b2ac6e0ffcbc1c3ee4cc028d1d58ac2c9321c0",
+            "ordinary": "examples/371-javaslang-matrix-transpose/receipts/replay/20261122T162019Z-9e17aa70/records/control-landed-jdk21.stdout"
+          }
+        }
+      }
+    },
+    "373": {
+      "example": 373,
+      "folder": "examples/373-commons-lang-nan-search",
+      "stages": {
+        "opening": {
+          "id": "20261122-162530-first-nan-and-preserved-numbers-at-zero",
+          "status": "passed",
+          "source": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+          "result": "verification/results/2026/11/22/20261122-162530-first-nan-and-preserved-numbers-at-zero/result.json"
+        },
+        "nativeFinal": {
+          "id": "20261122-164436-check-nan-searches-with-the-historical-a",
+          "status": "passed",
+          "source": "e6e2352c7ebb29b9288d354317c61a693e5251d0",
+          "result": "verification/results/2026/11/22/20261122-164436-check-nan-searches-with-the-historical-a/result.json"
+        }
+      },
+      "claims": {
+        "nans-parent": {
+          "entry": "datawork.NanSearch#nans(I)I",
+          "revision": "parent",
+          "guard": "code >= 0 && code < 902",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Both quiet NaN needles find the first NaN, with every raw input bit preserved.",
+          "frozenInputs": 902,
+          "primary": true,
+          "finite": {
+            "status": "refuted",
+            "receipt": "examples/373-commons-lang-nan-search/records/finite-proofs/20261122T164604Z-48536deb/nans-parent.json",
+            "inputs": 902,
+            "differences": 373,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "897e1a6f85cfe988",
+            "workflow": "examples/373-commons-lang-nan-search/receipts/nans-parent/20261122T164616Z-6143c266/result.json",
+            "receipt": "examples/373-commons-lang-nan-search/receipts/nans-parent/executions/20261122T164616Z-6143c266/checker.json",
+            "binding": {
+              "entry": "datawork.NanSearch#nans(I)I",
+              "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+              "subjectClassSha256": "0509c97f1785880b9d0924ec2fd7573c89d4fc864d3bf6d125ca17f1dd075bad"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+              "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.7984,
+            "peakRssBytes": 125464576,
+            "firstBlocker": "outside the fragment: Double Sub with an unspecified NaN result encoding"
+          },
+          "ordinary": {
+            "status": "unresolved",
+            "record": "records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/result.json",
+            "admitted": 902,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: Double Sub with an unspecified NaN result encoding",
+            "receipt": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/result.json"
+          },
+          "nativeSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/result.json",
+            "admitted": 902,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: Double Sub with an unspecified NaN result encoding",
+            "receipt": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/result.json",
+            "checkerSha256": "cb95d93512bec2208eb9b7bb716e96c6a83f15afef7e137429107854222f5d50",
+            "cost": {
+              "exit": 1,
+              "seconds": 26.4002,
+              "peakRssBytes": 122621952,
+              "log": "parent.log",
+              "logSha256": "2899ad2b210c8ebc1755051719cab0462cc7c0c41ceda27680c282f8b0105a92"
+            }
+          }
+        },
+        "nans-landed": {
+          "entry": "datawork.NanSearch#nans(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 902",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Both quiet NaN needles find the first NaN, with every raw input bit preserved.",
+          "frozenInputs": 902,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/373-commons-lang-nan-search/records/finite-proofs/20261122T164604Z-48536deb/nans-landed.json",
+            "inputs": 902,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "established",
+            "claimKey": "897e1a6f85cfe988",
+            "workflow": "examples/373-commons-lang-nan-search/receipts/nans-landed/20261122T164618Z-2efa6efa/result.json",
+            "receipt": "examples/373-commons-lang-nan-search/receipts/nans-landed/executions/20261122T164618Z-2efa6efa/checker.json",
+            "binding": {
+              "entry": "datawork.NanSearch#nans(I)I",
+              "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+              "subjectClassSha256": "a421c9e2f6084ed85c4af45721da10be58fd72ab387e8cee941a9fa465fe854e"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+              "c28e470a728a9ccbfa03e474daf20ace98b8a86f38cc3df3fccafa3000abb775"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.7741,
+            "peakRssBytes": 117395456,
+            "firstBlocker": null
+          },
+          "ordinary": {
+            "status": "established",
+            "receipt": "examples/373-commons-lang-nan-search/receipts/nans-landed/executions/20261122T164618Z-2efa6efa/checker.json",
+            "firstBlocker": null
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/result.json",
+            "admitted": 902,
+            "checked": 902,
+            "firstBlocker": null,
+            "receipt": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/result.json",
+            "checkerSha256": "cb95d93512bec2208eb9b7bb716e96c6a83f15afef7e137429107854222f5d50",
+            "cost": {
+              "exit": 0,
+              "seconds": 47.1569,
+              "peakRssBytes": 113442816,
+              "log": "landed.log",
+              "logSha256": "a11ef3fcb7695dd63a35fbefaeb47c1e8f9bd427464d8e414fbfbf3df2e0b6c9"
+            }
+          }
+        },
+        "numbers-parent": {
+          "entry": "datawork.NanSearch#numbers(I)I",
+          "revision": "parent",
+          "guard": "code >= 0 && code < 902",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Both signs of zero and the finite sentinel retain their first-match indices and the input bits.",
+          "frozenInputs": 902,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/373-commons-lang-nan-search/records/finite-proofs/20261122T164604Z-48536deb/numbers-parent.json",
+            "inputs": 902,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "established",
+            "claimKey": "504fd1225213a97d",
+            "workflow": "examples/373-commons-lang-nan-search/receipts/numbers-parent/20261122T164619Z-ed881b84/result.json",
+            "receipt": "examples/373-commons-lang-nan-search/receipts/numbers-parent/executions/20261122T164619Z-ed881b84/checker.json",
+            "binding": {
+              "entry": "datawork.NanSearch#numbers(I)I",
+              "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+              "subjectClassSha256": "0509c97f1785880b9d0924ec2fd7573c89d4fc864d3bf6d125ca17f1dd075bad"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+              "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.9796,
+            "peakRssBytes": 110542848,
+            "firstBlocker": null
+          },
+          "ordinary": {
+            "status": "established",
+            "receipt": "examples/373-commons-lang-nan-search/receipts/numbers-parent/executions/20261122T164619Z-ed881b84/checker.json",
+            "firstBlocker": null
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/result.json",
+            "admitted": 902,
+            "checked": 902,
+            "firstBlocker": null,
+            "receipt": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/result.json",
+            "checkerSha256": "cb95d93512bec2208eb9b7bb716e96c6a83f15afef7e137429107854222f5d50",
+            "cost": {
+              "exit": 1,
+              "seconds": 26.4002,
+              "peakRssBytes": 122621952,
+              "log": "parent.log",
+              "logSha256": "2899ad2b210c8ebc1755051719cab0462cc7c0c41ceda27680c282f8b0105a92"
+            }
+          }
+        },
+        "numbers-landed": {
+          "entry": "datawork.NanSearch#numbers(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 902",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "Both signs of zero and the finite sentinel retain their first-match indices and the input bits.",
+          "frozenInputs": 902,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/373-commons-lang-nan-search/records/finite-proofs/20261122T164604Z-48536deb/numbers-landed.json",
+            "inputs": 902,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "established",
+            "claimKey": "504fd1225213a97d",
+            "workflow": "examples/373-commons-lang-nan-search/receipts/numbers-landed/20261122T164621Z-e9350cd9/result.json",
+            "receipt": "examples/373-commons-lang-nan-search/receipts/numbers-landed/executions/20261122T164621Z-e9350cd9/checker.json",
+            "binding": {
+              "entry": "datawork.NanSearch#numbers(I)I",
+              "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+              "subjectClassSha256": "a421c9e2f6084ed85c4af45721da10be58fd72ab387e8cee941a9fa465fe854e"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+              "c28e470a728a9ccbfa03e474daf20ace98b8a86f38cc3df3fccafa3000abb775"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.8925,
+            "peakRssBytes": 110698496,
+            "firstBlocker": null
+          },
+          "ordinary": {
+            "status": "established",
+            "receipt": "examples/373-commons-lang-nan-search/receipts/numbers-landed/executions/20261122T164621Z-e9350cd9/checker.json",
+            "firstBlocker": null
+          },
+          "nativeSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/result.json",
+            "admitted": 902,
+            "checked": 902,
+            "firstBlocker": null,
+            "receipt": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/result.json",
+            "checkerSha256": "cb95d93512bec2208eb9b7bb716e96c6a83f15afef7e137429107854222f5d50",
+            "cost": {
+              "exit": 0,
+              "seconds": 47.1569,
+              "peakRssBytes": 113442816,
+              "log": "landed.log",
+              "logSha256": "a11ef3fcb7695dd63a35fbefaeb47c1e8f9bd427464d8e414fbfbf3df2e0b6c9"
+            }
+          }
+        }
+      },
+      "namedUpstream": {
+        "record": "examples/373-commons-lang-nan-search/records/setup/upstream-tests.json",
+        "sides": {
+          "parent": {
+            "source": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+            "jarSha256": "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425",
+            "tests": 3,
+            "failures": 2,
+            "errors": 0,
+            "skipped": 0
+          },
+          "landed": {
+            "source": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c",
+            "jarSha256": "c28e470a728a9ccbfa03e474daf20ace98b8a86f38cc3df3fccafa3000abb775",
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      },
+      "loadedClasses": {
+        "record": "verification/spring-java-data/exact-classpaths/classes.json",
+        "managedComparison": "verification/spring-java-data/public-providers/classes.json",
+        "revisions": {
+          "parent": {
+            "commit": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "2f84dd68fe06a38d3661ff9ad45e74eed3313efe2b60bd73d853a5f303f3e540"
+              },
+              {
+                "path": "adapter-parent.jar",
+                "sha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254"
+              },
+              {
+                "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+                "sha256": "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425"
+              }
+            ],
+            "classes": {
+              "datawork.NanSearch": {
+                "jarIndex": 1,
+                "jarSha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+                "entry": "datawork/NanSearch.class",
+                "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a"
+              },
+              "org.apache.commons.lang3.ArrayUtils": {
+                "jarIndex": 2,
+                "jarSha256": "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425",
+                "entry": "org/apache/commons/lang3/ArrayUtils.class",
+                "classSha256": "0509c97f1785880b9d0924ec2fd7573c89d4fc864d3bf6d125ca17f1dd075bad"
+              }
+            },
+            "ordinaryRows": 902,
+            "ordinarySha256": "fb75eaa5282b9e8ac9de46d72da7a60f65e56002922c5d17767f398b0cd20123",
+            "ordinary": "examples/373-commons-lang-nan-search/receipts/replay/20261122T162019Z-9e1e0f2a/records/control-parent-jdk21.stdout"
+          },
+          "landed": {
+            "commit": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "2f84dd68fe06a38d3661ff9ad45e74eed3313efe2b60bd73d853a5f303f3e540"
+              },
+              {
+                "path": "adapter-landed.jar",
+                "sha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254"
+              },
+              {
+                "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+                "sha256": "c28e470a728a9ccbfa03e474daf20ace98b8a86f38cc3df3fccafa3000abb775"
+              }
+            ],
+            "classes": {
+              "datawork.NanSearch": {
+                "jarIndex": 1,
+                "jarSha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+                "entry": "datawork/NanSearch.class",
+                "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a"
+              },
+              "org.apache.commons.lang3.ArrayUtils": {
+                "jarIndex": 2,
+                "jarSha256": "c28e470a728a9ccbfa03e474daf20ace98b8a86f38cc3df3fccafa3000abb775",
+                "entry": "org/apache/commons/lang3/ArrayUtils.class",
+                "classSha256": "a421c9e2f6084ed85c4af45721da10be58fd72ab387e8cee941a9fa465fe854e"
+              }
+            },
+            "ordinaryRows": 902,
+            "ordinarySha256": "7dfbfe8bbfcc8bd81744419f6c14f2807ac265fb9c9f1c6221a2fba75a5a1fb6",
+            "ordinary": "examples/373-commons-lang-nan-search/receipts/replay/20261122T162019Z-9e1e0f2a/records/control-landed-jdk21.stdout"
+          }
+        }
+      }
+    },
+    "375": {
+      "example": 375,
+      "folder": "examples/375-commons-lang-decimal-precision",
+      "stages": {
+        "opening": {
+          "id": "20261122-162530-decimal-result-class-coefficient-scale-a",
+          "status": "passed",
+          "source": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+          "result": "verification/results/2026/11/22/20261122-162530-decimal-result-class-coefficient-scale-a/result.json"
+        },
+        "nativeFinal": {
+          "id": "20261122-165839-qualified-check-exact-decimal-runtime-ty",
+          "status": "passed",
+          "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
+          "result": "verification/results/2026/11/22/20261122-165839-qualified-check-exact-decimal-runtime-ty/result.json"
+        }
+      },
+      "claims": {
+        "precise-parent": {
+          "entry": "datawork.Decimals#precise(I)I",
+          "revision": "parent",
+          "guard": "code >= 0 && code < 3",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "The runtime class is BigDecimal, with the signed lexical coefficient and scale 18.",
+          "frozenInputs": 3,
+          "primary": true,
+          "finite": {
+            "status": "refuted",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/precise-parent.json",
+            "inputs": 3,
+            "differences": 3,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "e306676095e52b78",
+            "workflow": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/result.json",
+            "receipt": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261122T164609Z-a95f3d6c/checker.json",
+            "binding": {
+              "entry": "datawork.Decimals#precise(I)I",
+              "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+              "subjectClassSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+              "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.6574,
+            "peakRssBytes": 109105152,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13 (java.lang.Character.isWhitespace(char) at org.apache.commons.lang3.StringUtils.isBlank:3518). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+          },
+          "ordinary": {
+            "status": "unresolved",
+            "record": "records/native-selectors/parent/20261122T172857Z-de17591c/tasks/precise-parent/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261122T172857Z-de17591c/tasks/precise-parent/result.json"
+          },
+          "nativeSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261122T172857Z-de17591c/tasks/precise-parent/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261122T172857Z-de17591c/tasks/precise-parent/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 1,
+              "seconds": 3.0616,
+              "peakRssBytes": 114171904,
+              "log": "parent.log",
+              "logSha256": "17026688bf8077cf036085e85e642b616598ba98c0246bf095cbe3ade888ba2c"
+            }
+          }
+        },
+        "precise-landed": {
+          "entry": "datawork.Decimals#precise(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 3",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "The runtime class is BigDecimal, with the signed lexical coefficient and scale 18.",
+          "frozenInputs": 3,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/precise-landed.json",
+            "inputs": 3,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "e306676095e52b78",
+            "workflow": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/result.json",
+            "receipt": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261122T164611Z-536718a1/checker.json",
+            "binding": {
+              "entry": "datawork.Decimals#precise(I)I",
+              "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+              "subjectClassSha256": "33f7877270f9c6f97571e9a1dec7465cbce61bcecc01c36a2fca69e09d884974"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+              "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.6615,
+            "peakRssBytes": 115658752,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13 (java.lang.Character.isWhitespace(char) at org.apache.commons.lang3.StringUtils.isBlank:3518). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+          },
+          "ordinary": {
+            "status": "unresolved",
+            "record": "records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/precise-landed/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/precise-landed/result.json"
+          },
+          "nativeSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/precise-landed/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/precise-landed/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 1,
+              "seconds": 2.9515,
+              "peakRssBytes": 117620736,
+              "log": "landed.log",
+              "logSha256": "88f3ee9d03a52e54b7d7be2c3dc4665dae46965b2d46926f4bef1870a73e8dd7"
+            }
+          }
+        },
+        "preserved-parent": {
+          "entry": "datawork.Decimals#preserved(I)I",
+          "revision": "parent",
+          "guard": "code >= 0 && code < 3",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "The short decimals return the expected Float bits, 17 returns Integer, and 1eE throws NumberFormatException.",
+          "frozenInputs": 3,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/preserved-parent.json",
+            "inputs": 3,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "b5f0874cc73601d9",
+            "workflow": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/result.json",
+            "receipt": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261122T164613Z-01dbcadf/checker.json",
+            "binding": {
+              "entry": "datawork.Decimals#preserved(I)I",
+              "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+              "subjectClassSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+              "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.6621,
+            "peakRssBytes": 120786944,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13 (java.lang.Character.isWhitespace(char) at org.apache.commons.lang3.StringUtils.isBlank:3518). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+          },
+          "ordinary": {
+            "status": "unresolved",
+            "record": "records/native-selectors/parent/20261122T172857Z-de17591c/tasks/preserved-parent/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261122T172857Z-de17591c/tasks/preserved-parent/result.json"
+          },
+          "nativeSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261122T172857Z-de17591c/tasks/preserved-parent/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261122T172857Z-de17591c/tasks/preserved-parent/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 1,
+              "seconds": 3.0616,
+              "peakRssBytes": 114171904,
+              "log": "parent.log",
+              "logSha256": "17026688bf8077cf036085e85e642b616598ba98c0246bf095cbe3ade888ba2c"
+            }
+          }
+        },
+        "preserved-landed": {
+          "entry": "datawork.Decimals#preserved(I)I",
+          "revision": "landed",
+          "guard": "code >= 0 && code < 3",
+          "bounds": {
+            "unwind": 256,
+            "maxArrayLength": 16384
+          },
+          "statement": "The short decimals return the expected Float bits, 17 returns Integer, and 1eE throws NumberFormatException.",
+          "frozenInputs": 3,
+          "primary": true,
+          "finite": {
+            "status": "established",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/preserved-landed.json",
+            "inputs": 3,
+            "differences": 0,
+            "reason": null
+          },
+          "opening": {
+            "status": "unresolved",
+            "claimKey": "b5f0874cc73601d9",
+            "workflow": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/result.json",
+            "receipt": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261122T164614Z-a4b95cb5/checker.json",
+            "binding": {
+              "entry": "datawork.Decimals#preserved(I)I",
+              "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+              "loadedFrom": "adapter-landed.jar",
+              "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+              "subjectClassSha256": "33f7877270f9c6f97571e9a1dec7465cbce61bcecc01c36a2fca69e09d884974"
+            },
+            "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+            "classpath": [
+              "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+              "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+            ],
+            "jdk": "21.0.13+9-LTS",
+            "seconds": 1.6557,
+            "peakRssBytes": 114962432,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13 (java.lang.Character.isWhitespace(char) at org.apache.commons.lang3.StringUtils.isBlank:3518). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+          },
+          "ordinary": {
+            "status": "unresolved",
+            "record": "records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/preserved-landed/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/preserved-landed/result.json"
+          },
+          "nativeSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/preserved-landed/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261122T172900Z-d603c0b4/tasks/preserved-landed/result.json",
+            "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
+            "cost": {
+              "exit": 1,
+              "seconds": 2.9515,
+              "peakRssBytes": 117620736,
+              "log": "landed.log",
+              "logSha256": "88f3ee9d03a52e54b7d7be2c3dc4665dae46965b2d46926f4bef1870a73e8dd7"
+            }
+          }
+        }
+      },
+      "namedUpstream": {
+        "record": "examples/375-commons-lang-decimal-precision/records/setup/upstream-tests.json",
+        "sides": {
+          "parent": {
+            "source": "1dd7cb14c233140a8e76ba5441b6360a239a98dc",
+            "jarSha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38",
+            "tests": 3,
+            "failures": 1,
+            "errors": 0,
+            "skipped": 0
+          },
+          "landed": {
+            "source": "5904c573ffacaa5d8836ffc2b346f400c8901ed1",
+            "jarSha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        }
+      },
+      "loadedClasses": {
+        "record": "verification/spring-java-data/exact-classpaths/classes.json",
+        "managedComparison": "verification/spring-java-data/public-providers/classes.json",
+        "revisions": {
+          "parent": {
+            "commit": "1dd7cb14c233140a8e76ba5441b6360a239a98dc",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "f0441a263c3276bd56394e05c40efe51292543c408e9220bb4376936d94e56ac"
+              },
+              {
+                "path": "adapter-parent.jar",
+                "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee"
+              },
+              {
+                "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+                "sha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+              }
+            ],
+            "classes": {
+              "org.apache.commons.lang3.math.NumberUtils": {
+                "jarIndex": 2,
+                "jarSha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38",
+                "entry": "org/apache/commons/lang3/math/NumberUtils.class",
+                "classSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22"
+              },
+              "org.apache.commons.lang3.StringUtils": {
+                "jarIndex": 2,
+                "jarSha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38",
+                "entry": "org/apache/commons/lang3/StringUtils.class",
+                "classSha256": "fc7318f505fe6fdcfb089f8c4215ebc79b8deb0c284958f49d57e81622df7888"
+              }
+            },
+            "ordinaryRows": 3,
+            "ordinarySha256": "3e890e8f9aa51209f2c7034b4dd9a2686b507bab3a9b84391505e4de57cd154d",
+            "ordinary": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T162020Z-15a34e9b/records/control-parent-jdk21.stdout"
+          },
+          "landed": {
+            "commit": "5904c573ffacaa5d8836ffc2b346f400c8901ed1",
+            "jdk": {
+              "IMPLEMENTOR": "Eclipse Adoptium",
+              "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+              "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+              "JAVA_VERSION": "21.0.13",
+              "JAVA_VERSION_DATE": "2026-10-20",
+              "LIBC": "gnu",
+              "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
+              "OS_ARCH": "x86_64",
+              "OS_NAME": "Linux",
+              "SOURCE": ".:git:2ab10ca20c19",
+              "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
+              "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
+              "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
+              "FULL_VERSION": "21.0.13+9-LTS",
+              "SEMANTIC_VERSION": "21.0.13+9",
+              "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
+              "JVM_VARIANT": "Hotspot",
+              "JVM_VERSION": "21.0.13+9-LTS",
+              "IMAGE_TYPE": "JDK"
+            },
+            "orderedJars": [
+              {
+                "path": "driver.jar",
+                "sha256": "f0441a263c3276bd56394e05c40efe51292543c408e9220bb4376936d94e56ac"
+              },
+              {
+                "path": "adapter-landed.jar",
+                "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee"
+              },
+              {
+                "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+                "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+              }
+            ],
+            "classes": {
+              "org.apache.commons.lang3.math.NumberUtils": {
+                "jarIndex": 2,
+                "jarSha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+                "entry": "org/apache/commons/lang3/math/NumberUtils.class",
+                "classSha256": "33f7877270f9c6f97571e9a1dec7465cbce61bcecc01c36a2fca69e09d884974"
+              },
+              "org.apache.commons.lang3.StringUtils": {
+                "jarIndex": 2,
+                "jarSha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+                "entry": "org/apache/commons/lang3/StringUtils.class",
+                "classSha256": "fc7318f505fe6fdcfb089f8c4215ebc79b8deb0c284958f49d57e81622df7888"
+              }
+            },
+            "ordinaryRows": 3,
+            "ordinarySha256": "17a6e91bf60da9d57d8b0e2555624eb09d72fd0528d18bcf046c541f19228fb1",
+            "ordinary": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T162020Z-15a34e9b/records/control-landed-jdk21.stdout"
+          }
+        }
+      }
+    }
+  },
+  "companions": {
+    "allRows": {
+      "id": "20261122-164436-check-every-realizable-bounded-boxed-row",
+      "status": "passed",
+      "source": "e6e2352c7ebb29b9288d354317c61a693e5251d0",
+      "result": "verification/results/2026/11/22/20261122-164436-check-every-realizable-bounded-boxed-row/result.json",
+      "measurement": "examples/369-boxed-ragged-rows/records/all-rows/measurement.json",
+      "cases": 33729,
+      "partitions": {
+        "()": 1,
+        "(0,)": 31,
+        "(0, 0)": 31,
+        "(0, 1)": 961,
+        "(0, 0, 0)": 31,
+        "(0, 0, 1)": 961,
+        "(0, 1, 0)": 961,
+        "(0, 1, 1)": 961,
+        "(0, 1, 2)": 29791
+      }
+    }
+  }
+}

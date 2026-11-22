@@ -218,4 +218,6 @@ The qualified native jobs check the boxed caller after correcting the optional I
 
 The qualified jobs established both boxed-row properties on their primary and release graphs. The original Vavr parent counterexample replayed at selector 9, and the rectangular property held on all 400 parent inputs. Across the two workstreams the ordinary native score is 0/16 for Spring and 9/14 for data processing. All 18 public JVM graphs now have class-loading evidence. A narrower registrar claim measures the ordering of all six date converters and the global, calendar and annotation callbacks on each historical artifact. The first capped parent check established the ordering with the two formatter initializers recorded.
 
-- Status: waiting on jobs 20261122-172803-check-the-original-spring-formatter-regi
+The registrar job established the exact callback sequence on both historical artifacts under the two recorded initializers. The complete bean and error claims retain their ordinary-startup disposition. All 30 primary obligations, the 18 JVM classpaths, the two transfer experiments and the named deferrals are recorded. [Results brief](spring-and-java-data-workstream-results.md) · [Spring scorecard](../../verification/spring-java-data/spring.json) · [Data-processing scorecard](../../verification/spring-java-data/data.json)
+
+- Status: done

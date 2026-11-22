@@ -30,8 +30,9 @@
     "description": "A single DataBinder accepts valid writes after an invalid nested count and keeps the field error across later edits."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen public claims",
+  "verdictLabel": "Ordinary native 0/2, finite JVM 2/2",
   "notes": [
-    "Spring Framework 6.2.3. The 12 histories contain 36 observed prefixes. A fresh binder over the same bean clears its own error history. A caller that stops editing after an error is rejected."
+    "Spring Framework 6.2.3. The 12 histories contain 36 observed prefixes. A fresh binder over the same bean clears its own error history. A caller that stops editing after an error is rejected.",
+    "The binder retained the rejected backup.count value after a successful primary.count write. Every prefix matched the independent model on Framework 6.2.3 and on the Security 6.3.0 / Framework 6.1.7 dependency graph."
   ]
 }
