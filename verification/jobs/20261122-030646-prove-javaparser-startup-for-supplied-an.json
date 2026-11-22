@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-030646-prove-javaparser-startup-for-supplied-an",
+  "title": "Prove JavaParser startup for supplied and cleared separators",
+  "description": "Use the original parent and fix JARs on Temurin 21.0.13. Compare the pilot to the new native checker on every non-null separator through three UTF-16 units. Check both real initializer failures after a clear, and both frozen trees with an arbitrary caller-supplied separator through two units. No application class is preinitialized. Replay the native parent witness on a fresh unmodified JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvm:counterexample"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T03:06:46+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check explicit startup on the original parent",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --side parent --pilot --output verification/domain-foundations/separator-inputs",
+      "cwd": "."
+    },
+    {
+      "name": "Check explicit startup on the landed fix",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --side fix --pilot --output verification/domain-foundations/separator-inputs",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/domain-foundations/separator-inputs"
+  ]
+}

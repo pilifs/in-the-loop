@@ -4354,6 +4354,9 @@ impl<'a> Engine<'a> {
     /// `None` for any other call, and for one whose String has no content, which stays the JDK call it was (a
     /// gap), unless what it lacks is a named limit ([`Obj::limit`]), which ends the path with no verdict.
     fn string_method(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if self.gap_mode == GapMode::Strict && name == "replace" && descriptor == "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" {
+            return self.replace_string_unit(path, o, args);
+        }
         if !models_string_method(STRING, name, descriptor) {
             return None;
         }
@@ -5162,10 +5165,7 @@ impl<'a> Engine<'a> {
             if let [Val::R(object)] = args.as_slice() {
                 let value = match *object {
                     Some(o) if path.objects[o].class == STRING => Some(o),
-                    Some(o) if self.gap_mode == GapMode::Strict && !path.objects[o].assumed
-                        && self.cp.is_application(&path.objects[o].class)
-                        && self.cp.checker_method(&path.objects[o].class, "toString", "()Ljava/lang/String;")
-                            .is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some()) => {
+                    Some(o) if self.application_string_callback(path, o) => {
                         if let Some((cf, m)) = self.cp.library_image_method(STRING, "valueOf", &member.descriptor) {
                             return self.enter_method(path, STRING, cf, m, args);
                         }

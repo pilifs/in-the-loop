@@ -379,6 +379,7 @@ pub struct ClassPath {
     /// function of the class path alone.
     pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
     plain_buffer_formatter: std::cell::OnceCell<bool>,
+    string_unit_replacement: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
@@ -403,7 +404,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -483,6 +484,7 @@ impl ClassPath {
 
     fn reset_runtime_caches(&mut self) {
         self.plain_buffer_formatter.take();
+        self.string_unit_replacement.take();
         self.concurrent_table_layout.take();
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
@@ -1165,6 +1167,15 @@ impl ClassPath {
               "50d5a86221a41a6b52d2bb0e43cf79432d32d8c4855c11c5969f8b38751cc2a0"])) // Temurin 25.0.5
     }
 
+    /// Both compact-string paths return the receiver on a miss, the canonical empty
+    /// string on complete deletion, and a fresh string for a nonempty change.
+    pub(crate) fn string_unit_replacement(&self) -> bool {
+        *self.string_unit_replacement.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/String", "java/lang/StringLatin1", "java/lang/StringUTF16"],
+            &["256709b88a51b3c338f471ab3824c9f9ead1f8af43a873fc32acb2583a0f810c", // Temurin 21.0.13
+              "962641c5f9fcb9933ccdd3c5c45e88d7361a57022ecda0771c54c6be87981fe3"])) // Temurin 25.0.5
+    }
+
     pub(crate) fn heap_buffer_owner(name: &str) -> bool {
         matches!(name, "java/nio/Buffer" | "java/nio/ByteBuffer" | "java/nio/CharBuffer"
             | "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
@@ -1311,6 +1322,7 @@ impl ClassPath {
         if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
             | ("java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;")
+            | ("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;")
             | ("java/lang/Class", "cast", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | ("java/lang/Class", "cannotCastMsg", "(Ljava/lang/Object;)Ljava/lang/String;")
             | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
@@ -1345,6 +1357,23 @@ impl ClassPath {
         let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
         Some((class, method))
+    }
+
+    /// The builder stores UTF-16 content in the checker. This forwarding overload
+    /// can run on that representation only when it touches no private JDK fields.
+    pub(crate) fn builder_append_object(&self) -> Option<(Rc<ClassFile>, Method)> {
+        use crate::classfile::{Insn::*, Kind::Ref};
+        let owner = "java/lang/StringBuilder";
+        let (cf, m) = self.library_image_method(owner, "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;")?;
+        let code = m.code.as_ref()?;
+        let ops = code.instructions().ok()?;
+        let [(_, Load(Ref, 0)), (_, Load(Ref, 1)), (_, InvokeStatic(value)), (_, InvokeVirtual(append)), (_, Return(Some(Ref)))] = ops.as_slice() else { return None };
+        let value = cf.pool.member(*value).ok()?;
+        let append = cf.pool.member(*append).ok()?;
+        (code.exception_table.is_empty() && (value.owner.as_str(), value.name.as_str(), value.descriptor.as_str())
+            == ("java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;")
+            && (append.owner.as_str(), append.name.as_str(), append.descriptor.as_str()) == (owner, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"))
+            .then_some((cf, m))
     }
 
     pub(crate) fn surrogate_arithmetic(owner: &str, name: &str, descriptor: &str) -> bool {

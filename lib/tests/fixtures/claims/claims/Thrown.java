@@ -113,12 +113,29 @@ public class Thrown {
         return new StringBuilder().append(new Shown("m")).toString().equals("claims.Thrown$Shown: m");
     }
 
+    public static boolean reentrantAppend(boolean fail) {
+        StringBuilder b = new StringBuilder("a");
+        Object value = new Object() {
+            public String toString() {
+                b.append('x');
+                if (fail) throw new IllegalStateException();
+                return null;
+            }
+        };
+        try {
+            return b.append(value) == b && !fail && b.toString().equals("axnull");
+        } catch (IllegalStateException expected) {
+            return fail && b.toString().equals("ax");
+        }
+    }
+
     /** False on a JVM: {@code toString()} uses the overridden message. */
     public static boolean nestedShown() {
         return new Nested("outer", new IllegalStateException("m")).toString().equals("claims.Thrown$Nested: outer");
     }
 
     public static void main(String[] args) {
+        if (!reentrantAppend(true) || !reentrantAppend(false)) throw new AssertionError("callback order");
         System.out.println("kept=" + kept("m") + " " + kept("") + " shown=" + shown("m") + " " + shown("") + " nested=" + nested("m") + " appended=" + appended("ab")
                 + " countsNothing=" + countsNothing() + " nullConversion=" + nullConversion() + " shownAppended=" + shownAppended() + " nestedShown=" + nestedShown());
     }

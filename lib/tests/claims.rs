@@ -611,6 +611,20 @@ fn copied_hash_sets_preserve_key_callbacks_collisions_and_independent_membership
     }
 }
 
+#[test]
+fn literal_unit_replacement_preserves_utf16_content_and_selected_jdk_identity() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for flag in ["-XX:+CompactStrings", "-XX:-CompactStrings"] {
+        assert!(Command::new("java").arg(flag).arg("-cp").arg(classes).arg("claims.LiteralReplacement").status().unwrap().success());
+    }
+    for (method, expected) in [("contentsAndIdentity", Verdict::Verified), ("takesReplacementIdentity", Verdict::Violation), ("callback", Verdict::Unverifiable)] {
+        let o = run(&options(classes, &format!("claims.LiteralReplacement#{method}"), 3, method));
+        assert_eq!(o.verdict, expected, "{method}: {}", o.output);
+        if method == "callback" { assert!(o.output.contains("java.lang.String.replace"), "{}", o.output); }
+    }
+}
+
 /// A `java.util.LinkedHashSet` of names, as Spring's `DefaultMessageCodesResolver` collects a binding error's message
 /// codes (`claims.LinkedSets`, example 286): the JDK's until a check asks for the model (`--model
 /// java.util.LinkedHashSet`, which runs the `HashSet` model above it too), then the definition written out over
@@ -712,7 +726,7 @@ fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jd
 /// stays the JDK's, each where a JVM breaks the statement: an application's `fillInStackTrace()`, which the JVM runs
 /// inside the constructor, is refused by name; a JDK constructor that does more than pass its arguments up
 /// (`UnknownFormatConversionException(null)` throws) is the gap it is, as are `toString()` where the class overrides
-/// it or the message, and `append` of such an exception.
+/// the message. Appending an exception with a concrete toString override runs its callback.
 #[test]
 fn an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor() {
     jvmcontract::tool_tier!();
@@ -724,13 +738,14 @@ fn an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor() {
         "{}",
         String::from_utf8_lossy(&jvm.stderr)
     );
-    for method in ["kept", "shown", "nested", "appended"] {
+    for method in ["kept", "shown", "nested", "appended", "reentrantAppend"] {
         proved(classes, &format!("claims.Thrown#{method}"), 3);
     }
+    let overridden = run(&options(classes, "claims.Thrown#shownAppended", 1, "overridden-append"));
+    assert_eq!(overridden.verdict, Verdict::Violation, "{}", overridden.output);
     for (method, why) in [
         ("countsNothing", "whose claims.Thrown$Counting.fillInStackTrace() the JVM runs inside the constructor"),
         ("nullConversion", "java.util.UnknownFormatConversionException.<init>"),
-        ("shownAppended", "java.lang.StringBuilder.append(Ljava/lang/Object;)"),
         ("nestedShown", "jdk-reference-method:claims.Thrown$Nested.toString()"),
     ] {
         let o = run(&options(classes, &format!("claims.Thrown#{method}"), 1, &format!("Thrown-{method}")));

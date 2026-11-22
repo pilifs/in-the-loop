@@ -1,0 +1,335 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-025719-check-avro-reserved-names-and-original-s",
+  "title": "Check Avro reserved names and original schema construction",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 15.6s, peak 247.6 MiB (estimated 3m00s, 3.0 GiB); 11 output file(s) changed",
+  "attention": [
+    "step 1 (Match four production sites and check constructors and controls) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-025719-check-avro-reserved-names-and-original-s.json",
+    "sha256": "c4faf0dfc6850503186a51546e9e422e176db52eafc52b5900e5d3a00e03d706",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-025719-check-avro-reserved-names-and-original-s",
+      "title": "Check Avro reserved names and original schema construction",
+      "description": "On both historical revisions of Avro 3878 and 729, match all instructions in the reserved-name producer, reject a changed literal and check the actual field values in a fresh JVM. Compare the pinned pilot and updated verifiers on the producer. Check original bytes-schema success and invalid-type failure with ordinary or separately named Schema startup. Record the first direct Jackson dependency.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "355",
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:57:19+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Match four production sites and check constructors and controls",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/schema_sets.py --pilot --output verification/domain-foundations/schema-sets",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/schema-sets"
+      ]
+    }
+  },
+  "sourceCommit": "058992696e310e85c2c8ff74ff63dd046ffdac1e",
+  "startedAt": "2026-11-22T03:03:18+00:00",
+  "finishedAt": "2026-11-22T03:06:55+00:00",
+  "wallSeconds": 217.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 105842,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 259670016,
+    "wallSeconds": 15.6,
+    "cpuSeconds": 26.4,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 191.727,
+      "cpuSeconds": 191.93,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2245980160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "c015913cb1483fc2070aef9b2b6d0b0aec8c616d915fcc00422e606d20faef01",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-025719-check-avro-reserved-names-and-original-s/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 11s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Match four production sites and check constructors and controls",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/schema_sets.py --pilot --output verification/domain-foundations/schema-sets",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 15.641,
+      "cpuSeconds": 26.381,
+      "cpuThrottledSeconds": 3.503,
+      "peakMemoryBytes": 259670016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-match-four-production-sites-an.log",
+        "lines": 39,
+        "bytes": 4285,
+        "sha256": "6e2731cb572434e7c3806da5b6181ab7a84aea12b1d50eb990742aa9167ba311",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "SLF4J(W): No SLF4J providers were found.",
+        "SLF4J(W): Defaulting to no-operation (NOP) logger implementation",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.",
+        "SLF4J(W): Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.",
+        "SLF4J(W): Ignoring binding found at [jar:file:/home/filip/.cache/in-the-loop/targets/sha256/ae/ae6fdd5c9547896114d5ec7fa7503733b7d2890573d3886fb548b3119c4d3f67!/org/slf4j/impl/StaticLoggerBinder.class]",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.",
+        "SLF4J(W): No SLF4J providers were found.",
+        "SLF4J(W): Defaulting to no-operation (NOP) logger implementation",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.",
+        "SLF4J(W): Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.",
+        "SLF4J(W): Ignoring binding found at [jar:file:/home/filip/.cache/in-the-loop/targets/sha256/ae/ae6fdd5c9547896114d5ec7fa7503733b7d2890573d3886fb548b3119c4d3f67!/org/slf4j/impl/StaticLoggerBinder.class]",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.",
+        "SLF4J(W): No SLF4J providers were found.",
+        "SLF4J(W): Defaulting to no-operation (NOP) logger implementation",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.",
+        "SLF4J(W): Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.",
+        "SLF4J(W): Ignoring binding found at [jar:file:/home/filip/.cache/in-the-loop/targets/sha256/ae/ae6fdd5c9547896114d5ec7fa7503733b7d2890573d3886fb548b3119c4d3f67!/org/slf4j/impl/StaticLoggerBinder.class]",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.",
+        "SLF4J(W): No SLF4J providers were found.",
+        "SLF4J(W): Defaulting to no-operation (NOP) logger implementation",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#noProviders for further details.",
+        "SLF4J(W): Class path contains SLF4J bindings targeting slf4j-api versions 1.7.x or earlier.",
+        "SLF4J(W): Ignoring binding found at [jar:file:/home/filip/.cache/in-the-loop/targets/sha256/ae/ae6fdd5c9547896114d5ec7fa7503733b7d2890573d3886fb548b3119c4d3f67!/org/slf4j/impl/StaticLoggerBinder.class]",
+        "SLF4J(W): See https://www.slf4j.org/codes.html#ignoredBindings for an explanation.",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-025719-check-avro-reserved-names-and-original-s/lib/benchmark/domain-foundations/schema_sets.py\", line 154, in <module>",
+        "    main()",
+        "    ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-025719-check-avro-reserved-names-and-original-s/lib/benchmark/domain-foundations/schema_sets.py\", line 135, in main",
+        "    \"producerSha256\": SHA(classes/PROOF), \"sites\": sites(work, subject, inspector, classes, output, exe), \"claims\": []}",
+        "                                                   ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-025719-check-avro-reserved-names-and-original-s/lib/benchmark/domain-foundations/schema_sets.py\", line 72, in sites",
+        "    claims.append(native(checker, subject, leg, calls, dest, label, \"BytesSchema#\"+method,",
+        "                  ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "        expected, jars, SHA(selected) if label == \"schema\" else None))",
+        "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-025719-check-avro-reserved-names-and-original-s/lib/benchmark/domain-foundations/schema_sets.py\", line 107, in native",
+        "    raise ValueError(f\"{label} {method}: {row['verdict']}: {row['problem']}\")",
+        "ValueError: schema rejectsRecord: unverifiable: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.a"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/schema-sets/355/fix/ordinary-firstFactory.native.json",
+      "change": "added",
+      "bytes": 5929,
+      "sha256": "5734e31d6b5e1f3770ede249a7843203e84d5da18204321205a27f3e2ec609d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/355/fix/ordinary-typed.native.json",
+      "change": "added",
+      "bytes": 5619,
+      "sha256": "2fe3af8e4475c70f6be78b65b85e4d14a1be95091aed2334210540a0f89d3cd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/355/fix/schema-rejectsRecord.native.json",
+      "change": "added",
+      "bytes": 26300,
+      "sha256": "53d2b40c8795b7610bbc260c78cdb3ea69ebbe9d5e9d31bd8e3f9c6f45bd1625",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/355/fix/schema-typed.native.json",
+      "change": "added",
+      "bytes": 26258,
+      "sha256": "93ac63c72c3a426385858242cd3e34ad9a2b4921c3b0f474d062f94a9458dfd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/355/parent/ordinary-firstFactory.native.json",
+      "change": "added",
+      "bytes": 5936,
+      "sha256": "49026d4aaabe6b36d7999f2229e2767fc674503627206d842547006b79f12c90",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/355/parent/ordinary-typed.native.json",
+      "change": "added",
+      "bytes": 5625,
+      "sha256": "88b284894b8474f5ef365fb923658896fbe4a1731084218ef0d49bc16329f863",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/355/parent/schema-rejectsRecord.native.json",
+      "change": "added",
+      "bytes": 26299,
+      "sha256": "bb53c8ae65bc44f8b4fc8304a892311ab43d2ec4bacffacd5e71f80155167ea0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/355/parent/schema-typed.native.json",
+      "change": "added",
+      "bytes": 26264,
+      "sha256": "bb30b3207df4f1c2b29bc624c7afef9cd64df4da0083a5fdffb70077ca7248fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/361/parent/ordinary-firstFactory.native.json",
+      "change": "added",
+      "bytes": 5934,
+      "sha256": "8618361e4f6188e267b223656bda7866a5b29f9aacedad56920c00ab33bbd0a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/361/parent/ordinary-typed.native.json",
+      "change": "added",
+      "bytes": 5626,
+      "sha256": "525798b3b6d5743091fe3d7d45c81ddf79a91c444dbc0638213880b7156faeb0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/schema-sets/361/parent/schema-typed.native.json",
+      "change": "added",
+      "bytes": 21019,
+      "sha256": "6e00adf048845d1fd178b402fed40cde5d2991b7fd7f1fa81626cf14eb005091",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T03:07:25+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/domain-foundations/schema-sets/355/fix/ordinary-firstFactory.native.json",
+      "verification/domain-foundations/schema-sets/355/fix/ordinary-typed.native.json",
+      "verification/domain-foundations/schema-sets/355/fix/schema-rejectsRecord.native.json",
+      "verification/domain-foundations/schema-sets/355/fix/schema-typed.native.json",
+      "verification/domain-foundations/schema-sets/355/parent/ordinary-firstFactory.native.json",
+      "verification/domain-foundations/schema-sets/355/parent/ordinary-typed.native.json",
+      "verification/domain-foundations/schema-sets/355/parent/schema-rejectsRecord.native.json",
+      "verification/domain-foundations/schema-sets/355/parent/schema-typed.native.json",
+      "verification/domain-foundations/schema-sets/361/parent/ordinary-firstFactory.native.json",
+      "verification/domain-foundations/schema-sets/361/parent/ordinary-typed.native.json",
+      "verification/domain-foundations/schema-sets/361/parent/schema-typed.native.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "fd0451e5c6f491b68d24ede7fdb43303c12e0e52",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/fd0451e5c6f491b68d24ede7fdb43303c12e0e52/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T030655Z-295514ee0b45460a",
+      "outputs": "20261122T030655Z-317588e39a731979",
+      "diff": "20261122T030655Z-336687499f594fff",
+      "workdir": "20261122T030658Z-932709c13aa87b19"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-025719-check-avro-reserved-names-and-original-s"
+}

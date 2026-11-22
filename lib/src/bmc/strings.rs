@@ -17,6 +17,9 @@
 //! - `indexOf(String)`, `indexOf(String, int)`: `NullPointerException` for null; the first index at or after the
 //!   start (held to the length) where the other's units all are; the start itself for the empty String.
 //! - `endsWith(String)`: `NullPointerException` for null; the other's units at the end.
+//! - `replace(CharSequence, CharSequence)` on the qualified JDKs when both arguments are concrete Strings
+//!   and the target is one UTF-16 unit. Bounded receiver contents may be symbolic. Reference comparisons see
+//!   the original on a miss, a fresh nonempty change and the canonical empty String on complete deletion.
 //! - `toLowerCase()` and `toLowerCase(Locale)`: of a String whose units are all ASCII, each of `A` to `Z` lowered,
 //!   and the String itself when none is. Under a Turkish or an Azeri locale `I` is lowered to U+0131, the dotless
 //!   i, and under every other, Lithuanian included, an ASCII String is lowered alike ([`super::locale`]). The
@@ -33,8 +36,8 @@
 //! `StringBuilder(int)` of a constant capacity from 0 to [`MOST_BUILDER_CONTENT`] (empty; another capacity is the
 //! JDK call), `StringBuilder(String)` (`NullPointerException` for null), `length()`, `charAt(int)`
 //! (`StringIndexOutOfBoundsException` outside the length), `append(String)` (the four units `null` for null),
-//! `append(Object)` (`null` for null, a String's units, an exception's `toString()` where the engine has it,
-//! [`super::throwables`], and the JDK call for any other object),
+//! `append(Object)` (including the result of an exact application object's `toString()` callback, or an
+//! exception's modeled text from [`super::throwables`]),
 //! `appendCodePoint(int)` (one BMP code unit or a surrogate pair, with an invalid int throwing before any write),
 //! `append(char)`, `append(int)` (the int's decimal digits, [`super::bytes`]; each the builder itself returned, its
 //! content at most [`MOST_BUILDER_CONTENT`] units, past which the run ends with no verdict), `indexOf(String)`,
@@ -86,6 +89,75 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
 }
 
 impl Engine<'_> {
+    pub(super) fn application_string_callback(&self, path: &Path, o: usize) -> bool {
+        let object = &path.objects[o];
+        self.gap_mode == GapMode::Strict && !object.assumed && self.cp.is_application(&object.class)
+            && self.cp.checker_method(&object.class, "toString", "()Ljava/lang/String;")
+                .is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some())
+    }
+
+    /// Single-unit literal targets cannot overlap. Walk the bounded UTF-16 units
+    /// backwards. Each live match prefixes the replacement to the suffix built so far.
+    /// Non-String CharSequences may run arbitrary toString callbacks and keep their gap.
+    pub(super) fn replace_string_unit(&mut self, path: &mut Path, o: usize, args: &[Val]) -> Option<Step> {
+        let [Val::R(Some(target)), Val::R(Some(replacement))] = args else { return None };
+        if path.objects[*target].class != STRING || path.objects[*replacement].class != STRING { return None; }
+        let target = self.constant_units(path, *target)?;
+        let [target] = target.as_slice() else { return None };
+        let replacement = self.constant_units(path, *replacement)?;
+        let source = path.objects[o].content()?.clone();
+        if !self.cp.string_unit_replacement() { return None; }
+        if replacement == [*target] {
+            self.push(path, Val::R(Some(o)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        let width = replacement.len().max(1);
+        if source.cells.len().saturating_mul(width) > MAX_STRING_CONTENT {
+            return Some(unsupported(format!("String.replace may exceed {MAX_STRING_CONTENT} UTF-16 code units")));
+        }
+        let needle = self.b.constant(i64::from(*target), 16);
+        let replacement: Vec<Bits> = replacement.iter().map(|u| self.b.constant(i64::from(*u), 16)).collect();
+        let zero = self.b.constant(0, 16);
+        let delta = self.b.constant(replacement.len() as i64 - 1, 32);
+        let mut length = source.length.clone();
+        let mut changed = FALSE;
+        let mut suffix = Vec::new();
+        for (i, unit) in source.cells.iter().enumerate().rev() {
+            let live = self.b.ult(&self.b.constant(i as i64, 32), &source.length);
+            let equal = self.b.eq(unit, &needle);
+            let hit = self.b.and(live, equal);
+            if hit == FALSE {
+                suffix.insert(0, unit.clone());
+                continue;
+            }
+            changed = self.b.or(changed, hit);
+            let longer = self.b.add(&length, &delta);
+            length = self.b.ite_bits(hit, &longer, &length);
+            if hit == TRUE {
+                suffix.splice(..0, replacement.iter().cloned());
+            } else {
+                suffix = (0..suffix.len()+width).map(|j| {
+                    let keep = if j == 0 { unit } else { suffix.get(j-1).unwrap_or(&zero) };
+                    let replace = if j < replacement.len() { &replacement[j] } else { suffix.get(j-replacement.len()).unwrap_or(&zero) };
+                    self.b.ite_bits(hit, replace, keep)
+                }).collect();
+            }
+        }
+        let result = if changed == FALSE { o } else {
+            let mut same = vec![(-changed, o)];
+            if replacement.is_empty() {
+                let empty = self.b.is_zero(&length);
+                let deleted_all = self.b.and(changed, empty);
+                if deleted_all != FALSE { same.push((deleted_all, self.empty_literal(path))); }
+            }
+            self.new_string(path, length, suffix, same)
+        };
+        self.push(path, Val::R(Some(result)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
     /// The unit of `s` at the index `at`: a choice among its cells, zero for an index it has no cell for.
     fn unit_at(&mut self, s: &Array, at: &Bits) -> Bits {
         if let Some(index) = self.b.constant_value(at) {
@@ -761,6 +833,14 @@ impl Engine<'_> {
                 })
             }
             ("append", [appended]) => {
+                if descriptor == "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" {
+                    if let Val::R(Some(arg)) = appended {
+                        if self.application_string_callback(path, *arg) {
+                            let (cf, method) = self.cp.builder_append_object()?;
+                            return Some(self.enter_method(path, BUILDER, cf, method, vec![Val::R(Some(o)), appended.clone()]));
+                        }
+                    }
+                }
                 // What is appended: a String's units (`null` for null), a char, or an int's decimal digits.
                 let t = match appended {
                     Val::R(None) => Array { element: Type::Char, length: self.b.constant(4, 32), cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u), 16)).collect(), refs: Vec::new() },

@@ -8,17 +8,11 @@ import tempfile
 import zipfile
 
 from producers import PROFILE
-from startup import HERE, ROOT, document, materialize, runtime_jar, runtime_jdk, runtime_maven
+from startup import HERE, ROOT, compile_java, document, materialize, pilot_checker, runtime_jar, runtime_jdk, runtime_maven
 
 SHA = runtime_maven.sha256_of
 ENTRY = "org/apache/avro/Schema.class"
 PROOF = Path("foundation/ReservedNames.class")
-
-
-def compile_java(jdk, work, dest, source, jars=()):
-    dest.mkdir(exist_ok=True)
-    cp = ["-cp", os.pathsep.join(map(str, jars))] if jars else []
-    subprocess.run([jdk/"bin/javac", "-J-Djava.io.tmpdir="+str(work), "-parameters", "-g", *cp, "-d", dest, source], check=True)
 
 
 def sites(work, subject, inspector, classes, output, checker):
@@ -92,6 +86,8 @@ def native(executable, subject, work, classes, output, label, entry, expected, j
     checked = subprocess.run(cmd, capture_output=True, env=env, timeout=60)
     if not checked.stdout:
         raise ValueError(checked.stderr.decode(errors="replace")[-900:])
+    path = output/(label+"-"+method+".native.json")
+    path.write_bytes(checked.stdout)
     row, = json.loads(checked.stdout)
     stated = row["stated"]
     assumptions = [a["id"] for a in stated["assumptions"] if a["kind"] == "library"]
@@ -103,16 +99,13 @@ def native(executable, subject, work, classes, output, label, entry, expected, j
     elif assumptions:
         raise ValueError("unexpected startup assumption")
     allowed = {expected} if expected else {"verified", "unverifiable"}
-    if row["verdict"] not in allowed or (row["verdict"] == "verified" and stated["vacuity"]["status"] != "non-vacuous"):
-        raise ValueError(f"{label} {method}: {row['verdict']}: {row['problem']}")
-    if label == "pilot" and "java.util.HashSet.<init>(Ljava/util/Collection;)V" not in (row["problem"] or ""):
-        raise ValueError("unexpected refusal: "+str(row["problem"]))
-    if expected == "violation" and row.get("counterexample") is None:
-        raise ValueError("the wrong membership assertion lacks a counterexample")
-    path = output/(label+"-"+method+".native.json")
-    path.write_bytes(checked.stdout)
+    matched = row["verdict"] in allowed
+    if row["verdict"] == "verified": matched &= stated["vacuity"]["status"] == "non-vacuous"
+    if label == "pilot": matched &= "java.util.HashSet.<init>(Ljava/util/Collection;)V" in (row["problem"] or "")
+    if row["verdict"] == "violation": matched &= row.get("counterexample") is not None
     return {"target": target, "verdict": row["verdict"], "checkerSha256": SHA(executable),
-            "raw": path.name, "sha256": SHA(path), "firstUnknown": row["problem"], "libraryPremises": assumptions}
+            "raw": path.name, "sha256": SHA(path), "firstUnknown": row["problem"], "libraryPremises": assumptions,
+            "matchedExpectation": matched}
 
 
 def main():
@@ -135,19 +128,17 @@ def main():
                   "producerSha256": SHA(classes/PROOF), "sites": sites(work, subject, inspector, classes, output, exe), "claims": []}
         if not args.sites_only:
             if args.pilot:
-                pilot = json.loads((ROOT/"verification/domain-foundations/results.json").read_bytes())
-                identity = pilot["startup"]["355"]["finalOrdinary"]["direct-limit-fix"]["checker"]
-                previous = exe.parent.parent/identity["libTree"]/"jvmcontract" if args.pilot == "cached" else Path(args.pilot).resolve()
-                if SHA(previous) != identity["jvmcontract"]:
-                    raise ValueError("the cached pilot verifier differs from the frozen receipt")
+                previous = pilot_checker(exe, args.pilot)
                 result["claims"].append(native(previous, subject, work, classes, output, "pilot", "ReservedNames#reserved", "unverifiable"))
             for method, expected in (("reserved","verified"), ("defaultLeaks","violation")):
                 result["claims"].append(native(exe, subject, work, classes, output, "current", "ReservedNames#"+method, expected))
         document(output/"evidence.json", result)
         for row in result["sites"]:
             print(row["example"], row["side"], row["startBci"], row["endBciExclusive"], row["instructions"])
-        for row in result["claims"]:
-            print(row["target"], row["verdict"])
+        claims = result["claims"] + [r for site in result["sites"] for r in site["constructorClaims"]]
+        for row in claims:
+            print(row["target"], row["verdict"], row["firstUnknown"])
+        if not all(r["matchedExpectation"] for r in claims): raise SystemExit(1)
 
 
 if __name__ == "__main__":
