@@ -211,7 +211,8 @@ skips it), and keyserver.ubuntu.com returned only a revocation certificate for i
   fresh-binder control were not run (the domain agent freezes those).
 - A2 on Security 6.3.0 + Framework 6.1.7, fluent builder `A → B`, `B → C, D`, `hasAuthority(prefix + "D")` with
   `setRoleHierarchy`: 14 of 16 subsets granted for each of `ROLE_` and `CUSTOM_PREFIX_`, as the brief says. Legacy
-  text configuration and the 64-history combined grid were not run.
+  text configuration on the release and on the built jars is [below](#the-briefs-spring-preflights-replayed-on-the-built-artifacts-and-slices);
+  the 64-history combined grid was not run.
 
 ### Gradle and JDKs for the historical Spring builds
 
@@ -230,26 +231,52 @@ the wrapper deleted its zip, so the zip was downloaded once more, matched gradle
 tree (`diff -r`). All seven checkouts' `gradle-wrapper.jar` match gradle.org's `gradle-VERSION-wrapper.jar.sha256`.
 
 Repositories the builds name: Spring Security uses the plugin portal, Central and `repo.spring.io/milestone` (200
-anonymously); Framework 7.1 uses Central and the plugin portal only; Framework 5.2 uses Central,
+anonymously). Framework 7.1 uses Central and the plugin portal, and its `buildSrc` `RepositoriesPlugin` adds
+`repo.spring.io/milestone` and `repo.spring.io/snapshot` because its version ends in `-SNAPSHOT` (an earlier
+version of this record said Central and the portal only, which was wrong). Framework 5.2 uses Central,
 `repo.spring.io/libs-spring-framework-build` (200 anonymously) and, for plugins after the portal,
-`repo.spring.io/plugins-release`, which answered **401** anonymously on 2026-11-22. If a 5.2 build plugin is found
-only there, the A4 build stops; the job below will say.
+`repo.spring.io/plugins-release`, which answered **401** anonymously on 2026-11-22, and the A4 build does stop
+there (below).
 
-### Builds and upstream tests: queued as jobs
+### Builds and upstream tests: run as jobs
 
-The Spring builds take minutes and several GB, so they are verification jobs, committed with this record (see the
-commit). Each job builds the module jar at every revision with that checkout's own wrapper and dependencies (the first
-run fills `gradle-home`), runs the named upstream tests, copies the jar to `artifacts/WORKTREE.jar` and prints its
-sha256, writes `logs/WORKTREE.MODULE.runtimeClasspath.txt`, reruns the landed tests with `--offline`, and finally
-removes the build trees (`git clean -fdxq` in each worktree). A transplanted test file is removed again after its run.
+The Spring builds take minutes and several GB, so they ran as verification jobs, submitted with this record in
+`svtruour` and collected on the default line by the spring-setup run's watcher (result commits `pkqqoykm` for A2
+and A3, `syqxkxpz` for A4; read them with `python3 verification/pipeline.py report` on a line that has them, or under
+`verification/results/2026/11/22/`). Each job builds the module jar at every revision with that checkout's own
+wrapper and dependencies (filling `gradle-home`), runs the named upstream tests, copies the jar to
+`artifacts/WORKTREE.jar` and prints its sha256, writes `logs/WORKTREE.MODULE.runtimeClasspath.txt` (the Gradle
+`dependencies --configuration runtimeClasspath` tree), reruns the landed tests with `--offline`, and finally removes
+the build trees (`git clean -fdxq` in each worktree). A transplanted test file is removed again after its run.
 
-| Job | Subject | What it runs |
+| Job | Subject | What it ran | Result |
+|---|---|---|---|
+| `20261122-151858-setup-build-spring-security-core-at-the` | A2 | `:spring-security-core` at before, feature, landed; each side's own `RoleHierarchyImplTests` and `AuthorityAuthorizationManagerTests`; the builder tests (`testBuilderWithDefaultRolePrefix`, `testBuilderWithRolePrefix` and five argument checks) exist from the feature commit on | **passed**, 4m36s, peak 2.4 GiB. JUnit: before 38/38, feature 46/46, landed 45/45 pass. Offline rerun of the landed tests: the test task executed, BUILD SUCCESSFUL. |
+| `20261122-151858-setup-build-spring-framework-spring-core` | A3 | `:spring-core` at landed and parent; `PropertyTests` is new in the change, so on the parent the landed file is transplanted | **passed**, 4m54s, peak 3.1 GiB. Landed 18/18 pass. Parent with the transplanted file: 9 of 18 fail as expected, including `resolveNameForRecordAccessorEmbeddingGetPrefix`, `…NamedGetWidget`, `…NamedIs`, `…NamedGet`, `…StartingWithIsPrefix`, `resolveNameForDataClassAccessorEmbeddingGetPrefix`, `…DataClassAccessorStartingWithIsPrefix`, `resolveNameForBooleanGetterBackedByFieldOfSameName`, `resolveNameForGetterEmbeddingGetInName` (list in `logs/spring-framework-36911-parent.spring-core.junit.txt`). Offline rerun of the landed tests: BUILD SUCCESSFUL. |
+| `20261122-151858-setup-build-spring-framework-spring-cont` | A4 | `:spring-context` at landed and parent; each side's own `DateFormattingTests`, then the landed file on the parent | **failed** at step 1 (landed), 1m06s; steps 2–5 skipped. **Refused by the server:** Gradle could not resolve the build script classpath because `repo.spring.io/plugins-release` answered 401 for `io.spring.asciidoctor:spring-asciidoctor-extensions:0.1.3.RELEASE` and `org.jfrog.buildinfo:build-info-extractor:2.13.10` (needed by `com.jfrog.artifactory` 4.9.8). Recorded and not worked around; the step 1 leftovers (`.gradle`, `buildSrc/build`) were removed by hand afterwards. |
+
+**Built jars** (`artifacts/`; jar digests include build timestamps):
+
+| Jar | sha256 | Built with |
 |---|---|---|
-| `20261122-151858-setup-build-spring-security-core-at-the` | A2 | `:spring-security-core` at before, feature, landed; each side's own `RoleHierarchyImplTests` and `AuthorityAuthorizationManagerTests`; the builder tests (`testBuilderWithDefaultRolePrefix`, `testBuilderWithRolePrefix` and five argument checks) exist from the feature commit on |
-| `20261122-151858-setup-build-spring-framework-spring-core` | A3 | `:spring-core` at landed and parent; `PropertyTests` is new in the change, so on the parent the landed file is transplanted and `resolveNameForRecordAccessorEmbeddingGetPrefix` must fail |
-| `20261122-151858-setup-build-spring-framework-spring-cont` | A4 | `:spring-context` at landed and parent; each side's own `DateFormattingTests`, then the landed file on the parent, where `testBindDateAnnotatedPatternWithGlobalFormat` must fail |
+| `spring-security-14196-before.jar` (6.3.0-SNAPSHOT) | `cdbc30986e169dd235ce624cfb96b746b553c94de265f57bbde233f25a1955e3` | Gradle 8.5 on JDK 17.0.21 |
+| `spring-security-14196-feature.jar` | `6a0b821f572378a8863c0b14dabb46714e43b631f3bcb18acf936d9c33c2afc0` | the same |
+| `spring-security-14196-landed.jar` | `513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be` | the same |
+| `spring-framework-36911-parent.jar` (spring-core 7.1.0-SNAPSHOT) | `3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d` | Gradle 9.7.0 on JDK 25.0.5, release 17 |
+| `spring-framework-36911-landed.jar` | `913fceb73ae5b156552587cf93f49be053c90aac38abb18cf6410f54524a3c8c` | the same |
 
-The commands, for a rerun by hand (each over a minute, so as a job):
+**Runtime classpaths** (`logs/WORKTREE.MODULE.runtimeClasspath.txt`). Spring Security core at all three revisions
+resolves Spring Framework **6.1.1** (aop, beans, context, core, expression) and micrometer-observation 1.12.0, plus
+the project's own `spring-security-crypto`: the same Framework graph as `releases/spring-security-6.2.0-framework-6.1.1`.
+Spring Framework spring-core 7.1.0-SNAPSHOT needs commons-logging 1.3.5 and JSpecify 1.0.0 at run time (the rest are
+optional), and its platform pulls **snapshot** dependencies: Reactor BOM 2026.0.0-SNAPSHOT (reactor-core
+3.9.0-SNAPSHOT) and Micrometer BOM 1.18.0-SNAPSHOT. Snapshots move, so an online rebuild later may resolve different
+bytes; the copies the job used are in `gradle-home` (sha256: reactor-core `51436b9a3967185e…`, micrometer-observation
+`e1c8305e6b8e3056…`, micrometer-commons `1b3add3a081c9e93…`, reactor-test `129ede5ed343d699…`,
+micrometer-observation-test `d4e85b7504c8621b…`). Build offline to keep them.
+
+The commands, for a rerun by hand (each over a minute, so as a job; the A2 and A3 caches are filled, so `--offline`
+works for them):
 
 ```bash
 B=~/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp
@@ -262,35 +289,97 @@ cd $B/src/spring-framework-36911-landed && JAVA_HOME=~/.sdkman/candidates/java/2
   -Porg.gradle.java.installations.auto-download=false \
   -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem \
   :spring-core:test --tests 'org.springframework.core.convert.PropertyTests'
-# A4 (JDK 8)
+# A4 (JDK 8): stops at the build script classpath, 401 from repo.spring.io/plugins-release (above)
 cd $B/src/spring-framework-23893-landed && JAVA_HOME=~/.sdkman/candidates/java/8.0.512.0+9-tem ./gradlew --no-daemon \
   :spring-context:test --tests 'org.springframework.format.datetime.DateFormattingTests'
 ```
 
-Add `--offline` once the job has filled the cache. The job steps themselves are in `verification/jobs/ID.json`; the
-script that wrote them is `~/.cache/in-the-loop/spring-java-data/scripts/submit_jobs.py`.
+Add `--offline` for A2 and A3. The job steps themselves are in `verification/jobs/ID.json`; the script that wrote
+them is `~/.cache/in-the-loop/spring-java-data/scripts/submit_jobs.py`.
+
+### The brief's Spring preflights, replayed on the built artifacts and slices
+
+Throwaway programs (not claims, not adapters), run inline on JDK 21.0.13 in the probe cap, each under a few seconds.
+
+**A2 on the built jars** (`probes/a/A2Built.java`, sha256 `b6296afa…`; `A2Legacy.java`, `520dbfe2…`, the same
+without the builder branch, for the pre-feature jar). Classpath: `artifacts/spring-security-14196-REV.jar` ahead of
+`releases/spring-security-6.2.0-framework-6.1.1` minus its `spring-security-core` (so crypto is the released 6.2.0,
+not the project's snapshot). Hierarchy `A → B`, `B → C`, `B → D`; 16 subsets per prefix; `hasAuthority(prefix + "D")`
+with `setRoleHierarchy`. The probe prints the granted count and a digest of the 16 reachable-name sets (prefix
+normalized), so runs can be compared with each other; it holds no independent graph oracle.
+
+| Artifact | Construction | `ROLE_` | `CUSTOM_PREFIX_` |
+|---|---|---|---|
+| before `10d88cdf` | legacy `setHierarchy` text | 14/16, sets `ad0470bed166537f` | 14/16, `ad0470bed166537f` |
+| feature `7d366242` | legacy text / builder | 14/16 / 14/16, same digest | 14/16 / 14/16, same digest |
+| landed `ee8bc78c` | legacy text / builder | 14/16 / 14/16, same digest | 14/16 / 14/16, same digest |
+| release 6.3.0 + 6.1.7 | legacy text / builder | 14/16 / 14/16, same digest | 14/16 / 14/16, same digest |
+
+So all 32 configurations give the same reachable sets and decisions on every path, as the brief reports. The builder
+API used (`withRolePrefix(p).role(..).implies(..).build()`) exists from the feature commit on; the landed polish
+removes `withNoRolePrefix()` and renames the branch builder type. The omitted-edge control and the combined A1 → A2
+grid were not run.
+
+**A3** (`probes/a3/A3Witness.java`, sha256 `1d7887a6…`): `new Property(type, type.getMethod(m), null).getName()` on
+nested records and a class, by two routes. (1) The built jars, `artifacts/spring-framework-36911-REV.jar` with
+commons-logging 1.3.5 and JSpecify 1.0.0. (2) The brief's slice: each revision's unmodified `Property.java` compiled
+by `javac` 21 against `releases/spring-core-7.0.4-jspecify-1.0.0` and put ahead of it (`probes/a3/slice-REV/`). Both
+routes give the same table, the brief's:
+
+| Fixture method | Parent | Landed |
+|---|---|---|
+| record component `budget()` | `""` | `budget` |
+| record component `issue()` | `sue` | `issue` |
+| record component `getWidget()` | `widget` | `getWidget` |
+| record component `name()` / ordinary getter `getName()` | `name` / `name` | `name` / `name` |
+| record with an additional `getWidget()` and no field of that name (the brief's added case) | `widget` | `widget` |
+
+**A4** (`probes/a4/A4Witness.java`, sha256 `29b82a22…`): `DateFormatterRegistrar` with a global `DateFormatter`
+set to `ISO.DATE_TIME`, `FormattingConversionService` with the default converters, a real `DataBinder` on a bean
+whose `Date` property carries `@DateTimeFormat(pattern = "M/d/yy h:mm")`, `Locale.US` in `LocaleContextHolder`,
+default time zone set to UTC, binding `"10/31/09 1:05"`. The historical build is blocked (above), so this is the
+brief's preflight route only: each revision's `DateFormatterRegistrar.java` (the only production file the change
+touches) compiled with JDK 8 against `releases/spring-framework-5.2.0.RELEASE` and put ahead of it
+(`probes/a4/slice-REV/`). The parent's file is byte-identical to the one in the 5.2.0.RELEASE sources jar.
+
+| Route | Stored date | Errors | Field error | Displayed value |
+|---|---|---|---|---|
+| parent registrar on 5.2.0.RELEASE (JDK 21.0.13 and JDK 8u512) | `null` | 1 | `dateAnnotatedPattern`, rejected `"10/31/09 1:05"`, code `typeMismatch` | `10/31/09 1:05` |
+| landed registrar on 5.2.0.RELEASE (both JDKs) | `2009-10-31T01:05:00Z` | 0 | none | `10/31/09 1:05` |
+| stock 5.2.0.RELEASE (control) | `null` | 1 | the same as the parent | `10/31/09 1:05` |
+
+This matches the brief: the same displayed string on both sides, the stored date and error count distinguishing
+them. The preservation inputs (unannotated global-format field, malformed local input, a valid edit after it) were
+not run, and `DateFormattingTests` itself could not be run on either revision.
 
 ## Summary
 
 | Subject | Sources | Dependencies cached | Original artifacts built | Original regression on a JVM | Brief's witness replayed |
 |---|---|---|---|---|---|
 | A1 binder (Framework 6.2.3) | release only | yes (`releases/spring-framework-6.2.3`) | released jars, signatures good | n/a (constructed application) | yes: the whole prefix table, both heap shapes |
-| A2 Security #14196 | 3 worktrees, unsigned commits | releases yes; Gradle build dependencies **fetched by the job's first run** | **job pending** | **job pending** | release grid headline: 14/16 per prefix on 6.3.0 + 6.1.7 |
-| A3 Framework #36911 | 2 worktrees, both signatures good | 7.0.4 + JSpecify slice yes; Gradle build dependencies **job** | **job pending** | **job pending** (transplanted `PropertyTests`) | not replayed (the slice replay compiles `Property.java` ahead of 7.0.4: domain agent) |
-| A4 Framework #23893 | 2 worktrees, unsigned | 5.2.0.RELEASE yes (signature unchecked); Gradle build dependencies **job** | **job pending** | **job pending** (transplanted `DateFormattingTests`) | not replayed (needs each revision's registrar on 5.2.0: domain agent) |
+| A2 Security #14196 | 3 worktrees, unsigned commits | releases yes; Gradle build dependencies yes, offline checked | yes, 3 jars (job passed) | yes: each side's own tests pass (38, 46, 45) | yes: 14/16 per prefix, identical reachable sets for legacy and builder on all three built jars and on 6.3.0 + 6.1.7 |
+| A3 Framework #36911 | 2 worktrees, both signatures good | 7.0.4 + JSpecify slice yes; Gradle build dependencies yes, offline checked (snapshot dependencies cached as used) | yes, 2 jars (job passed) | yes: landed 18/18 pass; transplanted `PropertyTests` fails 9/18 on the parent | yes: the whole table, on the built jars and on the 7.0.4 slice |
+| A4 Framework #23893 | 2 worktrees, unsigned | 5.2.0.RELEASE yes (signature unchecked); Gradle build dependencies **no: 401 from `repo.spring.io/plugins-release`** | **no** (job failed at the build script classpath) | **no** (`DateFormattingTests` not runnable without the build) | yes, slice route only: each revision's registrar on 5.2.0.RELEASE, JDK 21 and 8 |
 | B1 boxed row mapper | `commons-lang-1635-landed`; 3.17.0 release | yes, offline checked | yes | n/a (constructed client) | yes: row, 28/28 distinct pairs, isolation, 4 indy sites |
 | B2 Vavr #1829 | 2 worktrees | yes, offline checked | yes (JDK 8) | yes: landed test fails on parent | yes: all four table rows |
 | B3 Commons Lang #1589 | 2 worktrees, signatures good | yes, offline checked | yes | yes: landed tests fail on parent | yes: −1 vs 1 |
 | B4 Commons Lang #1635 | 2 worktrees, signatures good | yes, offline checked | yes | yes: landed test fails on parent | yes: Float 0.1 vs BigDecimal scale 18, controls |
 
-**Left for the jobs.** Until the three jobs run, the Gradle dependency caches for the historical Spring builds are
-empty, so an offline Spring build will not work yet; the first job run fills `gradle-home` and checks `--offline`.
-Read the results with `python3 verification/pipeline.py report`; each job's log prints the jar digests, the JUnit
-counts and failures (`junit tests=… failures=…`, `junit failed Class#method`) and the runtime classpath.
+**Refused, and what it blocks.** `repo.spring.io/plugins-release` answers 401 to anonymous requests, and the
+Framework 5.2 build needs `spring-asciidoctor-extensions` 0.1.3.RELEASE and `build-info-extractor` 2.13.10 from
+it to configure at all. So A4 has no historical build, no built jars, no Gradle dependency cache and no run of
+`DateFormattingTests` on either revision; the slice replay above is the only historical evidence here. Getting it
+needs a decision this setup does not take: credentials for that repository, a trusted source for those two
+artifacts, or a change to the historical build (for the domain agent or the user). Nothing else was refused.
+
+**Unchecked.** The Spring 5.2.0.RELEASE signature (key `9A2C7A98E457C53D` not obtainable with a user ID); its
+SHA-1s match Central's.
 
 **Not done, on purpose.** No examples, claims, sidecars, adapters or recipes; no verifier runs; no grids enumerated
-(B2's 400 matrices, A2's 32 configurations and 64 histories, A1's six permutations): those are the domain agent's to
-freeze. Nothing was refused during setup; the one gap is the unverifiable Spring 5.2.0.RELEASE signature above.
+(B2's 400 matrices, the A2 omitted-edge control and 64-history combined grid, A1's six permutations and fresh-binder
+control, A4's preservation inputs, B3's and B4's bounded families): those are the domain agent's to freeze. The A2
+32-configuration check above compares paths with each other, not with an oracle.
 
-**Disk** after setup: mirrors 53 MB, worktrees 584 MB (the Commons Lang and Vavr `target/` folders kept), Maven
-repository 334 MB, `gradle-home` 497 MB before the jobs (Spring's build dependencies will add a few GB).
+**Disk** after setup and the jobs: mirrors 53 MB, worktrees 584 MB (the Commons Lang and Vavr `target/` folders kept;
+the Spring build trees removed), Maven repository 334 MB, `gradle-home` 2.3 GB (wrappers plus the A2 and A3 build
+dependencies), releases 40 MB, artifacts 10 MB; 3.2 GB in all.
