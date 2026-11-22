@@ -1,0 +1,140 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/apache/commons-csv",
+    "commit": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+    "class": "org.apache.commons.csv.Lexer",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "built/commons-csv-1.10.0-SNAPSHOT.jar",
+      "sha256": "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/apache/commons-csv at 94711ebf25d79bd95df8a5e70885325660f94ddc: target/commons-csv-1.10.0-SNAPSHOT.jar"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+      "tree": "9f00320c1cab1d2be97b6ee6246bba702e8a99de",
+      "parents": [],
+      "fetchedFrom": "https://github.com/apache/commons-csv",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "target/commons-csv-1.10.0-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "target/commons-csv-1.10.0-SNAPSHOT.jar",
+          "sha256": "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "org/apache/commons/csv/Lexer.class",
+      "selectedClassSha256": "7f0506de439cdfd787a9054e20712035594b16e5478f948eaee4b142833a0c6f",
+      "sourceSha256": "eecc99ed6f163c3b97d1ad00b1e7a3bfd0b64c9b9ccc16fb93d16f6f599d6d09"
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "declaredCompilers": {}
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 128.4,
+        "logSha256": "45416340bf9550d9cd4498f2908bc816270c515f3931f0edb8db8578b4c73ff1",
+        "errors": [],
+        "tail": [
+          "[INFO] Installing /project/pom.xml to /work/repository/org/apache/commons/commons-csv/1.10.0-SNAPSHOT/commons-csv-1.10.0-SNAPSHOT.pom",
+          "[INFO] Installing /project/target/commons-csv-1.10.0-SNAPSHOT-sources.jar to /work/repository/org/apache/commons/commons-csv/1.10.0-SNAPSHOT/commons-csv-1.10.0-SNAPSHOT-sources.jar",
+          "[INFO] Installing /project/target/commons-csv-1.10.0-SNAPSHOT-test-sources.jar to /work/repository/org/apache/commons/commons-csv/1.10.0-SNAPSHOT/commons-csv-1.10.0-SNAPSHOT-test-sources.jar",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  02:06 min",
+          "[INFO] Finished at: 2026-11-22T06:31:28Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 4.7,
+        "logSha256": "5d0860671774eadf18543f2619951f98766bdb0475bc8856f1ad541985edcf60",
+        "errors": [],
+        "tail": [
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-csv ---",
+          "[INFO] No dependencies found.",
+          "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  3.190 s",
+          "[INFO] Finished at: 2026-11-22T06:31:33Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}
