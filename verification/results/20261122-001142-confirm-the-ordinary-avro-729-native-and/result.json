@@ -1,0 +1,864 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-001142-confirm-the-ordinary-avro-729-native-and",
+  "title": "Confirm the ordinary Avro 729 native and finite contracts",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 passed step(s) in 24.5s, peak 170.4 MiB (estimated 4m00s, 3.0 GiB); 81 output file(s) changed",
+  "attention": [
+    "step 1 (Check the original native scope) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-001142-confirm-the-ordinary-avro-729-native-and.json",
+    "sha256": "ab66a145850f0406dc4291e2a3bf4d91a32d381eb8f6bc3e8f46d021f97bf677",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-001142-confirm-the-ordinary-avro-729-native-and",
+      "title": "Confirm the ordinary Avro 729 native and finite contracts",
+      "description": "Re-run all four frozen obligations with ordinary startup on the decimal-capable verifier. Preserve the earliest native refusal and exhaustive independent JVM controls for all twelve input windows.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:11:42+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check the original native scope",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route native --stage decimal-confirmation",
+          "cwd": "."
+        },
+        {
+          "name": "Check original finite outcomes",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route finite --stage decimal-confirmation",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native",
+        "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite"
+      ]
+    }
+  },
+  "sourceCommit": "c5ddadb5389144713057cafbe97552157a34a6a0",
+  "startedAt": "2026-11-22T00:29:48+00:00",
+  "finishedAt": "2026-11-22T00:33:59+00:00",
+  "wallSeconds": 251.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2901987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 178671616,
+    "wallSeconds": 24.5,
+    "cpuSeconds": 37.5,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original native scope",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route native --stage decimal-confirmation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 6.812,
+      "cpuSeconds": 9.823,
+      "cpuThrottledSeconds": 0.37,
+      "peakMemoryBytes": 153632768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-native-scop.log",
+        "lines": 1,
+        "bytes": 538,
+        "sha256": "593943bf1e570b7d5c43a60b0960588f103476e98ca6838331515e4a5aaaecf0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"361\", \"route\": \"native\", \"stage\": \"decimal-confirmation\", \"workflowExit\": 1, \"seconds\": 6.696, \"checkerSeconds\": 60, \"tasks\": [\"replay\", \"cursor-parent\", \"cursor-fix\", \"decimals-parent\", \"decimals-fix\"], \"verifierCommit\": \"c5ddadb5389144713057cafbe97552157a34a6a0\", \"checkerSha256\": \"b61"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check original finite outcomes",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route finite --stage decimal-confirmation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 17.643,
+      "cpuSeconds": 27.644,
+      "cpuThrottledSeconds": 0.881,
+      "peakMemoryBytes": 178671616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-original-finite-outcomes.log",
+        "lines": 1,
+        "bytes": 529,
+        "sha256": "71a775951d93e2978fcc696d123a83c5566dfe5c23c8048f56a23aa1b0026e82",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"361\", \"route\": \"finite\", \"stage\": \"decimal-confirmation\", \"workflowExit\": 0, \"seconds\": 17.471, \"checkerSeconds\": 60, \"tasks\": [\"cursor-parent\", \"cursor-fix\", \"decimals-parent\", \"decimals-fix\"], \"verifierCommit\": \"c5ddadb5389144713057cafbe97552157a34a6a0\", \"checkerSha256\": \"b61cd17e7c11"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "09eea9b561e0762fa0c878d4443961d7dc4520ea8e36ea912f541f47e5ec60e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/plan.json",
+      "change": "added",
+      "bytes": 7524,
+      "sha256": "3b6ff5f7a20e40b134589803e56d9e06b9bec45a1f3c16422495da64641ecb82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/controls.json",
+      "change": "added",
+      "bytes": 11924,
+      "sha256": "491226230f2925fd61f5c8bf213ec432722076187282cda1c45eda9d1f30de5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/execution.json",
+      "change": "added",
+      "bytes": 34431,
+      "sha256": "033ecb474033d86963bcd8a15429f18fd53ec84e8f3d24b3038a3db7d4c006dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "4899dda461281ed4bbd0c62dc5fb2e602d6d108dcda4f2e909d52b482d4a7c1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 468,
+      "sha256": "b63f335fbec5970d6927a991af6927f3212fb32f7b4cff60a4024bfce40c94f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier.json",
+      "change": "added",
+      "bytes": 22114,
+      "sha256": "04c769118f731e58954589edfc88817a4a61589de7abd7c58ed78943a112477c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5906,
+      "sha256": "c1b4389bcba151a5c579fb134289a7b940a24f385898f36cb092b8f36920afc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/result.json",
+      "change": "added",
+      "bytes": 17509,
+      "sha256": "68ff4fa34f8d46e8e81cf0034513d06322068a08362bd1e024d4f3b8c5e6725e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/executions/20261122T003339Z-30bd910a/attempt.json",
+      "change": "added",
+      "bytes": 21923,
+      "sha256": "1f982c2ecb9079bca3584bdbcf880ee2f24d8742d5c4c4a825d9746a58b4c831",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/executions/20261122T003339Z-30bd910a/checker.json",
+      "change": "added",
+      "bytes": 8048,
+      "sha256": "53659ce6cdcfbbd641c9d40c1e09b1a509141c0b08e376f0885cbb430e37a686",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/executions/20261122T003339Z-30bd910a/correspondence.json",
+      "change": "added",
+      "bytes": 1557,
+      "sha256": "7f67b070484f8c172eaefca01bcf5445e30c25b83f7352e2380158468a7844b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "66efcc0209cb8c5d20c1065bc29d01063bad9ca849c6ca5961511dffdd36d18f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/plan.json",
+      "change": "added",
+      "bytes": 7429,
+      "sha256": "50c6dbb04eb424545714946f1c4021f9c27f766cf12823d0850d2d8e06a39bf1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/controls.json",
+      "change": "added",
+      "bytes": 11664,
+      "sha256": "a92219c26585c8f58026743c642ea0881088cf3ccadf16cab9fdb7fb57c6a89e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/execution.json",
+      "change": "added",
+      "bytes": 33887,
+      "sha256": "26ac7376e99d424610c2f339ef36f77a3b4002baf8eb2ade04fc43e483613eae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "4acc48c357f663dba4cff4409235063334d98b5b7a42037c36cc769f53725151",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 468,
+      "sha256": "b63f335fbec5970d6927a991af6927f3212fb32f7b4cff60a4024bfce40c94f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier.json",
+      "change": "added",
+      "bytes": 21861,
+      "sha256": "90582177f4d36b1c5c5be3e18ffbaa662231a1f204f61d6fce2909158991b41e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5907,
+      "sha256": "dcb44e1c0773f94f78d8b2ed18d536b9e4d80ac6fa6df5a51b1cbc8af817b208",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/result.json",
+      "change": "added",
+      "bytes": 17608,
+      "sha256": "49c08b4b8cafd54e9782c820c7c69931401c03e3f9a1a3bc9f8f56aaef69bd0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/executions/20261122T003338Z-9403bbf7/attempt.json",
+      "change": "added",
+      "bytes": 21688,
+      "sha256": "1a39df25050c4ef1cb3e9588815029e40e713015e961adf82f057481aa95c56e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/executions/20261122T003338Z-9403bbf7/checker.json",
+      "change": "added",
+      "bytes": 8082,
+      "sha256": "1bcfd44b0cd6c54ea80f5237090ba81504696d8956ac0318ebb960564e938813",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/executions/20261122T003338Z-9403bbf7/correspondence.json",
+      "change": "added",
+      "bytes": 1560,
+      "sha256": "bff18eb863d5a1762f042936b8461afb7fb847a7791d0cf913ac61ba1d535a68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1b66e86e235e2fdf5af71d9841559874e7bd29d3f3451f38c11d287f4d889c18",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/plan.json",
+      "change": "added",
+      "bytes": 7650,
+      "sha256": "1f8adea9bed42036eea37efcc9bbf3defbda58cbfcff58e66ce08126b65937a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/controls.json",
+      "change": "added",
+      "bytes": 11928,
+      "sha256": "990de337421f94d962f39dd93b4f326b4122d9c1a9cc755a1b60251226277cdc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/execution.json",
+      "change": "added",
+      "bytes": 34925,
+      "sha256": "bb76721cf42e0887b9904b52eb0666c121a159c57050feb33ef260fa91e272b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/streams.json",
+      "change": "added",
+      "bytes": 1949,
+      "sha256": "a24f0d761ad085ae19db188ddc1bb4539859699e340fca4b67fb8e628d8d9236",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 472,
+      "sha256": "a43c1423c886ceb527bd1fdf99fee67f0db52549d42f056311721e736994bfaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier.json",
+      "change": "added",
+      "bytes": 22596,
+      "sha256": "7797870659fac6694c2170293078b9dd1140d7ecfcd41845e08940862bbff4dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5923,
+      "sha256": "d6e97eb84e6017e126150fed89e4bbd43296044722407f628f990778ac808fe7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/result.json",
+      "change": "added",
+      "bytes": 17585,
+      "sha256": "c1498bb11f39bd21a2408f4351d82dc038922d0a35c3b22e73daa9dbba0cbc7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/executions/20261122T003340Z-6ae4e050/attempt.json",
+      "change": "added",
+      "bytes": 22373,
+      "sha256": "01f15f7cc7780fc6fe5a6ebbf80ea0f847f4036bdc74558a2609b0cb0e13bc37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/executions/20261122T003340Z-6ae4e050/checker.json",
+      "change": "added",
+      "bytes": 8067,
+      "sha256": "791f7610d1cca5c8e7103ed08ab95147ba9f07f736e565a64df1258063a7d106",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/executions/20261122T003340Z-6ae4e050/correspondence.json",
+      "change": "added",
+      "bytes": 1585,
+      "sha256": "564b864dd2ae8c2150b4181689490097171f6ec196eb54f8fe9672ab8647f93f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f3f8d1801c3e88614810251c91463e97192e8c1948a02db9d30184278263e5ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/plan.json",
+      "change": "added",
+      "bytes": 7555,
+      "sha256": "e9c2b8c779dc07e5181deecc67133283bb92ce64bc335b1641a68d3b934cf0d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/controls.json",
+      "change": "added",
+      "bytes": 11668,
+      "sha256": "569edf1abed157eec21a42a40b65ab3231d5859f7ad111c0b812c80a767cf651",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/execution.json",
+      "change": "added",
+      "bytes": 34377,
+      "sha256": "77f42128e9033f1eabf28cad7477330b00dc1e1151f1ce70316c2ee07a0c2593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "e1919b4a6ef8f03ca79412eed49c1b64e7e755865a0cc3d2ec0e66ae79ece257",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 472,
+      "sha256": "a43c1423c886ceb527bd1fdf99fee67f0db52549d42f056311721e736994bfaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier.json",
+      "change": "added",
+      "bytes": 22339,
+      "sha256": "69dc4b5f0472ab965ffcd1d0c3542e0e8acf4700cdf786a8ed2fef28e1fd3881",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5920,
+      "sha256": "34cfe603995103fc7b76ca30520f617bdc054b90d3111382b8110c14be7df5aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/result.json",
+      "change": "added",
+      "bytes": 17683,
+      "sha256": "37e35d2f11c37548997356a2740963d99dc7fdb5a21f2663a15241734fe3e817",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/executions/20261122T003339Z-d6343160/attempt.json",
+      "change": "added",
+      "bytes": 22138,
+      "sha256": "7363e909c857098f56a01336d14552002ee3fb701ac4a2520f3eaac2851f13ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/executions/20261122T003339Z-d6343160/checker.json",
+      "change": "added",
+      "bytes": 8097,
+      "sha256": "b071031b20b12105112562c5de7856d699f7fbfdfea96fc6056fe392bb1a027b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/executions/20261122T003339Z-d6343160/correspondence.json",
+      "change": "added",
+      "bytes": 1588,
+      "sha256": "5f13bb4caaf942f32d5ade6b364424743e35f4d32062f2493e15ab94491991ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "926a08f1d414963d468da918f92ad2639939c8ac0a33732bcb82c6cd6b0dd714",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/plan.json",
+      "change": "added",
+      "bytes": 8204,
+      "sha256": "a47f890af98046009d32862aa375271e2c0bc172784f08bf6e7929b9e862a6e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/controls.json",
+      "change": "added",
+      "bytes": 23524,
+      "sha256": "4dc75b19452952be103d6665b9abf527bd99d88390a01fd39db3ef5bc7525391",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/execution.json",
+      "change": "added",
+      "bytes": 24453,
+      "sha256": "539afc42207437da94df2cdf8980c2b05960906da2d1d1a991d9c80c649d599e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/streams.json",
+      "change": "added",
+      "bytes": 1715,
+      "sha256": "f236761d8d9cae9775793cfe9beacbd75ad510d029085e78d81766890c8637b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/summary.txt",
+      "change": "added",
+      "bytes": 720,
+      "sha256": "7e938ed16d10cc84c8546f1ec5bd85aa3d7046573a19af2f694e4f8403c80276",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/result.json",
+      "change": "added",
+      "bytes": 15774,
+      "sha256": "81acdecfbdaf9b588e02bbe6e5acd0a3a975371df23506c9a35ca221c1028514",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/executions/20261122T003334Z-b74ca10f/attempt.json",
+      "change": "added",
+      "bytes": 12451,
+      "sha256": "76c59d797c7c86245d75a4a6675f3192c436d2313e9936a98c12430c305e493e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/run.json",
+      "change": "added",
+      "bytes": 596,
+      "sha256": "8918cea13d90c2c3eb8ea16c032985530a613100ad1e1e42a7a3e2bed65b5e64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/workflow.log",
+      "change": "added",
+      "bytes": 1191,
+      "sha256": "cbb2f49f9337c4c2fdde56334abd0f6dbdc1561a5c82f70f7fd3d0e93ed2e86c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/batch.json",
+      "change": "added",
+      "bytes": 2627,
+      "sha256": "a4f050a1cfa8cea8426902be8fbd84464761c11e90407d0b233228440c31f2cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/cursor-fix.json",
+      "change": "added",
+      "bytes": 8585,
+      "sha256": "80ba3ce400a7319f4584f687443b9adf6e779915ca601b83c669a8bba65fa6fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/cursor-parent.json",
+      "change": "added",
+      "bytes": 11319,
+      "sha256": "7de7275762f1fc57e79cee607d669bd75b75ff9b08e67cd68140c9318ad87c22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/decimals-fix.json",
+      "change": "added",
+      "bytes": 8622,
+      "sha256": "e4585a18ab3d07c1ed735ef9276af1aa87698bb50ac23a32a7a4e820a50d658d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/decimals-parent.json",
+      "change": "added",
+      "bytes": 11362,
+      "sha256": "34a3d7683d061846ef1a9bca34e9aa2fbcd56bf502a8a8d6535ba035c7c2bb7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/run.json",
+      "change": "added",
+      "bytes": 583,
+      "sha256": "b942c98be3ea8ebcc3e585456128580e4e1def65fcad5a8be3fe69d485dbb23e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/workflow.log",
+      "change": "added",
+      "bytes": 162,
+      "sha256": "5b957b7fe98636f9309eeeb3ff67a93c5c4af308117a41fc6d961013dc801afb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:34:33+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/20261122T003339Z-30bd910a/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/executions/20261122T003339Z-30bd910a/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/executions/20261122T003339Z-30bd910a/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-fix/executions/20261122T003339Z-30bd910a/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/20261122T003338Z-9403bbf7/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/executions/20261122T003338Z-9403bbf7/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/executions/20261122T003338Z-9403bbf7/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/cursor-parent/executions/20261122T003338Z-9403bbf7/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/20261122T003340Z-6ae4e050/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/executions/20261122T003340Z-6ae4e050/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/executions/20261122T003340Z-6ae4e050/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-fix/executions/20261122T003340Z-6ae4e050/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/20261122T003339Z-d6343160/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/executions/20261122T003339Z-d6343160/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/executions/20261122T003339Z-d6343160/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/decimals-parent/executions/20261122T003339Z-d6343160/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/records/summary.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/20261122T003334Z-b74ca10f/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/replay/executions/20261122T003334Z-b74ca10f/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/run.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native/workflow.log",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/batch.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/cursor-fix.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/cursor-parent.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/decimals-fix.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/20261122T003341Z-727ec3e5/decimals-parent.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/run.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite/workflow.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "e13c1ac9ae92b3221196a954311b8ac3f139ec2a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e13c1ac9ae92b3221196a954311b8ac3f139ec2a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T003359Z-180971d2cbf06827",
+      "outputs": "20261122T003359Z-2349833912375fa7",
+      "diff": "20261122T003359Z-2716733b95218d5e",
+      "workdir": "20261122T003407Z-7357034d71e88209"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-001142-confirm-the-ordinary-avro-729-native-and"
+}
