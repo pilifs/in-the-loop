@@ -269,3 +269,28 @@ cd $B/src/spring-framework-23893-landed && JAVA_HOME=~/.sdkman/candidates/java/8
 
 Add `--offline` once the job has filled the cache. The job steps themselves are in `verification/jobs/ID.json`; the
 script that wrote them is `~/.cache/in-the-loop/spring-java-data/scripts/submit_jobs.py`.
+
+## Summary
+
+| Subject | Sources | Dependencies cached | Original artifacts built | Original regression on a JVM | Brief's witness replayed |
+|---|---|---|---|---|---|
+| A1 binder (Framework 6.2.3) | release only | yes (`releases/spring-framework-6.2.3`) | released jars, signatures good | n/a (constructed application) | yes: the whole prefix table, both heap shapes |
+| A2 Security #14196 | 3 worktrees, unsigned commits | releases yes; Gradle build dependencies **fetched by the job's first run** | **job pending** | **job pending** | release grid headline: 14/16 per prefix on 6.3.0 + 6.1.7 |
+| A3 Framework #36911 | 2 worktrees, both signatures good | 7.0.4 + JSpecify slice yes; Gradle build dependencies **job** | **job pending** | **job pending** (transplanted `PropertyTests`) | not replayed (the slice replay compiles `Property.java` ahead of 7.0.4: domain agent) |
+| A4 Framework #23893 | 2 worktrees, unsigned | 5.2.0.RELEASE yes (signature unchecked); Gradle build dependencies **job** | **job pending** | **job pending** (transplanted `DateFormattingTests`) | not replayed (needs each revision's registrar on 5.2.0: domain agent) |
+| B1 boxed row mapper | `commons-lang-1635-landed`; 3.17.0 release | yes, offline checked | yes | n/a (constructed client) | yes: row, 28/28 distinct pairs, isolation, 4 indy sites |
+| B2 Vavr #1829 | 2 worktrees | yes, offline checked | yes (JDK 8) | yes: landed test fails on parent | yes: all four table rows |
+| B3 Commons Lang #1589 | 2 worktrees, signatures good | yes, offline checked | yes | yes: landed tests fail on parent | yes: −1 vs 1 |
+| B4 Commons Lang #1635 | 2 worktrees, signatures good | yes, offline checked | yes | yes: landed test fails on parent | yes: Float 0.1 vs BigDecimal scale 18, controls |
+
+**Left for the jobs.** Until the three jobs run, the Gradle dependency caches for the historical Spring builds are
+empty, so an offline Spring build will not work yet; the first job run fills `gradle-home` and checks `--offline`.
+Read the results with `python3 verification/pipeline.py report`; each job's log prints the jar digests, the JUnit
+counts and failures (`junit tests=… failures=…`, `junit failed Class#method`) and the runtime classpath.
+
+**Not done, on purpose.** No examples, claims, sidecars, adapters or recipes; no verifier runs; no grids enumerated
+(B2's 400 matrices, A2's 32 configurations and 64 histories, A1's six permutations): those are the domain agent's to
+freeze. Nothing was refused during setup; the one gap is the unverifiable Spring 5.2.0.RELEASE signature above.
+
+**Disk** after setup: mirrors 53 MB, worktrees 584 MB (the Commons Lang and Vavr `target/` folders kept), Maven
+repository 334 MB, `gradle-home` 497 MB before the jobs (Spring's build dependencies will add a few GB).
