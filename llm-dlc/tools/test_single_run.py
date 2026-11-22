@@ -531,6 +531,49 @@ class SingleRunTest(unittest.TestCase):
         self.assertIn("no Codex model stands for claude-sonnet-5-5", err)
 
     @cost("tool")
+    def test_a_setup_phase_runs_the_templates_texts_on_opus_and_puts_its_notes_into_every_copy_of_the_brief(self):
+        (self.root / "llm-dlc/loops").mkdir(parents=True)
+        shutil.copy(TOOLS.parent / "loops/setup-agent-template.md", self.root / "llm-dlc/loops/setup-agent-template.md")
+        for args, why in ((("setup", "prep"), "for a brief: --brief FILE"),
+                          (("setup", "prep", "--brief", "notes/brief.md", "--prompt", PROMPT), "texts are llm-dlc/loops/setup-agent-template.md's"),
+                          (("notes", "prep"), "is not a setup run")):
+            status, _, err = self.tool(*args, ok=False)
+            self.assertEqual(status, 1, args)
+            self.assertIn(why, err, args)
+        with mock.patch.dict(os.environ, {"STANDIN_MODES": "commit"}):
+            started = json.loads(self.tool("setup", "prep", "--brief", self.root / "notes/brief.md", "--memory", "none",
+                                           "--no-verification", "--verdict-wait", 30)[1])
+        self.assertEqual((started["client"], started["model"], started["effort"]), ("claude", "claude-opus-5-5", "high"))
+        self.assertEqual(started["setup"], {"brief": "notes/brief.md", "record": "llm-dlc/loops/brief-setup.md"})
+        self.wait("prep")
+        first = self.prompts()[0]
+        self.assertTrue(first.startswith("You are the SETUP AGENT for `notes/brief.md`."), first[:80])
+        self.assertIn("`llm-dlc/loops/brief-setup.md`", first)
+        self.assertNotIn("{", first)
+        self.assertIn("claude-opus-5-5", self.calls()[0]["args"])
+        self.assertTrue((self.run_dir("prep") / "continue.md").read_text().startswith("Continue as the SETUP AGENT"))
+        self.tool("answer", "prep", "stop", "--reason", "Only its jobs are left.")
+        self.wait("prep", kind="ended")
+        status, _, err = self.tool("setup", "prep", "--record", "elsewhere.md", ok=False)  # continued, never re-set up
+        self.assertIn("only continues it", err)
+        status, _, err = self.tool("notes", "prep", ok=False)
+        self.assertIn("has not written it", err)
+        record = self.root / "llm-dlc/loops/brief-setup.md"
+        record.write_text("# Setup\n\nDetail.\n\n## Setup Agent Notes\n\n- Everything is cached.\n")
+        original = self.tmp / "original-brief.md"
+        original.write_text("# The made-up thing\n\nIt should work.\n")
+        out = json.loads(self.tool("notes", "prep", "--to", original)[1])
+        self.assertEqual(out["changed"], [str(self.root / "notes/brief.md"), str(original)])
+        self.assertEqual(out["next"], "commit notes/brief.md with `sync.py commit --only`")
+        for path in (self.root / "notes/brief.md", original):
+            self.assertEqual(path.read_text(), "# The made-up thing\n\nIt should work.\n\n## Setup Agent Notes\n\n- Everything is cached.\n")
+        self.assertEqual(json.loads(self.tool("notes", "prep", "--to", original)[1])["changed"], [], "a second time changes nothing")
+        record.write_text("# Setup\n\n## Setup Agent Notes\n\n- Now verified too.\n")
+        self.tool("notes", "prep")
+        self.assertIn("- Now verified too.", (self.root / "notes/brief.md").read_text())
+        self.assertNotIn("Everything is cached", (self.root / "notes/brief.md").read_text(), "replaced, not added again")
+
+    @cost("tool")
     def test_what_cannot_start_says_why_and_starts_nothing(self):
         for args, why in ((("start", "thing"), "needs its first text"),
                           (("start", "Thing", "--prompt", PROMPT), "lower-case letters"),
@@ -618,6 +661,38 @@ Ended 2026-11-18 10:21:00 after 2 cycle(s): the run was ended there (the watcher
             with self.assertRaises(single_run.Problem):
                 single_run.Run(Path("/nowhere"), bad)
 
+
+
+class TheSetupPhase(unittest.TestCase):
+    TEMPLATE = (TOOLS.parent / "loops/setup-agent-template.md").read_text()
+
+    def test_the_template_gives_two_texts_with_the_brief_and_the_record_filled_in(self):
+        record = single_run.setup_record("llm-dlc/loops/spring-briefs.md")
+        self.assertEqual(record, "llm-dlc/loops/spring-briefs-setup.md")
+        first, cont = single_run.setup_texts(self.TEMPLATE, "llm-dlc/loops/spring-briefs.md", record)
+        self.assertTrue(first.startswith("You are the SETUP AGENT for `llm-dlc/loops/spring-briefs.md`."))
+        self.assertTrue(cont.startswith("Continue as the SETUP AGENT for `llm-dlc/loops/spring-briefs.md`."))
+        for text in (first, cont):
+            self.assertNotIn("{", text)
+            self.assertIn("`llm-dlc/loops/spring-briefs-setup.md`", text)
+            self.assertIn(single_run.SETUP_NOTES, text)
+        self.assertNotIn("# Setup agent template", first, "the template's explanation is not a text")
+        self.assertIn("Do not look for a way around it", first)
+        with self.assertRaisesRegex(single_run.Problem, "needs two sections"):
+            single_run.setup_texts("## First text\n\nOnly one.\n", "b.md", "r.md")
+
+    def test_the_notes_are_their_section_alone_and_go_into_a_brief_once(self):
+        record = "# Setup\n\n## Revisions\n\nx\n\n## Setup Agent Notes\n\n- ready\n\n### Gaps\n\n- one\n\n## Afterwards\n\ny\n"
+        notes = single_run.notes_of(record)
+        self.assertEqual(notes, "## Setup Agent Notes\n\n- ready\n\n### Gaps\n\n- one")
+        self.assertIsNone(single_run.notes_of("# Setup\n\n## Setup agent notes, lower case\n"))
+        brief = "# Brief\n\nBody.\n\n[link]: https://example.invalid\n"
+        once = single_run.with_notes(brief, notes)
+        self.assertEqual(once, brief.rstrip() + "\n\n" + notes + "\n")
+        self.assertEqual(single_run.with_notes(once, notes), once)
+        again = single_run.with_notes(once, notes.replace("ready", "all ready"))
+        self.assertEqual(again.count(single_run.SETUP_NOTES), 1)
+        self.assertIn("- all ready", again)
 
 if __name__ == "__main__":
     unittest.main()

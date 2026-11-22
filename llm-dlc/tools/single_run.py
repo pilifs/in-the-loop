@@ -53,6 +53,17 @@ is feature-loop.sh's `single-agent`, with this run's directory as its conductor.
                                         which `start` then continues. Returns early with a result that did not pass.
     single_run.py land NAME             bring a workspace's commits to this checkout's line (brief_run.py's `land`)
     single_run.py list                  the runs this checkout knows, and which are under way
+    single_run.py setup NAME --brief FILE [--record FILE] [start's options, but the texts]
+        start a brief's setup phase as the run NAME: a setup agent (Claude Opus 5.5 at high effort, unless --client,
+        --model or --effort say otherwise) that only fetches, pins, verifies and builds what the brief needs, so that
+        the domain run that follows can start the real work at once. Its two texts are SETUP_TEMPLATE's, with the
+        brief and the record filled in. The record (--record; by default llm-dlc/loops/BRIEF-setup.md) ends with a
+        section headed SETUP_NOTES, written for the domain agent. Run again on a setup run that has stopped (to
+        wait on its jobs, say), it continues it, as `start` does.
+    single_run.py notes NAME [--to FILE ...]
+        put a setup run's SETUP_NOTES section into the brief it set up, and into each FILE (another copy of the
+        brief, such as the user's original): appended, or in place of the section already there, so that running it
+        again changes nothing. It prints which files changed; one in the checkout is then committed as usual.
 
 The run's directory is llm-dlc/loop-summaries/single-NAME/ (gitignored): watch.json (the run and the watcher's own
 state), first.md and continue.md (the two texts), messages.jsonl (each continue message and when it was set),
@@ -95,6 +106,11 @@ DEFAULT_CONTINUE = ("Continue the work toward the outcome you were given. Take t
                     "of your reply, with what is left.")
 REPORT_LIMIT = 8000  # characters of a cycle's report a question carries: the watcher's context is the run's memory
 OTHER_RUNS = ("run-streams.sh", "prove-loop.sh")  # runs whose own watcher keeps the verification queue
+# A setup phase (`setup`): the texts' template, the agent it runs by default, and the record's last section, which
+# `notes` puts into the brief for the domain agent. Opus 5.5 did the first one (2026-11-22, the Spring brief).
+SETUP_TEMPLATE = "llm-dlc/loops/setup-agent-template.md"
+SETUP_CLIENT, SETUP_MODEL, SETUP_EFFORT = "claude", "claude-opus-5-5", "high"
+SETUP_NOTES = "## Setup Agent Notes"
 
 
 class Problem(Exception):
@@ -231,7 +247,7 @@ def brief_named(run: Run, file: str, workspace: str | None) -> str:
     return str(rel)
 
 
-def cmd_start(run: Run, a: argparse.Namespace) -> int:
+def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int:
     data = run.read()
     if run.running():
         print(f"the run {run.name} is already under way (pid {data['loop']['pid']}): `single_run.py wait {run.name}`")
@@ -332,7 +348,7 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
                effort=a.effort or data.get("effort") or EFFORT, memory=memory, cycles=cycles,
                verdictWait=a.verdict_wait or data.get("verdictWait") or VERDICT_WAIT, verification=queue,
                base=data.get("base") or base, legs=legs, told=[], lastSummary=None, loop=None,
-               **({"interval": a.summary_interval} if a.summary_interval else {}))
+               **({"interval": a.summary_interval} if a.summary_interval else {}), **(extra or {}))
     pid = watch.detached([sys.executable, str(Path(__file__).resolve()), "--root", str(run.root), "loop", run.name],
                          run.root, run.dir / "loop.log")
     run.update(loop={"pid": pid, "started": legs[-1]["started"], "log": str(run.dir / "loop.log")})
@@ -344,7 +360,8 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
         "client": client, "model": data["model"], **({"runs": resolved["model"]} if resolved["model"] != data["model"] else {}),
         "effort": data["effort"], "memory": memory, "cycles": cycles or "no limit",
         "firstCycleTakes": legs[-1]["first"], "continueMessage": run.message.read_text().strip(), "brief": brief,
-        "verificationQueue": queue, **({"keptFromTheLegBefore": kept} if kept else {}), "output": str(run.dir / "loop.log"),
+        "verificationQueue": queue, **({"keptFromTheLegBefore": kept} if kept else {}), **(extra or {}),
+        "output": str(run.dir / "loop.log"),
         "next": f"run `python3 llm-dlc/tools/single_run.py wait {run.name}` as a background task"}, indent=1))
     return 0
 
@@ -741,6 +758,94 @@ def cmd_jobs(run: Run, timeout: float) -> int:
         time.sleep(min(watch.QUEUE_LOOK, max(1, until - time.monotonic())))
 
 
+def setup_texts(template: str, brief: str, record: str) -> tuple[str, str]:
+    """The setup agent's first text and continue message: the template's two sections, with the brief and the record
+    filled in. What comes before the first section is the template's own explanation, not a text."""
+    parts = re.split(r"^## (First text|Continue message)[ \t]*$", template, flags=re.M)
+    sections = dict(zip(parts[1::2], parts[2::2]))
+    if set(sections) != {"First text", "Continue message"}:
+        raise Problem(f"{SETUP_TEMPLATE} needs two sections, `## First text` and `## Continue message`")
+    fill = lambda text: text.strip().replace("{brief}", f"`{brief}`").replace("{record}", record) + "\n"
+    return fill(sections["First text"]), fill(sections["Continue message"])
+
+
+def setup_record(brief: str) -> str:
+    """Where a brief's setup is written down by default: beside the briefs, named for this one."""
+    return f"llm-dlc/loops/{Path(brief).stem}-setup.md"
+
+
+def notes_of(text: str) -> str | None:
+    """A text's SETUP_NOTES section: from its heading to the next heading of the same or a higher level."""
+    m = re.search(rf"^{re.escape(SETUP_NOTES)}[ \t]*$.*?(?=^#{{1,2}} |\Z)", text, flags=re.M | re.S)
+    return m.group(0).rstrip() if m else None
+
+
+def with_notes(text: str, notes: str) -> str:
+    """A brief with the notes in it: in place of the SETUP_NOTES section it has, else appended."""
+    old = notes_of(text)
+    if old is not None:
+        return text.replace(old, notes, 1)
+    return text.rstrip() + "\n\n" + notes + "\n"
+
+
+def cmd_setup(run: Run, a: argparse.Namespace) -> int:
+    data = run.read()
+    texts = a.prompt or a.prompt_file or getattr(a, "continue") or a.continue_file
+    if data.get("session"):  # a setup run that has stopped: continued as `start` continues any run
+        if not data.get("setup"):
+            raise Problem(f"the run {run.name} is not a setup run: `single_run.py start {run.name}` continues it")
+        if texts or a.record:
+            raise Problem(f"the setup run {run.name} has its texts and its record: `setup` only continues it")
+        return cmd_start(run, a)
+    if not a.brief:
+        raise Problem("a setup phase is for a brief: --brief FILE")
+    if texts:
+        raise Problem(f"a setup run's texts are {SETUP_TEMPLATE}'s: change the template, or `start` a run with texts of your own")
+    try:
+        template = (run.root / SETUP_TEMPLATE).read_text()
+    except OSError:
+        raise Problem(f"no {SETUP_TEMPLATE} in {run.root}: this checkout is on a line from before setup phases")
+    brief = brief_named(run, a.brief, a.workspace)
+    record = a.record or setup_record(brief)
+    a.prompt, cont = setup_texts(template, brief, record)
+    setattr(a, "continue", cont)
+    a.client, a.model, a.effort = a.client or SETUP_CLIENT, a.model or SETUP_MODEL, a.effort or SETUP_EFFORT
+    return cmd_start(run, a, extra={"setup": {"brief": brief, "record": record},
+                                    "afterSetup": f"land the run if it has a workspace, then `single_run.py notes {run.name}` "
+                                                  f"(--to FILE for each other copy of the brief), commit, and start the domain run"})
+
+
+def cmd_notes(run: Run, targets: list[str]) -> int:
+    setup = run.read().get("setup")
+    if not setup:
+        raise Problem(f"the run {run.name} is not a setup run (`single_run.py setup`)")
+    record = next((p for p in (run.root / setup["record"], run.folder / setup["record"]) if p.is_file()), None)
+    if record is None:
+        raise Problem(f"no record at {setup['record']}, in this checkout or in {run.folder}: the setup agent has not written it")
+    notes = notes_of(record.read_text())
+    if not notes or notes.strip() == SETUP_NOTES:
+        raise Problem(f"{record} has no `{SETUP_NOTES}` section, or an empty one: continue the setup run, whose texts ask for it")
+    files: list[Path] = []
+    for name in [setup["brief"], *targets]:
+        path = Path(name).expanduser()
+        path = path if path.is_absolute() else run.root / path
+        if not path.is_file():
+            raise Problem(f"no brief at {path}")
+        if path.resolve() not in [f.resolve() for f in files]:
+            files.append(path)
+    changed = []
+    for path in files:
+        old = path.read_text()
+        new = with_notes(old, notes)
+        if new != old:
+            path.write_text(new)
+            changed.append(path)
+    inside = [str(f.resolve().relative_to(run.root.resolve())) for f in changed if f.resolve().is_relative_to(run.root.resolve())]
+    print(json.dumps({"notes": str(record), "files": [str(f) for f in files], "changed": [str(f) for f in changed],
+                      **({"next": f"commit {' '.join(inside)} with `sync.py commit --only`"} if inside else {})}, indent=1))
+    return 0
+
+
 def cmd_list(root: Path) -> int:
     rows = []
     for path in sorted((root / "llm-dlc" / "loop-summaries").glob("single-*/watch.json")):
@@ -767,26 +872,29 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
         return p
 
     s = named("start", "start the run, or continue one that has stopped")
-    s.add_argument("--prompt")
-    s.add_argument("--prompt-file")
-    s.add_argument("--continue")
-    s.add_argument("--continue-file")
-    s.add_argument("--brief")
-    s.add_argument("--workspace")
-    s.add_argument("--session")
-    s.add_argument("--fork")
-    s.add_argument("--client", choices=agent_client.CLIENTS,
-                   help="who carries the agent's turns: claude (the default) or codex, for which the model's name is "
-                        "resolved by the operator's equivalences (agent_client.py)")
-    s.add_argument("--model")
-    s.add_argument("--effort")
-    s.add_argument("--memory", help="the loop's memory cap, as 12G; `none` runs it uncapped")
-    s.add_argument("--cycles", type=int)
-    s.add_argument("--verdict-wait", type=int, help=f"seconds the loop waits for the watcher after a cycle ({VERDICT_WAIT})")
-    s.add_argument("--no-verification", action="store_true", help="leave the verification queue alone")
-    s.add_argument("--verification", action="store_true",
-                   help="at a restart: keep the verification queue again, after a leg that left it alone")
-    s.add_argument("--summary-interval", type=float, help=f"seconds between two summaries of `wait` ({INTERVAL})")
+    u = named("setup", "start a brief's setup phase: a setup agent that only fetches, pins, verifies and builds")
+    u.add_argument("--record", help="the setup's record, in the checkout (default llm-dlc/loops/BRIEF-setup.md)")
+    for p in (s, u):  # setup takes start's options; its texts are refused there
+        p.add_argument("--prompt")
+        p.add_argument("--prompt-file")
+        p.add_argument("--continue")
+        p.add_argument("--continue-file")
+        p.add_argument("--brief")
+        p.add_argument("--workspace")
+        p.add_argument("--session")
+        p.add_argument("--fork")
+        p.add_argument("--client", choices=agent_client.CLIENTS,
+                       help="who carries the agent's turns: claude (the default) or codex, for which the model's name is "
+                            "resolved by the operator's equivalences (agent_client.py)")
+        p.add_argument("--model")
+        p.add_argument("--effort")
+        p.add_argument("--memory", help="the loop's memory cap, as 12G; `none` runs it uncapped")
+        p.add_argument("--cycles", type=int)
+        p.add_argument("--verdict-wait", type=int, help=f"seconds the loop waits for the watcher after a cycle ({VERDICT_WAIT})")
+        p.add_argument("--no-verification", action="store_true", help="leave the verification queue alone")
+        p.add_argument("--verification", action="store_true",
+                       help="at a restart: keep the verification queue again, after a leg that left it alone")
+        p.add_argument("--summary-interval", type=float, help=f"seconds between two summaries of `wait` ({INTERVAL})")
     w = named("wait", "block until something needs the watcher")
     w.add_argument("--interval", type=float)
     w.add_argument("--timeout", type=float, default=3300, help="seconds (default 3300, under an hour)")
@@ -809,6 +917,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     j = named("jobs", "block until the verification queue is clear, keeping it meanwhile")
     j.add_argument("--timeout", type=float, default=3300)
     named("land", "bring a workspace's commits to this checkout's line")
+    n = named("notes", "put a setup run's notes into the brief, and into each other copy of it")
+    n.add_argument("--to", action="append", default=[], metavar="FILE")
     sub.add_parser("loop").add_argument("name")  # the detached process of a run: `start` runs it
     sub.add_parser("list", help="the runs this checkout knows")
     args = ap.parse_args(argv)
@@ -821,6 +931,12 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             if args.cycles is not None and args.cycles < 0:
                 raise Problem("--cycles takes a count of 1 or more, or 0 for no limit")
             return cmd_start(run, args)
+        if args.command == "setup":
+            if args.cycles is not None and args.cycles < 0:
+                raise Problem("--cycles takes a count of 1 or more, or 0 for no limit")
+            return cmd_setup(run, args)
+        if args.command == "notes":
+            return cmd_notes(run, args.to)
         if args.command == "loop":
             return cmd_loop(run)
         if args.command == "wait":
