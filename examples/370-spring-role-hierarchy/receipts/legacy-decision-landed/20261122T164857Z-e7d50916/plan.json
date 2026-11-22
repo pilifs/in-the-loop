@@ -1,0 +1,345 @@
+{
+  "plan": {
+    "example": "370",
+    "task": "legacy-decision-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "springwork.RoleApplication#decide(IZZ)Z",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "legacy-decision-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "file": "claims/legacyDecision.json",
+      "sha256": "4a2995e0ad67c71df249e5160adc7d4887d634ca58cc1b8a8fcc4b87b78c8718",
+      "property": "legacy-decision",
+      "claimKind": "property",
+      "statement": "The public manager grants exactly when the selected roles imply the complete D authority.",
+      "assume": "code >= 0 && code < 32",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "a4e306db84eeef11b290495fbe67a188b653ffa67cbe46dc04ad9199cbe1bef9"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "220c3ad236df3adcbd588e7169d1cd31623f854c074832734532529dd0eb1523"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.RoleChecks#legacyDecision(I)I",
+        "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
+        "correspondence": "finite-oracle",
+        "cases": 32
+      },
+      "key": "d4338c80d571b69c"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "fixture",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-security-14196-landed",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ],
+        "runtimeLibraries": [
+          "spring-security-14196-landed",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ],
+        "libraries": {
+          "spring-security-14196-landed": {
+            "repository": "https://github.com/spring-projects/spring-security",
+            "commit": "ee8bc78cbcd4a0a42c7e7dc2a05b5aeb29c336ae",
+            "class": "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl",
+            "build": {
+              "tool": "gradle-wrapper",
+              "argv": [
+                "./gradlew",
+                "--offline",
+                ":spring-security-core:jar"
+              ],
+              "jdk": "17"
+            },
+            "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be"
+          },
+          "spring-security-crypto": {
+            "coordinates": "org.springframework.security:spring-security-crypto:6.2.0",
+            "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a"
+          },
+          "spring-aop": {
+            "coordinates": "org.springframework:spring-aop:6.1.1",
+            "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1"
+          },
+          "spring-beans": {
+            "coordinates": "org.springframework:spring-beans:6.1.1",
+            "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86"
+          },
+          "spring-core": {
+            "coordinates": "org.springframework:spring-core:6.1.1",
+            "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f"
+          },
+          "spring-jcl": {
+            "coordinates": "org.springframework:spring-jcl:6.1.1",
+            "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317"
+          },
+          "spring-expression": {
+            "coordinates": "org.springframework:spring-expression:6.1.1",
+            "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f"
+          },
+          "micrometer-observation": {
+            "coordinates": "io.micrometer:micrometer-observation:1.12.0",
+            "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085"
+          },
+          "micrometer-commons": {
+            "coordinates": "io.micrometer:micrometer-commons:1.12.0",
+            "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47"
+          },
+          "spring-context": {
+            "coordinates": "org.springframework:spring-context:6.1.1",
+            "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad"
+          }
+        },
+        "adapters": [
+          "adapter/springwork/RoleChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/legacy-decision-landed"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-164312-spring-security-reachable-roles-and-publ/examples/370-spring-role-hierarchy",
+    "network": true
+  },
+  "inputs": {
+    "example": "370",
+    "task": "legacy-decision-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "springwork.RoleApplication#decide(IZZ)Z",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "legacy-decision-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "file": "claims/legacyDecision.json",
+      "sha256": "4a2995e0ad67c71df249e5160adc7d4887d634ca58cc1b8a8fcc4b87b78c8718",
+      "property": "legacy-decision",
+      "claimKind": "property",
+      "statement": "The public manager grants exactly when the selected roles imply the complete D authority.",
+      "assume": "code >= 0 && code < 32",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "a4e306db84eeef11b290495fbe67a188b653ffa67cbe46dc04ad9199cbe1bef9"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "220c3ad236df3adcbd588e7169d1cd31623f854c074832734532529dd0eb1523"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.RoleChecks#legacyDecision(I)I",
+        "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
+        "correspondence": "finite-oracle",
+        "cases": 32
+      },
+      "key": "d4338c80d571b69c"
+    },
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "fixture",
+        "repository": "https://github.com/spring-projects/spring-security",
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-security-14196-landed",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ],
+        "runtimeLibraries": [
+          "spring-security-14196-landed",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ],
+        "libraries": {
+          "spring-security-14196-landed": {
+            "repository": "https://github.com/spring-projects/spring-security",
+            "commit": "ee8bc78cbcd4a0a42c7e7dc2a05b5aeb29c336ae",
+            "class": "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl",
+            "build": {
+              "tool": "gradle-wrapper",
+              "argv": [
+                "./gradlew",
+                "--offline",
+                ":spring-security-core:jar"
+              ],
+              "jdk": "17"
+            },
+            "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be"
+          },
+          "spring-security-crypto": {
+            "coordinates": "org.springframework.security:spring-security-crypto:6.2.0",
+            "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a"
+          },
+          "spring-aop": {
+            "coordinates": "org.springframework:spring-aop:6.1.1",
+            "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1"
+          },
+          "spring-beans": {
+            "coordinates": "org.springframework:spring-beans:6.1.1",
+            "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86"
+          },
+          "spring-core": {
+            "coordinates": "org.springframework:spring-core:6.1.1",
+            "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f"
+          },
+          "spring-jcl": {
+            "coordinates": "org.springframework:spring-jcl:6.1.1",
+            "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317"
+          },
+          "spring-expression": {
+            "coordinates": "org.springframework:spring-expression:6.1.1",
+            "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f"
+          },
+          "micrometer-observation": {
+            "coordinates": "io.micrometer:micrometer-observation:1.12.0",
+            "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085"
+          },
+          "micrometer-commons": {
+            "coordinates": "io.micrometer:micrometer-commons:1.12.0",
+            "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47"
+          },
+          "spring-context": {
+            "coordinates": "org.springframework:spring-context:6.1.1",
+            "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad"
+          }
+        },
+        "adapters": [
+          "adapter/springwork/RoleChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/springwork/RoleChecks.java",
+        "sha256": "fb0a6f90fc5ea691a5a3b08435339a5bdaaa6ec29d581cefcf418f0ee1df751f"
+      }
+    ]
+  },
+  "key": "229fa4138f067c52a6bf5ba1310df13ecd5a3e012f6ebf09db60fb7626a40965"
+}

@@ -1,0 +1,228 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-164436-check-every-realizable-bounded-boxed-row",
+  "title": "Check every realizable bounded boxed-row alias pattern",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.0s, peak 117.1 MiB (estimated 5m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-164436-check-every-realizable-bounded-boxed-row.json",
+    "sha256": "2bcfd0d4c6574994c73a720097bdab313718f831dad9185830fd1c546c768c04",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-164436-check-every-realizable-bounded-boxed-row",
+      "title": "Check every realizable bounded boxed-row alias pattern",
+      "description": "Enumerate every ordinal word and every row-identity partition at height 0 to 3 and width 0 to 2, then check each JVM observation independently. Bind the four actual bootstrap signatures.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "369"
+        ]
+      },
+      "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+      "submitted": {
+        "at": "2026-11-22T16:44:36+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Check every realizable bounded boxed-row alias pattern",
+          "run": "python3 -B lib/benchmark/spring-java-data/all_rows.py --output examples/369-boxed-ragged-rows/records/all-rows",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/369-boxed-ragged-rows/records/all-rows"
+      ]
+    }
+  },
+  "sourceCommit": "e6e2352c7ebb29b9288d354317c61a693e5251d0",
+  "startedAt": "2026-11-22T16:48:18+00:00",
+  "finishedAt": "2026-11-22T16:51:27+00:00",
+  "wallSeconds": 189.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3447250,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 122806272,
+    "wallSeconds": 2.0,
+    "cpuSeconds": 3.4,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 178.04,
+      "cpuSeconds": 178.234,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2214535168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "56c192c0b1a31237bb7b9510084c462f47083bf6971c9cbfc4d5cea478ad2f51",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-164436-check-every-realizable-bounded-boxed-row/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check every realizable bounded boxed-row alias pattern",
+      "run": "python3 -B lib/benchmark/spring-java-data/all_rows.py --output examples/369-boxed-ragged-rows/records/all-rows",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 2.006,
+      "cpuSeconds": 3.356,
+      "cpuThrottledSeconds": 0.323,
+      "peakMemoryBytes": 122806272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-every-realizable-bounded.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/369-boxed-ragged-rows/records/all-rows/bootstrap.txt",
+      "change": "added",
+      "bytes": 1930,
+      "sha256": "bba52a37ae008f6935d9dba3b8d6d4d9861cbf11210e540141f6b7fdd3e053f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/all-rows/measurement.json",
+      "change": "added",
+      "bytes": 2981,
+      "sha256": "e2a23cf92755cfaa0d60347787f51bbe9c20174eef24a4ca7ec824c564e3b6a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/all-rows/observations.jsonl.gz",
+      "change": "added",
+      "bytes": 209909,
+      "sha256": "fbc2ffe705736ee5d0723b67e7598fdd9d9875d0de467a278e63b404658aebc5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T16:55:00+00:00",
+    "applied": [
+      "examples/369-boxed-ragged-rows/records/all-rows/bootstrap.txt",
+      "examples/369-boxed-ragged-rows/records/all-rows/measurement.json",
+      "examples/369-boxed-ragged-rows/records/all-rows/observations.jsonl.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "91130f0344e2f9e4703d5c27a0a7975921869b65",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/91130f0344e2f9e4703d5c27a0a7975921869b65/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T165127Z-449380796e572d58",
+      "outputs": "20261122T165127Z-475800c2758e8ad3",
+      "diff": "20261122T165127Z-496035034f116ae7"
+    }
+  }
+}

@@ -1,0 +1,389 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-164436-prove-boxed-row-values-and-mutation-isol",
+  "title": "Prove boxed row values and mutation isolation on every selector",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 27.4s, peak 201.6 MiB (estimated 8m00s, 3.0 GiB); 27 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-164436-prove-boxed-row-values-and-mutation-isol.json",
+    "sha256": "f4c124e535c622c9d092ae0fd5687e25b6920191f540ae916a4997a50de22334",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-164436-prove-boxed-row-values-and-mutation-isol",
+      "title": "Prove boxed row values and mutation isolation on every selector",
+      "description": "Use the ordinary native checker with strict gaps on identical input guards and the same public observer through the standard bytecode-qualified selector workflow. Keep original-entry counterexample replays and check coverage on each side.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "369"
+        ]
+      },
+      "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+      "submitted": {
+        "at": "2026-11-22T16:44:36+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Prove boxed row values and mutation isolation on every selector",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 369 --first 37",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/369-boxed-ragged-rows/records/native-final",
+        "examples/369-boxed-ragged-rows/records/native-selectors"
+      ]
+    }
+  },
+  "sourceCommit": "e6e2352c7ebb29b9288d354317c61a693e5251d0",
+  "startedAt": "2026-11-22T16:51:43+00:00",
+  "finishedAt": "2026-11-22T16:52:19+00:00",
+  "wallSeconds": 36.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3447250,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 211419136,
+    "wallSeconds": 27.4,
+    "cpuSeconds": 30.7,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove boxed row values and mutation isolation on every selector",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 369 --first 37",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 27.45,
+      "cpuSeconds": 30.657,
+      "cpuThrottledSeconds": 0.921,
+      "peakMemoryBytes": 211419136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-boxed-row-values-and-mut.log",
+        "lines": 1,
+        "bytes": 135,
+        "sha256": "c2b65fca8ada22bd387d87e902fa74ebf28d02add80f0d9288ddf82012b56631",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'values-landed': 'established', 'fresh-landed': 'established', 'values-release317': 'established', 'fresh-release317': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-final/landed.log",
+      "change": "added",
+      "bytes": 107,
+      "sha256": "1d21ed22c2a9873ad8918f1f8dac01b9ff6d4dacef38746f4ec6cf7e088e5867",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-final/release317.log",
+      "change": "added",
+      "bytes": 115,
+      "sha256": "841cd3a91a482fc04c8dfd138a4629643f86e0993eec5034a576005de878127d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-final/run.json",
+      "change": "added",
+      "bytes": 1974,
+      "sha256": "8fa0a2ad5db07f5ce69e88726fc006e775ecddaeb4987711b19a05be3cd65147",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/073e8c3158731ecca66f/Calls.java",
+      "change": "added",
+      "bytes": 15735,
+      "sha256": "57560b281db0dcff7467e01e9b6d4ffaf26822fa7e015f8be7fabe46ac123ae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/073e8c3158731ecca66f/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 9342,
+      "sha256": "7a391a2f513f5c4ee1c9cc0c19e53d8f9ca4e75e8ba6d679623e4da35eead3e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/073e8c3158731ecca66f/cases.tar.gz",
+      "change": "added",
+      "bytes": 19597,
+      "sha256": "e2a3f20dc6a8d39ba2d47f211fd44a07a77c2e1c8e189a384a81f8a3ee8b4aac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/f7c69658dfe509bdd1bc/Calls.java",
+      "change": "added",
+      "bytes": 15548,
+      "sha256": "195d1159198646defbfe528993a636850883d71ab82e18da37350967c7b79b0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/f7c69658dfe509bdd1bc/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 9341,
+      "sha256": "8eac8cdb908048166f187bad708ceb65cb6a8b9e6d1f9805c6440664239b704c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/f7c69658dfe509bdd1bc/cases.tar.gz",
+      "change": "added",
+      "bytes": 19812,
+      "sha256": "604378bc8df16736397dad19baa64ce8155839f5d70ac184ed7c2c13ed44563c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/fresh-landed/Admission.java",
+      "change": "added",
+      "bytes": 13385,
+      "sha256": "9f47b31d7a9c64722b3d55dbfaa79d4fd8aaa6989630b42db57566825d83b918",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/fresh-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 6587,
+      "sha256": "85fdb336dce7d35753ce7739ee3bf371590dc8153d4e6201422e781a631ef3b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/fresh-landed/result.json",
+      "change": "added",
+      "bytes": 152312,
+      "sha256": "173a375db15c87c55768a3002621e6e9e21aee2a4618ef478b7b0b7dc4fe7bcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/values-landed/Admission.java",
+      "change": "added",
+      "bytes": 13385,
+      "sha256": "9f47b31d7a9c64722b3d55dbfaa79d4fd8aaa6989630b42db57566825d83b918",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/values-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 6587,
+      "sha256": "85fdb336dce7d35753ce7739ee3bf371590dc8153d4e6201422e781a631ef3b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/values-landed/result.json",
+      "change": "added",
+      "bytes": 152303,
+      "sha256": "822f9c56d12fd5bf80aa69b607f3537bbb75abbc75f9231eff87ae2c25521b48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/75310cc82af64ca7bffe/Calls.java",
+      "change": "added",
+      "bytes": 15735,
+      "sha256": "57560b281db0dcff7467e01e9b6d4ffaf26822fa7e015f8be7fabe46ac123ae9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/75310cc82af64ca7bffe/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 9342,
+      "sha256": "7a391a2f513f5c4ee1c9cc0c19e53d8f9ca4e75e8ba6d679623e4da35eead3e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/75310cc82af64ca7bffe/cases.tar.gz",
+      "change": "added",
+      "bytes": 19536,
+      "sha256": "7658149c4efdff914d3937577d86c1d1bf7b07b097645375e5f356e8dfb6e564",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/c92ec38ee0e8b6284ca5/Calls.java",
+      "change": "added",
+      "bytes": 15548,
+      "sha256": "195d1159198646defbfe528993a636850883d71ab82e18da37350967c7b79b0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/c92ec38ee0e8b6284ca5/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 9341,
+      "sha256": "8eac8cdb908048166f187bad708ceb65cb6a8b9e6d1f9805c6440664239b704c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/c92ec38ee0e8b6284ca5/cases.tar.gz",
+      "change": "added",
+      "bytes": 19809,
+      "sha256": "9febdaa786d476f54b5da223e3e4efe77ae92dc83297454da50a29683710722d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/fresh-release317/Admission.java",
+      "change": "added",
+      "bytes": 13385,
+      "sha256": "9f47b31d7a9c64722b3d55dbfaa79d4fd8aaa6989630b42db57566825d83b918",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/fresh-release317/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 6587,
+      "sha256": "85fdb336dce7d35753ce7739ee3bf371590dc8153d4e6201422e781a631ef3b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/fresh-release317/result.json",
+      "change": "added",
+      "bytes": 152346,
+      "sha256": "226f33baca652bccc9378874af52368b86a200827ef6c1caaaadbe7db6657bb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/values-release317/Admission.java",
+      "change": "added",
+      "bytes": 13385,
+      "sha256": "9f47b31d7a9c64722b3d55dbfaa79d4fd8aaa6989630b42db57566825d83b918",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/values-release317/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 6587,
+      "sha256": "85fdb336dce7d35753ce7739ee3bf371590dc8153d4e6201422e781a631ef3b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/values-release317/result.json",
+      "change": "added",
+      "bytes": 152321,
+      "sha256": "36c06311c9f5f3569a16bb1db38ce475351f2503810df8edbcc71e88c75016e0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T16:55:00+00:00",
+    "applied": [
+      "examples/369-boxed-ragged-rows/records/native-final/landed.log",
+      "examples/369-boxed-ragged-rows/records/native-final/release317.log",
+      "examples/369-boxed-ragged-rows/records/native-final/run.json",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/073e8c3158731ecca66f/Calls.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/073e8c3158731ecca66f/Calls.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/073e8c3158731ecca66f/cases.tar.gz",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/f7c69658dfe509bdd1bc/Calls.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/f7c69658dfe509bdd1bc/Calls.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/calls/f7c69658dfe509bdd1bc/cases.tar.gz",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/fresh-landed/Admission.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/fresh-landed/Admission.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/fresh-landed/result.json",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/values-landed/Admission.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/values-landed/Admission.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/landed/20261122T165152Z-bf66cb77/tasks/values-landed/result.json",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/75310cc82af64ca7bffe/Calls.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/75310cc82af64ca7bffe/Calls.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/75310cc82af64ca7bffe/cases.tar.gz",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/c92ec38ee0e8b6284ca5/Calls.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/c92ec38ee0e8b6284ca5/Calls.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/calls/c92ec38ee0e8b6284ca5/cases.tar.gz",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/fresh-release317/Admission.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/fresh-release317/Admission.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/fresh-release317/result.json",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/values-release317/Admission.java",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/values-release317/Admission.jvm-bytecode",
+      "examples/369-boxed-ragged-rows/records/native-selectors/release317/20261122T165206Z-3d334358/tasks/values-release317/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "91130f0344e2f9e4703d5c27a0a7975921869b65",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/91130f0344e2f9e4703d5c27a0a7975921869b65/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T165219Z-891458d94d07ba03",
+      "outputs": "20261122T165219Z-923597af25c9e6e1",
+      "diff": "20261122T165219Z-949021d9b3a4c144"
+    }
+  }
+}

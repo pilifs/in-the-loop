@@ -1,0 +1,796 @@
+{
+  "task": "legacy-names-landed",
+  "record": {
+    "kind": "verifier",
+    "revision": "landed",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+      "prove",
+      "springwork.RoleChecks#legacyNames(int)",
+      "--classes",
+      "prepare/landed/adapter-landed.jar",
+      "--classpath",
+      "prepare/landed/landed.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-security-14196-landed.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-security-crypto.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-aop.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-beans.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-core.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-jcl.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-expression.jar",
+      "--classpath",
+      "prepare/landed/libraries/micrometer-observation.jar",
+      "--classpath",
+      "prepare/landed/libraries/micrometer-commons.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-context.jar",
+      "--assume",
+      "code >= 0 && code < 32",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.032,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+      "commit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+      "libTree": "51a83b86ac020bc5c2cef7175b2aa59ff391c294",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
+        "method": "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;",
+        "revisions": {
+          "landed": {
+            "commit": "fixture:application",
+            "loadedFrom": "landed.jar",
+            "classSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5",
+            "origin": "built from application by the fixture recipe",
+            "parameters": {
+              "names": [
+                "code",
+                "fluent"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "springwork.RoleChecks#legacyNames(I)I",
+          "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
+          "correspondence": "finite-oracle",
+          "cases": 32
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "landed": [
+          {
+            "path": "adapter-landed.jar",
+            "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253",
+            "role": "adapter"
+          },
+          {
+            "path": "landed.jar",
+            "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9",
+            "role": "original"
+          },
+          {
+            "path": "libraries/spring-security-14196-landed.jar",
+            "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/spring-security-crypto.jar",
+            "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/spring-aop.jar",
+            "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/spring-beans.jar",
+            "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/spring-core.jar",
+            "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/spring-jcl.jar",
+            "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/spring-expression.jar",
+            "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/micrometer-observation.jar",
+            "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/micrometer-commons.jar",
+            "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/spring-context.jar",
+            "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "springwork.RoleChecks#legacyNames(I)I",
+      "entryBindings": {
+        "landed": {
+          "entry": "springwork.RoleChecks#legacyNames(I)I",
+          "classSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
+          "loadedFrom": "adapter-landed.jar",
+          "subject": "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;",
+          "subjectClassSha256": "3a3517b2e526e8164b8e42c574464a51c3c2d03f78b05977f5eee6364075dbe5"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;",
+        "checkedEntry": "springwork.RoleChecks#legacyNames(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 32"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "256"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16384"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "springwork.RoleChecks#legacyNames(I)I",
+          "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
+          "correspondence": "finite-oracle",
+          "cases": 32
+        }
+      },
+      "commits": {
+        "landed": "fixture:application"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "landed": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+            "gaps",
+            "--target",
+            "springwork.RoleChecks#legacyNames(int)",
+            "--classes",
+            "prepare/landed/adapter-landed.jar",
+            "--classpath",
+            "prepare/landed/landed.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-security-14196-landed.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-security-crypto.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-aop.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-beans.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-core.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-jcl.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-expression.jar",
+            "--classpath",
+            "prepare/landed/libraries/micrometer-observation.jar",
+            "--classpath",
+            "prepare/landed/libraries/micrometer-commons.jar",
+            "--classpath",
+            "prepare/landed/libraries/spring-context.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-landed.stdout",
+          "stderr": "verifier/probe-landed.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.PrintWriter.<init>(Ljava/io/Writer;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.PrintWriter.<init>(java.io.Writer)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:50"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.StringWriter.<init>()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.ArrayList.<init>(Ljava/util/Collection;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.ArrayList.<init>(java.util.Collection)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:178"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:220",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneStepMap:195",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:150",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:151"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>(Ljava/util/Collection;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>(java.util.Collection)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:219"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.PrintWriter.println(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.PrintWriter.println(java.lang.String)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.lambda$roleHierarchyFromMap$0:55"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Map.forEach(Ljava/util/function/BiConsumer;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Map.forEach(java.util.function.BiConsumer)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:51"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.apache.logging.log4j.spi.ExtendedLogger.logIfEnabled(Ljava/lang/String;Lorg/apache/logging/log4j/Level;Lorg/apache/logging/log4j/Marker;Ljava/lang/Object;Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.apache.logging.log4j.spi.ExtendedLogger.logIfEnabled(java.lang.String, org.apache.logging.log4j.Level, org.apache.logging.log4j.Marker, java.lang.Object, java.lang.Throwable)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Log4jLog.log:264"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.apache.logging.log4j.spi.ExtendedLogger.logIfEnabled(Ljava/lang/String;Lorg/apache/logging/log4j/Level;Lorg/apache/logging/log4j/Marker;Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.apache.logging.log4j.spi.ExtendedLogger.logIfEnabled(java.lang.String, org.apache.logging.log4j.Level, org.apache.logging.log4j.Marker, java.lang.String)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Log4jLog.log:260"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.apache.logging.log4j.spi.ExtendedLogger.logIfEnabled(Ljava/lang/String;Lorg/apache/logging/log4j/Level;Lorg/apache/logging/log4j/Marker;Ljava/lang/String;Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.apache.logging.log4j.spi.ExtendedLogger.logIfEnabled(java.lang.String, org.apache.logging.log4j.Level, org.apache.logging.log4j.Marker, java.lang.String, java.lang.Throwable)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Log4jLog.log:257"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.slf4j.Logger.debug(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.slf4j.Logger.debug(java.lang.String)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Slf4jLog.debug:371"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.slf4j.spi.LocationAwareLogger.log(Lorg/slf4j/Marker;Ljava/lang/String;ILjava/lang/String;[Ljava/lang/Object;Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.slf4j.spi.LocationAwareLogger.log(org.slf4j.Marker, java.lang.String, int, java.lang.String, java.lang.Object[], java.lang.Throwable)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Slf4jLocationAwareLog.debug:466"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.io.StringWriter.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.io.StringWriter.toString()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:58"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Collection.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Collection.iterator()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:152",
+                "springwork.RoleChecks.names:6"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:218",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:223",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:152",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:169",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.lambda$roleHierarchyFromMap$0:54",
+                "springwork.RoleChecks.names:6"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.iterator()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.lambda$roleHierarchyFromMap$0:54"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.keySet()Ljava/util/Set;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.keySet()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:218"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Set.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Set.iterator()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:218",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:223",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:169"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.Function.apply(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.Function.apply(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter.createLog:95"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:org.apache.logging.log4j.spi.LoggerContext.getLogger(Ljava/lang/String;)Lorg/apache/logging/log4j/spi/ExtendedLogger;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "org.apache.logging.log4j.spi.LoggerContext.getLogger(java.lang.String)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Log4jLog.<init>:159"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:org.slf4j.Logger.getName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "org.slf4j.Logger.getName()",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Slf4jLog.<init>:282"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "java.util.HashMap.find:80"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.hashCode()",
+              "sites": [
+                "java.util.HashMap.find:77",
+                "java.util.HashMap.put:65"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.String.isBlank()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.String.isBlank()",
+              "sites": [
+                "org.springframework.util.StringUtils.hasText:192"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.isEmpty()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:147",
+                "org.springframework.util.CollectionUtils.isEmpty:61"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:218",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:152",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:169",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.lambda$roleHierarchyFromMap$0:54",
+                "springwork.RoleChecks.names:6"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl$Builder.addHierarchy:286",
+                "springwork.RoleApplication.authorities:29"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.add(java.lang.Object)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:225",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneStepMap:201",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:155",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:159",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:163",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:170",
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.getReachableGrantedAuthorities:171"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.addAll(Ljava/util/Collection;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.addAll(java.util.Collection)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:232"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.isEmpty()",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:221"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.remove(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.remove(java.lang.Object)",
+              "sites": [
+                "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl.buildRolesReachableInOneOrMoreStepsMap:224"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:org.slf4j.Logger.isDebugEnabled()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "org.slf4j.Logger.isDebugEnabled()",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Slf4jLog.debug:370"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:org.slf4j.spi.LocationAwareLogger.isDebugEnabled()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "org.slf4j.spi.LocationAwareLogger.isDebugEnabled()",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Slf4jLocationAwareLog.debug:465"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.valueOf(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$JavaUtilLog.log:607",
+                "org.apache.commons.logging.LogAdapter$Slf4jLocationAwareLog.debug:466",
+                "org.apache.commons.logging.LogAdapter$Slf4jLog.debug:371"
+              ]
+            },
+            {
+              "id": "jdk-static-method:org.apache.logging.log4j.LogManager.getContext(Ljava/lang/ClassLoader;Z)Lorg/apache/logging/log4j/spi/LoggerContext;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "org.apache.logging.log4j.LogManager.getContext(java.lang.ClassLoader, boolean)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Log4jLog.<clinit>:146",
+                "org.apache.commons.logging.LogAdapter$Log4jLog.<init>:157"
+              ]
+            },
+            {
+              "id": "jdk-static-method:org.slf4j.LoggerFactory.getLogger(Ljava/lang/String;)Lorg/slf4j/Logger;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "org.slf4j.LoggerFactory.getLogger(java.lang.String)",
+              "sites": [
+                "org.apache.commons.logging.LogAdapter$Slf4jAdapter.createLocationAwareLog:121",
+                "org.apache.commons.logging.LogAdapter$Slf4jAdapter.createLog:127"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0257,
+        "peakRssBytes": 66506752,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "springwork.RoleChecks#legacyNames(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 32",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: java.lang.String.split on an object the engine does not model",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "springwork.RoleChecks#legacyNames(int) cannot be verified: outside the fragment: java.lang.String.split on an object the engine does not model",
+            "uri": null,
+            "line": 18
+          }
+        ],
+        "output": "✗ springwork.RoleChecks#legacyNames(int) cannot be verified: outside the fragment: java.lang.String.split on an object the engine does not model\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.010109346,
+          "properties": 1,
+          "unwind": 256,
+          "max_array_length": 16384,
+          "stage": null,
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 3,
+            "solving_seconds": 2.7301e-05,
+            "gates_evaluated": 132,
+            "evaluating_seconds": 4.388e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 190,
+            "clauses": 525,
+            "seconds": 0.0068996,
+            "loading_seconds": 0.00103176,
+            "decoding_seconds": 0.000119535,
+            "encoding_seconds": 0.001427013,
+            "witness_seconds": 0.0,
+            "assumed": [
+              "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+              "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+            ]
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.007,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 190,
+                "clauses": 525
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.022,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.007,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.014
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 32",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 256,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-164312-spring-security-reachable-roles-and-publ/.build-py/examples-n2tprv82/targets/370/legacy-names-landed/20261122T164852Z-dfe331e2",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-164312-spring-security-reachable-roles-and-publ/.build-py/examples-n2tprv82/targets/370/legacy-names-landed/20261122T164852Z-dfe331e2"
+  }
+}
