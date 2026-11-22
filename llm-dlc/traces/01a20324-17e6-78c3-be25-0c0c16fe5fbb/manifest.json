@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-22T14:16:36.900Z",
-  "duration_seconds": 7970,
+  "ended": "2026-11-22T14:22:28.080Z",
+  "duration_seconds": 8321,
   "stats": {
     "turns": 3,
-    "api_calls": 489,
-    "tool_calls": 1331,
-    "tool_errors": 25,
+    "api_calls": 507,
+    "tool_calls": 1376,
+    "tool_errors": 26,
     "compactions": 2,
     "peak_context_tokens": 336021,
     "usage": {
-      "input_tokens": 747861,
-      "output_tokens": 207214,
-      "cache_read_input_tokens": 99640320,
+      "input_tokens": 767461,
+      "output_tokens": 216328,
+      "cache_read_input_tokens": 103336192,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 811,
-    "exec": 464,
-    "apply_patch": 40,
+    "Bash": 832,
+    "exec": 483,
+    "apply_patch": 45,
     "wait": 9,
     "sleep": 3,
     "request_user_input_async": 1,
@@ -52,6 +52,7 @@
     "lib/benchmark/java-domain-proof/domains.py",
     "lib/benchmark/java-domain-proof/name_validation.py",
     "lib/benchmark/java-domain-proof/public_run.py",
+    "lib/benchmark/java-domain-proof/ready_parser.py",
     "lib/benchmark/java-domain-proof/scorecard.py",
     "lib/benchmark/java-domain-proof/transfer.py",
     "lib/src/bmc/mod.rs",
@@ -99,24 +100,24 @@
     {
       "index": 2,
       "started": "2026-11-22T14:02:09.693Z",
-      "ended": "2026-11-22T14:16:36.900Z",
+      "ended": "2026-11-22T14:22:28.080Z",
       "turns": 1,
-      "api_calls": 48,
+      "api_calls": 66,
       "usage": {
-        "input_tokens": 174861,
-        "output_tokens": 21080,
-        "cache_read_input_tokens": 6000512,
+        "input_tokens": 194461,
+        "output_tokens": 30194,
+        "cache_read_input_tokens": 9696384,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 184901
+      "peak_context_tokens": 202885
     }
   ],
   "log": {
-    "sha256": "9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea",
-    "bytes": 11461665,
-    "lines": 3894,
-    "gzip_bytes": 4275817,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea.jsonl.gz"
+    "sha256": "ff173a3522995fb1d23530b515fc32c84e3fe7e86da19d7c5c540783aca6fbe9",
+    "bytes": 11779758,
+    "lines": 4026,
+    "gzip_bytes": 4397791,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/ff173a3522995fb1d23530b515fc32c84e3fe7e86da19d7c5c540783aca6fbe9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -375,6 +376,14 @@
       "summary": "Preserve floating-point fields of selected startup receivers",
       "body": "Jackson’s original unused parser has inherited float and double fields. Capture their raw IEEE 754 bits for explicitly selected application instances, validate the declaring fields and restore those bits in the native heap. The alias and inheritance regression now reads negative zero and a signed subnormal on the JVM and in the checker.\n\nA capped fixed-JAR probe of the frozen schedule with padding one stopped at the uncaptured receiver before the change and verified the entire trace afterwards. The changed Rust tier passed. One unrelated JBMC timing test passed on retry.",
       "log_sha256": "9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea"
+    },
+    {
+      "change_id": "wqqsrltsnzvrytrltvuzumsoqtmzwwzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze the Jackson parser experiment at factory return",
+      "body": "Compare both native checkers on the same unused original parser, unmodified feed loop, and all 128 schedules per revision. Bind every compiled switch arm to its matching literal. Check all ten other trace coordinates before reporting the closing offset. The paired job will replay any native padded-parent counterexample on the frozen ordinary factory entry.\n\nFresh class loaders on the pinned JVM reproduced every original trace on both JARs. The fixed side matched 128 offset traces and the parent matched 32. Altered selector routing, EOF, a missing row and mutated trace coordinates were rejected. All 59 changed Rust test binaries passed.",
+      "log_sha256": "ff173a3522995fb1d23530b515fc32c84e3fe7e86da19d7c5c540783aca6fbe9"
     }
   ],
   "logs": {
@@ -436,6 +445,12 @@
       "bytes": 5643343,
       "lines": 2149,
       "gzip_bytes": 2126217,
+      "url": null
+    },
+    "ff173a3522995fb1d23530b515fc32c84e3fe7e86da19d7c5c540783aca6fbe9": {
+      "bytes": 11779758,
+      "lines": 4026,
+      "gzip_bytes": 4397791,
       "url": null
     }
   },

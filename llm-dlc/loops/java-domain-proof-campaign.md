@@ -139,7 +139,9 @@ The follow-up checks the default name-policy supplier and the instructions that 
 
 The name-validation job returned **10/10 strict native establishments** on the follow-up verifier, up from **0/10** on the campaign verifier. The debugger observed the default policy at all 344 lookups inside 32 public calls. Two establishments cover the unmodified public UTF validator. Eight cover the two checks on each historical artifact given the installed supplier’s value. Both complete decoders remain open. The public campaign totals are 8/20 ordinary and 20/20 finite. [Managed result](../../verification/results/20261122-133607-prove-the-name-validation-consumer-on-fo/result.json)
 
-- Status: done
+The Jackson follow-up starts at the unused parser returned by the frozen public factory. It captures the parser before the first feed, then executes the original token loop, locations and EOF. A capped probe on fixed selector 32 refused the parser's inherited floating-point fields on the earlier checker. Preserving their exact bits let the same probe establish the trace. The paired experiment will check all 32 partitions at each padding, the parent closing-offset law `5 + padding`, and the fixed offset 5. It will replay a native parent witness through the original factory with ordinary startup.
+
+- Status: working
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e
 [pilot]: https://github.com/pilifs/in-the-loop/blob/ae92d881c61581011ed494c0ce62fcdfd291343e/llm-dlc/loops/domain-foundations-strategy-results.md

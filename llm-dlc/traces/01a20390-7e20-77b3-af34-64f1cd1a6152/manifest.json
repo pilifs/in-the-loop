@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-22T14:02:10.871Z",
-  "ended": "2026-11-22T14:10:02.752Z",
-  "duration_seconds": 472,
+  "ended": "2026-11-22T14:22:26.911Z",
+  "duration_seconds": 1216,
   "stats": {
-    "turns": 2,
-    "api_calls": 3,
+    "turns": 3,
+    "api_calls": 5,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 34191,
+    "peak_context_tokens": 54720,
     "usage": {
-      "input_tokens": 34519,
-      "output_tokens": 368,
-      "cache_read_input_tokens": 57088,
+      "input_tokens": 55398,
+      "output_tokens": 604,
+      "cache_read_input_tokens": 137856,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-22T14:02:10.871Z",
-      "ended": "2026-11-22T14:10:02.752Z",
-      "turns": 2,
-      "api_calls": 3,
+      "ended": "2026-11-22T14:22:26.911Z",
+      "turns": 3,
+      "api_calls": 5,
       "usage": {
-        "input_tokens": 34519,
-        "output_tokens": 368,
-        "cache_read_input_tokens": 57088,
+        "input_tokens": 55398,
+        "output_tokens": 604,
+        "cache_read_input_tokens": 137856,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 34191
+      "peak_context_tokens": 54720
     }
   ],
   "log": {
-    "sha256": "396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af",
-    "bytes": 326657,
-    "lines": 45,
-    "gzip_bytes": 111569,
-    "path": "llm-dlc/traces/01a20390-7e20-77b3-af34-64f1cd1a6152/logs/396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af.jsonl.gz"
+    "sha256": "381c220e72c758dab82383c1ba1b3baab6dad4a9570ec900e892d0e6a587b7ea",
+    "bytes": 465907,
+    "lines": 68,
+    "gzip_bytes": 142260,
+    "path": "llm-dlc/traces/01a20390-7e20-77b3-af34-64f1cd1a6152/logs/381c220e72c758dab82383c1ba1b3baab6dad4a9570ec900e892d0e6a587b7ea.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -62,9 +62,23 @@
       "summary": "Preserve floating-point fields of selected startup receivers",
       "body": "Jackson’s original unused parser has inherited float and double fields. Capture their raw IEEE 754 bits for explicitly selected application instances, validate the declaring fields and restore those bits in the native heap. The alias and inheritance regression now reads negative zero and a signed subnormal on the JVM and in the checker.\n\nA capped fixed-JAR probe of the frozen schedule with padding one stopped at the uncaptured receiver before the change and verified the entire trace afterwards. The changed Rust tier passed. One unrelated JBMC timing test passed on retry.",
       "log_sha256": "396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af"
+    },
+    {
+      "change_id": "wqqsrltsnzvrytrltvuzumsoqtmzwwzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze the Jackson parser experiment at factory return",
+      "body": "Compare both native checkers on the same unused original parser, unmodified feed loop, and all 128 schedules per revision. Bind every compiled switch arm to its matching literal. Check all ten other trace coordinates before reporting the closing offset. The paired job will replay any native padded-parent counterexample on the frozen ordinary factory entry.\n\nFresh class loaders on the pinned JVM reproduced every original trace on both JARs. The fixed side matched 128 offset traces and the parent matched 32. Altered selector routing, EOF, a missing row and mutated trace coordinates were rejected. All 59 changed Rust test binaries passed.",
+      "log_sha256": "381c220e72c758dab82383c1ba1b3baab6dad4a9570ec900e892d0e6a587b7ea"
     }
   ],
   "logs": {
+    "381c220e72c758dab82383c1ba1b3baab6dad4a9570ec900e892d0e6a587b7ea": {
+      "bytes": 465907,
+      "lines": 68,
+      "gzip_bytes": 142260,
+      "url": null
+    },
     "396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af": {
       "bytes": 326657,
       "lines": 45,
