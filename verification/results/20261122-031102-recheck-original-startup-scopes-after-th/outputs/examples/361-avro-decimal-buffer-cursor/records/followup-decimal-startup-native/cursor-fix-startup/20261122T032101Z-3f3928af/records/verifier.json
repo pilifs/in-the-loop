@@ -1,0 +1,606 @@
+{
+  "task": "cursor-fix-startup",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a04fff32b8a618fcf88eb87527be55dce7dc82d8/jvmcontract",
+      "prove",
+      "organic.DecimalWindow#cursor(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/avro-1.10.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-core/2.10.0/jackson-core-2.10.0.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-databind/2.10.0/jackson-databind-2.10.0.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.jar",
+      "--classpath",
+      "prepare/fix/lib/org/apache/commons/commons-compress/1.19/commons-compress-1.19.jar",
+      "--classpath",
+      "prepare/fix/lib/org/xerial/snappy/snappy-java/1.1.7.3/snappy-java-1.1.7.3.jar",
+      "--classpath",
+      "prepare/fix/lib/org/tukaani/xz/1.8/xz-1.8.jar",
+      "--classpath",
+      "prepare/fix/lib/com/github/luben/zstd-jni/1.4.3-1/zstd-jni-1.4.3-1.jar",
+      "--classpath",
+      "prepare/fix/lib/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar",
+      "--assume",
+      "code >= 0 && code < 12",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--observed-initializer",
+      "org.apache.avro.LogicalTypes",
+      "--observed-initializer",
+      "org.apache.avro.Schema",
+      "--observed-runtime",
+      "{\"emptyEnvironment\":true,\"preinitializeTogether\":true,\"processors\":2,\"rootWorkingDirectory\":true}",
+      "--unwind",
+      "64",
+      "--max-array-length",
+      "128",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 1.512,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+      "commit": "1c914d34f1cf6bb4d7b11590cfaaf46ded3caee3",
+      "libTree": "a04fff32b8a618fcf88eb87527be55dce7dc82d8",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "After one public conversion the caller retains its initial position and limit. Each selector maps to its original observation in controls/table.json.",
+        "method": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+        "revisions": {
+          "fix": {
+            "commit": "ce9032a4123e262341a3e746e6eb2b8476eae1ae",
+            "loadedFrom": "built/avro-1.10.0-SNAPSHOT.jar",
+            "classSha256": "87ad635a44ea725764b03a202f0a311896b5ae55678e4e83b8332b4806a3a42d",
+            "origin": "built by maven from https://github.com/apache/avro at ce9032a4123e262341a3e746e6eb2b8476eae1ae: lang/java/avro/target/avro-1.10.0-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "value",
+                "schema",
+                "type"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "organic.DecimalWindow#cursor(I)I",
+          "mapping": "After one public conversion the caller retains its initial position and limit. Each selector maps to its original observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 12
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "964e6aa2ddfc777b08619d3fc77a96e4bdbe7966303ea8e6676da7db0036de47",
+            "role": "adapter"
+          },
+          {
+            "path": "built/avro-1.10.0-SNAPSHOT.jar",
+            "sha256": "e4ca6c32cc7a32b0f8bcdf6190feccea129ff11bb4bf955826cf8376d3444cbd",
+            "role": "original"
+          },
+          {
+            "path": "lib/com/fasterxml/jackson/core/jackson-core/2.10.0/jackson-core-2.10.0.jar",
+            "sha256": "69e7695b1e40834fa1242fc328a4010607911ced3706ab79abc769d451197513",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/fasterxml/jackson/core/jackson-databind/2.10.0/jackson-databind-2.10.0.jar",
+            "sha256": "8e6c566c67fc61a96c5dfc4a71d430f2565765778ec9a6ef216c5460a9911b60",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.jar",
+            "sha256": "77a0846219774a8269bc1b38cc00294908d34e77f8a9da34d97673982f75853d",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/apache/commons/commons-compress/1.19/commons-compress-1.19.jar",
+            "sha256": "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/xerial/snappy/snappy-java/1.1.7.3/snappy-java-1.1.7.3.jar",
+            "sha256": "7eea31c0a25d35cd092d8aec08bed04f22152409b58d63d43839074a9ab7ab97",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/tukaani/xz/1.8/xz-1.8.jar",
+            "sha256": "8c7964b36fe3f0cbe644b04fcbff84e491ce81917db2f5bfa0cba8e9548aff5d",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/github/luben/zstd-jni/1.4.3-1/zstd-jni-1.4.3-1.jar",
+            "sha256": "8370149f5bd16a83d27240a8ce5a64204f3c70647ed180801dcf95f7be27ef87",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar",
+            "sha256": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "organic.DecimalWindow#cursor(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "organic.DecimalWindow#cursor(I)I",
+          "classSha256": "2d877fb639609c13bd0a8f2989c696885f6164fe2990e9b1f8119006401dccd5",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+          "subjectClassSha256": "87ad635a44ea725764b03a202f0a311896b5ae55678e4e83b8332b4806a3a42d",
+          "initializerClasses": {
+            "org.apache.avro.LogicalTypes": "8f2ce6316d21f354e12f9418943112eb3604afc4e44d703ad913c559b74f96b9",
+            "org.apache.avro.Schema": "56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3"
+          }
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+        "checkedEntry": "organic.DecimalWindow#cursor(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 12"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "observedInitializers",
+            "flag": "--observed-initializer",
+            "value": "org.apache.avro.LogicalTypes"
+          },
+          {
+            "field": "observedInitializers",
+            "flag": "--observed-initializer",
+            "value": "org.apache.avro.Schema"
+          },
+          {
+            "field": "observedRuntime",
+            "flag": "--observed-runtime",
+            "value": "{\"emptyEnvironment\":true,\"preinitializeTogether\":true,\"processors\":2,\"rootWorkingDirectory\":true}"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "64"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "128"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "requiredStatementEvidence": {
+            "jdk": "21.0.13"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "observedInitializerStates": {
+          "org.apache.avro.LogicalTypes": "4fad771837678b64785d4e53c29aa911d92f10bc9d3cb72e7153394e847dbc9e",
+          "org.apache.avro.Schema": "4fad771837678b64785d4e53c29aa911d92f10bc9d3cb72e7153394e847dbc9e"
+        },
+        "correspondence": {
+          "entry": "organic.DecimalWindow#cursor(I)I",
+          "mapping": "After one public conversion the caller retains its initial position and limit. Each selector maps to its original observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 12
+        }
+      },
+      "commits": {
+        "fix": "ce9032a4123e262341a3e746e6eb2b8476eae1ae"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a04fff32b8a618fcf88eb87527be55dce7dc82d8/jvmcontract",
+            "gaps",
+            "--target",
+            "organic.DecimalWindow#cursor(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/built/avro-1.10.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/fix/lib/com/fasterxml/jackson/core/jackson-core/2.10.0/jackson-core-2.10.0.jar",
+            "--classpath",
+            "prepare/fix/lib/com/fasterxml/jackson/core/jackson-databind/2.10.0/jackson-databind-2.10.0.jar",
+            "--classpath",
+            "prepare/fix/lib/com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.jar",
+            "--classpath",
+            "prepare/fix/lib/org/apache/commons/commons-compress/1.19/commons-compress-1.19.jar",
+            "--classpath",
+            "prepare/fix/lib/org/xerial/snappy/snappy-java/1.1.7.3/snappy-java-1.1.7.3.jar",
+            "--classpath",
+            "prepare/fix/lib/org/tukaani/xz/1.8/xz-1.8.jar",
+            "--classpath",
+            "prepare/fix/lib/com/github/luben/zstd-jni/1.4.3-1/zstd-jni-1.4.3-1.jar",
+            "--classpath",
+            "prepare/fix/lib/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.065,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.nio.HeapByteBuffer.<init>([BIILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.HeapByteBuffer.<init>(byte[], int, int, java.lang.foreign.MemorySegment)",
+              "sites": [
+                "java.nio.ByteBuffer.wrap:436"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.concurrent.ConcurrentLinkedQueue.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.concurrent.ConcurrentLinkedQueue.<init>()",
+              "sites": [
+                "org.apache.avro.JsonProperties$2.<init>:153"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.math.BigInteger.checkRange()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.math.BigInteger.checkRange()",
+              "sites": [
+                "java.math.BigInteger.<init>:333"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.duplicate()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.duplicate()",
+              "sites": [
+                "org.apache.avro.Conversions$DecimalConversion.fromBytes:83"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.get([B)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.get(byte[])",
+              "sites": [
+                "org.apache.avro.Conversions$DecimalConversion.fromBytes:83"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.avro.LogicalTypes.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.avro.LogicalTypes.<clinit>()",
+              "sites": [
+                "organic.DecimalWindow.cursor:21"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.avro.Schema.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.avro.Schema.<clinit>()",
+              "sites": [
+                "organic.DecimalWindow.cursor:22"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.limit()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.limit()",
+              "sites": [
+                "organic.DecimalWindow.cursor:25"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.position()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.position()",
+              "sites": [
+                "organic.DecimalWindow.cursor:25"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.remaining()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.remaining()",
+              "sites": [
+                "org.apache.avro.Conversions$DecimalConversion.fromBytes:82"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 2.6271,
+        "peakRssBytes": 133238784,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "organic.DecimalWindow#cursor(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 12",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.5 s; loops unwound 64 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ organic.DecimalWindow#cursor(int) satisfies `result == 1` on every input where code >= 0 && code < 12 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.5 s; loops unwound 64 times with unwinding assertions)\n  not vacuous: cursor(code=4) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 1.4516885880000001,
+          "properties": 1,
+          "unwind": 64,
+          "max_array_length": 128,
+          "stage": null,
+          "native": {
+            "paths": 14,
+            "merges": 0,
+            "solver_calls": 220,
+            "solving_seconds": 0.040969725,
+            "gates_evaluated": 14852,
+            "evaluating_seconds": 0.00035092,
+            "divisions": 3,
+            "divisions_built": 3,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 21405,
+            "clauses": 71605,
+            "seconds": 0.085426032,
+            "loading_seconds": 0.010245736,
+            "decoding_seconds": 0.000305354,
+            "encoding_seconds": 0.016359143,
+            "witness_seconds": 0.0,
+            "assumed": [
+              "org.apache.avro.Schema was startup root 2 in the same JVM as org.apache.avro.LogicalTypes, before the checked entry",
+              "the class initializer of org.apache.avro.LogicalTypes was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 8f2ce6316d21), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties slf4j.detectLoggerNameMismatch, not set; java.vendor.url = \"https://adoptium.net/\"; line.separator = \"\\n\", and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 143 other initialized application classes [com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility, com.fasterxml.jackson.annotation.JsonFormat$Features, com.fasterxml.jackson.annotation.JsonFormat$Shape, com.fasterxml.jackson.annotation.JsonFormat$Value, com.fasterxml.jackson.annotation.JsonInclude$Include, com.fasterxml.jackson.annotation.JsonInclude$Value, com.fasterxml.jackson.annotation.JsonSetter$Value, com.fasterxml.jackson.annotation.Nulls, com.fasterxml.jackson.core.Base64Variant, com.fasterxml.jackson.core.Base64Variants, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonParser$NumberType, com.fasterxml.jackson.core.ObjectCodec, com.fasterxml.jackson.core.PrettyPrinter, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.TreeCodec, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.type.ResolvedType, com.fasterxml.jackson.core.util.DefaultIndenter, com.fasterxml.jackson.core.util.DefaultPrettyPrinter, com.fasterxml.jackson.core.util.DefaultPrettyPrinter$FixedSpaceIndenter, com.fasterxml.jackson.core.util.DefaultPrettyPrinter$NopIndenter, com.fasterxml.jackson.core.util.Separators, com.fasterxml.jackson.databind.AnnotationIntrospector, com.fasterxml.jackson.databind.BeanDescription, com.fasterxml.jackson.databind.DatabindContext, com.fasterxml.jackson.databind.DeserializationConfig, com.fasterxml.jackson.databind.DeserializationContext, com.fasterxml.jackson.databind.DeserializationFeature, com.fasterxml.jackson.databind.JavaType, com.fasterxml.jackson.databind.JsonSerializer, com.fasterxml.jackson.databind.MapperFeature, com.fasterxml.jackson.databind.ObjectMapper, com.fasterxml.jackson.databind.PropertyName, com.fasterxml.jackson.databind.SerializationConfig, com.fasterxml.jackson.databind.SerializationFeature, com.fasterxml.jackson.databind.SerializerProvider, com.fasterxml.jackson.databind.cfg.BaseSettings, com.fasterxml.jackson.databind.cfg.ConfigOverride, com.fasterxml.jackson.databind.cfg.ConfigOverride$Empty, com.fasterxml.jackson.databind.cfg.ConfigOverrides, com.fasterxml.jackson.databind.cfg.ContextAttributes, com.fasterxml.jackson.databind.cfg.ContextAttributes$Impl, com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig, com.fasterxml.jackson.databind.cfg.MapperConfig, com.fasterxml.jackson.databind.cfg.MapperConfigBase, com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig, com.fasterxml.jackson.databind.deser.BasicDeserializerFactory, com.fasterxml.jackson.databind.deser.BeanDeserializerFactory, com.fasterxml.jackson.databind.deser.DefaultDeserializationContext, com.fasterxml.jackson.databind.deser.DefaultDeserializationContext$Impl, com.fasterxml.jackson.databind.deser.DeserializerCache, com.fasterxml.jackson.databind.deser.DeserializerFactory, com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers, com.fasterxml.jackson.databind.ext.Java7Support, com.fasterxml.jackson.databind.ext.Java7SupportImpl, com.fasterxml.jackson.databind.introspect.Annotated, com.fasterxml.jackson.databind.introspect.AnnotatedClass, com.fasterxml.jackson.databind.introspect.AnnotatedClass$Creators, com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver, com.fasterxml.jackson.databind.introspect.AnnotationCollector, com.fasterxml.jackson.databind.introspect.AnnotationCollector$NoAnnotations, com.fasterxml.jackson.databind.introspect.BasicBeanDescription, com.fasterxml.jackson.databind.introspect.BasicClassIntrospector, com.fasterxml.jackson.databind.introspect.ClassIntrospector, com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector, com.fasterxml.jackson.databind.introspect.SimpleMixInResolver, com.fasterxml.jackson.databind.introspect.VisibilityChecker$Std, com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator, com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator$Base, com.fasterxml.jackson.databind.jsontype.SubtypeResolver, com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator, com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver, com.fasterxml.jackson.databind.node.JsonNodeFactory, com.fasterxml.jackson.databind.ser.BasicSerializerFactory, com.fasterxml.jackson.databind.ser.BeanSerializerFactory, com.fasterxml.jackson.databind.ser.DefaultSerializerProvider, com.fasterxml.jackson.databind.ser.DefaultSerializerProvider$Impl, com.fasterxml.jackson.databind.ser.SerializerCache, com.fasterxml.jackson.databind.ser.SerializerFactory, com.fasterxml.jackson.databind.ser.impl.FailingSerializer, com.fasterxml.jackson.databind.ser.impl.UnknownSerializer, com.fasterxml.jackson.databind.ser.std.BooleanSerializer, com.fasterxml.jackson.databind.ser.std.CalendarSerializer, com.fasterxml.jackson.databind.ser.std.DateSerializer, com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase, com.fasterxml.jackson.databind.ser.std.NullSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers, com.fasterxml.jackson.databind.ser.std.NumberSerializers$Base, com.fasterxml.jackson.databind.ser.std.NumberSerializers$DoubleSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$FloatSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntLikeSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntegerSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$LongSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$ShortSerializer, com.fasterxml.jackson.databind.ser.std.StdJdkSerializers, com.fasterxml.jackson.databind.ser.std.StdScalarSerializer, com.fasterxml.jackson.databind.ser.std.StdSerializer, com.fasterxml.jackson.databind.ser.std.StringSerializer, com.fasterxml.jackson.databind.ser.std.ToStringSerializer, com.fasterxml.jackson.databind.ser.std.ToStringSerializerBase, com.fasterxml.jackson.databind.ser.std.UUIDSerializer, com.fasterxml.jackson.databind.type.SimpleType, com.fasterxml.jackson.databind.type.TypeBase, com.fasterxml.jackson.databind.type.TypeBindings, com.fasterxml.jackson.databind.type.TypeFactory, com.fasterxml.jackson.databind.type.TypeParser, com.fasterxml.jackson.databind.util.ClassUtil, com.fasterxml.jackson.databind.util.LRUMap, com.fasterxml.jackson.databind.util.RootNameLookup, com.fasterxml.jackson.databind.util.StdDateFormat, org.apache.avro.JsonProperties, org.apache.avro.JsonProperties$1, org.apache.avro.JsonProperties$Null, org.apache.avro.LogicalType, org.apache.avro.LogicalTypes$Date, org.apache.avro.LogicalTypes$LocalTimestampMicros, org.apache.avro.LogicalTypes$LocalTimestampMillis, org.apache.avro.LogicalTypes$TimeMicros, org.apache.avro.LogicalTypes$TimeMillis, org.apache.avro.LogicalTypes$TimestampMicros, org.apache.avro.LogicalTypes$TimestampMillis, org.apache.avro.Schema, org.apache.avro.Schema$Type, org.apache.avro.util.internal.Accessor, org.apache.avro.util.internal.Accessor$JsonPropertiesAccessor, org.slf4j.LoggerFactory, org.slf4j.helpers.MarkerIgnoringBase, org.slf4j.helpers.NOPLogger, org.slf4j.helpers.NOPLoggerFactory, org.slf4j.helpers.NamedLoggerBase, org.slf4j.helpers.SubstituteLoggerFactory, org.slf4j.helpers.Util], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call)"
+            ]
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 58.641,
+              "seconds": 0.085,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.01,
+                "lowering": 0.0,
+                "symbolic": 0.018,
+                "encoding": 0.016,
+                "solving": 0.041,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 21405,
+                "clauses": 71605
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 58.548,
+              "seconds": 0.013,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.007,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 184,
+                "clauses": 514
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 1.494,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.098,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 1.393
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 12",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "org.apache.avro.Schema was startup root 2 in the same JVM as org.apache.avro.LogicalTypes, before the checked entry",
+              "basis": "engine",
+              "id": "observed-initializer:org.apache.avro.Schema:56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3:4fad771837678b64785d4e53c29aa911d92f10bc9d3cb72e7153394e847dbc9e"
+            },
+            {
+              "kind": "library",
+              "text": "the class initializer of org.apache.avro.LogicalTypes was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 8f2ce6316d21), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties slf4j.detectLoggerNameMismatch, not set; java.vendor.url = \"https://adoptium.net/\"; line.separator = \"\\n\", and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 143 other initialized application classes [com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility, com.fasterxml.jackson.annotation.JsonFormat$Features, com.fasterxml.jackson.annotation.JsonFormat$Shape, com.fasterxml.jackson.annotation.JsonFormat$Value, com.fasterxml.jackson.annotation.JsonInclude$Include, com.fasterxml.jackson.annotation.JsonInclude$Value, com.fasterxml.jackson.annotation.JsonSetter$Value, com.fasterxml.jackson.annotation.Nulls, com.fasterxml.jackson.core.Base64Variant, com.fasterxml.jackson.core.Base64Variants, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonParser$NumberType, com.fasterxml.jackson.core.ObjectCodec, com.fasterxml.jackson.core.PrettyPrinter, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.TreeCodec, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.type.ResolvedType, com.fasterxml.jackson.core.util.DefaultIndenter, com.fasterxml.jackson.core.util.DefaultPrettyPrinter, com.fasterxml.jackson.core.util.DefaultPrettyPrinter$FixedSpaceIndenter, com.fasterxml.jackson.core.util.DefaultPrettyPrinter$NopIndenter, com.fasterxml.jackson.core.util.Separators, com.fasterxml.jackson.databind.AnnotationIntrospector, com.fasterxml.jackson.databind.BeanDescription, com.fasterxml.jackson.databind.DatabindContext, com.fasterxml.jackson.databind.DeserializationConfig, com.fasterxml.jackson.databind.DeserializationContext, com.fasterxml.jackson.databind.DeserializationFeature, com.fasterxml.jackson.databind.JavaType, com.fasterxml.jackson.databind.JsonSerializer, com.fasterxml.jackson.databind.MapperFeature, com.fasterxml.jackson.databind.ObjectMapper, com.fasterxml.jackson.databind.PropertyName, com.fasterxml.jackson.databind.SerializationConfig, com.fasterxml.jackson.databind.SerializationFeature, com.fasterxml.jackson.databind.SerializerProvider, com.fasterxml.jackson.databind.cfg.BaseSettings, com.fasterxml.jackson.databind.cfg.ConfigOverride, com.fasterxml.jackson.databind.cfg.ConfigOverride$Empty, com.fasterxml.jackson.databind.cfg.ConfigOverrides, com.fasterxml.jackson.databind.cfg.ContextAttributes, com.fasterxml.jackson.databind.cfg.ContextAttributes$Impl, com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig, com.fasterxml.jackson.databind.cfg.MapperConfig, com.fasterxml.jackson.databind.cfg.MapperConfigBase, com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig, com.fasterxml.jackson.databind.deser.BasicDeserializerFactory, com.fasterxml.jackson.databind.deser.BeanDeserializerFactory, com.fasterxml.jackson.databind.deser.DefaultDeserializationContext, com.fasterxml.jackson.databind.deser.DefaultDeserializationContext$Impl, com.fasterxml.jackson.databind.deser.DeserializerCache, com.fasterxml.jackson.databind.deser.DeserializerFactory, com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers, com.fasterxml.jackson.databind.ext.Java7Support, com.fasterxml.jackson.databind.ext.Java7SupportImpl, com.fasterxml.jackson.databind.introspect.Annotated, com.fasterxml.jackson.databind.introspect.AnnotatedClass, com.fasterxml.jackson.databind.introspect.AnnotatedClass$Creators, com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver, com.fasterxml.jackson.databind.introspect.AnnotationCollector, com.fasterxml.jackson.databind.introspect.AnnotationCollector$NoAnnotations, com.fasterxml.jackson.databind.introspect.BasicBeanDescription, com.fasterxml.jackson.databind.introspect.BasicClassIntrospector, com.fasterxml.jackson.databind.introspect.ClassIntrospector, com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector, com.fasterxml.jackson.databind.introspect.SimpleMixInResolver, com.fasterxml.jackson.databind.introspect.VisibilityChecker$Std, com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator, com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator$Base, com.fasterxml.jackson.databind.jsontype.SubtypeResolver, com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator, com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver, com.fasterxml.jackson.databind.node.JsonNodeFactory, com.fasterxml.jackson.databind.ser.BasicSerializerFactory, com.fasterxml.jackson.databind.ser.BeanSerializerFactory, com.fasterxml.jackson.databind.ser.DefaultSerializerProvider, com.fasterxml.jackson.databind.ser.DefaultSerializerProvider$Impl, com.fasterxml.jackson.databind.ser.SerializerCache, com.fasterxml.jackson.databind.ser.SerializerFactory, com.fasterxml.jackson.databind.ser.impl.FailingSerializer, com.fasterxml.jackson.databind.ser.impl.UnknownSerializer, com.fasterxml.jackson.databind.ser.std.BooleanSerializer, com.fasterxml.jackson.databind.ser.std.CalendarSerializer, com.fasterxml.jackson.databind.ser.std.DateSerializer, com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase, com.fasterxml.jackson.databind.ser.std.NullSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers, com.fasterxml.jackson.databind.ser.std.NumberSerializers$Base, com.fasterxml.jackson.databind.ser.std.NumberSerializers$DoubleSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$FloatSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntLikeSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntegerSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$LongSerializer, com.fasterxml.jackson.databind.ser.std.NumberSerializers$ShortSerializer, com.fasterxml.jackson.databind.ser.std.StdJdkSerializers, com.fasterxml.jackson.databind.ser.std.StdScalarSerializer, com.fasterxml.jackson.databind.ser.std.StdSerializer, com.fasterxml.jackson.databind.ser.std.StringSerializer, com.fasterxml.jackson.databind.ser.std.ToStringSerializer, com.fasterxml.jackson.databind.ser.std.ToStringSerializerBase, com.fasterxml.jackson.databind.ser.std.UUIDSerializer, com.fasterxml.jackson.databind.type.SimpleType, com.fasterxml.jackson.databind.type.TypeBase, com.fasterxml.jackson.databind.type.TypeBindings, com.fasterxml.jackson.databind.type.TypeFactory, com.fasterxml.jackson.databind.type.TypeParser, com.fasterxml.jackson.databind.util.ClassUtil, com.fasterxml.jackson.databind.util.LRUMap, com.fasterxml.jackson.databind.util.RootNameLookup, com.fasterxml.jackson.databind.util.StdDateFormat, org.apache.avro.JsonProperties, org.apache.avro.JsonProperties$1, org.apache.avro.JsonProperties$Null, org.apache.avro.LogicalType, org.apache.avro.LogicalTypes$Date, org.apache.avro.LogicalTypes$LocalTimestampMicros, org.apache.avro.LogicalTypes$LocalTimestampMillis, org.apache.avro.LogicalTypes$TimeMicros, org.apache.avro.LogicalTypes$TimeMillis, org.apache.avro.LogicalTypes$TimestampMicros, org.apache.avro.LogicalTypes$TimestampMillis, org.apache.avro.Schema, org.apache.avro.Schema$Type, org.apache.avro.util.internal.Accessor, org.apache.avro.util.internal.Accessor$JsonPropertiesAccessor, org.slf4j.LoggerFactory, org.slf4j.helpers.MarkerIgnoringBase, org.slf4j.helpers.NOPLogger, org.slf4j.helpers.NOPLoggerFactory, org.slf4j.helpers.NamedLoggerBase, org.slf4j.helpers.SubstituteLoggerFactory, org.slf4j.helpers.Util], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call)",
+              "basis": "engine",
+              "id": "observed-initializer:org.apache.avro.LogicalTypes:8f2ce6316d21f354e12f9418943112eb3604afc4e44d703ad913c559b74f96b9:4fad771837678b64785d4e53c29aa911d92f10bc9d3cb72e7153394e847dbc9e"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 64,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found cursor(code=4).",
+            "witness": "cursor(code=4)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-031102-recheck-original-startup-scopes-after-th/.build-py/examples-09138psg/targets/361/cursor-fix-startup/20261122T032101Z-3f3928af",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-031102-recheck-original-startup-scopes-after-th/.build-py/examples-09138psg/targets/361/cursor-fix-startup/20261122T032101Z-3f3928af"
+  }
+}
