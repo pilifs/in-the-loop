@@ -1,5 +1,6 @@
 """Measure every frozen obligation through build.py and keep the original execution receipts."""
 import argparse
+from contextlib import ExitStack
 import hashlib
 import json
 import os
@@ -29,10 +30,13 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def measure(argv, output):
+def measure(argv, output, *, stderr=None, cwd=ROOT, env=None):
     start = time.monotonic()
-    with output.open("wb") as log:
-        process = subprocess.Popen(argv, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT)
+    argv = list(map(str, argv))
+    with ExitStack() as files:
+        log = files.enter_context(output.open("wb"))
+        error = files.enter_context(stderr.open("wb")) if stderr else subprocess.STDOUT
+        process = subprocess.Popen(argv, cwd=cwd, env=env, stdout=log, stderr=error)
         _, status, usage = os.wait4(process.pid, 0)
         process.returncode = os.waitstatus_to_exitcode(status)
     return {"exit":process.returncode, "seconds":round(time.monotonic()-start,6),
@@ -56,6 +60,37 @@ def native(folder, task, argv, dest, budget=()):
         shutil.copytree(execution, arch/"executions"/attempt)
     record.update(status=row["conclusion"]["status"], receipt=str((arch/attempt/"result.json").relative_to(dest)))
     return record
+
+
+def partition(folder, number, tasks, dest, seconds):
+    """Run native bytecode for each admitted constant when the symbolic query remains open."""
+    from targets import native_selectors, route, sidecar
+
+    example = read(folder / "example.json")
+    target = sidecar.load(folder, example)
+    reports = {}
+    for side in ("parent", "fix"):
+        selected = [t for t in tasks if t.endswith("-" + side)]
+        if not selected:
+            continue
+        directory = folder / "records/native-selectors" / side
+        previous = set(directory.glob("*"))
+        args = [sys.executable, "examples/tools/build.py", number, "--native-selectors", ",".join(selected),
+                "--checker-seconds", str(seconds), "--first", {"363": "36", "365": "32"}.get(number, "0")]
+        measured = measure(args, dest / ("selectors-" + side + ".log"))
+        fresh = set(directory.glob("*")) - previous
+        if len(fresh) != 1:
+            raise ValueError(f"{number}/{side}: no unique new selector batch")
+        batch, = fresh
+        output = dest / "selectors" / side / batch.name
+        shutil.copytree(batch, output)
+        for name in selected:
+            path = output / "tasks" / name / "result.json"
+            plan = route.resolve(folder, example, target, name)
+            checked = native_selectors.validate_result(folder, plan, path)
+            reports[name] = {"status":checked["status"],"receipt":str(path.relative_to(dest)),
+                             "firstBlocker":read(path).get("firstBlocker"),"batch":measured}
+    return reports
 
 
 def run(number, stage, seconds, build):
@@ -108,6 +143,10 @@ def run(number, stage, seconds, build):
             claim = read(folder/t["claim"])
             if field["inputs"] != claim["adapter"]["cases"] or field["status"] != t["expected"]:
                 raise ValueError(f"{t['id']}: finite outcome differs from frozen expectation")
+    if stage == "final":
+        unresolved = [name for name in tasks if receipt["claims"][name]["status"] == "unresolved"]
+        receipt["selectors"] = partition(folder, number, unresolved, out, seconds)
+        write(out/"run.json",receipt)
     print(json.dumps({task:row["status"] for task,row in receipt["claims"].items()}))
 
 

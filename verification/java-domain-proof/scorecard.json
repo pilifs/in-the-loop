@@ -1,0 +1,2064 @@
+{
+  "schema": "java-domain-scorecard/v1",
+  "planned": 20,
+  "cases": {
+    "363": {
+      "pullRequest": 3333,
+      "namedTests": {
+        "parent": {
+          "revision": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "TestVariantObjectBuilder#testMixedBinaryBuilder": [
+              {
+                "status": "failure",
+                "class": "org.apache.parquet.variant.TestVariantObjectBuilder",
+                "method": "testMixedBinaryBuilder",
+                "xmlSha256": "6bf94ae49aef5630f57f7d7bdd42f5b756971e1383ce3a9438307a5bed02be29",
+                "failureType": "java.lang.AssertionError",
+                "message": "expected:<java.nio.HeapByteBuffer[pos=0 lim=10 cap=10]> but was:<java.nio.HeapByteBufferR[pos=12 lim=52 cap=1024]>",
+                "atNamedTest": true
+              }
+            ]
+          },
+          "record": "verification/results/20261122-063655-qualify-363-original-artifacts-and-compl/outputs/examples/363-parquet-nested-binary/records/qualified-build/parent-upstream.json",
+          "job": "20261122-063655-qualify-363-original-artifacts-and-compl"
+        },
+        "fix": {
+          "revision": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "TestVariantObjectBuilder#testMixedBinaryBuilder": [
+              {
+                "status": "passed",
+                "class": "org.apache.parquet.variant.TestVariantObjectBuilder",
+                "method": "testMixedBinaryBuilder",
+                "xmlSha256": "cafb61cc658f3255b6929ad83f302b4cd3104b1bf14bec7b61527c148413a2ff"
+              }
+            ]
+          },
+          "record": "verification/results/20261122-063655-qualify-363-original-artifacts-and-compl/outputs/examples/363-parquet-nested-binary/records/qualified-build/fix-upstream.json",
+          "job": "20261122-063655-qualify-363-original-artifacts-and-compl"
+        }
+      },
+      "openingRun": {
+        "state": "measured",
+        "job": "20261122-121129-measure-the-original-parquet-opening-cla",
+        "jobResult": "verification/results/20261122-121129-measure-the-original-parquet-opening-cla/result.json",
+        "source": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+        "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+        "fingerprint": "3f774e33431cbc42fc3d39c147e8efabf2ef2397dbe5430b8d06d8dcff2f3254",
+        "builds": {
+          "parent": "c384652aba8c8a71ea413a32473a3f1ebb72934af782ef5801a5b940692455c3",
+          "fix": "8de48c6dd6c99b77772e7c8df04e1ad67365bce224a0489e987912103d707d5c"
+        },
+        "record": "examples/363-parquet-nested-binary/records/opening-bound/run.json"
+      },
+      "finalRun": {
+        "state": "pending",
+        "job": "20261122-123421-final-java-domain-363-parquet-nested-bin"
+      },
+      "obligations": {
+        "extent-parent": {
+          "revision": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+          "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+          "entry": "campaign.NestedBinary#extent(I)I",
+          "statement": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child.",
+          "inputRows": 64,
+          "guard": "code >= 0 && code < 64",
+          "bounds": {
+            "unwind": 96,
+            "maxArrayLength": 2048
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13 (java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) at java.nio.ByteBuffer.put:1040). With --gaps assume it assumes instead that java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int)",
+                "sites": [
+                  "java.nio.ByteBuffer.put:1040"
+                ],
+                "approximation": "returns and does nothing: it throws nothing and changes neither its receiver nor its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.NestedBinary#extent(I)I",
+              "classSha256": "929d2ed872bf6446043dccebe127966a62cb0ca2c93829f514ec78c62513d0aa",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+              "subjectClassSha256": "477c0a67773153ac1fe267a97b038649d7da553e681b2c5c2a6a0f17f0e66c7f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 64",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "044a92d398fd9b63",
+            "wallSeconds": 2.631726,
+            "peakRssBytes": 112271360,
+            "checkerSeconds": 0.042,
+            "checkerPeakRssBytes": 69070848,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/result.json",
+            "finite": {
+              "status": "refuted",
+              "inputs": 64,
+              "differences": 32,
+              "seconds": 3.5861,
+              "receipt": "examples/363-parquet-nested-binary/records/opening-bound/finite/extent-parent.json"
+            }
+          },
+          "final": null
+        },
+        "extent-fix": {
+          "revision": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+          "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+          "entry": "campaign.NestedBinary#extent(I)I",
+          "statement": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child.",
+          "inputRows": 64,
+          "guard": "code >= 0 && code < 64",
+          "bounds": {
+            "unwind": 96,
+            "maxArrayLength": 2048
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13 (java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) at java.nio.ByteBuffer.put:1040). With --gaps assume it assumes instead that java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int)",
+                "sites": [
+                  "java.nio.ByteBuffer.put:1040"
+                ],
+                "approximation": "returns and does nothing: it throws nothing and changes neither its receiver nor its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.NestedBinary#extent(I)I",
+              "classSha256": "929d2ed872bf6446043dccebe127966a62cb0ca2c93829f514ec78c62513d0aa",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+              "subjectClassSha256": "477c0a67773153ac1fe267a97b038649d7da553e681b2c5c2a6a0f17f0e66c7f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 64",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "044a92d398fd9b63",
+            "wallSeconds": 2.632174,
+            "peakRssBytes": 117817344,
+            "checkerSeconds": 0.042,
+            "checkerPeakRssBytes": 68706304,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 64,
+              "differences": 0,
+              "seconds": 2.9395,
+              "receipt": "examples/363-parquet-nested-binary/records/opening-bound/finite/extent-fix.json"
+            }
+          },
+          "final": null
+        },
+        "fresh-parent": {
+          "revision": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+          "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+          "entry": "campaign.NestedBinary#fresh(I)I",
+          "statement": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there.",
+          "inputRows": 64,
+          "guard": "code >= 0 && code < 64",
+          "bounds": {
+            "unwind": 96,
+            "maxArrayLength": 2048
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13 (java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) at java.nio.ByteBuffer.put:1040). With --gaps assume it assumes instead that java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int)",
+                "sites": [
+                  "java.nio.ByteBuffer.put:1040"
+                ],
+                "approximation": "returns and does nothing: it throws nothing and changes neither its receiver nor its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.NestedBinary#fresh(I)I",
+              "classSha256": "929d2ed872bf6446043dccebe127966a62cb0ca2c93829f514ec78c62513d0aa",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+              "subjectClassSha256": "477c0a67773153ac1fe267a97b038649d7da553e681b2c5c2a6a0f17f0e66c7f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 64",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "fb12fa81463dd0af",
+            "wallSeconds": 2.614521,
+            "peakRssBytes": 122707968,
+            "checkerSeconds": 0.031,
+            "checkerPeakRssBytes": 68890624,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 64,
+              "differences": 0,
+              "seconds": 0.771,
+              "receipt": "examples/363-parquet-nested-binary/records/opening-bound/finite/fresh-parent.json"
+            }
+          },
+          "final": null
+        },
+        "fresh-fix": {
+          "revision": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+          "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+          "entry": "campaign.NestedBinary#fresh(I)I",
+          "statement": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there.",
+          "inputRows": 64,
+          "guard": "code >= 0 && code < 64",
+          "bounds": {
+            "unwind": 96,
+            "maxArrayLength": 2048
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13 (java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) at java.nio.ByteBuffer.put:1040). With --gaps assume it assumes instead that java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int)",
+                "sites": [
+                  "java.nio.ByteBuffer.put:1040"
+                ],
+                "approximation": "returns and does nothing: it throws nothing and changes neither its receiver nor its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.NestedBinary#fresh(I)I",
+              "classSha256": "929d2ed872bf6446043dccebe127966a62cb0ca2c93829f514ec78c62513d0aa",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+              "subjectClassSha256": "477c0a67773153ac1fe267a97b038649d7da553e681b2c5c2a6a0f17f0e66c7f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 64",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "fb12fa81463dd0af",
+            "wallSeconds": 2.635788,
+            "peakRssBytes": 111869952,
+            "checkerSeconds": 0.042,
+            "checkerPeakRssBytes": 69066752,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 64,
+              "differences": 0,
+              "seconds": 0.7548,
+              "receipt": "examples/363-parquet-nested-binary/records/opening-bound/finite/fresh-fix.json"
+            }
+          },
+          "final": null
+        }
+      }
+    },
+    "364": {
+      "pullRequest": 1381,
+      "namedTests": {
+        "parent": {
+          "revision": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "TestResolvingGrammarGenerator#testDifferingEnumNamespaces": [
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[0]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[1]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[2]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[3]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[4]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[5]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[6]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[7]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[8]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[9]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[10]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[11]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[12]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[13]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[14]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[15]",
+                "xmlSha256": "b8a01a0cd27cf34c96800d659bb88d3ac4b8f4aa2782e601be462493f7f5f5f0",
+                "failureType": "org.apache.avro.AvroTypeException",
+                "message": "Found namespace1.Enum1, expecting namespace2.Enum1",
+                "atNamedTest": true
+              }
+            ]
+          },
+          "record": "verification/results/20261122-062459-build-and-check-364-avro-enum-namespace/outputs/examples/364-avro-enum-namespace/records/original-build/parent-upstream.json",
+          "job": "20261122-062459-build-and-check-364-avro-enum-namespace"
+        },
+        "fix": {
+          "revision": "c35add7b29b5fab9229d79927a74f327bd56fa70",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "TestResolvingGrammarGenerator#testDifferingEnumNamespaces": [
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[0]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[1]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[2]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[3]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[4]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[5]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[6]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[7]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[8]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[9]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[10]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[11]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[12]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[13]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[14]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.io.parsing.TestResolvingGrammarGenerator",
+                "method": "testDifferingEnumNamespaces[15]",
+                "xmlSha256": "70b818f79ff1779134aa9e614496ab8462b027d71cc98be5f76ee6c7dcf1ab63"
+              }
+            ]
+          },
+          "record": "verification/results/20261122-062459-build-and-check-364-avro-enum-namespace/outputs/examples/364-avro-enum-namespace/records/original-build/fix-upstream.json",
+          "job": "20261122-062459-build-and-check-364-avro-enum-namespace"
+        }
+      },
+      "openingRun": {
+        "state": "measured",
+        "job": "20261122-063655-qualify-364-original-artifacts-and-compl",
+        "jobResult": "verification/results/20261122-063655-qualify-364-original-artifacts-and-compl/result.json",
+        "source": "d3f87a34ce0d74e10da8fd51d318dbdbb3f5674a",
+        "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+        "fingerprint": "3f774e33431cbc42fc3d39c147e8efabf2ef2397dbe5430b8d06d8dcff2f3254",
+        "builds": {
+          "parent": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b",
+          "fix": "52bfec76fb9dc246626c28701a450fa6f4f562e9cba72906d46718f60749826f"
+        },
+        "record": "examples/364-avro-enum-namespace/records/opening-qualified/run.json"
+      },
+      "finalRun": {
+        "state": "pending",
+        "job": "20261122-123421-final-java-domain-364-avro-enum-namespac"
+      },
+      "obligations": {
+        "renamed-parent": {
+          "revision": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.EnumReader#renamed(I)I",
+          "statement": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.EnumReader#renamed(I)I",
+              "classSha256": "2536c7c2473cbd74270a6aa69c88287061692586253c0a8879207beecb9d3f63",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "afee422eb7114b77",
+            "wallSeconds": 2.834251,
+            "peakRssBytes": 117280768,
+            "checkerSeconds": 0.062,
+            "checkerPeakRssBytes": 70823936,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/renamed-parent/20261122T064421Z-3779560d/result.json",
+            "finite": {
+              "status": "refuted",
+              "inputs": 4,
+              "differences": 4,
+              "seconds": 3.3239,
+              "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/finite/renamed-parent.json"
+            }
+          },
+          "final": null
+        },
+        "renamed-fix": {
+          "revision": "c35add7b29b5fab9229d79927a74f327bd56fa70",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.EnumReader#renamed(I)I",
+          "statement": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.EnumReader#renamed(I)I",
+              "classSha256": "2536c7c2473cbd74270a6aa69c88287061692586253c0a8879207beecb9d3f63",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "afee422eb7114b77",
+            "wallSeconds": 2.838627,
+            "peakRssBytes": 112066560,
+            "checkerSeconds": 0.052,
+            "checkerPeakRssBytes": 70504448,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/renamed-fix/20261122T064424Z-13cacaa8/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 4,
+              "differences": 0,
+              "seconds": 2.6276,
+              "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/finite/renamed-fix.json"
+            }
+          },
+          "final": null
+        },
+        "preserved-parent": {
+          "revision": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.EnumReader#preserved(I)I",
+          "statement": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.EnumReader#preserved(I)I",
+              "classSha256": "2536c7c2473cbd74270a6aa69c88287061692586253c0a8879207beecb9d3f63",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "9aa52570ae971662",
+            "wallSeconds": 2.870658,
+            "peakRssBytes": 118579200,
+            "checkerSeconds": 0.052,
+            "checkerPeakRssBytes": 70459392,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/preserved-parent/20261122T064426Z-e55359f8/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 4,
+              "differences": 0,
+              "seconds": 0.8351,
+              "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/finite/preserved-parent.json"
+            }
+          },
+          "final": null
+        },
+        "preserved-fix": {
+          "revision": "c35add7b29b5fab9229d79927a74f327bd56fa70",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.EnumReader#preserved(I)I",
+          "statement": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.EnumReader#preserved(I)I",
+              "classSha256": "2536c7c2473cbd74270a6aa69c88287061692586253c0a8879207beecb9d3f63",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "9aa52570ae971662",
+            "wallSeconds": 2.43602,
+            "peakRssBytes": 117612544,
+            "checkerSeconds": 0.042,
+            "checkerPeakRssBytes": 70742016,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/preserved-fix/20261122T064429Z-ba26287e/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 4,
+              "differences": 0,
+              "seconds": 0.9309,
+              "receipt": "examples/364-avro-enum-namespace/records/opening-qualified/finite/preserved-fix.json"
+            }
+          },
+          "final": null
+        }
+      }
+    },
+    "365": {
+      "pullRequest": 1415,
+      "namedTests": {
+        "parent": {
+          "revision": "99f749d958a55013724571d825625e1032af9d4b",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset": [
+              {
+                "status": "failure",
+                "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+                "method": "feedWholeDocumentFromNonZeroOffset",
+                "xmlSha256": "20075314d1b332b4c39c40c2af34c2a0ce2762d940dabead7bb174e87ac2ef95",
+                "failureType": "org.opentest4j.AssertionFailedError",
+                "message": "expected: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@5d2a4eed, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@57459491, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@3f0846c6]> but was: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@77a98a6a, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@78fbff54, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@3e10dc6]>",
+                "atNamedTest": true
+              }
+            ],
+            "AsyncLocation1412Test#feedByteByByteFromNonZeroOffset": [
+              {
+                "status": "failure",
+                "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+                "method": "feedByteByByteFromNonZeroOffset",
+                "xmlSha256": "20075314d1b332b4c39c40c2af34c2a0ce2762d940dabead7bb174e87ac2ef95",
+                "failureType": "org.opentest4j.AssertionFailedError",
+                "message": "expected: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@1ef3efa8, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@502f1f4c, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@6f8f9349]> but was: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@75c9e76b, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@7446d8d5, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@5c3b6c6e]>",
+                "atNamedTest": true
+              }
+            ],
+            "AsyncLocation1412Test#feedByteByByteFromOffsetZero": [
+              {
+                "status": "passed",
+                "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+                "method": "feedByteByByteFromOffsetZero",
+                "xmlSha256": "20075314d1b332b4c39c40c2af34c2a0ce2762d940dabead7bb174e87ac2ef95"
+              }
+            ]
+          },
+          "record": "verification/results/20261122-063655-qualify-365-original-artifacts-and-compl/outputs/examples/365-jackson-async-token-offsets/records/qualified-build/parent-upstream.json",
+          "job": "20261122-063655-qualify-365-original-artifacts-and-compl"
+        },
+        "fix": {
+          "revision": "596fd82955080ba7207b4adc54100781b5024a61",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset": [
+              {
+                "status": "passed",
+                "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+                "method": "feedWholeDocumentFromNonZeroOffset",
+                "xmlSha256": "87c5b61834ffc4ae5a013b4cd9eded9ceab0a81c4b4915d945f42e5c3d0dd41d"
+              }
+            ],
+            "AsyncLocation1412Test#feedByteByByteFromNonZeroOffset": [
+              {
+                "status": "passed",
+                "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+                "method": "feedByteByByteFromNonZeroOffset",
+                "xmlSha256": "87c5b61834ffc4ae5a013b4cd9eded9ceab0a81c4b4915d945f42e5c3d0dd41d"
+              }
+            ],
+            "AsyncLocation1412Test#feedByteByByteFromOffsetZero": [
+              {
+                "status": "passed",
+                "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+                "method": "feedByteByByteFromOffsetZero",
+                "xmlSha256": "87c5b61834ffc4ae5a013b4cd9eded9ceab0a81c4b4915d945f42e5c3d0dd41d"
+              }
+            ]
+          },
+          "record": "verification/results/20261122-063655-qualify-365-original-artifacts-and-compl/outputs/examples/365-jackson-async-token-offsets/records/qualified-build/fix-upstream.json",
+          "job": "20261122-063655-qualify-365-original-artifacts-and-compl"
+        }
+      },
+      "openingRun": {
+        "state": "measured",
+        "job": "20261122-121129-measure-the-original-jackson-opening-cla",
+        "jobResult": "verification/results/20261122-121129-measure-the-original-jackson-opening-cla/result.json",
+        "source": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+        "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+        "fingerprint": "3f774e33431cbc42fc3d39c147e8efabf2ef2397dbe5430b8d06d8dcff2f3254",
+        "builds": {
+          "parent": "353c2b38d584c0ddb09510a39b574a343778b756df50d288d30ae52aeb42d44d",
+          "fix": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+        },
+        "record": "examples/365-jackson-async-token-offsets/records/opening-bound/run.json"
+      },
+      "finalRun": {
+        "state": "pending",
+        "job": "20261122-123421-final-java-domain-365-jackson-async-toke"
+      },
+      "obligations": {
+        "offsets-parent": {
+          "revision": "99f749d958a55013724571d825625e1032af9d4b",
+          "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+          "entry": "campaign.AsyncTokens#offsets(I)I",
+          "statement": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+          "inputRows": 128,
+          "guard": "code >= 0 && code < 128",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "gapSites": [
+              {
+                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.System.getProperty(java.lang.String)",
+                "sites": [
+                  "com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.AsyncTokens#offsets(I)I",
+              "classSha256": "7ce1c6f80b251f9684114201166a6c5d5101021fa3a8e52fe9e76a5c8ff2ef77",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+              "subjectClassSha256": "de63294fd5c43b5cf05bbe77da5ae15026accd47f59735dce88e56b32db17383"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 128",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "3451a7e7f8f361d0",
+            "wallSeconds": 1.805056,
+            "peakRssBytes": 112132096,
+            "checkerSeconds": 0.031,
+            "checkerPeakRssBytes": 64708608,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/result.json",
+            "finite": {
+              "status": "refuted",
+              "inputs": 128,
+              "differences": 96,
+              "seconds": 4.0864,
+              "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/offsets-parent.json"
+            }
+          },
+          "final": null
+        },
+        "offsets-fix": {
+          "revision": "596fd82955080ba7207b4adc54100781b5024a61",
+          "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+          "entry": "campaign.AsyncTokens#offsets(I)I",
+          "statement": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+          "inputRows": 128,
+          "guard": "code >= 0 && code < 128",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "gapSites": [
+              {
+                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.System.getProperty(java.lang.String)",
+                "sites": [
+                  "com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.AsyncTokens#offsets(I)I",
+              "classSha256": "7ce1c6f80b251f9684114201166a6c5d5101021fa3a8e52fe9e76a5c8ff2ef77",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+              "subjectClassSha256": "23c4657233ceaa0658aa4dcfebdb0e9d9d0cae47bfce8b2eb02611b107d48971"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 128",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "3451a7e7f8f361d0",
+            "wallSeconds": 1.927666,
+            "peakRssBytes": 117743616,
+            "checkerSeconds": 0.032,
+            "checkerPeakRssBytes": 64393216,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 128,
+              "differences": 0,
+              "seconds": 3.6174,
+              "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/offsets-fix.json"
+            }
+          },
+          "final": null
+        },
+        "tokens-parent": {
+          "revision": "99f749d958a55013724571d825625e1032af9d4b",
+          "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+          "entry": "campaign.AsyncTokens#tokens(I)I",
+          "statement": "The original parser emits exactly START_ARRAY, VALUE_TRUE and END_ARRAY, in order, then terminates at final EOF. A suspended feed may return NOT_AVAILABLE.",
+          "inputRows": 128,
+          "guard": "code >= 0 && code < 128",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "gapSites": [
+              {
+                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.System.getProperty(java.lang.String)",
+                "sites": [
+                  "com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.AsyncTokens#tokens(I)I",
+              "classSha256": "7ce1c6f80b251f9684114201166a6c5d5101021fa3a8e52fe9e76a5c8ff2ef77",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+              "subjectClassSha256": "de63294fd5c43b5cf05bbe77da5ae15026accd47f59735dce88e56b32db17383"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 128",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "970af27183869920",
+            "wallSeconds": 1.834194,
+            "peakRssBytes": 115789824,
+            "checkerSeconds": 0.032,
+            "checkerPeakRssBytes": 64806912,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 128,
+              "differences": 0,
+              "seconds": 2.1866,
+              "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/tokens-parent.json"
+            }
+          },
+          "final": null
+        },
+        "tokens-fix": {
+          "revision": "596fd82955080ba7207b4adc54100781b5024a61",
+          "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+          "entry": "campaign.AsyncTokens#tokens(I)I",
+          "statement": "The original parser emits exactly START_ARRAY, VALUE_TRUE and END_ARRAY, in order, then terminates at final EOF. A suspended feed may return NOT_AVAILABLE.",
+          "inputRows": 128,
+          "guard": "code >= 0 && code < 128",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "gapSites": [
+              {
+                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.System.getProperty(java.lang.String)",
+                "sites": [
+                  "com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.AsyncTokens#tokens(I)I",
+              "classSha256": "7ce1c6f80b251f9684114201166a6c5d5101021fa3a8e52fe9e76a5c8ff2ef77",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+              "subjectClassSha256": "23c4657233ceaa0658aa4dcfebdb0e9d9d0cae47bfce8b2eb02611b107d48971"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 128",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "970af27183869920",
+            "wallSeconds": 1.89859,
+            "peakRssBytes": 112566272,
+            "checkerSeconds": 0.032,
+            "checkerPeakRssBytes": 64778240,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 128,
+              "differences": 0,
+              "seconds": 2.1995,
+              "receipt": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/tokens-fix.json"
+            }
+          },
+          "final": null
+        }
+      }
+    },
+    "366": {
+      "pullRequest": 218,
+      "namedTests": {
+        "parent": {
+          "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "JiraCsv288Test#testParseWithDoublePipeDelimiter": [
+              {
+                "status": "failure",
+                "class": "org.apache.commons.csv.issues.JiraCsv288Test",
+                "method": "testParseWithDoublePipeDelimiter",
+                "xmlSha256": "574927b93d0cc5237556e4b378cab90e26f5fafea71d93152f2165b7500b1c9a",
+                "failureType": "org.opentest4j.AssertionFailedError",
+                "message": "expected: <a,b,c,d,,f> but was: <a,b|c,d,|f>",
+                "atNamedTest": true
+              }
+            ],
+            "JiraCsv288Test#testParseWithDoublePipeDelimiterQuoted": [
+              {
+                "status": "failure",
+                "class": "org.apache.commons.csv.issues.JiraCsv288Test",
+                "method": "testParseWithDoublePipeDelimiterQuoted",
+                "xmlSha256": "574927b93d0cc5237556e4b378cab90e26f5fafea71d93152f2165b7500b1c9a",
+                "failureType": "org.opentest4j.AssertionFailedError",
+                "message": "expected: <a,b||c,d,,f> but was: <a,b||c,d,|f>",
+                "atNamedTest": true
+              }
+            ]
+          },
+          "record": "verification/results/20261122-062500-build-and-check-366-commons-csv-delimite/outputs/examples/366-commons-csv-delimiter-lookahead/records/original-build/parent-upstream.json",
+          "job": "20261122-062500-build-and-check-366-commons-csv-delimite"
+        },
+        "fix": {
+          "revision": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "JiraCsv288Test#testParseWithDoublePipeDelimiter": [
+              {
+                "status": "passed",
+                "class": "org.apache.commons.csv.issues.JiraCsv288Test",
+                "method": "testParseWithDoublePipeDelimiter",
+                "xmlSha256": "c0eab4c24f196d0f1582cc02226322cd68e5828586c71032cada6f3d2b2683bb"
+              }
+            ],
+            "JiraCsv288Test#testParseWithDoublePipeDelimiterQuoted": [
+              {
+                "status": "passed",
+                "class": "org.apache.commons.csv.issues.JiraCsv288Test",
+                "method": "testParseWithDoublePipeDelimiterQuoted",
+                "xmlSha256": "c0eab4c24f196d0f1582cc02226322cd68e5828586c71032cada6f3d2b2683bb"
+              }
+            ]
+          },
+          "record": "verification/results/20261122-062500-build-and-check-366-commons-csv-delimite/outputs/examples/366-commons-csv-delimiter-lookahead/records/original-build/fix-upstream.json",
+          "job": "20261122-062500-build-and-check-366-commons-csv-delimite"
+        }
+      },
+      "openingRun": {
+        "state": "measured",
+        "job": "20261122-063655-qualify-366-original-artifacts-and-compl",
+        "jobResult": "verification/results/20261122-063655-qualify-366-original-artifacts-and-compl/result.json",
+        "source": "d3f87a34ce0d74e10da8fd51d318dbdbb3f5674a",
+        "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+        "fingerprint": "3f774e33431cbc42fc3d39c147e8efabf2ef2397dbe5430b8d06d8dcff2f3254",
+        "builds": {
+          "parent": "a35228d6735ca45a21ee4c6383d9777631635f48ce9caaee6396700768ac4bf2",
+          "fix": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424"
+        },
+        "record": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/run.json"
+      },
+      "finalRun": {
+        "state": "pending",
+        "job": "20261122-123421-final-java-domain-366-commons-csv-delimi"
+      },
+      "obligations": {
+        "fields-parent": {
+          "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+          "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+          "entry": "campaign.DelimitedFields#fields(I)I",
+          "statement": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows.",
+          "inputRows": 14,
+          "guard": "code >= 0 && code < 14",
+          "bounds": {
+            "unwind": 128,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "refuted",
+            "symbolicStatus": "refuted",
+            "nativePartition": null,
+            "firstBlocker": null,
+            "gapSites": [],
+            "binding": {
+              "entry": "campaign.DelimitedFields#fields(I)I",
+              "classSha256": "14255dcf71d19b7e2e3f747b9631484f66ca2046f63cfc5adece53672eccc61c",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+              "subjectClassSha256": "c4fc923e6f275f3af7dcbca28bdcb85422fd65c359d0080f7367fec93b6b4e2f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 14",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "d12184324cfff702",
+            "wallSeconds": 2.172522,
+            "peakRssBytes": 110645248,
+            "checkerSeconds": 0.102,
+            "checkerPeakRssBytes": 63324160,
+            "checkerBudgetSeconds": 60,
+            "witness": {
+              "input": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 3
+                }
+              ],
+              "values": [
+                0,
+                null
+              ],
+              "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/fields-parent/executions/20261122T064418Z-4c01a09c/replay.json"
+            },
+            "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/fields-parent/20261122T064418Z-4c01a09c/result.json",
+            "finite": {
+              "status": "refuted",
+              "inputs": 14,
+              "differences": 10,
+              "seconds": 2.4163,
+              "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/finite/fields-parent.json"
+            }
+          },
+          "final": null
+        },
+        "fields-fix": {
+          "revision": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+          "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+          "entry": "campaign.DelimitedFields#fields(I)I",
+          "statement": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows.",
+          "inputRows": 14,
+          "guard": "code >= 0 && code < 14",
+          "bounds": {
+            "unwind": 128,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "established",
+            "symbolicStatus": "established",
+            "nativePartition": null,
+            "firstBlocker": null,
+            "gapSites": [],
+            "binding": {
+              "entry": "campaign.DelimitedFields#fields(I)I",
+              "classSha256": "14255dcf71d19b7e2e3f747b9631484f66ca2046f63cfc5adece53672eccc61c",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+              "subjectClassSha256": "c4fc923e6f275f3af7dcbca28bdcb85422fd65c359d0080f7367fec93b6b4e2f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 14",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "d12184324cfff702",
+            "wallSeconds": 1.951714,
+            "peakRssBytes": 116019200,
+            "checkerSeconds": 0.123,
+            "checkerPeakRssBytes": 63590400,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/fields-fix/20261122T064420Z-73bcc855/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 14,
+              "differences": 0,
+              "seconds": 1.9417,
+              "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/finite/fields-fix.json"
+            }
+          },
+          "final": null
+        },
+        "prefixes-parent": {
+          "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+          "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+          "entry": "campaign.DelimitedFields#prefixes(I)I",
+          "statement": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust.",
+          "inputRows": 14,
+          "guard": "code >= 0 && code < 14",
+          "bounds": {
+            "unwind": 128,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "established",
+            "symbolicStatus": "established",
+            "nativePartition": null,
+            "firstBlocker": null,
+            "gapSites": [],
+            "binding": {
+              "entry": "campaign.DelimitedFields#prefixes(I)I",
+              "classSha256": "14255dcf71d19b7e2e3f747b9631484f66ca2046f63cfc5adece53672eccc61c",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+              "subjectClassSha256": "c4fc923e6f275f3af7dcbca28bdcb85422fd65c359d0080f7367fec93b6b4e2f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 14",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "f8394f58c0c305df",
+            "wallSeconds": 1.963213,
+            "peakRssBytes": 106627072,
+            "checkerSeconds": 0.082,
+            "checkerPeakRssBytes": 63582208,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/prefixes-parent/20261122T064422Z-735ab094/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 14,
+              "differences": 0,
+              "seconds": 0.5784,
+              "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/finite/prefixes-parent.json"
+            }
+          },
+          "final": null
+        },
+        "prefixes-fix": {
+          "revision": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+          "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+          "entry": "campaign.DelimitedFields#prefixes(I)I",
+          "statement": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust.",
+          "inputRows": 14,
+          "guard": "code >= 0 && code < 14",
+          "bounds": {
+            "unwind": 128,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "established",
+            "symbolicStatus": "established",
+            "nativePartition": null,
+            "firstBlocker": null,
+            "gapSites": [],
+            "binding": {
+              "entry": "campaign.DelimitedFields#prefixes(I)I",
+              "classSha256": "14255dcf71d19b7e2e3f747b9631484f66ca2046f63cfc5adece53672eccc61c",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+              "subjectClassSha256": "c4fc923e6f275f3af7dcbca28bdcb85422fd65c359d0080f7367fec93b6b4e2f"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 14",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "f8394f58c0c305df",
+            "wallSeconds": 2.030815,
+            "peakRssBytes": 108912640,
+            "checkerSeconds": 0.082,
+            "checkerPeakRssBytes": 63352832,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/prefixes-fix/20261122T064424Z-6610bcd0/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 14,
+              "differences": 0,
+              "seconds": 0.5464,
+              "receipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/finite/prefixes-fix.json"
+            }
+          },
+          "final": null
+        }
+      }
+    },
+    "367": {
+      "pullRequest": 3730,
+      "namedTests": {
+        "parent": {
+          "revision": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied": [
+              {
+                "status": "error",
+                "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+                "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[1]",
+                "xmlSha256": "ae534ac75079a0d2038902533d9128af33383edc6f2b30d6dbcec3fffb2aec7e",
+                "failureType": "org.apache.avro.AvroRuntimeException",
+                "message": "Not an array: [{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RecordA\",\"fields\":[{\"name\":\"fieldA\",\"type\":\"int\"}]}},\"null\"]",
+                "atNamedTest": true
+              },
+              {
+                "status": "error",
+                "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+                "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[2]",
+                "xmlSha256": "ae534ac75079a0d2038902533d9128af33383edc6f2b30d6dbcec3fffb2aec7e",
+                "failureType": "org.apache.avro.AvroRuntimeException",
+                "message": "Not an array: [{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RecordA\",\"fields\":[{\"name\":\"fieldA\",\"type\":\"int\"}]}},\"null\"]",
+                "atNamedTest": true
+              }
+            ]
+          },
+          "record": "verification/results/20261122-121129-measure-the-original-avro-fast-reader-op/outputs/examples/367-avro-union-array-default/records/module-build/parent-upstream.json",
+          "job": "20261122-121129-measure-the-original-avro-fast-reader-op"
+        },
+        "fix": {
+          "revision": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+          "packagingExit": 0,
+          "packagingErrors": [],
+          "named": {
+            "TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied": [
+              {
+                "status": "passed",
+                "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+                "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[1]",
+                "xmlSha256": "ef4acda8c7f31041fcebea31b9f01351bc287dfdedebf6df5fa56db86ec703a5"
+              },
+              {
+                "status": "passed",
+                "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+                "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[2]",
+                "xmlSha256": "ef4acda8c7f31041fcebea31b9f01351bc287dfdedebf6df5fa56db86ec703a5"
+              }
+            ]
+          },
+          "record": "verification/results/20261122-121129-measure-the-original-avro-fast-reader-op/outputs/examples/367-avro-union-array-default/records/module-build/fix-upstream.json",
+          "job": "20261122-121129-measure-the-original-avro-fast-reader-op"
+        }
+      },
+      "openingRun": {
+        "state": "measured",
+        "job": "20261122-122655-bind-the-four-avro-default-opening-rows",
+        "jobResult": "verification/results/20261122-122655-bind-the-four-avro-default-opening-rows/result.json",
+        "source": "77fe23bb2d11a5e259bf8afc9dec5ec496a5df65",
+        "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+        "fingerprint": "3f774e33431cbc42fc3d39c147e8efabf2ef2397dbe5430b8d06d8dcff2f3254",
+        "builds": {
+          "parent": "d1249fbc5ae8fccbc31395c5cb3095c72778a08a050e2d7b1688e4f461717d27",
+          "fix": "aa84c288267bce6d7ae8294e3c7c2ee244447aeeda720eab3610c0ac615752d9"
+        },
+        "record": "examples/367-avro-union-array-default/records/opening-bound/run.json"
+      },
+      "finalRun": {
+        "state": "pending",
+        "job": "20261122-123422-final-java-domain-367-avro-union-array-d"
+      },
+      "obligations": {
+        "union-parent": {
+          "revision": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.DefaultReader#union(I)I",
+          "statement": "The fast binary reader returns a record with an empty array for its reader-only union field and retains each writer marker when present.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.DefaultReader#union(I)I",
+              "classSha256": "2aedb0a166bf7829c471a109718de11f08d40ccdcf5c8365fe83a248bc4f0010",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "f1df8eb8120496c890cf8545297e958b8a54871acd5f4ed08b03e39d2359585c"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "d5cebc74ffd605df",
+            "wallSeconds": 5.181447,
+            "peakRssBytes": 123748352,
+            "checkerSeconds": 0.073,
+            "checkerPeakRssBytes": 72093696,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/367-avro-union-array-default/records/opening-bound/union-parent/20261122T123305Z-6381b80b/result.json",
+            "finite": {
+              "status": "refuted",
+              "inputs": 4,
+              "differences": 4,
+              "seconds": 3.5358,
+              "receipt": "examples/367-avro-union-array-default/records/opening-bound/finite/union-parent.json"
+            }
+          },
+          "final": null
+        },
+        "union-fix": {
+          "revision": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.DefaultReader#union(I)I",
+          "statement": "The fast binary reader returns a record with an empty array for its reader-only union field and retains each writer marker when present.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.DefaultReader#union(I)I",
+              "classSha256": "2aedb0a166bf7829c471a109718de11f08d40ccdcf5c8365fe83a248bc4f0010",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "f1df8eb8120496c890cf8545297e958b8a54871acd5f4ed08b03e39d2359585c"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "d5cebc74ffd605df",
+            "wallSeconds": 5.138869,
+            "peakRssBytes": 126799872,
+            "checkerSeconds": 0.052,
+            "checkerPeakRssBytes": 71999488,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/367-avro-union-array-default/records/opening-bound/union-fix/20261122T123310Z-8b699e58/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 4,
+              "differences": 0,
+              "seconds": 2.6672,
+              "receipt": "examples/367-avro-union-array-default/records/opening-bound/finite/union-fix.json"
+            }
+          },
+          "final": null
+        },
+        "direct-parent": {
+          "revision": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.DefaultReader#direct(I)I",
+          "statement": "With a direct array field and the same empty default the fast binary reader returns the empty array and preserves each writer marker.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.DefaultReader#direct(I)I",
+              "classSha256": "2aedb0a166bf7829c471a109718de11f08d40ccdcf5c8365fe83a248bc4f0010",
+              "loadedFrom": "adapter-parent.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "f1df8eb8120496c890cf8545297e958b8a54871acd5f4ed08b03e39d2359585c"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "6b4ff92968c5498a",
+            "wallSeconds": 5.12481,
+            "peakRssBytes": 125652992,
+            "checkerSeconds": 0.062,
+            "checkerPeakRssBytes": 72200192,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/367-avro-union-array-default/records/opening-bound/direct-parent/20261122T123315Z-ad05c262/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 4,
+              "differences": 0,
+              "seconds": 0.9335,
+              "receipt": "examples/367-avro-union-array-default/records/opening-bound/finite/direct-parent.json"
+            }
+          },
+          "final": null
+        },
+        "direct-fix": {
+          "revision": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+          "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "entry": "campaign.DefaultReader#direct(I)I",
+          "statement": "With a direct array field and the same empty default the fast binary reader returns the empty array and preserves each writer marker.",
+          "inputRows": 4,
+          "guard": "code >= 0 && code < 4",
+          "bounds": {
+            "unwind": 512,
+            "maxArrayLength": 16384
+          },
+          "observations": [
+            "result",
+            "exception"
+          ],
+          "startup": "ordinary",
+          "opening": {
+            "status": "unresolved",
+            "symbolicStatus": "unresolved",
+            "nativePartition": null,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "gapSites": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ],
+            "binding": {
+              "entry": "campaign.DefaultReader#direct(I)I",
+              "classSha256": "2aedb0a166bf7829c471a109718de11f08d40ccdcf5c8365fe83a248bc4f0010",
+              "loadedFrom": "adapter-fix.jar",
+              "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+              "subjectClassSha256": "f1df8eb8120496c890cf8545297e958b8a54871acd5f4ed08b03e39d2359585c"
+            },
+            "engineAssumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "claimKey": "6b4ff92968c5498a",
+            "wallSeconds": 5.309648,
+            "peakRssBytes": 114040832,
+            "checkerSeconds": 0.062,
+            "checkerPeakRssBytes": 71880704,
+            "checkerBudgetSeconds": 60,
+            "witness": null,
+            "receipt": "examples/367-avro-union-array-default/records/opening-bound/direct-fix/20261122T123320Z-ccd35406/result.json",
+            "finite": {
+              "status": "established",
+              "inputs": 4,
+              "differences": 0,
+              "seconds": 0.9588,
+              "receipt": "examples/367-avro-union-array-default/records/opening-bound/finite/direct-fix.json"
+            }
+          },
+          "final": null
+        }
+      },
+      "jvmControls": {
+        "parent": {
+          "vectors": 16,
+          "observationsPerVector": [
+            "union",
+            "direct",
+            "required"
+          ],
+          "markers": [
+            null,
+            -1,
+            0,
+            1
+          ],
+          "encodings": [
+            "binary",
+            "JSON"
+          ],
+          "readers": [
+            "standard",
+            "fast"
+          ],
+          "missingRequiredField": "org.apache.avro.AvroTypeException",
+          "receipt": "verification/results/20261122-121129-measure-the-original-avro-fast-reader-op/outputs/examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-parent-jdk21.stdout"
+        },
+        "fix": {
+          "vectors": 16,
+          "observationsPerVector": [
+            "union",
+            "direct",
+            "required"
+          ],
+          "markers": [
+            null,
+            -1,
+            0,
+            1
+          ],
+          "encodings": [
+            "binary",
+            "JSON"
+          ],
+          "readers": [
+            "standard",
+            "fast"
+          ],
+          "missingRequiredField": "org.apache.avro.AvroTypeException",
+          "receipt": "verification/results/20261122-121129-measure-the-original-avro-fast-reader-op/outputs/examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-fix-jdk21.stdout"
+        }
+      }
+    }
+  },
+  "earlierPopulations": {
+    "sixPRs": {
+      "ordinary": [
+        39,
+        46
+      ],
+      "finite": [
+        46,
+        46
+      ]
+    },
+    "avro729": {
+      "ordinary": [
+        2,
+        4
+      ],
+      "recordedStartup": [
+        4,
+        4
+      ],
+      "finite": [
+        4,
+        4
+      ]
+    }
+  },
+  "totals": {
+    "opening": {
+      "unresolved": 16,
+      "refuted": 1,
+      "established": 3
+    },
+    "final": {
+      "unmeasured": 20
+    },
+    "finite": {
+      "refuted": 5,
+      "established": 15
+    }
+  }
+}

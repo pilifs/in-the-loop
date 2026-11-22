@@ -5392,6 +5392,16 @@ impl<'a> Engine<'a> {
                 }
             }
         }
+        let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
+        let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
+        if !contracted && !special && caller == "java/nio/ByteBuffer" && member.owner == caller && member.name == "putBuffer"
+            && member.descriptor == "(ILjava/nio/ByteBuffer;II)V" && self.cp.heap_buffer_copy() {
+            let frame = path.frames.last().expect("a frame");
+            if frame.method == "put" && matches!(frame.code.descriptor.as_str(),
+                "(Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;" | "(ILjava/nio/ByteBuffer;II)Ljava/nio/ByteBuffer;") {
+                return self.heap_byte_buffer_copy(path, receiver_at);
+            }
+        }
         let args = self.pop_args(path, descriptor.params.len())?;
         let receiver = self.pop_ref(path)?;
         let o = match self.null_check(path, receiver) {
@@ -5441,8 +5451,6 @@ impl<'a> Engine<'a> {
         }
         // A contract given for the call stands in place of the engine's own model of it ([`gaps::modelled_jdk_call`]):
         // the call is then the gap it is to a checker with no such model, closed as the contract says.
-        let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
-        let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
             if special && member.owner == STRING && member.name == "<init>"
                 && matches!(member.descriptor.as_str(), "([BLjava/nio/charset/Charset;)V" | "([BIILjava/nio/charset/Charset;)V") {
@@ -5468,6 +5476,17 @@ impl<'a> Engine<'a> {
                         full.extend(args);
                         return self.enter_method(path, &member.owner, cf, method, full);
                     }
+                }
+                if let Some((cf,method)) = self.cp.blocking_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                    if special && member.owner == runtime::REENTRANT_LOCK {
+                        // The original constructor initializes sync. The existing single-thread
+                        // lock operations also keep their public hold-count observation.
+                        path.objects[o].fields.insert(runtime::HOLD_COUNT.into(), Val::I(self.b.constant(0, 32)));
+                    }
+                    let owner=cf.name.clone();
+                    let mut full=vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path,&owner,cf,method,full);
                 }
                 if let Some((cf, method)) = self.cp.linked_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
                     let mut full = vec![Val::R(Some(o))];

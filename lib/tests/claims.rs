@@ -1433,6 +1433,8 @@ fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     proved(classes, "claims.ReaderAndListeners#propertyChanges", 4);
     machine.monitor = false;
     proved(classes, "claims.ReaderAndListeners#nestedLock", 4);
+    proved(classes, "claims.ReaderAndListeners#queueConstruction", 4);
+    proved(classes, "claims.ReaderAndListeners#propertyEquality", 4);
     assert_eq!(machine.call_static("claims/ReaderAndListeners", "nestedLock", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     for flag in [0, 1] {
         assert_eq!(machine.call_static("claims/ReaderAndListeners", "propertyChanges", "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
@@ -1497,9 +1499,11 @@ fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.WrappedBuffers").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["window", "whole", "invalid", "duplicate", "readOnly"] {
+    for name in ["window", "whole", "invalid", "duplicate", "readOnly", "transfer", "indexedTransfer", "rejectedTransfer"] {
         proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
     }
+    let corrupted = run(&options(classes, "claims.WrappedBuffers#wrongTransfer", 4, "overlapping-heap-buffers"));
+    assert_eq!(corrupted.verdict, Verdict::Violation, "{}", corrupted.output);
     let wrong = run(&options(classes, "claims.WrappedBuffers#wrongSharedCursor", 4, "heap-buffer-cursor"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
 }

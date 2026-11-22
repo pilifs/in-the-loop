@@ -54,7 +54,7 @@ def cases(number):
 
 
 WRONG = {
-    363: [(36, "extent", dict(bytes=[16,1,0,0,0,20], remaining=6, exhausted=True)),
+    363: [(36, "extent", dict(bytes=[60,1,0,0,0,20], remaining=6, exhausted=False)),
           (36, "fresh", dict(sameStart=False, value=dict(bytes=[20], remaining=1, exhausted=True)))],
     364: [(2, "renamed", "B"), (0, "preserved", ["A","A"])],
     365: [(32, "offsets", dict(trace=[3,1,1,9,2,5,4,6,6,3,1], matchesUnpadded=False)),
