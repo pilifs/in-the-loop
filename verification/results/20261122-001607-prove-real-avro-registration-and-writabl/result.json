@@ -1,0 +1,416 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-001607-prove-real-avro-registration-and-writabl",
+  "title": "Prove real Avro registration and writable producer contracts",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.8s, peak 312.0 MiB (estimated 4m00s, 3.0 GiB); 24 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-001607-prove-real-avro-registration-and-writabl.json",
+    "sha256": "3eefe7b9a5929d0511c52016a5c92fa131d518a2bcc3306d813379e4ad01ea42",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-001607-prove-real-avro-registration-and-writabl",
+      "title": "Prove real Avro registration and writable producer contracts",
+      "description": "Check original superclass initialization, a prior installation and a second accessor installation on both PR classpaths. Verify writable backing identity, size, contents and the growth control separately with ordinary and recorded startup. Each property has a fresh JVM control and a strict raw native receipt.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "355",
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:16:07+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "18m"
+      },
+      "steps": [
+        {
+          "name": "Check both revisions of both consumers",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/producers.py --output verification/domain-foundations/producers",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/producers"
+      ]
+    }
+  },
+  "sourceCommit": "c5ddadb5389144713057cafbe97552157a34a6a0",
+  "startedAt": "2026-11-22T00:29:48+00:00",
+  "finishedAt": "2026-11-22T00:33:52+00:00",
+  "wallSeconds": 244.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2901987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1080.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 327172096,
+    "wallSeconds": 17.8,
+    "cpuSeconds": 27.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 213.225,
+      "cpuSeconds": 213.419,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2268532736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "1764695917cb0a0f83a04dfd2db18b629df4cd0a43801e673126c31f912d6ac7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-001607-prove-real-avro-registration-and-writabl/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 33s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check both revisions of both consumers",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/producers.py --output verification/domain-foundations/producers",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 17.839,
+      "cpuSeconds": 27.019,
+      "cpuThrottledSeconds": 2.87,
+      "peakMemoryBytes": 327172096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-both-revisions-of-both-c.log",
+        "lines": 20,
+        "bytes": 1134,
+        "sha256": "7cd6bba663bdfc96784ac942f8a15e403b630f005543bb6fcfbb5be993d2396c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "355 parent SchemaRegistration-originalInstall verified",
+        "355 parent SchemaRegistration-firstInstallation verified",
+        "355 parent SchemaRegistration-priorInstallation verified",
+        "355 parent WritableBacking-shrink-ordinary unverifiable",
+        "355 parent WritableBacking-growthChangesBacking-ordinary unverifiable",
+        "355 parent WritableBacking-shrink-observed verified",
+        "355 parent WritableBacking-growthChangesBacking-observed verified",
+        "355 fix SchemaRegistration-originalInstall verified",
+        "355 fix SchemaRegistration-firstInstallation verified",
+        "355 fix SchemaRegistration-priorInstallation verified",
+        "355 fix WritableBacking-shrink-ordinary unverifiable",
+        "355 fix WritableBacking-growthChangesBacking-ordinary unverifiable",
+        "355 fix WritableBacking-shrink-observed verified",
+        "355 fix WritableBacking-growthChangesBacking-observed verified",
+        "361 parent SchemaRegistration-originalInstall verified",
+        "361 parent SchemaRegistration-firstInstallation verified",
+        "361 parent SchemaRegistration-priorInstallation verified",
+        "361 fix SchemaRegistration-originalInstall verified",
+        "361 fix SchemaRegistration-firstInstallation verified",
+        "361 fix SchemaRegistration-priorInstallation verified"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/producers/355/fix/SchemaRegistration-firstInstallation.native.json",
+      "change": "added",
+      "bytes": 4403,
+      "sha256": "127e3e371c4534a33d3600b920d40f7370b15bb54757ecddb10622effb42c118",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/fix/SchemaRegistration-originalInstall.native.json",
+      "change": "added",
+      "bytes": 4395,
+      "sha256": "539ed4127d4ed28b00437e2774f194c4f6109b34dbd5b5f150a8c9a8bb76a34d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/fix/SchemaRegistration-priorInstallation.native.json",
+      "change": "added",
+      "bytes": 4405,
+      "sha256": "75246abffeca6d4571ab2bad78e0b33b2e3900a419bbd9d5c624cf972b8107ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/fix/WritableBacking-growthChangesBacking-observed.native.json",
+      "change": "added",
+      "bytes": 28836,
+      "sha256": "d26c6bdf1f0967d218f71116e1b1c37e13620bd833df1c013026954145eee0fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/fix/WritableBacking-growthChangesBacking-ordinary.native.json",
+      "change": "added",
+      "bytes": 5946,
+      "sha256": "87550958c0028143ae89c2d2f15f3af1c74ef1241c67ec6db8077b090f345b4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/fix/WritableBacking-shrink-observed.native.json",
+      "change": "added",
+      "bytes": 30300,
+      "sha256": "ac264ebf2e35b7d087f668988934d3978d86d27e646f1d9ab9c6b830e1f8b5ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/fix/WritableBacking-shrink-ordinary.native.json",
+      "change": "added",
+      "bytes": 6505,
+      "sha256": "5911e09c78ba1912768fa3f850acd7ed5d9b902e08abc2add843ec27a4e35b54",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/fix/evidence.json",
+      "change": "added",
+      "bytes": 15086,
+      "sha256": "4a1ea92573738b6bc2cb05234cadf62d9233dcab6b289c5f02cb7927e1e56c97",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/SchemaRegistration-firstInstallation.native.json",
+      "change": "added",
+      "bytes": 4403,
+      "sha256": "df57eca5c4180ec1856b4fc2a5d23099157a7730cd088c0cd964272df00fee25",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/SchemaRegistration-originalInstall.native.json",
+      "change": "added",
+      "bytes": 4393,
+      "sha256": "5c5e77caeb17ce9ca609f12f5237ef8a99e791a78d6b6d1281f7bbff256db68c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/SchemaRegistration-priorInstallation.native.json",
+      "change": "added",
+      "bytes": 4402,
+      "sha256": "6800270f8550fa37b3bea1d24fb64d4a444ed4255a9d4a7a8a5575cc8b2d7ebc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/WritableBacking-growthChangesBacking-observed.native.json",
+      "change": "added",
+      "bytes": 28833,
+      "sha256": "8ce340f9cab0a125a3c44afc10332c1a264480b66de8af094a571cae46c70598",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/WritableBacking-growthChangesBacking-ordinary.native.json",
+      "change": "added",
+      "bytes": 5945,
+      "sha256": "bceab05b251c9e7ade3eeec04c03fdf99f3fc22da3e8303de176e0b7fb94d002",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/WritableBacking-shrink-observed.native.json",
+      "change": "added",
+      "bytes": 30298,
+      "sha256": "99ed13bfb6d02caeb10d126c14e5ed5ab019ed2e7e4e1cb7e4b0d2b5a3010021",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/WritableBacking-shrink-ordinary.native.json",
+      "change": "added",
+      "bytes": 6506,
+      "sha256": "22cf21868d7b1cfc4b43c707f53e4b7b1bb8b95ba82c679ab17700499563bcad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/355/parent/evidence.json",
+      "change": "added",
+      "bytes": 15088,
+      "sha256": "03edbaf746b6be4b5314a6414d93422fb6dade41ba42c7f27a343d61204dde3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/fix/SchemaRegistration-firstInstallation.native.json",
+      "change": "added",
+      "bytes": 4401,
+      "sha256": "5de3f4b4a827e1e85ddba9370e838b798be1a5f88c0819e0c809e3807921d52e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/fix/SchemaRegistration-originalInstall.native.json",
+      "change": "added",
+      "bytes": 4392,
+      "sha256": "c104cb2c30fe4893288f8e7bc83e3490528906626a4737a1c08215d76dd431f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/fix/SchemaRegistration-priorInstallation.native.json",
+      "change": "added",
+      "bytes": 4403,
+      "sha256": "4cd6f7f2d20c1fdf17d5c9b5b25f841865e2cf727c748d6f1d84d24c42ac97cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/fix/evidence.json",
+      "change": "added",
+      "bytes": 3181,
+      "sha256": "898318b2da801d1f2a8fe8a1b826181eaa288847c2e0e67c43dd9a1afa6e3d34",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/parent/SchemaRegistration-firstInstallation.native.json",
+      "change": "added",
+      "bytes": 4403,
+      "sha256": "ff62d56aa0554580c86f847f1af4c0fb11e96edf943f11fabab91047f60a10a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/parent/SchemaRegistration-originalInstall.native.json",
+      "change": "added",
+      "bytes": 4393,
+      "sha256": "49433b9348c21b17cb8266aeeedaf164de8d2fc19a0d6c4abc49a39c768a0c05",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/parent/SchemaRegistration-priorInstallation.native.json",
+      "change": "added",
+      "bytes": 4400,
+      "sha256": "ea116b4d0166b866404bf9e5e39cce388c4d5f673d03c776a6c17d037fcda198",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/producers/361/parent/evidence.json",
+      "change": "added",
+      "bytes": 3183,
+      "sha256": "db3c8cc63b887d20650b275cc6abdc778653171f6d49b3d2de9eb8b98d29df03",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:33:59+00:00",
+    "applied": [
+      "verification/domain-foundations/producers/355/fix/SchemaRegistration-firstInstallation.native.json",
+      "verification/domain-foundations/producers/355/fix/SchemaRegistration-originalInstall.native.json",
+      "verification/domain-foundations/producers/355/fix/SchemaRegistration-priorInstallation.native.json",
+      "verification/domain-foundations/producers/355/fix/WritableBacking-growthChangesBacking-observed.native.json",
+      "verification/domain-foundations/producers/355/fix/WritableBacking-growthChangesBacking-ordinary.native.json",
+      "verification/domain-foundations/producers/355/fix/WritableBacking-shrink-observed.native.json",
+      "verification/domain-foundations/producers/355/fix/WritableBacking-shrink-ordinary.native.json",
+      "verification/domain-foundations/producers/355/fix/evidence.json",
+      "verification/domain-foundations/producers/355/parent/SchemaRegistration-firstInstallation.native.json",
+      "verification/domain-foundations/producers/355/parent/SchemaRegistration-originalInstall.native.json",
+      "verification/domain-foundations/producers/355/parent/SchemaRegistration-priorInstallation.native.json",
+      "verification/domain-foundations/producers/355/parent/WritableBacking-growthChangesBacking-observed.native.json",
+      "verification/domain-foundations/producers/355/parent/WritableBacking-growthChangesBacking-ordinary.native.json",
+      "verification/domain-foundations/producers/355/parent/WritableBacking-shrink-observed.native.json",
+      "verification/domain-foundations/producers/355/parent/WritableBacking-shrink-ordinary.native.json",
+      "verification/domain-foundations/producers/355/parent/evidence.json",
+      "verification/domain-foundations/producers/361/fix/SchemaRegistration-firstInstallation.native.json",
+      "verification/domain-foundations/producers/361/fix/SchemaRegistration-originalInstall.native.json",
+      "verification/domain-foundations/producers/361/fix/SchemaRegistration-priorInstallation.native.json",
+      "verification/domain-foundations/producers/361/fix/evidence.json",
+      "verification/domain-foundations/producers/361/parent/SchemaRegistration-firstInstallation.native.json",
+      "verification/domain-foundations/producers/361/parent/SchemaRegistration-originalInstall.native.json",
+      "verification/domain-foundations/producers/361/parent/SchemaRegistration-priorInstallation.native.json",
+      "verification/domain-foundations/producers/361/parent/evidence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e13c1ac9ae92b3221196a954311b8ac3f139ec2a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e13c1ac9ae92b3221196a954311b8ac3f139ec2a/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T003352Z-317162b75465fed2",
+      "outputs": "20261122T003352Z-3715808be955b926",
+      "diff": "20261122T003352Z-4051538aeb08c0aa"
+    }
+  }
+}

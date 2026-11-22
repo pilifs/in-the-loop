@@ -1,0 +1,171 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "foundation.WritableBacking#shrink",
+    "domain": "bytes: byte[] of length ≤ 6, not null × length: int",
+    "assume": "length >= 0 && length <= bytes.length",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V (org.apache.hadoop.conf.Configuration.<clinit>() at org.apache.hadoop.io.WritableComparator.<init>:145). With --gaps assume it assumes instead that org.apache.hadoop.conf.Configuration.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+    "statement": "/home/filip/.cache/in-the-loop/tmp/producer-proofs-4uveqsw3/WritableBacking-shrink-ordinary/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "foundation.WritableBacking#shrink cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V (org.apache.hadoop.conf.Configuration.<clinit>() at org.apache.hadoop.io.WritableComparator.<init>:145). With --gaps assume it assumes instead that org.apache.hadoop.conf.Configuration.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+        "uri": null,
+        "line": 7
+      }
+    ],
+    "output": "✗ foundation.WritableBacking#shrink cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V (org.apache.hadoop.conf.Configuration.<clinit>() at org.apache.hadoop.io.WritableComparator.<init>:145). With --gaps assume it assumes instead that org.apache.hadoop.conf.Configuration.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/producer-proofs-4uveqsw3/WritableBacking-shrink-ordinary",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.08968402,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 6,
+      "stage": null,
+      "native": {
+        "paths": 9,
+        "merges": 0,
+        "solver_calls": 15,
+        "solving_seconds": 0.000344348,
+        "gates_evaluated": 410,
+        "evaluating_seconds": 0.000017093,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 700,
+        "clauses": 2032,
+        "seconds": 0.021199396,
+        "loading_seconds": 0.007772641,
+        "decoding_seconds": 0.00009046,
+        "encoding_seconds": 0.000601853,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "class-initializer:org.apache.hadoop.conf.Configuration.<clinit>()V",
+          "kind": "class-initializer",
+          "call": "org.apache.hadoop.conf.Configuration.<clinit>()",
+          "sites": [
+            "org.apache.hadoop.io.WritableComparator.<init>:145"
+          ],
+          "approximation": "has run already, and threw nothing",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.021,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.008,
+            "lowering": 0.0,
+            "symbolic": 0.012,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 700,
+            "clauses": 2032
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.173,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.021,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.15
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "bytes",
+            "type": "byte[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 6
+          },
+          {
+            "name": "length",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "bytes: byte[] of length ≤ 6, not null × length: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "length >= 0 && length <= bytes.length",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": 6,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
