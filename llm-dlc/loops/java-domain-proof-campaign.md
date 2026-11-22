@@ -113,6 +113,8 @@ Work on independent examples while jobs run. When the remaining work depends on 
 
 Examples 363–367 freeze all twenty ordinary public claims on the execution head. The independent grids cover 64 Parquet inputs, four enum schema/input pairs, 128 Jackson schedules, fourteen CSV fixtures and four evolved Avro records. Each preservation property runs on both original revisions. [Opening verifier fingerprint](../../lib/benchmark/java-domain-proof/opening.json) · [Original build pins](../../lib/benchmark/java-domain-proof/cases.json)
 
+The original-build and opening-verifier jobs are [363](../../verification/jobs/20261122-062459-build-and-check-363-parquet-nested-binar.json), [364](../../verification/jobs/20261122-062459-build-and-check-364-avro-enum-namespace.json), [365](../../verification/jobs/20261122-062459-build-and-check-365-jackson-async-token.json), [366](../../verification/jobs/20261122-062500-build-and-check-366-commons-csv-delimite.json), [367](../../verification/jobs/20261122-062500-build-and-check-367-avro-union-array-def.json). Each preserves original failures, the ordered classpath, the finite JVM result and ordinary native receipts.
+
 - Status: working
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e

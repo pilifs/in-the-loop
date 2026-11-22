@@ -13,10 +13,13 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 sys.path.append(str(REPO / "lib/tools"))
+from cost_tier import cost  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[3] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
 
@@ -37,6 +40,28 @@ def tree(root):
         (root / name).parent.mkdir(parents=True, exist_ok=True)
         (root / name).write_text(text)
     return root
+
+
+class OriginalRegression(unittest.TestCase):
+    def test_parameterized_named_failure_and_passing_parent_control(self):
+        import upstream
+        selector = "TestReader#read"
+        control = "TestReader#control"
+        case = {"tests": {selector: "test.java", control: "test.java"},
+                "testParameters": {selector: [1, 2]}, "parentControls": [control]}
+        def failure(index):
+            method = f"read(Encoding)[{index}]"
+            invocation = ET.Element("testcase", classname="org.example.TestReader", name=method)
+            error = ET.fromstring("<error>at org.example.TestReader.read(TestReader.java:20)</error>")
+            return {"status":"error", "method":method, "atNamedTest":bool(upstream.named_failure(invocation, error, {}))}
+        rows = {selector: [failure(1), failure(2)], control: [{"status":"passed","method":"control"}]}
+        self.assertTrue(upstream.qualified_tests(case, "parent", rows))
+        self.assertFalse(upstream.qualified_tests(case, "fix", rows))
+        rows[selector][1] = failure(1)
+        self.assertFalse(upstream.qualified_tests(case, "parent", rows))
+        rows[selector][1] = failure(2)
+        rows[control] = []
+        self.assertFalse(upstream.qualified_tests(case, "parent", rows))
 
 
 class Inventories(unittest.TestCase):

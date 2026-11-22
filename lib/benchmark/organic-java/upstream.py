@@ -6,6 +6,9 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
+import tarfile
+import urllib.request
 import subprocess
 import sys
 import tempfile
@@ -47,10 +50,10 @@ def module_args(case, module):
 def build_args(case):
     # The Avro reactor publishes test JARs for its dependents. Package them while leaving the
     # separate invoker cross-JDK compatibility suite to upstream CI.
-    flags = ["-DskipTests", "-Dinvoker.skip=true"] if case.get("providedHost") else ["-Dmaven.test.skip=true"]
+    flags = ["-DskipTests", "-Dinvoker.skip=true"] if case.get("providedHost") or case.get("packageTestJars") else ["-Dmaven.test.skip=true"]
     selection = (["-f", case["module"] + "/pom.xml"] if case.get("prerequisitePoms")
                  else module_args(case, case["module"]))
-    return [*OPTIONS, *selection, *flags, "install"]
+    return [*OPTIONS, *case.get("mavenProperties", []), *selection, *flags, "install"]
 
 
 def toolchains(command, case, work, jdk26):
@@ -196,6 +199,8 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
         raise ValueError("the production build changed its sources or has a different first parent")
     outputs = {"original": jar_name, "jars": [{"path": jar_name, "sha256": records[0]["sha256"], "auxiliary": False}],
                "selectedClass": cls, "selectedClassSha256": cls_digest, "sourceSha256": digest(project / case["productionSource"])}
+    if case.get("buildTool"):
+        outputs["buildTool"] = case["buildTool"]
     if qualification:
         outputs["packagedClassQualification"] = qualification
     record = {"schema": "upstream-jar-build/v1", "recipe": recipe, "artifacts": records,
@@ -209,9 +214,13 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
     return outputs
 
 
+def method_name(name):
+    return re.split(r"[\[(]", name, maxsplit=1)[0]
+
+
 def named_failure(testcase, failed, execution):
     """Surefire can truncate XML stack text at an isolated surrogate. Its text summary retains the source line."""
-    method = testcase.get("classname") + "." + testcase.get("name")
+    method = testcase.get("classname") + "." + method_name(testcase.get("name", ""))
     if method + "(" in (failed.text or ""):
         return "XML stack frame"
     short = method.rsplit(".", 2)[-2:]
@@ -223,21 +232,29 @@ def named_failure(testcase, failed, execution):
 
 def tests(case, side, project, command, scratch, out):
     sources = {}
-    for name in set(case["tests"].values()):
+    transplanted = []
+    for name in sorted(set(case["tests"].values()) | set(case.get("testFixtures", []))):
         data = git(project, "show", case["fix"] + ":" + name)
         if side == "parent":
-            (project / name).write_bytes(data)
+            target = project / name
+            if not target.is_file() or target.read_bytes() != data:
+                transplanted.append(name)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(data)
         if (project / name).read_bytes() != data:
             raise ValueError("the transplanted regression differs from its landed source")
         sources[name] = hashlib.sha256(data).hexdigest()
     changed = set(git(project, "diff", "--name-only", "HEAD").decode().splitlines())
-    if (side == "fix" and changed) or not changed.issubset(sources):
+    new_sources = git(project, "ls-files", "--others", "--exclude-standard").decode().splitlines()
+    changed.update(path for path in new_sources if "/src/" in "/" + path)
+    if changed != set(transplanted):
         raise ValueError("the production checkout changed outside the parent test transplant")
     # The Guava testlib's Java 9 descriptor needs the packaged multi-release Guava JAR.
     # A reactor stopped at the test phase substitutes target/classes and loses its descriptor.
     support = None
     test_dependencies = []
-    selection = module_args(case, case["testModule"])
+    selection = (["-f", case["testModule"] + "/pom.xml"] if case.get("testModuleOnly")
+                 else module_args(case, case["testModule"]))
     if case["module"] == "guava":
         support = maven(command, [*OPTIONS, "-f", "guava-testlib/pom.xml", "-Dmaven.test.skip=true", "install"],
                         scratch, "install-original-testlib")
@@ -247,12 +264,13 @@ def tests(case, side, project, command, scratch, out):
             test_dependencies.append(maven(command, [*OPTIONS, "-N", "-f", pom, "-Dmaven.test.skip=true", "install"],
                                            scratch, "test-support-" + Path(pom).parent.name))
         selection = ["-f", case["testModule"] + "/pom.xml"]
-    args = [*OPTIONS, *selection, "-Dmaven.build.cache.enabled=false", "-Dsurefire.failIfNoSpecifiedTests=false", "-Dtest=" + ",".join(case["tests"]), "test"]
+    selectors = [key + ("*" if key in case.get("testParameters", {}) else "") for key in case["tests"]]
+    args = [*OPTIONS, *case.get("mavenProperties", []), *selection, "-Dmaven.build.cache.enabled=false", "-Dsurefire.failIfNoSpecifiedTests=false", "-Dtest=" + ",".join(selectors), "test"]
     run = maven(command, args, scratch, "upstream-tests")
     found = {name: [] for name in case["tests"]}
     for xml in project.glob("**/target/surefire-reports/TEST-*.xml"):
         for t in ET.parse(xml).iter("testcase"):
-            name = t.get("classname", "").split(".")[-1] + "#" + t.get("name", "").split("(")[0]
+            name = t.get("classname", "").split(".")[-1] + "#" + method_name(t.get("name", ""))
             if name in found:
                 status = next((s for s in ("failure", "error", "skipped") if t.find(s) is not None), "passed")
                 row = {"status": status, "class": t.get("classname"), "method": t.get("name"), "xmlSha256": digest(xml)}
@@ -261,9 +279,87 @@ def tests(case, side, project, command, scratch, out):
                     row.update(failureType=failure.get("type"), message=failure.get("message", "")[:600],
                                atNamedTest=bool(named_failure(t, failure, run)))
                 found[name].append(row)
-                (out / (side + "-" + xml.name + ".gz")).write_bytes(gzip.compress(xml.read_bytes(), mtime=0))
+                saved_xml = out / (side + "-" + xml.name + ".gz")
+                if not saved_xml.exists():
+                    saved_xml.write_bytes(gzip.compress(xml.read_bytes(), mtime=0))
     return {"execution": run, "packagedTestSupport": support, "testPrerequisites": test_dependencies, "testSourceSha256": sources,
             "transplant": sorted(changed), "named": found}
+
+
+def git_source(args, repository):
+    return (args.repos / repository.rsplit("/", 1)[-1]).resolve().as_uri() if args.repos else repository
+
+
+def build_tool(case, work):
+    """Extract just the pinned compiler binary into this isolated build."""
+    pin = case.get("buildTool")
+    if pin is None:
+        return None
+    archive = work / "compiler.deb"
+    cache = runtime_maven.Cache()
+    if not cache.restore(pin["packageSha256"], archive)[0]:
+        with urllib.request.urlopen(pin["url"], timeout=60) as response, archive.open("wb") as dest:
+            shutil.copyfileobj(response, dest)
+        if digest(archive) != pin["packageSha256"]:
+            raise ValueError("the compiler package differs from the distribution checksum")
+        cache.store(archive, pin["packageSha256"])
+    dest = work / "tools" / Path(pin["member"]).name
+    dest.parent.mkdir()
+    with subprocess.Popen(["dpkg-deb", "--fsys-tarfile", archive], stdout=subprocess.PIPE) as proc:
+        with tarfile.open(fileobj=proc.stdout, mode="r|") as tar:
+            for member in tar:
+                if member.name.removeprefix("./") == pin["member"] and member.isfile():
+                    with dest.open("xb") as stream:
+                        shutil.copyfileobj(tar.extractfile(member), stream)
+        if proc.wait() or not dest.is_file() or digest(dest) != pin["executableSha256"]:
+            raise ValueError("the isolated compiler differs from the pinned distribution binary")
+    dest.chmod(0o755)
+    return pin
+
+
+def upstream_parents(case, args, work, command, scratch):
+    """Install the exact original POMs selected for dated Maven snapshots."""
+    steps = []
+    for index, parent in enumerate(case.get("buildParents", [])):
+        relative = Path("build-parents", str(index))
+        project = work / relative
+        project.mkdir(parents=True)
+        git(project, "init", "-q")
+        git(project, "fetch", "-q", "--no-tags", "--depth=1", git_source(args, parent["repository"]), parent["commit"])
+        git(project, "checkout", "-q", "--detach", parent["commit"])
+        if git(project, "rev-parse", "HEAD").decode().strip() != parent["commit"]:
+            raise ValueError("unexpected Maven parent commit")
+        for pom in parent["poms"]:
+            identity = digest(project / pom)
+            step = maven(command, [*OPTIONS, "-N", "-f", str(Path("/work") / relative / pom), "install"],
+                         scratch, "external-parent-" + str(len(steps)))
+            step.update(repository=parent["repository"], commit=parent["commit"], pom=pom, pomSha256=identity)
+            steps.append(step)
+            if step["exit"]:
+                return steps
+        if git(project, "diff", "--name-only", "HEAD"):
+            raise ValueError("building the Maven parent modified its tracked source")
+    return steps
+
+
+def qualified_tests(case, side, results):
+    for selector in case["tests"]:
+        rows = results.get(selector, [])
+        parameters = case.get("testParameters", {}).get(selector)
+        if parameters is None:
+            if len(rows) != 1:
+                return False
+        else:
+            indices = [re.search(r"\[(\d+)\]", row["method"]) for row in rows]
+            if not all(indices) or sorted(int(m.group(1)) for m in indices) != sorted(parameters):
+                return False
+        should_pass = side == "fix" or selector in case.get("parentControls", [])
+        for row in rows:
+            if should_pass and row["status"] != "passed":
+                return False
+            if not should_pass and (row["status"] not in ("failure", "error") or not row.get("atNamedTest")):
+                return False
+    return True
 
 
 def run_side(case, side, args):
@@ -279,16 +375,19 @@ def run_side(case, side, args):
         sockets.mkdir()
         project.mkdir()
         git(project, "init", "-q")
-        origin = (args.repos / case["repository"].rsplit("/", 1)[-1]).resolve().as_uri() if args.repos else case["repository"]
+        origin = git_source(args, case["repository"])
         git(project, "fetch", "-q", "--no-tags", "--depth=2", origin, case["fix"])
         git(project, "checkout", "-q", "--detach", case[side])
         if git(project, "rev-parse", "HEAD").decode().strip() != case[side]:
             raise ValueError("the original checkout differs from the pinned revision")
+        tool = build_tool(case, work)
+        if tool:
+            status["buildTool"] = tool
         command = namespace(project, work, scratch, sockets, args.maven, jdk)
         command, compilers = toolchains(command, case, work, args.jdk26)
         module = project / Path(case["reactorPom"]).parent / case["module"]
         with serve(args.maven_cache, sockets, 3 * 1024**3) as requests:
-            prerequisites = []
+            prerequisites = upstream_parents(case, args, work, command, base)
             for i, pom in enumerate(case.get("prerequisitePoms", [])):
                 # Maven resolves extensions of every module while reading an aggregator.
                 # Build the original prerequisite POMs individually when an unrelated distribution module is unavailable.
@@ -322,10 +421,7 @@ def run_side(case, side, args):
             status["upstreamTest"] = tests(case, side, project, command, base, out)
             status["mirror"] = dict(requests)
     write(out / (side + "-upstream.json"), status)
-    expected = {"failure", "error"} if side == "parent" else {"passed"}
-    return "artifact" in status and all(len(rows) == 1 and rows[0]["status"] in expected
-            and (side == "fix" or rows[0].get("atNamedTest"))
-            for rows in status["upstreamTest"]["named"].values())
+    return "artifact" in status and all(not step["exit"] for step in prerequisites) and qualified_tests(case, side, status["upstreamTest"]["named"])
 
 
 def bind(case, output):
@@ -349,7 +445,8 @@ def bind(case, output):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("example", choices=CASES)
+    parser.add_argument("example")
+    parser.add_argument("--cases", type=Path, help="a campaign manifest of original builds")
     parser.add_argument("--repos", type=Path, help="local clones holding the original public commits")
     parser.add_argument("--maven-cache", type=Path)
     parser.add_argument("--bind-existing", action="store_true", help="bind both collected build records to target.json")
@@ -357,17 +454,20 @@ def main():
     parser.add_argument("--jdk26", type=Path, help="pinned Guava build compiler")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
+    cases = json.loads(args.cases.read_text())["cases"] if args.cases else CASES
+    if args.example not in cases:
+        parser.error("unknown example in the selected corpus")
     if args.bind_existing:
-        bind(CASES[args.example], args.output)
+        bind(cases[args.example], args.output)
         return 0
     if not args.maven_cache:
         parser.error("a shared --maven-cache is required for original builds")
     results = []
     for side in ("parent", "fix"):
         try:
-            passed = run_side(CASES[args.example], side, args)
+            passed = run_side(cases[args.example], side, args)
         except (ValueError, OSError, subprocess.SubprocessError, runtime_maven.Blocked) as error:
-            write(args.output / (side + "-error.json"), {"revision": CASES[args.example][side], "error": str(error)})
+            write(args.output / (side + "-error.json"), {"revision": cases[args.example][side], "error": str(error)})
             passed = False
         results.append(passed)
         print(args.example, side, "qualified" if passed else "open", flush=True)
