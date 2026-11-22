@@ -1,0 +1,240 @@
+{
+  "plan": {
+    "example": "366",
+    "task": "fields-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "fields-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "file": "claims/fields.json",
+      "sha256": "18e4a475a1647aa1adb29a547d33d3670a916441169eca7918f93f600b4cda41",
+      "property": "fields",
+      "claimKind": "property",
+      "statement": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows.",
+      "assume": "code >= 0 && code < 14",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "e64d8c00b0752b64a427a3eaa2e92e97324d856f6b5a2c9f681532148c520097"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.DelimitedFields#fields(I)I",
+        "mapping": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 14
+      },
+      "key": "d12184324cfff702"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-fix.json",
+          "sha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/fields-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-366-commons-csv-delimi/examples/366-commons-csv-delimiter-lookahead",
+    "network": true
+  },
+  "inputs": {
+    "example": "366",
+    "task": "fields-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "fields-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "file": "claims/fields.json",
+      "sha256": "18e4a475a1647aa1adb29a547d33d3670a916441169eca7918f93f600b4cda41",
+      "property": "fields",
+      "claimKind": "property",
+      "statement": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows.",
+      "assume": "code >= 0 && code < 14",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "e64d8c00b0752b64a427a3eaa2e92e97324d856f6b5a2c9f681532148c520097"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.DelimitedFields#fields(I)I",
+        "mapping": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 14
+      },
+      "key": "d12184324cfff702"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-fix.json",
+          "sha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/DelimitedFields.java",
+        "sha256": "f330ac8324d3e2aecdb06b02986b9b36a41fe64c477745be06935236fb1a78aa"
+      }
+    ]
+  },
+  "key": "e0dbe31c63dc836821671c0c42d2b38ab3b891563960bd55da3c1b3551b0ea00"
+}
