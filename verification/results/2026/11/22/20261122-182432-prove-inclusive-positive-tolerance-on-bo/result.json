@@ -1,0 +1,304 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-182432-prove-inclusive-positive-tolerance-on-bo",
+  "title": "Prove inclusive positive tolerance on both Commons Lang histories",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.2s, peak 85.3 MiB (estimated 1m00s, 1.0 GiB); 12 output file(s) changed",
+  "attention": [
+    "step 1 (Check inclusive endpoints and first matches on both original JARs) was held back 2.7s by its 1-CPU quota in 3.2s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-182432-prove-inclusive-positive-tolerance-on-bo.json",
+    "sha256": "cb3e87334d591292daf231aa6b0e72c7da1cd9c6d92b1f08fb864d9ed37b4342",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-182432-prove-inclusive-positive-tolerance-on-bo",
+      "title": "Prove inclusive positive tolerance on both Commons Lang histories",
+      "description": "Run ArrayUtils.indexOf(double[], double, int, double) on the original #1589 parent and landed JARs at tolerance 0.25 and three exact binary centers. Compare two independent 64-bit element sources, every Java int start and raw input preservation against an integer oracle with ordinary strict native startup. Compare the physical JVM on both artifacts with an exact-rational oracle, including immediately adjacent doubles and lower-exclusive, upper-exclusive and last-match controls.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "373"
+        ]
+      },
+      "expected": "Each original passes a non-vacuous native proof over both cell words and every start and a complete 18,900-row finite replay. Preserve the original primary claim population.",
+      "submitted": {
+        "at": "2026-11-22T18:24:32+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Check inclusive endpoints and first matches on both original JARs",
+          "run": "python3 -B lib/benchmark/spring-java-data/positive_tolerance.py --output examples/373-commons-lang-nan-search/records/positive-tolerance",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/373-commons-lang-nan-search/records/positive-tolerance"
+      ]
+    }
+  },
+  "sourceCommit": "97f0f04c8f5eee4b9a32dc2a484e96badbae5019",
+  "startedAt": "2026-11-22T18:29:02+00:00",
+  "finishedAt": "2026-11-22T18:32:57+00:00",
+  "wallSeconds": 235.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 182459,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 89440256,
+    "wallSeconds": 3.2,
+    "cpuSeconds": 3.2,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 222.334,
+      "cpuSeconds": 221.995,
+      "cpuThrottledSeconds": 0.543,
+      "peakMemoryBytes": 3122659328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "7712bb3388efba821b8cd9e9b76aa34697a88f478094518706bd4950b767ce4c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-182432-prove-inclusive-positive-tolerance-on-bo/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 42s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check inclusive endpoints and first matches on both original JARs",
+      "run": "python3 -B lib/benchmark/spring-java-data/positive_tolerance.py --output examples/373-commons-lang-nan-search/records/positive-tolerance",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 3.207,
+      "cpuSeconds": 3.152,
+      "cpuThrottledSeconds": 2.682,
+      "peakMemoryBytes": 89440256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-inclusive-endpoints-and.log",
+        "lines": 2,
+        "bytes": 340,
+        "sha256": "e3b1454bd0c318fed6aa014e713462f3edf4e6c5d3d26d3d02d6fbe525c04f14",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent {'cases': 18900, 'indices': {'-1': 14862, '0': 1980, '1': 2058}, 'controlDifferences': {'excludeLower': 564, 'excludeUpper': 564, 'lastMatch': 582}} verified None",
+        "landed {'cases': 18900, 'indices': {'-1': 14862, '0': 1980, '1': 2058}, 'controlDifferences': {'excludeLower': 564, 'excludeUpper': 564, 'lastMatch': 582}} verified None"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/jvm.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/jvm.stdout",
+      "change": "added",
+      "bytes": 212,
+      "sha256": "344d42e5424bf85d58efee24e38cf01133782556832d0bbe6c77a077f017d717",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/measurement.json",
+      "change": "added",
+      "bytes": 3470,
+      "sha256": "e261dd7bf797b2ffd4174fba83611ec81aa27669691ed7c44ca83d083e522185",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/observations.bin.gz",
+      "change": "added",
+      "bytes": 15553,
+      "sha256": "e91c6200dd5a1ea336c330d6b15b1d26edd32f6a63f3f96858f7ec150b01ef5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/ordinary.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/ordinary.stdout",
+      "change": "added",
+      "bytes": 6193,
+      "sha256": "3494503bf17c0a2fd77d9c20079623b3300e2fda8e6d01e9efd7db8d5ff637b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/jvm.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/jvm.stdout",
+      "change": "added",
+      "bytes": 212,
+      "sha256": "869b5e85729a40d522b847ac9d8c5b175826ef5ed027df2dd57f392069ffa73f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/measurement.json",
+      "change": "added",
+      "bytes": 3470,
+      "sha256": "aa36ed9b9e72a7fc784ce570439301d11422e7da45b87b399e77e74e6ba29e50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/observations.bin.gz",
+      "change": "added",
+      "bytes": 15553,
+      "sha256": "e91c6200dd5a1ea336c330d6b15b1d26edd32f6a63f3f96858f7ec150b01ef5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/ordinary.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/ordinary.stdout",
+      "change": "added",
+      "bytes": 6197,
+      "sha256": "5854f5fdcc25e5179c677c77567ab4fce6b070096e4013e56a6b340412df28ee",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T18:33:08+00:00",
+    "applied": [
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/jvm.stderr",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/jvm.stdout",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/measurement.json",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/observations.bin.gz",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/ordinary.stderr",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/landed/ordinary.stdout",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/jvm.stderr",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/jvm.stdout",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/measurement.json",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/observations.bin.gz",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/ordinary.stderr",
+      "examples/373-commons-lang-nan-search/records/positive-tolerance/parent/ordinary.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "da5ed00db3f429e604dcd61c26b21f9d9ada3329",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/da5ed00db3f429e604dcd61c26b21f9d9ada3329/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T183257Z-678390dd4c6ce6f1",
+      "outputs": "20261122T183257Z-702367a0b75dc88a",
+      "diff": "20261122T183257Z-720802edd3cbc143"
+    }
+  }
+}

@@ -12,40 +12,43 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-22T18:27:36.004Z",
-  "duration_seconds": 23029,
+  "ended": "2026-11-22T18:33:44.874Z",
+  "duration_seconds": 23398,
   "stats": {
     "turns": 6,
-    "api_calls": 1079,
-    "tool_calls": 2574,
-    "tool_errors": 63,
+    "api_calls": 1102,
+    "tool_calls": 2629,
+    "tool_errors": 66,
     "compactions": 4,
     "peak_context_tokens": 525653,
     "usage": {
-      "input_tokens": 1483194,
-      "output_tokens": 493880,
-      "cache_read_input_tokens": 285266816,
+      "input_tokens": 1508397,
+      "output_tokens": 504139,
+      "cache_read_input_tokens": 288319872,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1484,
-    "exec": 999,
-    "apply_patch": 56,
+    "Bash": 1515,
+    "exec": 1017,
+    "apply_patch": 59,
     "wait": 9,
+    "send_message": 8,
     "sleep": 8,
-    "send_message": 7,
+    "spawn_agent": 4,
     "followup_task": 3,
     "list_agents": 3,
-    "spawn_agent": 3,
     "request_user_input_async": 1,
-    "send_message_to_user_async": 1
+    "send_message_to_user_async": 1,
+    "wait_agent": 1
   },
   "files_touched": [
     "examples/365-jackson-async-token-offsets/README.md",
     "examples/367-avro-union-array-default/driver/campaign/Cases.java",
+    "examples/373-commons-lang-nan-search/README.md",
     "examples/373-commons-lang-nan-search/companions/ToleranceReplay.java",
     "examples/373-commons-lang-nan-search/companions/ToleranceSearch.java",
+    "examples/373-commons-lang-nan-search/example.json",
     "lib/benchmark/java-domain-proof/DirectParser.java",
     "lib/benchmark/java-domain-proof/NameChecks.java",
     "lib/benchmark/java-domain-proof/NamePolicySites.java",
@@ -75,7 +78,8 @@
     "lib/tests/fixtures/observed-countermodels/app/oc/PublishedLookup.java",
     "llm-dlc/loops/java-domain-proof-campaign-results.md",
     "llm-dlc/loops/java-domain-proof-campaign.md",
-    "llm-dlc/loops/spring-and-java-data-workstream-briefs.md"
+    "llm-dlc/loops/spring-and-java-data-workstream-briefs.md",
+    "llm-dlc/loops/spring-and-java-data-workstream-results.md"
   ],
   "context_windows": [
     {
@@ -137,24 +141,24 @@
     {
       "index": 4,
       "started": "2026-11-22T18:18:42.758Z",
-      "ended": "2026-11-22T18:27:36.004Z",
+      "ended": "2026-11-22T18:33:44.874Z",
       "turns": 1,
-      "api_calls": 30,
+      "api_calls": 53,
       "usage": {
-        "input_tokens": 112553,
-        "output_tokens": 17604,
-        "cache_read_input_tokens": 2836608,
+        "input_tokens": 137756,
+        "output_tokens": 27863,
+        "cache_read_input_tokens": 5889664,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 123927
+      "peak_context_tokens": 147798
     }
   ],
   "log": {
-    "sha256": "0ce5f557b5730881c7d5eaed2bdd01f28a7bfdae24cb97b56991a8c11dae35da",
-    "bytes": 23835789,
-    "lines": 8313,
-    "gzip_bytes": 9322520,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/0ce5f557b5730881c7d5eaed2bdd01f28a7bfdae24cb97b56991a8c11dae35da.jsonl.gz"
+    "sha256": "5986ffe33c3b62d1159c56c165067ed4964d2821e46cba208687972425e27a55",
+    "bytes": 24283981,
+    "lines": 8501,
+    "gzip_bytes": 9521246,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/5986ffe33c3b62d1159c56c165067ed4964d2821e46cba208687972425e27a55.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -645,6 +649,22 @@
       "summary": "Check inclusive Commons Lang tolerance across symbolic cell pairs (verification pending)",
       "body": "Exercise the parent and landed ArrayUtils.indexOf on two independently chosen 64-bit words, all Java int starting indices and three exact centers at tolerance one quarter. Compare first match and post-call raw bits against an integer oracle. Calibrate 18,900 cases per original JAR with exact rational arithmetic, checking both boundary mutations and last match. The parent native probe, normal example validation, and selected Rust tests passed.\n\nManaged job 20261122-182432-prove-inclusive-positive-tolerance-on-bo checks both historical targets and records the full physical grids and strict proof receipts. The positive-tolerance extension is counted separately from the frozen zero-tolerance obligations.",
       "log_sha256": "0ce5f557b5730881c7d5eaed2bdd01f28a7bfdae24cb97b56991a8c11dae35da"
+    },
+    {
+      "change_id": "zoxzsozpnpzurqykqorylzkzqmmskxyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "5986ffe33c3b62d1159c56c165067ed4964d2821e46cba208687972425e27a55"
+    },
+    {
+      "change_id": "plzqnmvqzrzvwqtyxonxxppmmvyomutk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Collect the Commons Lang positive-tolerance proofs",
+      "body": "Managed job 20261122-182432-prove-inclusive-positive-tolerance-on-bo verified the two-cell first-match and raw input preservation claim on both original #1589 JARs. Both strict native receipts are non-vacuous and both 18,900-row JVM grids match the exact-rational oracle.\n\nCollection applied outputs for one of one jobs with zero conflicts. All 12 recorded digests rechecked. The measured step took 3.2 seconds and peaked at 85.3 MiB. Its one-CPU quota accounted for 2.7 seconds of throttling.",
+      "log_sha256": "5986ffe33c3b62d1159c56c165067ed4964d2821e46cba208687972425e27a55"
     }
   ],
   "logs": {
@@ -700,6 +720,12 @@
       "bytes": 3197216,
       "lines": 969,
       "gzip_bytes": 1082228,
+      "url": null
+    },
+    "5986ffe33c3b62d1159c56c165067ed4964d2821e46cba208687972425e27a55": {
+      "bytes": 24283981,
+      "lines": 8501,
+      "gzip_bytes": 9521246,
       "url": null
     },
     "6979f6c0a67f3fac34f7e1462c5f3698667f79ec10bad34accd7da8a80652452": {

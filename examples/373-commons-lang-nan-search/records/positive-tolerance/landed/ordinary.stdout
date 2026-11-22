@@ -1,0 +1,191 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "datawork.ToleranceSearch#agrees",
+    "domain": "first: long × second: long × start: int × center: int",
+    "assume": "center >= -1 && center <= 1",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over first: long × second: long × start: int × center: int in 0.0 s; loops unwound 256 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/positive-tolerance-kiexk331/ordinary/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ datawork.ToleranceSearch#agrees satisfies `result == 1` on every input where center >= -1 && center <= 1 (jvmcontract's own checker (CaDiCaL): 1 properties proved over first: long × second: long × start: int × center: int in 0.0 s; loops unwound 256 times with unwinding assertions)\n  not vacuous: agrees(first=20, second=20, start=20, center=0) reaches the calls\n",
+    "work": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/positive-tolerance-kiexk331/ordinary",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.04674688,
+      "properties": 1,
+      "unwind": 256,
+      "max_array_length": 16384,
+      "stage": null,
+      "native": {
+        "paths": 124,
+        "merges": 0,
+        "solver_calls": 825,
+        "solving_seconds": 0.027832418,
+        "gates_evaluated": 28804,
+        "evaluating_seconds": 0.00069255,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 4470,
+        "clauses": 14656,
+        "seconds": 0.04519845,
+        "loading_seconds": 0.000570037,
+        "decoding_seconds": 0.000101139,
+        "encoding_seconds": 0.00645792,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.045,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.01,
+            "encoding": 0.006,
+            "solving": 0.028,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 4470,
+            "clauses": 14656
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.953,
+          "seconds": 0.005,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 711,
+            "clauses": 1803
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.062,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.05,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.011
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "first",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "second",
+            "type": "long",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "start",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "center",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "first: long × second: long × start: int × center: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "center >= -1 && center <= 1",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found agrees(first=20, second=20, start=20, center=0).",
+        "witness": "agrees(first=20, second=20, start=20, center=0)"
+      }
+    }
+  }
+]
