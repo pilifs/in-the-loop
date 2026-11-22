@@ -1,0 +1,448 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-151858-setup-build-spring-security-core-at-the",
+  "title": "Setup: build Spring Security core at the three #14196 revisions and run the role hierarchy tests",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 4m36s, peak 2.4 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-151858-setup-build-spring-security-core-at-the.json",
+    "sha256": "f5d4d547e460c6f736ca553ccbef650c02f9408f17b33162369b497a2f49c5ea",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-151858-setup-build-spring-security-core-at-the",
+      "title": "Setup: build Spring Security core at the three #14196 revisions and run the role hierarchy tests",
+      "description": "Setup for Brief A2 (llm-dlc/loops/spring-and-java-data-workstream-briefs.md), no claims. In the worktrees under ~/.cache/in-the-loop/spring-java-data/src (made by the setup session; the Gradle 8.5 distribution and JDK 17 are already there), builds spring-security-core at 10d88cdf (before), 7d366242 (feature commit, adds RoleHierarchyImpl.Builder) and ee8bc78c (landed polish) with each checkout's own wrapper and dependencies, and runs each side's own RoleHierarchyImplTests and AuthorityAuthorizationManagerTests. The first run downloads the build's dependencies into ~/.cache/in-the-loop/spring-java-data/gradle-home; the landed tests are then rerun with --offline to show the cache is complete. Each jar is copied to .../artifacts/spring-security-14196-REV.jar with its sha256, the runtime classpath is written to .../logs, and the build trees are removed at the end (git clean in each worktree). Results go into llm-dlc/loops/spring-and-java-data-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-and-java-data-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: each revision's tests run (junit tests=N>0, failures=0) and its jar digest is printed; the offline rerun ends BUILD SUCCESSFUL",
+      "submitted": {
+        "at": "2026-11-22T15:18:58+00:00",
+        "session": "b30353b6-2017-49c9-b550-ea9010226406",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "30m",
+        "notes": "Gradle daemon -Xmx3g from gradle.properties plus test JVMs; first run downloads dependencies, later revisions hit the build cache"
+      },
+      "steps": [
+        {
+          "name": "spring-security-14196-before: build core, run RoleHierarchyImplTests and AuthorityAuthorizationManagerTests",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-security-14196-before; cd $W; echo worktree=spring-security-14196-before commit=$(git rev-parse HEAD); $G :spring-security-core:jar; $G :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' 2>&1 | tee $B/logs/spring-security-14196-before.spring-security-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/core/build/test-results/test | tee $B/logs/spring-security-14196-before.spring-security-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-security-14196-before.spring-security-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/core/build/libs/spring-security-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-security-14196-before.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-security-14196-before.jar; $G :spring-security-core:dependencies --configuration runtimeClasspath > $B/logs/spring-security-14196-before.spring-security-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-security-14196-before.spring-security-core.runtimeClasspath.txt | head -40; ",
+          "cwd": "."
+        },
+        {
+          "name": "spring-security-14196-feature: build core, run RoleHierarchyImplTests and AuthorityAuthorizationManagerTests",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-security-14196-feature; cd $W; echo worktree=spring-security-14196-feature commit=$(git rev-parse HEAD); $G :spring-security-core:jar; $G :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' 2>&1 | tee $B/logs/spring-security-14196-feature.spring-security-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/core/build/test-results/test | tee $B/logs/spring-security-14196-feature.spring-security-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-security-14196-feature.spring-security-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/core/build/libs/spring-security-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-security-14196-feature.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-security-14196-feature.jar; $G :spring-security-core:dependencies --configuration runtimeClasspath > $B/logs/spring-security-14196-feature.spring-security-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-security-14196-feature.spring-security-core.runtimeClasspath.txt | head -40; ",
+          "cwd": "."
+        },
+        {
+          "name": "spring-security-14196-landed: build core, run RoleHierarchyImplTests and AuthorityAuthorizationManagerTests",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-security-14196-landed; cd $W; echo worktree=spring-security-14196-landed commit=$(git rev-parse HEAD); $G :spring-security-core:jar; $G :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' 2>&1 | tee $B/logs/spring-security-14196-landed.spring-security-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/core/build/test-results/test | tee $B/logs/spring-security-14196-landed.spring-security-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-security-14196-landed.spring-security-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/core/build/libs/spring-security-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-security-14196-landed.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-security-14196-landed.jar; $G :spring-security-core:dependencies --configuration runtimeClasspath > $B/logs/spring-security-14196-landed.spring-security-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-security-14196-landed.spring-security-core.runtimeClasspath.txt | head -40; ",
+          "cwd": "."
+        },
+        {
+          "name": "spring-security-14196-landed: the same tests offline",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; cd $B/src/spring-security-14196-landed; $G --offline :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' --rerun 2>&1 | tee $B/logs/spring-security-14196-landed.spring-security-core.offline-test.log | tail -5; grep -q 'BUILD SUCCESSFUL' $B/logs/spring-security-14196-landed.spring-security-core.offline-test.log",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; git -C $B/src/spring-security-14196-before clean -fdxq; git -C $B/src/spring-security-14196-before status --short | wc -l; git -C $B/src/spring-security-14196-feature clean -fdxq; git -C $B/src/spring-security-14196-feature status --short | wc -l; git -C $B/src/spring-security-14196-landed clean -fdxq; git -C $B/src/spring-security-14196-landed status --short | wc -l; du -sh $B/src",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "6fc93ec453f87424cffc49eb1cdae0713c868482",
+  "startedAt": "2026-11-22T15:24:49+00:00",
+  "finishedAt": "2026-11-22T15:29:37+00:00",
+  "wallSeconds": 288.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2455446,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": "Gradle daemon -Xmx3g from gradle.properties plus test JVMs; first run downloads dependencies, later revisions hit the build cache"
+  },
+  "usage": {
+    "peakMemoryBytes": 2594897920,
+    "wallSeconds": 277.0,
+    "cpuSeconds": 455.7,
+    "memoryOfEstimate": 0.4,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "spring-security-14196-before: build core, run RoleHierarchyImplTests and AuthorityAuthorizationManagerTests",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-security-14196-before; cd $W; echo worktree=spring-security-14196-before commit=$(git rev-parse HEAD); $G :spring-security-core:jar; $G :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' 2>&1 | tee $B/logs/spring-security-14196-before.spring-security-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/core/build/test-results/test | tee $B/logs/spring-security-14196-before.spring-security-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-security-14196-before.spring-security-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/core/build/libs/spring-security-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-security-14196-before.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-security-14196-before.jar; $G :spring-security-core:dependencies --configuration runtimeClasspath > $B/logs/spring-security-14196-before.spring-security-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-security-14196-before.spring-security-core.runtimeClasspath.txt | head -40; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 177.114,
+      "cpuSeconds": 201.466,
+      "cpuThrottledSeconds": 8.627,
+      "peakMemoryBytes": 2594897920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-spring-security-14196-before-b.log",
+        "lines": 118,
+        "bytes": 7426,
+        "sha256": "0119a270bbd1c7637d074b56076d5b0c28ae1974aba75b272ddc13a2bfb2bdfa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-before/core/src/test/java/org/springframework/security/authorization/AuthorityAuthorizationManagerTests.java:100: warning: non-varargs call of varargs method with inexact argument type for last parameter;",
+        "\t\tassertThatIllegalArgumentException().isThrownBy(() -> AuthorityAuthorizationManager.hasAnyAuthority(null))",
+        "\t\t                                                                                                    ^",
+        "  cast to String for a varargs call",
+        "  cast to String[] for a non-varargs call and to suppress this warning",
+        "/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-before/core/src/test/java/org/springframework/security/core/StaticFinalReflectionUtils.java:51: warning: [removal] AccessController in java.security has been deprecated and marked for removal",
+        "\t\t\t\tAccessController.doPrivileged(new PrivilegedAction<Object>() {",
+        "\t\t\t\t^",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: Some input files use unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "4 warnings",
+        "",
+        "> Task :spring-security-core:testClasses",
+        "> Task :spring-security-core:test",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 17s",
+        "12 actionable tasks: 3 executed, 9 up-to-date",
+        "",
+        "A build scan was not published as you have not authenticated with server 'ge.spring.io'.",
+        "For more information, please see https://gradle.com/help/gradle-authenticating-with-gradle-enterprise.",
+        "gradle-test-exit=0",
+        "junit tests=38 failures=0 errors=0 skipped=0",
+        "built-jar=/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-before/core/build/libs/spring-security-core-6.3.0-SNAPSHOT.jar",
+        "cdbc30986e169dd235ce624cfb96b746b553c94de265f57bbde233f25a1955e3  /home/filip/.cache/in-the-loop/spring-java-data/artifacts/spring-security-14196-before.jar",
+        "+--- project :spring-security-crypto",
+        "+--- org.springframework:spring-aop -> 6.1.1",
+        "+--- org.springframework:spring-beans -> 6.1.1 (*)",
+        "+--- org.springframework:spring-context -> 6.1.1",
+        "+--- org.springframework:spring-core -> 6.1.1 (*)",
+        "+--- org.springframework:spring-expression -> 6.1.1 (*)",
+        "+--- io.micrometer:micrometer-observation -> 1.12.0 (*)",
+        "\\--- project :spring-security-dependencies"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "spring-security-14196-feature: build core, run RoleHierarchyImplTests and AuthorityAuthorizationManagerTests",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-security-14196-feature; cd $W; echo worktree=spring-security-14196-feature commit=$(git rev-parse HEAD); $G :spring-security-core:jar; $G :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' 2>&1 | tee $B/logs/spring-security-14196-feature.spring-security-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/core/build/test-results/test | tee $B/logs/spring-security-14196-feature.spring-security-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-security-14196-feature.spring-security-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/core/build/libs/spring-security-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-security-14196-feature.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-security-14196-feature.jar; $G :spring-security-core:dependencies --configuration runtimeClasspath > $B/logs/spring-security-14196-feature.spring-security-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-security-14196-feature.spring-security-core.runtimeClasspath.txt | head -40; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 45.508,
+      "cpuSeconds": 113.681,
+      "cpuThrottledSeconds": 0.389,
+      "peakMemoryBytes": 1185304576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-spring-security-14196-feature.log",
+        "lines": 111,
+        "bytes": 7030,
+        "sha256": "7655df4d218e4ca7245a3dc32cd21326d251b8cf87021bb416db22ca5294e5e7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-feature/core/src/test/java/org/springframework/security/authorization/AuthorityAuthorizationManagerTests.java:100: warning: non-varargs call of varargs method with inexact argument type for last parameter;",
+        "\t\tassertThatIllegalArgumentException().isThrownBy(() -> AuthorityAuthorizationManager.hasAnyAuthority(null))",
+        "\t\t                                                                                                    ^",
+        "  cast to String for a varargs call",
+        "  cast to String[] for a non-varargs call and to suppress this warning",
+        "/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-feature/core/src/test/java/org/springframework/security/core/StaticFinalReflectionUtils.java:51: warning: [removal] AccessController in java.security has been deprecated and marked for removal",
+        "\t\t\t\tAccessController.doPrivileged(new PrivilegedAction<Object>() {",
+        "\t\t\t\t^",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: Some input files use unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "4 warnings",
+        "",
+        "> Task :spring-security-core:testClasses",
+        "> Task :spring-security-core:test",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 14s",
+        "12 actionable tasks: 3 executed, 9 up-to-date",
+        "",
+        "A build scan was not published as you have not authenticated with server 'ge.spring.io'.",
+        "For more information, please see https://gradle.com/help/gradle-authenticating-with-gradle-enterprise.",
+        "gradle-test-exit=0",
+        "junit tests=46 failures=0 errors=0 skipped=0",
+        "built-jar=/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-feature/core/build/libs/spring-security-core-6.3.0-SNAPSHOT.jar",
+        "6a0b821f572378a8863c0b14dabb46714e43b631f3bcb18acf936d9c33c2afc0  /home/filip/.cache/in-the-loop/spring-java-data/artifacts/spring-security-14196-feature.jar",
+        "+--- project :spring-security-crypto",
+        "+--- org.springframework:spring-aop -> 6.1.1",
+        "+--- org.springframework:spring-beans -> 6.1.1 (*)",
+        "+--- org.springframework:spring-context -> 6.1.1",
+        "+--- org.springframework:spring-core -> 6.1.1 (*)",
+        "+--- org.springframework:spring-expression -> 6.1.1 (*)",
+        "+--- io.micrometer:micrometer-observation -> 1.12.0 (*)",
+        "\\--- project :spring-security-dependencies"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "spring-security-14196-landed: build core, run RoleHierarchyImplTests and AuthorityAuthorizationManagerTests",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-security-14196-landed; cd $W; echo worktree=spring-security-14196-landed commit=$(git rev-parse HEAD); $G :spring-security-core:jar; $G :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' 2>&1 | tee $B/logs/spring-security-14196-landed.spring-security-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/core/build/test-results/test | tee $B/logs/spring-security-14196-landed.spring-security-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-security-14196-landed.spring-security-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/core/build/libs/spring-security-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-security-14196-landed.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-security-14196-landed.jar; $G :spring-security-core:dependencies --configuration runtimeClasspath > $B/logs/spring-security-14196-landed.spring-security-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-security-14196-landed.spring-security-core.runtimeClasspath.txt | head -40; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 40.1,
+      "cpuSeconds": 108.24,
+      "cpuThrottledSeconds": 0.499,
+      "peakMemoryBytes": 1687035904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-spring-security-14196-landed-b.log",
+        "lines": 111,
+        "bytes": 7022,
+        "sha256": "1b6be32706b7f14065816adde2952b36ffcfcf3858b8bfaccb392d1a76dd00c9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-landed/core/src/test/java/org/springframework/security/authorization/AuthorityAuthorizationManagerTests.java:100: warning: non-varargs call of varargs method with inexact argument type for last parameter;",
+        "\t\tassertThatIllegalArgumentException().isThrownBy(() -> AuthorityAuthorizationManager.hasAnyAuthority(null))",
+        "\t\t                                                                                                    ^",
+        "  cast to String for a varargs call",
+        "  cast to String[] for a non-varargs call and to suppress this warning",
+        "/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-landed/core/src/test/java/org/springframework/security/core/StaticFinalReflectionUtils.java:51: warning: [removal] AccessController in java.security has been deprecated and marked for removal",
+        "\t\t\t\tAccessController.doPrivileged(new PrivilegedAction<Object>() {",
+        "\t\t\t\t^",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: Some input files use unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "4 warnings",
+        "",
+        "> Task :spring-security-core:testClasses",
+        "> Task :spring-security-core:test",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 13s",
+        "12 actionable tasks: 3 executed, 9 up-to-date",
+        "",
+        "A build scan was not published as you have not authenticated with server 'ge.spring.io'.",
+        "For more information, please see https://gradle.com/help/gradle-authenticating-with-gradle-enterprise.",
+        "gradle-test-exit=0",
+        "junit tests=45 failures=0 errors=0 skipped=0",
+        "built-jar=/home/filip/.cache/in-the-loop/spring-java-data/src/spring-security-14196-landed/core/build/libs/spring-security-core-6.3.0-SNAPSHOT.jar",
+        "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be  /home/filip/.cache/in-the-loop/spring-java-data/artifacts/spring-security-14196-landed.jar",
+        "+--- project :spring-security-crypto",
+        "+--- org.springframework:spring-aop -> 6.1.1",
+        "+--- org.springframework:spring-beans -> 6.1.1 (*)",
+        "+--- org.springframework:spring-context -> 6.1.1",
+        "+--- org.springframework:spring-core -> 6.1.1 (*)",
+        "+--- org.springframework:spring-expression -> 6.1.1 (*)",
+        "+--- io.micrometer:micrometer-observation -> 1.12.0 (*)",
+        "\\--- project :spring-security-dependencies"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "spring-security-14196-landed: the same tests offline",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; cd $B/src/spring-security-14196-landed; $G --offline :spring-security-core:test --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests' --tests 'org.springframework.security.authorization.AuthorityAuthorizationManagerTests' --rerun 2>&1 | tee $B/logs/spring-security-14196-landed.spring-security-core.offline-test.log | tail -5; grep -q 'BUILD SUCCESSFUL' $B/logs/spring-security-14196-landed.spring-security-core.offline-test.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 13.838,
+      "cpuSeconds": 31.945,
+      "cpuThrottledSeconds": 0.107,
+      "peakMemoryBytes": 880877568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-spring-security-14196-landed-t.log",
+        "lines": 5,
+        "bytes": 396,
+        "sha256": "52308634bb666e219fafcf9f57e84ef58e0c6c03fd43d675d263975038e6bc00",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "For more on this, please refer to https://docs.gradle.org/8.5/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 13s",
+        "12 actionable tasks: 1 executed, 11 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; git -C $B/src/spring-security-14196-before clean -fdxq; git -C $B/src/spring-security-14196-before status --short | wc -l; git -C $B/src/spring-security-14196-feature clean -fdxq; git -C $B/src/spring-security-14196-feature status --short | wc -l; git -C $B/src/spring-security-14196-landed clean -fdxq; git -C $B/src/spring-security-14196-landed status --short | wc -l; du -sh $B/src",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.403,
+      "cpuSeconds": 0.365,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 8183808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-remove-the-build-trees.log",
+        "lines": 4,
+        "bytes": 63,
+        "sha256": "7505237f2ef92d791f3863f0f3594ec7ae7f71fe2f4989d5a55aba83b26aab46",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0",
+        "0",
+        "0",
+        "660M\t/home/filip/.cache/in-the-loop/spring-java-data/src"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-22T15:30:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T152937Z-00955905c2c21fa6"
+    }
+  }
+}

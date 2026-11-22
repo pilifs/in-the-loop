@@ -1,0 +1,367 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-151858-setup-build-spring-framework-spring-core",
+  "title": "Setup: build Spring Framework spring-core at both #36911 revisions and run PropertyTests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 4m54s, peak 3.1 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-151858-setup-build-spring-framework-spring-core.json",
+    "sha256": "3ecd2d1c834420215bd684d8c2d6ab166d1b055c17efb3fe6269e9853a2bbcbd",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-151858-setup-build-spring-framework-spring-core",
+      "title": "Setup: build Spring Framework spring-core at both #36911 revisions and run PropertyTests",
+      "description": "Setup for Brief A3, no claims. In the setup worktrees under ~/.cache/in-the-loop/spring-java-data/src, builds spring-core at f067d40f (landed) and fd95ab16 (parent) with Gradle 9.7.0 and the JDK 25 toolchain (Temurin 25.0.5, auto-download off), runs the landed PropertyTests (new in this change) on the landed side, and the same file transplanted onto the parent, where resolveNameForRecordAccessorEmbeddingGetPrefix is expected to fail (the transplant is removed after). Jars to .../artifacts with sha256, runtime classpath to .../logs, landed tests rerun --offline, build trees removed. Results go into llm-dlc/loops/spring-and-java-data-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/spring-and-java-data-setup.md"
+        ]
+      },
+      "expected": "every step exits 0: landed PropertyTests all pass; on the parent the Gradle test task fails and the junit summary lists PropertyTests#resolveNameForRecordAccessorEmbeddingGetPrefix among the failures; offline rerun BUILD SUCCESSFUL",
+      "submitted": {
+        "at": "2026-11-22T15:18:58+00:00",
+        "session": "b30353b6-2017-49c9-b550-ea9010226406",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m",
+        "notes": "Gradle -Xmx2048m plus a Kotlin daemon and the test JVM; first run downloads the Framework 7.1 build's dependencies"
+      },
+      "steps": [
+        {
+          "name": "spring-framework-36911-landed: build spring-core, run PropertyTests",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem\"; W=$B/src/spring-framework-36911-landed; cd $W; echo worktree=spring-framework-36911-landed commit=$(git rev-parse HEAD); $G :spring-core:jar; $G :spring-core:test --tests 'org.springframework.core.convert.PropertyTests' 2>&1 | tee $B/logs/spring-framework-36911-landed.spring-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/spring-core/build/test-results/test | tee $B/logs/spring-framework-36911-landed.spring-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-framework-36911-landed.spring-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/spring-core/build/libs/spring-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-framework-36911-landed.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-framework-36911-landed.jar; $G :spring-core:dependencies --configuration runtimeClasspath > $B/logs/spring-framework-36911-landed.spring-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-framework-36911-landed.spring-core.runtimeClasspath.txt | head -40; ",
+          "cwd": "."
+        },
+        {
+          "name": "spring-framework-36911-parent: build spring-core, run the landed PropertyTests (transplanted; failures expected)",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem\"; W=$B/src/spring-framework-36911-parent; cd $W; echo worktree=spring-framework-36911-parent commit=$(git rev-parse HEAD); git -C $W show f067d40f0a646a98d0e2735a34b6e31f0e3f2c97:spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java > $W/spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java; echo transplanted spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java from f067d40f0a646a98d0e2735a34b6e31f0e3f2c97; $G :spring-core:jar; set +e; $G :spring-core:test --tests 'org.springframework.core.convert.PropertyTests' 2>&1 | tee $B/logs/spring-framework-36911-parent.spring-core.test.log; rc=${PIPESTATUS[0]}; set -e; rm -f $W/spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java; echo gradle-test-exit=$rc; summarize $W/spring-core/build/test-results/test | tee $B/logs/spring-framework-36911-parent.spring-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-framework-36911-parent.spring-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/spring-core/build/libs/spring-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-framework-36911-parent.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-framework-36911-parent.jar; $G :spring-core:dependencies --configuration runtimeClasspath > $B/logs/spring-framework-36911-parent.spring-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-framework-36911-parent.spring-core.runtimeClasspath.txt | head -40; test $rc -ne 0; grep -q 'failed PropertyTests#resolveNameForRecordAccessorEmbeddingGetPrefix' $B/logs/spring-framework-36911-parent.spring-core.junit.txt",
+          "cwd": "."
+        },
+        {
+          "name": "spring-framework-36911-landed: PropertyTests offline",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem\"; cd $B/src/spring-framework-36911-landed; $G --offline :spring-core:test --tests 'org.springframework.core.convert.PropertyTests' --rerun 2>&1 | tee $B/logs/spring-framework-36911-landed.spring-core.offline-test.log | tail -5; grep -q 'BUILD SUCCESSFUL' $B/logs/spring-framework-36911-landed.spring-core.offline-test.log",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; git -C $B/src/spring-framework-36911-parent clean -fdxq; git -C $B/src/spring-framework-36911-parent status --short | wc -l; git -C $B/src/spring-framework-36911-landed clean -fdxq; git -C $B/src/spring-framework-36911-landed status --short | wc -l; du -sh $B/src",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "6fc93ec453f87424cffc49eb1cdae0713c868482",
+  "startedAt": "2026-11-22T15:24:49+00:00",
+  "finishedAt": "2026-11-22T15:29:54+00:00",
+  "wallSeconds": 305.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2455446,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": "Gradle -Xmx2048m plus a Kotlin daemon and the test JVM; first run downloads the Framework 7.1 build's dependencies"
+  },
+  "usage": {
+    "peakMemoryBytes": 3298144256,
+    "wallSeconds": 294.6,
+    "cpuSeconds": 482.9,
+    "memoryOfEstimate": 0.51,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "spring-framework-36911-landed: build spring-core, run PropertyTests",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem\"; W=$B/src/spring-framework-36911-landed; cd $W; echo worktree=spring-framework-36911-landed commit=$(git rev-parse HEAD); $G :spring-core:jar; $G :spring-core:test --tests 'org.springframework.core.convert.PropertyTests' 2>&1 | tee $B/logs/spring-framework-36911-landed.spring-core.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/spring-core/build/test-results/test | tee $B/logs/spring-framework-36911-landed.spring-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-framework-36911-landed.spring-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/spring-core/build/libs/spring-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-framework-36911-landed.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-framework-36911-landed.jar; $G :spring-core:dependencies --configuration runtimeClasspath > $B/logs/spring-framework-36911-landed.spring-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-framework-36911-landed.spring-core.runtimeClasspath.txt | head -40; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 224.577,
+      "cpuSeconds": 306.643,
+      "cpuThrottledSeconds": 20.56,
+      "peakMemoryBytes": 3298144256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-spring-framework-36911-landed.log",
+        "lines": 126,
+        "bytes": 6674,
+        "sha256": "6b9caefcf46081b1c9f23a79ccca8082c8d2d18cf795163772f990167238a3e5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> Task :spring-core:processTestResources",
+        "> Task :spring-core:compileTestKotlin",
+        "> Task :spring-core:compileTestJava",
+        "> Task :spring-core:testClasses",
+        "",
+        "> Task :spring-core:test",
+        "OpenJDK 64-Bit Server VM warning: Option AllowRedefinitionToAddDeleteMethods was deprecated in version 13.0 and will likely be removed in a future release.",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/spring-java-data/src/spring-framework-36911-landed/build/reports/problems/problems-report.html",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 43s",
+        "24 actionable tasks: 6 executed, 18 up-to-date",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html",
+        "gradle-test-exit=0",
+        "junit tests=18 failures=0 errors=0 skipped=0",
+        "built-jar=/home/filip/.cache/in-the-loop/spring-java-data/src/spring-framework-36911-landed/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "913fceb73ae5b156552587cf93f49be053c90aac38abb18cf6410f54524a3c8c  /home/filip/.cache/in-the-loop/spring-java-data/artifacts/spring-framework-36911-landed.jar",
+        "+--- commons-logging:commons-logging -> 1.3.5",
+        "+--- org.jspecify:jspecify -> 1.0.0",
+        "+--- project ':framework-platform'",
+        "+--- io.micrometer:context-propagation -> 1.2.1",
+        "+--- io.netty:netty-buffer -> 4.2.17.Final",
+        "+--- io.projectreactor:reactor-core -> 3.9.0-SNAPSHOT",
+        "+--- io.reactivex.rxjava3:rxjava -> 3.1.12",
+        "+--- io.smallrye.reactive:mutiny -> 1.10.0",
+        "+--- net.sf.jopt-simple:jopt-simple -> 5.0.4",
+        "+--- org.aspectj:aspectjweaver -> 1.9.25",
+        "+--- org.eclipse.jetty:jetty-io -> 12.1.12",
+        "+--- org.jetbrains.kotlin:kotlin-reflect -> 2.4.10",
+        "+--- org.jetbrains.kotlin:kotlin-stdlib -> 2.4.10 (*)",
+        "+--- org.jetbrains.kotlinx:kotlinx-coroutines-core -> 1.11.0",
+        "+--- org.jetbrains.kotlinx:kotlinx-coroutines-reactor -> 1.11.0",
+        "+--- org.jetbrains.kotlin:kotlin-reflect:2.4.10 (c)",
+        "\\--- org.jetbrains.kotlin:kotlin-stdlib:2.4.10 (c)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "spring-framework-36911-parent: build spring-core, run the landed PropertyTests (transplanted; failures expected)",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem\"; W=$B/src/spring-framework-36911-parent; cd $W; echo worktree=spring-framework-36911-parent commit=$(git rev-parse HEAD); git -C $W show f067d40f0a646a98d0e2735a34b6e31f0e3f2c97:spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java > $W/spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java; echo transplanted spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java from f067d40f0a646a98d0e2735a34b6e31f0e3f2c97; $G :spring-core:jar; set +e; $G :spring-core:test --tests 'org.springframework.core.convert.PropertyTests' 2>&1 | tee $B/logs/spring-framework-36911-parent.spring-core.test.log; rc=${PIPESTATUS[0]}; set -e; rm -f $W/spring-core/src/test/java/org/springframework/core/convert/PropertyTests.java; echo gradle-test-exit=$rc; summarize $W/spring-core/build/test-results/test | tee $B/logs/spring-framework-36911-parent.spring-core.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-framework-36911-parent.spring-core.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/spring-core/build/libs/spring-core-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-framework-36911-parent.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-framework-36911-parent.jar; $G :spring-core:dependencies --configuration runtimeClasspath > $B/logs/spring-framework-36911-parent.spring-core.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-framework-36911-parent.spring-core.runtimeClasspath.txt | head -40; test $rc -ne 0; grep -q 'failed PropertyTests#resolveNameForRecordAccessorEmbeddingGetPrefix' $B/logs/spring-framework-36911-parent.spring-core.junit.txt",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 58.561,
+      "cpuSeconds": 142.731,
+      "cpuThrottledSeconds": 2.095,
+      "peakMemoryBytes": 1671499776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-spring-framework-36911-parent.log",
+        "lines": 170,
+        "bytes": 8989,
+        "sha256": "1319b6a9929a1e772bcce0b47100d687819c4accb57bf6fd04a4e774453dcd93",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "> There were failing tests. See the report at: file:///home/filip/.cache/in-the-loop/spring-java-data/src/spring-framework-36911-parent/spring-core/build/reports/tests/test/index.html",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.7.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD FAILED in 17s",
+        "24 actionable tasks: 3 executed, 3 from cache, 18 up-to-date",
+        "gradle-test-exit=1",
+        "junit tests=18 failures=9 errors=0 skipped=0",
+        "junit failed PropertyTests#resolveNameForRecordAccessorNamedIs()",
+        "junit failed PropertyTests#resolveNameForRecordAccessorEmbeddingGetPrefix()",
+        "junit failed PropertyTests#resolveNameForDataClassAccessorEmbeddingGetPrefix()",
+        "junit failed PropertyTests#resolveNameForRecordAccessorNamedGetWidget()",
+        "junit failed PropertyTests#resolveNameForDataClassAccessorStartingWithIsPrefix()",
+        "junit failed PropertyTests#resolveNameForRecordAccessorStartingWithIsPrefix()",
+        "junit failed PropertyTests#resolveNameForBooleanGetterBackedByFieldOfSameName()",
+        "junit failed PropertyTests#resolveNameForRecordAccessorNamedGet()",
+        "junit failed PropertyTests#resolveNameForGetterEmbeddingGetInName()",
+        "built-jar=/home/filip/.cache/in-the-loop/spring-java-data/src/spring-framework-36911-parent/spring-core/build/libs/spring-core-7.1.0-SNAPSHOT.jar",
+        "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d  /home/filip/.cache/in-the-loop/spring-java-data/artifacts/spring-framework-36911-parent.jar",
+        "+--- commons-logging:commons-logging -> 1.3.5",
+        "+--- org.jspecify:jspecify -> 1.0.0",
+        "+--- project ':framework-platform'",
+        "+--- io.micrometer:context-propagation -> 1.2.1",
+        "+--- io.netty:netty-buffer -> 4.2.17.Final",
+        "+--- io.projectreactor:reactor-core -> 3.9.0-SNAPSHOT",
+        "+--- io.reactivex.rxjava3:rxjava -> 3.1.12",
+        "+--- io.smallrye.reactive:mutiny -> 1.10.0",
+        "+--- net.sf.jopt-simple:jopt-simple -> 5.0.4",
+        "+--- org.aspectj:aspectjweaver -> 1.9.25",
+        "+--- org.eclipse.jetty:jetty-io -> 12.1.12",
+        "+--- org.jetbrains.kotlin:kotlin-reflect -> 2.4.10",
+        "+--- org.jetbrains.kotlin:kotlin-stdlib -> 2.4.10 (*)",
+        "+--- org.jetbrains.kotlinx:kotlinx-coroutines-core -> 1.11.0",
+        "+--- org.jetbrains.kotlinx:kotlinx-coroutines-reactor -> 1.11.0",
+        "+--- org.jetbrains.kotlin:kotlin-reflect:2.4.10 (c)",
+        "\\--- org.jetbrains.kotlin:kotlin-stdlib:2.4.10 (c)"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "spring-framework-36911-landed: PropertyTests offline",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem\"; cd $B/src/spring-framework-36911-landed; $G --offline :spring-core:test --tests 'org.springframework.core.convert.PropertyTests' --rerun 2>&1 | tee $B/logs/spring-framework-36911-landed.spring-core.offline-test.log | tail -5; grep -q 'BUILD SUCCESSFUL' $B/logs/spring-framework-36911-landed.spring-core.offline-test.log",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 11.024,
+      "cpuSeconds": 33.099,
+      "cpuThrottledSeconds": 0.646,
+      "peakMemoryBytes": 775204864,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-spring-framework-36911-landed.log",
+        "lines": 5,
+        "bytes": 377,
+        "sha256": "ddbf9229940272da84ab3173cdfb51971ac495d4bd8018481a2026abc171f4d6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "",
+        "BUILD SUCCESSFUL in 10s",
+        "24 actionable tasks: 1 executed, 23 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.7.0/userguide/configuration_cache_enabling.html"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; git -C $B/src/spring-framework-36911-parent clean -fdxq; git -C $B/src/spring-framework-36911-parent status --short | wc -l; git -C $B/src/spring-framework-36911-landed clean -fdxq; git -C $B/src/spring-framework-36911-landed status --short | wc -l; du -sh $B/src",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 0.401,
+      "cpuSeconds": 0.415,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 11567104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-remove-the-build-trees.log",
+        "lines": 3,
+        "bytes": 61,
+        "sha256": "2cc66be246cc542376f70352fe4e43638f650f3554e2aaf6605ca5f4f71bb157",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "0",
+        "0",
+        "605M\t/home/filip/.cache/in-the-loop/spring-java-data/src"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-22T15:30:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T152954Z-661752cca4987042"
+    }
+  }
+}
