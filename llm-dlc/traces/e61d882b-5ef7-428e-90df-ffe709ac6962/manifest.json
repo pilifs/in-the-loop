@@ -12,32 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-22T23:19:16.924Z",
-  "duration_seconds": 470493,
+  "ended": "2026-11-22T23:23:05.480Z",
+  "duration_seconds": 470722,
   "stats": {
     "turns": 149,
-    "api_calls": 1052,
-    "tool_calls": 1001,
+    "api_calls": 1058,
+    "tool_calls": 1007,
     "tool_errors": 20,
     "compactions": 6,
     "peak_context_tokens": 565519,
     "usage": {
-      "input_tokens": 2444,
-      "output_tokens": 719356,
-      "cache_read_input_tokens": 233047217,
-      "cache_creation_input_tokens": 3839380
+      "input_tokens": 2460,
+      "output_tokens": 722693,
+      "cache_read_input_tokens": 235057950,
+      "cache_creation_input_tokens": 3845039
     }
   },
   "tools": {
-    "Bash": 871,
+    "Bash": 875,
     "Edit": 47,
     "Read": 25,
     "SendMessage": 14,
     "ToolSearch": 12,
     "Write": 11,
     "ListAgents": 8,
-    "CronCreate": 4,
-    "CronDelete": 2,
+    "CronCreate": 5,
+    "CronDelete": 3,
     "TaskStop": 2,
     "Agent": 1,
     "PushNotification": 1,
@@ -159,24 +159,24 @@
     {
       "index": 6,
       "started": "2026-11-21T20:18:11.910Z",
-      "ended": "2026-11-22T23:19:16.924Z",
+      "ended": "2026-11-22T23:23:05.480Z",
       "turns": 22,
-      "api_calls": 187,
+      "api_calls": 193,
       "usage": {
-        "input_tokens": 454,
-        "output_tokens": 121245,
-        "cache_read_input_tokens": 38179967,
-        "cache_creation_input_tokens": 802193
+        "input_tokens": 470,
+        "output_tokens": 124582,
+        "cache_read_input_tokens": 40190700,
+        "cache_creation_input_tokens": 807852
       },
-      "peak_context_tokens": 332619
+      "peak_context_tokens": 338278
     }
   ],
   "log": {
-    "sha256": "e43ccd097987de64a5452a0fb0181d0e85cacfafe5236038f0684c9a9a1e3229",
-    "bytes": 21058837,
-    "lines": 7969,
-    "gzip_bytes": 3863994,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/e43ccd097987de64a5452a0fb0181d0e85cacfafe5236038f0684c9a9a1e3229.jsonl.gz"
+    "sha256": "174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7",
+    "bytes": 21128183,
+    "lines": 8012,
+    "gzip_bytes": 3873377,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7.jsonl.gz"
   },
   "subagents": [
     {
@@ -6607,6 +6607,14 @@
       "summary": "Stamp the redaction rules after policy 6",
       "body": "sync.py stamp rescanned every transcript, log and published file under redaction policy 6 (Codex encrypted reasoning redacted) and wrote the new stamp. As it does, it turned the 85 open warnings into allow-list proposals, mostly the encrypted-reasoning blobs in logs stored before policy 6, which keep warning in check until a person approves or drops them. Run at the user's request after they vouched for the 18 delegated decisions.",
       "log_sha256": "e43ccd097987de64a5452a0fb0181d0e85cacfafe5236038f0684c9a9a1e3229"
+    },
+    {
+      "change_id": "rlprzytnzrmpwkyvxtlzopowtysoypux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "List the encrypted-reasoning redaction test in the cost inventory",
+      "body": "test_codex.py::Redaction.test_encrypted_reasoning, added with redaction policy 6, was missing from lib/tests/costs.json, so the tier lint failed the default run after the Spring merge. test_costs.py estimate added its row (unit tier); the tier lint passes.",
+      "log_sha256": "174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7"
     }
   ],
   "logs": {
@@ -6657,6 +6665,12 @@
       "lines": 1726,
       "gzip_bytes": 943999,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/143756e2ea1f4f78e4948178f2d67096414daec8edb5528f61f6c41d8512af60.jsonl.gz"
+    },
+    "174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7": {
+      "bytes": 21128183,
+      "lines": 8012,
+      "gzip_bytes": 3873377,
+      "url": null
     },
     "18d0570da54fb8dcb194cf7c40bee8abcf0841bb4d85deeb3a7e95a0f2cf973c": {
       "bytes": 18369676,

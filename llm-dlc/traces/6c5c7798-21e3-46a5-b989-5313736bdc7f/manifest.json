@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-22T23:17:15.721Z",
-  "duration_seconds": 625789,
+  "ended": "2026-11-22T23:29:28.911Z",
+  "duration_seconds": 626522,
   "stats": {
-    "turns": 901,
-    "api_calls": 4159,
-    "tool_calls": 3695,
+    "turns": 902,
+    "api_calls": 4166,
+    "tool_calls": 3702,
     "tool_errors": 54,
     "compactions": 12,
     "peak_context_tokens": 626480,
     "usage": {
-      "input_tokens": 10102,
-      "output_tokens": 1883122,
-      "cache_read_input_tokens": 1176634253,
-      "cache_creation_input_tokens": 6220080
+      "input_tokens": 10120,
+      "output_tokens": 1887370,
+      "cache_read_input_tokens": 1179427298,
+      "cache_creation_input_tokens": 6228169
     }
   },
   "tools": {
-    "Bash": 3538,
+    "Bash": 3544,
     "Edit": 33,
-    "SendMessage": 28,
+    "SendMessage": 29,
     "ToolSearch": 21,
     "Write": 17,
     "TaskStop": 16,
@@ -246,24 +246,24 @@
     {
       "index": 12,
       "started": "2026-11-22T14:41:29.545Z",
-      "ended": "2026-11-22T23:17:15.721Z",
-      "turns": 29,
-      "api_calls": 188,
+      "ended": "2026-11-22T23:29:28.911Z",
+      "turns": 30,
+      "api_calls": 195,
       "usage": {
-        "input_tokens": 434,
-        "output_tokens": 98098,
-        "cache_read_input_tokens": 55404834,
-        "cache_creation_input_tokens": 634057
+        "input_tokens": 452,
+        "output_tokens": 102346,
+        "cache_read_input_tokens": 58197879,
+        "cache_creation_input_tokens": 642146
       },
-      "peak_context_tokens": 394225
+      "peak_context_tokens": 402314
     }
   ],
   "log": {
-    "sha256": "7047b9085876d82630861031d445ec6deae88faa354dd460a973ae34d3fa7fb7",
-    "bytes": 66229093,
-    "lines": 34519,
-    "gzip_bytes": 10473476,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7047b9085876d82630861031d445ec6deae88faa354dd460a973ae34d3fa7fb7.jsonl.gz"
+    "sha256": "dce49f5f925e15a7d219e3df71728655a0fd140fd50d3e79f255fd63ce10613e",
+    "bytes": 66374323,
+    "lines": 34604,
+    "gzip_bytes": 10490113,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/dce49f5f925e15a7d219e3df71728655a0fd140fd50d3e79f255fd63ce10613e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -8402,6 +8402,14 @@
       "summary": "Stamp the redaction rules after policy 6",
       "body": "sync.py stamp rescanned every transcript, log and published file under redaction policy 6 (Codex encrypted reasoning redacted) and wrote the new stamp. As it does, it turned the 85 open warnings into allow-list proposals, mostly the encrypted-reasoning blobs in logs stored before policy 6, which keep warning in check until a person approves or drops them. Run at the user's request after they vouched for the 18 delegated decisions.",
       "log_sha256": "7047b9085876d82630861031d445ec6deae88faa354dd460a973ae34d3fa7fb7"
+    },
+    {
+      "change_id": "rlprzytnzrmpwkyvxtlzopowtysoypux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "List the encrypted-reasoning redaction test in the cost inventory",
+      "body": "test_codex.py::Redaction.test_encrypted_reasoning, added with redaction policy 6, was missing from lib/tests/costs.json, so the tier lint failed the default run after the Spring merge. test_costs.py estimate added its row (unit tier); the tier lint passes.",
+      "log_sha256": "dce49f5f925e15a7d219e3df71728655a0fd140fd50d3e79f255fd63ce10613e"
     }
   ],
   "logs": {
@@ -10984,6 +10992,12 @@
       "lines": 25951,
       "gzip_bytes": 8491614,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/dcd4a41de969857f2bcc88a81e6ec124f47cf3b93201a95c11007f75a7d8e04a.jsonl.gz"
+    },
+    "dce49f5f925e15a7d219e3df71728655a0fd140fd50d3e79f255fd63ce10613e": {
+      "bytes": 66374323,
+      "lines": 34604,
+      "gzip_bytes": 10490113,
+      "url": null
     },
     "de27cd8c952c8a43a2c8aecec9ed291fb9bb5f211fa853b2266480242f7db670": {
       "bytes": 49669042,
