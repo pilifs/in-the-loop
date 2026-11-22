@@ -56,19 +56,19 @@
   "subagents": [],
   "commits": [
     {
-      "change_id": "lstxpvvtnwpqlxopntsuzsvouqonxnst",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "fb0531bd578c06450d77404e4a023968b89d897542356b7f90f5e00392ca2260"
-    },
-    {
       "change_id": "kouyxpoqsystovzpuponotsnuuuplptu",
       "commit_id": null,
       "immutable": false,
       "summary": "Pin Avro’s buffered encoder regression (verification pending)",
       "body": "Pin the original core module, commits and mapped-buffer regression from Avro #198. Job 20261122-035338-build-the-avro-198-encoder-and-run-its-m builds both unmodified revisions with JDK 8 and checks the landed test on both. Verified the fix’s first parent and source diff, passed all four organic runner tests and validated the job schema. The separate public encoder example will bind the build products once collected.",
+      "log_sha256": "fb0531bd578c06450d77404e4a023968b89d897542356b7f90f5e00392ca2260"
+    },
+    {
+      "change_id": "nwtkymssktnstkqnkkkxtzxlsyyvuozl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Build Avro’s original shaded dependency (verification pending)",
+      "body": "The first build of Avro #198 identified a reactor-local Guava snapshot on both revisions. Bind its original module as a prerequisite and preserve both failed build diagnostics. Verified both collected files against the runner’s digests and passed four runner tests. Job 20261122-040311-build-the-original-avro-encoder-with-its repeats the two builds and the upstream mapped-buffer regression.",
       "log_sha256": "fb0531bd578c06450d77404e4a023968b89d897542356b7f90f5e00392ca2260"
     }
   ],
