@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-041348-qualify-avro-198-packaged-classes-after",
+  "title": "Qualify Avro 198 packaged classes after original shading",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m06s, peak 1.2 GiB (estimated 4m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (Qualify the untouched compiler and packaged products) was held back 8m28s by its 2-CPU quota in 2m06s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-041348-qualify-avro-198-packaged-classes-after.json",
+    "sha256": "b119c7c92495a72ffac78e1c93b983671c4f07cd069281d34a0fb78c77b71d5e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-041348-qualify-avro-198-packaged-classes-after",
+      "title": "Qualify Avro 198 packaged classes after original shading",
+      "description": "Run the historical module with its Guava prerequisite, retain the exact packaged JAR and compare the original compiler class, pre-shade archive entry and canonical re-emission of the packaged class. Repeat the mapped-buffer regression. Require the named failure on the parent and pass on the fix.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test"
+      ],
+      "links": {
+        "examples": [
+          "362"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:13:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Qualify the untouched compiler and packaged products",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/upstream.py 362 --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/362-avro-buffered-encoder-cursor/records/build-packaged",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/362-avro-buffered-encoder-cursor/records/build-packaged"
+      ]
+    }
+  },
+  "sourceCommit": "dd5f47874ca1a0aeb0d7642edfeca05a117012cf",
+  "startedAt": "2026-11-22T04:15:22+00:00",
+  "finishedAt": "2026-11-22T04:17:36+00:00",
+  "wallSeconds": 134.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1150082,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1252233216,
+    "wallSeconds": 126.2,
+    "cpuSeconds": 243.0,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.53
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualify the untouched compiler and packaged products",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/upstream.py 362 --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/362-avro-buffered-encoder-cursor/records/build-packaged",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 126.241,
+      "cpuSeconds": 243.008,
+      "cpuThrottledSeconds": 508.351,
+      "peakMemoryBytes": 1252233216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-the-untouched-compiler.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "02fc8141c35e519203bbe335ab43dd1d56b99acf102f115ec4c337188b16bd74",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "362 parent qualified",
+        "362 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/build-packaged/build-fix.json",
+      "change": "added",
+      "bytes": 13837,
+      "sha256": "f29a2211e7a515deaee1893d443dc7be76d849a4cf2fdd3dc316212304a9d86d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/build-packaged/build-parent.json",
+      "change": "added",
+      "bytes": 13722,
+      "sha256": "b3a6b0e2868827d2da73eda7f79de688fce49cb8ed42b7cd61449a45b62b822f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/build-packaged/fix-TEST-org.apache.avro.io.TestEncoders.xml.gz",
+      "change": "added",
+      "bytes": 1631,
+      "sha256": "f05bd3a9742397d65f4582a65c512634c64fd2ec41739b8537feb4e75833a38a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/build-packaged/fix-upstream.json",
+      "change": "added",
+      "bytes": 11949,
+      "sha256": "d4c8c3ea7396c05908c94a7fc20e02d0743f50968757fca19daad83ed80ae480",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/build-packaged/parent-TEST-org.apache.avro.io.TestEncoders.xml.gz",
+      "change": "added",
+      "bytes": 1787,
+      "sha256": "cb24f5bb51b9259b03dc71daf50aea5f80c0900a1aa39c45760a87b4331329c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/362-avro-buffered-encoder-cursor/records/build-packaged/parent-upstream.json",
+      "change": "added",
+      "bytes": 13088,
+      "sha256": "f8da298ed3e0fec988ec0a3d232521c34b30ca8b0067a30fb56d3043d194c407",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:17:37+00:00",
+    "applied": [
+      "examples/362-avro-buffered-encoder-cursor/records/build-packaged/build-fix.json",
+      "examples/362-avro-buffered-encoder-cursor/records/build-packaged/build-parent.json",
+      "examples/362-avro-buffered-encoder-cursor/records/build-packaged/fix-TEST-org.apache.avro.io.TestEncoders.xml.gz",
+      "examples/362-avro-buffered-encoder-cursor/records/build-packaged/fix-upstream.json",
+      "examples/362-avro-buffered-encoder-cursor/records/build-packaged/parent-TEST-org.apache.avro.io.TestEncoders.xml.gz",
+      "examples/362-avro-buffered-encoder-cursor/records/build-packaged/parent-upstream.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T041736Z-622267f4286efd29",
+      "outputs": "20261122T041736Z-6500465011ceb87b",
+      "diff": "20261122T041736Z-688883d3f55b2243"
+    }
+  }
+}
