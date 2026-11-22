@@ -1,0 +1,174 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "springwork.RegistrationTrace#sequence",
+    "domain": "code: int",
+    "assume": "code >= 0 && code <= 1",
+    "assert": "(code == 0 && result == 9) || (code == 1 && result == 789)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13 (java.util.HashSet.<init>(int) at org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory.<clinit>:46); class-initializer:org.springframework.format.datetime.DateFormatter.<clinit>()V (org.springframework.format.datetime.DateFormatter.<clinit>() at springwork.RegistrationTrace.sequence:57). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+    "statement": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/registrar-callbacks-4kfu3zgn/ordinary/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "springwork.RegistrationTrace#sequence cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13 (java.util.HashSet.<init>(int) at org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory.<clinit>:46); class-initializer:org.springframework.format.datetime.DateFormatter.<clinit>()V (org.springframework.format.datetime.DateFormatter.<clinit>() at springwork.RegistrationTrace.sequence:57). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
+        "uri": null,
+        "line": 54
+      }
+    ],
+    "output": "✗ springwork.RegistrationTrace#sequence cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13 (java.util.HashSet.<init>(int) at org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory.<clinit>:46); class-initializer:org.springframework.format.datetime.DateFormatter.<clinit>()V (org.springframework.format.datetime.DateFormatter.<clinit>() at springwork.RegistrationTrace.sequence:57). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption\n",
+    "work": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/registrar-callbacks-4kfu3zgn/ordinary",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.010795704,
+      "properties": 1,
+      "unwind": 256,
+      "max_array_length": 16384,
+      "stage": null,
+      "native": {
+        "paths": 4,
+        "merges": 0,
+        "solver_calls": 3,
+        "solving_seconds": 0.000042459,
+        "gates_evaluated": 94,
+        "evaluating_seconds": 3.818e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 125,
+        "clauses": 307,
+        "seconds": 0.007053069,
+        "loading_seconds": 0.001597503,
+        "decoding_seconds": 0.000089887,
+        "encoding_seconds": 0.000058037,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13",
+          "kind": "jdk-constructor",
+          "call": "java.util.HashSet.<init>(int)",
+          "sites": [
+            "org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory.<clinit>:46"
+          ],
+          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+          "treatment": "refused"
+        },
+        {
+          "id": "class-initializer:org.springframework.format.datetime.DateFormatter.<clinit>()V",
+          "kind": "class-initializer",
+          "call": "org.springframework.format.datetime.DateFormatter.<clinit>()",
+          "sites": [
+            "springwork.RegistrationTrace.sequence:57"
+          ],
+          "approximation": "has run already, and threw nothing",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.007,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.002,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 125,
+            "clauses": 307
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.023,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.007,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.015
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code <= 1",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (code == 0 && result == 9) || (code == 1 && result == 789)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

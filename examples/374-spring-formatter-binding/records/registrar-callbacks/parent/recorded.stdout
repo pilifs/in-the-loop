@@ -1,0 +1,189 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "springwork.RegistrationTrace#sequence",
+    "domain": "code: int",
+    "assume": "code >= 0 && code <= 1",
+    "assert": "(code == 0 && result == 9) || (code == 1 && result == 978)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 2.2 s; loops unwound 256 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/registrar-callbacks-juv6fx06/recorded/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ springwork.RegistrationTrace#sequence satisfies `(code == 0 && result == 9) || (code == 1 && result == 978)` on every input where code >= 0 && code <= 1 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 2.2 s; loops unwound 256 times with unwinding assertions)\n  not vacuous: sequence(code=0) reaches the calls\n",
+    "work": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/registrar-callbacks-juv6fx06/recorded",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 2.214707406,
+      "properties": 1,
+      "unwind": 256,
+      "max_array_length": 16384,
+      "stage": null,
+      "native": {
+        "paths": 4,
+        "merges": 0,
+        "solver_calls": 5,
+        "solving_seconds": 0.000114413,
+        "gates_evaluated": 156,
+        "evaluating_seconds": 0.000010238,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 156,
+        "clauses": 400,
+        "seconds": 0.046705578,
+        "loading_seconds": 0.00144197,
+        "decoding_seconds": 0.000180628,
+        "encoding_seconds": 0.00021769,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory was startup root 2 in the same JVM as org.springframework.format.datetime.DateFormatter, before the checked entry",
+          "the class initializer of org.springframework.format.datetime.DateFormatter was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 4aeb480cbcb5), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 3 other initialized application classes [org.springframework.context.support.EmbeddedValueResolutionSupport, org.springframework.format.annotation.DateTimeFormat$ISO, org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call)"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 57.834,
+          "seconds": 0.047,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.045,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 156,
+            "clauses": 400
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 57.785,
+          "seconds": 0.003,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.002,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 160,
+            "clauses": 443
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 2.236,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.05,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 2.185
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code <= 1",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory was startup root 2 in the same JVM as org.springframework.format.datetime.DateFormatter, before the checked entry",
+          "basis": "engine",
+          "id": "observed-initializer:org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory:27ffef0fb293ce915210c4089a012f8b3c90a3873c3b8d59585cdc0fb2e64909:6bca4d4b6fc7f7f644343208bbd235ca769c9659f55a90d790542adac581f724"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.springframework.format.datetime.DateFormatter was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 4aeb480cbcb5), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 3 other initialized application classes [org.springframework.context.support.EmbeddedValueResolutionSupport, org.springframework.format.annotation.DateTimeFormat$ISO, org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call)",
+          "basis": "engine",
+          "id": "observed-initializer:org.springframework.format.datetime.DateFormatter:4aeb480cbcb5beeba07dd6eb0655b4690067e1a4336dd9e6963b1f2a38f42a63:6bca4d4b6fc7f7f644343208bbd235ca769c9659f55a90d790542adac581f724"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (code == 0 && result == 9) || (code == 1 && result == 978)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found sequence(code=0).",
+        "witness": "sequence(code=0)"
+      }
+    }
+  }
+]

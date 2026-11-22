@@ -1,0 +1,288 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-172803-check-the-original-spring-formatter-regi",
+  "title": "Check the original Spring formatter registration order",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 18.8s, peak 222.6 MiB (estimated 2m00s, 2.0 GiB); 14 output file(s) changed",
+  "attention": [
+    "step 1 (Check both historical callback sequences) was held back 17.8s by its 1-CPU quota in 18.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-172803-check-the-original-spring-formatter-regi.json",
+    "sha256": "83690dd4bbf0ee8f50b32de91af0fa655ec9994f1eb40a2d662b8be1a7fa5395",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-172803-check-the-original-spring-formatter-regi",
+      "title": "Check the original Spring formatter registration order",
+      "description": "Run both source-slice registrars through a recording public FormatterRegistry. Check the six concrete converters and the identity, type and order of every subsequent registration with and without the global ISO formatter. Repeat the native query with the original DateFormatter and annotation factory statics observed. Keep these proofs separate from the public bean and error claims.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "374"
+        ]
+      },
+      "expected": "A fresh JVM trace and strict native receipt for both configurations on each side. The public binder claims keep their independent scope.",
+      "submitted": {
+        "at": "2026-11-22T17:28:03+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Check both historical callback sequences",
+          "run": "python3 -B examples/374-spring-formatter-binding/companions/registration.py --output examples/374-spring-formatter-binding/records/registrar-callbacks",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/374-spring-formatter-binding/records/registrar-callbacks"
+      ]
+    }
+  },
+  "sourceCommit": "525e93afce166aad8aaea77b93bcf42da1adb080",
+  "startedAt": "2026-11-22T17:43:44+00:00",
+  "finishedAt": "2026-11-22T17:44:11+00:00",
+  "wallSeconds": 27.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4005336,
+    "workers": 1,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 233459712,
+    "wallSeconds": 18.8,
+    "cpuSeconds": 18.7,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check both historical callback sequences",
+      "run": "python3 -B examples/374-spring-formatter-binding/companions/registration.py --output examples/374-spring-formatter-binding/records/registrar-callbacks",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 18.841,
+      "cpuSeconds": 18.683,
+      "cpuThrottledSeconds": 17.849,
+      "peakMemoryBytes": 233459712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-both-historical-callback.log",
+        "lines": 4,
+        "bytes": 1324,
+        "sha256": "9dca9a0419e0a98d01ecc60283cbe499e87b1ab6f38332c76f499c993accbccd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent ordinary unverifiable the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13 (java.util.HashSet.<init>(int) at org.springframework.format.datetime.DateTimeFormatAnnotation",
+        "parent recorded verified None",
+        "landed ordinary unverifiable the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13 (java.util.HashSet.<init>(int) at org.springframework.format.datetime.DateTimeFormatAnnotation",
+        "landed recorded verified None"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/jvm.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/jvm.stdout",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "5e39bf022379d1efe2ffa611b9dd12691f584e7432d19d2b3bdc25d7c6f078fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/measurement.json",
+      "change": "added",
+      "bytes": 15272,
+      "sha256": "f05ddc150c69a19c695dbb44e90f4d4e13ea9ed12d64fe00c205a76bb2a9a8b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/ordinary.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/ordinary.stdout",
+      "change": "added",
+      "bytes": 7330,
+      "sha256": "04132089bfb0b32865c241ff0d39aace9d4280485f175f7359a499b2db0d3460",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/recorded.stdout",
+      "change": "added",
+      "bytes": 9318,
+      "sha256": "9f35012745c4ae93c678efd5570a09400e3d92eb73ee41c6d1080b922be7b021",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/jvm.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/jvm.stdout",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "ac88ede854b01e8ce8de4a28b65d90738b3b958394dcae7f4c459325a010c602",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/measurement.json",
+      "change": "added",
+      "bytes": 15273,
+      "sha256": "b734326f076e003d93628517f1c5dbf621a3a394ad9280b52965d1d87e884396",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/ordinary.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/ordinary.stdout",
+      "change": "added",
+      "bytes": 7328,
+      "sha256": "6207f08fac75456da9558df6b41d14f85b44196758b9fec8e31ea038b7dd7cd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/recorded.stdout",
+      "change": "added",
+      "bytes": 9319,
+      "sha256": "8cbf7a4d23dd6b90b6260f8a0d94832345ba06a3870f17be0c8ab5e83bf5a0f1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T17:44:44+00:00",
+    "applied": [
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/jvm.stderr",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/measurement.json",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/ordinary.stderr",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/ordinary.stdout",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/recorded.stderr",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/landed/recorded.stdout",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/jvm.stderr",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/measurement.json",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/ordinary.stderr",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/ordinary.stdout",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/recorded.stderr",
+      "examples/374-spring-formatter-binding/records/registrar-callbacks/parent/recorded.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T174411Z-720481aa4022c700",
+      "outputs": "20261122T174411Z-74278741884bd638",
+      "diff": "20261122T174411Z-7613308c978556a5"
+    }
+  }
+}
