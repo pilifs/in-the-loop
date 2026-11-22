@@ -5156,12 +5156,21 @@ impl<'a> Engine<'a> {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
         // `String.valueOf(Object)` of a String is the String itself (its `toString()` is itself), and of null the
-        // interned "null". Of any other object it calls that object's `toString()`: the gap it is to the scan,
-        // which cannot tell the argument's class, and to the engine.
+        // interned "null". On an exact application object the JDK body dispatches to its real
+        // toString implementation, including overrides on individual enum constants.
         if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;") {
             if let [Val::R(object)] = args.as_slice() {
                 let value = match *object {
                     Some(o) if path.objects[o].class == STRING => Some(o),
+                    Some(o) if self.gap_mode == GapMode::Strict && !path.objects[o].assumed
+                        && self.cp.is_application(&path.objects[o].class)
+                        && self.cp.checker_method(&path.objects[o].class, "toString", "()Ljava/lang/String;")
+                            .is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some()) => {
+                        if let Some((cf, m)) = self.cp.library_image_method(STRING, "valueOf", &member.descriptor) {
+                            return self.enter_method(path, STRING, cf, m, args);
+                        }
+                        None
+                    }
                     Some(o) if path.objects[o].class == "java/lang/Character" && path.objects[o].fields.contains_key("value")
                         && self.cp.numeric_image_method("java/lang/Character", "toString", "()Ljava/lang/String;").is_some() => {
                         return self.call(path, "java/lang/Character", "toString", "()Ljava/lang/String;", vec![Val::R(Some(o))]);

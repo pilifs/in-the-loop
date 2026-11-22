@@ -269,7 +269,6 @@ fn a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observa
     }
     for (method, stop) in [
         ("off", "java.util.logging.Level.OFF"),
-        ("described", "java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;"),
         ("counted", "java.util.logging.Logger.log(Ljava/util/logging/LogRecord;)V"),
         ("levelled", "java.util.logging.Logger.setLevel"),
         ("filtered", "java.util.logging.Logger.setFilter"),
@@ -279,6 +278,8 @@ fn a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observa
         assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
         assert!(o.output.contains(stop), "{method}: {}", o.output);
     }
+    let described = run(&options(classes, "claims.Logged#described", 3, "Logged-described"));
+    assert_eq!(described.verdict, Verdict::Violation, "{}", described.output);
 }
 
 /// A throws clause's condition is Java as the assumption and the assertion are: one over a String's bytes is

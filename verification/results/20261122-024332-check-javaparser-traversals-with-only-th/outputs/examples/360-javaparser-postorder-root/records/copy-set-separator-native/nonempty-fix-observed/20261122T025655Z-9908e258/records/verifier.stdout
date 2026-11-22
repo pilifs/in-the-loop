@@ -1,0 +1,182 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "organic.TreeOrder#postorder(int)",
+    "domain": "code: int",
+    "assume": "code >= 1 && code < 2",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 48.8 s; loops unwound 96 times with unwinding assertions",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ organic.TreeOrder#postorder(int) satisfies `result == 1` on every input where code >= 1 && code < 2 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 48.8 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: postorder(code=1) reaches the calls\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 48.787495735,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 64,
+      "stage": null,
+      "native": {
+        "paths": 1749,
+        "merges": 1264,
+        "solver_calls": 6712,
+        "solving_seconds": 41.616119716,
+        "gates_evaluated": 6408744,
+        "evaluating_seconds": 0.136467494,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 427190,
+        "clauses": 1351700,
+        "seconds": 47.512059358,
+        "loading_seconds": 0.003864628,
+        "decoding_seconds": 0.000880623,
+        "encoding_seconds": 0.862353973,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the class initializer of com.github.javaparser.utils.LineSeparator was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 0413a3f8b470), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 58.879,
+          "seconds": 47.512,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.004,
+            "lowering": 0.001,
+            "symbolic": 5.029,
+            "encoding": 0.862,
+            "solving": 41.616,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 427190,
+            "clauses": 1351700
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 11.212,
+          "seconds": 0.007,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.007,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 279,
+            "clauses": 830
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 48.808,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 47.519,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 1.288
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 1 && code < 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of com.github.javaparser.utils.LineSeparator was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 0413a3f8b470), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:com.github.javaparser.utils.LineSeparator:0413a3f8b4707638860dc0dea988cdf0dae425da5eeae8cc803cae7724919e56:a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found postorder(code=1).",
+        "witness": "postorder(code=1)"
+      }
+    }
+  }
+]

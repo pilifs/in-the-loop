@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-025719-check-avro-reserved-names-and-original-s",
+  "title": "Check Avro reserved names and original schema construction",
+  "description": "On both historical revisions of Avro 3878 and 729, match all instructions in the reserved-name producer, reject a changed literal and check the actual field values in a fresh JVM. Compare the pinned pilot and updated verifiers on the producer. Check original bytes-schema success and invalid-type failure with ordinary or separately named Schema startup. Record the first direct Jackson dependency.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355",
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T02:57:19+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Match four production sites and check constructors and controls",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/schema_sets.py --pilot --output verification/domain-foundations/schema-sets",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/schema-sets"
+  ]
+}

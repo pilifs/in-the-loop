@@ -1,0 +1,1205 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-024332-check-javaparser-traversals-with-only-th",
+  "title": "Check JavaParser traversals with only the separator initialized",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4m10s, peak 427.7 MiB (estimated 4m00s, 3.0 GiB); 124 output file(s) changed",
+  "attention": [
+    "step 1 (Check all eight original enum-only tasks) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-024332-check-javaparser-traversals-with-only-th.json",
+    "sha256": "cf65cc9d0a3a54223124feb6aa1f51b84f15f659b34be008c741662b84326e60",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-024332-check-javaparser-traversals-with-only-th",
+      "title": "Check JavaParser traversals with only the separator initialized",
+      "description": "Run all eight frozen traversal and preservation contracts on the original parent and fix with only the LineSeparator enum initialized. The printer and Node must initialize using the selected JDK copy-set constructor. The earlier enum-only run refused that constructor. Keep the original artifact, witnesses, bounds and checker budget.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:43:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check all eight original enum-only tasks",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage copy-set-separator --tasks postorder-parent-observed,postorder-fix-observed,terminal-parent-observed,terminal-fix-observed,preorder-parent-observed,preorder-fix-observed,nonempty-parent-observed,nonempty-fix-observed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/360-javaparser-postorder-root/records/copy-set-separator-native"
+      ]
+    }
+  },
+  "sourceCommit": "addc8c72ad3c023cf474587e6ca92ad1375061b2",
+  "startedAt": "2026-11-22T02:50:15+00:00",
+  "finishedAt": "2026-11-22T02:57:45+00:00",
+  "wallSeconds": 450.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4067844,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 448483328,
+    "wallSeconds": 250.1,
+    "cpuSeconds": 266.8,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 1.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 190.254,
+      "cpuSeconds": 190.526,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2271784960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "7fd7899384c6338a093d6da20595b51cec77008c732b0d2af0045b752c26a427",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-024332-check-javaparser-traversals-with-only-th/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 10s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check all eight original enum-only tasks",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage copy-set-separator --tasks postorder-parent-observed,postorder-fix-observed,terminal-parent-observed,terminal-fix-observed,preorder-parent-observed,preorder-fix-observed,nonempty-parent-observed,nonempty-fix-observed",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 250.084,
+      "cpuSeconds": 266.768,
+      "cpuThrottledSeconds": 5.276,
+      "peakMemoryBytes": 448483328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-all-eight-original-enum.log",
+        "lines": 1,
+        "bytes": 676,
+        "sha256": "2cd1cae015a41bf1f2938ab2f908e5c1aa11ccb40c55cf1e19ac70f45763be85",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"360\", \"route\": \"native\", \"stage\": \"copy-set-separator\", \"workflowExit\": 1, \"seconds\": 249.989, \"checkerSeconds\": 60, \"tasks\": [\"postorder-parent-observed\", \"postorder-fix-observed\", \"terminal-parent-observed\", \"terminal-fix-observed\", \"preorder-parent-observed\", \"preorder-fix-observed\","
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "96afb9cfa85afc44d00af51d7997d83cd0741455739421c0d2002b6998163e91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/plan.json",
+      "change": "added",
+      "bytes": 7904,
+      "sha256": "518fa3b2273771738ef140723770ca4a2773653cc519647df087dbb873e33104",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/controls.json",
+      "change": "added",
+      "bytes": 4462,
+      "sha256": "cb92dbd332a16966ffe275ece0e2c72044cd66a1ccaad799eb7037f86c33450a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/execution.json",
+      "change": "added",
+      "bytes": 36044,
+      "sha256": "987a68ef87104ce396bb5892897d3c88003655f2147c7843ff142b83ce917508",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "22a16e75d559e22dadd9737ec4576b9a07217954ba9ba9ce89eee8bb4ea505d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "999deb4e7a0fc4de3beb38dadacd1c48e8a501b52ece2f5f9fe309eab21731c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier.json",
+      "change": "added",
+      "bytes": 30871,
+      "sha256": "34a5b4d23836a138001501c717d5d590d7b1e8fe0e793340042c7678cf65d244",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6935,
+      "sha256": "b91de6d11267f20c74240d0aaefda6129e7c3e30f486ffb1da49b9e687646987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/result.json",
+      "change": "added",
+      "bytes": 19551,
+      "sha256": "0464a6210a326df6545579a349bcd73beca56c569a41db0302dc84e56a2dc7ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/executions/20261122T025655Z-9908e258/attempt.json",
+      "change": "added",
+      "bytes": 25757,
+      "sha256": "b1cfeeae9826aa5fee35f6046d9d6a733b7e40afb21a259e158676f19d5256e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/executions/20261122T025655Z-9908e258/checker.json",
+      "change": "added",
+      "bytes": 8369,
+      "sha256": "4b573024312642e5391f625d01ffe87a0cf5ef2a78a8577f401bd884f446d8f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/executions/20261122T025655Z-9908e258/correspondence.json",
+      "change": "added",
+      "bytes": 1696,
+      "sha256": "a20e83f33d7d78b8612790f9f9a739fb4ef922630ad36ccbda3e0345a62c7e7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "21a02ee8464bfb2a41a462c02f02c420e638673cd7a71cd2a0336ca6d86ec616",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/plan.json",
+      "change": "added",
+      "bytes": 7813,
+      "sha256": "5965ea1411514bdd4527190a11b06c9f98010cfa391c0475abcf26718cb56a9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/controls.json",
+      "change": "added",
+      "bytes": 4403,
+      "sha256": "f3932d31a467543d167cd6b6037e61ce2c29f5c530da7e075cdaac83fcc6ed4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/execution.json",
+      "change": "added",
+      "bytes": 34987,
+      "sha256": "7bb1eb9b854bb25eace5921b22f4572c2811705b6bce271544e565a8d6872a0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "cb23205acfcc406da2ab9faf079d75c1018f52e727bd6c352bb33a5c9b7fb02e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 105,
+      "sha256": "ca74c93e7baebf630913d00b2635cadeb8a156522c3304633b8504073f614cd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier.json",
+      "change": "added",
+      "bytes": 29935,
+      "sha256": "d089589e22aea3d76d14b9cb000c0372f97199333d40fa8dac79e0155e67d502",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6090,
+      "sha256": "361e216285de5cafc95269a26e3105d1bca3b2668c6904cb0f2e701aa8e9de4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/result.json",
+      "change": "added",
+      "bytes": 15376,
+      "sha256": "adecf0b3ba9e35f187337f7d4eac83616d6fc46fc0d787868a00cf6a5908d94a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/executions/20261122T025555Z-1d3f3ac1/attempt.json",
+      "change": "added",
+      "bytes": 25829,
+      "sha256": "b742a4362ad1e6c4b802e121580a1243d7aad88a1295612b91d5b7cef250650c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/executions/20261122T025555Z-1d3f3ac1/checker.json",
+      "change": "added",
+      "bytes": 7491,
+      "sha256": "125963178301d8833b663d343dcd23d5a64b201c987b51781f0f5e978f07523d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/executions/20261122T025555Z-1d3f3ac1/correspondence.json",
+      "change": "added",
+      "bytes": 1699,
+      "sha256": "2875944eeed0214dfa1f9c72d74c67442cefedc9eac0150bcbee203f34d7b3cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2eaf5e16813b4c2be8988ecfdf8b5ddff0f4f91233fdf55430e50b261db8cb32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/plan.json",
+      "change": "added",
+      "bytes": 8053,
+      "sha256": "5af508c34a5377234f465e15e6ec4e6661e37440d2fe30056f87b3c2a5f0c822",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/controls.json",
+      "change": "added",
+      "bytes": 4464,
+      "sha256": "c7daf9ae82efbfd64d32d5ca060c4a9cf7af470fd9682d9e18adaad5c6575965",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/execution.json",
+      "change": "added",
+      "bytes": 36146,
+      "sha256": "4f31e2a9d49bd16db8e63a0bb0666a1d0d7ad1103ac3f71d50287aaa814dd89e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "327ad7b0ac84908d52bcbc1dd0b7225c6f9024c631ea55d1e5271a17b13b376b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "a26af0d3ef42bed2337f872fee86c7a78d85d5c8fb295fc6ebf8c790ac93dbf1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier.json",
+      "change": "added",
+      "bytes": 30975,
+      "sha256": "25b3a78b5abe710e72eff7ad158a8b99641cc9d75124fcd4b3abe015cd6a837c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6930,
+      "sha256": "ab0d88340b9f63f12d82ad5ed8d64f81b95babe1a4f6454076f10e21be9eb024",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/result.json",
+      "change": "added",
+      "bytes": 19622,
+      "sha256": "ec9b4633a4a555e52934e7233faafc902ddb594b944469e2c0dbe3d93d503365",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/executions/20261122T025352Z-82457eed/attempt.json",
+      "change": "added",
+      "bytes": 25867,
+      "sha256": "c7d615def1ff530e8c3dd9fc277c19c68d49db35e1837636d366731a6e2bbe89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/executions/20261122T025352Z-82457eed/checker.json",
+      "change": "added",
+      "bytes": 8364,
+      "sha256": "8294f0f31766e083b78741f4c8324fb0cd382416f589f61387b68ab06af02310",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/executions/20261122T025352Z-82457eed/correspondence.json",
+      "change": "added",
+      "bytes": 1731,
+      "sha256": "7b177adcc67da250db8d3606702e3e9de60f0709e20bd9f4b6ae8fa64d725cbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "43dcb19082c9b0d69f548175719dbdf564b0489847435934b3965ca82bf3fca0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/plan.json",
+      "change": "added",
+      "bytes": 7958,
+      "sha256": "b3363b324c0f7d0a976f47fcd1a615fda8adec6842b26414ffdf087e93a7a375",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/controls.json",
+      "change": "added",
+      "bytes": 4405,
+      "sha256": "a89b84de7b4708478b77cfa2143184457982fbe62dfde3a9fc42b611822b23c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/execution.json",
+      "change": "added",
+      "bytes": 39104,
+      "sha256": "7809edfaf023d753772a687faf18adf167a8c85b5dacd7a9a5175a8c5e5959ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "9385836f47bae52a20e0782403c82e9426c9b0a35fcc4dcc0c9f76dcf0eb7f80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 551,
+      "sha256": "7e4e035aab93b14b5716f9e89110db3c104dc215acc80eae6602ee3f8641c06d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier.json",
+      "change": "added",
+      "bytes": 31497,
+      "sha256": "a313d72cca75be95b4a78b49ee8e329f92936590149515f7971a2e869a2aae5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7408,
+      "sha256": "92d611b6a6ef50f761f86dd3587041bbf0638b86b22f1767fc68af4fe1730749",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/result.json",
+      "change": "added",
+      "bytes": 20458,
+      "sha256": "dec29d4af4d8b55b37389ce7641f42fcf334ae33db896ec57dd66835209ce3b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/attempt.json",
+      "change": "added",
+      "bytes": 25986,
+      "sha256": "9e85a05208fc54dcc3782a4bbd4036bda605382f779b718767d9c11aad1f7b78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/checker.json",
+      "change": "added",
+      "bytes": 8877,
+      "sha256": "1401e6112e6c49f5db5e77cc81f029f23eb5b788c7e2a9ec57859c8e38022a86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/correspondence.json",
+      "change": "added",
+      "bytes": 1734,
+      "sha256": "1c2de98fbc9cb49cca2ba4258a84d0efdf7d8c57ce3e1cd33805ae59d28cb83c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/replay.json",
+      "change": "added",
+      "bytes": 1995,
+      "sha256": "4e923991d01cb9acd41992dddb2991c086804e7e5b8f009d788421672ee57a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cc7447ac87959f69385380d4668291cf9380948e88bdce9c4012a0e97fa62378",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/plan.json",
+      "change": "added",
+      "bytes": 7950,
+      "sha256": "5833970121c0c734d9a93483674b1f58742277b746a37e49bec391412473e2c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/controls.json",
+      "change": "added",
+      "bytes": 4462,
+      "sha256": "1aba48350d91f8da5bb50288d4bde632a17c51a1a885f829d0ff5cd311156e39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/execution.json",
+      "change": "added",
+      "bytes": 36066,
+      "sha256": "ed8294d0ae2b174d10cf47d9825294afa941a54552e22d235253a80cd6c59f03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "6499ca1811db51a626f26b94fc7d0d8aa0399c982800b9515069f7ba497fb84e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "a955f38195c95febc8fd7082087e7adb308318e5519b012745bc4500f6c73b79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier.json",
+      "change": "added",
+      "bytes": 30893,
+      "sha256": "aca994006cd2a97dcbbdcfa6fc3f207cd07dd37770fed3c8a3175c4e8029b055",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6927,
+      "sha256": "aa7b042c6f8f3168bacfabae0671bc477503c402bf3083013e41d57726f330f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/result.json",
+      "change": "added",
+      "bytes": 19566,
+      "sha256": "c9e103801c5a86cfee69a016bd990b59120a5a0a3010c295ab6c725a6b6dab20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/executions/20261122T025528Z-abb41497/attempt.json",
+      "change": "added",
+      "bytes": 25788,
+      "sha256": "a535108b94bcc56c79cb647c0d6b06fb85618eb42a4c8a68376e4769327c6793",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/executions/20261122T025528Z-abb41497/checker.json",
+      "change": "added",
+      "bytes": 8360,
+      "sha256": "51dfaba0b252f2e8e67cb34726f6cd7004bd034c661106984afad85715978315",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/executions/20261122T025528Z-abb41497/correspondence.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "84465a17769654ceba9dc25f4687c9ecc7d7a1a3ed50afd9edf827472915b6dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fb7efba11f51f0d5de5214daa6ffdeb8db577aa1a1e52c9b3bf90c7155ddbd81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/plan.json",
+      "change": "added",
+      "bytes": 7859,
+      "sha256": "01eaa7d1c0172c90d4ec055b84acbce5670b9d369f9d963747af7d7afdcb7661",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/controls.json",
+      "change": "added",
+      "bytes": 4403,
+      "sha256": "a93098f604486007317dfe34f1610ee9826450f8db5cb39859685deb2421e277",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/execution.json",
+      "change": "added",
+      "bytes": 35979,
+      "sha256": "b2dc3218434c3b13534bc95be8ba6db58e0378b4dc0daf6d024379e2171fd0be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "bf51b77d0a724f026f64428b00222fa4fbe7977779f76069b25551f6573fe5c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "702e8c28e994dd99287e395a75da9ee18f389ef9fe4185b312b9d96c00a37b29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier.json",
+      "change": "added",
+      "bytes": 30885,
+      "sha256": "1141b1bfbf5518b49dee79a4d5afa3aabd23828b7c4f95f324cfbdc7c3b59c5d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6927,
+      "sha256": "1273cd23769b1e03aba4743955c5fceb69ec15ddc986affe0a0a6e2ab9845682",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/result.json",
+      "change": "added",
+      "bytes": 19621,
+      "sha256": "da358604cffb5c4d634feea9899f625669cbbf0432832b11c717fe7f0c6879ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/executions/20261122T025503Z-d988bc69/attempt.json",
+      "change": "added",
+      "bytes": 25785,
+      "sha256": "e6eb13d17959b470701fdebce3c772de8ae397966821f5dd8135354a064ab190",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/executions/20261122T025503Z-d988bc69/checker.json",
+      "change": "added",
+      "bytes": 8369,
+      "sha256": "3ea662f7c3687425a9d61be697026f70b8488cff27be4875b9bfbba2f49af77f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/executions/20261122T025503Z-d988bc69/correspondence.json",
+      "change": "added",
+      "bytes": 1710,
+      "sha256": "505484d459527882396e1618c04f5500c36643e11dab271e54bcab0802e34d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/run.json",
+      "change": "added",
+      "bytes": 746,
+      "sha256": "ff5ad28f2aac6f0ebc4997c63292d2b6f1c22307fef7eaf667125a9f6c9796d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "576ce9fdc6375676a4d85b046bf44e6ca13bf58ae78533b868aa428a52e123d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/plan.json",
+      "change": "added",
+      "bytes": 7878,
+      "sha256": "f49b145872cc173b37cffa50788bf7722d5daaf248dc453ebf551a46d96d02c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "561792daa8b5bce45f1a7cfd5dcaef126c61af4b3cf28ddd3986bebc6bd86231",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/controls.json",
+      "change": "added",
+      "bytes": 4461,
+      "sha256": "205d45be88fd93ab74e9f84752ab14a4193717374932d3b461f5da96cd420ba3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/execution.json",
+      "change": "added",
+      "bytes": 31561,
+      "sha256": "3b2aebf4e894a06c515ed7cff02e9b4e4ba05b72dbf6b0d0d5454b6ab88dda98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/streams.json",
+      "change": "added",
+      "bytes": 1941,
+      "sha256": "39d2e82e53881a0bcb8640d8b9ef076f2194d92aafe2f2a25512f791afa9db69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "ef44024266f0b53cfdfa248ca67444963313c35761fc3506445547da3614948b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier.json",
+      "change": "added",
+      "bytes": 26570,
+      "sha256": "69f31ce70df45ea21e8d86f9cc4744b7ef1048300ac091ac8fb60a1fcc81bf1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6924,
+      "sha256": "2ef06fb3437afe6691812e6f2d6331a7c3a7ecef518eb0cec21625b10a5228bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/result.json",
+      "change": "added",
+      "bytes": 19529,
+      "sha256": "5fa4e7382801778dd33853636c0b87b401143c2c7207ac82b42237540d934d16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/executions/20261122T025436Z-65f48f4b/attempt.json",
+      "change": "added",
+      "bytes": 21622,
+      "sha256": "746621a5766fee7144b04475f32d7039278bfd75ba98b1afbdb8f36e0882cab2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/executions/20261122T025436Z-65f48f4b/checker.json",
+      "change": "added",
+      "bytes": 8357,
+      "sha256": "2b2679b2ad4349e01e0b482f6f164088b05ca0fcd44276968e45f03063ebf5a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/executions/20261122T025436Z-65f48f4b/correspondence.json",
+      "change": "added",
+      "bytes": 1689,
+      "sha256": "c72aa4c98dc1fbbac2037174b1893ae6b7108d8106af11311bb2a99a7d5fc66e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4127f691cd270ddca5198d1369ca47bc884129462eba83a9b8f785c8ad3e8bab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/plan.json",
+      "change": "added",
+      "bytes": 7783,
+      "sha256": "a43e3f32fda6a440c21a13c42ccfdda56278bd1d2a55a436096c6ff6e25cff0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 439,
+      "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/controls.json",
+      "change": "added",
+      "bytes": 4402,
+      "sha256": "123d1962799016ef6ecdac6288c4a54ee045cec761f08f4ec8d94b3cee10175c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/execution.json",
+      "change": "added",
+      "bytes": 34588,
+      "sha256": "5c748567f597cb92c501c9745dd2eaf6e59f6238245c147a1d124d1409d2c8ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "dba3a656acb15f68d55410803890276f3966debe7b57bd428c983e82d221daec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 549,
+      "sha256": "64cc99ef91bfac17ac49742587eb79ae594069d2eb1325f61fcecbf6db0c63bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier.json",
+      "change": "added",
+      "bytes": 27162,
+      "sha256": "880f9e451498c6d8c6550c5d9c80faafa5c7e76abe847a3aff0ed4a5426ab6be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7404,
+      "sha256": "ee94030229a774889822013d3fb4ff12c052b199c122722897336c312ea5c412",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/result.json",
+      "change": "added",
+      "bytes": 20365,
+      "sha256": "6c2f4ff8bdbbeb9b30b1c4dc6749d6bcbff3f6965dffc5798be6dc6c68dc208f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/attempt.json",
+      "change": "added",
+      "bytes": 21807,
+      "sha256": "87a9a886e7c830bd129667d376253f2452cbbf396a7d6993239662c7fc3fdfba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/checker.json",
+      "change": "added",
+      "bytes": 8872,
+      "sha256": "1d04bf935ff27291d45411464d07f28464cbddf95c3a5b2bc6df0b123ac017a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/correspondence.json",
+      "change": "added",
+      "bytes": 1692,
+      "sha256": "d1891fd7a3c734b9c5a685154313e6d39e2b14c44c04216269f8a75c387059f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/replay.json",
+      "change": "added",
+      "bytes": 1992,
+      "sha256": "1213d1f7974d262d5b23f3d858f3ed5996f94de8c289d30f585d96305376552e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/360-javaparser-postorder-root/records/copy-set-separator-native/workflow.log",
+      "change": "added",
+      "bytes": 2091,
+      "sha256": "18a234516c30e882164e8dc3ddfe8037456a016a53fbb19fca9f6bcc875dd870",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T02:58:05+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/20261122T025655Z-9908e258/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/executions/20261122T025655Z-9908e258/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/executions/20261122T025655Z-9908e258/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-fix-observed/executions/20261122T025655Z-9908e258/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/20261122T025555Z-1d3f3ac1/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/executions/20261122T025555Z-1d3f3ac1/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/executions/20261122T025555Z-1d3f3ac1/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/nonempty-parent-observed/executions/20261122T025555Z-1d3f3ac1/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/20261122T025352Z-82457eed/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/executions/20261122T025352Z-82457eed/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/executions/20261122T025352Z-82457eed/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-fix-observed/executions/20261122T025352Z-82457eed/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/20261122T025335Z-424e9e77/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/postorder-parent-observed/executions/20261122T025335Z-424e9e77/replay.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/20261122T025528Z-abb41497/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/executions/20261122T025528Z-abb41497/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/executions/20261122T025528Z-abb41497/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-fix-observed/executions/20261122T025528Z-abb41497/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/20261122T025503Z-d988bc69/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/executions/20261122T025503Z-d988bc69/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/executions/20261122T025503Z-d988bc69/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/preorder-parent-observed/executions/20261122T025503Z-d988bc69/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/run.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/control-fix-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/control-fix-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/20261122T025436Z-65f48f4b/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/executions/20261122T025436Z-65f48f4b/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/executions/20261122T025436Z-65f48f4b/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-fix-observed/executions/20261122T025436Z-65f48f4b/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/completion.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/plan.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/control-parent-jdk21.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/control-parent-jdk21.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/controls.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/execution.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/streams.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier-output.txt",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier.stderr",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/records/verifier.stdout",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/20261122T025410Z-4f8a531f/result.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/attempt.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/checker.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/correspondence.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/terminal-parent-observed/executions/20261122T025410Z-4f8a531f/replay.json",
+      "examples/360-javaparser-postorder-root/records/copy-set-separator-native/workflow.log"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1189380,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "1a5c107681b60a8493ec8e4d63636b5fb3b92b90",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5c107681b60a8493ec8e4d63636b5fb3b92b90/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T025745Z-549859381e02aa7f",
+      "outputs": "20261122T025745Z-612563dc4297e17c",
+      "diff": "20261122T025745Z-652302b7d712ef93",
+      "workdir": "20261122T025749Z-88795448fbb1fbf5"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-024332-check-javaparser-traversals-with-only-th"
+}
