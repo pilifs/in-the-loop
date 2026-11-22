@@ -5,9 +5,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PublishedLookup {
-    static class Base { Object name; }
+    static class Base { Object name; double weight; }
     static class Holder extends Base {
         String name;
+        float scale;
         Holder next;
         Map<String, Object> data;
         Object unobserved;
@@ -21,6 +22,8 @@ public class PublishedLookup {
             shared.data = backing;
             shared.name = "child";
             ((Base) shared).name = "base";
+            shared.scale = -0.0f;
+            shared.weight = Double.longBitsToDouble(0x8000000000000001L);
             shared.unobserved = new StringBuilder("opaque");
             backing.put("Aa", shared);
             backing.put("BB", null);
@@ -30,6 +33,8 @@ public class PublishedLookup {
     }
     public static boolean reads() {
         Holder h = Root.cell.get();
+        if (Float.floatToRawIntBits(h.scale) != 0x80000000
+                || Double.doubleToRawLongBits(h.weight) != 0x8000000000000001L) return false;
         if (h != Root.shared || h != h.next || h.data != Root.backing || !h.name.equals("child")
                 || !"base".equals(((Base) h).name) || h.data.size() != 4 || h.data.isEmpty()) return false;
         if (h.data.get("Aa") != h || h.data.get("\uD800") != h || !h.data.containsKey("BB")

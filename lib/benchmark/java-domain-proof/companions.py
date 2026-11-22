@@ -29,7 +29,7 @@ def invocation(args, name, out, work, env):
     return cost
 
 
-def proof(checker, classes, jars, work, env, out, method, label, guard=None, assertion="result == 1", roots=(), bounds=(512, 16384)):
+def proof(checker, classes, jars, work, env, out, method, label, guard=None, assertion="result == 1", roots=(), bounds=(512, 16384), profile=PROFILE):
     args = [checker, "prove", method, "--classes", classes, "--classpath", os.pathsep.join(map(str, jars)),
             "--engine", "native", "--gaps", "strict", "--unwind", str(bounds[0]), "--max-array-length", str(bounds[1]),
             "--timeout", "60", "--work", work / label, "--assert", assertion, "--json"]
@@ -38,7 +38,7 @@ def proof(checker, classes, jars, work, env, out, method, label, guard=None, ass
     for root in roots:
         args += ["--observed-initializer", root]
     if roots:
-        args += ["--observed-runtime", json.dumps(PROFILE)]
+        args += ["--observed-runtime", json.dumps(profile)]
     row = invocation(args, label, out, work, env)
     row.update(target=method, guard=guard, assertion=assertion, observedRoots=list(roots), bounds=list(bounds))
     try:
@@ -67,7 +67,12 @@ def proof(checker, classes, jars, work, env, out, method, label, guard=None, ass
         identity = assumption.get("id", "")
         if identity.startswith("observed-initializer:"):
             _, name, provider, state = identity.split(":")
-            if name not in roots or hash_bytes(selected_class(jars, name.replace(".", "/")+".class")[2]) != provider:
+            if name not in roots:
+                raise ValueError(f"{label}: unexpected observed class")
+            resource = name.replace(".", "/") + ".class"
+            local = classes / resource
+            actual = SHA(local) if local.is_file() else hash_bytes(selected_class(jars, resource)[2])
+            if actual != provider:
                 raise ValueError(f"{label}: different observed class")
             states[name] = state
     if row["verdict"] == "verified" and set(states) != set(roots):

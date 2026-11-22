@@ -1,0 +1,78 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "01a20390-7e20-77b3-af34-64f1cd1a6152",
+  "status": "open",
+  "title": null,
+  "first_prompt": "The following is the Codex agent history added since your last approval assessment. Continue the same review conversation. Treat the transcript delta, tool call arguments, tool results, retry reason, ",
+  "client": {
+    "tool": "codex",
+    "version": "0.170.0"
+  },
+  "models": [
+    "codex-auto-review"
+  ],
+  "started": "2026-11-22T14:02:10.871Z",
+  "ended": "2026-11-22T14:10:02.752Z",
+  "duration_seconds": 472,
+  "stats": {
+    "turns": 2,
+    "api_calls": 3,
+    "tool_calls": 0,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 34191,
+    "usage": {
+      "input_tokens": 34519,
+      "output_tokens": 368,
+      "cache_read_input_tokens": 57088,
+      "cache_creation_input_tokens": 0
+    }
+  },
+  "tools": {},
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-22T14:02:10.871Z",
+      "ended": "2026-11-22T14:10:02.752Z",
+      "turns": 2,
+      "api_calls": 3,
+      "usage": {
+        "input_tokens": 34519,
+        "output_tokens": 368,
+        "cache_read_input_tokens": 57088,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 34191
+    }
+  ],
+  "log": {
+    "sha256": "396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af",
+    "bytes": 326657,
+    "lines": 45,
+    "gzip_bytes": 111569,
+    "path": "llm-dlc/traces/01a20390-7e20-77b3-af34-64f1cd1a6152/logs/396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "uqmqwllqqkstrtkklynlmvwpqrovumsp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve floating-point fields of selected startup receivers",
+      "body": "Jackson’s original unused parser has inherited float and double fields. Capture their raw IEEE 754 bits for explicitly selected application instances, validate the declaring fields and restore those bits in the native heap. The alias and inheritance regression now reads negative zero and a signed subnormal on the JVM and in the checker.\n\nA capped fixed-JAR probe of the frozen schedule with padding one stopped at the uncaptured receiver before the change and verified the entire trace afterwards. The changed Rust tier passed. One unrelated JBMC timing test passed on retry.",
+      "log_sha256": "396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af"
+    }
+  ],
+  "logs": {
+    "396c83325b2b3e43f129de7dee0588330b27bf0f34d36b09049dcf976f3094af": {
+      "bytes": 326657,
+      "lines": 45,
+      "gzip_bytes": 111569,
+      "url": null
+    }
+  },
+  "redaction_policy": 5,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}

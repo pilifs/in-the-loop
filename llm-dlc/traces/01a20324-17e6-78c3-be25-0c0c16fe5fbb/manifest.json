@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-22T14:00:01.280Z",
-  "duration_seconds": 6974,
+  "ended": "2026-11-22T14:16:36.900Z",
+  "duration_seconds": 7970,
   "stats": {
-    "turns": 2,
-    "api_calls": 436,
-    "tool_calls": 1132,
-    "tool_errors": 22,
-    "compactions": 1,
+    "turns": 3,
+    "api_calls": 489,
+    "tool_calls": 1331,
+    "tool_errors": 25,
+    "compactions": 2,
     "peak_context_tokens": 336021,
     "usage": {
-      "input_tokens": 571106,
-      "output_tokens": 183853,
-      "cache_read_input_tokens": 92484096,
+      "input_tokens": 747861,
+      "output_tokens": 207214,
+      "cache_read_input_tokens": 99640320,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 665,
-    "exec": 415,
-    "apply_patch": 37,
-    "wait": 8,
+    "Bash": 811,
+    "exec": 464,
+    "apply_patch": 40,
+    "wait": 9,
     "sleep": 3,
     "request_user_input_async": 1,
     "send_message": 1,
@@ -45,6 +45,8 @@
     "lib/benchmark/java-domain-proof/NameChecks.java",
     "lib/benchmark/java-domain-proof/NamePolicySites.java",
     "lib/benchmark/java-domain-proof/ProjectNameValidation.java",
+    "lib/benchmark/java-domain-proof/ReadyParser.java",
+    "lib/benchmark/java-domain-proof/ReadyTrace.java",
     "lib/benchmark/java-domain-proof/UtfNameChecks.java",
     "lib/benchmark/java-domain-proof/companions.py",
     "lib/benchmark/java-domain-proof/domains.py",
@@ -53,12 +55,16 @@
     "lib/benchmark/java-domain-proof/scorecard.py",
     "lib/benchmark/java-domain-proof/transfer.py",
     "lib/src/bmc/mod.rs",
+    "lib/src/bmc/observed.rs",
     "lib/src/bmc/runtime.rs",
     "lib/src/bmc/strings.rs",
+    "lib/src/observed.rs",
+    "lib/src/observed/ObservedInitializer.java",
     "lib/tests/claims.rs",
     "lib/tests/fixtures/claims/claims/P.java",
     "lib/tests/fixtures/claims/claims/ReaderAndListeners.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
+    "lib/tests/fixtures/observed-countermodels/app/oc/PublishedLookup.java",
     "llm-dlc/loops/java-domain-proof-campaign.md"
   ],
   "context_windows": [
@@ -79,24 +85,38 @@
     {
       "index": 1,
       "started": "2026-11-22T13:18:51.241Z",
-      "ended": "2026-11-22T14:00:01.280Z",
+      "ended": "2026-11-22T14:02:09.686Z",
       "turns": 1,
-      "api_calls": 147,
+      "api_calls": 152,
       "usage": {
-        "input_tokens": 227817,
-        "output_tokens": 66065,
-        "cache_read_input_tokens": 24876928,
+        "input_tokens": 229711,
+        "output_tokens": 68346,
+        "cache_read_input_tokens": 26032640,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 230746
+      "peak_context_tokens": 232201
+    },
+    {
+      "index": 2,
+      "started": "2026-11-22T14:02:09.693Z",
+      "ended": "2026-11-22T14:16:36.900Z",
+      "turns": 1,
+      "api_calls": 48,
+      "usage": {
+        "input_tokens": 174861,
+        "output_tokens": 21080,
+        "cache_read_input_tokens": 6000512,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 184901
     }
   ],
   "log": {
-    "sha256": "4ecafa52f3c377a02e39df34b59f4349fc3e9346daa222f410dce09ddaea65b3",
-    "bytes": 9209947,
-    "lines": 3420,
-    "gzip_bytes": 3518911,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/4ecafa52f3c377a02e39df34b59f4349fc3e9346daa222f410dce09ddaea65b3.jsonl.gz"
+    "sha256": "9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea",
+    "bytes": 11461665,
+    "lines": 3894,
+    "gzip_bytes": 4275817,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -347,6 +367,14 @@
       "summary": "Report the checked Avro name policies on four historical JARs",
       "body": "Merge the collected comparison for job 20261122-133607-prove-the-name-validation-consumer-on-fo. The follow-up checker established ten bounded name-validation queries where the previous checker left all ten open. The debugger witnessed 344 policy reads inside the frozen public readers. Eight proofs take the value at the lookup as an explicit premise and two call the original public UTF validator. The complete decoder claims keep their original dispositions.\n\nThe scorecard recounts raw checker and debugger receipts and links qualified decisions, including the original Parquet replay. All 28 changed-test groups, example validation for 364 and 367, the complete recount and altered-receipt controls passed.",
       "log_sha256": "4ecafa52f3c377a02e39df34b59f4349fc3e9346daa222f410dce09ddaea65b3"
+    },
+    {
+      "change_id": "uqmqwllqqkstrtkklynlmvwpqrovumsp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve floating-point fields of selected startup receivers",
+      "body": "Jackson’s original unused parser has inherited float and double fields. Capture their raw IEEE 754 bits for explicitly selected application instances, validate the declaring fields and restore those bits in the native heap. The alias and inheritance regression now reads negative zero and a signed subnormal on the JVM and in the checker.\n\nA capped fixed-JAR probe of the frozen schedule with padding one stopped at the uncaptured receiver before the change and verified the entire trace afterwards. The changed Rust tier passed. One unrelated JBMC timing test passed on retry.",
+      "log_sha256": "9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea"
     }
   ],
   "logs": {
@@ -396,6 +424,12 @@
       "bytes": 4256215,
       "lines": 1463,
       "gzip_bytes": 1532142,
+      "url": null
+    },
+    "9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea": {
+      "bytes": 11461665,
+      "lines": 3894,
+      "gzip_bytes": 4275817,
       "url": null
     },
     "d84e774cc5be9e73aa8bfc8dfe16955668ccd9951649fbc1bd014a7db2a2a2f5": {
