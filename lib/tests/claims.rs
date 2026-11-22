@@ -105,8 +105,25 @@ fn a_string_array_parameter_is_strings_of_their_own_or_null_and_a_witness_runs_o
 fn lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_for() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["lambda", "streams", "chars", "range", "mapped", "optional"] {
+    for method in ["lambda", "streams", "chars", "range", "mapped", "optional", "boxedCallbacks", "emptyCollections"] {
         proved(classes, &format!("claims.L#{method}"), 3);
+    }
+    let image = Command::new("java").arg("-cp").arg(classes).args(["claims.L", "cache-image"]).output().unwrap();
+    assert!(image.status.success());
+    if matches!(image.stdout.as_slice(),
+        b"72bfbbe1f2885dbd5565cf63195e776a2ca3fc3807a8d8292f50bc8a06a927aa"
+        | b"b9dd4690cd66026e282baa47deb2d5f60e9cffd843b34027cda4898da3d1141b") {
+        for (high, expected) in [("127", "false/false"), ("407", "true/false"), ("512", "true/true")] {
+            let actual = Command::new("java").arg(format!("-XX:AutoBoxCacheMax={high}"))
+                .arg("-cp").arg(classes).arg("claims.L").output().unwrap();
+            assert!(actual.status.success());
+            assert_eq!(String::from_utf8_lossy(&actual.stdout), expected);
+        }
+        proved(classes, "claims.L#optionalIntegerCache", 3);
+        for method in ["alwaysCached407", "neverCached407"] {
+            let outcome = run(&options(classes, &format!("claims.L#{method}"), 3, method));
+            assert_ne!(outcome.verdict, Verdict::Verified, "the VM can choose either identity");
+        }
     }
 }
 

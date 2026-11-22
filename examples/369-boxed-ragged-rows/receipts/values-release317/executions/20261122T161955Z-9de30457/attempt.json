@@ -1,0 +1,537 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261122T161955Z-9de30457",
+  "task": "values-release317",
+  "claimKey": "d34af32896d215e2",
+  "revisions": [
+    "release317"
+  ],
+  "startedAt": "2026-11-22T16:19:55.646704+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261122-161543-boxed-parser-values-and-independent-resu",
+  "sourceCommit": "3089187967c7051c99429aa72a175d23e537accb",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.8495
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.0041
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 2.0101
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.0733
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.1172
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.2194
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "release317": {
+      "revision": "fixture:application",
+      "target": {
+        "class": "datawork.RowMapper",
+        "method": "parseRows",
+        "descriptor": "([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+        "loadedFrom": "release317.jar",
+        "classSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8",
+        "adapterCalls": [
+          "datawork.RowMapper#copyContents([[Ljava/lang/String;)[[Ljava/lang/String;",
+          "datawork.RowMapper#correct([[Ljava/lang/String;[[Ljava/lang/Integer;)Z",
+          "datawork.RowMapper#input(I)[[Ljava/lang/String;",
+          "datawork.RowMapper#isolated([[Ljava/lang/String;[[Ljava/lang/String;[[Ljava/lang/String;[[Ljava/lang/Integer;[[Ljava/lang/Integer;)Z",
+          "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "8980056a169ad3fd9d43477138187a3dfc84832e255fd40630ee4e90f83a4fcd",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-release317.jar",
+          "sha256": "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "release317.jar",
+          "sha256": "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from application by the fixture recipe"
+        },
+        {
+          "path": "libraries/commons-lang3-317.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+          "origin": "published org.apache.commons:commons-lang3:3.17.0 at 6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+        }
+      ]
+    }
+  },
+  "bindingId": "3e5194564e266457803ab76a9dabd2a9c37c9788f910a50294c6f2ee52a91c23",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/02ee1ec461c3d58af585b7bfa843f53d430919cb/jvmcontract",
+    "prove",
+    "datawork.RowChecks#values(int)",
+    "--classes",
+    "prepare/release317/adapter-release317.jar",
+    "--classpath",
+    "prepare/release317/release317.jar",
+    "--classpath",
+    "prepare/release317/libraries/commons-lang3-317.jar",
+    "--assume",
+    "code >= 0 && code < 187",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "256",
+    "--max-array-length",
+    "16384",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+    "commit": "3089187967c7051c99429aa72a175d23e537accb",
+    "libTree": "02ee1ec461c3d58af585b7bfa843f53d430919cb",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 256,
+      "maxArrayLength": 16384
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Selector zero is an empty matrix. Six layouts each use every width-zero, width-one and width-two word from the five-token alphabet.",
+      "method": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "revisions": {
+        "release317": {
+          "commit": "fixture:application",
+          "loadedFrom": "release317.jar",
+          "classSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8",
+          "origin": "built from application by the fixture recipe",
+          "parameters": {
+            "names": [
+              "rows"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "datawork.RowChecks#values(I)I",
+        "mapping": "Selector zero is an empty matrix. Six layouts each use every width-zero, width-one and width-two word from the five-token alphabet.",
+        "correspondence": "finite-oracle",
+        "cases": 187
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "release317": [
+        {
+          "path": "adapter-release317.jar",
+          "sha256": "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f",
+          "role": "adapter"
+        },
+        {
+          "path": "release317.jar",
+          "sha256": "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395",
+          "role": "original"
+        },
+        {
+          "path": "libraries/commons-lang3-317.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "datawork.RowChecks#values(I)I",
+    "entryBindings": {
+      "release317": {
+        "entry": "datawork.RowChecks#values(I)I",
+        "classSha256": "80908a3f3f94481bf7d9fca63108746538d7f471f0e069d8a35b4e3c69323c73",
+        "loadedFrom": "adapter-release317.jar",
+        "subject": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+        "subjectClassSha256": "cfe1b89d632b773f9f2316cb0a53d69af18594379a4662e232136a9ee734dfb8"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "checkedEntry": "datawork.RowChecks#values(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 187"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "256"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "16384"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "datawork.RowChecks#values(I)I",
+        "mapping": "Selector zero is an empty matrix. Six layouts each use every width-zero, width-one and width-two word from the five-token alphabet.",
+        "correspondence": "finite-oracle",
+        "cases": 187
+      }
+    },
+    "commits": {
+      "release317": "fixture:application"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "release317": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/02ee1ec461c3d58af585b7bfa843f53d430919cb/jvmcontract",
+          "gaps",
+          "--target",
+          "datawork.RowChecks#values(int)",
+          "--classes",
+          "prepare/release317/adapter-release317.jar",
+          "--classpath",
+          "prepare/release317/release317.jar",
+          "--classpath",
+          "prepare/release317/libraries/commons-lang3-317.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-release317.stdout",
+        "stderr": "verifier/probe-release317.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.lang.ArrayIndexOutOfBoundsException.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.ArrayIndexOutOfBoundsException.<init>(int)",
+            "sites": [
+              "java.util.Spliterators.checkFromToBounds:391",
+              "java.util.Spliterators.checkFromToBounds:394"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.Spliterator.forEachRemaining(Ljava/util/function/Consumer;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.Spliterator.forEachRemaining(java.util.function.Consumer)",
+            "sites": [
+              "java.util.stream.AbstractPipeline.copyInto:509"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.function.Consumer.accept(Ljava/lang/Object;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.function.Consumer.accept(java.lang.Object)",
+            "sites": [
+              "java.util.Spliterators$ArraySpliterator.forEachRemaining:1024",
+              "java.util.Spliterators$ArraySpliterator.tryAdvance:1034"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.stream.Sink.accept(Ljava/lang/Object;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.stream.Sink.accept(java.lang.Object)",
+            "sites": [
+              "java.util.stream.ReferencePipeline$3$1.accept:197"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.stream.Sink.begin(J)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.stream.Sink.begin(long)",
+            "sites": [
+              "java.util.stream.AbstractPipeline.copyInto:508",
+              "java.util.stream.AbstractPipeline.copyIntoWithCancel:526",
+              "java.util.stream.Sink$ChainedReference.begin:256"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.stream.Sink.end()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.stream.Sink.end()",
+            "sites": [
+              "java.util.stream.AbstractPipeline.copyInto:510",
+              "java.util.stream.AbstractPipeline.copyIntoWithCancel:528",
+              "java.util.stream.Sink$ChainedReference.end:261"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.Spliterator.getComparator()Ljava/util/Comparator;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Spliterator.getComparator()",
+            "sites": [
+              "java.util.stream.StreamOpFlag.fromCharacteristics:751"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.function.Function.apply(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.function.Function.apply(java.lang.Object)",
+            "sites": [
+              "java.util.stream.ReferencePipeline$3$1.accept:197"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.function.Supplier.get()Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.function.Supplier.get()",
+            "sites": [
+              "java.util.stream.AbstractPipeline.sourceSpliterator:405"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.stream.Node.spliterator()Ljava/util/Spliterator;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.stream.Node.spliterator()",
+            "sites": [
+              "java.util.stream.AbstractPipeline.opEvaluateParallelLazy:735"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.stream.Node$Builder.build()Ljava/util/stream/Node;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.stream.Node$Builder.build()",
+            "sites": [
+              "java.util.stream.AbstractPipeline.evaluate:575"
+            ]
+          },
+          {
+            "id": "class-initializer:java.util.stream.StreamOpFlag.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "java.util.stream.StreamOpFlag.<clinit>()",
+            "sites": [
+              "java.util.stream.StreamSupport.stream:70"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Class.desiredAssertionStatus()",
+            "sites": [
+              "java.util.stream.ReferencePipeline$StatelessOp.<clinit>:787"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Spliterator.characteristics()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Spliterator.characteristics()",
+            "sites": [
+              "java.util.stream.StreamOpFlag.fromCharacteristics:750"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Spliterator.getExactSizeIfKnown()J@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Spliterator.getExactSizeIfKnown()",
+            "sites": [
+              "java.util.stream.AbstractPipeline.copyInto:508",
+              "java.util.stream.AbstractPipeline.copyIntoWithCancel:526",
+              "java.util.stream.AbstractPipeline.exactOutputSizeIfKnown:470"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Spliterator.hasCharacteristics(I)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Spliterator.hasCharacteristics(int)",
+            "sites": [
+              "java.util.stream.AbstractPipeline.sourceSpliterator:438"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Spliterator.tryAdvance(Ljava/util/function/Consumer;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Spliterator.tryAdvance(java.util.function.Consumer)",
+            "sites": [
+              "java.util.stream.ReferencePipeline.forEachWithCancel:129"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Spliterators$ArraySpliterator.hasCharacteristics(I)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Spliterators$ArraySpliterator.hasCharacteristics(int)",
+            "sites": [
+              "java.util.Spliterators$ArraySpliterator.getComparator:1052"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.stream.Sink.cancellationRequested()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.stream.Sink.cancellationRequested()",
+            "sites": [
+              "java.util.stream.ReferencePipeline.forEachWithCancel:129",
+              "java.util.stream.Sink$ChainedReference.cancellationRequested:266"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.stream.Nodes.builder(JLjava/util/function/IntFunction;)Ljava/util/stream/Node$Builder;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.stream.Nodes.builder(long, java.util.function.IntFunction)",
+            "sites": [
+              "java.util.stream.ReferencePipeline.makeNodeBuilder:135"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.stream.Nodes.collect(Ljava/util/stream/PipelineHelper;Ljava/util/Spliterator;ZLjava/util/function/IntFunction;)Ljava/util/stream/Node;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.stream.Nodes.collect(java.util.stream.PipelineHelper, java.util.Spliterator, boolean, java.util.function.IntFunction)",
+            "sites": [
+              "java.util.stream.ReferencePipeline.evaluateToNode:111"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.stream.Nodes.flatten(Ljava/util/stream/Node;Ljava/util/function/IntFunction;)Ljava/util/stream/Node;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.stream.Nodes.flatten(java.util.stream.Node, java.util.function.IntFunction)",
+            "sites": [
+              "java.util.stream.ReferencePipeline.toArray:616"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.04,
+      "peakRssBytes": 64692224,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.04,
+    "peakRssBytes": 64692224,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.042,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/values-release317/20261122T161955Z-9de30457/result.json",
+  "preparedClaim": "c7605db990e5b948",
+  "firstBlocker": "outside the fragment: a lambda whose call of org.apache.commons.lang3.math.NumberUtils.toInt needs an unsupported argument or result conversion",
+  "endedAt": "2026-11-22T16:19:57.866205+00:00"
+}

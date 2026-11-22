@@ -873,6 +873,16 @@ struct Decoded {
     descriptor: String,
 }
 
+/// A SAM's normal return can discard a result or apply a boxing invocation.
+#[derive(Clone, Copy, Default, PartialEq, Eq)]
+enum LambdaReturn {
+    #[default]
+    Pass,
+    Discard,
+    BoxInt,
+    IntegerValueOf,
+}
+
 #[derive(Clone)]
 struct Frame {
     class: Rc<ClassFile>,
@@ -882,8 +892,8 @@ struct Frame {
     at: usize,
     locals: Vec<Option<Val>>,
     stack: Vec<Val>,
-    /// A void functional interface discards its target's value only on normal return.
-    discard_result: bool,
+    /// Adapt the implementation result before advancing the caller's interface instruction.
+    lambda_return: LambdaReturn,
     /// The class whose `<clinit>` the frame runs: when it returns the class is initialized, and when an exception
     /// leaves it the class is erroneous (JVMS §5.5, steps 10 and 11).
     initializes: Option<String>,
@@ -902,7 +912,7 @@ struct Frame {
 
 impl Frame {
     fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
-        Frame { class, method, code, at: 0, locals, stack: Vec::new(), discard_result: false, initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), lambda_return: LambdaReturn::Pass, initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
     }
 
     fn pc(&self) -> u32 {
@@ -1024,7 +1034,7 @@ enum Literal {
     /// `Boolean.TRUE` or `Boolean.FALSE` ([`runtime::truth_constant`]).
     Truth(bool),
     /// A wrapper's mandated cache entry, distinct for each class and small value.
-    CachedIntegral(&'static str, i8),
+    CachedIntegral(&'static str, i32),
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -1117,7 +1127,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
-        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.discard_result == g.discard_result && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.lambda_return == g.lambda_return && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
         && a.unheld_statics == b.unheld_statics
         && a.statics.len() == b.statics.len()
@@ -3542,7 +3552,14 @@ impl<'a> Engine<'a> {
 
     fn advance(&self, path: &mut Path) {
         let frame = path.frames.last_mut().expect("a frame");
-        if std::mem::take(&mut frame.discard_result) { frame.stack.pop().expect("adapted method result"); }
+        match std::mem::take(&mut frame.lambda_return) {
+            LambdaReturn::BoxInt => {
+                frame.lambda_return = LambdaReturn::IntegerValueOf;
+                return;
+            }
+            LambdaReturn::Discard => { frame.stack.pop().expect("adapted method result"); }
+            LambdaReturn::IntegerValueOf | LambdaReturn::Pass => {}
+        }
         frame.at += 1;
     }
 
@@ -3628,7 +3645,7 @@ impl<'a> Engine<'a> {
             let handler = frame.code.handlers.iter().find(|h| u32::from(h.start_pc) <= pc && pc < u32::from(h.end_pc) && h.catch_type.as_deref().is_none_or(|t| self.cp.is_subtype(&class, t))).cloned();
             if let Some(h) = handler {
                 let to = *frame.code.index.get(&u32::from(h.handler_pc)).ok_or_else(|| Stop::Unsupported("handler at no instruction".into()))?;
-                frame.discard_result = false;
+                frame.lambda_return = LambdaReturn::Pass;
                 frame.stack.clear();
                 frame.stack.push(Val::R(Some(obj)));
                 frame.at = to;
@@ -3675,8 +3692,13 @@ impl<'a> Engine<'a> {
     /// Executes the instruction at the top frame's `at`.
     fn step(&mut self, path: &mut Path) -> Step {
         let frame = path.frames.last().expect("a frame");
-        let insn = frame.code.insns[frame.at].clone();
         let class = frame.class.clone();
+        if frame.lambda_return == LambdaReturn::IntegerValueOf {
+            // Keep this phase until valueOf completes, including initialization or a path split.
+            let factory = crate::classfile::MemberRef::new("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+            return self.invoke_static(path, &class.name, &factory);
+        }
+        let insn = frame.code.insns[frame.at].clone();
         if !self.observed.is_empty() {
             if let Some(reason) = frame.stack.iter().find_map(|v| match v { Val::Unobserved(s) => Some(s.clone()), _ => None }) {
                 if let Some(step) = self.transport_unobserved(path, &class, &insn, &reason) { return step; }
@@ -5277,7 +5299,7 @@ impl<'a> Engine<'a> {
     /// application method runs, a JDK method is modelled, a gap or refused, as anywhere else. The class of a
     /// static method is initialized first, the stack still as the interface call left it, since the instruction
     /// runs again once an initializer returns. The erased call checks its instantiated argument types. A void
-    /// interface discards the normal result. Boxing conversions outside the fragment are refused.
+    /// interface discards the normal result. An int implementation of an Integer-valued SAM invokes Integer.valueOf.
     fn lambda_call(&mut self, path: &mut Path, caller: &str, o: usize, receiver_at: usize, lambda: &Lambda, called: &MethodDescriptor) -> Step {
         let target = &lambda.handle.member;
         let Ok(mut takes) = MethodDescriptor::parse(&target.descriptor) else { return unsupported("a lambda's method with no descriptor") };
@@ -5297,7 +5319,11 @@ impl<'a> Engine<'a> {
             (Type::Object(_) | Type::Array(_), Type::Object(_) | Type::Array(_)) => true,
             (a, b) => a == b,
         };
-        if !called.params.iter().zip(&takes.params[lambda.captured..]).all(|(a, b)| fits(a, b)) || (called.ret != Type::Void && !fits(&returns, &called.ret)) {
+        let box_int = returns == Type::Int
+            && matches!(&lambda.instantiated.ret, Type::Object(c) if c == "java/lang/Integer")
+            && matches!(&called.ret, Type::Object(c) if self.cp.is_subtype("java/lang/Integer", c));
+        if !called.params.iter().zip(&takes.params[lambda.captured..]).all(|(a, b)| fits(a, b))
+            || (called.ret != Type::Void && !fits(&returns, &called.ret) && !box_int) {
             return unsupported(format!("a lambda whose call of {}.{} needs an unsupported argument or result conversion", target.owner.replace('/', "."), target.name));
         }
         if kind == 6 || kind == 8 {
@@ -5337,7 +5363,11 @@ impl<'a> Engine<'a> {
         }
         let made = (kind == 8).then(|| self.alloc(path, &target.owner));
         let frame = path.frames.last_mut().expect("a frame");
-        frame.discard_result |= returns != Type::Void && called.ret == Type::Void;
+        if box_int {
+            frame.lambda_return = LambdaReturn::BoxInt;
+        } else if returns != Type::Void && called.ret == Type::Void {
+            frame.lambda_return = LambdaReturn::Discard;
+        }
         let stack = &mut frame.stack;
         let mut replaced: Vec<Val> = Vec::new();
         if let Some(r) = made {
@@ -5477,7 +5507,7 @@ impl<'a> Engine<'a> {
                         return self.enter_method(path, &member.owner, cf, method, full);
                     }
                 }
-                if let Some((cf,method)) = self.cp.blocking_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                if let Some((cf,method)) = self.cp.fresh_collection_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
                     if special && member.owner == runtime::REENTRANT_LOCK {
                         // The original constructor initializes sync. The existing single-thread
                         // lock operations also keep their public hold-count observation.

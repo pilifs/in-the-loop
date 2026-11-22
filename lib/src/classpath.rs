@@ -1163,6 +1163,15 @@ impl ClassPath {
         digests.contains(&crate::digest::sha256_hex(&bytes).as_str())
     }
 
+    /// Both factories load the cached object for -128..=high and allocate a distinct Integer otherwise.
+    /// The cache initializer fixes high at startup and fills each slot with its corresponding value.
+    pub(crate) fn known_integer_cache(&self) -> bool {
+        self.matches_jdk_classes(&["java/lang/Integer", "java/lang/Integer$IntegerCache"], &[
+            "72bfbbe1f2885dbd5565cf63195e776a2ca3fc3807a8d8292f50bc8a06a927aa",
+            "b9dd4690cd66026e282baa47deb2d5f60e9cffd843b34027cda4898da3d1141b",
+        ])
+    }
+
     /// These images install Buffer$1 through Preconditions$4. The fixed checkIndex formatter
     /// converts two plain Integers with "%s". Buffer$1.apply(String) ignores both the message
     /// and its receiver and constructs a fresh, no-argument IndexOutOfBoundsException.
@@ -1284,16 +1293,23 @@ impl ClassPath {
         (!method.is_static() && method.code.is_some()).then_some((class, method))
     }
 
+    /// Fresh deques and sets construct their backing storage on the selected JDK.
     /// Fresh linked blocking queues build two distinct locks, conditions, an atomic
     /// count and a sentinel node. Only construction and the empty-state observers
     /// execute here. Waiting, signaling and atomic updates retain their own boundaries.
-    pub(crate) fn blocking_queue_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+    pub(crate) fn fresh_collection_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
         const QUEUE: &str = "java/util/concurrent/LinkedBlockingQueue";
         const COUNT: &str = "java/util/concurrent/atomic/AtomicInteger";
         const LOCK: &str = "java/util/concurrent/locks/ReentrantLock";
         const SYNC: &str = "java/util/concurrent/locks/ReentrantLock$NonfairSync";
         const CONDITION: &str = "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject";
         let supported = match receiver {
+            "java/util/HashSet" => matches!((owner, name, desc),
+                ("java/util/HashSet" | "java/util/AbstractSet" | "java/util/AbstractCollection", "<init>", "()V")
+                | ("java/util/HashSet" | "java/util/Set" | "java/util/Collection", "isEmpty", "()Z")),
+            "java/util/ArrayDeque" => matches!((owner, name, desc),
+                ("java/util/ArrayDeque" | "java/util/AbstractCollection", "<init>", "()V")
+                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "isEmpty", "()Z")),
             QUEUE => matches!((owner, name, desc),
                 (QUEUE, "<init>", "()V" | "(I)V") | (QUEUE, "size" | "remainingCapacity", "()I") | ("java/util/AbstractCollection", "size", "()I")
                 | ("java/util/AbstractCollection" | QUEUE, "isEmpty", "()Z")),

@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-164436-recheck-spring-binder-prefixes-from-ordi",
+  "title": "Recheck Spring binder prefixes from ordinary startup",
+  "description": "Use the ordinary native checker with strict gaps on identical input guards and the same public observer through the standard bytecode-qualified selector workflow. Keep original-entry counterexample replays and check coverage on each side.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "368"
+    ]
+  },
+  "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+  "submitted": {
+    "at": "2026-11-22T16:44:36+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "javac",
+    "java",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Recheck Spring binder prefixes from ordinary startup",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 368 --first 0",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/368-spring-binding-history/records/native-final",
+    "examples/368-spring-binding-history/records/native-selectors"
+  ]
+}

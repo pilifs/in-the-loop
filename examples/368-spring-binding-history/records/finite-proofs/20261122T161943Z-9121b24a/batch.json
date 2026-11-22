@@ -1,0 +1,84 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261122T161943Z-9121b24a",
+  "retryOf": null,
+  "order": [
+    "beans-release",
+    "ledger-release",
+    "beans-combined",
+    "ledger-combined"
+  ],
+  "claims": {
+    "beans-release": {
+      "sourceClaim": "9e965174c9108d8d",
+      "inputsKey": "058a7a7a8eec85b055ba570c11e026312b276bac287308c21e60d852dd98fe7f",
+      "revisions": [
+        "release"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "release": "2c8158709456941041d2ef66e4cb031890c0281943872592c90317570dd849f2"
+      }
+    },
+    "ledger-release": {
+      "sourceClaim": "3dc16102418e1734",
+      "inputsKey": "1e5030c9792aec890f6e87d3ec3ba63699b3afc3cd9cbd1997616ca4deee747d",
+      "revisions": [
+        "release"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "release": "2c8158709456941041d2ef66e4cb031890c0281943872592c90317570dd849f2"
+      }
+    },
+    "beans-combined": {
+      "sourceClaim": "9e965174c9108d8d",
+      "inputsKey": "f03d2bf76fb8f8f09354e88964058c9f3aaced3552fe1f49a23a54028f4a4215",
+      "revisions": [
+        "combined"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "combined": "75ed65e7c61a0a054744c2d472db5e69bcc9b6c60ffcae52b9b886ac6097b99f"
+      }
+    },
+    "ledger-combined": {
+      "sourceClaim": "3dc16102418e1734",
+      "inputsKey": "78045ccaae80349a96e45430fa60fb042e5e3a8d109f70d2dd285272b58c3a94",
+      "revisions": [
+        "combined"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "combined": "75ed65e7c61a0a054744c2d472db5e69bcc9b6c60ffcae52b9b886ac6097b99f"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "beans-release",
+      "status": "established",
+      "sha256": "4edc086c1c346b4de041a63af9f2ef4ad1cc48c90a60306de2af2021ca902bf3"
+    },
+    {
+      "task": "ledger-release",
+      "status": "established",
+      "sha256": "e3329d21f50899407e786e1bb50b9b361e95261c6d7cba056319c8768e779c16"
+    },
+    {
+      "task": "beans-combined",
+      "status": "established",
+      "sha256": "bab6d416166babac9c7aced36a74fb5eca8ce3adffb059d0db8daf9b024fe25d"
+    },
+    {
+      "task": "ledger-combined",
+      "status": "established",
+      "sha256": "ddc8c40ceb941991483306770d92de0d0317b9736d3631681050c6f834d36c5a"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 90,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "Each input starts with fresh application classes on its pinned classpath. Boolean selections also start a fresh JVM for each value. Integer intervals above 4096 use consecutive JVM batches on one total deadline."
+}

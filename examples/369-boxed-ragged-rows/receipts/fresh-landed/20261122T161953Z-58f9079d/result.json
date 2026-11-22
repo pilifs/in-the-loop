@@ -1,0 +1,434 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "5b1a8887defea6af",
+    "format": 1,
+    "example": "369",
+    "statement": {
+      "approach": "target",
+      "task": "fresh-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "revisions": [
+        "landed"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "fresh-landed",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+        "file": "claims/fresh.json",
+        "sha256": "7d2a50481b0bec693b585e9db772290e8c367ce91a87921cb9d8df4b3db34c23",
+        "property": "fresh",
+        "claimKind": "property",
+        "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+        "assume": "code >= 0 && code < 187",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "explicitBounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/datawork/Cases.java",
+            "sha256": "50db65851326e65b1d5b2507530de50e454582b1139dbbfe3fb03c9cdf8d1e97"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "602a010d95cf25b94db02f572e9a90abecbf1d1b57c292e8a0855931dd3dd820"
+          }
+        ],
+        "adapter": {
+          "entry": "datawork.RowChecks#fresh(I)I",
+          "mapping": "The six layouts include repeated rows, equal clones and distinct ragged rows. The observer writes each output cell and checks the separate invocation.",
+          "correspondence": "finite-oracle",
+          "cases": 187
+        },
+        "key": "488d28802bebf7ac"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16384
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "af0ad1a6faf9967906af5a489c13dde5094a132c48942ee10c3593721a936aff",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "fresh-landed",
+      "sidecar": "8e66a8d46fada2f1adb6a167f4d8bd6b4ffd333df406fd9e6a916ff00bd7b69c",
+      "revisions": {
+        "landed": "e093f27938175bbb186bd1433a2ea3acdfd6ecf7"
+      },
+      "dependencies": [
+        {
+          "revision": "landed",
+          "position": 0,
+          "role": "driver",
+          "sha256": "8980056a169ad3fd9d43477138187a3dfc84832e255fd40630ee4e90f83a4fcd"
+        },
+        {
+          "revision": "landed",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "55214274b4273c8f0a2d4c7fb647569239898216f5f71ed0d7501b871712835f"
+        },
+        {
+          "revision": "landed",
+          "position": 2,
+          "role": "original",
+          "sha256": "7fff1e4de4f9461b238ea199cd732ccc31632c5ce00a72f7984c8ee3297f9395"
+        },
+        {
+          "revision": "landed",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/datawork/RowChecks.java": "f19f872666a2fc43945266de8d16a1713e1660ab831139dd1ba16e91338b44ef",
+        "claims/fresh.json": "7d2a50481b0bec693b585e9db772290e8c367ce91a87921cb9d8df4b3db34c23",
+        "controls/table.json": "602a010d95cf25b94db02f572e9a90abecbf1d1b57c292e8a0855931dd3dd820",
+        "driver/datawork/Cases.java": "50db65851326e65b1d5b2507530de50e454582b1139dbbfe3fb03c9cdf8d1e97"
+      },
+      "claimKey": "488d28802bebf7ac"
+    }
+  },
+  "attempt": {
+    "id": "20261122T161953Z-58f9079d",
+    "claim": "5b1a8887defea6af",
+    "startedAt": "2026-11-22T16:19:53+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "datawork.RowChecks#fresh(int)",
+      "--classes",
+      "prepare/landed/adapter-landed.jar",
+      "--classpath",
+      "prepare/landed/landed.jar",
+      "--classpath",
+      "prepare/landed/libraries/commons-lang-1635-landed.jar",
+      "--assume",
+      "code >= 0 && code < 187",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a28d9a872abbd7ac6fe0819d672c3d832dc2b861614aa1c61be191624165a040",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-161543-boxed-parser-values-and-independent-resu",
+      "sourceCommit": "3089187967c7051c99429aa72a175d23e537accb",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-161543-boxed-parser-values-and-independent-resu"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control landed on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-landed-jdk21.stdout",
+        "stderr": "records/control-landed-jdk21.stderr"
+      },
+      {
+        "name": "verifier landed on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.041,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 256,
+      "maxArrayLength": 16384,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "5b1a8887defea6af",
+    "attempt": "20261122T161953Z-58f9079d",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 187",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "outside the fragment: a lambda whose call of org.apache.commons.lang3.math.NumberUtils.toInt needs an unsupported argument or result conversion",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.027,
+            "properties": 1,
+            "unwind": 256,
+            "maxArrayLength": 16384,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.024,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.003,
+                  "encoding": 0.011,
+                  "solving": 0.009,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 20007,
+                  "clauses": 69340
+                }
+              }
+            ],
+            "native": {
+              "paths": 1,
+              "merges": 0,
+              "solverCalls": 34,
+              "solvingSeconds": 0.00944485,
+              "gatesEvaluated": 1777,
+              "evaluatingSeconds": 5.1888e-05,
+              "divisions": 4,
+              "divisionsBuilt": 4,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 20007,
+              "clauses": 69340,
+              "seconds": 0.024366092,
+              "loadingSeconds": 0.000413734,
+              "decodingSeconds": 8.4878e-05,
+              "encodingSeconds": 0.011191539,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 187",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"landed\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "outside the fragment: a lambda whose call of org.apache.commons.lang3.math.NumberUtils.toInt needs an unsupported argument or result conversion",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 187"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "82acefa60daa545d8fdbd230fbaff07c6cc2320b80528b83a27bfb5869db6039",
+        "bytes": 171993
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "9ea5a14dabd24a899155868bbe7572e74421818408a7ebeb326bc1bd461d6ebe",
+        "bytes": 198
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "9c6741022584b01b4043df5463664487f4c08db6abcaaafd50eef3222e5acde7",
+        "bytes": 1973
+      },
+      {
+        "path": "records/control-landed-jdk21.stdout",
+        "sha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+        "bytes": 32643
+      },
+      {
+        "path": "records/control-landed-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "fdf2fc80cc827bf789d70e9e27cb6de0ef034fac49ad265abaaabab7db092ade",
+        "bytes": 149397
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "8fe528eec048a9fd7a71393f63f0cbdeb176fa7bb6ff010f58da0abdd7228d4f",
+        "bytes": 4712
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "1527dd5b907674e33a234507ac42db04b6308546c4798ddd1fa670c28c056495",
+        "bytes": 22180
+      }
+    ]
+  }
+}

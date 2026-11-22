@@ -21,6 +21,52 @@ public final class L {
         return answer == (present ? 2 : 7) && fallback.calls == (present ? 0 : 1);
     }
 
+    private static int signedLength(String value) {
+        if (value == null) throw new IllegalArgumentException();
+        return value.isEmpty() ? -2 : 7;
+    }
+
+    public static boolean boxedCallbacks(boolean empty) {
+        java.util.function.Function<String, Integer> mapper = L::signedLength;
+        String arg = empty ? "" : "x";
+        Integer value = mapper.apply(arg);
+        if (value != Integer.valueOf(empty ? -2 : 7)) return false;
+        try { mapper.apply(null); return false; }
+        catch (IllegalArgumentException expected) {
+            // An instance-method reference exercises a different dispatch and must box its result too.
+            java.util.function.Function<String, Integer> length = String::length;
+            return length.apply(arg) == Integer.valueOf(empty ? 0 : 1);
+        }
+    }
+
+    public static boolean optionalIntegerCache() {
+        Integer low = Integer.valueOf(407), high = Integer.valueOf(408), negative = Integer.valueOf(-129);
+        return low.intValue() == 407 && high.intValue() == 408 && negative.intValue() == -129 && low != high
+                && negative != Integer.valueOf(-129) && (low == Integer.valueOf(407) || high != Integer.valueOf(408));
+    }
+
+    public static boolean alwaysCached407() { return Integer.valueOf(407) == Integer.valueOf(407); }
+    public static boolean neverCached407() { return Integer.valueOf(407) != Integer.valueOf(407); }
+
+    public static void main(String[] args) throws Exception {
+        if (args.length == 1 && args[0].equals("cache-image")) {
+            var sha = java.security.MessageDigest.getInstance("SHA-256");
+            for (String cls : new String[]{"Integer.class", "Integer$IntegerCache.class"})
+                try (var data = Integer.class.getResourceAsStream(cls)) { sha.update(data.readAllBytes()); }
+            System.out.print(java.util.HexFormat.of().formatHex(sha.digest()));
+            return;
+        }
+        if (!optionalIntegerCache()) throw new AssertionError("cache value or ordering");
+        System.out.print(alwaysCached407() + "/" + (Integer.valueOf(408) == Integer.valueOf(408)));
+    }
+
+    public static boolean emptyCollections() {
+        java.util.Deque<String> left = new java.util.ArrayDeque<>();
+        java.util.Deque<String> right = new java.util.ArrayDeque<>();
+        java.util.Set<String> suppressed = new java.util.HashSet<>();
+        return left != right && left.isEmpty() && right.isEmpty() && suppressed.isEmpty();
+    }
+
     static boolean any(int[] a, IntPredicate p) {
         for (int x : a) {
             if (p.test(x)) return true;

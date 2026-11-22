@@ -365,7 +365,7 @@ impl Engine<'_> {
                 _ => return None,
             };
             let frame = path.frames.last()?;
-            let ignored = frame.discard_result || matches!(frame.code.insns.get(frame.at + 1), Some(Insn::Pop));
+            let ignored = frame.lambda_return == super::LambdaReturn::Discard || matches!(frame.code.insns.get(frame.at + 1), Some(Insn::Pop));
             if previous.is_none() && !ignored { return None; }
             if let Err(stop) = self.keeps(path, None, "changes a JVM system property") { return Some(Err(stop)); }
             path.statics.insert(slot, value);
@@ -381,8 +381,11 @@ impl Engine<'_> {
     pub(super) fn cached_integral(&mut self, path: &mut Path, class: &'static str, word: &Bits) -> Option<Step> {
         let minimum = if class == "java/lang/Character" { 0 } else { i8::MIN };
         let boxed = if let Some(n) = self.b.constant_value(word) {
+            if class == "java/lang/Integer" && i8::try_from(n).is_err() {
+                return self.wide_integer(path, word, i32::try_from(n).ok()?);
+            }
             let n = i8::try_from(n).ok().filter(|n| *n >= minimum)?;
-            Val::R(Some(self.literal(path, Literal::CachedIntegral(class, n), class)))
+            Val::R(Some(self.literal(path, Literal::CachedIntegral(class, i32::from(n)), class)))
         } else {
             let mut range = None;
             for (lo, hi) in [(0, 3), ((-1).max(minimum), 15), (minimum, i8::MAX)] {
@@ -399,9 +402,33 @@ impl Engine<'_> {
             let mut choices = Vec::new();
             for n in range? {
                 let guard = self.b.eq(word, &self.b.constant(i64::from(n), word.len()));
-                choices.push((guard, Some(self.literal(path, Literal::CachedIntegral(class, n), class))));
+                choices.push((guard, Some(self.literal(path, Literal::CachedIntegral(class, i32::from(n)), class))));
             }
             choice(&mut self.b, choices)
+        };
+        self.push(path, boxed);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// The selected JDKs allow their Integer cache to extend above 127. Keep one VM-wide cutoff
+    /// across calls and values. A claim about a stored number can then hold for either identity.
+    fn wide_integer(&mut self, path: &mut Path, word: &Bits, n: i32) -> Option<Step> {
+        let slot = ("java/lang/Integer$IntegerCache".to_string(), "<qualified-high>".to_string());
+        if !path.statics.contains_key(&slot) {
+            if !self.cp.known_integer_cache() { return None; }
+            path.statics.insert(slot.clone(), Val::I(self.b.fresh(32)));
+        }
+        let fresh = self.alloc(path, "java/lang/Integer");
+        path.objects[fresh].fields.insert("value".into(), Val::I(word.clone()));
+        let boxed = if n < -128 {
+            Val::R(Some(fresh))
+        } else {
+            let Val::I(high) = path.statics.get(&slot)? else { return None };
+            let above = self.b.slt(high, word);
+            let cached = self.literal(path, Literal::CachedIntegral("java/lang/Integer", n), "java/lang/Integer");
+            path.unbound_platform_value = Some("the JVM's Integer cache limit");
+            choice(&mut self.b, vec![(above, Some(fresh)), (!above, Some(cached))])
         };
         self.push(path, boxed);
         self.advance(path);
@@ -474,10 +501,9 @@ impl Engine<'_> {
             return Some(Ok(None));
         }
         if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) {
-            let value = path.literals.iter().find_map(|(literal, &object)| match literal {
-                Literal::CachedIntegral("java/lang/Integer", value) if object == o => Some(*value), _ => None,
-            })?;
-            self.push(path, Val::I(self.b.constant(i64::from(value), 32)));
+            if path.objects[o].class != "java/lang/Integer" { return None; }
+            let Val::I(value) = path.objects[o].fields.get("value")?.clone() else { return None };
+            self.push(path, Val::I(value));
             self.advance(path);
             return Some(Ok(None));
         }

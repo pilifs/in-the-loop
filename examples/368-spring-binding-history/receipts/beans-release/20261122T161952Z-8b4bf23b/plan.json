@@ -1,0 +1,298 @@
+{
+  "plan": {
+    "example": "368",
+    "task": "beans-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "beans-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "file": "claims/beans.json",
+      "sha256": "96eaa609bc735bd8dd8c11f023acfe25a73b92d008f3f7593ef1280c5487eb76",
+      "property": "beans",
+      "claimKind": "property",
+      "statement": "Both children retain their identities and expose the independently specified name and count after every edit.",
+      "assume": "code >= 0 && code < 12",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "ce33cb84b13661ba78afea274e7c1016c0004c2d9edc584d03a5df7360099060"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "9f20fc55f8742765c58ceab87a495ced8b6be93de72ab97be4b28ba6fb23f27a"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.BindingChecks#beans(I)I",
+        "mapping": "Six permutations on distinct children, followed by the same six on a shared child.",
+        "correspondence": "finite-oracle",
+        "cases": 12
+      },
+      "key": "9e965174c9108d8d"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "fixture",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-context",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons"
+        ],
+        "runtimeLibraries": [
+          "spring-context",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons"
+        ],
+        "libraries": {
+          "spring-context": {
+            "coordinates": "org.springframework:spring-context:6.2.3",
+            "sha256": "53feea6d8c61a25089d8c474c4f92ebd24f0ef7eb52ecdaf46f11e9a253fdb4e"
+          },
+          "spring-aop": {
+            "coordinates": "org.springframework:spring-aop:6.2.3",
+            "sha256": "5e6fc3da90c1943f2fce5f06ef04d586187ce0062fe186d80acd53109065205d"
+          },
+          "spring-beans": {
+            "coordinates": "org.springframework:spring-beans:6.2.3",
+            "sha256": "4e289d6c0aa3ea74633005dae06d7cc827510e5b840d68bfcebdcf0bdd363f44"
+          },
+          "spring-core": {
+            "coordinates": "org.springframework:spring-core:6.2.3",
+            "sha256": "49531684df2304f0e611f775faba79273c77504eb7d856592d830e2389e9eb14"
+          },
+          "spring-jcl": {
+            "coordinates": "org.springframework:spring-jcl:6.2.3",
+            "sha256": "8c65ec5ed648966a470e6b48b27cbebf5f1f412bd46b243e0111c5d5d96efe86"
+          },
+          "spring-expression": {
+            "coordinates": "org.springframework:spring-expression:6.2.3",
+            "sha256": "e901e26baaa0e333ce2cc4f29d910d630c1f7a6c6cb99ac7a3c411a506b5b780"
+          },
+          "micrometer-observation": {
+            "coordinates": "io.micrometer:micrometer-observation:1.14.4",
+            "sha256": "28dd4b001c14fc13b0bc48535621214916518895924e3ce528a604205b1ff0a1"
+          },
+          "micrometer-commons": {
+            "coordinates": "io.micrometer:micrometer-commons:1.14.4",
+            "sha256": "6bb0f56fb88f65ddb4b080e3d80165eeb1740f2227ba0b8ac386109969f7e9bf"
+          }
+        },
+        "adapters": [
+          "adapter/springwork/BindingChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/beans-release"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-161543-spring-binder-edits-and-the-persistent-f/examples/368-spring-binding-history",
+    "network": true
+  },
+  "inputs": {
+    "example": "368",
+    "task": "beans-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "beans-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "file": "claims/beans.json",
+      "sha256": "96eaa609bc735bd8dd8c11f023acfe25a73b92d008f3f7593ef1280c5487eb76",
+      "property": "beans",
+      "claimKind": "property",
+      "statement": "Both children retain their identities and expose the independently specified name and count after every edit.",
+      "assume": "code >= 0 && code < 12",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "ce33cb84b13661ba78afea274e7c1016c0004c2d9edc584d03a5df7360099060"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "9f20fc55f8742765c58ceab87a495ced8b6be93de72ab97be4b28ba6fb23f27a"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.BindingChecks#beans(I)I",
+        "mapping": "Six permutations on distinct children, followed by the same six on a shared child.",
+        "correspondence": "finite-oracle",
+        "cases": 12
+      },
+      "key": "9e965174c9108d8d"
+    },
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "fixture",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-context",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons"
+        ],
+        "runtimeLibraries": [
+          "spring-context",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons"
+        ],
+        "libraries": {
+          "spring-context": {
+            "coordinates": "org.springframework:spring-context:6.2.3",
+            "sha256": "53feea6d8c61a25089d8c474c4f92ebd24f0ef7eb52ecdaf46f11e9a253fdb4e"
+          },
+          "spring-aop": {
+            "coordinates": "org.springframework:spring-aop:6.2.3",
+            "sha256": "5e6fc3da90c1943f2fce5f06ef04d586187ce0062fe186d80acd53109065205d"
+          },
+          "spring-beans": {
+            "coordinates": "org.springframework:spring-beans:6.2.3",
+            "sha256": "4e289d6c0aa3ea74633005dae06d7cc827510e5b840d68bfcebdcf0bdd363f44"
+          },
+          "spring-core": {
+            "coordinates": "org.springframework:spring-core:6.2.3",
+            "sha256": "49531684df2304f0e611f775faba79273c77504eb7d856592d830e2389e9eb14"
+          },
+          "spring-jcl": {
+            "coordinates": "org.springframework:spring-jcl:6.2.3",
+            "sha256": "8c65ec5ed648966a470e6b48b27cbebf5f1f412bd46b243e0111c5d5d96efe86"
+          },
+          "spring-expression": {
+            "coordinates": "org.springframework:spring-expression:6.2.3",
+            "sha256": "e901e26baaa0e333ce2cc4f29d910d630c1f7a6c6cb99ac7a3c411a506b5b780"
+          },
+          "micrometer-observation": {
+            "coordinates": "io.micrometer:micrometer-observation:1.14.4",
+            "sha256": "28dd4b001c14fc13b0bc48535621214916518895924e3ce528a604205b1ff0a1"
+          },
+          "micrometer-commons": {
+            "coordinates": "io.micrometer:micrometer-commons:1.14.4",
+            "sha256": "6bb0f56fb88f65ddb4b080e3d80165eeb1740f2227ba0b8ac386109969f7e9bf"
+          }
+        },
+        "adapters": [
+          "adapter/springwork/BindingChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/springwork/BindingChecks.java",
+        "sha256": "60ae0539c55d09afb690fbca76e02142105566a667094b7fa39cd6251ee1b60a"
+      }
+    ]
+  },
+  "key": "058a7a7a8eec85b055ba570c11e026312b276bac287308c21e60d852dd98fe7f"
+}
