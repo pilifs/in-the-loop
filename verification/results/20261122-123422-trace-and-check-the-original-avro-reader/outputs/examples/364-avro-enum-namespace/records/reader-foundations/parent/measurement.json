@@ -1,0 +1,186 @@
+{
+  "binding": {
+    "build": "examples/364-avro-enum-namespace/records/original-build/build-parent.json",
+    "buildSha256": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b",
+    "orderedJars": [
+      "f51b98903f067da1a1086e0a7fd428787f6f40f7a2eae91032b001e7593758a0",
+      "0c9860b8fb6f24f59e083e0b92a17c515c45312951fc272d093e4709faed6356",
+      "d49cdfd82443fa5869d75fe53680012cef2dd74621b69d37da69087c40f1575a",
+      "517926d9fe04cadd55120790d0b5355e4f656ffe2969e4d480a0e7f95a983e9e",
+      "6aecfd5459728a595601cfa07258d131972ffc39b492eb48bdd596577a2f244a",
+      "24c4d1fc1e89e078331ab8f401a99cad68599bde4a2e4516042cb548c51b1c3e",
+      "211b306cfc44f8f96df3a0a3ddaf75ba8c5289eed77d60d72f889bb855f535e5",
+      "448b6b48c9891938237451bc2267eab3f8317e3a8ac7f885268101c0baf6b416",
+      "336811855ee97fcd8413343dc42f4d26362502860e8a9193e4db305e3e8ef80a"
+    ],
+    "revision": "0cbfb17d49186348a85cc2afc19c6b940da4aad1"
+  },
+  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+  "example": "364",
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "producerClass": "69ecc98691f941dff4e22056053a7572dcf31cbdcfd7f2ee87e6acff184911d9",
+  "proofs": {
+    "bytes-schema": {
+      "assertion": "result",
+      "assumptions": [
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "bounds": [
+        512,
+        16384
+      ],
+      "exit": 1,
+      "guard": null,
+      "log": "bytes-schema.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 49680384,
+      "seconds": 0.067874,
+      "states": {},
+      "stderr": "bytes-schema.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "bytes-schema.stdout",
+      "stdoutSha256": "9316415e35428dab09328e06950a7bdd9852e75da90301083a239a990da044fd",
+      "target": "foundation.BytesSchema#typed",
+      "verdict": "unverifiable"
+    },
+    "configured-byte": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "wire >= 0 && wire <= 2"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        },
+        {
+          "basis": "engine",
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access"
+        }
+      ],
+      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.util.Utf8.<clinit>()V (org.apache.avro.util.Utf8.<clinit>() at org.apache.avro.io.BinaryDecoder.<init>:318). With --gaps assume it assumes instead that org.apache.avro.util.Utf8.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "bounds": [
+        512,
+        16384
+      ],
+      "exit": 1,
+      "guard": "wire >= 0 && wire <= 2",
+      "log": "configured-byte.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 46542848,
+      "seconds": 0.049738,
+      "states": {},
+      "stderr": "configured-byte.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "configured-byte.stdout",
+      "stdoutSha256": "ebc7b74087206ca3e92db12d2c26d21d5d713b19ee3ec52f9d270e52468a0fa7",
+      "target": "campaign.ReaderFacts#configuredByte",
+      "verdict": "unverifiable"
+    },
+    "fields": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "code >= 0 && code < 4"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "bounds": [
+        512,
+        16384
+      ],
+      "exit": 1,
+      "guard": "code >= 0 && code < 4",
+      "log": "fields.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 48971776,
+      "seconds": 0.071972,
+      "states": {},
+      "stderr": "fields.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "fields.stdout",
+      "stdoutSha256": "8d2f370a64e762121f7d9a25bfef4a88c9f33c995f51b5d418d767f5e22f8c90",
+      "target": "campaign.ReaderFacts#fields",
+      "verdict": "unverifiable"
+    },
+    "one-byte": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "wire >= 0 && wire <= 2"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.util.Utf8.<clinit>()V (org.apache.avro.util.Utf8.<clinit>() at org.apache.avro.io.BinaryDecoder.<init>:318). With --gaps assume it assumes instead that org.apache.avro.util.Utf8.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "bounds": [
+        512,
+        16384
+      ],
+      "exit": 1,
+      "guard": "wire >= 0 && wire <= 2",
+      "log": "one-byte.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 45592576,
+      "seconds": 0.047838,
+      "states": {},
+      "stderr": "one-byte.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "one-byte.stdout",
+      "stdoutSha256": "db253aa2328ef12a470e8eb70c64a90256762425d24674158fb74a51b579d72c",
+      "target": "campaign.ReaderFacts#oneByte",
+      "verdict": "unverifiable"
+    }
+  },
+  "providers": {
+    "org.apache.avro.Schema": {
+      "class": "e714702611dd7a0cbc93a0c235eb42dab7fd5b8a3f20642bd2f4a86e3dfb3f11",
+      "entry": "org/apache/avro/Schema.class",
+      "jar": "f51b98903f067da1a1086e0a7fd428787f6f40f7a2eae91032b001e7593758a0"
+    },
+    "org.apache.avro.generic.GenericData": {
+      "class": "6d58a9538c8ad5d4a2c04b884a04c5faf9c8ae78bce5904c3af7939774478dd7",
+      "entry": "org/apache/avro/generic/GenericData.class",
+      "jar": "f51b98903f067da1a1086e0a7fd428787f6f40f7a2eae91032b001e7593758a0"
+    },
+    "org.apache.avro.generic.GenericData$Record": {
+      "class": "bd315776a1319ac68899a916d55b71594f81c358dfc6895428d15107de92c5ca",
+      "entry": "org/apache/avro/generic/GenericData$Record.class",
+      "jar": "f51b98903f067da1a1086e0a7fd428787f6f40f7a2eae91032b001e7593758a0"
+    },
+    "org.apache.avro.generic.GenericDatumReader": {
+      "class": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f",
+      "entry": "org/apache/avro/generic/GenericDatumReader.class",
+      "jar": "f51b98903f067da1a1086e0a7fd428787f6f40f7a2eae91032b001e7593758a0"
+    },
+    "org.apache.avro.io.BinaryDecoder": {
+      "class": "2b32b903cd3e5b51e6d251dc4f031cf742d207379544704fb9cfa2b4eda49757",
+      "entry": "org/apache/avro/io/BinaryDecoder.class",
+      "jar": "f51b98903f067da1a1086e0a7fd428787f6f40f7a2eae91032b001e7593758a0"
+    }
+  },
+  "schema": "java-domain-reader-facts/v1",
+  "side": "parent",
+  "source": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39"
+}

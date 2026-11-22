@@ -1,0 +1,279 @@
+{
+  "plan": {
+    "example": "366",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "e64d8c00b0752b64a427a3eaa2e92e97324d856f6b5a2c9f681532148c520097"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        }
+      ],
+      "key": "5970757f90033f66"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-parent.json",
+          "sha256": "a35228d6735ca45a21ee4c6383d9777631635f48ce9caaee6396700768ac4bf2"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-fix.json",
+          "sha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-366-commons-csv-delimi/examples/366-commons-csv-delimiter-lookahead",
+    "network": true
+  },
+  "inputs": {
+    "example": "366",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "e64d8c00b0752b64a427a3eaa2e92e97324d856f6b5a2c9f681532148c520097"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        }
+      ],
+      "key": "5970757f90033f66"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-parent.json",
+          "sha256": "a35228d6735ca45a21ee4c6383d9777631635f48ce9caaee6396700768ac4bf2"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-fix.json",
+          "sha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/DelimitedFields.java",
+        "sha256": "f330ac8324d3e2aecdb06b02986b9b36a41fe64c477745be06935236fb1a78aa"
+      }
+    ]
+  },
+  "key": "05adae4292e84c37aa4661e6c9f0552d6641eb9929e01d3d79b0cd89d2ec5f5c"
+}

@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-123429-check-367-fast-reader-producers-and-call",
+  "title": "Check 367 fast reader producers and call sites",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.6s, peak 116.0 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [
+    "step 1 (Qualify the two original Avro classpaths) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-123429-check-367-fast-reader-producers-and-call.json",
+    "sha256": "75ccb9a31865b9b417d668fec6fda52145b78038ed4a859960dce818c4e51d29",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-123429-check-367-fast-reader-producers-and-call",
+      "title": "Check 367 fast reader producers and call sites",
+      "description": "Trace the byte decoder and named-field lookups reached by the unmodified reader, bind code and providers on each revision, and check one-byte decoding, schema construction, earlier Jackson startup and the public reader with three recorded initializer roots. Retain every refusal and its precise scope.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "367"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:34:29+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Qualify the two original Avro classpaths",
+          "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 367 --output examples/367-avro-union-array-default/records/reader-foundations",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/367-avro-union-array-default/records/reader-foundations"
+      ]
+    }
+  },
+  "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+  "startedAt": "2026-11-22T12:42:29+00:00",
+  "finishedAt": "2026-11-22T12:45:56+00:00",
+  "wallSeconds": 207.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 303280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 121667584,
+    "wallSeconds": 1.6,
+    "cpuSeconds": 2.5,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualify the two original Avro classpaths",
+      "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 367 --output examples/367-avro-union-array-default/records/reader-foundations",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 1.603,
+      "cpuSeconds": 2.495,
+      "cpuThrottledSeconds": 0.348,
+      "peakMemoryBytes": 121667584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-the-two-original-avro.log",
+        "lines": 10,
+        "bytes": 1012,
+        "sha256": "3939d7b22bc3c9870a35b02234eb56dfcaf851301d7d11c09ea2273a3a5c4cba",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-123429-check-367-fast-reader-producers-and-call/lib/benchmark/java-domain-proof/companions.py\", line 183, in <module>",
+        "    avro(args.example,side,args.output.resolve()/side)",
+        "    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-123429-check-367-fast-reader-producers-and-call/lib/benchmark/java-domain-proof/companions.py\", line 162, in avro",
+        "    report[\"proofs\"][label] = proof(checker,classes,jars,work,env,target,method,label,guard,assertion,roots)",
+        "                              ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-123429-check-367-fast-reader-producers-and-call/lib/benchmark/java-domain-proof/companions.py\", line 59, in proof",
+        "    raise ValueError(f\"{label}: incomplete proof\")",
+        "ValueError: one-byte: incomplete proof"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stdout",
+      "change": "added",
+      "bytes": 5309,
+      "sha256": "e3f3a2711c6c2c9405615709209456ee4ef0ef1d0b0ed3bc39756868f31af2e6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:46:42+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stdout"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d0076816bcae8681f74d3349ba50ca57c350f3cd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T124556Z-5693012d58295d50",
+      "outputs": "20261122T124556Z-61672749a45b5534",
+      "diff": "20261122T124556Z-64166046bfbe67d8",
+      "workdir": "20261122T124616Z-167940d7fdae7eb1"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123429-check-367-fast-reader-producers-and-call"
+}
