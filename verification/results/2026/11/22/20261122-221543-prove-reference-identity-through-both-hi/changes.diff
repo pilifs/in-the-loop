@@ -1,0 +1,1050 @@
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/landed/boundaries.stdout
+@@ -0,0 +1,179 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "datawork.MatrixReferences#boundaries",
++    "domain": "shape: int × choices: int",
++    "assume": "shape >= 0 && shape < 5",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over shape: int × choices: int in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-references-vcc0toj4/boundaries/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ datawork.MatrixReferences#boundaries satisfies `result == 1` on every input where shape >= 0 && shape < 5 (jvmcontract's own checker (CaDiCaL): 1 properties proved over shape: int × choices: int in 0.0 s; loops unwound 256 times with unwinding assertions)\n  not vacuous: boundaries(shape=4, choices=20) reaches the calls\n",
++    "work": "/tmp/matrix-references-vcc0toj4/boundaries",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.008301409,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 7,
++        "merges": 0,
++        "solver_calls": 16,
++        "solving_seconds": 0.000163967,
++        "gates_evaluated": 834,
++        "evaluating_seconds": 0.000020998,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 537,
++        "clauses": 1507,
++        "seconds": 0.007250019,
++        "loading_seconds": 0.001973427,
++        "decoding_seconds": 0.000192653,
++        "encoding_seconds": 0.000401671,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.007,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 537,
++            "clauses": 1507
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.992,
++          "seconds": 0.002,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.002,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 288,
++            "clauses": 762
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.019,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.009,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "shape",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "choices",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "shape: int × choices: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "shape >= 0 && shape < 5",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found boundaries(shape=4, choices=20).",
++        "witness": "boundaries(shape=4, choices=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/landed/jvm.stdout
+@@ -0,0 +1,7 @@
++datawork.MatrixReferences	classes	fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35
++datawork.MatrixReferences$Cell	classes	b3b1e448c388d8bb2c9d17212a9d535af0f35250a293d979cbf9f8fd7814a384
++MatrixReplay	classes	54d41d497af8c672856d8d489f0b1e7f515b46a8a5ef618f412caa7b3dcadd78
++LoadedClasses	classes	d1ff899d96aac7d9d71bb86ead4b1eb885490df648ad00c640116805a5e83f75
++javaslang.collection.List	original.jar	40f536c3cd74d9af576485094ec16e4a433eb5eb9c2e407f44ff7dce356b95ae
++javaslang.collection.Collections	original.jar	10618033b82bf305a02b62dd9dae9764a3b8c397dce51112b35144c58027ab01
++javaslang.collection.Iterator	original.jar	6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/landed/measurement.json
+@@ -0,0 +1,175 @@
++{
++  "commit": "84a4c690a009c55098ec8f7106c4867e0af747c0",
++  "jdk": "21.0.13+9-LTS",
++  "classpath": [
++    "classes",
++    "original.jar"
++  ],
++  "jarSha256": "5ad6e4ae3cfc10b1377dced13f796906aad8d0a48df7cf86a83b59db0885713e",
++  "sources": {
++    "MatrixReferences.java": "7a01684bf5ec8c0197339d2caff7df8e31e23e7fa7864d5d62ed298f187691e7",
++    "MatrixReplay.java": "171bf5bee3b4cdd5633ab36716d91c1861914bb65ea473b27e850492c4e3e36b",
++    "LoadedClasses.java": "9aaab92330cd9d82647d6785b54fb571f6d8bcee37cdf7497f62579f8d54bfc0"
++  },
++  "classes": {
++    "datawork.MatrixReferences": "fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35",
++    "datawork.MatrixReferences$Cell": "b3b1e448c388d8bb2c9d17212a9d535af0f35250a293d979cbf9f8fd7814a384",
++    "MatrixReplay": "54d41d497af8c672856d8d489f0b1e7f515b46a8a5ef618f412caa7b3dcadd78",
++    "LoadedClasses": "d1ff899d96aac7d9d71bb86ead4b1eb885490df648ad00c640116805a5e83f75",
++    "javaslang.collection.List": "40f536c3cd74d9af576485094ec16e4a433eb5eb9c2e407f44ff7dce356b95ae",
++    "javaslang.collection.Collections": "10618033b82bf305a02b62dd9dae9764a3b8c397dce51112b35144c58027ab01",
++    "javaslang.collection.Iterator": "6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f"
++  },
++  "jvm": {
++    "exit": 0,
++    "seconds": 0.119094,
++    "peakRssBytes": 57716736,
++    "log": "jvm.stdout",
++    "stdout": "jvm.stdout",
++    "stderr": "jvm.stderr",
++    "stdoutSha256": "82fd3400cc5606828da4e4cbbd38afe47e475943e23d4857d0fc59540aab553b",
++    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
++  },
++  "grid": {
++    "partitions": 877,
++    "rectangles": 1754,
++    "representedLabeledRectangles": 524288,
++    "boundaries": 40,
++    "equalCopiesWithWrongReferences": 1752,
++    "invertibleReshapesWithWrongCoordinates": 1724
++  },
++  "observationsSha256": "dc262dabf4311ad0cc124e77c910278cab8783080095c5521468428f3feddbd4",
++  "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
++  "source": "4bffd5f17521f77bd73e5bd3acccb20402329c5a",
++  "job": "20261122-221543-prove-reference-identity-through-both-hi",
++  "libTree": "ea8c0d4f292f6601a964931c15afebfd0f5502d9",
++  "checkerBindings": [
++    {
++      "class": "datawork.MatrixReferences",
++      "provider": "classes",
++      "entry": "datawork/MatrixReferences.class",
++      "sha256": "fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35",
++      "method": "roundTrip",
++      "descriptor": "(IZ)I"
++    },
++    {
++      "class": "datawork.MatrixReferences",
++      "provider": "classes",
++      "entry": "datawork/MatrixReferences.class",
++      "sha256": "fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35",
++      "method": "boundaries",
++      "descriptor": "(II)I"
++    },
++    {
++      "class": "javaslang.collection.List",
++      "provider": "original.jar",
++      "entry": "javaslang/collection/List.class",
++      "sha256": "40f536c3cd74d9af576485094ec16e4a433eb5eb9c2e407f44ff7dce356b95ae",
++      "method": "transpose",
++      "descriptor": "(Ljavaslang/collection/List;)Ljavaslang/collection/List;"
++    },
++    {
++      "class": "datawork.MatrixReferences$Cell",
++      "provider": "classes",
++      "entry": "datawork/MatrixReferences$Cell.class",
++      "sha256": "b3b1e448c388d8bb2c9d17212a9d535af0f35250a293d979cbf9f8fd7814a384",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "MatrixReplay",
++      "provider": "classes",
++      "entry": "MatrixReplay.class",
++      "sha256": "54d41d497af8c672856d8d489f0b1e7f515b46a8a5ef618f412caa7b3dcadd78",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "LoadedClasses",
++      "provider": "classes",
++      "entry": "LoadedClasses.class",
++      "sha256": "d1ff899d96aac7d9d71bb86ead4b1eb885490df648ad00c640116805a5e83f75",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "javaslang.collection.Collections",
++      "provider": "original.jar",
++      "entry": "javaslang/collection/Collections.class",
++      "sha256": "10618033b82bf305a02b62dd9dae9764a3b8c397dce51112b35144c58027ab01",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "javaslang.collection.Iterator",
++      "provider": "original.jar",
++      "entry": "javaslang/collection/Iterator.class",
++      "sha256": "6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f",
++      "method": null,
++      "descriptor": null
++    }
++  ],
++  "proofs": {
++    "roundTrip": {
++      "exit": 0,
++      "seconds": 0.027125,
++      "peakRssBytes": 37449728,
++      "log": "roundTrip.stdout",
++      "stdout": "roundTrip.stdout",
++      "stderr": "roundTrip.stderr",
++      "stdoutSha256": "141aaeed47e435214449c0360e5dcfc4b3edc527e150fc70e0dd73ad2b8fcd4f",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "datawork.MatrixReferences#roundTrip",
++      "guard": null,
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        256,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "boundaries": {
++      "exit": 0,
++      "seconds": 0.021369,
++      "peakRssBytes": 37449728,
++      "log": "boundaries.stdout",
++      "stdout": "boundaries.stdout",
++      "stderr": "boundaries.stderr",
++      "stdoutSha256": "5a7e20bc8cf0894f2d548102cc84310754777e9c4db615825d38a1e64a85a037",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "datawork.MatrixReferences#boundaries",
++      "guard": "shape >= 0 && shape < 5",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        256,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "shape >= 0 && shape < 5",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  }
++}
+Binary file examples/371-javaslang-matrix-transpose/records/references/landed/observations.tsv.gz changed
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/landed/roundTrip.stdout
+@@ -0,0 +1,151 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "datawork.MatrixReferences#roundTrip",
++    "domain": "choices: int × wide: boolean",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over choices: int × wide: boolean in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-references-vcc0toj4/roundTrip/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ datawork.MatrixReferences#roundTrip satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over choices: int × wide: boolean in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/matrix-references-vcc0toj4/roundTrip",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.015510181,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 13,
++        "solving_seconds": 0.000089918,
++        "gates_evaluated": 247,
++        "evaluating_seconds": 9.206e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 148,
++        "clauses": 343,
++        "seconds": 0.014346009,
++        "loading_seconds": 0.00172462,
++        "decoding_seconds": 0.000231123,
++        "encoding_seconds": 0.000378198,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.014,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.012,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 148,
++            "clauses": 343
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.024,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.014,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "choices",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "wide",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "choices: int × wide: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/parent/boundaries.stdout
+@@ -0,0 +1,179 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "datawork.MatrixReferences#boundaries",
++    "domain": "shape: int × choices: int",
++    "assume": "shape >= 0 && shape < 5",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over shape: int × choices: int in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-references-gmlc1yh0/boundaries/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ datawork.MatrixReferences#boundaries satisfies `result == 1` on every input where shape >= 0 && shape < 5 (jvmcontract's own checker (CaDiCaL): 1 properties proved over shape: int × choices: int in 0.0 s; loops unwound 256 times with unwinding assertions)\n  not vacuous: boundaries(shape=4, choices=20) reaches the calls\n",
++    "work": "/tmp/matrix-references-gmlc1yh0/boundaries",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.006944065,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 7,
++        "merges": 0,
++        "solver_calls": 16,
++        "solving_seconds": 0.000137267,
++        "gates_evaluated": 834,
++        "evaluating_seconds": 0.000017033,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 537,
++        "clauses": 1507,
++        "seconds": 0.005902433,
++        "loading_seconds": 0.001786739,
++        "decoding_seconds": 0.000130119,
++        "encoding_seconds": 0.00027251,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.006,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 537,
++            "clauses": 1507
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.993,
++          "seconds": 0.004,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.003,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 288,
++            "clauses": 762
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.02,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.01,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "shape",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "choices",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "shape: int × choices: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "shape >= 0 && shape < 5",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found boundaries(shape=4, choices=20).",
++        "witness": "boundaries(shape=4, choices=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/parent/jvm.stdout
+@@ -0,0 +1,7 @@
++datawork.MatrixReferences	classes	fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35
++datawork.MatrixReferences$Cell	classes	b3b1e448c388d8bb2c9d17212a9d535af0f35250a293d979cbf9f8fd7814a384
++MatrixReplay	classes	54d41d497af8c672856d8d489f0b1e7f515b46a8a5ef618f412caa7b3dcadd78
++LoadedClasses	classes	d1ff899d96aac7d9d71bb86ead4b1eb885490df648ad00c640116805a5e83f75
++javaslang.collection.List	original.jar	8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c
++javaslang.collection.Collections	original.jar	1c8a78c4a2430c5d0b238468f9b208fb3da5665fc59f14e2181a3843861907e8
++javaslang.collection.Iterator	original.jar	6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/parent/measurement.json
+@@ -0,0 +1,175 @@
++{
++  "commit": "a8cace88bfb12a9a7e1977a5765753798962e942",
++  "jdk": "21.0.13+9-LTS",
++  "classpath": [
++    "classes",
++    "original.jar"
++  ],
++  "jarSha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
++  "sources": {
++    "MatrixReferences.java": "7a01684bf5ec8c0197339d2caff7df8e31e23e7fa7864d5d62ed298f187691e7",
++    "MatrixReplay.java": "171bf5bee3b4cdd5633ab36716d91c1861914bb65ea473b27e850492c4e3e36b",
++    "LoadedClasses.java": "9aaab92330cd9d82647d6785b54fb571f6d8bcee37cdf7497f62579f8d54bfc0"
++  },
++  "classes": {
++    "datawork.MatrixReferences": "fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35",
++    "datawork.MatrixReferences$Cell": "b3b1e448c388d8bb2c9d17212a9d535af0f35250a293d979cbf9f8fd7814a384",
++    "MatrixReplay": "54d41d497af8c672856d8d489f0b1e7f515b46a8a5ef618f412caa7b3dcadd78",
++    "LoadedClasses": "d1ff899d96aac7d9d71bb86ead4b1eb885490df648ad00c640116805a5e83f75",
++    "javaslang.collection.List": "8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c",
++    "javaslang.collection.Collections": "1c8a78c4a2430c5d0b238468f9b208fb3da5665fc59f14e2181a3843861907e8",
++    "javaslang.collection.Iterator": "6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f"
++  },
++  "jvm": {
++    "exit": 0,
++    "seconds": 0.129626,
++    "peakRssBytes": 56782848,
++    "log": "jvm.stdout",
++    "stdout": "jvm.stdout",
++    "stderr": "jvm.stderr",
++    "stdoutSha256": "a01e94b81560d2483072ea8a57e8c0eca76702e4461c5f4d34e1b19d8028f627",
++    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
++  },
++  "grid": {
++    "partitions": 877,
++    "rectangles": 1754,
++    "representedLabeledRectangles": 524288,
++    "boundaries": 40,
++    "equalCopiesWithWrongReferences": 1752,
++    "invertibleReshapesWithWrongCoordinates": 1724
++  },
++  "observationsSha256": "dc262dabf4311ad0cc124e77c910278cab8783080095c5521468428f3feddbd4",
++  "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
++  "source": "4bffd5f17521f77bd73e5bd3acccb20402329c5a",
++  "job": "20261122-221543-prove-reference-identity-through-both-hi",
++  "libTree": "ea8c0d4f292f6601a964931c15afebfd0f5502d9",
++  "checkerBindings": [
++    {
++      "class": "datawork.MatrixReferences",
++      "provider": "classes",
++      "entry": "datawork/MatrixReferences.class",
++      "sha256": "fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35",
++      "method": "roundTrip",
++      "descriptor": "(IZ)I"
++    },
++    {
++      "class": "datawork.MatrixReferences",
++      "provider": "classes",
++      "entry": "datawork/MatrixReferences.class",
++      "sha256": "fdc318203ec1671d915e4569394c55a2122b6dd9decaf7f362f328b50069aa35",
++      "method": "boundaries",
++      "descriptor": "(II)I"
++    },
++    {
++      "class": "javaslang.collection.List",
++      "provider": "original.jar",
++      "entry": "javaslang/collection/List.class",
++      "sha256": "8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c",
++      "method": "transpose",
++      "descriptor": "(Ljavaslang/collection/List;)Ljavaslang/collection/List;"
++    },
++    {
++      "class": "datawork.MatrixReferences$Cell",
++      "provider": "classes",
++      "entry": "datawork/MatrixReferences$Cell.class",
++      "sha256": "b3b1e448c388d8bb2c9d17212a9d535af0f35250a293d979cbf9f8fd7814a384",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "MatrixReplay",
++      "provider": "classes",
++      "entry": "MatrixReplay.class",
++      "sha256": "54d41d497af8c672856d8d489f0b1e7f515b46a8a5ef618f412caa7b3dcadd78",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "LoadedClasses",
++      "provider": "classes",
++      "entry": "LoadedClasses.class",
++      "sha256": "d1ff899d96aac7d9d71bb86ead4b1eb885490df648ad00c640116805a5e83f75",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "javaslang.collection.Collections",
++      "provider": "original.jar",
++      "entry": "javaslang/collection/Collections.class",
++      "sha256": "1c8a78c4a2430c5d0b238468f9b208fb3da5665fc59f14e2181a3843861907e8",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "javaslang.collection.Iterator",
++      "provider": "original.jar",
++      "entry": "javaslang/collection/Iterator.class",
++      "sha256": "6d6893e132817509fb6ec3c54e753cf4cc8e793bdbf1e83c11c2401113c9fa3f",
++      "method": null,
++      "descriptor": null
++    }
++  ],
++  "proofs": {
++    "roundTrip": {
++      "exit": 0,
++      "seconds": 1.791748,
++      "peakRssBytes": 37449728,
++      "log": "roundTrip.stdout",
++      "stdout": "roundTrip.stdout",
++      "stderr": "roundTrip.stderr",
++      "stdoutSha256": "54a615772cb35987ef78cf3035e07fdfe6e2b2288fa7a1914dd0de9eb1edc1ba",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "datawork.MatrixReferences#roundTrip",
++      "guard": null,
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        256,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "boundaries": {
++      "exit": 0,
++      "seconds": 0.025025,
++      "peakRssBytes": 37449728,
++      "log": "boundaries.stdout",
++      "stdout": "boundaries.stdout",
++      "stderr": "boundaries.stderr",
++      "stdoutSha256": "0358d18576c02744b90cf43d1a79c604357f46452f34ed69f684b9976209d178",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "datawork.MatrixReferences#boundaries",
++      "guard": "shape >= 0 && shape < 5",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        256,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "shape >= 0 && shape < 5",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  }
++}
+Binary file examples/371-javaslang-matrix-transpose/records/references/parent/observations.tsv.gz changed
+--- /dev/null
++++ b/examples/371-javaslang-matrix-transpose/records/references/parent/roundTrip.stdout
+@@ -0,0 +1,151 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "datawork.MatrixReferences#roundTrip",
++    "domain": "choices: int × wide: boolean",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over choices: int × wide: boolean in 1.8 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-references-gmlc1yh0/roundTrip/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ datawork.MatrixReferences#roundTrip satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over choices: int × wide: boolean in 1.8 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/matrix-references-gmlc1yh0/roundTrip",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.778278764,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 760,
++        "merges": 270,
++        "solver_calls": 847,
++        "solving_seconds": 0.027267988,
++        "gates_evaluated": 161918,
++        "evaluating_seconds": 0.002514893,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 7291,
++        "clauses": 22633,
++        "seconds": 1.776363004,
++        "loading_seconds": 0.001982502,
++        "decoding_seconds": 0.000216192,
++        "encoding_seconds": 0.059106818,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 1.776,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 1.688,
++            "encoding": 0.059,
++            "solving": 0.027,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 7291,
++            "clauses": 22633
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.787,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.776,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.011
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "choices",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "wide",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "choices: int × wide: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
