@@ -1,0 +1,444 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "fdf19d032c82b695",
+    "format": 1,
+    "example": "365",
+    "statement": {
+      "approach": "target",
+      "task": "offsets-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "offsets-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+        "file": "claims/offsets.json",
+        "sha256": "7e403105a2d744e4cd9bd21020a4df0cc3bccff2c33c525e3911f745f54be0ef",
+        "property": "offsets",
+        "claimKind": "property",
+        "statement": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+        "assume": "code >= 0 && code < 128",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 512,
+          "maxArrayLength": 16384
+        },
+        "explicitBounds": {
+          "unwind": 512,
+          "maxArrayLength": 16384
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/campaign/Cases.java",
+            "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+          }
+        ],
+        "adapter": {
+          "entry": "campaign.AsyncTokens#offsets(I)I",
+          "mapping": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 128
+        },
+        "key": "3451a7e7f8f361d0"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16384
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "offsets-parent",
+      "sidecar": "383fd699041fa8f5307168f51eafdb097ad3d6fc0cfcd74f536e80e5d03334d6",
+      "revisions": {
+        "parent": "99f749d958a55013724571d825625e1032af9d4b"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "b13f56f75a5b842787d4dd138fbc8f3c296675d633d4d9b1e7777ddf108212d2"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "07e422a3cf15e72e28aae5d788e64b59c6f5d94d2c2efe52af9bf0aef434603a"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec"
+        },
+        {
+          "revision": "parent",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f",
+          "coordinates": "ch.randelshofer:fastdoubleparser:1.0.90"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/campaign/AsyncTokens.java": "06e1c9eee95e7efab1d4ae0f55f2c854d680d55f0ee375f33d4434f6ed7b77e7",
+        "claims/offsets.json": "7e403105a2d744e4cd9bd21020a4df0cc3bccff2c33c525e3911f745f54be0ef",
+        "controls/table.json": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f",
+        "driver/campaign/Cases.java": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+      },
+      "claimKey": "3451a7e7f8f361d0"
+    }
+  },
+  "attempt": {
+    "id": "20261122T121901Z-2d3b18ee",
+    "claim": "fdf19d032c82b695",
+    "startedAt": "2026-11-22T12:19:01+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "campaign.AsyncTokens#offsets(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/jackson-core-2.19.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/ch/randelshofer/fastdoubleparser/1.0.90/fastdoubleparser-1.0.90.jar",
+      "--assume",
+      "code >= 0 && code < 128",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "512",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "396518f7d306c919ff8a8bc8bef9bc0961978cf09e548210958110664f10ecf3",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-121129-measure-the-original-jackson-opening-cla",
+      "sourceCommit": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-jackson-opening-cla"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.031,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 512,
+      "maxArrayLength": 16384,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "fdf19d032c82b695",
+    "attempt": "20261122T121901Z-2d3b18ee",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 128",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.016,
+            "properties": 1,
+            "unwind": 512,
+            "maxArrayLength": 16384,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.014,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.002,
+                  "lowering": 0.001,
+                  "symbolic": 0.009,
+                  "encoding": 0.002,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 357,
+                  "clauses": 772
+                }
+              }
+            ],
+            "native": {
+              "paths": 3,
+              "merges": 0,
+              "solverCalls": 8,
+              "solvingSeconds": 1.7563e-05,
+              "gatesEvaluated": 72,
+              "evaluatingSeconds": 3.276e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 357,
+              "clauses": 772,
+              "seconds": 0.014204748,
+              "loadingSeconds": 0.002364545,
+              "decodingSeconds": 0.000999525,
+              "encodingSeconds": 0.00212307,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.System.getProperty(java.lang.String)",
+                "sites": [
+                  "com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 128",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 512,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:43). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 128"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "1eb6a74142399a0d46be41cb7ee1d425abdf1f60e9c64ea6d7449cd49ac9e7af",
+        "bytes": 126997
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "ce7a9e6a2d2ffc9d9b636ec98613b9b9c5e3441669c43438b35c96916cfb821a",
+        "bytes": 512
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "72155e20856f94dfa51d56a68a4d862dd7ca7776292418bcf69758604b650169",
+        "bytes": 1971
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "00acc837dec516562b489d5af7af8a471ca2eb8904c9b69e92a89e7930026fca",
+        "bytes": 22602
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "149f360762364d172e70b153b94805975ef8dc3f814d78e995ee732e7fb7b217",
+        "bytes": 92373
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "ef5b5c6000173328cecb6db0c2c2bb1bf800f0332b27bc327d379475d38fa15b",
+        "bytes": 6226
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "69cd638221db5a68ae5c3569f7193a00a8816e3bef536bace8a707a123000c40",
+        "bytes": 33846
+      }
+    ]
+  }
+}

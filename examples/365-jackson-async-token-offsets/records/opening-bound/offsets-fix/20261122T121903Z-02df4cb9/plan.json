@@ -1,0 +1,242 @@
+{
+  "plan": {
+    "example": "365",
+    "task": "offsets-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "offsets-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "file": "claims/offsets.json",
+      "sha256": "7e403105a2d744e4cd9bd21020a4df0cc3bccff2c33c525e3911f745f54be0ef",
+      "property": "offsets",
+      "claimKind": "property",
+      "statement": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+      "assume": "code >= 0 && code < 128",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.AsyncTokens#offsets(I)I",
+        "mapping": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 128
+      },
+      "key": "3451a7e7f8f361d0"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "596fd82955080ba7207b4adc54100781b5024a61",
+        "parent": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-fix.json",
+          "sha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/offsets-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-jackson-opening-cla/examples/365-jackson-async-token-offsets",
+    "network": true
+  },
+  "inputs": {
+    "example": "365",
+    "task": "offsets-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "offsets-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "file": "claims/offsets.json",
+      "sha256": "7e403105a2d744e4cd9bd21020a4df0cc3bccff2c33c525e3911f745f54be0ef",
+      "property": "offsets",
+      "claimKind": "property",
+      "statement": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+      "assume": "code >= 0 && code < 128",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.AsyncTokens#offsets(I)I",
+        "mapping": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 128
+      },
+      "key": "3451a7e7f8f361d0"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "596fd82955080ba7207b4adc54100781b5024a61",
+        "parent": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-fix.json",
+          "sha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/AsyncTokens.java",
+        "sha256": "06e1c9eee95e7efab1d4ae0f55f2c854d680d55f0ee375f33d4434f6ed7b77e7"
+      }
+    ]
+  },
+  "key": "916c8353504915f2968f28b47388a83ddd56255f65e6d0b764ea48029d789ff0"
+}

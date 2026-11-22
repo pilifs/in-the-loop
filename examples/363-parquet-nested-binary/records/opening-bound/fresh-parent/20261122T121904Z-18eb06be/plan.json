@@ -1,0 +1,276 @@
+{
+  "plan": {
+    "example": "363",
+    "task": "fresh-parent",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "fresh-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+      "file": "claims/fresh.json",
+      "sha256": "693b441caf7df45c2f45f5232fc2d46bbab455b0ae2379fa73c6b0045129b1b2",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there.",
+      "assume": "code >= 0 && code < 64",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 2048
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 2048
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "adbccc8d39f5d50f41b9d47d824008a512a8f7ff79f97fb23fe3e9aea393ef3b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "0a6bd3a803c6e3fa2f78882ee301a5e7ce72ba737b1e3eb7c0f2e842d4371639"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.NestedBinary#fresh(I)I",
+        "mapping": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 64
+      },
+      "key": "fb12fa81463dd0af"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/parquet-java",
+        "commit": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+        "orderedClasses": [
+          "shaded.parquet.it.unimi.dsi.fastutil.booleans.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.bytes.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.chars.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.doubles.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.floats.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.ints.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.io.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.longs.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.objects.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.shorts.package-info"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-Dthrift.executable=/work/tools/thrift",
+            "-Dspotless.check.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "parquet-variant",
+            "-am",
+            "-DskipTests",
+            "-Dinvoker.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-parent.json",
+          "sha256": "c384652aba8c8a71ea413a32473a3f1ebb72934af782ef5801a5b940692455c3"
+        },
+        "adapters": [
+          "adapter/campaign/NestedBinary.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/fresh-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-parquet-opening-cla/examples/363-parquet-nested-binary",
+    "network": true
+  },
+  "inputs": {
+    "example": "363",
+    "task": "fresh-parent",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "fresh-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+      "file": "claims/fresh.json",
+      "sha256": "693b441caf7df45c2f45f5232fc2d46bbab455b0ae2379fa73c6b0045129b1b2",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there.",
+      "assume": "code >= 0 && code < 64",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 2048
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 2048
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "adbccc8d39f5d50f41b9d47d824008a512a8f7ff79f97fb23fe3e9aea393ef3b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "0a6bd3a803c6e3fa2f78882ee301a5e7ce72ba737b1e3eb7c0f2e842d4371639"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.NestedBinary#fresh(I)I",
+        "mapping": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 64
+      },
+      "key": "fb12fa81463dd0af"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/parquet-java",
+        "commit": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+        "orderedClasses": [
+          "shaded.parquet.it.unimi.dsi.fastutil.booleans.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.bytes.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.chars.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.doubles.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.floats.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.ints.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.io.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.longs.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.objects.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.shorts.package-info"
+        ],
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-Dthrift.executable=/work/tools/thrift",
+            "-Dspotless.check.skip=true",
+            "-f",
+            "pom.xml",
+            "-pl",
+            "parquet-variant",
+            "-am",
+            "-DskipTests",
+            "-Dinvoker.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-parent.json",
+          "sha256": "c384652aba8c8a71ea413a32473a3f1ebb72934af782ef5801a5b940692455c3"
+        },
+        "adapters": [
+          "adapter/campaign/NestedBinary.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/NestedBinary.java",
+        "sha256": "512b6213dd62fcd38a2cc2f737d4418745769383cd7e1bd25f2b443b16359903"
+      }
+    ]
+  },
+  "key": "881590e804c40a7303113f0459a4fac4b5dd1b30c8c69af06e61fb56ff916a3d"
+}

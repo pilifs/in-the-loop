@@ -1,0 +1,851 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-121129-measure-the-original-parquet-opening-cla",
+  "title": "Measure the original Parquet opening claims on bound JARs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24.7s, peak 173.6 MiB (estimated 5m00s, 4.0 GiB); 84 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-121129-measure-the-original-parquet-opening-cla.json",
+    "sha256": "acb92e4d17f14f623e66c24ba72f655a1f8183e4b1125bd6ca6e515cbd843067",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-121129-measure-the-original-parquet-opening-cla",
+      "title": "Measure the original Parquet opening claims on bound JARs",
+      "description": "The original test now qualifies on both packaged modules. Resolve the shaded package metadata in Maven classpath order, verify the opening executable and measure the 64 builder inputs at the public child accessors.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-upstream-test"
+      ],
+      "links": {
+        "examples": [
+          "363"
+        ],
+        "jobs": [
+          "20261122-063655-qualify-363-original-artifacts-and-compl"
+        ]
+      },
+      "expected": "Both named regressions qualify, four finite results match their frozen outcomes, and every ordinary claim has an opening verifier receipt.",
+      "submitted": {
+        "at": "2026-11-22T12:11:29+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen public obligations",
+          "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 363 --stage opening-bound --build qualified-build",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/363-parquet-nested-binary/records/opening-bound"
+      ]
+    }
+  },
+  "sourceCommit": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+  "startedAt": "2026-11-22T12:15:42+00:00",
+  "finishedAt": "2026-11-22T12:19:09+00:00",
+  "wallSeconds": 207.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 88963,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 181981184,
+    "wallSeconds": 24.7,
+    "cpuSeconds": 40.5,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen public obligations",
+      "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 363 --stage opening-bound --build qualified-build",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 24.662,
+      "cpuSeconds": 40.489,
+      "cpuThrottledSeconds": 2.57,
+      "peakMemoryBytes": 181981184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-public-obliga.log",
+        "lines": 1,
+        "bytes": 117,
+        "sha256": "042956f0f090cce5cd68ac5ce7dd04b5c07f684771fb6cdf4f8c0332a795212e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"extent-parent\": \"unresolved\", \"extent-fix\": \"unresolved\", \"fresh-parent\": \"unresolved\", \"fresh-fix\": \"unresolved\"}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a55e2f283a3435ccdecf1e0b6d857971830807c83b4e994e543b1e9e3550b2b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/plan.json",
+      "change": "added",
+      "bytes": 9409,
+      "sha256": "c72b96275746307ee8f80cb77eeae71ed216ab4c8433212282ae9abe294ffeab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15670,
+      "sha256": "2d1def67e06faf25a1bd5029114da1483ce58a2fa989691c92d8ca28453a05a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/controls.json",
+      "change": "added",
+      "bytes": 50564,
+      "sha256": "0e33c70a2864f98afa129a78a50ffcf32039a916da06aceac15e02e845fe9846",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/execution.json",
+      "change": "added",
+      "bytes": 79347,
+      "sha256": "bb19492406b4f55e4e4020d911a4d32731120fac17154f03ea22c67fe26ae9f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "27a7f9657bd1917128d967c4edff700c684edc2693bd4b325e04af7c62936482",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 603,
+      "sha256": "4782cbd624d90d3f355fde8ef8fd859298a1997f0a703d22fa73472db1cb29c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier.json",
+      "change": "added",
+      "bytes": 28216,
+      "sha256": "050ffe8c9e48ca2b79941fb92b145bcc1ef2edfe32436b284feeafcd1559847b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6425,
+      "sha256": "0d61fa45d0bb81b38e3ef7d9937842304a8ec4f9fc6813a533e05f747ce820d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/result.json",
+      "change": "added",
+      "bytes": 17322,
+      "sha256": "104041157ae43c61d1fe56b8592620dfb5b6765da9f06aed78bc0061ddea90e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/executions/20261122T121901Z-75d6b18c/attempt.json",
+      "change": "added",
+      "bytes": 35867,
+      "sha256": "1d4e2499470e64e81caedb75f14fd397330990ca1d49e1f2d5ee184a6ce00072",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/executions/20261122T121901Z-75d6b18c/checker.json",
+      "change": "added",
+      "bytes": 8496,
+      "sha256": "8c2106c509546ff433ce28a7018f936c73227217c254129093fae9a9d72b2c95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/executions/20261122T121901Z-75d6b18c/correspondence.json",
+      "change": "added",
+      "bytes": 10378,
+      "sha256": "941da409869c58b0f93b51e88ee22259e01435b8918767394ed9ee793438f22a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-fix.log",
+      "change": "added",
+      "bytes": 231,
+      "sha256": "42b8951e61f23bf0d217c5ec98913928032514b8cc82b2e92d64c036305794f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4cc87280e48d94632ddc140025c350304e7613da269df61574b8f02ebd241b22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/plan.json",
+      "change": "added",
+      "bytes": 9314,
+      "sha256": "ea44a1d373c7a33be67ac17ba573e30bafe698de10b12ef2558c6376ca8bd0bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 16196,
+      "sha256": "1b3080b0da3ac7c86f0c075b0fa319b9fb8fd3fa97f2fbf1841f332acde5b75f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/controls.json",
+      "change": "added",
+      "bytes": 54773,
+      "sha256": "6ed1738f67318757674364b9b680386709bdafeac08be19e4c0d052530173eef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/execution.json",
+      "change": "added",
+      "bytes": 83272,
+      "sha256": "7f4165bfcf8de9e8bc7e1549b8bf42b23f0a2df7a0622df764fb28d7d858ff27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "63b4257b8f3e602a63447b194c4d019ed0129a569b64807fd862449c4eb0ef3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 603,
+      "sha256": "4782cbd624d90d3f355fde8ef8fd859298a1997f0a703d22fa73472db1cb29c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier.json",
+      "change": "added",
+      "bytes": 27966,
+      "sha256": "76ea829e87e0f8b9ead718ad42934035cd26de71bb013a3cf1cdaa793e682539",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6427,
+      "sha256": "2c29d292cce71fca05804f9951ff5117f5f0080ee89e6b27ca48de5f4e927b86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/result.json",
+      "change": "added",
+      "bytes": 17410,
+      "sha256": "b6ba5b7949dd930065c41b111295a44f7959409bb2c8b16594500e311d2cbbe7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/executions/20261122T121858Z-cb14efcf/attempt.json",
+      "change": "added",
+      "bytes": 35634,
+      "sha256": "661f29fe5126d7bbce9e6de0b6c534e7a082c5584cdb6463660b38c01d0fa1c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/executions/20261122T121858Z-cb14efcf/checker.json",
+      "change": "added",
+      "bytes": 8525,
+      "sha256": "2771f7be67064c3b8de16cf453b3b0cdd59f828a82c62e4b77355957d1486781",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/executions/20261122T121858Z-cb14efcf/correspondence.json",
+      "change": "added",
+      "bytes": 10381,
+      "sha256": "34233ba09b10ea993509664d5915a65dd5475c1dc53214e0f1cc40cd9744591c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/extent-parent.log",
+      "change": "added",
+      "bytes": 236,
+      "sha256": "59ac0b3275b4fa891b224e09c04b612cb7067fbc731785cf9f37dfa171e16682",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/finite/batch.json",
+      "change": "added",
+      "bytes": 2617,
+      "sha256": "c05d66806d8bb1b612a73d8d0bb47313fe443df76bd89740d957b881499ecfd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/finite/extent-fix.json",
+      "change": "added",
+      "bytes": 26281,
+      "sha256": "ca98739bfd372ee7071b34c79e18e96256b4078ed1d17bc85aedfc6e2be8e990",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/finite/extent-parent.json",
+      "change": "added",
+      "bytes": 29096,
+      "sha256": "5a0fae98316c7cca078ae51b42007de219e57d6ae95d970afe1caba3762e6289",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/finite/fresh-fix.json",
+      "change": "added",
+      "bytes": 26269,
+      "sha256": "c940674846066a2b9d3f0374bc8594d9143adf16428e64e731f9ed86bc7f0bff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/finite/fresh-parent.json",
+      "change": "added",
+      "bytes": 26289,
+      "sha256": "b91d5891e87023ebba2ff15dae04b561a73dca9679d7bafb89f43492b78d8f56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/finite.log",
+      "change": "added",
+      "bytes": 160,
+      "sha256": "a4e3a2db0b0bb950163a0f95c862136f683900ac621bf870400841deefb4d795",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cb2ceb66b09f6e496a3bb331a382a191854f80a6911bf6fa1f61a77924e1bd35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/plan.json",
+      "change": "added",
+      "bytes": 9374,
+      "sha256": "ead3a51d97a53094540539bb60027f0d51d394b7362f338834b5a7c0ec9a2a64",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15670,
+      "sha256": "2d1def67e06faf25a1bd5029114da1483ce58a2fa989691c92d8ca28453a05a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/controls.json",
+      "change": "added",
+      "bytes": 50561,
+      "sha256": "b9ae4285a77806f1a651f8e934693b7ed62d2aa3b1725fcfb75a40ba2a56438f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/execution.json",
+      "change": "added",
+      "bytes": 79802,
+      "sha256": "b43301752005fb8e79fe919f120449dd9e2f8c3df9d6eb02374c7ecc938de845",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "4e7df9ad108773efd0b36f5edad9fbf60849ec5831ac9c35504429be7d6c91dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 602,
+      "sha256": "331208d0c742994ce44d92289ec7de6de0d06d6b0e80f153a92d7a2e45261253",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier.json",
+      "change": "added",
+      "bytes": 28647,
+      "sha256": "fd36895efece864c0c640a92fa7027e935a39fd1602e4a5c7f1ec6edc54cb110",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6420,
+      "sha256": "0c341604d35c2fe4fbc66b319691fdf506f08925276f0092a05efc3f9f3baec6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/result.json",
+      "change": "added",
+      "bytes": 17300,
+      "sha256": "30862858f4f6781e4dbf157a3b3097cbfe7156412fb54817f720251a1045bf5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/executions/20261122T121906Z-ae4c06df/attempt.json",
+      "change": "added",
+      "bytes": 36282,
+      "sha256": "58b7dff0e9d43399b37605d67c99e0ad9962af38eaf354e88d089755edff649d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/executions/20261122T121906Z-ae4c06df/checker.json",
+      "change": "added",
+      "bytes": 8490,
+      "sha256": "83043d67fca1bb8127d96e54ae7f17d43e239948b78216e51e282191fe1d0d74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/executions/20261122T121906Z-ae4c06df/correspondence.json",
+      "change": "added",
+      "bytes": 10370,
+      "sha256": "220b01b3e2de3cd478ac2e315dc23a383747e61093b7c915a26d4b6b96938600",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix.log",
+      "change": "added",
+      "bytes": 228,
+      "sha256": "9b0f4b0892ec6a859fb1d1f06e4321c15665f7d0a58730967621dc0bea541112",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5961de737bc4c5ad7a33442c5a8cad5a1b64d7a4e9cc2665bba39213d689fa34",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/plan.json",
+      "change": "added",
+      "bytes": 9283,
+      "sha256": "1843cf06d3536d886cb0fb32a435437dc3ef5d0173293fd832293d9cd2d794e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 16196,
+      "sha256": "1b3080b0da3ac7c86f0c075b0fa319b9fb8fd3fa97f2fbf1841f332acde5b75f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/controls.json",
+      "change": "added",
+      "bytes": 54770,
+      "sha256": "006e9a95326cd6c866287986ff217661970e7bb1341e5b6d745dfe7ae195b8fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/execution.json",
+      "change": "added",
+      "bytes": 83726,
+      "sha256": "1baca67a0fdf628438fffe07d01374949eeb488d857d8e4b4a604ccbe7f02afa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "a8748f454ce856f337ee745a8c887acc878dfdda9f18d6428ceec2b12759130c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 602,
+      "sha256": "331208d0c742994ce44d92289ec7de6de0d06d6b0e80f153a92d7a2e45261253",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier.json",
+      "change": "added",
+      "bytes": 28396,
+      "sha256": "d0856f688fb92170b0b889f389bacd940ebf3570a2099b06c7d7e3f830f8aade",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6421,
+      "sha256": "3d4f18c4f354994cfdb046748d8fa8195db2c92b4ab0ec38ca2517290d22e135",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/result.json",
+      "change": "added",
+      "bytes": 17392,
+      "sha256": "201475c9a20d5d6d2aec79b3e6bfd7d202e1f523076d7ea1fc641c034ba002ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/executions/20261122T121904Z-18eb06be/attempt.json",
+      "change": "added",
+      "bytes": 36047,
+      "sha256": "2181e2b98723fd2aa5093c8e35a5a0558ae8fdbcc3c61e5914f1f9866984d281",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/executions/20261122T121904Z-18eb06be/checker.json",
+      "change": "added",
+      "bytes": 8518,
+      "sha256": "6103a6a1900c2e768cd4f5d388d5d3e99fe06068cedcc680d378fafa0a569bea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/executions/20261122T121904Z-18eb06be/correspondence.json",
+      "change": "added",
+      "bytes": 10373,
+      "sha256": "2c442b0f75c114b713c943006b85016b724ca9f544276e63c4462eea99511919",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent.log",
+      "change": "added",
+      "bytes": 237,
+      "sha256": "bf472f1e32cdae27b8414909d876e36a1740d1ac6a2d0c6d77c022c64cd4c1b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3779ed3df85a0cc32d323544cee4d65dc0e12091c1ba0603104c3e99a64ca713",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/plan.json",
+      "change": "added",
+      "bytes": 11765,
+      "sha256": "589876fbe4a8b14dc0df2b80dd666615e5d6799e251fb8543ecc4933f5475ade",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15670,
+      "sha256": "2d1def67e06faf25a1bd5029114da1483ce58a2fa989691c92d8ca28453a05a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 16196,
+      "sha256": "1b3080b0da3ac7c86f0c075b0fa319b9fb8fd3fa97f2fbf1841f332acde5b75f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/controls.json",
+      "change": "added",
+      "bytes": 105262,
+      "sha256": "e8b927904760250441b448079693023e91b85b58c73c9106f257478f5d62db94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/execution.json",
+      "change": "added",
+      "bytes": 106673,
+      "sha256": "1cd4cc2cc2042300e16fb4d1c9cf7da134cac47571da4cb8a9f6191fe573b035",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/streams.json",
+      "change": "added",
+      "bytes": 1713,
+      "sha256": "96cff8fec1b59ff9117962e66fc3d2697a38a1902acf48eaf725400cc5e62daa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/summary.txt",
+      "change": "added",
+      "bytes": 914,
+      "sha256": "4ad4a7804d540278c1c28354416cf9cc3c248158b6d003581e0b442f61370f55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/result.json",
+      "change": "added",
+      "bytes": 15940,
+      "sha256": "60f55a72a0ce4b243a9857140c2bf30d324227ac9626fcb4562642b32909c036",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay/executions/20261122T121845Z-1acd65ad/attempt.json",
+      "change": "added",
+      "bytes": 29258,
+      "sha256": "7445cc54c9dffcf60ad59695f52ef8c221059a2abea5423745df727d9a7b6456",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/replay.log",
+      "change": "added",
+      "bytes": 195,
+      "sha256": "ac38898f632c84e55c5a1c3492a08b3731d462b4682d40cd2119638377a17520",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-bound/run.json",
+      "change": "added",
+      "bytes": 3003,
+      "sha256": "6c5e485264f8c34b7b77bbb2d6328df2200bf15db9111f8316f130a6cda9cee1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:19:12+00:00",
+    "applied": [
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/completion.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/plan.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/control-fix-jdk21.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/control-fix-jdk21.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/controls.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/execution.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/streams.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier-output.txt",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/records/verifier.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/20261122T121901Z-75d6b18c/result.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/executions/20261122T121901Z-75d6b18c/attempt.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/executions/20261122T121901Z-75d6b18c/checker.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix/executions/20261122T121901Z-75d6b18c/correspondence.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-fix.log",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/completion.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/plan.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/control-parent-jdk21.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/control-parent-jdk21.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/controls.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/execution.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/streams.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier-output.txt",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/records/verifier.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/20261122T121858Z-cb14efcf/result.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/executions/20261122T121858Z-cb14efcf/attempt.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/executions/20261122T121858Z-cb14efcf/checker.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent/executions/20261122T121858Z-cb14efcf/correspondence.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/extent-parent.log",
+      "examples/363-parquet-nested-binary/records/opening-bound/finite/batch.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/finite/extent-fix.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/finite/extent-parent.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/finite/fresh-fix.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/finite/fresh-parent.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/finite.log",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/completion.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/plan.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/control-fix-jdk21.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/control-fix-jdk21.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/controls.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/execution.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/streams.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier-output.txt",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/records/verifier.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/20261122T121906Z-ae4c06df/result.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/executions/20261122T121906Z-ae4c06df/attempt.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/executions/20261122T121906Z-ae4c06df/checker.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix/executions/20261122T121906Z-ae4c06df/correspondence.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-fix.log",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/completion.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/plan.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/control-parent-jdk21.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/control-parent-jdk21.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/controls.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/execution.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/streams.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier-output.txt",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/records/verifier.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/20261122T121904Z-18eb06be/result.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/executions/20261122T121904Z-18eb06be/attempt.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/executions/20261122T121904Z-18eb06be/checker.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent/executions/20261122T121904Z-18eb06be/correspondence.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/fresh-parent.log",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/completion.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/plan.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-fix-jdk21.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-fix-jdk21.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-parent-jdk21.stderr",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/control-parent-jdk21.stdout",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/controls.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/execution.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/streams.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/records/summary.txt",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/20261122T121845Z-1acd65ad/result.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay/executions/20261122T121845Z-1acd65ad/attempt.json",
+      "examples/363-parquet-nested-binary/records/opening-bound/replay.log",
+      "examples/363-parquet-nested-binary/records/opening-bound/run.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1553136,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "9d1e2762d625d1e742068118a5ccfd929be10885",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9d1e2762d625d1e742068118a5ccfd929be10885/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T121909Z-6932331b28754965",
+      "outputs": "20261122T121909Z-7325155d7d8da8f0",
+      "diff": "20261122T121909Z-762084cedc06dd8f"
+    }
+  }
+}
