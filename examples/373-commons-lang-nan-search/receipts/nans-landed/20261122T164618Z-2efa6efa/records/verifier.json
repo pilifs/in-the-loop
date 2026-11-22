@@ -1,0 +1,398 @@
+{
+  "task": "nans-landed",
+  "record": {
+    "kind": "verifier",
+    "revision": "landed",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+      "prove",
+      "datawork.NanSearch#nans(int)",
+      "--classes",
+      "prepare/landed/adapter-landed.jar",
+      "--classpath",
+      "prepare/landed/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 902",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.103,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+      "commit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+      "libTree": "51a83b86ac020bc5c2cef7175b2aa59ff391c294",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+        "method": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+        "revisions": {
+          "landed": {
+            "commit": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c",
+            "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "classSha256": "a421c9e2f6084ed85c4af45721da10be58fd72ab387e8cee941a9fa465fe854e",
+            "origin": "Original commons-lang-1589-landed module, prepared in spring-java-data setup",
+            "parameters": {
+              "names": [
+                "array",
+                "valueToFind",
+                "startIndex",
+                "tolerance"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "datawork.NanSearch#nans(I)I",
+          "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+          "correspondence": "finite-oracle",
+          "cases": 902
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "landed": [
+          {
+            "path": "adapter-landed.jar",
+            "sha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "sha256": "c28e470a728a9ccbfa03e474daf20ace98b8a86f38cc3df3fccafa3000abb775",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "datawork.NanSearch#nans(I)I",
+      "entryBindings": {
+        "landed": {
+          "entry": "datawork.NanSearch#nans(I)I",
+          "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a",
+          "loadedFrom": "adapter-landed.jar",
+          "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+          "subjectClassSha256": "a421c9e2f6084ed85c4af45721da10be58fd72ab387e8cee941a9fa465fe854e"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+        "checkedEntry": "datawork.NanSearch#nans(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 902"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "256"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16384"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "datawork.NanSearch#nans(I)I",
+          "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+          "correspondence": "finite-oracle",
+          "cases": 902
+        }
+      },
+      "commits": {
+        "landed": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "landed": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+            "gaps",
+            "--target",
+            "datawork.NanSearch#nans(int)",
+            "--classes",
+            "prepare/landed/adapter-landed.jar",
+            "--classpath",
+            "prepare/landed/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-landed.stdout",
+          "stderr": "verifier/probe-landed.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0927,
+        "peakRssBytes": 68251648,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "datawork.NanSearch#nans(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 902",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 256 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ datawork.NanSearch#nans(int) satisfies `result == 1` on every input where code >= 0 && code < 902 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 256 times with unwinding assertions)\n  not vacuous: nans(code=20) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.071705936,
+          "properties": 1,
+          "unwind": 256,
+          "max_array_length": 16384,
+          "stage": null,
+          "native": {
+            "paths": 20,
+            "merges": 0,
+            "solver_calls": 146,
+            "solving_seconds": 0.033722137,
+            "gates_evaluated": 10153,
+            "evaluating_seconds": 0.00021224,
+            "divisions": 10,
+            "divisions_built": 6,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 37889,
+            "clauses": 129948,
+            "seconds": 0.067916612,
+            "loading_seconds": 0.000967899,
+            "decoding_seconds": 0.000132918,
+            "encoding_seconds": 0.025672504,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.068,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.007,
+                "encoding": 0.026,
+                "solving": 0.034,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 37889,
+                "clauses": 129948
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.928,
+              "seconds": 0.005,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 184,
+                "clauses": 515
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.087,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.073,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.013
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 902",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 256,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found nans(code=20).",
+            "witness": "nans(code=20)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-first-nan-and-preserved-numbers-at-zero/.build-py/examples-7hbmlo84/targets/373/nans-landed/20261122T164618Z-2efa6efa",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-first-nan-and-preserved-numbers-at-zero/.build-py/examples-7hbmlo84/targets/373/nans-landed/20261122T164618Z-2efa6efa"
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "plan": {
+    "example": "371",
+    "task": "rectangle-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "rectangle-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "file": "claims/rectangle.json",
+      "sha256": "8f44e38f4f5287d4fa151e09aa247c1c4ae3e0b36e7ac2d91681bc76eeb1d25e",
+      "property": "rectangle",
+      "claimKind": "property",
+      "statement": "On rectangles values and dimensions agree and a positive-width double transpose restores the input.",
+      "assume": "code >= 0 && code < 400",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "cee60133a5a37a7cbaa17d2733e7f6d3be9e5ada950407787738f5319cb1a7b4"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "5786c187f013bd191e1e26d3edd2ce4d1622a77872c35e353a681402d43b6aa6"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.Matrices#rectangle(I)I",
+        "mapping": "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+        "correspondence": "finite-oracle",
+        "cases": 400
+      },
+      "key": "bf3f524cec580349"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/vavr-io/vavr",
+        "commit": "a8cace88bfb12a9a7e1977a5765753798962e942",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-pl",
+            "javaslang",
+            "-am",
+            "-DskipTests",
+            "package"
+          ],
+          "jdk": "8"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-parent.json",
+          "sha256": "e17dedfb85ca78b7b49f00018d312d758f190acee75212166fa51a985515ec26"
+        },
+        "adapters": [
+          "adapter/datawork/Matrices.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/rectangle-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-vavr-matrix-coordinates-and-ragged-rejec/examples/371-javaslang-matrix-transpose",
+    "network": true
+  },
+  "inputs": {
+    "example": "371",
+    "task": "rectangle-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "rectangle-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "file": "claims/rectangle.json",
+      "sha256": "8f44e38f4f5287d4fa151e09aa247c1c4ae3e0b36e7ac2d91681bc76eeb1d25e",
+      "property": "rectangle",
+      "claimKind": "property",
+      "statement": "On rectangles values and dimensions agree and a positive-width double transpose restores the input.",
+      "assume": "code >= 0 && code < 400",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "cee60133a5a37a7cbaa17d2733e7f6d3be9e5ada950407787738f5319cb1a7b4"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "5786c187f013bd191e1e26d3edd2ce4d1622a77872c35e353a681402d43b6aa6"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.Matrices#rectangle(I)I",
+        "mapping": "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+        "correspondence": "finite-oracle",
+        "cases": 400
+      },
+      "key": "bf3f524cec580349"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/vavr-io/vavr",
+        "commit": "a8cace88bfb12a9a7e1977a5765753798962e942",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-pl",
+            "javaslang",
+            "-am",
+            "-DskipTests",
+            "package"
+          ],
+          "jdk": "8"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-parent.json",
+          "sha256": "e17dedfb85ca78b7b49f00018d312d758f190acee75212166fa51a985515ec26"
+        },
+        "adapters": [
+          "adapter/datawork/Matrices.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/datawork/Matrices.java",
+        "sha256": "02b084367bdbdf6c0ec3028587af1fb2cbaf3444b6fb3cad918f143100150971"
+      }
+    ]
+  },
+  "key": "eb2ae07b74969de2f7808a3ab9776e5869acfa183c0fd8be9cd136f715711181"
+}

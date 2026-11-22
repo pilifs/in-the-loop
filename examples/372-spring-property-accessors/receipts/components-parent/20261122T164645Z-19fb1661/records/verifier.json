@@ -1,0 +1,1055 @@
+{
+  "task": "components-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+      "prove",
+      "springwork.Accessors#components(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/spring-core-7.1.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
+      "--classpath",
+      "prepare/parent/lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+      "--assume",
+      "code >= 0 && code < 3",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.032,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+      "commit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+      "libTree": "51a83b86ac020bc5c2cef7175b2aa59ff391c294",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Pair one of three altered component names with one preserved record or bean accessor.",
+        "method": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+        "revisions": {
+          "parent": {
+            "commit": "fd95ab16baa2353416e96bddbd979169a9618260",
+            "loadedFrom": "built/spring-core-7.1.0-SNAPSHOT.jar",
+            "classSha256": "345122e8b4337cce5a871cf1ef90e82366360ff048203f84df89fdf0bd62fa8f",
+            "origin": "Original spring-framework-36911-parent module, prepared in spring-java-data setup",
+            "parameters": {
+              "names": [],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "springwork.Accessors#components(I)I",
+          "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
+          "correspondence": "finite-oracle",
+          "cases": 3
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
+            "role": "adapter"
+          },
+          {
+            "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
+            "sha256": "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d",
+            "role": "original"
+          },
+          {
+            "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
+            "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+            "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "springwork.Accessors#components(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "springwork.Accessors#components(I)I",
+          "classSha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+          "subjectClassSha256": "345122e8b4337cce5a871cf1ef90e82366360ff048203f84df89fdf0bd62fa8f"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+        "checkedEntry": "springwork.Accessors#components(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 3"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "256"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16384"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "springwork.Accessors#components(I)I",
+          "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
+          "correspondence": "finite-oracle",
+          "cases": 3
+        }
+      },
+      "commits": {
+        "parent": "fd95ab16baa2353416e96bddbd979169a9618260"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+            "gaps",
+            "--target",
+            "springwork.Accessors#components(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/spring-core-7.1.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/parent/lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
+            "--classpath",
+            "prepare/parent/lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.064,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ref.ReferenceQueue.<init>()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.<init>:1261"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ref.SoftReference.<init>(Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ref.SoftReference.<init>(java.lang.Object, java.lang.ref.ReferenceQueue)",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$SoftEntryReference.<init>:1303"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ref.WeakReference.<init>(Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ref.WeakReference.<init>(java.lang.Object, java.lang.ref.ReferenceQueue)",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$WeakEntryReference.<init>:1337"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.AbstractMap.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.AbstractMap.<init>()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap.<init>:188"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.ArrayList.<init>(int)",
+              "sites": [
+                "org.springframework.core.PrioritizedParameterNameDiscoverer.<init>:39"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:737"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.JumboEnumSet.<init>(Ljava/lang/Class;[Ljava/lang/Enum;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.JumboEnumSet.<init>(java.lang.Class, java.lang.Enum[])",
+              "sites": [
+                "java.util.EnumSet.noneOf:120"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.concurrent.atomic.AtomicInteger.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.concurrent.atomic.AtomicInteger.<init>()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:630"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.concurrent.locks.ReentrantLock.<init>()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.concurrent.atomic.AtomicInteger.set(I)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.concurrent.atomic.AtomicInteger.set(int)",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:801"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.springframework.util.ConcurrentReferenceHashMap$Segment.lock()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.springframework.util.ConcurrentReferenceHashMap$Segment.lock()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.doTask:675",
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:732"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.springframework.util.ConcurrentReferenceHashMap$Segment.unlock()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.springframework.util.ConcurrentReferenceHashMap$Segment.unlock()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.doTask:691",
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:804"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.componentType()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.componentType()",
+              "sites": [
+                "org.springframework.core.ResolvableType.getComponentType:441"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getDeclaredAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getDeclaredAnnotation(java.lang.Class)",
+              "sites": [
+                "org.springframework.core.KotlinDetector.isKotlinType:113"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getGenericSuperclass()Ljava/lang/reflect/Type;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getGenericSuperclass()",
+              "sites": [
+                "org.springframework.core.ResolvableType.getSuperType:514"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getMethod(java.lang.String, java.lang.Class[])",
+              "sites": [
+                "springwork.Accessors.name:22"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ref.ReferenceQueue.poll()Ljava/lang/ref/Reference;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ref.ReferenceQueue.poll()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1286"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ref.SoftReference.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ref.SoftReference.get()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$SoftEntryReference.get:1294"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ref.WeakReference.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ref.WeakReference.get()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$WeakEntryReference.get:1328"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.Executable.getDeclaringClass()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.Executable.getDeclaringClass()",
+              "sites": [
+                "org.springframework.core.MethodParameter.getDeclaringClass:215",
+                "org.springframework.core.MethodParameter.getGenericParameterType:502"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.GenericArrayType.getGenericComponentType()Ljava/lang/reflect/Type;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.GenericArrayType.getGenericComponentType()",
+              "sites": [
+                "org.springframework.core.ResolvableType.getComponentType:445"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.Method.getGenericReturnType()Ljava/lang/reflect/Type;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.Method.getGenericReturnType()",
+              "sites": [
+                "org.springframework.core.MethodParameter.getGenericParameterType:496",
+                "org.springframework.core.MethodParameter$KotlinDelegate.getGenericReturnType:984"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.Method.getName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.Method.getName()",
+              "sites": [
+                "org.springframework.core.SerializableTypeWrapper$MethodParameterTypeProvider.<init>:282",
+                "org.springframework.core.convert.Property.resolveName:136",
+                "org.springframework.core.convert.Property.resolveName:141",
+                "org.springframework.core.convert.Property.resolveName:150",
+                "org.springframework.core.convert.Property.resolveName:153",
+                "org.springframework.core.convert.Property.resolveName:158"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.Method.getReturnType()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.Method.getReturnType()",
+              "sites": [
+                "org.springframework.core.MethodParameter.computeParameterType:526",
+                "org.springframework.core.MethodParameter$KotlinDelegate.getReturnType:999",
+                "org.springframework.core.MethodParameter$KotlinDelegate.getReturnType:1005"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.ParameterizedType.getOwnerType()Ljava/lang/reflect/Type;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.ParameterizedType.getOwnerType()",
+              "sites": [
+                "org.springframework.core.ResolvableType.resolveVariable:962"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.ParameterizedType.getRawType()Ljava/lang/reflect/Type;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.ParameterizedType.getRawType()",
+              "sites": [
+                "org.springframework.core.ResolvableType.resolveType:922"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.Type.getClass()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.Type.getClass()",
+              "sites": [
+                "org.springframework.core.SerializableTypeWrapper.forTypeProvider:130"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.TypeVariable.getName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.TypeVariable.getName()",
+              "sites": [
+                "org.springframework.core.ResolvableType.resolveVariable:968"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.get(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.get(java.lang.Object)",
+              "sites": [
+                "org.springframework.core.ResolvableType.getNested:729"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getKey()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getKey()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Entry.equals:917"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getValue()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getValue()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Entry.equals:918"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.Supplier.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.Supplier.get()",
+              "sites": [
+                "org.springframework.util.Assert.nullSafeGet:649"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:kotlin.reflect.KFunction.getReturnType()Lkotlin/reflect/KType;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "kotlin.reflect.KFunction.getReturnType()",
+              "sites": [
+                "org.springframework.core.MethodParameter$KotlinDelegate.getGenericReturnType:978",
+                "org.springframework.core.MethodParameter$KotlinDelegate.getReturnType:995"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:org.springframework.core.SerializableTypeWrapper$TypeProvider.getClass()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "org.springframework.core.SerializableTypeWrapper$TypeProvider.getClass()",
+              "sites": [
+                "org.springframework.core.SerializableTypeWrapper.forTypeProvider:122"
+              ]
+            },
+            {
+              "id": "class-initializer:org.springframework.core.DefaultParameterNameDiscoverer.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.springframework.core.DefaultParameterNameDiscoverer.<clinit>()",
+              "sites": [
+                "org.springframework.core.MethodParameter.<init>:95"
+              ]
+            },
+            {
+              "id": "class-initializer:org.springframework.core.KotlinDetector.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.springframework.core.KotlinDetector.<clinit>()",
+              "sites": [
+                "org.springframework.core.MethodParameter.computeParameterType:523"
+              ]
+            },
+            {
+              "id": "class-initializer:org.springframework.core.MethodParameter.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.springframework.core.MethodParameter.<clinit>()",
+              "sites": [
+                "org.springframework.core.convert.Property.resolveReadMethodParameter:188"
+              ]
+            },
+            {
+              "id": "class-initializer:org.springframework.core.ResolvableType.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.springframework.core.ResolvableType.<clinit>()",
+              "sites": [
+                "org.springframework.core.MethodParameter.getParameterType:475"
+              ]
+            },
+            {
+              "id": "class-initializer:org.springframework.util.ClassUtils.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.springframework.util.ClassUtils.<clinit>()",
+              "sites": [
+                "org.springframework.core.MethodParameter.getGenericParameterType:502"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Class.getModifiers()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.getModifiers()",
+              "sites": [
+                "org.springframework.util.ClassUtils.isStaticClass:922"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Class.isMemberClass()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.isMemberClass()",
+              "sites": [
+                "org.springframework.util.ClassUtils.isInnerClass:934"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "java.util.Objects.equals:64",
+                "org.springframework.core.MethodParameter.equals:756",
+                "org.springframework.core.convert.Property.resolveMethodParameter:177",
+                "org.springframework.util.ObjectUtils.nullSafeEquals:347"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.hashCode()",
+              "sites": [
+                "java.util.Arrays.hashCode:4599",
+                "org.springframework.core.MethodParameter.hashCode:761",
+                "org.springframework.util.ConcurrentReferenceHashMap.getHash:238",
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:459"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.reflect.Executable.getParameterCount()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.reflect.Executable.getParameterCount()",
+              "sites": [
+                "org.springframework.core.MethodParameter.getGenericParameterType:503",
+                "org.springframework.core.MethodParameter.validateIndex:850"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.EnumSet.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.EnumSet.add(java.lang.Object)",
+              "sites": [
+                "java.util.EnumSet.of:342",
+                "java.util.EnumSet.of:344"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.EnumSet.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.EnumSet.contains(java.lang.Object)",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Task.hasOption:945"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.EnumSet.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.EnumSet.equals(java.lang.Object)",
+              "sites": [
+                "java.util.RegularEnumSet.equals:294"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "org.springframework.core.PrioritizedParameterNameDiscoverer.addDiscoverer:47"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.add(java.lang.Object)",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:739"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.contains(java.lang.Object)",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:762",
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:786"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.size()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:743"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.atomic.AtomicInteger.get()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.atomic.AtomicInteger.get()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.doTask:672",
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.getReference:649",
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructure:734",
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:723"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.atomic.AtomicInteger.incrementAndGet()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.atomic.AtomicInteger.incrementAndGet()",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap$Segment.lambda$doTask$0:686"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:kotlin.reflect.KFunction.isSuspend()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "kotlin.reflect.KFunction.isSuspend()",
+              "sites": [
+                "org.springframework.core.MethodParameter$KotlinDelegate.getGenericReturnType:977",
+                "org.springframework.core.MethodParameter$KotlinDelegate.getReturnType:994"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.toLowerCase(C)C@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.toLowerCase(char)",
+              "sites": [
+                "org.springframework.util.StringUtils.changeFirstCharacterCase:612"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.toUpperCase(C)C@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.toUpperCase(char)",
+              "sites": [
+                "org.springframework.util.StringUtils.changeFirstCharacterCase:609"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Long.bitCount(J)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Long.bitCount(long)",
+              "sites": [
+                "java.util.RegularEnumSet.size:123"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.reflect.Array.newInstance(java.lang.Class, int)",
+              "sites": [
+                "org.springframework.core.ResolvableType.resolveClass:910",
+                "org.springframework.util.ConcurrentReferenceHashMap.<init>:200"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.reflect.Modifier.isStatic(I)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.reflect.Modifier.isStatic(int)",
+              "sites": [
+                "org.springframework.util.ClassUtils.isStaticClass:922"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.reflect.Proxy.newProxyInstance(Ljava/lang/ClassLoader;[Ljava/lang/Class;Ljava/lang/reflect/InvocationHandler;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.reflect.Proxy.newProxyInstance(java.lang.ClassLoader, java.lang.Class[], java.lang.reflect.InvocationHandler)",
+              "sites": [
+                "org.springframework.core.SerializableTypeWrapper.forTypeProvider:125"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.equals([C[C)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.equals(char[], char[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.arrayEquals:378"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.equals([D[D)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.equals(double[], double[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.arrayEquals:381"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.equals([F[F)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.equals(float[], float[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.arrayEquals:384"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.equals([I[I)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.equals(int[], int[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.arrayEquals:387"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.equals([J[J)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.equals(long[], long[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.arrayEquals:390"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.equals([S[S)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.equals(short[], short[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.arrayEquals:393"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.equals([Z[Z)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.equals(boolean[], boolean[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.arrayEquals:372"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([B)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(byte[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:438"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([C)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(char[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:441"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([D)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(double[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:444"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([F)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(float[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:447"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([I)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(int[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:450"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([J)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(long[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:453"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([S)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(short[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:456"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([Z)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(boolean[])",
+              "sites": [
+                "org.springframework.util.ObjectUtils.nullSafeHashCode:435"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.access.SharedSecrets.getJavaLangAccess()Ljdk/internal/access/JavaLangAccess;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.access.SharedSecrets.getJavaLangAccess()",
+              "sites": [
+                "java.util.EnumSet.getUniverse:409"
+              ]
+            },
+            {
+              "id": "jdk-static-method:kotlin.reflect.jvm.ReflectJvmMapping.getJavaType(Lkotlin/reflect/KType;)Ljava/lang/reflect/Type;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "kotlin.reflect.jvm.ReflectJvmMapping.getJavaType(kotlin.reflect.KType)",
+              "sites": [
+                "org.springframework.core.MethodParameter$KotlinDelegate.getGenericReturnType:978",
+                "org.springframework.core.MethodParameter$KotlinDelegate.getReturnType:995"
+              ]
+            },
+            {
+              "id": "jdk-static-method:kotlin.reflect.jvm.ReflectJvmMapping.getKotlinFunction(Ljava/lang/reflect/Method;)Lkotlin/reflect/KFunction;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "kotlin.reflect.jvm.ReflectJvmMapping.getKotlinFunction(java.lang.reflect.Method)",
+              "sites": [
+                "org.springframework.core.MethodParameter$KotlinDelegate.getGenericReturnType:976",
+                "org.springframework.core.MethodParameter$KotlinDelegate.getReturnType:993"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0242,
+        "peakRssBytes": 66293760,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "springwork.Accessors#components(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 3",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13 (java.lang.reflect.Array.newInstance(java.lang.Class, int) at org.springframework.util.ConcurrentReferenceHashMap.<init>:200). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "springwork.Accessors#components(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13 (java.lang.reflect.Array.newInstance(java.lang.Class, int) at org.springframework.util.ConcurrentReferenceHashMap.<init>:200). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 24
+          }
+        ],
+        "output": "✗ springwork.Accessors#components(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13 (java.lang.reflect.Array.newInstance(java.lang.Class, int) at org.springframework.util.ConcurrentReferenceHashMap.<init>:200). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006396729,
+          "properties": 1,
+          "unwind": 256,
+          "max_array_length": 16384,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 5,
+            "solving_seconds": 5.2249e-05,
+            "gates_evaluated": 185,
+            "evaluating_seconds": 6.891e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 217,
+            "clauses": 584,
+            "seconds": 0.004184248,
+            "loading_seconds": 0.000522026,
+            "decoding_seconds": 0.000108913,
+            "encoding_seconds": 0.000520091,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.reflect.Array.newInstance(java.lang.Class, int)",
+              "sites": [
+                "org.springframework.util.ConcurrentReferenceHashMap.<init>:200"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.004,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.003,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 217,
+                "clauses": 584
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.02,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.004,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.015
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 256,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-spring-accessor-names-on-paired-method-m/.build-py/examples-dmn7ym7e/targets/372/components-parent/20261122T164645Z-19fb1661",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-spring-accessor-names-on-paired-method-m/.build-py/examples-dmn7ym7e/targets/372/components-parent/20261122T164645Z-19fb1661"
+  }
+}

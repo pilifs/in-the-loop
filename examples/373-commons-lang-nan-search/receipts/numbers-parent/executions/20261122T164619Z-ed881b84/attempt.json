@@ -1,0 +1,332 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261122T164619Z-ed881b84",
+  "task": "numbers-parent",
+  "claimKey": "504fd1225213a97d",
+  "revisions": [
+    "parent"
+  ],
+  "startedAt": "2026-11-22T16:46:19.972929+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261122-162530-first-nan-and-preserved-numbers-at-zero",
+  "sourceCommit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.2414
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.406
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 1.4157
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.4621
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.708
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.8355
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "parent": {
+      "revision": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+      "target": {
+        "class": "org.apache.commons.lang3.ArrayUtils",
+        "method": "indexOf",
+        "descriptor": "([DDID)I",
+        "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+        "classSha256": "0509c97f1785880b9d0924ec2fd7573c89d4fc864d3bf6d125ca17f1dd075bad",
+        "adapterCalls": [
+          "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "2f84dd68fe06a38d3661ff9ad45e74eed3313efe2b60bd73d853a5f303f3e540",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425",
+          "role": "original",
+          "coordinates": null,
+          "origin": "Original commons-lang-1589-parent module, prepared in spring-java-data setup"
+        }
+      ]
+    }
+  },
+  "bindingId": "270cc4ee6c0c77dd37c670c196d1accb9b726f658dd8836fd1497b9905947175",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+    "prove",
+    "datawork.NanSearch#numbers(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+    "--assume",
+    "code >= 0 && code < 902",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "256",
+    "--max-array-length",
+    "16384",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+    "commit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+    "libTree": "51a83b86ac020bc5c2cef7175b2aa59ff391c294",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 256,
+      "maxArrayLength": 16384
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+      "method": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "revisions": {
+        "parent": {
+          "commit": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+          "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "classSha256": "0509c97f1785880b9d0924ec2fd7573c89d4fc864d3bf6d125ca17f1dd075bad",
+          "origin": "Original commons-lang-1589-parent module, prepared in spring-java-data setup",
+          "parameters": {
+            "names": [
+              "array",
+              "valueToFind",
+              "startIndex",
+              "tolerance"
+            ],
+            "recordedIn": "LocalVariableTable"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "datawork.NanSearch#numbers(I)I",
+        "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+        "correspondence": "finite-oracle",
+        "cases": 902
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "parent": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "datawork.NanSearch#numbers(I)I",
+    "entryBindings": {
+      "parent": {
+        "entry": "datawork.NanSearch#numbers(I)I",
+        "classSha256": "325bc8e10a34a1d741b52549be3cc8095f5a05a855a50bfd0609de21f5315a3a",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+        "subjectClassSha256": "0509c97f1785880b9d0924ec2fd7573c89d4fc864d3bf6d125ca17f1dd075bad"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "checkedEntry": "datawork.NanSearch#numbers(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 902"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "256"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "16384"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "datawork.NanSearch#numbers(I)I",
+        "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+        "correspondence": "finite-oracle",
+        "cases": 902
+      }
+    },
+    "commits": {
+      "parent": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "parent": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+          "gaps",
+          "--target",
+          "datawork.NanSearch#numbers(int)",
+          "--classes",
+          "prepare/parent/adapter-parent.jar",
+          "--classpath",
+          "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-parent.stdout",
+        "stderr": "verifier/probe-parent.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.2375,
+      "peakRssBytes": 68182016,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.2375,
+    "peakRssBytes": 68182016,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.244,
+  "missing": [],
+  "receipt": "receipts/numbers-parent/20261122T164619Z-ed881b84/result.json",
+  "preparedClaim": "7e50404e28172abb",
+  "firstBlocker": null,
+  "endedAt": "2026-11-22T16:46:21.808515+00:00"
+}
