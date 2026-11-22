@@ -54,8 +54,13 @@ def proof(checker, classes, jars, work, env, out, method, label, guard=None, ass
         raise ValueError(f"{label}: different claim or engine")
     row.update(verdict=outcome["verdict"], blocker=outcome["problem"], assumptions=stated["assumptions"])
     if row["verdict"] == "verified":
-        if (row["exit"] or row["blocker"] or stated["vacuity"]["status"] != "non-vacuous" or
-                stated["bounds"] != {"complete": True, "unwind": bounds[0], "max_array_length": bounds[1]}):
+        array_input = any(p["type"].endswith("[]") for p in stated["domain"]["parameters"])
+        # The statement bounds input arrays. The search receipt separately records
+        # the engine's configured array limit even when every argument is scalar.
+        if (row["exit"] or row["blocker"] or stated["vacuity"]["status"] != "non-vacuous"
+                or outcome["search"]["max_array_length"] != bounds[1]
+                or stated["bounds"] != {"complete": True, "unwind": bounds[0],
+                                        "max_array_length": bounds[1] if array_input else None}):
             raise ValueError(f"{label}: incomplete proof")
     states = {}
     for assumption in stated["assumptions"]:

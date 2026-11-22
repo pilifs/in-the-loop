@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-124440-csv-short-reads-at-three-reader-caps",
+  "title": "CSV short reads at three reader caps",
+  "description": "The original parser gets a real Reader returning one to three characters per read. Certify its progress, EOF and buffer-range contract. Measure changes from the StringReader observations for every fixture without moving those obligations into the primary grid.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "java-input-segmentation"
+  ],
+  "links": {
+    "examples": [
+      "366"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T12:44:40+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Check the separate parser entry on paired original modules",
+      "run": "python3 -B lib/benchmark/java-domain-proof/window_experiments.py 366 --output examples/366-commons-csv-delimiter-lookahead/records/input-segmentation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/366-commons-csv-delimiter-lookahead/records/input-segmentation"
+  ]
+}
