@@ -22,6 +22,8 @@ def main():
                     help="prefer these full Maven modules when both sides are available, in option order")
     ap.add_argument("--variant", choices=("operational",), help="run a declared additional observation for the original case")
     ap.add_argument("--output", required=True, type=Path)
+    ap.add_argument("--native-caller", type=Path, help="also check each finite original caller natively and inspect its JVM receiver")
+    ap.add_argument("--native-seconds", type=int, default=60)
     args = ap.parse_args()
     cases = {c["id"]: c for c in read(HERE / "corpus.json")["cases"]}
     args.output.mkdir(parents=True, exist_ok=True)
@@ -46,6 +48,8 @@ def main():
                "--spec", str(directory / "scope.json"), "--probe", str(directory / "UpgradeProbe.java"),
                "--jdk", str(Path.home() / ".sdkman/candidates/java" / jdk), "--output", str(out)]
         prep = preparation_root(args.preparations, args.complete, key)
+        if args.native_caller:
+            cmd += ["--native-caller", str(args.native_caller.resolve()), "--native-seconds", str(args.native_seconds)]
         try:
             for side in ("old", "new"):
                 manifest = prep/key/side/"prepared.json"

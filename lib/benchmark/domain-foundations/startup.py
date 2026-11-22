@@ -48,6 +48,21 @@ def document(path, value):
     path.write_bytes(gzip.compress(data, mtime=0) if path.suffix == ".gz" else data)
 
 
+def compile_java(jdk, work, dest, source, jars=()):
+    dest.mkdir(exist_ok=True)
+    cp = ["-cp", os.pathsep.join(map(str, jars))] if jars else []
+    subprocess.run([jdk/"bin/javac", "-J-Djava.io.tmpdir="+str(work), "-parameters", "-g", *cp, "-d", dest, source], check=True)
+
+
+def pilot_checker(current, requested):
+    pilot = json.loads((ROOT/"verification/domain-foundations/results.json").read_bytes())
+    identity = pilot["startup"]["355"]["finalOrdinary"]["direct-limit-fix"]["checker"]
+    previous = current.parent.parent/identity["libTree"]/"jvmcontract" if requested == "cached" else Path(requested).resolve()
+    if runtime_maven.sha256_of(previous) != identity["jvmcontract"]:
+        raise ValueError("the pilot verifier differs from the frozen receipt")
+    return previous
+
+
 def materialize(folder, side, work):
     spec = json.loads((folder / "target.json").read_text())
     path = folder / spec["preparation"]["capturedBuilds"][side]
@@ -66,6 +81,15 @@ def materialize(folder, side, work):
         cp.append(link)
     return cp, {"revision": record["recipe"]["commit"], "build": str(path.relative_to(ROOT)),
                 "buildSha256": runtime_maven.sha256_of(path), "orderedJars": [a["sha256"] for a in record["artifacts"]]}
+
+
+def selected_class(jars, name, release=21):
+    for index, jar in enumerate(jars):
+        with zipfile.ZipFile(jar) as archive:
+            entry = runtime_jar.effective_entries(archive, release).get(name)
+            if entry is not None:
+                return index, entry.filename, archive.read(entry)
+    raise ValueError("pinned classpath has no "+name)
 
 
 def launcher(cmd, cwd, env=None):

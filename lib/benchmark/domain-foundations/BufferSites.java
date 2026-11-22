@@ -14,9 +14,10 @@ public final class BufferSites {
 
     static void calls(String number) throws Exception {
         boolean oldExample = number.equals("355");
-        Class<?> adapter = Class.forName(oldExample ? "organic.WritableBuffer" : "organic.DecimalWindow");
+        Class<?> adapter = Class.forName(oldExample ? "organic.WritableBuffer" :
+                number.equals("362") ? "organic.EncoderWindow" : "organic.DecimalWindow");
         var call = adapter.getMethod(oldExample ? "directLimit" : "cursor", int.class);
-        for (selector = 0; selector < (oldExample ? 21 : 12); selector++)
+        for (selector = 0; selector < (oldExample ? 21 : number.equals("362") ? 16 : 12); selector++)
             System.out.println("ROW\t" + selector + "\t" + call.invoke(null, selector));
     }
 
@@ -24,10 +25,14 @@ public final class BufferSites {
     static final String DECIMAL = "org.apache.avro.Conversions$DecimalConversion";
     static final String WRAP = "([BII)Ljava/nio/ByteBuffer;";
     static final String DEC = "(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;";
+    static final String ENCODER = "org.apache.avro.io.BufferedBinaryEncoder";
+    static final String HEAP = "java.nio.HeapByteBuffer";
+    static final String READ_ONLY = "()Ljava/nio/ByteBuffer;";
 
     static void install(VirtualMachine vm, ReferenceType type, String name) {
-        String method = name.equals(BUFFER) ? "wrap" : "fromBytes";
-        List<Method> selected = type.methodsByName(method, name.equals(BUFFER) ? WRAP : DEC);
+        String method = name.equals(BUFFER) ? "wrap" : name.equals(HEAP) ? "asReadOnlyBuffer" : name.equals(ENCODER) ? "writeFixed" : "fromBytes";
+        String descriptor = name.equals(BUFFER) ? WRAP : name.equals(HEAP) ? READ_ONLY : name.equals(ENCODER) ? "(Ljava/nio/ByteBuffer;)V" : DEC;
+        List<Method> selected = type.methodsByName(method, descriptor);
         if (selected.size() != 1 || !selected.get(0).declaringType().equals(type) ||
                 (name.equals(BUFFER) && type.classLoader() != null)) throw new IllegalStateException("ambiguous method " + name);
         BreakpointRequest point = vm.eventRequestManager().createBreakpointRequest(selected.get(0).location());
@@ -41,7 +46,8 @@ public final class BufferSites {
     }
 
     static void event(BreakpointEvent hit, String number, Map<Integer,Long> arrays,
-                      Map<Long,Integer> pending, Map<Integer,Long> returnedViews) throws Exception {
+                      Map<Long,Integer> pending, Map<Integer,Long> returnedViews, Map<Long,Integer> pendingReadOnly,
+                      Map<Integer,Long> readOnlyViews) throws Exception {
         var frames = hit.thread().frames();
         Method target = hit.location().method();
         boolean wrapping = target.declaringType().name().equals(BUFFER);
@@ -51,15 +57,24 @@ public final class BufferSites {
                 frames.get(index).location().method().signature().equals("([B)Ljava/nio/ByteBuffer;")) index++;
         Location caller = frames.get(index).location();
         String expected = number.equals("355") ? "org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter"
-                                              : "organic.DecimalWindow";
+                                              : number.equals("362") ? "organic.EncoderWindow" : "organic.DecimalWindow";
         if (!caller.declaringType().name().equals(expected)) return;
-        String name = number.equals("355") ? "convert" : (wrapping ? "buffer" : "cursor");
+        boolean makingReadOnly = target.declaringType().name().equals(HEAP);
+        String name = number.equals("355") ? "convert" : number.equals("362") && (wrapping || makingReadOnly)
+                ? "window" : (wrapping ? "buffer" : "cursor");
         if (!caller.method().name().equals(name)) return;
         VirtualMachine vm = hit.virtualMachine();
         var profiles = vm.classesByName("foundation.BufferSites");
         if (profiles.size() != 1 || vm.classesByName(expected).size() != 1 ||
                 vm.classesByName(target.declaringType().name()).size() != 1) throw new IllegalStateException("ambiguous loader");
         int code = integer(profiles.get(0).getValue(profiles.get(0).fieldByName("selector")));
+        if (makingReadOnly) {
+            if (target.declaringType().classLoader() != null ||
+                    !Objects.equals(returnedViews.get(code), frames.get(0).thisObject().uniqueID()) ||
+                    pendingReadOnly.put(hit.thread().uniqueID(), code) != null)
+                throw new IllegalStateException("read-only conversion of a different buffer");
+            return;
+        }
         var args = frames.get(0).getArgumentValues();
         int start, length, capacity;
         if (wrapping) {
@@ -70,19 +85,21 @@ public final class BufferSites {
             if (pending.put(hit.thread().uniqueID(), code) != null) throw new IllegalStateException("nested selected wrap");
         } else {
             ObjectReference view = (ObjectReference)args.get(0);
-            if (!Objects.equals(returnedViews.get(code), view.uniqueID())) throw new IllegalStateException("decimal consumes another buffer");
-            if (!view.referenceType().name().equals("java.nio.HeapByteBuffer") || view.referenceType().classLoader() != null)
-                throw new IllegalStateException("unexpected decimal buffer type");
+            boolean readonly = number.equals("362") && code >= 8;
+            if (!Objects.equals((readonly ? readOnlyViews : returnedViews).get(code), view.uniqueID()))
+                throw new IllegalStateException("consumer received another buffer");
+            if (!view.referenceType().name().equals(readonly ? HEAP+"R" : HEAP) || view.referenceType().classLoader() != null)
+                throw new IllegalStateException("unexpected consumer buffer type");
             ReferenceType t = view.referenceType();
             ArrayReference hb = (ArrayReference)view.getValue(t.fieldByName("hb"));
-            if (!Objects.equals(arrays.get(code), hb.uniqueID())) throw new IllegalStateException("decimal consumes another array");
+            if (!Objects.equals(arrays.get(code), hb.uniqueID())) throw new IllegalStateException("consumer received another array");
             start = integer(view.getValue(t.fieldByName("position")));
             length = integer(view.getValue(t.fieldByName("limit"))) - start;
             capacity = integer(view.getValue(t.fieldByName("capacity")));
             if (capacity != hb.length() || integer(view.getValue(t.fieldByName("offset"))) != 0)
                 throw new IllegalStateException("unexpected decimal view");
         }
-        System.out.println(String.join("\t", "SITE", Integer.toString(code), wrapping ? "wrap" : "decimal",
+        System.out.println(String.join("\t", "SITE", Integer.toString(code), wrapping ? "wrap" : number.equals("362") ? "encoder" : "decimal",
                 Integer.toString(capacity), Integer.toString(start), Integer.toString(length),
                 expected + "#" + name + caller.method().signature(), Long.toString(caller.codeIndex()),
                 digest(caller.method().bytecodes()), digest(caller.declaringType().constantPool()),
@@ -102,13 +119,21 @@ public final class BufferSites {
         Map<Integer, Long> arrays = new HashMap<>();
         Map<Long, Integer> pending = new HashMap<>();
         Map<Integer, Long> returnedViews = new HashMap<>();
+        Map<Long,Integer> pendingReadOnly = new HashMap<>();
+        Map<Integer,Long> readOnlyViews = new HashMap<>();
         try {
             if (!vm.canGetMethodReturnValues()) throw new IllegalStateException("JVM cannot identify the returned view");
             var exits = vm.eventRequestManager().createMethodExitRequest();
             exits.addClassFilter(BUFFER);
             exits.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
             exits.enable();
-            for (String name : number.equals("355") ? List.of(BUFFER) : List.of(BUFFER, DECIMAL)) {
+            if (number.equals("362")) {
+                var readOnly = vm.eventRequestManager().createMethodExitRequest();
+                readOnly.addClassFilter(HEAP);
+                readOnly.setSuspendPolicy(EventRequest.SUSPEND_EVENT_THREAD);
+                readOnly.enable();
+            }
+            for (String name : number.equals("355") ? List.of(BUFFER) : number.equals("362") ? List.of(BUFFER, HEAP, ENCODER) : List.of(BUFFER, DECIMAL)) {
                 var request = vm.eventRequestManager().createClassPrepareRequest();
                 request.addClassFilter(name);
                 request.setSuspendPolicy(EventRequest.SUSPEND_ALL);
@@ -120,7 +145,12 @@ public final class BufferSites {
                 if (events == null) throw new IllegalStateException("no progress from traced JVM");
                 for (Event e : events) {
                     if (e instanceof ClassPrepareEvent c) install(vm, c.referenceType(), c.referenceType().name());
-                    if (e instanceof BreakpointEvent b) event(b, number, arrays, pending, returnedViews);
+                    if (e instanceof BreakpointEvent b) event(b, number, arrays, pending, returnedViews, pendingReadOnly, readOnlyViews);
+                    if (e instanceof MethodExitEvent x && x.method().declaringType().name().equals(HEAP)
+                            && x.method().name().equals("asReadOnlyBuffer") && x.method().signature().equals(READ_ONLY)) {
+                        Integer input = pendingReadOnly.remove(x.thread().uniqueID());
+                        if (input != null) readOnlyViews.put(input, ((ObjectReference)x.returnValue()).uniqueID());
+                    }
                     if (e instanceof MethodExitEvent x && x.method().name().equals("wrap") && x.method().signature().equals(WRAP)) {
                         Integer code = pending.remove(x.thread().uniqueID());
                         if (code != null) returnedViews.put(code, ((ObjectReference)x.returnValue()).uniqueID());
@@ -135,7 +165,7 @@ public final class BufferSites {
             if (process.isAlive() && !process.waitFor(2, java.util.concurrent.TimeUnit.SECONDS)) process.destroyForcibly();
             out.join(); err.join();
             if (process.waitFor() != 0) throw new IllegalStateException("traced JVM failed");
-            if (!returnedViews.keySet().equals(arrays.keySet()) || !pending.isEmpty())
+            if (!returnedViews.keySet().equals(arrays.keySet()) || !pending.isEmpty() || !pendingReadOnly.isEmpty())
                 throw new IllegalStateException("missing normal return from a selected wrap");
         }
     }

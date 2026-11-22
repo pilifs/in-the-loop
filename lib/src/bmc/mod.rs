@@ -84,6 +84,8 @@
 //! | `invokespecial`, `invokevirtual` and `invokeinterface` of the constructors and methods of `java.util.ArrayList`, `java.util.ArrayDeque`, `java.util.HashSet`, `java.util.LinkedHashSet` (with the `HashSet` model), `java.util.StringJoiner` or `java.beans.PropertyChangeEvent` (with `java.util.EventObject`), in a check that asks for the class's model (`--model java.util.ArrayList`, [`crate::models::ON_REQUEST`]) | enter the model ([`ClassPath::runs_model`]) for what it keeps, and the run states it ([`Outcome::assumed`]); a method it does not keep, and every call in a check that did not ask, is the JDK call it was |
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
 //! | `Arrays.asList(T...)` and its fixed-size view | Strict checking on an image executes the JDK's array-backed list and iterator. The portable model supplies size, get and toArray when the image is unavailable. |
+//! | Integer lookup tables initialized by application bytecode | Strict checking can enter a looping initializer whose static fields are final primitive arrays. Whole-array integer fill and the Latin-1 path of `Character.isJavaIdentifierPart` execute the selected JDK's bytecode. The enclosing claim retains its loop bound. |
+//! | `new HashSet(Collection)` on an exact receiver | Strict checking executes the selected JDK constructor and its backing map, including the source iterator, key callbacks and their exceptions. The image must initialize its shared membership sentinel with a single fresh object. An explicitly requested HashSet model keeps its own layout. |
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
 //! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
@@ -1011,6 +1013,9 @@ enum Literal {
     EmptyMap,
     CollectionsEmptyList,
     CollectionsEmptySet,
+    HashSetPresent,
+    BasicBase64Decoder,
+    BasicBase64Encoder,
     EmptySuppressedArray,
     ListEmptyStorage(bool),
     /// The private Character cache as read by valueOf on its ASCII branch.
@@ -2527,6 +2532,9 @@ impl<'a> Engine<'a> {
                         Literal::EmptyMap => runtime::EMPTY_MAP,
                         Literal::CollectionsEmptyList => throwables::EMPTY_LIST,
                         Literal::CollectionsEmptySet => "java/util/Collections$EmptySet",
+                        Literal::HashSetPresent => "java/lang/Object",
+                        Literal::BasicBase64Decoder => "java/util/Base64$Decoder",
+                        Literal::BasicBase64Encoder => "java/util/Base64$Encoder",
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
                         Literal::AsciiBoxes => "[Ljava/lang/Character;",
@@ -3988,6 +3996,13 @@ impl<'a> Engine<'a> {
                     return Ok(None);
                 }
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/util/HashSet", "PRESENT", "Ljava/lang/Object;")
+                    && class.name == declaring && self.cp.is_map_image(&class) {
+                    let sentinel = self.literal(path, Literal::HashSetPresent, "java/lang/Object");
+                    self.push(path, Val::R(Some(sentinel)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) ==
                     ("sun/nio/cs/UTF_8", "JLA", "Ljdk/internal/access/JavaLangAccess;") {
                     let slot = (declaring.clone(), member.name.clone());
@@ -4344,6 +4359,9 @@ impl<'a> Engine<'a> {
     /// `None` for any other call, and for one whose String has no content, which stays the JDK call it was (a
     /// gap), unless what it lacks is a named limit ([`Obj::limit`]), which ends the path with no verdict.
     fn string_method(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if self.gap_mode == GapMode::Strict && name == "replace" && descriptor == "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" {
+            return self.replace_string_unit(path, o, args);
+        }
         if !models_string_method(STRING, name, descriptor) {
             return None;
         }
@@ -4789,10 +4807,13 @@ impl<'a> Engine<'a> {
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
         }
+        let gap = Gap { kind: GapKind::ClassInitializer, owner: class.to_string(), name: "<clinit>".into(), descriptor: "()V".into() };
         let runs = match self.runs.get(class) {
             Some(&r) => r,
             None => {
-                let r = (self.gap_mode == GapMode::Strict && (self.cp.state_image_class(class).is_some() || gaps::builds_static_objects(self.cp, &cf)))
+                let r = (self.gap_mode == GapMode::Strict && (self.cp.state_image_class(class).is_some() ||
+                    (!self.contracts.contains_key(&gap) && (gaps::builds_static_objects(self.cp, &cf)
+                        || self.cp.is_application(class) && gaps::builds_primitive_tables(&cf)))))
                     || gaps::runs_initializer(self.cp, class);
                 self.runs.insert(class.to_string(), r);
                 r
@@ -4808,7 +4829,6 @@ impl<'a> Engine<'a> {
             path.frames.last_mut().expect("a frame").initializes = Some(class.to_string());
             return Ok(Initialising::Running);
         }
-        let gap = Gap { kind: GapKind::ClassInitializer, owner: class.to_string(), name: "<clinit>".into(), descriptor: "()V".into() };
         if self.contracts.get(&gap).is_some_and(|k| k.how == Closing::Initialised) {
             self.apply(path, gap);
         } else if let Some(end) = self.meet(path, GapKind::ClassInitializer, class, "<clinit>", "()V") {
@@ -4873,7 +4893,7 @@ impl<'a> Engine<'a> {
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
                 o
             }
-            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet => self.alloc(path, class),
+            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::BasicBase64Decoder | Literal::BasicBase64Encoder => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
                 path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());
@@ -5146,12 +5166,18 @@ impl<'a> Engine<'a> {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
         // `String.valueOf(Object)` of a String is the String itself (its `toString()` is itself), and of null the
-        // interned "null". Of any other object it calls that object's `toString()`: the gap it is to the scan,
-        // which cannot tell the argument's class, and to the engine.
+        // interned "null". On an exact application object the JDK body dispatches to its real
+        // toString implementation, including overrides on individual enum constants.
         if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;") {
             if let [Val::R(object)] = args.as_slice() {
                 let value = match *object {
                     Some(o) if path.objects[o].class == STRING => Some(o),
+                    Some(o) if self.application_string_callback(path, o) => {
+                        if let Some((cf, m)) = self.cp.library_image_method(STRING, "valueOf", &member.descriptor) {
+                            return self.enter_method(path, STRING, cf, m, args);
+                        }
+                        None
+                    }
                     Some(o) if path.objects[o].class == "java/lang/Character" && path.objects[o].fields.contains_key("value")
                         && self.cp.numeric_image_method("java/lang/Character", "toString", "()Ljava/lang/String;").is_some() => {
                         return self.call(path, "java/lang/Character", "toString", "()Ljava/lang/String;", vec![Val::R(Some(o))]);
@@ -5174,16 +5200,53 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
-        if path.frames.last().is_some_and(|f| runtime::enum_identity_read(caller, &f.method, member)) {
-            if let [Val::R(Some(o))] = args.as_slice() {
-                // Every int is permitted, including zero or another object's hash. The value is stable
-                // for this object even if the JDK's cached hash still contains its zero sentinel.
-                let value = path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone();
-                path.unbound_platform_value = Some("a JVM-chosen identity hash");
-                self.push(path, value);
+        if member.owner == "java/util/Base64" {
+            let singleton = match (member.name.as_str(), member.descriptor.as_str()) {
+                ("getDecoder", "()Ljava/util/Base64$Decoder;") => Some((Literal::BasicBase64Decoder, "java/util/Base64$Decoder")),
+                ("getEncoder", "()Ljava/util/Base64$Encoder;") => Some((Literal::BasicBase64Encoder, "java/util/Base64$Encoder")),
+                _ => None,
+            };
+            if let Some((key, class)) = singleton.filter(|_| self.cp.basic_base64()) {
+                let object = self.literal(path, key, class);
+                self.push(path, Val::R(Some(object)));
                 self.advance(path);
                 return Ok(None);
             }
+        }
+        if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+            == ("java/lang/Boolean", "parseBoolean", "(Ljava/lang/String;)Z") {
+            let parsed = match args.as_slice() {
+                [Val::R(None)] => Some(false),
+                [Val::R(Some(o))] => self.constant_units(path, *o).and_then(|units| {
+                    units.iter().all(|&c| c < 128).then(|| units.iter().map(|&c| (c as u8).to_ascii_lowercase()).eq(b"true".iter().copied()))
+                }),
+                _ => None,
+            };
+            if let Some(value) = parsed {
+                self.push(path, Val::I(self.b.constant(i64::from(value), 32)));
+                self.advance(path);
+                return Ok(None);
+            }
+        }
+        if self.cp.platform_native(member) || path.frames.last().is_some_and(|f| runtime::enum_identity_read(caller, &f.method, member)) {
+            let value = match (member.name.as_str(), args.as_slice()) {
+                // Read a fresh word even when the previous read was in the same method.
+                // Wall time may jump in either direction. A platform-dependent witness must qualify.
+                ("currentTimeMillis", []) => {
+                    path.unbound_platform_value = Some("a JVM wall-clock reading");
+                    Val::J(self.b.fresh(64))
+                }
+                ("identityHashCode", [Val::R(None)]) => Val::I(self.b.constant(0, 32)),
+                ("identityHashCode", [Val::R(Some(o))]) => {
+                    // Stable for the same object. Distinct objects may collide, including at zero.
+                    path.unbound_platform_value = Some("a JVM-chosen identity hash");
+                    path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone()
+                }
+                _ => return unsupported("the JVM identity hash needs a resolved reference"),
+            };
+            self.push(path, value);
+            self.advance(path);
+            return Ok(None);
         }
         if self.cp.collection_static(&member.owner, &member.name, &member.descriptor) && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
@@ -5394,14 +5457,25 @@ impl<'a> Engine<'a> {
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
+            if !special {
+                if let Some(step) = self.basic_base64_call(path, o, member, &args) { return step; }
+            }
             if !path.objects[o].assumed && !path.objects[o].given {
+                if member.owner == "java/util/concurrent/atomic/AtomicReference" && path.objects[o].class == member.owner
+                    && !path.objects[o].unknown {
+                    if let Some((cf, method)) = self.cp.fresh_atomic_method(&member.name, &member.descriptor, special) {
+                        let mut full = vec![Val::R(Some(o))];
+                        full.extend(args);
+                        return self.enter_method(path, &member.owner, cf, method, full);
+                    }
+                }
                 if let Some((cf, method)) = self.cp.linked_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
                     let mut full = vec![Val::R(Some(o))];
                     full.extend(args);
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
-            if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
+            if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapByteBufferR" | "java/nio/HeapCharBuffer")
                 && !path.objects[o].assumed && !path.objects[o].given && ClassPath::heap_buffer_owner(&member.owner) {
                 let target = if special { member.owner.clone() } else {
                     self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor)
@@ -5424,6 +5498,7 @@ impl<'a> Engine<'a> {
                 if self.there_before(path, o) { self.reads(path, || "Object.clone reads all fields of its receiver".into())?; }
                 let copy = self.alloc(path, &class);
                 path.objects[copy].fields = path.objects[o].fields.clone();
+                path.objects[copy].fields.remove("<JVM.identityHashCode>");
                 self.push(path, Val::R(Some(copy)));
                 self.advance(path);
                 return Ok(None);

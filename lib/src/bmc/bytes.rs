@@ -39,6 +39,52 @@
 
 use super::*;
 
+/// The canonical ASCII fragment of the JDK basic decoder. Padding is optional
+/// for a final group of two or three digits. Other inputs keep the JDK call boundary.
+fn basic_base64_bytes(units: &[u16]) -> Option<Vec<u8>> {
+    let digits = units.iter().position(|&c| c == u16::from(b'=')).unwrap_or(units.len());
+    if !units[digits..].iter().all(|&c| c == u16::from(b'=')) ||
+        !matches!((digits % 4, units.len() - digits), (0, 0) | (2, 0 | 2) | (3, 0 | 1)) { return None; }
+    let mut decoded = Vec::with_capacity(digits * 3 / 4);
+    let mut bits = 0u16;
+    let mut count = 0;
+    for &unit in &units[..digits] {
+        let byte = u8::try_from(unit).ok()?;
+        let value = match byte {
+            b'A'..=b'Z' => byte - b'A',
+            b'a'..=b'z' => byte - b'a' + 26,
+            b'0'..=b'9' => byte - b'0' + 52,
+            b'+' => 62,
+            b'/' => 63,
+            _ => return None,
+        };
+        bits = (bits << 6) | u16::from(value);
+        count += 6;
+        if count >= 8 {
+            count -= 8;
+            decoded.push((bits >> count) as u8);
+            bits &= (1 << count) - 1;
+        }
+    }
+    (bits == 0).then_some(decoded)
+}
+
+fn basic_base64_units(bytes: &[u8]) -> Vec<u16> {
+    const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut result = Vec::with_capacity(bytes.len().div_ceil(3) * 4);
+    for group in bytes.chunks(3) {
+        let a = group[0];
+        let b = group.get(1).copied().unwrap_or(0);
+        let c = group.get(2).copied().unwrap_or(0);
+        let digit = |index: u8| u16::from(ALPHABET[usize::from(index)]);
+        result.push(digit(a >> 2));
+        result.push(digit((a & 3) << 4 | b >> 4));
+        result.push(if group.len() >= 2 { digit((b & 15) << 2 | c >> 6) } else { u16::from(b'=') });
+        result.push(if group.len() == 3 { digit(c & 63) } else { u16::from(b'=') });
+    }
+    result
+}
+
 const INTEGER: &str = "java/lang/Integer";
 const DIGEST: &str = "java/security/MessageDigest";
 const ARRAYS: &str = "java/util/Arrays";
@@ -102,6 +148,41 @@ pub fn utf8_slice_units(bytes: &[u8]) -> Option<Vec<u16>> {
 }
 
 impl Engine<'_> {
+    /// The source array or String must be concrete and the receiver must be the
+    /// original JDK basic codec. Both operations allocate a fresh result even for empty input.
+    pub(super) fn basic_base64_call(&mut self, path: &mut Path, receiver: usize, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
+        let [Val::R(Some(input))] = args else { return None };
+        let result = match (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) {
+            ("java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B")
+                if path.literals.get(&Literal::BasicBase64Decoder) == Some(&receiver) => {
+                let bytes = basic_base64_bytes(&self.constant_units(path, *input)?)?;
+                let length = self.b.constant(bytes.len() as i64, 32);
+                if let Err(stop) = self.new_array_cells(path, &length) { return Some(Err(stop)); }
+                let cells = bytes.into_iter().map(|v| self.b.constant(i64::from(v), 8)).collect();
+                let object = path.objects.len();
+                path.objects.push(Obj { array: Some(Array { element: Type::Byte, length, cells, refs: Vec::new() }), ..Obj::new("[B") });
+                object
+            }
+            ("java/util/Base64$Encoder", "encodeToString", "([B)Ljava/lang/String;")
+                if path.literals.get(&Literal::BasicBase64Encoder) == Some(&receiver) => {
+                if self.there_before(path, *input) {
+                    if let Err(stop) = self.reads(path, || "reads the original byte array for Base64.encodeToString".into()) {
+                        return Some(Err(stop));
+                    }
+                }
+                let array = path.objects[*input].array.as_ref()?;
+                if array.element != Type::Byte { return None; }
+                let n = usize::try_from(self.b.constant_value(&array.length)?).ok()?;
+                let bytes = array.cells.get(..n)?.iter().map(|b| self.b.constant_value(b).map(|v| v as u8)).collect::<Option<Vec<_>>>()?;
+                self.string(path, &basic_base64_units(&bytes))
+            }
+            _ => return None,
+        };
+        self.push(path, Val::R(Some(result)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
     /// Constant-fold a known byte slice and exact standard charset. All bounds,
     /// pre-existing heap reads and freshness checks precede the content update.
     pub(super) fn string_from_utf8(&mut self, path: &mut Path, object: usize, args: &[Val]) -> Option<Step> {

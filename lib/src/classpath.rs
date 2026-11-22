@@ -379,6 +379,8 @@ pub struct ClassPath {
     /// function of the class path alone.
     pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
     plain_buffer_formatter: std::cell::OnceCell<bool>,
+    string_unit_replacement: std::cell::OnceCell<bool>,
+    basic_base64: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
@@ -403,7 +405,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), basic_base64: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -483,6 +485,8 @@ impl ClassPath {
 
     fn reset_runtime_caches(&mut self) {
         self.plain_buffer_formatter.take();
+        self.string_unit_replacement.take();
+        self.basic_base64.take();
         self.concurrent_table_layout.take();
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
@@ -1075,11 +1079,11 @@ impl ClassPath {
             && get.descriptor == "()Ljdk/internal/access/JavaLangAccess;").then(|| provider.to_owned())
     }
 
-    /// Reference-array comparison and hashing call the actual elements' methods.
+    /// JDK array operations and the character and collection methods used by their callers.
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
-            ("java/util/Arrays", "fill", "([CC)V")
-            | ("java/util/Arrays", "fill", "([IIII)V")
+            ("java/util/Arrays", "fill", "([CC)V" | "([II)V" | "([IIII)V")
+            | ("java/lang/Character", "isJavaIdentifierPart", "(C)Z" | "(I)Z")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
             | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
@@ -1087,6 +1091,7 @@ impl ClassPath {
             | ("java/util/Arrays", "checkLength", "(II)V")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
             | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
+            | ("java/nio/channels/Channels", "newChannel", "(Ljava/io/OutputStream;)Ljava/nio/channels/WritableByteChannel;")
             | ("java/nio/CharBuffer", "wrap", "([CII)Ljava/nio/CharBuffer;" | "([C)Ljava/nio/CharBuffer;")
             | ("java/lang/String", "decodeASCII", "([BI[CII)I")
             | ("java/lang/String", "rangeCheck", "([CII)Ljava/lang/Void;")
@@ -1096,6 +1101,7 @@ impl ClassPath {
             | ("java/util/Arrays", "sort" | "legacyMergeSort", "([Ljava/lang/Object;Ljava/util/Comparator;)V" | "([Ljava/lang/Object;)V")
             | ("java/util/Arrays", "mergeSort", "([Ljava/lang/Object;[Ljava/lang/Object;III)V" | "([Ljava/lang/Object;[Ljava/lang/Object;IIILjava/util/Comparator;)V")
             | ("java/util/Collections", "reverseOrder", "(Ljava/util/Comparator;)Ljava/util/Comparator;")
+            | ("java/util/Collections", "emptyIterator", "()Ljava/util/Iterator;")
             | ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;")
             | ("java/util/stream/Stream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")
             | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
@@ -1145,10 +1151,11 @@ impl ClassPath {
 
     /// Fingerprint the complete bootstrap class files in order for a qualified JDK operation.
     fn matches_jdk_classes(&self, names: &[&str], digests: &[&str]) -> bool {
-        let Some(image) = self.jdk() else { return false };
         let mut bytes = Vec::new();
         for &name in names {
-            let Ok(Some(body)) = image.read_class(name) else { return false };
+            let body = if let Some(image) = self.jdk() { image.read_class(name).ok().flatten() }
+                else { self.legacy_boot.as_ref().and_then(|archive| archive.read(&format!("{name}.class")).ok().flatten()) };
+            let Some(body) = body else { return false };
             bytes.extend(body);
         }
         digests.contains(&crate::digest::sha256_hex(&bytes).as_str())
@@ -1165,9 +1172,34 @@ impl ClassPath {
               "50d5a86221a41a6b52d2bb0e43cf79432d32d8c4855c11c5969f8b38751cc2a0"])) // Temurin 25.0.5
     }
 
+    /// The basic decoder singleton and its standard alphabet on the subject JVM.
+    pub(crate) fn basic_base64(&self) -> bool {
+        *self.basic_base64.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/Base64", "java/util/Base64$Decoder", "java/util/Base64$Encoder", "java/lang/String"],
+            &["df41fe30f3d956b4ac136e8ffba2efb4acfc22d5ada1c697b008050a6e14a988", // Temurin 8u512
+              "01f87d4df37d231720d9366da567b2433b06e5d8f0cd882030e148b57fbee6df", // Temurin 21.0.13
+              "31a8fdd027846b8e8cd5f7437707e581c34953dd609eced4d6b3b616ec06b08d"])) // Temurin 25.0.5
+    }
+
+    /// Both compact-string paths return the receiver on a miss, the canonical empty
+    /// string on complete deletion, and a fresh string for a nonempty change.
+    pub(crate) fn string_unit_replacement(&self) -> bool {
+        *self.string_unit_replacement.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/String", "java/lang/StringLatin1", "java/lang/StringUTF16"],
+            &["256709b88a51b3c338f471ab3824c9f9ead1f8af43a873fc32acb2583a0f810c", // Temurin 21.0.13
+              "962641c5f9fcb9933ccdd3c5c45e88d7361a57022ecda0771c54c6be87981fe3"])) // Temurin 25.0.5
+    }
+
     pub(crate) fn heap_buffer_owner(name: &str) -> bool {
         matches!(name, "java/nio/Buffer" | "java/nio/ByteBuffer" | "java/nio/CharBuffer"
-            | "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
+            | "java/nio/HeapByteBuffer" | "java/nio/HeapByteBufferR" | "java/nio/HeapCharBuffer")
+    }
+
+    pub(crate) fn platform_native(&self, member: &crate::classfile::MemberRef) -> bool {
+        if member.owner != "java/lang/System" || !matches!((member.name.as_str(), member.descriptor.as_str()),
+            ("currentTimeMillis", "()J") | ("identityHashCode", "(Ljava/lang/Object;)I")) { return false; }
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(&member.owner) else { return false };
+        class.method(&member.name, &member.descriptor).is_some_and(|m| m.is_public() && m.is_static() && m.is_native())
     }
 
     /// In these JDKs WeakHashMap.get and put hash the supplied key, and compare with
@@ -1201,12 +1233,22 @@ impl ClassPath {
             && !field.is_static() && field.access & crate::classfile::flags::VOLATILE != 0).then_some((class, method))
     }
 
+    /// Execute the selected image's constructor on a fresh, exact AtomicReference.
+    /// Its get and set accessors use the same volatile field as a captured reference.
+    pub(crate) fn fresh_atomic_method(&self, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        if !special { return self.atomic_reference_accessor(name, desc); }
+        if name != "<init>" || !matches!(desc, "()V" | "(Ljava/lang/Object;)V") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load("java/util/concurrent/atomic/AtomicReference").ok()?? else { return None };
+        let method = class.method(name, desc)?.clone();
+        (method.is_public() && !method.is_static() && method.code.is_some()).then_some((class, method))
+    }
+
     /// Methods of an image-backed byte or char buffer with an ordinary Java heap array.
     /// Foreign segments and native memory operations keep their separate call boundaries.
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !Self::heap_buffer_owner(owner) || !matches!(name, "<init>" | "position" | "limit" | "capacity" | "remaining"
             | "hasRemaining" | "flip" | "rewind" | "clear" | "compact" | "discardMark" | "checkScope"
-            | "duplicate" | "markValue" | "checkSession" | "session"
+            | "duplicate" | "asReadOnlyBuffer" | "markValue" | "checkSession" | "session"
             | "array" | "hasArray" | "arrayOffset" | "ix" | "isReadOnly" | "isDirect" | "nextGetIndex" | "nextPutIndex"
             | "get" | "put" | "checkIndex" | "createLimitException" | "createPositionException" | "mark" | "reset") { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
@@ -1253,6 +1295,8 @@ impl ClassPath {
             | ("java/util/Hashtable", "<init>", "(Ljava/lang/Void;)V") | ("java/util/Dictionary", "<init>", "()V")
             | (PROPS, "size", "()I") | (PROPS, "isEmpty", "()Z") | (PROPS, "containsKey", "(Ljava/lang/Object;)Z")
             | (PROPS, "get", "(Ljava/lang/Object;)Ljava/lang/Object;")
+            | (PROPS, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
+            | (PROPS, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "putAll", "(Ljava/util/Map;)V") | (PROPS, "entrySet", "()Ljava/util/Set;")
             | (PROPS, "getProperty", "(Ljava/lang/String;)Ljava/lang/String;" | "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) {
             return None;
@@ -1310,6 +1354,8 @@ impl ClassPath {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
         if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;")
+            | ("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;")
             | ("java/lang/Class", "cast", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | ("java/lang/Class", "cannotCastMsg", "(Ljava/lang/Object;)Ljava/lang/String;")
             | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
@@ -1344,6 +1390,23 @@ impl ClassPath {
         let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
         Some((class, method))
+    }
+
+    /// The builder stores UTF-16 content in the checker. This forwarding overload
+    /// can run on that representation only when it touches no private JDK fields.
+    pub(crate) fn builder_append_object(&self) -> Option<(Rc<ClassFile>, Method)> {
+        use crate::classfile::{Insn::*, Kind::Ref};
+        let owner = "java/lang/StringBuilder";
+        let (cf, m) = self.library_image_method(owner, "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;")?;
+        let code = m.code.as_ref()?;
+        let ops = code.instructions().ok()?;
+        let [(_, Load(Ref, 0)), (_, Load(Ref, 1)), (_, InvokeStatic(value)), (_, InvokeVirtual(append)), (_, Return(Some(Ref)))] = ops.as_slice() else { return None };
+        let value = cf.pool.member(*value).ok()?;
+        let append = cf.pool.member(*append).ok()?;
+        (code.exception_table.is_empty() && (value.owner.as_str(), value.name.as_str(), value.descriptor.as_str())
+            == ("java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;")
+            && (append.owner.as_str(), append.name.as_str(), append.descriptor.as_str()) == (owner, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"))
+            .then_some((cf, m))
     }
 
     pub(crate) fn surrogate_arithmetic(owner: &str, name: &str, descriptor: &str) -> bool {
@@ -1483,6 +1546,14 @@ impl ClassPath {
     /// Ordinary single-threaded JDK objects whose instance and static fields both engines
     /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
     pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if matches!(name, "java/nio/channels/Channels$WritableByteChannelImpl" | "java/nio/channels/spi/AbstractInterruptibleChannel"
+            | "java/nio/channels/spi/AbstractInterruptibleChannel$1") {
+            let base = "java/nio/channels/spi/AbstractInterruptibleChannel";
+            let Loaded { class: parent, origin: Origin::Jdk } = self.load(base).ok()?? else { return None };
+            if parent.method("<clinit>", "()V").is_some() { return None; }
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return class.method("<clinit>", "()V").is_none().then_some(class);
+        }
         if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
             | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
@@ -1498,6 +1569,7 @@ impl ClassPath {
             return Some(class);
         }
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+            | "java/lang/CharacterData" | "java/lang/CharacterDataLatin1"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
             | "java/io/OutputStream" | "java/io/ByteArrayOutputStream" | "java/io/FilterOutputStream"
             | "java/io/InputStreamReader" | "sun/nio/cs/StreamDecoder" | "jdk/internal/misc/InternalLock" | "java/nio/charset/CodingErrorAction" | "java/nio/ByteOrder"
@@ -1508,7 +1580,7 @@ impl ClassPath {
             | "java/util/Collections$UnmodifiableList" | "java/util/Collections$UnmodifiableRandomAccessList"
             | "java/util/Collections$UnmodifiableCollection$1"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
-            | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
+            | "java/util/Collections$EmptyList" | "java/util/Collections$EmptyIterator" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
             | "java/util/Spliterators$ArraySpliterator" | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
             | "java/util/stream/ReferencePipeline$3" | "java/util/stream/ReferencePipeline$3$1"
@@ -1539,13 +1611,33 @@ impl ClassPath {
         class.method("<clinit>", "()V").is_none().then_some(class)
     }
 
+    /// HashSet's copy constructor and methods share the image map layout. Its only
+    /// static initialization must create one fresh sentinel, used by every set.
+    /// An explicitly selected model keeps its own field layout and dispatch.
+    fn native_map_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if name != "java/util/HashSet" { return self.map_image_class(name); }
+        if self.runs_model(name) || self.observed_initializers.borrow().contains(name) { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        let code = class.method("<clinit>", "()V")?.code.as_ref()?;
+        let ops = code.instructions().ok()?;
+        use crate::classfile::Insn::*;
+        let [(_, New(object)), (_, Dup), (_, InvokeSpecial(init)), (_, PutStatic(write)), (_, Return(None))] = ops.as_slice() else { return None };
+        let ctor = class.pool.member(*init).ok()?;
+        let field = class.pool.member(*write).ok()?;
+        let declared = class.field("PRESENT")?;
+        (code.exception_table.is_empty() && class.pool.class_name(*object).ok()? == "java/lang/Object"
+            && (ctor.owner.as_str(), ctor.name.as_str(), ctor.descriptor.as_str()) == ("java/lang/Object", "<init>", "()V")
+            && (field.owner.as_str(), field.name.as_str(), field.descriptor.as_str()) == (name, "PRESENT", "Ljava/lang/Object;")
+            && declared.is_static() && declared.is_final() && declared.descriptor == field.descriptor).then_some(class)
+    }
+
     pub(crate) fn map_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
-        let (cf, m) = self.method_in(owner, name, descriptor, &|c| self.map_image_class(c))?;
+        let (cf, m) = self.method_in(owner, name, descriptor, &|c| self.native_map_image_class(c))?;
         (m.code.is_some() && (name != "<init>" || cf.name == owner)).then_some((cf, m))
     }
 
     pub(crate) fn is_map_image(&self, cf: &Rc<ClassFile>) -> bool {
-        self.map_image_class(&cf.name).is_some_and(|image| Rc::ptr_eq(cf, &image))
+        self.native_map_image_class(&cf.name).is_some_and(|image| Rc::ptr_eq(cf, &image))
     }
 
     /// The class whose static fields and initializer the tool's own checker holds and runs (JVMS §5.5): an

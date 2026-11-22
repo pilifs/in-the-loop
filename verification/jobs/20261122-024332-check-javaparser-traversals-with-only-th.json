@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-024332-check-javaparser-traversals-with-only-th",
+  "title": "Check JavaParser traversals with only the separator initialized",
+  "description": "Run all eight frozen traversal and preservation contracts on the original parent and fix with only the LineSeparator enum initialized. The printer and Node must initialize using the selected JDK copy-set constructor. The earlier enum-only run refused that constructor. Keep the original artifact, witnesses, bounds and checker budget.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T02:43:32+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check all eight original enum-only tasks",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 360 --route native --stage copy-set-separator --tasks postorder-parent-observed,postorder-fix-observed,terminal-parent-observed,terminal-fix-observed,preorder-parent-observed,preorder-fix-observed,nonempty-parent-observed,nonempty-fix-observed",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/360-javaparser-postorder-root/records/copy-set-separator-native"
+  ]
+}

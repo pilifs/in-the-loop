@@ -89,8 +89,10 @@ class UpgradeReviewTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             client = """public interface Service { int read(); }
-                public static class Proxy implements Service { public int read() { return call(); } }
-                public static int call() { return dep.Number.value(); }"""
+                public static class Proxy implements Service { public int read() { return new Real().call(); } }
+                private final Object alias = this;
+                private Object empty;
+                public int call() { return dep.Number.value(); }"""
             prepared, dependencies = self.prepared_pair(root, jdk, client, {
                 "old": "public static int value() { return 7; }",
                 "new": """public static int value() { IllegalStateException failure = new IllegalStateException();
@@ -104,9 +106,16 @@ class UpgradeReviewTest(unittest.TestCase):
             spec.write_text(json.dumps({"entry": "app.Real#call()I", "invocationVia": "app.Real$Service#read()I",
                 "probeClass": "UpgradeProbe", "observer": "service response", "basis": "control",
                 "cases": [{"args": [], "expected": {"return": "7"}}]}))
-            result = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30)
+            result = upgrade_replay.evaluate(spec, *prepared, probe, jdk, dependencies, 30, inspect_receiver=True)
             self.assertEqual(result["status"], "changed")
             for side in result["sides"].values():
+                first, again = side["trials"][0]["receiverAtEntry"]
+                self.assertEqual(first, again)
+                self.assertEqual(first["entry"]["this"], "Lapp/Real;@0")
+                self.assertEqual(first["entry"]["fields"], {"app.Real#alias:Ljava/lang/Object;": "Lapp/Real;@0",
+                                                          "app.Real#empty:Ljava/lang/Object;": "null"})
+                ctor, = first["observedConstructorEntries"]
+                self.assertEqual((ctor["descriptor"], ctor["calledBy"]), ("()V", "app.Real$Proxy#read()I"))
                 entries = side["trials"][0]["entryInvocations"]
                 self.assertEqual([e["dispatchedTo"] for e in entries], ["app.Real$Proxy#read()I"] * 2)
                 self.assertEqual({e["observerCodeIndex"] for e in entries}, set(result["observerInvocation"]["codeIndices"]))

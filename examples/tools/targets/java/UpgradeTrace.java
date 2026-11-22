@@ -1,10 +1,12 @@
 import com.sun.jdi.Bootstrap;
+import com.sun.jdi.Field;
 import com.sun.jdi.Location;
 import com.sun.jdi.Method;
 import com.sun.jdi.ObjectReference;
 import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.VirtualMachine;
+import com.sun.jdi.Value;
 import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.LaunchingConnector;
@@ -19,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -29,6 +32,38 @@ import java.util.Set;
 
 /** Observe an actual entry in the child JVM launched here. The class files on its classpath are untouched. */
 public final class UpgradeTrace {
+    private static final boolean receivers = Boolean.getBoolean("upgrade.trace.receivers");
+
+    // Emit metadata and within-frame aliases only. JDI reads slots without calling methods in the child.
+    private static String shape(Value value, Map<Long, Integer> aliases) {
+        if (value == null) return "null";
+        if (!(value instanceof ObjectReference)) return value.type().signature();
+        ObjectReference object = (ObjectReference) value;
+        long id = object.uniqueID();
+        if (!aliases.containsKey(id)) aliases.put(id, aliases.size());
+        return object.referenceType().signature() + "@" + aliases.get(id);
+    }
+
+    private static String frameShape(StackFrame frame, boolean fields) {
+        Map<Long, Integer> aliases = new LinkedHashMap<>();
+        List<String> lines = new ArrayList<>();
+        ObjectReference receiver = frame.thisObject();
+        lines.add("this\t" + shape(receiver, aliases));
+        for (Value arg : frame.getArgumentValues()) lines.add("arg\t" + shape(arg, aliases));
+        if (fields && receiver != null) {
+            List<Field> declared = new ArrayList<>(receiver.referenceType().allFields());
+            declared.removeIf(Field::isStatic);
+            declared.sort(Comparator.comparing(f -> f.declaringType().name() + "#" + f.name() + ":" + f.signature()));
+            Map<Field, Value> values = receiver.getValues(declared);
+            for (Field f : declared) lines.add("field\t" + f.declaringType().name() + "#" + f.name() + ":"
+                    + f.signature() + "\t" + shape(values.get(f), aliases));
+        }
+        return String.join("\n", lines);
+    }
+
+    private static String encoded(String value) {
+        return Base64.getEncoder().encodeToString(value.getBytes(StandardCharsets.UTF_8));
+    }
     private static Thread forward(InputStream input, OutputStream output) {
         Thread thread = new Thread(() -> {
             try {
@@ -60,7 +95,11 @@ public final class UpgradeTrace {
 
     private static void install(VirtualMachine vm, ReferenceType type, String owner, String method,
                                 String descriptor, Set<String> exceptions) {
-        if (type.name().equals(owner)) breakpoint(vm, type, method, descriptor, "entry");
+        if (type.name().equals(owner)) {
+            breakpoint(vm, type, method, descriptor, "entry");
+            if (receivers) for (Method ctor : type.methodsByName("<init>"))
+                breakpoint(vm, type, "<init>", ctor.signature(), "constructor");
+        }
         if (exceptions.isEmpty()) return;
         if (exceptions.contains(type.name())) {
             ExceptionRequest request = vm.eventRequestManager().createExceptionRequest(type, true, true);
@@ -171,6 +210,7 @@ public final class UpgradeTrace {
         OutputStream diagnostics = Files.newOutputStream(Paths.get(args[2], "child.stderr"));
         Thread stdout = forward(child.getInputStream(), System.out), stderr = forward(child.getErrorStream(), diagnostics);
         String entryInvocation = null;
+        Map<Long, List<String>> constructors = new LinkedHashMap<>();
         boolean finished = false;
         Map<String, List<String>> thrown = new LinkedHashMap<>();
         try {
@@ -209,7 +249,22 @@ public final class UpgradeTrace {
                     } else if (event instanceof BreakpointEvent) {
                         BreakpointEvent point = (BreakpointEvent) event;
                         String purpose = (String) point.request().getProperty("purpose");
-                        if (purpose.equals("failure") || purpose.equals("root")) {
+                        if (purpose.equals("constructor")) {
+                            if (entryInvocation != null) continue;
+                            StackFrame frame = point.thread().frame(0);
+                            ObjectReference object = frame.thisObject();
+                            if (object == null) continue;
+                            long id = object.uniqueID();
+                            if (!constructors.containsKey(id) && constructors.size() == 256)
+                                constructors.remove(constructors.keySet().iterator().next());
+                            List<String> calls = constructors.computeIfAbsent(id, unused -> new ArrayList<>());
+                            if (calls.size() < 32 && point.thread().frameCount() > 1) {
+                                Location at = point.thread().frame(1).location();
+                                calls.add(frame.location().method().signature() + "\t" + at.declaringType().name() + "#"
+                                        + at.method().name() + at.method().signature() + "\t" + at.codeIndex() + "\n"
+                                        + frameShape(frame, false));
+                            }
+                        } else if (purpose.equals("failure") || purpose.equals("root")) {
                             boolean root = purpose.equals("root");
                             ObjectReference cause = (ObjectReference) point.thread().frame(0).getArgumentValues().get(root ? 0 : 1);
                             List<String> stack = thrown.get(point.thread().uniqueID() + "/" + cause.uniqueID());
@@ -222,6 +277,14 @@ public final class UpgradeTrace {
                             String site = invocation(point, observer, sites);
                             if (site != null) {
                                 entryInvocation = site;
+                                if (receivers) {
+                                    StackFrame frame = point.thread().frame(0);
+                                    ObjectReference object = frame.thisObject();
+                                    System.err.println("UPGRADE-RECEIVER " + encoded(frameShape(frame, true)));
+                                    if (object != null && constructors.containsKey(object.uniqueID()))
+                                        for (String call : constructors.get(object.uniqueID()))
+                                            System.err.println("UPGRADE-CONSTRUCTOR " + encoded(call));
+                                }
                                 point.request().disable();
                             }
                         }

@@ -699,10 +699,15 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
     to load, through `observe(names)`. Without an observation such a class is refused: which entry a JVM takes is
     not computed here."""
     declared = {runtime_jar.internal(name) for name in ordered_classes}
+    cls, method, descriptor = runtime_jar.parse_target(plan.target)
+    target_name = runtime_jar.internal(cls)
     resolution = {}
     shadowed = []
     for name, holders in runtime_jar.duplicates(classpath, workdir):
-        if name in declared and all(path in dependencies for path in holders):
+        # A shaded module may contain a non-target dependency class also present in
+        # the Maven runtime. The subject JVM must confirm which bytes actually load.
+        if (name in declared and name != target_name and (original not in holders or holders[0] == original)
+                and all(path == original or path in dependencies for path in holders)):
             resolution[name.replace("/", ".")] = [
                 {"path": path, "classSha256": hashlib.sha256(runtime_jar.read_class(workdir / path, name)).hexdigest()}
                 for path in holders]
@@ -712,8 +717,7 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
         listed = "; ".join(f"{name.replace('/', '.')} in {', '.join(holders)}" for name, holders in shadowed[:10])
         raise Refused("classpath", f"{len(shadowed)} class(es) held by more than one classpath entry, so the class loaded "
                                    f"depends on order: {listed}")
-    cls, method, descriptor = runtime_jar.parse_target(plan.target)
-    name = runtime_jar.internal(cls)
+    name = target_name
     held = class_binding.candidates(workdir / original, name)
     if not held:
         raise Refused("target", f"the original artifact {original} holds no class {cls}")

@@ -464,9 +464,8 @@ pub enum FieldKind {
     /// never its identity, which no claim over a String observes (J1's O2: the quote request's code).
     String,
     /// A reference of a type the check makes no object of (`java.util.Map`), of a receiver or object parameter made
-    /// by its constructor: compared by identity alone, never read into. Only a write set's check lays a field out so
-    /// (`equivalence::made_of_framed`), where the frame needs `this.someMap == \old(this.someMap)` and nothing
-    /// else of it; every other check refuses such a field by name, as before.
+    /// by its constructor. Single-version properties allow identity or null observations
+    /// on this field. A paired field-by-field comparison needs the referenced state as well.
     Reference(Type),
 }
 

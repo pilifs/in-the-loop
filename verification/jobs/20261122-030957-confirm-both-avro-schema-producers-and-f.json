@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-030957-confirm-both-avro-schema-producers-and-f",
+  "title": "Confirm both Avro schema producers and formatting paths",
+  "description": "Repeat the four Avro classpaths after discovering that the older Schema formats an invalid type through StringBuilder.append(Object) and the newer one through String.valueOf(Object). Execute both real callbacks. Retain each ordinary startup diagnostic, confirm the public typed construction and exception under the named Schema startup, compare the isolated reserved-name producer against the pilot and check its wrong-answer control.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355",
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T03:09:57+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Qualify original constructors and the shared reserved-name producer",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/schema_sets.py --pilot --output verification/domain-foundations/schema-sets-confirmed",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/schema-sets-confirmed"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-044516-measure-avro-198-reuse-at-its-actual-enc",
+  "title": "Measure Avro 198 reuse at its actual encoder call sites",
+  "description": "Requalify the JDK heap-window guarantee through backing length 20. Prove a read-only view keeps the backing contents and advances its own cursor. Compare fresh, clean and reused wrap proofs; trace the exact view passed to both original encoders and reject the old six-byte bound for the large windows.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "362",
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T04:45:16+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "18m"
+  },
+  "steps": [
+    {
+      "name": "Prove and qualify the shared heap-buffer facts",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_adoption.py --output verification/domain-foundations/encoder-adoption",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/encoder-adoption"
+  ],
+  "supersedes": "20261122-042802-measure-avro-198-reuse-at-its-actual-enc",
+  "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+}

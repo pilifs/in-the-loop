@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-040728-trace-and-check-original-upgrade-receive",
+  "title": "Trace and check original upgrade receivers group 01",
+  "description": "Repeat each frozen native overload on its pinned modules. Exercise each registered original public caller on both sides under strict native checking and on two fresh JVMs per input. Record the actual constructor descriptors, calling bytecode offsets, field and argument types, nulls, and within-frame aliases at the selected method. Preserve pre-entry failures and bounded caller scopes.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-22T04:07:28+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "6m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-callers --group 01",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/receiver-callers/01"
+  ]
+}

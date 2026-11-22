@@ -110,6 +110,29 @@ def maven(command, args, directory, name):
             "tail": lines[-9:]}
 
 
+def packaged_class(case, module, artifact, entry, compiled, packaged):
+    """A shading pass may renumber the constant pool in an otherwise unchanged class."""
+    if not case.get("qualifyShadedClass"):
+        raise ValueError("JAR class differs from the original module compiler output")
+    before_shade = module / "target" / ("original-" + artifact.name)
+    with zipfile.ZipFile(before_shade) as jar:
+        if jar.read(entry) != compiled.read_bytes():
+            raise ValueError("the module's pre-shade JAR differs from its compiler product")
+    jdk = Path(runtime_jdk.home("21"))
+    helper = HERE / "ComparePackagedClass.java"
+    with tempfile.TemporaryDirectory(prefix="qualify-shaded-") as tmp:
+        altered = Path(tmp) / "packaged.class"
+        altered.write_bytes(packaged)
+        check = subprocess.run([jdk/"bin/java", "-Djava.io.tmpdir="+tmp, "--add-exports",
+            "java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED", helper, compiled, altered],
+            text=True, capture_output=True, timeout=45)
+        if check.returncode or not re.fullmatch("[a-f0-9]{64}", check.stdout.strip()):
+            raise ValueError("the packaged class differs after normalizing the constant pool: "+check.stderr[-400:])
+    return {"preShadeJarSha256":digest(before_shade), "compilerClassSha256":digest(compiled),
+            "packagedClassSha256":hashlib.sha256(packaged).hexdigest(), "canonicalClassSha256":check.stdout.strip(),
+            "normalizerSourceSha256":digest(helper), "normalizerJdkModulesSha256":digest(jdk/"lib/modules")}
+
+
 def capture(case, side, project, module, local_repo, out, build, cp, jdk, compilers, prerequisites):
     """Store only JARs from the original owning module and Maven's ordered runtime resolution."""
     revision = case[side]
@@ -125,9 +148,10 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
         raise ValueError(f"expected one original {cls} provider in this module, found {candidates}")
     original, = candidates
     with zipfile.ZipFile(original) as jar:
-        cls_digest = hashlib.sha256(jar.read(cls)).hexdigest()
-    if cls_digest != digest(module / "target/classes" / cls):
-        raise ValueError("JAR class differs from the original module compiler output")
+        packaged = jar.read(cls)
+    cls_digest = hashlib.sha256(packaged).hexdigest()
+    compiled = module / "target/classes" / cls
+    qualification = packaged_class(case, module, original, cls, compiled, packaged) if cls_digest != digest(compiled) else None
     cache = runtime_maven.Cache()
     records = []
 
@@ -172,6 +196,8 @@ def capture(case, side, project, module, local_repo, out, build, cp, jdk, compil
         raise ValueError("the production build changed its sources or has a different first parent")
     outputs = {"original": jar_name, "jars": [{"path": jar_name, "sha256": records[0]["sha256"], "auxiliary": False}],
                "selectedClass": cls, "selectedClassSha256": cls_digest, "sourceSha256": digest(project / case["productionSource"])}
+    if qualification:
+        outputs["packagedClassQualification"] = qualification
     record = {"schema": "upstream-jar-build/v1", "recipe": recipe, "artifacts": records,
               "build": {"checkout": checkout, "outputs": outputs, "toolchain": {"jdk": runtime_jdk.identity(jdk), "declaredCompilers": compilers},
                         "steps": [*prerequisites, build, cp]}}

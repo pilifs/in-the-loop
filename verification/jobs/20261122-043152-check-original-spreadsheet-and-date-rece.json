@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-043152-check-original-spreadsheet-and-date-rece",
+  "title": "Check original spreadsheet and date receiver producers",
+  "description": "Check fresh receiver properties on both actual versions of the streaming spreadsheet and Spring date validator. Compare the previous final checker against the current executable, challenge the null result on both versions and bind every classpath digest plus an ordinary JVM construction. These properties have their own domain alongside the registered caller comparisons.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-22T04:31:52+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Exercise both original receiver classes and counterclaims",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/receiver_properties.py --area \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-properties",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/receiver-properties"
+  ]
+}

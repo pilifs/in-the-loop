@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-035338-build-the-avro-198-encoder-and-run-its-m",
+  "title": "Build the Avro 198 encoder and run its mapped-buffer regression",
+  "description": "Compile both unmodified Avro core revisions with their original Maven module and JDK 8. Record the class, source and ordered runtime dependencies. Require the landed mapped-buffer regression to fail in the named parent test and pass on the fix.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test"
+  ],
+  "links": {
+    "examples": [
+      "362"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T03:53:38+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "22m"
+  },
+  "steps": [
+    {
+      "name": "Build the two original revisions and check the upstream test",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/upstream.py 362 --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/362-avro-buffered-encoder-cursor/records/build-historical",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/362-avro-buffered-encoder-cursor/records/build-historical"
+  ]
+}

@@ -1085,8 +1085,9 @@ fn a_property_wrong_only_where_the_constructor_refuses_holds_within_the_construc
 fn a_property_over_an_object_outside_the_supported_kinds_or_written_wrong_is_refused_by_name() {
     jvmcontract::tool_tier!();
     let Some(o) = property_over("after", "tagged", None, "result == t.n", &[], &[]) else { return };
-    assert_eq!(o.verdict, Verdict::Unverifiable);
-    assert!(o.problem.as_deref().unwrap().contains("the field tag of objects.Tagged has type java.lang.Object"), "{:?}", o.problem);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let Some(unknown) = property_over("after", "tagged", None, "t.tag.unknown == 0", &[], &[]) else { return };
+    assert_eq!(unknown.verdict, Verdict::Unverifiable, "{}", unknown.output);
     let wrong = [
         ("\\old(l) == l", "\\old(l) is an object"),
         ("l.price == l", "incomparable types"),

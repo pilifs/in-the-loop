@@ -710,6 +710,18 @@ pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
 pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::ClassFile) -> bool {
     let Some(code) = cf.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
     let Ok(insns) = code.instructions() else { return false };
+    if cp.is_application(&cf.name) && assertion_prologue(cf, &insns).is_some() { return true; }
+    // A straight-line initializer can publish a singleton before configuring it.
+    // Execute the entire initializer, including later calls, static writes and failures.
+    if let [(_, Insn::New(owner)), (_, Insn::Dup), (_, Insn::InvokeSpecial(ctor)), (_, Insn::PutStatic(slot)), ..] = insns.as_slice() {
+        if code.exception_table.is_empty() && cp.is_application(&cf.name) && insns.iter().all(|(_, op)| op.targets().is_empty())
+            && cf.pool.class_name(*owner).is_ok_and(|name| cp.is_application(name)
+                && cf.pool.member(*ctor).is_ok_and(|m| m.owner == name && m.name == "<init>" && m.descriptor == "()V"))
+            && cf.pool.member(*slot).is_ok_and(|m| m.owner == cf.name && cf.field(&m.name).is_some_and(|f|
+                f.is_static() && f.is_final() && f.descriptor == m.descriptor)) {
+            return true;
+        }
+    }
     let mut writes_constant = false;
     code.exception_table.is_empty() && insns.iter().all(|(_, insn)| match insn {
         Insn::Nop | Insn::AConstNull | Insn::IConst(_) | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_)
@@ -736,6 +748,32 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
         }
         _ => false,
     }) && writes_constant
+}
+
+/// The first read of its own class's assertion setting in a javac initializer.
+/// This selects code to execute. The bytecode still sets the actual static field.
+pub(super) fn assertion_prologue(cf: &crate::classfile::ClassFile, ops: &[(u32, Insn)]) -> Option<u32> {
+    let [(_, Insn::Ldc(class)), (pc, Insn::InvokeVirtual(call)), ..] = ops else { return None };
+    let method = cf.pool.member(*call).ok()?;
+    if cf.pool.class_name(*class).ok()? != cf.name || method.owner != "java/lang/Class"
+        || method.name != "desiredAssertionStatus" || method.descriptor != "()Z" { return None; }
+    let field = cf.field("$assertionsDisabled")?;
+    (field.is_static() && field.is_final() && field.descriptor == "Z"
+        && ops.iter().take(8).any(|(_, i)| matches!(i, Insn::PutStatic(f) if cf.pool.member(*f)
+            .is_ok_and(|m| m.owner == cf.name && m.name == field.name && m.descriptor == field.descriptor)))).then_some(*pc)
+}
+
+/// Try an application's primitive lookup-table initializer on the actual path. A
+/// conservative walk through every CharacterData plane would reject a loop whose
+/// indices always select Latin-1. Its writes, callees and exceptions still execute.
+pub(super) fn builds_primitive_tables(cf: &crate::classfile::ClassFile) -> bool {
+    let mut statics = cf.fields.iter().filter(|f| f.is_static()).peekable();
+    if statics.peek().is_none() || !statics.all(|f| f.is_final() && matches!(f.descriptor.as_str(),
+        "[B" | "[C" | "[S" | "[I" | "[J" | "[F" | "[D" | "[Z")) { return false; }
+    let Some(code) = cf.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
+    let Ok(insns) = code.instructions() else { return false };
+    insns.iter().any(|(_, op)| matches!(op, Insn::NewArray(_)))
+        && insns.iter().any(|(pc, op)| op.targets().iter().any(|target| target < pc))
 }
 
 /// Whether the engine runs `class`'s `<clinit>` when a use initializes the class, rather than meeting a
@@ -1210,6 +1248,8 @@ impl<'a> Walker<'a> {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     if super::runtime::enum_identity_read(&cf.name, name, &member) {
                         *self.scan.exact.entry("Enum.hashCode (all stable JVM identity hashes)".into()).or_default() += 1;
+                    } else if self.cp.platform_native(&member) {
+                        *self.scan.exact.entry(format!("System.{} (all JVM values, counterexamples require reachability)", member.name)).or_default() += 1;
                     } else if self.cp.is_application(&member.owner) || self.cp.checked_image_class(&member.owner).is_some() {
                         let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(c, _)| c.name.clone()).unwrap_or_else(|| member.owner.clone());
                         self.initialise(&declaring, &site);

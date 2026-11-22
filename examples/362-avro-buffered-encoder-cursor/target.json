@@ -1,0 +1,148 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "avro-buffered-encoder-cursor",
+    "family": "avro",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/avro",
+    "revisions": {
+      "parent": {
+        "commit": "0b74bd5e7a37ccdb42918a0ab7768e9292df5dab",
+        "orderedClasses": [
+          "org.apache.avro.GuavaClasses"
+        ]
+      },
+      "fix": {
+        "commit": "c9f2c49241397fb3967bd281225f7cce353c32fc",
+        "parent": "0b74bd5e7a37ccdb42918a0ab7768e9292df5dab",
+        "orderedClasses": [
+          "org.apache.avro.GuavaClasses"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/organic/EncoderWindow.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "lang/java/avro/pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "8"
+    },
+    "capturedBuilds": {
+      "parent": "records/build-packaged/build-parent.json",
+      "fix": "records/build-packaged/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V"
+    },
+    {
+      "id": "cursor-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "claim": "claims/cursor.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "cursor-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "claim": "claims/cursor.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "repeated-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "claim": "claims/repeated.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "repeated-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "claim": "claims/repeated.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/organic/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

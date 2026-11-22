@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "cursor",
+  "statement": "One write preserves the source position and limit.",
+  "assume": "code >= 0 && code < 16",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.EncoderWindow#cursor(I)I",
+    "mapping": "One write preserves the source position and limit. Each selector maps to its independent raw JVM observation.",
+    "correspondence": "finite-oracle",
+    "cases": 16
+  }
+}

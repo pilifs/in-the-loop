@@ -4,6 +4,52 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class CharacterFormats {
+    static boolean failTable;
+    static final class Lookup {
+        static final int[] TABLE = new int[2];
+        static {
+            for (int i = 0; i < TABLE.length; i++) {
+                if (i < 0) System.getProperties().size();
+                if (i == 1 && failTable) throw new IllegalArgumentException();
+                TABLE[i] = i;
+            }
+        }
+    }
+
+    public static boolean tableStartup(boolean fail) {
+        failTable = fail;
+        try {
+            int n = Lookup.TABLE[1];
+            return !fail && n == 1;
+        } catch (ExceptionInInitializerError error) {
+            if (!fail || !(error.getCause() instanceof IllegalArgumentException)) return false;
+            try { return Lookup.TABLE.length == 0; } catch (NoClassDefFoundError expected) { return true; }
+        }
+    }
+
+    public static boolean latinIdentifiers(char ch) {
+        boolean expected = ch <= 8 || (ch >= 14 && ch <= 27) || ch == '$' || (ch >= '0' && ch <= '9')
+            || (ch >= 'A' && ch <= 'Z') || ch == '_' || (ch >= 'a' && ch <= 'z')
+            || (ch >= 0x7f && ch <= 0x9f) || (ch >= 0xa2 && ch <= 0xa5) || ch == 0xaa || ch == 0xad
+            || ch == 0xb5 || ch == 0xba || (ch >= 0xc0 && ch <= 0xd6) || (ch >= 0xd8 && ch <= 0xf6) || ch >= 0xf8;
+        return Character.isJavaIdentifierPart(ch) == expected && Character.isJavaIdentifierPart((int) ch) == expected;
+    }
+
+    public static boolean copiesAndFills(int value) {
+        int[] source = {1, 2};
+        int[] alias = source;
+        Arrays.fill(source, value);
+        int[] copy = Arrays.copyOf(source, 2);
+        int[] grown = Arrays.copyOf(source, 3);
+        if (copy == source || grown[2] != 0 || copy[1] != value || alias[0] != value) return false;
+        copy[0] = ~value;
+        if (grown[0] != value || source[0] != value) return false;
+        try { Arrays.copyOf(source, -1); return false; } catch (NegativeArraySizeException expected) { }
+        try { Arrays.fill((int[]) null, value); return false; } catch (NullPointerException expected) { return true; }
+    }
+
+    public static boolean outsideLatin1() { return !Character.isJavaIdentifierPart('\u0100'); }
+
     private enum Quote { SINGLE, DOUBLE }
 
     public static boolean hashContract(boolean quoted, boolean limit) {
@@ -51,10 +97,59 @@ public final class CharacterFormats {
         return separator != null && separator == System.lineSeparator();
     }
 
+    public static boolean clockSeed() {
+        long time = System.currentTimeMillis();
+        int seed = ((int)time + (int)(time >>> 32)) | 1;
+        Object object = new Object();
+        java.util.concurrent.atomic.AtomicReference<Object> ref = new java.util.concurrent.atomic.AtomicReference<>(object);
+        if (ref.get() != object || System.identityHashCode(object) != System.identityHashCode(ref.get())) return false;
+        ref.set(null);
+        return (seed & 1) == 1 && ref.get() == null && System.identityHashCode(null) == 0;
+    }
+    public static boolean sameTime() { return System.currentTimeMillis() == System.currentTimeMillis(); }
+    public static boolean decoder() {
+        java.util.Base64.Decoder d = java.util.Base64.getDecoder();
+        byte[] a = d.decode("+/8="), b = d.decode("+/8"), c = d.decode("YQ==");
+        if (d != java.util.Base64.getDecoder() || a == b || a.length != 2 || a[0] != -5 || a[1] != -1
+                || b[1] != -1 || c.length != 1 || c[0] != 'a' || d.decode("").length != 0) return false;
+        a[0] = 0;
+        java.util.Base64.Encoder e = java.util.Base64.getEncoder();
+        String first = e.encodeToString(b);
+        return b[0] == -5 && e == java.util.Base64.getEncoder() && first.equals("+/8=") && first != e.encodeToString(b)
+                && e.encodeToString(c).equals("YQ==") && e.encodeToString(new byte[]{0, -1, 64}).equals("AP9A")
+                && e.encodeToString(new byte[0]).isEmpty() && e.encodeToString(new byte[0]) != ""
+                && Boolean.parseBoolean("tRuE") && !Boolean.parseBoolean(null) && !Boolean.parseBoolean("yes");
+    }
+    public static String optionalText(boolean present) { return present ? "selected" : null; }
+    public static boolean emptyIterator() {
+        java.util.Iterator<?> it = java.util.Collections.emptyIterator();
+        if (it != java.util.Collections.emptyIterator() || it.hasNext()) return false;
+        try { it.next(); return false; } catch (java.util.NoSuchElementException exhausted) { }
+        try { it.remove(); return false; } catch (IllegalStateException noElement) { }
+        try { it.forEachRemaining(null); return false; } catch (NullPointerException noConsumer) { return true; }
+    }
+    public static boolean invalidBase64() { return java.util.Base64.getDecoder().decode("A=").length == 0; }
+    static final class Copyable implements Cloneable {
+        Copyable copy() throws CloneNotSupportedException { return (Copyable) super.clone(); }
+    }
+    public static boolean copiedHash() throws CloneNotSupportedException {
+        Copyable source = new Copyable();
+        int hash = System.identityHashCode(source);
+        return hash == System.identityHashCode(source.copy());
+    }
+
     public static boolean expectsUnixContents() { return System.lineSeparator().equals("\n"); }
     public static boolean expectsInternedIdentity() { return System.lineSeparator() == "\n"; }
 
     public static void main(String[] args) {
+        if (args.length == 1) {
+            if (!tableStartup(Boolean.parseBoolean(args[0]))) throw new AssertionError("table initialization");
+            return;
+        }
+        if (!clockSeed() || !decoder() || !emptyIterator()) throw new AssertionError("clock, identity, codec or iterator");
+        for (int c = 0; c < 256; c++) if (!latinIdentifiers((char) c)) throw new AssertionError(c);
+        if (outsideLatin1()) throw new AssertionError("U+0100 uses a different character table");
+        if (!copiesAndFills(Integer.MIN_VALUE)) throw new AssertionError("array copy");
         if (!boxed(false) || !boxed(true) || !arrays(false) || !arrays(true) || wrong() || !separator()) throw new AssertionError();
         for (int i = 0; i < 4; i++) if (!cached(i)) throw new AssertionError();
         for (boolean q : new boolean[] {false, true}) if (!hashContract(q, false) || !hashContract(q, true)) throw new AssertionError();

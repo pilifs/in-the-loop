@@ -348,6 +348,14 @@ pub enum Rooted {
 /// the parameter's type named by its path from the root (`this.capacity`), an object of the parameter's class. A
 /// plan [`check_plans`] accepts, so that its values are supported.
 pub fn root(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &str) -> Result<Option<Rooted>, Unsupported> {
+    root_in(cp, plan, name, false)
+}
+
+pub(crate) fn property_root(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &str) -> Result<Option<Rooted>, Unsupported> {
+    root_in(cp, plan, name, true)
+}
+
+fn root_in(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &str, property: bool) -> Result<Option<Rooted>, Unsupported> {
     let Some(root) = plan.roots.iter().find(|r| r.name == name) else { return Ok(None) };
     match &root.value {
         PlanValue::Leaf { path, ty } => {
@@ -367,7 +375,7 @@ pub fn root(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, name: &st
         // A node at two roots is one object, its leaves named from the first (O2).
         PlanValue::Node { id, .. } => {
             let first = plan.roots.iter().find(|r| matches!(r.value, PlanValue::Node { id: i, .. } if i == *id)).map(|r| r.name.as_str()).unwrap_or(name);
-            node(cp, plan, *id, first, &mut Vec::new()).map(|r| Some(Rooted::Object(r)))
+            node(cp, plan, *id, first, property).map(|r| Some(Rooted::Object(r)))
         }
         PlanValue::Adapted { path, domain } => adapted_root("the plan's", name, path, domain).map(|d| Some(Rooted::List(d))),
         other => Err(Unsupported::new(Part::Objects, format!("the plan's root {name} is {}, which check_plans refuses", value_name(other)))),
@@ -527,8 +535,8 @@ pub fn flat_roots(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, nam
     Ok(out)
 }
 
-/// The node `id` of `plan`, made at `path`; `within` are the classes it is part of, as for `equivalence::made_of`.
-fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path: &str, within: &mut Vec<String>) -> Result<crate::harness::RecordType, Unsupported> {
+/// The node `id` of the already shape-checked plan, made at `path`.
+fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path: &str, property: bool) -> Result<crate::harness::RecordType, Unsupported> {
     let gap = |what: String| Unsupported::new(Part::Objects, what);
     let n = plan.nodes.iter().find(|n| n.id == id).ok_or_else(|| gap(format!("the plan has no node {id}")))?;
     let class = n.class.replace('.', "/");
@@ -549,7 +557,6 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
     if parsed.params.len() != n.args.len() {
         return Err(gap(format!("node {id}'s constructor {descriptor} takes {} arguments, and the plan gives {}", parsed.params.len(), n.args.len())));
     }
-    within.push(class.clone());
     let mut params = Vec::new();
     let mut inner = Vec::new();
     let mut dependencies = Vec::new();
@@ -587,10 +594,13 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
             }
             PlanValue::Node { id: inner_id, .. } => {
                 let inner_node = plan.nodes.iter().find(|x| x.id == *inner_id).ok_or_else(|| gap(format!("the plan has no node {inner_id}")))?;
-                if *pt != crate::classfile::Type::Object(inner_node.class.replace('.', "/")) {
+                let concrete = inner_node.class.replace('.', "/");
+                let assignable = matches!(pt, crate::classfile::Type::Object(declared)
+                    if declared == &concrete || property && cp.is_subtype(&concrete, declared));
+                if !assignable {
                     return Err(gap(format!("node {id}'s argument {pname} is node {inner_id}, a {}, and the constructor takes a {}", inner_node.class, pt.java_name())));
                 }
-                inner.push(node(cp, plan, *inner_id, &at, within)?);
+                inner.push(node(cp, plan, *inner_id, &at, property)?);
             }
             // A String leaf (J1's O2), its domain checked by `supported` and its bound by `array_bound_problem`.
             PlanValue::Adapted { path: leaf, .. } => {
@@ -604,8 +614,9 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
         }
         params.push((pname.clone(), pt.clone()));
     }
-    within.pop();
-    let fields = crate::equivalence::fields_of(cp, &class, &mut Vec::new()).map_err(|e| gap(format!("node {id}, a {}: {e}", n.class)))?.map_err(|g| gap(format!("node {id}, a {}: {g}", n.class)))?;
+    let fields = if property { crate::equivalence::property_fields(cp, &class) }
+        else { crate::equivalence::fields_of(cp, &class, &mut Vec::new()) };
+    let fields = fields.map_err(|e| gap(format!("node {id}, a {}: {e}", n.class)))?.map_err(|g| gap(format!("node {id}, a {}: {g}", n.class)))?;
     Ok(crate::harness::RecordType::made_with_dependencies(&class, params, inner, dependencies, fields))
 }
 
@@ -680,8 +691,8 @@ pub fn receiver(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::
     receiver_in(cp, class, false)
 }
 
-/// [`receiver`] for a write set's check, whose frame compares a field of a type it makes no object of by identity
-/// (`equivalence::made_of_framed`).
+/// A property reads the fields its assertion or write set names. External fields
+/// hold the actual references written by the constructor.
 pub fn receiver_framed(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::harness::RecordType, Unsupported> {
     receiver_in(cp, class, true)
 }

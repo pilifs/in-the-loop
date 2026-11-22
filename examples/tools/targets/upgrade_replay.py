@@ -20,7 +20,7 @@ import tempfile
 import time
 from urllib.parse import unquote, urlsplit
 
-from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_jdbc, upgrade_linkage
+from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_jdbc, upgrade_linkage, upgrade_receiver
 
 
 LAUNCHER = Path(__file__).with_name("java") / "UpgradeObservation.java"
@@ -243,7 +243,8 @@ def run_observation(run_dir, launch, subject_cp, sites, main, encoded, trace_exc
     return classes, stderr.decode(errors="replace").splitlines(), observation.read_text(encoding="utf-8")
 
 
-def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None):
+def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None,
+             inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None):
     spec = json.loads(specfile.read_text())
     working_directory = spec.get("workingDirectory", ".")
     if working_directory not in (".", "fixtures"):
@@ -356,6 +357,17 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         report["probeClasses"]={helper_class(f):sha(f) for f in compiled}
         launch = [str(jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*tools]),
                   "UpgradeTrace", caller, str(jdk)]
+        if inspect_receiver or native_caller:
+            launch.insert(1, "-Dupgrade.trace.receivers=true")
+        if native_caller:
+            native_start = time.monotonic()
+            try:
+                report["nativeCaller"] = upgrade_receiver.native_inputs(native_caller, jdk, temp, output,
+                    main, domain, prepared, env, native_seconds, identity["feature"], resources, working_directory, receipts)
+            except (OSError, ValueError, subprocess.SubprocessError) as error:
+                report["nativeCaller"] = {"domain":"registered finite caller inputs", "reason":str(error)}
+            # Keep the existing physical replay budget independent of both native checks.
+            start += time.monotonic() - native_start
         first_early = None
         old_loaded = {}
         for side,(files,dependency,side_record) in prepared.items():
@@ -384,6 +396,8 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     if early:
                         trace_exception = exception_types(trace_exception, early[0]["causes"])
                     child_output, marks, observation_text = run(run_dir, trace_exception)
+                    if (inspect_receiver or native_caller) and "UPGRADE-HIT " + caller in marks:
+                        trial_record.setdefault("receiverAtEntry", []).append(upgrade_receiver.at_entry(marks))
                     detail = next((line[len("UPGRADE-DETAIL "):] for line in observation_text.splitlines()
                                    if line.startswith("UPGRADE-DETAIL ")), "")
                     if detail:
@@ -485,12 +499,18 @@ def main(argv=None):
     ap.add_argument("--new-dependency",required=True)
     ap.add_argument("--seconds",type=int,default=120)
     ap.add_argument("--fixtures", type=Path)
+    ap.add_argument("--inspect-receiver", action="store_true", help="record actual JVM constructors, field types and aliases at the selected entry")
+    ap.add_argument("--native-caller", type=Path, help="also run this strict native checker on both original finite caller paths")
+    ap.add_argument("--native-seconds", type=int, default=60, help="native time budget per revision")
     a=ap.parse_args(argv)
+    if a.native_seconds < 1: ap.error("--native-seconds must be positive")
     result = {}
     started = time.monotonic()
     try:
         result=evaluate(a.spec,a.before,a.after,a.probe,a.jdk,(a.old_dependency,a.new_dependency),a.seconds,
-                        fixtures=a.fixtures, progress=result)
+                        fixtures=a.fixtures, progress=result, inspect_receiver=a.inspect_receiver,
+                        native_caller=a.native_caller.resolve() if a.native_caller else None, native_seconds=a.native_seconds,
+                        receipts=a.output.parent / (a.output.stem+"-receipts"))
     except (OSError,ValueError,KeyError,subprocess.SubprocessError) as e:
         detail = result.get("stoppedAt",{}).get("exception")
         reason = str(e) + (". " + detail if detail and detail not in str(e) else "")

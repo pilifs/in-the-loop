@@ -984,6 +984,10 @@ impl Parser<'_> {
                         let path = self.path(name.clone(), param.slot, fields)?;
                         return self.object_operand(path);
                     }
+                    if name == "result" && crate::values::is_string(&param.ty) {
+                        let path = FieldPath { shown: name, slot: param.slot, steps: Vec::new(), ty: param.ty.clone() };
+                        return self.object_operand(path);
+                    }
                     if let Type::Array(element) = &param.ty {
                         let element = (**element).clone();
                         if !self.in_old && matches!(self.peek(), Token::Op("==") | Token::Op("!=")) {

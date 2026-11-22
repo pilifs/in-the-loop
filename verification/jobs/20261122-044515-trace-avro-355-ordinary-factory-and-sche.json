@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-044515-trace-avro-355-ordinary-factory-and-sche",
+  "title": "Trace Avro 355 ordinary factory and schema producers",
+  "description": "Execute the original Jackson factory and successive Avro schema producers at the frozen 64 unwind and the separately qualified 512. On Hadoop also check a fresh JobConf(false), isolated and malformed overlays, explicit resources and progressively smaller startup captures. Keep every strict refusal and the original JVM controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T04:45:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check both historical sides",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 355 --output verification/domain-foundations/startup-expansion",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/domain-foundations/startup-expansion/355"
+  ],
+  "supersedes": "20261122-042449-trace-avro-355-ordinary-factory-and-sche",
+  "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+}

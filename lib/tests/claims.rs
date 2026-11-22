@@ -269,7 +269,6 @@ fn a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observa
     }
     for (method, stop) in [
         ("off", "java.util.logging.Level.OFF"),
-        ("described", "java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;"),
         ("counted", "java.util.logging.Logger.log(Ljava/util/logging/LogRecord;)V"),
         ("levelled", "java.util.logging.Logger.setLevel"),
         ("filtered", "java.util.logging.Logger.setFilter"),
@@ -279,6 +278,8 @@ fn a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observa
         assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
         assert!(o.output.contains(stop), "{method}: {}", o.output);
     }
+    let described = run(&options(classes, "claims.Logged#described", 3, "Logged-described"));
+    assert_eq!(described.verdict, Verdict::Violation, "{}", described.output);
 }
 
 /// A throws clause's condition is Java as the assumption and the assertion are: one over a String's bytes is
@@ -596,6 +597,34 @@ fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definiti
     assert!(left_out.output.contains("remove(Ljava/lang/Object;)Z"), "{}", left_out.output);
 }
 
+#[test]
+fn copied_hash_sets_preserve_key_callbacks_collisions_and_independent_membership() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.CopiedSets").status().unwrap().success());
+    for method in ["independent", "callbacks", "nullSource", "retainsDuplicates"] {
+        let mut opts = options(classes, &format!("claims.CopiedSets#{method}"), 32, method);
+        opts.unwind = 64;
+        let result = run(&opts);
+        let expected = if method == "retainsDuplicates" { Verdict::Violation } else { Verdict::Verified };
+        assert_eq!(result.verdict, expected, "{method}: {}", result.output);
+    }
+}
+
+#[test]
+fn literal_unit_replacement_preserves_utf16_content_and_selected_jdk_identity() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for flag in ["-XX:+CompactStrings", "-XX:-CompactStrings"] {
+        assert!(Command::new("java").arg(flag).arg("-cp").arg(classes).arg("claims.LiteralReplacement").status().unwrap().success());
+    }
+    for (method, expected) in [("contentsAndIdentity", Verdict::Verified), ("takesReplacementIdentity", Verdict::Violation), ("callback", Verdict::Unverifiable)] {
+        let o = run(&options(classes, &format!("claims.LiteralReplacement#{method}"), 3, method));
+        assert_eq!(o.verdict, expected, "{method}: {}", o.output);
+        if method == "callback" { assert!(o.output.contains("java.lang.String.replace"), "{}", o.output); }
+    }
+}
+
 /// A `java.util.LinkedHashSet` of names, as Spring's `DefaultMessageCodesResolver` collects a binding error's message
 /// codes (`claims.LinkedSets`, example 286): the JDK's until a check asks for the model (`--model
 /// java.util.LinkedHashSet`, which runs the `HashSet` model above it too), then the definition written out over
@@ -697,7 +726,7 @@ fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jd
 /// stays the JDK's, each where a JVM breaks the statement: an application's `fillInStackTrace()`, which the JVM runs
 /// inside the constructor, is refused by name; a JDK constructor that does more than pass its arguments up
 /// (`UnknownFormatConversionException(null)` throws) is the gap it is, as are `toString()` where the class overrides
-/// it or the message, and `append` of such an exception.
+/// the message. Appending an exception with a concrete toString override runs its callback.
 #[test]
 fn an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor() {
     jvmcontract::tool_tier!();
@@ -709,13 +738,14 @@ fn an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor() {
         "{}",
         String::from_utf8_lossy(&jvm.stderr)
     );
-    for method in ["kept", "shown", "nested", "appended"] {
+    for method in ["kept", "shown", "nested", "appended", "reentrantAppend"] {
         proved(classes, &format!("claims.Thrown#{method}"), 3);
     }
+    let overridden = run(&options(classes, "claims.Thrown#shownAppended", 1, "overridden-append"));
+    assert_eq!(overridden.verdict, Verdict::Violation, "{}", overridden.output);
     for (method, why) in [
         ("countsNothing", "whose claims.Thrown$Counting.fillInStackTrace() the JVM runs inside the constructor"),
         ("nullConversion", "java.util.UnknownFormatConversionException.<init>"),
-        ("shownAppended", "java.lang.StringBuilder.append(Ljava/lang/Object;)"),
         ("nestedShown", "jdk-reference-method:claims.Thrown$Nested.toString()"),
     ] {
         let o = run(&options(classes, &format!("claims.Thrown#{method}"), 1, &format!("Thrown-{method}")));
@@ -1191,12 +1221,11 @@ fn a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity
     let stashing = framed("Stashing", "stashing");
     assert_eq!(stashing.verdict, Verdict::Unverifiable, "{}", stashing.output);
     assert!(stashing.problem.as_deref().unwrap_or_default().contains("writes a field of an object made before it was called and none of its inputs"), "{}", stashing.output);
-    // Without a write set the field is refused by name, as before.
+    // The plain property observes the assigned name. Its unrelated Map stays on the real receiver.
     let mut plain = options(classes, "claims.Frames$Mapped#setDisplayName", 3, "frames-map-plain");
     plain.assert = Some("this.displayName == name".into());
     let plain = run(&plain);
-    assert_eq!(plain.verdict, Verdict::Unverifiable, "{}", plain.output);
-    assert!(plain.problem.as_deref().unwrap_or_default().contains("the field extras of claims.Frames$Mapped has type java.util.Map"), "{}", plain.output);
+    assert_eq!(plain.verdict, Verdict::Verified, "{}", plain.output);
     // The effect contract at a call: proved, and named among what the result rests on.
     let app = |entry: &str, bean: &str| {
         let mut o = options(classes, &format!("claims.Frames#{entry}"), 3, &format!("effects-map-{bean}"));
@@ -1316,6 +1345,32 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     proved(classes, "claims.CharacterFormats#separator", 4);
     proved(classes, "claims.CharacterFormats#hashContract", 4);
+    proved(classes, "claims.CharacterFormats#copiesAndFills", 4);
+    proved(classes, "claims.CharacterFormats#tableStartup", 4);
+    for fail in ["false", "true"] {
+        assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.CharacterFormats").arg(fail).status().unwrap().success());
+    }
+    let mut latin = options(classes, "claims.CharacterFormats#latinIdentifiers", 4, "latin-identifiers");
+    latin.assume = Some("ch <= 255".into());
+    let o = run(&latin);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let outside = run(&options(classes, "claims.CharacterFormats#outsideLatin1", 4, "outside-latin-table"));
+    assert_ne!(outside.verdict, Verdict::Verified, "{}", outside.output);
+    proved(classes, "claims.CharacterFormats#clockSeed", 4);
+    proved(classes, "claims.CharacterFormats#decoder", 4);
+    proved(classes, "claims.CharacterFormats#emptyIterator", 4);
+    let mut text_result = options(classes, "claims.CharacterFormats#optionalText", 4, "string-result");
+    text_result.assert = Some("present ? result.equals(\"selected\") : result == null".into());
+    assert_eq!(run(&text_result).verdict, Verdict::Verified);
+    text_result.assert = Some("result != null".into());
+    assert_eq!(run(&text_result).verdict, Verdict::Violation);
+    let invalid = run(&options(classes, "claims.CharacterFormats#invalidBase64", 4, "malformed-base64"));
+    assert_eq!(invalid.verdict, Verdict::Unverifiable, "{}", invalid.output);
+    for (method, reason) in [("sameTime", "wall-clock reading"), ("copiedHash", "identity hash")] {
+        let result = run(&options(classes, &format!("claims.CharacterFormats#{method}"), 4, method));
+        assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
+        assert!(result.output.contains(reason), "{}", result.output);
+    }
     let collision = run(&options(classes, "claims.CharacterFormats#assumesDistinctHashes", 4, "identity-hash-collision"));
     assert_eq!(collision.verdict, Verdict::Unverifiable, "{}", collision.output);
     assert!(collision.output.contains("JVM-chosen identity hash"), "{}", collision.output);
@@ -1442,7 +1497,7 @@ fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.WrappedBuffers").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["window", "whole", "invalid", "duplicate"] {
+    for name in ["window", "whole", "invalid", "duplicate", "readOnly"] {
         proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
     }
     let wrong = run(&options(classes, "claims.WrappedBuffers#wrongSharedCursor", 4, "heap-buffer-cursor"));

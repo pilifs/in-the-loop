@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-044515-avro-198-encoder-baseline-on-packaged-ar",
+  "title": "Avro 198 encoder-baseline on packaged artifacts",
+  "description": "Check the four frozen cursor and repeated-byte observations on both original shaded products. Each run binds the same sixteen inputs, expected bytes, both manifests and the executable digest. Native refusals remain recorded in the comparison.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "362"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T04:45:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "native",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; old=\"$(dirname \"$(dirname \"$JVMCONTRACT\")\")/5f16739e2a3796d20fe4150398cdb6305cf959c3/jvmcontract\"; test \"$(sha256sum \"$old\" | cut -d \" \" -f 1)\" = a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb || exit 2; export JVMCONTRACT=\"$old\" JVMCONTRACT_LIB_TREE=5f16739e2a3796d20fe4150398cdb6305cf959c3 VERIFY_SOURCE_COMMIT=05a2bb772876a679c847e5fafb1ef8779a83fab1; python3 -B lib/benchmark/organic-java/run.py 362 --stage encoder-baseline --route native",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/362-avro-buffered-encoder-cursor/records/encoder-baseline-native"
+  ],
+  "supersedes": "20261122-042450-avro-198-encoder-baseline-on-packaged-ar",
+  "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+}

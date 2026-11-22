@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-032239-qualify-ordinary-jackson-table-startup-o",
+  "title": "Qualify ordinary Jackson table startup on both Avro changes",
+  "description": "Use all four original Avro classpaths and compare the pilot and new checker on every ASCII input to the real Jackson charToHex method. Run the original 64 unwind and a separate 512-iteration producer proof. Check the different 0x141 result on the two Jackson releases and the next ordinary JsonFactory producer at both bounds. Each result binds the actual class bytes and fresh JVM output.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "355",
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T03:22:39+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check ASCII, the release-specific input and the real factory",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/jackson_tables.py --pilot --output verification/domain-foundations/jackson-tables",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/jackson-tables"
+  ]
+}

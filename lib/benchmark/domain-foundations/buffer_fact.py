@@ -11,11 +11,11 @@ import time
 from startup import HERE, ROOT, document, materialize, runtime_jdk, runtime_maven
 
 GUARD = "start >= 0 && length >= 0 && start <= bytes.length && length <= bytes.length - start"
-METHOD = "foundation.BufferRange#"
 WRAP = "java.nio.ByteBuffer#wrap([BII)Ljava/nio/ByteBuffer;"
 DECIMAL = "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;"
 CALLER = {"355": "org.apache.avro.hadoop.io.AvroDatumConverterFactory$BytesWritableConverter#convert(Lorg/apache/hadoop/io/BytesWritable;)Ljava/nio/ByteBuffer;",
-          "361": "organic.DecimalWindow#buffer(I)Ljava/nio/ByteBuffer;"}
+          "361": "organic.DecimalWindow#buffer(I)Ljava/nio/ByteBuffer;", "362": "organic.EncoderWindow#window(I)Ljava/nio/ByteBuffer;"}
+ENCODER = "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V"
 
 
 def elapsed(start):
@@ -38,26 +38,27 @@ def execute(args, directory, env):
                  "peakRssBytes": usage.ru_maxrss * 1024}
 
 
-def dependencies(work, jdk, checker):
-    return {"theoremClass": runtime_maven.sha256_of(work / "proof/foundation/BufferRange.class"),
+def dependencies(work, jdk, checker, max_length=6, theorem="BufferRange"):
+    return {"theoremClass": runtime_maven.sha256_of(work / "proof/foundation" / (theorem+".class")),
             "jdkModules": runtime_maven.sha256_of(jdk / "lib/modules"),
             "libjvm": runtime_maven.sha256_of(jdk / "lib/server/libjvm.so"),
             "jdkRelease": runtime_maven.sha256_of(jdk / "release"),
             "checkerSha256": runtime_maven.sha256_of(checker), "engine": "native", "gaps": "strict",
-            "unwind": 64, "maxArrayLength": 6, "guard": GUARD, "assert": "result == 1"}
+            "unwind": 64, "maxArrayLength": max_length, "guard": GUARD, "assert": "result == 1"}
 
 
-def certify(work, jdk, checker, env, path, method):
-    identity = dependencies(work, jdk, checker)
-    argv = [checker, "prove", "--classes", work / "proof", METHOD + method, "--engine", "native", "--gaps", "strict",
-            "--unwind", "64", "--max-array-length", "6", "--assume", GUARD, "--assert", identity["assert"], "--json"]
+def certify(work, jdk, checker, env, path, method, max_length=6, theorem="BufferRange"):
+    identity = dependencies(work, jdk, checker, max_length, theorem)
+    target = "foundation."+theorem+"#"+method
+    argv = [checker, "prove", "--classes", work / "proof", target, "--engine", "native", "--gaps", "strict",
+            "--unwind", "64", "--max-array-length", str(max_length), "--assume", GUARD, "--assert", identity["assert"], "--json"]
     raw, cost = execute(argv, work, env)
     row, = json.loads(raw)
     stated = row["stated"]
-    if (row["target"] != METHOD + method or row["verdict"] != "verified" or row["problem"]
+    if (row["target"] != target or row["verdict"] != "verified" or row["problem"]
             or row["assume"] != GUARD or row["assert"] != identity["assert"] or row["throws"]
             or stated["gap_mode"] != "strict" or stated["vacuity"]["status"] != "non-vacuous"
-            or stated["bounds"] != {"unwind": 64, "max_array_length": 6, "complete": True}
+            or stated["bounds"] != {"unwind": 64, "max_array_length": max_length, "complete": True}
             or {a["kind"] for a in stated["assumptions"]} != {"initialization", "precondition"}):
         raise ValueError("producer did not establish the complete non-vacuous strict statement")
     raw_path = path.with_suffix(".native.json")
@@ -79,7 +80,7 @@ def validate_producer(path, expected_sha, identity, method):
         raise ValueError("changed producer dependencies or proof")
 
 
-def site_inputs(number, side, work, jdk, env):
+def site_inputs(number, side, work, jdk, env, max_length=6):
     start = time.monotonic()
     folder, = (ROOT / "examples").glob(number + "-*")
     directory = work / (number + "-" + side)
@@ -118,20 +119,24 @@ def site_inputs(number, side, work, jdk, env):
         seen.add((index, kind))
         actual = tuple(map(int, (capacity, pos, size)))
         expected = ((inp["capacity"], 0, inp["capacity"] if side == "parent" else inp["length"]) if number == "355"
-                    else (6, inp["start"], inp["width"]))
-        if actual != expected or not (0 <= actual[1] <= actual[0] <= 6 and 0 <= actual[2] <= actual[0] - actual[1]):
+                    else (inp.get("capacity", 6), inp["start"], inp["width"]))
+        if actual != expected or not (0 <= actual[1] <= actual[0] <= max_length and 0 <= actual[2] <= actual[0] - actual[1]):
             raise ValueError("the observed original caller does not satisfy the producer's domain")
-        want = (CALLER[number], WRAP) if kind == "wrap" else ("organic.DecimalWindow#cursor(I)I", DECIMAL)
+        want = ((CALLER[number], WRAP) if kind == "wrap" else
+                ("organic.EncoderWindow#cursor(I)I", ENCODER) if number == "362" else ("organic.DecimalWindow#cursor(I)I", DECIMAL))
         if (caller, target) != want:
             raise ValueError("unexpected call site or callee")
         sites.append({"input": index, "call": kind, "capacity": actual[0], "position": actual[1], "length": actual[2],
                       "caller": caller, "bci": int(pc), "methodSha256": caller_sha, "poolSha256": pool_sha,
                       "target": target, "targetMethodSha256": target_sha})
-    kinds = ("wrap",) if number == "355" else ("wrap", "decimal")
+    kinds = {"355": ("wrap",), "361": ("wrap", "decimal"), "362": ("wrap", "encoder")}[number]
     if seen != {(r["id"], k) for r in table for k in kinds}:
         raise ValueError("incomplete original caller coverage")
     expected_outcomes = {r["id"]: int(side == "fix" or number == "355" and r["input"]["capacity"] == r["input"]["length"])
                          for r in table}
+    if number == "362":
+        expected_outcomes = {r["id"]: int(side == "fix" or not r["input"]["readOnly"] or r["input"]["width"] <= 16)
+                             for r in table}
     if outcomes != expected_outcomes:
         raise ValueError("wrong public return or missing admitted input")
     return {"build": binding, "sites": sorted(sites, key=lambda r: (r["input"], r["call"])),

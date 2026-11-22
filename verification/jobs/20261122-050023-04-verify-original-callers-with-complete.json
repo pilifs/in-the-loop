@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-050023-04-verify-original-callers-with-complete",
+  "title": "04 verify original callers with complete observations",
+  "description": "Recheck the complete frozen group, including every original overload, both native callers, and repeated original JVM receiver and collaborator observations after the output encoder and String-result support.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-22T05:00:23+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-verified --group 04",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/domain-foundations/receiver-verified/04"
+  ]
+}

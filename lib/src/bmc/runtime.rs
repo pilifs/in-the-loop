@@ -473,7 +473,11 @@ impl Engine<'_> {
             let image_host = self.cp.state_image_class(&class).is_some()
                 || (frame.class.name.starts_with(&format!("{class}$")) && self.cp.load(&class).ok().flatten()
                     .is_some_and(|loaded| matches!(loaded.origin, crate::classpath::Origin::Jdk)));
-            if frame.method != "<clinit>" || self.cp.state_image_class(&frame.class.name).is_none() || !image_host { return None; }
+            if frame.method != "<clinit>" { return None; }
+            let own_prologue = frame.class.name == class && self.cp.is_application(&class)
+                && frame.class.method("<clinit>", "()V")?.code.as_ref()?.instructions().ok()
+                    .and_then(|ops| super::gaps::assertion_prologue(&frame.class, &ops)) == Some(frame.pc());
+            if !own_prologue && (self.cp.state_image_class(&frame.class.name).is_none() || !image_host) { return None; }
             let flag = path.statics.entry((class, "<VM.desiredAssertionStatus>".into())).or_insert_with(|| {
                 let bit = self.b.var(); Val::I(self.b.zext(&vec![bit], 32))
             }).clone();
