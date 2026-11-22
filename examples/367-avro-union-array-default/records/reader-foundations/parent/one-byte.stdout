@@ -1,0 +1,173 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "campaign.ReaderFacts#oneByte",
+    "domain": "wire: int",
+    "assume": "wire >= 0 && wire <= 2",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over wire: int in 0.0 s; loops unwound 512 times with unwinding assertions",
+    "problem": null,
+    "statement": "/tmp/avro-reader-facts-1am_vm03/one-byte/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ campaign.ReaderFacts#oneByte satisfies `result == 1` on every input where wire >= 0 && wire <= 2 (jvmcontract's own checker (CaDiCaL): 1 properties proved over wire: int in 0.0 s; loops unwound 512 times with unwinding assertions)\n  not vacuous: oneByte(wire=0) reaches the calls\n",
+    "work": "/tmp/avro-reader-facts-1am_vm03/one-byte",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.017152446,
+      "properties": 1,
+      "unwind": 512,
+      "max_array_length": 16384,
+      "stage": null,
+      "native": {
+        "paths": 4,
+        "merges": 0,
+        "solver_calls": 6,
+        "solving_seconds": 0.000207489,
+        "gates_evaluated": 357,
+        "evaluating_seconds": 0.000011252,
+        "divisions": 1,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1445,
+        "clauses": 4652,
+        "seconds": 0.007701486,
+        "loading_seconds": 0.001059469,
+        "decoding_seconds": 0.000139844,
+        "encoding_seconds": 0.000711623,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.008,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.006,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1445,
+            "clauses": 4652
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.983,
+          "seconds": 0.006,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 162,
+            "clauses": 449
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.046,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.014,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.031
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "wire",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "wire: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "wire >= 0 && wire <= 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 512,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found oneByte(wire=0).",
+        "witness": "oneByte(wire=0)"
+      }
+    }
+  }
+]

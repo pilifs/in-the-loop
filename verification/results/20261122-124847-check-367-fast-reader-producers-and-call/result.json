@@ -1,0 +1,571 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-124847-check-367-fast-reader-producers-and-call",
+  "title": "Check 367 fast reader producers and call sites",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.8s, peak 147.5 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-124847-check-367-fast-reader-producers-and-call.json",
+    "sha256": "af460bf45f50ae2f1fc33d07be5a51b2e78b30d0f97e6e1ca60c83a0747acaae",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-124847-check-367-fast-reader-producers-and-call",
+      "title": "Check 367 fast reader producers and call sites",
+      "description": "Trace the byte decoder and named-field lookups reached by the unmodified reader, bind code and providers on each revision, and check one-byte decoding, schema construction, earlier Jackson startup and the public reader with three recorded initializer roots. Retain every refusal and its precise scope.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "367"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:48:47+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Qualify the two original Avro classpaths",
+          "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 367 --output examples/367-avro-union-array-default/records/reader-foundations",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/367-avro-union-array-default/records/reader-foundations"
+      ],
+      "supersedes": "20261122-123429-check-367-fast-reader-producers-and-call"
+    }
+  },
+  "sourceCommit": "f040551d5639e5dec7cfa4f66e5c1cd360372592",
+  "startedAt": "2026-11-22T12:49:50+00:00",
+  "finishedAt": "2026-11-22T12:53:41+00:00",
+  "wallSeconds": 231.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 303280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 154636288,
+    "wallSeconds": 19.8,
+    "cpuSeconds": 28.8,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 197.704,
+      "cpuSeconds": 197.955,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2179358720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b1bd19a39b51e951ed41703aaa615b804b9c6591bd9765968dd7579033090ee6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-124847-check-367-fast-reader-producers-and-call/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 17s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Qualify the two original Avro classpaths",
+      "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 367 --output examples/367-avro-union-array-default/records/reader-foundations",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 19.831,
+      "cpuSeconds": 28.813,
+      "cpuThrottledSeconds": 3.058,
+      "peakMemoryBytes": 154636288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-the-two-original-avro.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/bytes-schema.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/bytes-schema.stdout",
+      "change": "added",
+      "bytes": 5889,
+      "sha256": "b10726fcacfd1a7a4a1634c0e8117b6eebe59867809d3fd4d75f550facdd862e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/compile.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/compile.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/configured-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/configured-byte.stdout",
+      "change": "added",
+      "bytes": 5712,
+      "sha256": "70f480fa666662ea1ad89a33f82cef64a9dd9feeb66fbc4dad0ec5dadb3b5062",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/direct-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/direct-recorded.stdout",
+      "change": "added",
+      "bytes": 29219,
+      "sha256": "20d8306619d7503f51f198beac853597b60ae51ee17a80cee348b712758132be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/factory.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/factory.stdout",
+      "change": "added",
+      "bytes": 4283,
+      "sha256": "b5c4546757e96a1009f7a310c6f71e429125c321b60cbafb6e00e798b3cd7118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/fields-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/fields-recorded.stdout",
+      "change": "added",
+      "bytes": 29214,
+      "sha256": "1cafb21a96164d85019dece66f12acda0427edd341c5ad8b06d2bd7754098fb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/fields.stdout",
+      "change": "added",
+      "bytes": 6208,
+      "sha256": "33a490d94616473657eb81aae4687cbd1a23a00fa059900dfdca06b88318902c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/measurement.json",
+      "change": "added",
+      "bytes": 63290,
+      "sha256": "e3b0971cba8c0638950dd11f66d3cae02ccc373f11122503acdba458f9be6e30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/one-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/one-byte.stdout",
+      "change": "added",
+      "bytes": 5308,
+      "sha256": "ee4a89ffdaa632977d9cce41c0e66fee881af2ca46717413cc29ddb16502d9c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/ordinary-jvm.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/ordinary-jvm.stdout",
+      "change": "added",
+      "bytes": 80,
+      "sha256": "636632fbe22ee39f18109dd3759a1f5ac927c84cedd7cea15d901c2c0d482e5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/traced-jvm.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/traced-jvm.stdout",
+      "change": "added",
+      "bytes": 6458,
+      "sha256": "4cf6812a0b55c32cca0742717096ef7a1f643cd9db8eb8b6bf0d35c31a2f2755",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/union-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/fix/union-recorded.stdout",
+      "change": "added",
+      "bytes": 29214,
+      "sha256": "6562d354b26ac44ca71d0259457924b9d5e2d145e09712aaf3591ac6cec8bfbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/bytes-schema.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/bytes-schema.stdout",
+      "change": "added",
+      "bytes": 5889,
+      "sha256": "5d49667b869e3f1f05897f4fa1dbe50684a5c1a1a11db49757dd0965ebb7c698",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/configured-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/configured-byte.stdout",
+      "change": "added",
+      "bytes": 5710,
+      "sha256": "858639825ef3322352b577d7f3faa0b97547a5b414b14bbdfb37987d214369ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/direct-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/direct-recorded.stdout",
+      "change": "added",
+      "bytes": 29225,
+      "sha256": "624054c375977804290230478ed71cc29ae498404bf3f000f355946322152a3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/factory.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/factory.stdout",
+      "change": "added",
+      "bytes": 4286,
+      "sha256": "62713b779338eec00d5b949a67a855afed06e2f7dd6fe6cdc402f28b26517071",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/fields-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/fields-recorded.stdout",
+      "change": "added",
+      "bytes": 29213,
+      "sha256": "2e2d525d5a73be96b2e0f29851f4e36609f3b0ff6bcfb93e8ee69f8afd9094cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/fields.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/fields.stdout",
+      "change": "added",
+      "bytes": 6208,
+      "sha256": "02d5594c476fa85508769059babaf48883387f801e42f964684624860b583f6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/measurement.json",
+      "change": "added",
+      "bytes": 60469,
+      "sha256": "2d7279e8b7f477833a185e0860d7ba8d161c39a450aca64e14b1efc4a9737eeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stdout",
+      "change": "added",
+      "bytes": 5310,
+      "sha256": "5d44067773994865525476098fa9de22791720f2222ab02c03a9d7456d24b247",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/ordinary-jvm.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/ordinary-jvm.stdout",
+      "change": "added",
+      "bytes": 80,
+      "sha256": "08313d587635597ffa0ca411a9e0c9970d348f0e0cf0aa84b1e95ceec566813a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/traced-jvm.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/traced-jvm.stdout",
+      "change": "added",
+      "bytes": 4654,
+      "sha256": "8ff90a6f8896b0c0f7ebb26f994d1a7a2ff0ce5910da48bbbfeb088bf54928bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/union-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/reader-foundations/parent/union-recorded.stdout",
+      "change": "added",
+      "bytes": 29216,
+      "sha256": "58b39e80c99d6fcab81ffa9b45b12278efe551d5866a3c14061d7061347828b4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:54:01+00:00",
+    "applied": [
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/bytes-schema.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/bytes-schema.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/compile.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/compile.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/configured-byte.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/configured-byte.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/direct-recorded.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/direct-recorded.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/factory.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/factory.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/fields-recorded.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/fields-recorded.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/fields.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/fields.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/measurement.json",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/one-byte.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/one-byte.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/ordinary-jvm.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/ordinary-jvm.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/traced-jvm.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/traced-jvm.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/union-recorded.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/fix/union-recorded.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/bytes-schema.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/bytes-schema.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/compile.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/configured-byte.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/configured-byte.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/direct-recorded.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/direct-recorded.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/factory.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/factory.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/fields-recorded.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/fields-recorded.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/fields.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/fields.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/measurement.json",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/one-byte.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/ordinary-jvm.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/ordinary-jvm.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/traced-jvm.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/traced-jvm.stdout",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/union-recorded.stderr",
+      "examples/367-avro-union-array-default/records/reader-foundations/parent/union-recorded.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c0abc875ddf18e776e940703bf3e322d26d6d631",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c0abc875ddf18e776e940703bf3e322d26d6d631/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T125341Z-6376893cc0402d27",
+      "outputs": "20261122T125341Z-663335408311d163",
+      "diff": "20261122T125341Z-6856809067c1aac5"
+    }
+  }
+}
