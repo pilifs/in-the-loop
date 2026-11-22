@@ -1,0 +1,1159 @@
+{
+  "entry": "com.uber.profiling.Arguments#runConfigProvider()V",
+  "observer": "The real profiler applies a root configuration and then a tag-specific override. Observe the retained tag, interval and I/O flag.",
+  "domainBasis": "The declared provider supplies input settings only. An exact tag1 has an explicit override, while a different tag uses root values. Both expectations follow the original configuration contract and historical test.",
+  "cases": [
+    {
+      "args": [
+        "tag1"
+      ],
+      "expected": {
+        "return": "tag1/9001/false"
+      }
+    },
+    {
+      "args": [
+        "other"
+      ],
+      "expected": {
+        "return": "other/9000/true"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "7769f3f07c25fed9f80f0f97ad871a364748aed09cb3e4420e8626540ed54909",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "03a21825f87a95b1d1291c035b9f885066dca9d0",
+      "sourceSha256": "8421ad7ad0c7d9f401939cbe2b14ba21b1752376096124f5b6b17fc5cda1c473",
+      "callerClassSha256": "10dc097a22099cde220a856409fe6c6500de85cc13c83f502aeedc4fe657f784",
+      "classpath": [
+        "9d730670194406eb5c93275810011f83d1cae56fa48b108d5e1104e24ec289c0",
+        "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
+        "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
+        "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
+        "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
+        "737c1165a617eac7275431f76615fd18447b001c0dc4f4f4db4e24b3b3cce0f9",
+        "c876f2e85d0f108a34cdd11ccc9d8d7875697367efc75bf10a89c2c26aee994c",
+        "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
+        "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
+        "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
+        "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
+        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+        "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
+      ],
+      "dependency": "737c1165a617eac7275431f76615fd18447b001c0dc4f4f4db4e24b3b3cce0f9",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 55,
+      "resources": 0,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "a0bcc53895bb4bcad99a7474861eef9d2f4872718f20d344c1a04ee2753f7d53",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "tag1/9001/false"
+            },
+            {
+              "return": "tag1/9001/false"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            },
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "other/9000/true"
+            },
+            {
+              "return": "other/9000/true"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            },
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "com.fasterxml.jackson.databind.AbstractTypeResolver",
+        "com.fasterxml.jackson.databind.AnnotationIntrospector",
+        "com.fasterxml.jackson.databind.BeanDescription",
+        "com.fasterxml.jackson.databind.BeanProperty",
+        "com.fasterxml.jackson.databind.DatabindContext",
+        "com.fasterxml.jackson.databind.DeserializationConfig",
+        "com.fasterxml.jackson.databind.DeserializationContext",
+        "com.fasterxml.jackson.databind.DeserializationFeature",
+        "com.fasterxml.jackson.databind.JavaType",
+        "com.fasterxml.jackson.databind.JsonDeserializer",
+        "com.fasterxml.jackson.databind.JsonMappingException",
+        "com.fasterxml.jackson.databind.JsonNode",
+        "com.fasterxml.jackson.databind.JsonSerializable",
+        "com.fasterxml.jackson.databind.JsonSerializable$Base",
+        "com.fasterxml.jackson.databind.JsonSerializer",
+        "com.fasterxml.jackson.databind.KeyDeserializer",
+        "com.fasterxml.jackson.databind.MapperFeature",
+        "com.fasterxml.jackson.databind.MappingJsonFactory",
+        "com.fasterxml.jackson.databind.Module$SetupContext",
+        "com.fasterxml.jackson.databind.ObjectMapper",
+        "com.fasterxml.jackson.databind.PropertyName",
+        "com.fasterxml.jackson.databind.SerializationConfig",
+        "com.fasterxml.jackson.databind.SerializationFeature",
+        "com.fasterxml.jackson.databind.SerializerProvider",
+        "com.fasterxml.jackson.databind.annotation.JsonDeserialize",
+        "com.fasterxml.jackson.databind.annotation.JsonSerialize",
+        "com.fasterxml.jackson.databind.annotation.JsonTypeResolver",
+        "com.fasterxml.jackson.databind.cfg.BaseSettings",
+        "com.fasterxml.jackson.databind.cfg.ConfigFeature",
+        "com.fasterxml.jackson.databind.cfg.ConfigOverride",
+        "com.fasterxml.jackson.databind.cfg.ConfigOverride$Empty",
+        "com.fasterxml.jackson.databind.cfg.ConfigOverrides",
+        "com.fasterxml.jackson.databind.cfg.ContextAttributes",
+        "com.fasterxml.jackson.databind.cfg.ContextAttributes$Impl",
+        "com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig",
+        "com.fasterxml.jackson.databind.cfg.MapperConfig",
+        "com.fasterxml.jackson.databind.cfg.MapperConfigBase",
+        "com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig",
+        "com.fasterxml.jackson.databind.deser.AbstractDeserializer",
+        "com.fasterxml.jackson.databind.deser.BasicDeserializerFactory",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializer",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializerBase",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializerFactory",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializerModifier",
+        "com.fasterxml.jackson.databind.deser.ContextualDeserializer",
+        "com.fasterxml.jackson.databind.deser.CreatorProperty",
+        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext",
+        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext$Impl",
+        "com.fasterxml.jackson.databind.deser.DeserializerCache",
+        "com.fasterxml.jackson.databind.deser.DeserializerFactory",
+        "com.fasterxml.jackson.databind.deser.Deserializers",
+        "com.fasterxml.jackson.databind.deser.KeyDeserializers",
+        "com.fasterxml.jackson.databind.deser.NullValueProvider",
+        "com.fasterxml.jackson.databind.deser.ResolvableDeserializer",
+        "com.fasterxml.jackson.databind.deser.SettableBeanProperty",
+        "com.fasterxml.jackson.databind.deser.UnresolvedForwardReference",
+        "com.fasterxml.jackson.databind.deser.ValueInstantiator",
+        "com.fasterxml.jackson.databind.deser.ValueInstantiator$Base",
+        "com.fasterxml.jackson.databind.deser.ValueInstantiator$Gettable",
+        "com.fasterxml.jackson.databind.deser.ValueInstantiators",
+        "com.fasterxml.jackson.databind.deser.impl.ErrorThrowingDeserializer",
+        "com.fasterxml.jackson.databind.deser.impl.FieldProperty",
+        "com.fasterxml.jackson.databind.deser.impl.MethodProperty",
+        "com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator",
+        "com.fasterxml.jackson.databind.deser.impl.SetterlessProperty",
+        "com.fasterxml.jackson.databind.deser.impl.TypeWrappedDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ArrayBlockingQueueDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.AtomicReferenceDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.CollectionDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase",
+        "com.fasterxml.jackson.databind.deser.std.EnumDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.EnumMapDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.EnumSetDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.JsonLocationInstantiator",
+        "com.fasterxml.jackson.databind.deser.std.MapDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.MapEntryDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ObjectArrayDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$DelegatingKD",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$EnumKD",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringCtorKeyDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringFactoryKeyDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers",
+        "com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StringDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ThrowableDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.TokenBufferDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer",
+        "com.fasterxml.jackson.databind.exc.InvalidDefinitionException",
+        "com.fasterxml.jackson.databind.exc.InvalidFormatException",
+        "com.fasterxml.jackson.databind.exc.InvalidTypeIdException",
+        "com.fasterxml.jackson.databind.exc.MismatchedInputException",
+        "com.fasterxml.jackson.databind.exc.PropertyBindingException",
+        "com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException",
+        "com.fasterxml.jackson.databind.ext.Java7Support",
+        "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+        "com.fasterxml.jackson.databind.ext.NioPathDeserializer",
+        "com.fasterxml.jackson.databind.ext.NioPathSerializer",
+        "com.fasterxml.jackson.databind.introspect.Annotated",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedClass",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedClass$Creators",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedConstructor",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedField",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedMember",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedMethod",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedParameter",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedWithParams",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$EmptyCollector",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$NoAnnotations",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$OneCollector",
+        "com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair",
+        "com.fasterxml.jackson.databind.introspect.BasicBeanDescription",
+        "com.fasterxml.jackson.databind.introspect.BasicClassIntrospector",
+        "com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition",
+        "com.fasterxml.jackson.databind.introspect.ClassIntrospector",
+        "com.fasterxml.jackson.databind.introspect.ClassIntrospector$MixInResolver",
+        "com.fasterxml.jackson.databind.introspect.ConcreteBeanPropertyBase",
+        "com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector",
+        "com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector",
+        "com.fasterxml.jackson.databind.introspect.SimpleMixInResolver",
+        "com.fasterxml.jackson.databind.introspect.TypeResolutionContext",
+        "com.fasterxml.jackson.databind.introspect.VirtualAnnotatedMember",
+        "com.fasterxml.jackson.databind.introspect.VisibilityChecker",
+        "com.fasterxml.jackson.databind.introspect.VisibilityChecker$Std",
+        "com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitable",
+        "com.fasterxml.jackson.databind.jsonschema.SchemaAware",
+        "com.fasterxml.jackson.databind.jsontype.SubtypeResolver",
+        "com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder",
+        "com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver",
+        "com.fasterxml.jackson.databind.node.BaseJsonNode",
+        "com.fasterxml.jackson.databind.node.BigIntegerNode",
+        "com.fasterxml.jackson.databind.node.BinaryNode",
+        "com.fasterxml.jackson.databind.node.BooleanNode",
+        "com.fasterxml.jackson.databind.node.ContainerNode",
+        "com.fasterxml.jackson.databind.node.DecimalNode",
+        "com.fasterxml.jackson.databind.node.DoubleNode",
+        "com.fasterxml.jackson.databind.node.FloatNode",
+        "com.fasterxml.jackson.databind.node.IntNode",
+        "com.fasterxml.jackson.databind.node.JsonNodeCreator",
+        "com.fasterxml.jackson.databind.node.JsonNodeFactory",
+        "com.fasterxml.jackson.databind.node.LongNode",
+        "com.fasterxml.jackson.databind.node.NullNode",
+        "com.fasterxml.jackson.databind.node.NumericNode",
+        "com.fasterxml.jackson.databind.node.ObjectNode",
+        "com.fasterxml.jackson.databind.node.POJONode",
+        "com.fasterxml.jackson.databind.node.ShortNode",
+        "com.fasterxml.jackson.databind.node.TextNode",
+        "com.fasterxml.jackson.databind.node.TreeTraversingParser",
+        "com.fasterxml.jackson.databind.node.ValueNode",
+        "com.fasterxml.jackson.databind.ser.BasicSerializerFactory",
+        "com.fasterxml.jackson.databind.ser.BeanPropertyWriter",
+        "com.fasterxml.jackson.databind.ser.BeanSerializer",
+        "com.fasterxml.jackson.databind.ser.BeanSerializerFactory",
+        "com.fasterxml.jackson.databind.ser.BeanSerializerModifier",
+        "com.fasterxml.jackson.databind.ser.ContainerSerializer",
+        "com.fasterxml.jackson.databind.ser.ContextualSerializer",
+        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider",
+        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider$Impl",
+        "com.fasterxml.jackson.databind.ser.PropertyWriter",
+        "com.fasterxml.jackson.databind.ser.ResolvableSerializer",
+        "com.fasterxml.jackson.databind.ser.SerializerCache",
+        "com.fasterxml.jackson.databind.ser.SerializerFactory",
+        "com.fasterxml.jackson.databind.ser.Serializers",
+        "com.fasterxml.jackson.databind.ser.VirtualBeanPropertyWriter",
+        "com.fasterxml.jackson.databind.ser.impl.AttributePropertyWriter",
+        "com.fasterxml.jackson.databind.ser.impl.FailingSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.IndexedStringListSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.IteratorSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.MapEntrySerializer",
+        "com.fasterxml.jackson.databind.ser.impl.PropertyBasedObjectIdGenerator",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Double",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Empty",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$SerializerAndMapResult",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Single",
+        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap",
+        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap$Bucket",
+        "com.fasterxml.jackson.databind.ser.impl.StringArraySerializer",
+        "com.fasterxml.jackson.databind.ser.impl.StringCollectionSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.TypeWrappedSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.UnknownSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ArraySerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.BeanSerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer",
+        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer$AsNumber",
+        "com.fasterxml.jackson.databind.ser.std.ByteBufferSerializer",
+        "com.fasterxml.jackson.databind.ser.std.CalendarSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ClassSerializer",
+        "com.fasterxml.jackson.databind.ser.std.CollectionSerializer",
+        "com.fasterxml.jackson.databind.ser.std.DateSerializer",
+        "com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.EnumSerializer",
+        "com.fasterxml.jackson.databind.ser.std.EnumSetSerializer",
+        "com.fasterxml.jackson.databind.ser.std.FileSerializer",
+        "com.fasterxml.jackson.databind.ser.std.InetAddressSerializer",
+        "com.fasterxml.jackson.databind.ser.std.InetSocketAddressSerializer",
+        "com.fasterxml.jackson.databind.ser.std.IterableSerializer",
+        "com.fasterxml.jackson.databind.ser.std.JsonValueSerializer",
+        "com.fasterxml.jackson.databind.ser.std.MapProperty",
+        "com.fasterxml.jackson.databind.ser.std.MapSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NullSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$Base",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$DoubleSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$FloatSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntLikeSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntegerSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$LongSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$ShortSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ObjectArraySerializer",
+        "com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer",
+        "com.fasterxml.jackson.databind.ser.std.SerializableSerializer",
+        "com.fasterxml.jackson.databind.ser.std.SqlDateSerializer",
+        "com.fasterxml.jackson.databind.ser.std.SqlTimeSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StaticListSerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicBooleanSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicIntegerSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicLongSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Default",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Dynamic",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$EnumKeySerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$StringKeySerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdScalarSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StringSerializer",
+        "com.fasterxml.jackson.databind.ser.std.TimeZoneSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ToStringSerializer",
+        "com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer",
+        "com.fasterxml.jackson.databind.ser.std.UUIDSerializer",
+        "com.fasterxml.jackson.databind.type.ArrayType",
+        "com.fasterxml.jackson.databind.type.ClassStack",
+        "com.fasterxml.jackson.databind.type.CollectionLikeType",
+        "com.fasterxml.jackson.databind.type.CollectionType",
+        "com.fasterxml.jackson.databind.type.MapLikeType",
+        "com.fasterxml.jackson.databind.type.MapType",
+        "com.fasterxml.jackson.databind.type.PlaceholderForType",
+        "com.fasterxml.jackson.databind.type.ReferenceType",
+        "com.fasterxml.jackson.databind.type.ResolvedRecursiveType",
+        "com.fasterxml.jackson.databind.type.SimpleType",
+        "com.fasterxml.jackson.databind.type.TypeBase",
+        "com.fasterxml.jackson.databind.type.TypeBindings",
+        "com.fasterxml.jackson.databind.type.TypeBindings$AsKey",
+        "com.fasterxml.jackson.databind.type.TypeBindings$TypeParamStash",
+        "com.fasterxml.jackson.databind.type.TypeFactory",
+        "com.fasterxml.jackson.databind.type.TypeParser",
+        "com.fasterxml.jackson.databind.util.Annotations",
+        "com.fasterxml.jackson.databind.util.ArrayIterator",
+        "com.fasterxml.jackson.databind.util.ClassUtil",
+        "com.fasterxml.jackson.databind.util.ClassUtil$Ctor",
+        "com.fasterxml.jackson.databind.util.ConstantValueInstantiator",
+        "com.fasterxml.jackson.databind.util.LRUMap",
+        "com.fasterxml.jackson.databind.util.Named",
+        "com.fasterxml.jackson.databind.util.RootNameLookup",
+        "com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition",
+        "com.fasterxml.jackson.databind.util.StdDateFormat",
+        "com.fasterxml.jackson.databind.util.TokenBuffer",
+        "com.fasterxml.jackson.databind.util.TypeKey"
+      ]
+    },
+    "new": {
+      "commit": "279ece31518ff797eb149c57df01093cdd376daf",
+      "sourceSha256": "8421ad7ad0c7d9f401939cbe2b14ba21b1752376096124f5b6b17fc5cda1c473",
+      "callerClassSha256": "10dc097a22099cde220a856409fe6c6500de85cc13c83f502aeedc4fe657f784",
+      "classpath": [
+        "9d730670194406eb5c93275810011f83d1cae56fa48b108d5e1104e24ec289c0",
+        "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
+        "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
+        "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
+        "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
+        "2d23f47001492233565adf5a34f225f2ae89564cee08024873ec36b7842ede46",
+        "673f8ae16becea4fa937404b3a851417faf42df3bbc592028bbe2bfe0cc9d8cb",
+        "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
+        "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
+        "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
+        "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
+        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+        "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
+      ],
+      "dependency": "2d23f47001492233565adf5a34f225f2ae89564cee08024873ec36b7842ede46",
+      "preparation": "complete original Maven production module",
+      "compiledClasses": 55,
+      "resources": 0,
+      "operandScope": "runtime",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "5359f94f00f807394898214fbb13a714e2d209e31687d77f19c729b18c2c08a5",
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "tag1/9000/true"
+            },
+            {
+              "return": "tag1/9000/true"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            },
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "other/9000/true"
+            },
+            {
+              "return": "other/9000/true"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.uber.profiling.Arguments#appIdRegex:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.uber.profiling.Arguments#appIdVariable:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#argumentProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@2",
+                  "com.uber.profiling.Arguments#cluster:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configFile:Ljava/lang/String;": "null",
+                  "com.uber.profiling.Arguments#configProviderConstructor:Ljava/lang/reflect/Constructor;": "Ljava/lang/reflect/Constructor;@3",
+                  "com.uber.profiling.Arguments#durationProfiling:Ljava/util/List;": "Ljava/util/ArrayList;@4",
+                  "com.uber.profiling.Arguments#ioProfiling:Z": "Z",
+                  "com.uber.profiling.Arguments#metricInterval:J": "J",
+                  "com.uber.profiling.Arguments#noop:Z": "Z",
+                  "com.uber.profiling.Arguments#rawArgValues:Ljava/util/Map;": "Ljava/util/HashMap;@5",
+                  "com.uber.profiling.Arguments#reporterConstructor:Ljava/lang/reflect/Constructor;": "null",
+                  "com.uber.profiling.Arguments#sampleInterval:J": "J",
+                  "com.uber.profiling.Arguments#tag:Ljava/lang/String;": "Ljava/lang/String;@6"
+                },
+                "this": "Lcom/uber/profiling/Arguments;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/util/Map;)V",
+                  "calledBy": "com.uber.profiling.Arguments#parseArgs(Ljava/lang/String;)Lcom/uber/profiling/Arguments;",
+                  "codeIndex": 196,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/util/HashMap;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/uber/profiling/Arguments;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            },
+            {
+              "observerCodeIndex": 39,
+              "dispatchedTo": "com.uber.profiling.Arguments#runConfigProvider()V"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "com.fasterxml.jackson.databind.AbstractTypeResolver",
+        "com.fasterxml.jackson.databind.AnnotationIntrospector",
+        "com.fasterxml.jackson.databind.BeanDescription",
+        "com.fasterxml.jackson.databind.BeanProperty",
+        "com.fasterxml.jackson.databind.DatabindContext",
+        "com.fasterxml.jackson.databind.DeserializationConfig",
+        "com.fasterxml.jackson.databind.DeserializationContext",
+        "com.fasterxml.jackson.databind.DeserializationFeature",
+        "com.fasterxml.jackson.databind.JavaType",
+        "com.fasterxml.jackson.databind.JsonDeserializer",
+        "com.fasterxml.jackson.databind.JsonMappingException",
+        "com.fasterxml.jackson.databind.JsonNode",
+        "com.fasterxml.jackson.databind.JsonSerializable",
+        "com.fasterxml.jackson.databind.JsonSerializable$Base",
+        "com.fasterxml.jackson.databind.JsonSerializer",
+        "com.fasterxml.jackson.databind.KeyDeserializer",
+        "com.fasterxml.jackson.databind.MapperFeature",
+        "com.fasterxml.jackson.databind.MappingJsonFactory",
+        "com.fasterxml.jackson.databind.Module$SetupContext",
+        "com.fasterxml.jackson.databind.ObjectMapper",
+        "com.fasterxml.jackson.databind.PropertyName",
+        "com.fasterxml.jackson.databind.SerializationConfig",
+        "com.fasterxml.jackson.databind.SerializationFeature",
+        "com.fasterxml.jackson.databind.SerializerProvider",
+        "com.fasterxml.jackson.databind.annotation.JsonDeserialize",
+        "com.fasterxml.jackson.databind.annotation.JsonSerialize",
+        "com.fasterxml.jackson.databind.annotation.JsonTypeResolver",
+        "com.fasterxml.jackson.databind.cfg.BaseSettings",
+        "com.fasterxml.jackson.databind.cfg.ConfigFeature",
+        "com.fasterxml.jackson.databind.cfg.ConfigOverride",
+        "com.fasterxml.jackson.databind.cfg.ConfigOverride$Empty",
+        "com.fasterxml.jackson.databind.cfg.ConfigOverrides",
+        "com.fasterxml.jackson.databind.cfg.ContextAttributes",
+        "com.fasterxml.jackson.databind.cfg.ContextAttributes$Impl",
+        "com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig",
+        "com.fasterxml.jackson.databind.cfg.MapperConfig",
+        "com.fasterxml.jackson.databind.cfg.MapperConfigBase",
+        "com.fasterxml.jackson.databind.cfg.SerializerFactoryConfig",
+        "com.fasterxml.jackson.databind.deser.AbstractDeserializer",
+        "com.fasterxml.jackson.databind.deser.BasicDeserializerFactory",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializer",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializerBase",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializerFactory",
+        "com.fasterxml.jackson.databind.deser.BeanDeserializerModifier",
+        "com.fasterxml.jackson.databind.deser.ContextualDeserializer",
+        "com.fasterxml.jackson.databind.deser.CreatorProperty",
+        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext",
+        "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext$Impl",
+        "com.fasterxml.jackson.databind.deser.DeserializerCache",
+        "com.fasterxml.jackson.databind.deser.DeserializerFactory",
+        "com.fasterxml.jackson.databind.deser.Deserializers",
+        "com.fasterxml.jackson.databind.deser.KeyDeserializers",
+        "com.fasterxml.jackson.databind.deser.NullValueProvider",
+        "com.fasterxml.jackson.databind.deser.ResolvableDeserializer",
+        "com.fasterxml.jackson.databind.deser.SettableBeanProperty",
+        "com.fasterxml.jackson.databind.deser.UnresolvedForwardReference",
+        "com.fasterxml.jackson.databind.deser.ValueInstantiator$Gettable",
+        "com.fasterxml.jackson.databind.deser.ValueInstantiators",
+        "com.fasterxml.jackson.databind.deser.impl.ErrorThrowingDeserializer",
+        "com.fasterxml.jackson.databind.deser.impl.FieldProperty",
+        "com.fasterxml.jackson.databind.deser.impl.MethodProperty",
+        "com.fasterxml.jackson.databind.deser.impl.PropertyBasedObjectIdGenerator",
+        "com.fasterxml.jackson.databind.deser.impl.SetterlessProperty",
+        "com.fasterxml.jackson.databind.deser.impl.TypeWrappedDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ArrayBlockingQueueDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.AtomicReferenceDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.CollectionDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ContainerDeserializerBase",
+        "com.fasterxml.jackson.databind.deser.std.EnumDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.EnumMapDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.EnumSetDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.MapDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.MapEntryDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ObjectArrayDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ReferenceTypeDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$DelegatingKD",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$EnumKD",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringCtorKeyDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializer$StringFactoryKeyDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StdKeyDeserializers",
+        "com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StringArrayDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.StringDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.ThrowableDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.TokenBufferDeserializer",
+        "com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer",
+        "com.fasterxml.jackson.databind.exc.InvalidDefinitionException",
+        "com.fasterxml.jackson.databind.exc.InvalidFormatException",
+        "com.fasterxml.jackson.databind.exc.InvalidTypeIdException",
+        "com.fasterxml.jackson.databind.exc.MismatchedInputException",
+        "com.fasterxml.jackson.databind.exc.PropertyBindingException",
+        "com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException",
+        "com.fasterxml.jackson.databind.exc.ValueInstantiationException",
+        "com.fasterxml.jackson.databind.ext.Java7Support",
+        "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+        "com.fasterxml.jackson.databind.introspect.Annotated",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedClass",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedClass$Creators",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedClassResolver",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedConstructor",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedField",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedMember",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedMethod",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedParameter",
+        "com.fasterxml.jackson.databind.introspect.AnnotatedWithParams",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$EmptyCollector",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$NoAnnotations",
+        "com.fasterxml.jackson.databind.introspect.AnnotationCollector$OneCollector",
+        "com.fasterxml.jackson.databind.introspect.AnnotationIntrospectorPair",
+        "com.fasterxml.jackson.databind.introspect.BasicBeanDescription",
+        "com.fasterxml.jackson.databind.introspect.BasicClassIntrospector",
+        "com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition",
+        "com.fasterxml.jackson.databind.introspect.ClassIntrospector",
+        "com.fasterxml.jackson.databind.introspect.ClassIntrospector$MixInResolver",
+        "com.fasterxml.jackson.databind.introspect.ConcreteBeanPropertyBase",
+        "com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector",
+        "com.fasterxml.jackson.databind.introspect.NopAnnotationIntrospector",
+        "com.fasterxml.jackson.databind.introspect.SimpleMixInResolver",
+        "com.fasterxml.jackson.databind.introspect.TypeResolutionContext",
+        "com.fasterxml.jackson.databind.introspect.VirtualAnnotatedMember",
+        "com.fasterxml.jackson.databind.introspect.VisibilityChecker",
+        "com.fasterxml.jackson.databind.introspect.VisibilityChecker$Std",
+        "com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitable",
+        "com.fasterxml.jackson.databind.jsonschema.SchemaAware",
+        "com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator",
+        "com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator$Base",
+        "com.fasterxml.jackson.databind.jsontype.SubtypeResolver",
+        "com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder",
+        "com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator",
+        "com.fasterxml.jackson.databind.jsontype.impl.StdSubtypeResolver",
+        "com.fasterxml.jackson.databind.node.BaseJsonNode",
+        "com.fasterxml.jackson.databind.node.BigIntegerNode",
+        "com.fasterxml.jackson.databind.node.BinaryNode",
+        "com.fasterxml.jackson.databind.node.BooleanNode",
+        "com.fasterxml.jackson.databind.node.ContainerNode",
+        "com.fasterxml.jackson.databind.node.DecimalNode",
+        "com.fasterxml.jackson.databind.node.DoubleNode",
+        "com.fasterxml.jackson.databind.node.FloatNode",
+        "com.fasterxml.jackson.databind.node.IntNode",
+        "com.fasterxml.jackson.databind.node.JsonNodeCreator",
+        "com.fasterxml.jackson.databind.node.JsonNodeFactory",
+        "com.fasterxml.jackson.databind.node.LongNode",
+        "com.fasterxml.jackson.databind.node.MissingNode",
+        "com.fasterxml.jackson.databind.node.NullNode",
+        "com.fasterxml.jackson.databind.node.NumericNode",
+        "com.fasterxml.jackson.databind.node.ObjectNode",
+        "com.fasterxml.jackson.databind.node.POJONode",
+        "com.fasterxml.jackson.databind.node.ShortNode",
+        "com.fasterxml.jackson.databind.node.TextNode",
+        "com.fasterxml.jackson.databind.node.TreeTraversingParser",
+        "com.fasterxml.jackson.databind.node.ValueNode",
+        "com.fasterxml.jackson.databind.ser.BasicSerializerFactory",
+        "com.fasterxml.jackson.databind.ser.BeanPropertyWriter",
+        "com.fasterxml.jackson.databind.ser.BeanSerializer",
+        "com.fasterxml.jackson.databind.ser.BeanSerializerFactory",
+        "com.fasterxml.jackson.databind.ser.BeanSerializerModifier",
+        "com.fasterxml.jackson.databind.ser.ContainerSerializer",
+        "com.fasterxml.jackson.databind.ser.ContextualSerializer",
+        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider",
+        "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider$Impl",
+        "com.fasterxml.jackson.databind.ser.PropertyWriter",
+        "com.fasterxml.jackson.databind.ser.ResolvableSerializer",
+        "com.fasterxml.jackson.databind.ser.SerializerCache",
+        "com.fasterxml.jackson.databind.ser.SerializerFactory",
+        "com.fasterxml.jackson.databind.ser.Serializers",
+        "com.fasterxml.jackson.databind.ser.VirtualBeanPropertyWriter",
+        "com.fasterxml.jackson.databind.ser.impl.AttributePropertyWriter",
+        "com.fasterxml.jackson.databind.ser.impl.FailingSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.IndexedListSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.IndexedStringListSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.IteratorSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.MapEntrySerializer",
+        "com.fasterxml.jackson.databind.ser.impl.PropertyBasedObjectIdGenerator",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Double",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Empty",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$SerializerAndMapResult",
+        "com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap$Single",
+        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap",
+        "com.fasterxml.jackson.databind.ser.impl.ReadOnlyClassToSerializerMap$Bucket",
+        "com.fasterxml.jackson.databind.ser.impl.StringArraySerializer",
+        "com.fasterxml.jackson.databind.ser.impl.StringCollectionSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.TypeWrappedSerializer",
+        "com.fasterxml.jackson.databind.ser.impl.UnknownSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ArraySerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.AsArraySerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.BeanSerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer",
+        "com.fasterxml.jackson.databind.ser.std.BooleanSerializer$AsNumber",
+        "com.fasterxml.jackson.databind.ser.std.ByteBufferSerializer",
+        "com.fasterxml.jackson.databind.ser.std.CalendarSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ClassSerializer",
+        "com.fasterxml.jackson.databind.ser.std.CollectionSerializer",
+        "com.fasterxml.jackson.databind.ser.std.DateSerializer",
+        "com.fasterxml.jackson.databind.ser.std.DateTimeSerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.EnumSerializer",
+        "com.fasterxml.jackson.databind.ser.std.EnumSetSerializer",
+        "com.fasterxml.jackson.databind.ser.std.FileSerializer",
+        "com.fasterxml.jackson.databind.ser.std.InetAddressSerializer",
+        "com.fasterxml.jackson.databind.ser.std.InetSocketAddressSerializer",
+        "com.fasterxml.jackson.databind.ser.std.IterableSerializer",
+        "com.fasterxml.jackson.databind.ser.std.JsonValueSerializer",
+        "com.fasterxml.jackson.databind.ser.std.MapProperty",
+        "com.fasterxml.jackson.databind.ser.std.MapSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NullSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializer$BigDecimalAsStringSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$Base",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$DoubleSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$FloatSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntLikeSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$IntegerSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$LongSerializer",
+        "com.fasterxml.jackson.databind.ser.std.NumberSerializers$ShortSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ObjectArraySerializer",
+        "com.fasterxml.jackson.databind.ser.std.ReferenceTypeSerializer",
+        "com.fasterxml.jackson.databind.ser.std.SerializableSerializer",
+        "com.fasterxml.jackson.databind.ser.std.SqlDateSerializer",
+        "com.fasterxml.jackson.databind.ser.std.SqlTimeSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StaticListSerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicBooleanSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicIntegerSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdJdkSerializers$AtomicLongSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Default",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$Dynamic",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$EnumKeySerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdKeySerializers$StringKeySerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdScalarSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StdSerializer",
+        "com.fasterxml.jackson.databind.ser.std.StringSerializer",
+        "com.fasterxml.jackson.databind.ser.std.TimeZoneSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ToStringSerializer",
+        "com.fasterxml.jackson.databind.ser.std.ToStringSerializerBase",
+        "com.fasterxml.jackson.databind.ser.std.TokenBufferSerializer",
+        "com.fasterxml.jackson.databind.ser.std.UUIDSerializer",
+        "com.fasterxml.jackson.databind.type.ArrayType",
+        "com.fasterxml.jackson.databind.type.ClassStack",
+        "com.fasterxml.jackson.databind.type.CollectionLikeType",
+        "com.fasterxml.jackson.databind.type.CollectionType",
+        "com.fasterxml.jackson.databind.type.MapLikeType",
+        "com.fasterxml.jackson.databind.type.MapType",
+        "com.fasterxml.jackson.databind.type.PlaceholderForType",
+        "com.fasterxml.jackson.databind.type.ReferenceType",
+        "com.fasterxml.jackson.databind.type.ResolvedRecursiveType",
+        "com.fasterxml.jackson.databind.type.SimpleType",
+        "com.fasterxml.jackson.databind.type.TypeBase",
+        "com.fasterxml.jackson.databind.type.TypeBindings",
+        "com.fasterxml.jackson.databind.type.TypeBindings$AsKey",
+        "com.fasterxml.jackson.databind.type.TypeBindings$TypeParamStash",
+        "com.fasterxml.jackson.databind.type.TypeFactory",
+        "com.fasterxml.jackson.databind.type.TypeParser",
+        "com.fasterxml.jackson.databind.util.Annotations",
+        "com.fasterxml.jackson.databind.util.ArrayIterator",
+        "com.fasterxml.jackson.databind.util.ClassUtil",
+        "com.fasterxml.jackson.databind.util.ClassUtil$Ctor",
+        "com.fasterxml.jackson.databind.util.LRUMap",
+        "com.fasterxml.jackson.databind.util.Named",
+        "com.fasterxml.jackson.databind.util.RootNameLookup",
+        "com.fasterxml.jackson.databind.util.SimpleBeanPropertyDefinition",
+        "com.fasterxml.jackson.databind.util.StdDateFormat",
+        "com.fasterxml.jackson.databind.util.TokenBuffer",
+        "com.fasterxml.jackson.databind.util.TypeKey"
+      ]
+    }
+  },
+  "status": "changed",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "com.uber.profiling.Arguments#runConfigProvider()V",
+    "codeIndices": [
+      39
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "com.uber.profiling.Arguments#runConfigProvider()V",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe$Settings": "4fcac9ec73bef36e5665d8311f34193d60daffaf3c7fcc54b5fff30771081e3a",
+    "UpgradeProbe": "21ac2cef1bead32eef6f0f7eff5501dbd44a5c074cfb43206766cb86483ba4fb",
+    "UpgradeTrace": "bd0cf2e9519310ef6edfbcded4927ae58f877b0e508794f6ca46e27da1348fa0"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 2",
+    "checkerSha256": "a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb",
+    "adapterClassSha256": "d4536fa21378dfcda10fbf66d262d8bd656d744fdc7e292c0edb1495b7957cb6",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "03a21825f87a95b1d1291c035b9f885066dca9d0",
+        "callerClassSha256": "10dc097a22099cde220a856409fe6c6500de85cc13c83f502aeedc4fe657f784",
+        "orderedClasspathSha256": [
+          "9d730670194406eb5c93275810011f83d1cae56fa48b108d5e1104e24ec289c0",
+          "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
+          "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
+          "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
+          "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+          "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
+          "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
+          "737c1165a617eac7275431f76615fd18447b001c0dc4f4f4db4e24b3b3cce0f9",
+          "c876f2e85d0f108a34cdd11ccc9d8d7875697367efc75bf10a89c2c26aee994c",
+          "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
+          "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
+          "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
+          "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
+          "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+          "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "outside the fragment: java.lang.String.split on an object the engine does not model",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "517856cccfc8d293ade3f9e928c309ae67da1575c8ebecf5b4eaa546a17d9f67",
+        "seconds": 0.098
+      },
+      "new": {
+        "commit": "279ece31518ff797eb149c57df01093cdd376daf",
+        "callerClassSha256": "10dc097a22099cde220a856409fe6c6500de85cc13c83f502aeedc4fe657f784",
+        "orderedClasspathSha256": [
+          "9d730670194406eb5c93275810011f83d1cae56fa48b108d5e1104e24ec289c0",
+          "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
+          "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
+          "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
+          "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+          "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
+          "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
+          "2d23f47001492233565adf5a34f225f2ae89564cee08024873ec36b7842ede46",
+          "673f8ae16becea4fa937404b3a851417faf42df3bbc592028bbe2bfe0cc9d8cb",
+          "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
+          "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
+          "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
+          "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
+          "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
+          "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "outside the fragment: java.lang.String.split on an object the engine does not model",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "255808ac28a03c6f83e08b8518db419ecf09f9186b0d3bd8ae4c49cab130309a",
+        "seconds": 0.09
+      }
+    }
+  },
+  "differences": [
+    0
+  ],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 7.079,
+  "specSha256": "5cb80db69344ac52581cc592e5aea5b7b00a56195aa731173d3a3d3d6ae61251"
+}

@@ -1,0 +1,683 @@
+{
+  "entry": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+  "observer": "The exact escaped and highlighted text returned for empty, ordinary and HTML-sensitive step arguments.",
+  "domainBasis": "Escape HTML characters in the original step text, then mark the specified nonempty argument span at its zero-based offset. Empty and absent argument lists contribute no marks.",
+  "cases": [
+    {
+      "args": [
+        "a & b",
+        "[]"
+      ],
+      "expected": {
+        "return": "a &amp; b"
+      }
+    },
+    {
+      "args": [
+        "eat red now",
+        "[{\"val\":\"red\",\"offset\":4}]"
+      ],
+      "expected": {
+        "return": "eat <b>red</b> now"
+      }
+    },
+    {
+      "args": [
+        "a<b",
+        "[{\"val\":\"<\",\"offset\":1}]"
+      ],
+      "expected": {
+        "return": "a<b>&lt;</b>b"
+      }
+    },
+    {
+      "args": [
+        "",
+        "[]"
+      ],
+      "expected": {
+        "return": ""
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "e4958c2f8aa4e3b085a2c62fa43f65d82833b2164ad0303ee606b2df07aab768",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d",
+      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
+      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
+      "classpath": [
+        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
+        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
+        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
+        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
+        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
+        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
+        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
+        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
+        "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
+        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
+        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
+        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
+        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
+        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
+        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
+        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
+      ],
+      "dependency": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 3,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "a &amp; b"
+            },
+            {
+              "return": "a &amp; b"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "eat <b>red</b> now"
+            },
+            {
+              "return": "eat <b>red</b> now"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "a<b>&lt;</b>b"
+            },
+            {
+              "return": "a<b>&lt;</b>b"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": ""
+            },
+            {
+              "return": ""
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.lang3.ArrayUtils",
+        "org.apache.commons.lang3.Range",
+        "org.apache.commons.lang3.Range$ComparableComparator",
+        "org.apache.commons.lang3.StringUtils",
+        "org.apache.commons.lang3.Validate",
+        "org.apache.commons.lang3.stream.LangCollectors",
+        "org.apache.commons.lang3.stream.LangCollectors$SimpleCollector",
+        "org.apache.commons.lang3.stream.Streams"
+      ]
+    },
+    "new": {
+      "commit": "bf97b9ef1d60f9959a61379c3b3a682350e8e583",
+      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
+      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
+      "classpath": [
+        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
+        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
+        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
+        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
+        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
+        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
+        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
+        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
+        "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
+        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
+        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
+        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
+        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
+        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
+        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
+        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
+        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
+      ],
+      "dependency": "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 3,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "a &amp; b"
+            },
+            {
+              "return": "a &amp; b"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "eat <b>red</b> now"
+            },
+            {
+              "return": "eat <b>red</b> now"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "a<b>&lt;</b>b"
+            },
+            {
+              "return": "a<b>&lt;</b>b"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": ""
+            },
+            {
+              "return": ""
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "Ljava/lang/String;@0",
+                  "[Lnet/masterthought/cucumber/json/support/Argument;@1",
+                  "Ljava/lang/String;@2",
+                  "Ljava/lang/String;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            },
+            {
+              "observerCodeIndex": 27,
+              "dispatchedTo": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.lang3.ArrayUtils",
+        "org.apache.commons.lang3.Range",
+        "org.apache.commons.lang3.Range$ComparableComparator",
+        "org.apache.commons.lang3.StringUtils",
+        "org.apache.commons.lang3.Validate",
+        "org.apache.commons.lang3.stream.LangCollectors",
+        "org.apache.commons.lang3.stream.LangCollectors$SimpleCollector",
+        "org.apache.commons.lang3.stream.Streams"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+    "codeIndices": [
+      27
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
+    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+    "UpgradeProbe": "63a87dfa181cacb80de7cbc9a395d65c1fc7d6094308bc4c58fb1959b993a4b3",
+    "UpgradeTrace": "d5359fa3264eeb31b99378b21d4102bd39c3733b454baf875712a8b2f0e0283c"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 4",
+    "checkerSha256": "a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb",
+    "adapterClassSha256": "9309cb511116539482bef5fb2fa3c4b55baae2c386455946de75c592fe9b403d",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d",
+        "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
+        "orderedClasspathSha256": [
+          "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
+          "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
+          "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
+          "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
+          "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
+          "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
+          "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
+          "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
+          "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+          "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
+          "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
+          "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
+          "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
+          "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
+          "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
+          "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
+          "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Collections.emptyIterator()Ljava/util/Iterator;@jdk-21.0.13 (java.util.Collections.emptyIterator() at com.fasterxml.jackson.databind.util.ClassUtil.<clinit>:25). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "e393814a16196b5a460b741e0ed07f11ccd5114cecc74ddd54a01e3e2f7216d0",
+        "seconds": 0.037
+      },
+      "new": {
+        "commit": "bf97b9ef1d60f9959a61379c3b3a682350e8e583",
+        "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
+        "orderedClasspathSha256": [
+          "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
+          "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
+          "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
+          "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
+          "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
+          "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
+          "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
+          "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
+          "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
+          "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
+          "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
+          "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
+          "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
+          "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
+          "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
+          "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
+          "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Collections.emptyIterator()Ljava/util/Iterator;@jdk-21.0.13 (java.util.Collections.emptyIterator() at com.fasterxml.jackson.databind.util.ClassUtil.<clinit>:25). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "b22008c09b8f63536d19f2f71440367dfe67052400ad9f8ce8dcb011e2b7fe47",
+        "seconds": 0.041
+      }
+    }
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 17.279,
+  "specSha256": "0508ebde7f7bdfe033720ff36cbe8d00f2e6066f6a760c4a298c7d382b7b498a"
+}
