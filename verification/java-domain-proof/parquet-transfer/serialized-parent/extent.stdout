@@ -1,0 +1,186 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "campaign.SerializedBinary#extent",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 64",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "extent(code=32)",
+      "outcome": "0",
+      "values": [
+        "32"
+      ],
+      "shrink_runs": 0,
+      "inputs": [
+        {
+          "name": "code",
+          "type": "int",
+          "value": 32
+        }
+      ],
+      "call": {
+        "class": "campaign.SerializedBinary",
+        "class_file": "campaign/SerializedBinary.class",
+        "classes": "after",
+        "method": "extent",
+        "descriptor": "(I)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "code",
+            "type": "int",
+            "value": 32,
+            "from": "code"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 60.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
+    "problem": null,
+    "statement": "/tmp/parquet-transfer-4_wnxww9/reuse/parent/extent/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of campaign.SerializedBinary#extent violated: `result == 1` where code >= 0 && code < 64:\n  extent(code=32)\n    outcome: 0",
+        "uri": null,
+        "line": 35
+      }
+    ],
+    "output": "✗ Property of campaign.SerializedBinary#extent violated: `result == 1` where code >= 0 && code < 64:\n  extent(code=32)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 60.3 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/tmp/parquet-transfer-4_wnxww9/reuse/parent/extent",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 60.335460779,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 2048,
+      "stage": "[-100000:100000]",
+      "native": {
+        "paths": 23,
+        "merges": 0,
+        "solver_calls": 655,
+        "solving_seconds": 53.640196771,
+        "gates_evaluated": 177024,
+        "evaluating_seconds": 0.009518951,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 8,
+        "multiplications_built": 0,
+        "variables": 2121434,
+        "clauses": 6481790,
+        "seconds": 60.040052488,
+        "loading_seconds": 0.001714391,
+        "decoding_seconds": 0.00036108,
+        "encoding_seconds": 5.8581431859999995,
+        "witness_seconds": 0.042157112
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 60.04,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.002,
+            "lowering": 0.0,
+            "symbolic": 0.497,
+            "encoding": 5.858,
+            "solving": 53.64,
+            "trace": 0.042,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 2121434,
+            "clauses": 6481790
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 60.552,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 60.04,
+        "replay": 0.005,
+        "jvm": 0.191,
+        "other": 0.314
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 64",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

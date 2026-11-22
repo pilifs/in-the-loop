@@ -1,0 +1,592 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-123429-price-the-avro-buffer-fact-at-the-parque",
+  "title": "Price the Avro buffer fact at the Parquet builder",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6m38s, peak 1.6 GiB (estimated 7m00s, 4.0 GiB); 52 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-123429-price-the-avro-buffer-fact-at-the-parque.json",
+    "sha256": "34937e8ba4edee07f9d07f51ae409a951751143121adb724b60af13fa4696dbd",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-123429-price-the-avro-buffer-fact-at-the-parque",
+      "title": "Price the Avro buffer fact at the Parquet builder",
+      "description": "Price recertifying the earlier Avro wrap theorem, validate the two actual Parquet wrap sites and exact read-only view on each selector, and time the same public extent claim with checked reuse disabled and enabled. Larger backing arrays require a new bound even when the metadata wrap fits the old theorem.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "examples": [
+          "363",
+          "362"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:34:29+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "7m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Measure both public routes and the separate read-only producer",
+          "run": "python3 -B lib/benchmark/java-domain-proof/transfer.py --output verification/java-domain-proof/parquet-transfer",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-domain-proof/parquet-transfer"
+      ]
+    }
+  },
+  "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+  "startedAt": "2026-11-22T12:42:29+00:00",
+  "finishedAt": "2026-11-22T12:52:33+00:00",
+  "wallSeconds": 604.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 303280,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1671041024,
+    "wallSeconds": 398.8,
+    "cpuSeconds": 417.0,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.95
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure both public routes and the separate read-only producer",
+      "run": "python3 -B lib/benchmark/java-domain-proof/transfer.py --output verification/java-domain-proof/parquet-transfer",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 398.758,
+      "cpuSeconds": 417.012,
+      "cpuThrottledSeconds": 2.986,
+      "peakMemoryBytes": 1671041024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-both-public-routes-and.log",
+        "lines": 1,
+        "bytes": 62,
+        "sha256": "7966fbf8c39313278e7ae20613c23a5e5db606cdebf59346df48e80b95a45af5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'disabled': 12.871822, 'clean': 5.795087, 'reuse': 9.906397}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/clean-20.json",
+      "change": "added",
+      "bytes": 961,
+      "sha256": "bc5c59882ec5e407ffd13c71b139b1ae380e8f80b35090f4669e2d97c2bf6155",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/clean-20.native.json",
+      "change": "added",
+      "bytes": 6417,
+      "sha256": "f6f89d19044e6ba2fd279298dace40905574aca1954633dc653c47f0ad285b69",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b7fb53bb5fb1f97ccd8a3ef5dba34dc79c52b03fb9ce1543af7f78413c1e038b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/plan.json",
+      "change": "added",
+      "bytes": 9409,
+      "sha256": "f5b98183f7e0556508083b16aefedfb2250b3d557d25a0f7b195f4c15d8566ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15670,
+      "sha256": "2d1def67e06faf25a1bd5029114da1483ce58a2fa989691c92d8ca28453a05a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/controls.json",
+      "change": "added",
+      "bytes": 50564,
+      "sha256": "4f979f2aaf376d26530171b0b302c23d65d2b8bce887fd6ef27d04336feec461",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/execution.json",
+      "change": "added",
+      "bytes": 77305,
+      "sha256": "e957c2e0e5a1e511f8f04177f038ee346859c12aa49e7db97b8e566fada7ef38",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "929716d40ed1a04e861759ec19399a687571f6a417638f7d2ad845cd925a5435",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 106,
+      "sha256": "54d3b86f6e7642fcb4646e962ab7a49d552bf3f64f2afcd9440ef30a8848efd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier.json",
+      "change": "added",
+      "bytes": 26198,
+      "sha256": "c86f1376d660da2bdc126ee8fe539d97c1ba8e189e3f7a69f92475c9086470ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4451,
+      "sha256": "332f62c99135f7852ae7405e4b5120760647e7a64e01831ffbd1d7d58a62191f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/result.json",
+      "change": "added",
+      "bytes": 15774,
+      "sha256": "1ad2114eca803166556ce8df0097142a9ca250704f717a2d6ecce056bff885ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/executions/20261122T124608Z-312804d2/attempt.json",
+      "change": "added",
+      "bytes": 35376,
+      "sha256": "b32448bb88ce2f37b2d84f1860b50baa53a936fb4e2e03f79353e96e7f63ebc9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/executions/20261122T124608Z-312804d2/checker.json",
+      "change": "added",
+      "bytes": 6500,
+      "sha256": "db4447927a607f4d243ff70fd3afefe003245f7fb4de92811ce30459151649ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/executions/20261122T124608Z-312804d2/correspondence.json",
+      "change": "added",
+      "bytes": 10378,
+      "sha256": "941da409869c58b0f93b51e88ee22259e01435b8918767394ed9ee793438f22a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled/extent-fix.log",
+      "change": "added",
+      "bytes": 231,
+      "sha256": "540116b9f27a313f52f408c1bf4c5dab1c44939246f94f68874fe83b249da8cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled-47.json",
+      "change": "added",
+      "bytes": 964,
+      "sha256": "5fe9d25845af87954451902b222a84fcc3d15fe3453213d27e42c0dfbb889076",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/disabled-47.native.json",
+      "change": "added",
+      "bytes": 6735,
+      "sha256": "a901e3b72664fa9da314c812d796c96a57867ee4a5206b5d0b036f2c4d4a9240",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/measurement.json",
+      "change": "added",
+      "bytes": 517610,
+      "sha256": "cd96fa2cbfa2d89b32d3b50562d0cc9bcc6beb217908014c0592d27b24e688a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/read-only-child.native.json",
+      "change": "added",
+      "bytes": 7175,
+      "sha256": "c726ebc03612162b774a71c62280a96720b3e99e0771a153302bc8bb85a2fcd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/read-only-child.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3e8552044f844c717934a5a6e36b130745b6fa3046a160fdeea4fefc18a7b2ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/plan.json",
+      "change": "added",
+      "bytes": 9409,
+      "sha256": "f5b98183f7e0556508083b16aefedfb2250b3d557d25a0f7b195f4c15d8566ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15670,
+      "sha256": "2d1def67e06faf25a1bd5029114da1483ce58a2fa989691c92d8ca28453a05a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/controls.json",
+      "change": "added",
+      "bytes": 50564,
+      "sha256": "f066359cec5c4293b0f365687e42354472e83710257abb45eb6bbeb905bb1ef7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/execution.json",
+      "change": "added",
+      "bytes": 77305,
+      "sha256": "ad161e6b94633ecbfc17237b090b7472652376a81e78a6e71c9506402d6cc5c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "ddf09753d3610f14a7b8f9b4ce6816f2c1be829cb032dcf84f187b288823e76b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 106,
+      "sha256": "54d3b86f6e7642fcb4646e962ab7a49d552bf3f64f2afcd9440ef30a8848efd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier.json",
+      "change": "added",
+      "bytes": 26198,
+      "sha256": "0fa5ed8c2fe1e230e491452a916b700ab3b1b5353f6cd6f3b64c0d3fd8fc46df",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4451,
+      "sha256": "a7906afd102166a63754bcbfbf9f69b52dbe90bec529325b3776f59349a60f6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/result.json",
+      "change": "added",
+      "bytes": 15774,
+      "sha256": "543da8f61edb75e04f695b8135265abcd002ad064d148ea9b23446af7e9b9a5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/executions/20261122T124728Z-416e571f/attempt.json",
+      "change": "added",
+      "bytes": 35376,
+      "sha256": "7833283ac4ec5007baf239d13b191ec9b1923ac39094d097aa0a59366960528c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/executions/20261122T124728Z-416e571f/checker.json",
+      "change": "added",
+      "bytes": 6500,
+      "sha256": "b1a0c62bbfd7bc69b4f65adaba5ee151718cc9674bdfcaeb4e8d5d8defa1bf2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/executions/20261122T124728Z-416e571f/correspondence.json",
+      "change": "added",
+      "bytes": 10378,
+      "sha256": "941da409869c58b0f93b51e88ee22259e01435b8918767394ed9ee793438f22a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse/extent-fix.log",
+      "change": "added",
+      "bytes": 231,
+      "sha256": "102782c7e09e9e4a7d15cf8769b7be8fb6804b31fbf6c20927ce4ae7639519ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse-47.json",
+      "change": "added",
+      "bytes": 961,
+      "sha256": "4628225468c46e3950f0f3665e6cb45e7f18a1d33c14d0d544f15f2fa91967f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/reuse-47.native.json",
+      "change": "added",
+      "bytes": 6736,
+      "sha256": "d2af8b0fb1f9e1f7b10c6eac4319fda1cf483cd4699dfc72b39d48ee2272a366",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/routes.json",
+      "change": "added",
+      "bytes": 504190,
+      "sha256": "24edbd85b5b6e2003a14b73dda40de3a5173d0c000ba3ae6d4282c0ff1eb9abf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-fix/extent.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-fix/extent.stdout",
+      "change": "added",
+      "bytes": 4517,
+      "sha256": "9077ffc9c89f23bf1430acbfe753976b893fb0cb7e65ea7ecefe6f366c0eb081",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-fix/fresh.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-fix/fresh.stdout",
+      "change": "added",
+      "bytes": 4511,
+      "sha256": "2edb323f76c63940ce87c158d1c164014d94078fd326b0e3f4d29ca22af07691",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-fix/measurement.json",
+      "change": "added",
+      "bytes": 3122,
+      "sha256": "9b61f8d0e6fcc440f2723f73471dbc18d03d285739805993dad2b89aa6343a8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-parent/extent.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-parent/extent.stdout",
+      "change": "added",
+      "bytes": 5892,
+      "sha256": "71af8137005dc67b5b3bf5ecaf2edd5a1242b5289269c662d4305541d430c427",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-parent/fresh.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-parent/fresh.stdout",
+      "change": "added",
+      "bytes": 4513,
+      "sha256": "efbeed08231ec1e26b4c40eb1a2533e439f5d9b99b6624d151664229692d2d86",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/parquet-transfer/serialized-parent/measurement.json",
+      "change": "added",
+      "bytes": 3076,
+      "sha256": "167f0a6a9e28be1b8987dc4412d1eea5a4b8141ab8b95e89942c2bb6d4ce6e0f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:52:59+00:00",
+    "applied": [
+      "verification/java-domain-proof/parquet-transfer/clean-20.json",
+      "verification/java-domain-proof/parquet-transfer/clean-20.native.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/completion.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/plan.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/control-fix-jdk21.stderr",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/control-fix-jdk21.stdout",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/controls.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/execution.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/streams.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier-output.txt",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier.stderr",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/records/verifier.stdout",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/20261122T124608Z-312804d2/result.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/executions/20261122T124608Z-312804d2/attempt.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/executions/20261122T124608Z-312804d2/checker.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix/executions/20261122T124608Z-312804d2/correspondence.json",
+      "verification/java-domain-proof/parquet-transfer/disabled/extent-fix.log",
+      "verification/java-domain-proof/parquet-transfer/disabled-47.json",
+      "verification/java-domain-proof/parquet-transfer/disabled-47.native.json",
+      "verification/java-domain-proof/parquet-transfer/measurement.json",
+      "verification/java-domain-proof/parquet-transfer/read-only-child.native.json",
+      "verification/java-domain-proof/parquet-transfer/read-only-child.stderr",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/completion.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/plan.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/control-fix-jdk21.stderr",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/control-fix-jdk21.stdout",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/controls.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/execution.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/streams.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier-output.txt",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier.stderr",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/records/verifier.stdout",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/20261122T124728Z-416e571f/result.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/executions/20261122T124728Z-416e571f/attempt.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/executions/20261122T124728Z-416e571f/checker.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix/executions/20261122T124728Z-416e571f/correspondence.json",
+      "verification/java-domain-proof/parquet-transfer/reuse/extent-fix.log",
+      "verification/java-domain-proof/parquet-transfer/reuse-47.json",
+      "verification/java-domain-proof/parquet-transfer/reuse-47.native.json",
+      "verification/java-domain-proof/parquet-transfer/routes.json",
+      "verification/java-domain-proof/parquet-transfer/serialized-fix/extent.stderr",
+      "verification/java-domain-proof/parquet-transfer/serialized-fix/extent.stdout",
+      "verification/java-domain-proof/parquet-transfer/serialized-fix/fresh.stderr",
+      "verification/java-domain-proof/parquet-transfer/serialized-fix/fresh.stdout",
+      "verification/java-domain-proof/parquet-transfer/serialized-fix/measurement.json",
+      "verification/java-domain-proof/parquet-transfer/serialized-parent/extent.stderr",
+      "verification/java-domain-proof/parquet-transfer/serialized-parent/extent.stdout",
+      "verification/java-domain-proof/parquet-transfer/serialized-parent/fresh.stderr",
+      "verification/java-domain-proof/parquet-transfer/serialized-parent/fresh.stdout",
+      "verification/java-domain-proof/parquet-transfer/serialized-parent/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 1619912,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d0076816bcae8681f74d3349ba50ca57c350f3cd/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T125233Z-7690364e2b6e2d6f",
+      "outputs": "20261122T125233Z-805540135d73d9ad",
+      "diff": "20261122T125233Z-837280d3438aa44a"
+    }
+  }
+}
