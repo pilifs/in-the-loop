@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "open",
+  "status": "ended",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -6614,6 +6614,14 @@
       "immutable": false,
       "summary": "List the encrypted-reasoning redaction test in the cost inventory",
       "body": "test_codex.py::Redaction.test_encrypted_reasoning, added with redaction policy 6, was missing from lib/tests/costs.json, so the tier lint failed the default run after the Spring merge. test_costs.py estimate added its row (unit tier); the tier lint passes.",
+      "log_sha256": "174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7"
+    },
+    {
+      "change_id": "oxkopkzmwylvnxzylununzkwqxotlqrl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add a setup phase to single-agent runs: a setup agent prepares a brief, and its notes go into the brief",
+      "body": "single_run.py setup NAME --brief FILE starts a setup agent (Claude Opus 5.5 at high effort by default) whose two texts come from the new llm-dlc/loops/setup-agent-template.md, with the brief and its record filled in. The agent only fetches, pins, verifies and builds what the brief needs, records it, and ends its record with a '## Setup Agent Notes' section for the domain agent. single_run.py notes NAME [--to FILE] puts that section into the brief and any other copy of it, replacing an earlier one, so a second run changes nothing. The /single-agent-run skill gains --setup and a 'A setup phase' section (when to use it, the drift signals for answering stop, waiting on its jobs, and the handover to the domain run), and llm-dlc/README.md describes it.\n\nThe template carries the lessons of the first setup pass (2026-11-22, the Spring and Java data brief): a built-in way to wait on jobs, checked substitution for public repositories that have gone away (and no assuming that an artifact exists elsewhere), a private GNUPGHOME whose agent is stopped at the end, and that other sessions' memory notes are not instructions. Verified with three new tests in test_single_run.py (the template's texts, the notes section's extraction and replacement, and a real setup run on the stand-in client through to notes in two copies of a brief), and test_costs.py run --changed: test_single_run, test_brief_run, test_conductor, test_prove_loop and test_watch all pass.",
       "log_sha256": "174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7"
     }
   ],

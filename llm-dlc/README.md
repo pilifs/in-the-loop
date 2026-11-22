@@ -95,8 +95,8 @@ llm-dlc/
                                     stage, start, wait, status, merge (in an order, or early), trial merges, a
                                     stream's rerun, helpers; test_brief_run.py tests it and run-streams.sh's part
   tools/single_run.py               the watcher's tools for a single agent's run (/single-agent-run): start, wait,
-                                    answer, the continue message, stop, land; test_single_run.py tests it and
-                                    feature-loop.sh's `single-agent` loop
+                                    answer, the continue message, stop, land, a brief's setup phase and its notes;
+                                    test_single_run.py tests it and feature-loop.sh's `single-agent` loop
   tools/agent_client.py             the client boundary of a loop's turn: starts, resumes and compacts a Codex turn and
                                     prints the stream the loops read from Claude Code; test_agent_client.py tests it
                                     over codex_standin.py, a stand-in for the client
@@ -469,6 +469,16 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
 - **Stopping and continuing.** `stop NAME` ends the run after the cycle under way, `stop NAME --now` interrupts it,
   and `start NAME` on a run that has ended continues its session, the first cycle taking the continue message as
   it stands (or a new `--prompt` of the user's). `cycles NAME +N` changes the count, as typed in a loop's terminal.
+- **A setup phase** (`--setup`; `single_run.py setup NAME --brief FILE`). Before a brief's domain run, a setup agent
+  (Claude Opus 5.5 at high effort) does only the mechanical setup. It fetches the pinned sources, both sides'
+  dependencies, the build tools and JDKs into `~/.cache/in-the-loop/`, verifies hashes and signatures, builds the
+  original artifacts, and checks the original regressions. Its texts are
+  [`loops/setup-agent-template.md`](loops/setup-agent-template.md)'s, with the brief and the record filled in.
+  Its record ends with a `## Setup Agent Notes` section for the domain agent, which `single_run.py notes NAME`
+  puts into the brief (and with `--to FILE`, into another copy of it), in place of a section already there.
+  The watcher stops it if it drifts into claims, examples or library code. The first one (2026-11-22, the Spring and
+  Java data brief) took two cycles, and the domain agent then scored the whole brief in its first cycle without
+  fetching anything.
 
 The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle.
 
@@ -703,7 +713,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 151 | 28 | open |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 163 | 144 | open |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](traces/7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 84 | 22 | open |
-| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 147 | 796 | open |
+| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 149 | 801 | open |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 12 | 1 | ended |
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1 | 2 | ended |
 | 2026-11-17 02:13 UTC | [Window 11 verification loop](traces/b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 11 | 14 | ended |
@@ -726,7 +736,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | ended |
 | 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 60 | 429 | ended |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](traces/48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 1 | 6 | ended |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 897 | 1013 | open |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 902 | 1018 | open |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 41 | 90 | ended |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 11 | 12 | ended |
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](traces/72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 61 | 21 | ended |
