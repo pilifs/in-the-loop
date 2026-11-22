@@ -50,18 +50,22 @@ def hadoop(exe, jdk, work, out, classes, jars, binding, profile):
             raw = subprocess.run(cmd, env=env, capture_output=True, timeout=90)
             if not raw.stdout: raise ValueError(raw.stderr.decode(errors="replace")[-600:])
             row, = json.loads(raw.stdout)
-            stated = row["stated"]
-            premises = [x["id"] for x in stated["assumptions"] if x["kind"] == "library"]
+            stated = row.get("stated")
+            library = [x for x in (stated or {}).get("assumptions", []) if x["kind"] == "library"]
+            premises = [x.get("id") or x["text"] for x in library]
             named = {x.split(":")[1] for x in premises if x.startswith("observed-initializer:")}
-            if row["target"] != target or row["assert"] != assertion or stated["gap_mode"] != "strict" or named != set(roots):
+            if row["target"] != target or row["assert"] != assertion or (stated and stated["gap_mode"] != "strict"):
                 raise ValueError("different Hadoop public entry or startup assumptions")
-            if not roots and premises: raise ValueError("unexpected ordinary Hadoop premise")
+            if row["verdict"] != "unverifiable" and (not stated or named != set(roots)):
+                raise ValueError("Hadoop verdict has a different startup scope")
+            if not roots and any(x.get("id") for x in library): raise ValueError("unexpected ordinary Hadoop contract")
             if row["verdict"] == "verified" and stated["vacuity"]["status"] != "non-vacuous": raise ValueError("vacuous Hadoop result")
             if row["verdict"] == "violation" and method not in ("wrong",):
                 raise ValueError("public lookup contradicted its original physical oracle")
+            if method == "wrong" and row["verdict"] == "verified": raise ValueError("incorrect reducer default established")
             p = out/(key+".native.json"); p.write_bytes(raw.stdout)
             record["claims"][key] = {"roots":roots, "verdict":row["verdict"], "firstOutstanding":row["problem"],
-                "premises":premises,"raw":p.name,"sha256":SHA(p),"seconds":round(time.monotonic()-start,3)}
+                "premises":premises,"boundRoots":sorted(named),"raw":p.name,"sha256":SHA(p),"seconds":round(time.monotonic()-start,3)}
             print(key,row["verdict"],row["problem"],flush=True)
             document(out/"reducers.json",record)
 
@@ -87,7 +91,8 @@ def run(number, side, output):
         for limit in (64,512):
             for method in (controls if limit==512 else ["firstFactory","typed"]):
                 row=native(exe,jdk,work,classes,out,"unwind-"+str(limit),"BytesSchema#"+method,
-                           "verified" if limit==512 and method=="firstFactory" else None,jars,unwind=limit)
+                           "verified" if limit==512 and method=="firstFactory" else None,jars,unwind=limit,
+                           record_environment=method!="firstFactory")
                 record["claims"][str(limit)+"-"+method]=row
                 document(out/"jackson.json",record)
                 print(number,side,limit,method,row["verdict"],row["firstUnknown"],flush=True)

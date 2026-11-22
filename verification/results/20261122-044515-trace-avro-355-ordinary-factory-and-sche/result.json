@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044515-trace-avro-355-ordinary-factory-and-sche",
+  "title": "Trace Avro 355 ordinary factory and schema producers",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2.8s, peak 242.0 MiB (estimated 4m00s, 3.0 GiB); 5 output file(s) changed",
+  "attention": [
+    "step 1 (Check both historical sides) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-044515-trace-avro-355-ordinary-factory-and-sche.json",
+    "sha256": "507026b013d10e87199ea9ad8984ab2825ce299aeb90ebc9cbd822c8ee7af25f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044515-trace-avro-355-ordinary-factory-and-sche",
+      "title": "Trace Avro 355 ordinary factory and schema producers",
+      "description": "Execute the original Jackson factory and successive Avro schema producers at the frozen 64 unwind and the separately qualified 512. On Hadoop also check a fresh JobConf(false), isolated and malformed overlays, explicit resources and progressively smaller startup captures. Keep every strict refusal and the original JVM controls.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:45:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check both historical sides",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 355 --output verification/domain-foundations/startup-expansion",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/startup-expansion/355"
+      ],
+      "supersedes": "20261122-042449-trace-avro-355-ordinary-factory-and-sche",
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:46:15+00:00",
+  "finishedAt": "2026-11-22T04:50:30+00:00",
+  "wallSeconds": 255.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 253788160,
+    "wallSeconds": 2.8,
+    "cpuSeconds": 4.0,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check both historical sides",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 355 --output verification/domain-foundations/startup-expansion",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 2.815,
+      "cpuSeconds": 3.998,
+      "cpuThrottledSeconds": 0.159,
+      "peakMemoryBytes": 253788160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-both-historical-sides.log",
+        "lines": 14,
+        "bytes": 1270,
+        "sha256": "0cb4a4058f04194d5fbf61c13b91cbe114f477d442466929802a6220f4eec4b6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "355 parent 64 firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "355 parent 64 typed unverifiable outside the fragment: arraycopy of summarized array cells",
+        "355 parent 512 firstFactory verified None",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-355-ordinary-factory-and-sche/lib/benchmark/domain-foundations/startup_probes.py\", line 107, in <module>",
+        "    for side in (\"parent\",\"fix\"): run(a.example,side,a.output)",
+        "                                  ~~~^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-355-ordinary-factory-and-sche/lib/benchmark/domain-foundations/startup_probes.py\", line 89, in run",
+        "    row=native(exe,jdk,work,classes,out,\"unwind-\"+str(limit),\"BytesSchema#\"+method,",
+        "               \"verified\" if limit==512 and method==\"firstFactory\" else None,jars,unwind=limit)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-355-ordinary-factory-and-sche/lib/benchmark/domain-foundations/schema_sets.py\", line 100, in native",
+        "    assumptions = [a[\"id\"] for a in stated[\"assumptions\"] if a[\"kind\"] == \"library\"]",
+        "                   ~^^^^^^",
+        "KeyError: 'id'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/startup-expansion/355/parent/jackson.json",
+      "change": "added",
+      "bytes": 11422,
+      "sha256": "6f862c39fe6831bfb74579c0d63cd214baf17b8fc27f56d12326258838264f93",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/355/parent/unwind-512-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4378,
+      "sha256": "c38404852a64f6d2565f70e81b2da3a08ed15e718e3badc7011e372826ce74cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/355/parent/unwind-512-mapper.native.json",
+      "change": "added",
+      "bytes": 6513,
+      "sha256": "e64a4662e000043ccd85eae6a0f65ede2afe1b61f814e3c5328ab55584054143",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/355/parent/unwind-64-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4505,
+      "sha256": "94a001adeeef76b798d4d587bb19277e23cfdd5f4c804c1f946abc03bc4b950d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/355/parent/unwind-64-typed.native.json",
+      "change": "added",
+      "bytes": 4473,
+      "sha256": "d5eba3e362c82b92e3fdd2bc6c3ecd5a183e9b498136f91a5df45a4606347e4e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:51:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/domain-foundations/startup-expansion/355/parent/jackson.json",
+      "verification/domain-foundations/startup-expansion/355/parent/unwind-512-firstFactory.native.json",
+      "verification/domain-foundations/startup-expansion/355/parent/unwind-512-mapper.native.json",
+      "verification/domain-foundations/startup-expansion/355/parent/unwind-64-firstFactory.native.json",
+      "verification/domain-foundations/startup-expansion/355/parent/unwind-64-typed.native.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045030Z-19961967120d2fca",
+      "outputs": "20261122T045030Z-2159228f195dbcc2",
+      "diff": "20261122T045030Z-2306470fa6ad7aad",
+      "workdir": "20261122T045100Z-5358760cc58decc4"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-355-ordinary-factory-and-sche"
+}

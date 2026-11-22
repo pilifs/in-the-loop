@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044515-trace-avro-361-ordinary-factory-and-sche",
+  "title": "Trace Avro 361 ordinary factory and schema producers",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.8s, peak 81.7 MiB (estimated 4m00s, 3.0 GiB); 5 output file(s) changed",
+  "attention": [
+    "step 1 (Check both historical sides) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-044515-trace-avro-361-ordinary-factory-and-sche.json",
+    "sha256": "3d43afea68cee5c1a78c14acb3fbdec98a09a29e194836a1872f83ff4987ea99",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044515-trace-avro-361-ordinary-factory-and-sche",
+      "title": "Trace Avro 361 ordinary factory and schema producers",
+      "description": "Execute the original Jackson factory and successive Avro schema producers at the frozen 64 unwind and the separately qualified 512. On Hadoop also check a fresh JobConf(false), isolated and malformed overlays, explicit resources and progressively smaller startup captures. Keep every strict refusal and the original JVM controls.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:45:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check both historical sides",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 361 --output verification/domain-foundations/startup-expansion",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/startup-expansion/361"
+      ],
+      "supersedes": "20261122-042449-trace-avro-361-ordinary-factory-and-sche",
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:46:15+00:00",
+  "finishedAt": "2026-11-22T04:50:29+00:00",
+  "wallSeconds": 254.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 85667840,
+    "wallSeconds": 1.8,
+    "cpuSeconds": 2.4,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check both historical sides",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 361 --output verification/domain-foundations/startup-expansion",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 1.807,
+      "cpuSeconds": 2.417,
+      "cpuThrottledSeconds": 0.162,
+      "peakMemoryBytes": 85667840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-both-historical-sides.log",
+        "lines": 14,
+        "bytes": 1270,
+        "sha256": "dd370f7ab1993cc2abdeab94c3b7d010c7ad5c6705bb704ce03a676ee1b6ffee",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "361 parent 64 firstFactory unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 parent 64 typed unverifiable outside the fragment: arraycopy of summarized array cells",
+        "361 parent 512 firstFactory verified None",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-361-ordinary-factory-and-sche/lib/benchmark/domain-foundations/startup_probes.py\", line 107, in <module>",
+        "    for side in (\"parent\",\"fix\"): run(a.example,side,a.output)",
+        "                                  ~~~^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-361-ordinary-factory-and-sche/lib/benchmark/domain-foundations/startup_probes.py\", line 89, in run",
+        "    row=native(exe,jdk,work,classes,out,\"unwind-\"+str(limit),\"BytesSchema#\"+method,",
+        "               \"verified\" if limit==512 and method==\"firstFactory\" else None,jars,unwind=limit)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-361-ordinary-factory-and-sche/lib/benchmark/domain-foundations/schema_sets.py\", line 100, in native",
+        "    assumptions = [a[\"id\"] for a in stated[\"assumptions\"] if a[\"kind\"] == \"library\"]",
+        "                   ~^^^^^^",
+        "KeyError: 'id'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/startup-expansion/361/parent/jackson.json",
+      "change": "added",
+      "bytes": 2899,
+      "sha256": "200e74aadfaa9bf2a3f8a1166e118dbadfc54a12d65d66afe2bfdb23df758cc7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/361/parent/unwind-512-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4379,
+      "sha256": "f8090bd85a90386552834dd1975c62b1e959feb6d9501b5ec2af7e3535f59f0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/361/parent/unwind-512-mapper.native.json",
+      "change": "added",
+      "bytes": 6515,
+      "sha256": "1c3bd2da25590f492dfdcfdd1e4ad7fc93ff833b4628d8750fc0ff39b5fcc549",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/361/parent/unwind-64-firstFactory.native.json",
+      "change": "added",
+      "bytes": 4505,
+      "sha256": "49212d43e703f2d3c3a10e2c2dba0125f27fd7f1c15cbe0f2711777ef13e2728",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/startup-expansion/361/parent/unwind-64-typed.native.json",
+      "change": "added",
+      "bytes": 4469,
+      "sha256": "acd6053da513420a36b3215ebe2b6b9555b0cd53093ed8d8aca14f62346a1579",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:51:03+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/domain-foundations/startup-expansion/361/parent/jackson.json",
+      "verification/domain-foundations/startup-expansion/361/parent/unwind-512-firstFactory.native.json",
+      "verification/domain-foundations/startup-expansion/361/parent/unwind-512-mapper.native.json",
+      "verification/domain-foundations/startup-expansion/361/parent/unwind-64-firstFactory.native.json",
+      "verification/domain-foundations/startup-expansion/361/parent/unwind-64-typed.native.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045029Z-1781026cdf3f6663",
+      "outputs": "20261122T045029Z-2112529f2541a3cb",
+      "diff": "20261122T045029Z-238819b3497e759b",
+      "workdir": "20261122T045051Z-761048843f51f08e"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-361-ordinary-factory-and-sche"
+}

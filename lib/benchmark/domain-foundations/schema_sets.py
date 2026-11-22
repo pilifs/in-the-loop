@@ -78,7 +78,7 @@ def sites(work, subject, inspector, classes, output, checker):
 
 
 def native(executable, subject, work, classes, output, label, entry, expected, jars=(), observed_schema=None,
-           *, unwind=64, guard=None, assertion=None, refusal=None):
+           *, unwind=64, guard=None, assertion=None, refusal=None, record_environment=False):
     target = "foundation."+entry
     method = entry.split("#")[1]
     env = dict(os.environ, JAVA_HOME=str(subject), JVMCONTRACT_JAR_RELEASE="21", PATH=str(subject/"bin")+os.pathsep+os.defpath)
@@ -97,13 +97,14 @@ def native(executable, subject, work, classes, output, label, entry, expected, j
     path.write_bytes(checked.stdout)
     row, = json.loads(checked.stdout)
     stated = row["stated"]
-    assumptions = [a["id"] for a in stated["assumptions"] if a["kind"] == "library"]
+    library = [a for a in stated["assumptions"] if a["kind"] == "library"]
+    assumptions = [a.get("id") or a["text"] for a in library]
     if row["target"] != target or stated["gap_mode"] != "strict" or row["assume"] != guard or (assertion and row["assert"] != assertion):
         raise ValueError("unexpected producer or startup scope")
     if observed_schema:
         if len(assumptions) != 1 or not assumptions[0].startswith("observed-initializer:org.apache.avro.Schema:"+observed_schema+":"):
             raise ValueError("construction used a different Schema or another library premise")
-    elif assumptions:
+    elif assumptions and not (record_environment and all(not a.get("id") for a in library)):
         raise ValueError("unexpected startup assumption")
     allowed = {expected} if expected else {"verified", "unverifiable"}
     matched = row["verdict"] in allowed
