@@ -38,6 +38,7 @@
   },
   "notes": [
     "Both properties start at ordinary application startup on Temurin 21. The original module is built separately on each revision. The public driver records the full observations for the independent finite oracle.",
-    "Binary and JSON both reproduce the parent fast reader's AvroRuntimeException. The fixed fast reader and both standard readers preserve every marker and materialize the empty array. Every decoder and reader mode rejects a missing required field. The ordinary native reader reaches SLF4J's thread-local construction. After recorded startup Schema.VALIDATE_NAMES holds an opaque supplied thread-local."
+    "Binary and JSON both reproduce the parent fast reader's AvroRuntimeException. The fixed fast reader and both standard readers preserve every marker and materialize the empty array. Every decoder and reader mode rejects a missing required field. The ordinary native reader reaches SLF4J's thread-local construction. After recorded startup Schema.VALIDATE_NAMES holds an opaque supplied thread-local.",
+    "On each original JAR, all 52 name-validation lookups inside the eight public reader calls returned NameValidator.UTF_VALIDATOR. The native checker established the original public validator on eighteen cases and the post-lookup consumer on those cases and all 16,384 two-character ASCII names. Fast-reader setup and default allocation remain part of the open public decode."
   ]
 }

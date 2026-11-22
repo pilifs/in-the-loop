@@ -1,0 +1,400 @@
+{
+  "baseline": {
+    "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+    "proofs": {
+      "names": {
+        "assertion": "result == 1",
+        "assumptions": [
+          {
+            "basis": "stated",
+            "kind": "precondition",
+            "text": "code >= 0 && code < 18"
+          },
+          {
+            "basis": "engine",
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+          }
+        ],
+        "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isLetterOrDigit(C)Z@jdk-21.0.13 (java.lang.Character.isLetterOrDigit(char) at campaign.NameSuffix.validateName). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "bounds": [
+          32,
+          64
+        ],
+        "exit": 1,
+        "guard": "code >= 0 && code < 18",
+        "log": "baseline-names.stdout",
+        "observedRoots": [],
+        "peakRssBytes": 45395968,
+        "seconds": 0.033181,
+        "states": {},
+        "stderr": "baseline-names.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "baseline-names.stdout",
+        "stdoutSha256": "85aae6b3a9ec6f3ed5c572c6742ebb668a01ce9258f5b88f6ac2d50e2a9f69a7",
+        "target": "campaign.NameChecks#names",
+        "verdict": "unverifiable"
+      },
+      "twoAscii": {
+        "assertion": "result == 1",
+        "assumptions": [
+          {
+            "basis": "stated",
+            "kind": "precondition",
+            "text": "first >= 0 && first < 128 && second >= 0 && second < 128"
+          },
+          {
+            "basis": "engine",
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+          }
+        ],
+        "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isLetterOrDigit(C)Z@jdk-21.0.13 (java.lang.Character.isLetterOrDigit(char) at campaign.NameSuffix.validateName). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "bounds": [
+          16,
+          32
+        ],
+        "exit": 1,
+        "guard": "first >= 0 && first < 128 && second >= 0 && second < 128",
+        "log": "baseline-twoAscii.stdout",
+        "observedRoots": [],
+        "peakRssBytes": 45793280,
+        "seconds": 0.030419,
+        "states": {},
+        "stderr": "baseline-twoAscii.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "baseline-twoAscii.stdout",
+        "stdoutSha256": "655e17797671677f46c351111dd05724d2026426426ab87e7813253b8b367e70",
+        "target": "campaign.NameChecks#twoAscii",
+        "verdict": "unverifiable"
+      }
+    },
+    "source": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39"
+  },
+  "binding": {
+    "build": "examples/364-avro-enum-namespace/records/original-build/build-fix.json",
+    "buildSha256": "52bfec76fb9dc246626c28701a450fa6f4f562e9cba72906d46718f60749826f",
+    "orderedJars": [
+      "12f9b2cc3f68c983f2f17c20d41888cc6d93da7d1bd7f03a43607773ec55ccc0",
+      "0c9860b8fb6f24f59e083e0b92a17c515c45312951fc272d093e4709faed6356",
+      "d49cdfd82443fa5869d75fe53680012cef2dd74621b69d37da69087c40f1575a",
+      "517926d9fe04cadd55120790d0b5355e4f656ffe2969e4d480a0e7f95a983e9e",
+      "6aecfd5459728a595601cfa07258d131972ffc39b492eb48bdd596577a2f244a",
+      "24c4d1fc1e89e078331ab8f401a99cad68599bde4a2e4516042cb548c51b1c3e",
+      "211b306cfc44f8f96df3a0a3ddaf75ba8c5289eed77d60d72f889bb855f535e5",
+      "448b6b48c9891938237451bc2267eab3f8317e3a8ac7f885268101c0baf6b416",
+      "336811855ee97fcd8413343dc42f4d26362502860e8a9193e4db305e3e8ef80a"
+    ],
+    "revision": "c35add7b29b5fab9229d79927a74f327bd56fa70"
+  },
+  "callSites": [
+    {
+      "code": 0,
+      "entry": "renamed",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    },
+    {
+      "code": 1,
+      "entry": "renamed",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    },
+    {
+      "code": 2,
+      "entry": "renamed",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "B",
+        "A",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    },
+    {
+      "code": 3,
+      "entry": "renamed",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "B",
+        "A",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    },
+    {
+      "code": 0,
+      "entry": "preserved",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "Other",
+        "A",
+        "B",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    },
+    {
+      "code": 1,
+      "entry": "preserved",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "Other",
+        "A",
+        "B",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    },
+    {
+      "code": 2,
+      "entry": "preserved",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "B",
+        "A",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "Other",
+        "B",
+        "A",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    },
+    {
+      "code": 3,
+      "entry": "preserved",
+      "names": [
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "E",
+        "B",
+        "A",
+        "field",
+        "MyRecord",
+        "E",
+        "A",
+        "B",
+        "field",
+        "MyRecord",
+        "Other",
+        "B",
+        "A",
+        "field",
+        "MyRecord"
+      ],
+      "value": 1
+    }
+  ],
+  "checker": "2b31cb1c7508723ff9ea48b4358baeaa4248796d2c62186d4dcf22efc612e726",
+  "checksClassSha256": "7ce6466f3b6ac8111c975aeb841744ff4a0bdfb5625b0bdb502101c484f4ad7a",
+  "checksSourceSha256": "f6d4969430b7b16e20e9577ebe70797ceb9167d8cc6b5cd08d1841d97008789e",
+  "defaultPolicyClass": "java.lang.Boolean",
+  "example": "364",
+  "extractorSha256": "83282d0d27c72798ebb5f7a376797060eaaab66e4bfa451a1208114e0f734407",
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "physical": {
+    "exit": 0,
+    "log": "original-jvm.stdout",
+    "peakRssBytes": 96555008,
+    "seconds": 0.310122,
+    "stderr": "original-jvm.stderr",
+    "stderrSha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+    "stdout": "original-jvm.stdout",
+    "stdoutSha256": "4bc4c4655dd5e5eaba08cc87a3c41c9fbd2eca66d3ae3138252a04b14fb000c8"
+  },
+  "proofs": {
+    "names": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "code >= 0 && code < 18"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": null,
+      "bounds": [
+        32,
+        64
+      ],
+      "exit": 0,
+      "guard": "code >= 0 && code < 18",
+      "log": "names.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 48316416,
+      "seconds": 0.035815,
+      "states": {},
+      "stderr": "names.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "names.stdout",
+      "stdoutSha256": "f619742ee9ebe09ebeddbc05dd0793d165dd13d0558d584ca6cabcbc7b4664d6",
+      "target": "campaign.NameChecks#names",
+      "verdict": "verified"
+    },
+    "twoAscii": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "first >= 0 && first < 128 && second >= 0 && second < 128"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": null,
+      "bounds": [
+        16,
+        32
+      ],
+      "exit": 0,
+      "guard": "first >= 0 && first < 128 && second >= 0 && second < 128",
+      "log": "twoAscii.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 48398336,
+      "seconds": 0.038379,
+      "states": {},
+      "stderr": "twoAscii.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "twoAscii.stdout",
+      "stdoutSha256": "2c2dc57ffb2357353cd13b00988c174867c570c164181113267fb21a9f6d14aa",
+      "target": "campaign.NameChecks#twoAscii",
+      "verdict": "verified"
+    }
+  },
+  "qualification": {
+    "afterGetBytes": 154,
+    "afterGetSha256": "8d08b941f14c0732804b0ebf99974edfbc257917ad443176e57f1519ff4159cd",
+    "consumer": "validateName(Ljava/lang/String;)Ljava/lang/String;",
+    "field": "validateNames",
+    "originalCodeSha256": "97e09a0af452a1d964375c0ec59b3c26a7f02d363fd56fac948a88150a838868",
+    "originalPoolSha256": "76b48d2033e5587d4b4db34537c1eafb363c35ab5590ed3c7c733241e148e5df",
+    "projectedClassSha256": "f5f89d0b01dd2342a9c1f769424469df1878ca206f1d6beac99e849a65e4e308",
+    "rejectedChanges": [
+      "field",
+      "instruction",
+      "pool"
+    ],
+    "schemaClassSha256": "e714702611dd7a0cbc93a0c235eb42dab7fd5b8a3f20642bd2f4a86e3dfb3f11",
+    "supplier": "lambda$static$0()Ljava/lang/Boolean;",
+    "supplierCodeSha256": "82a3e9cf92027a77c7ef29e474329bdbcc679e62ead0d883f406af583b5308d9"
+  },
+  "schemaProvider": {
+    "entry": "org/apache/avro/Schema.class",
+    "jar": "12f9b2cc3f68c983f2f17c20d41888cc6d93da7d1bd7f03a43607773ec55ccc0"
+  },
+  "side": "fix",
+  "source": "78923c2e419cca1619a4261038065806cec2360f",
+  "threadLocalFactory": {
+    "classSha256": "386a33f3e171e0e4421691547f0abdaf291ac4c4d117f54036ec827f43ab09bb",
+    "codeSha256": "d05eb223bd29bacc6c35275aab2e78568435ec9d94fab20cd5c3bd1a6ce55664",
+    "entry": "org/apache/avro/util/internal/ThreadLocalWithInitial.class",
+    "jar": "12f9b2cc3f68c983f2f17c20d41888cc6d93da7d1bd7f03a43607773ec55ccc0",
+    "poolSha256": "f16561098f862946c64491880f1509fd2298eadf601608deb07ba81c69a0864e",
+    "target": {
+      "descriptor": "(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;",
+      "name": "withInitial",
+      "opcode": "invokestatic",
+      "owner": "java.lang.ThreadLocal",
+      "referenceKind": "method"
+    }
+  },
+  "trace": {
+    "exit": 0,
+    "log": "policy-sites.stdout",
+    "peakRssBytes": 67850240,
+    "seconds": 3.103271,
+    "stderr": "policy-sites.stderr",
+    "stderrSha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+    "stdout": "policy-sites.stdout",
+    "stdoutSha256": "dc2d3e2ad6b54966fa706f43301cafe0778819bcb765c5db60eb8d69250a800f"
+  }
+}

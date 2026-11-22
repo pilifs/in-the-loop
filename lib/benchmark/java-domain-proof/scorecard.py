@@ -125,6 +125,7 @@ def public_result(job, base, run, folder, task, claim):
             finite["sides"][side]["commit"] == PINS[run["example"]][side] and
             finite["jdkRelease"] == proof["jdkRelease"], f"{name}: different finite claim")
     decision = status
+    decision_receipt = rel(path) if status in ("established", "refuted") else None
     partition = None
     selected = run.get("selectors", {}).get(name)
     if selected:
@@ -137,10 +138,16 @@ def public_result(job, base, run, folder, task, claim):
                 f"{name}: the partition changed the checker, artifacts or public scope")
         if checked["status"] in ("established", "refuted"):
             decision = checked["status"]
+            decision_receipt = rel(result_path)
+            if decision == "refuted":
+                replay = data["originalJVMReplay"]
+                witness = {"input": replay["inputs"], "values": replay["sides"][side]["values"], "receipt": decision_receipt}
         partition = {**checked, "record":rel(result_path), "cost":data["cost"], "wallSeconds":data["wallSeconds"],
                      "witness":(data.get("originalJVMReplay") or {}).get("inputs")}
     return {"status": decision, "symbolicStatus":status, "nativePartition":partition,
-            "firstBlocker": evidence["problem"], "gapSites": (raw.get("search") or {}).get("gaps", []),
+            "firstBlocker": evidence["problem"] if decision == "unresolved" else None,
+            **({"symbolicBlocker": evidence["problem"]} if decision != status else {}),
+            "decisionReceipt": decision_receipt, "gapSites": (raw.get("search") or {}).get("gaps", []),
             "binding": entry, "engineAssumptions": raw["stated"]["assumptions"], "claimKey": journal["claimKey"],
             "wallSeconds": workflow["seconds"], "peakRssBytes": workflow["peakRssBytes"],
             "checkerSeconds": journal["checkerSeconds"], "checkerPeakRssBytes": journal["usage"]["peakRssBytes"],
@@ -423,6 +430,96 @@ def foundation_results(result):
             "inputSegmentation":segments}
 
 
+NAME_JOB = "20261122-133607-prove-the-name-validation-consumer-on-fo"
+
+
+def name_checks(job, base, results, number):
+    from name_validation import QUERIES
+
+    expected = set(QUERIES) if number == "367" else {"names", "twoAscii"}
+    require(set(results) == expected, "incomplete name-validation queries")
+    checked = {}
+    for label, item in results.items():
+        target, guard, (unwind, array_limit) = QUERIES[label]
+        path = job.output(base / item["stdout"])
+        raw, = read(path)
+        stated = raw["stated"]
+        require(sha(path) == item["stdoutSha256"] and raw["target"] == item["target"] == target
+                and raw["assume"] == item["guard"] == guard and raw["assert"] == item["assertion"] == "result == 1"
+                and stated["checker"]["engine"] == "native" and stated["checker"]["fallback"] is None
+                and stated["gap_mode"] == "strict" and not item["observedRoots"]
+                and item["verdict"] == raw["verdict"] and item["blocker"] == raw["problem"]
+                and item["bounds"] == [unwind, array_limit]
+                and stated["bounds"]["unwind"] == unwind and raw["search"]["max_array_length"] == array_limit,
+                f"{number}/{label}: different name-validation evidence")
+        if raw["verdict"] == "verified":
+            require(item["exit"] == 0 and stated["bounds"]["complete"] and stated["vacuity"]["status"] == "non-vacuous"
+                    and not raw["problem"] and {(a["basis"], a["kind"], a["text"]) for a in stated["assumptions"]} ==
+                    {("stated", "precondition", guard), ("engine", "initialization",
+                     "every JDK class is initialized already, its static initializer having run and thrown nothing")},
+                    "name validation needs an additional assumption or a complete proof")
+        checked[label] = {"target": target, "guard": guard, "verdict": raw["verdict"], "firstBlocker": raw["problem"],
+                          "seconds": item["seconds"], "peakRssBytes": item["peakRssBytes"], "receipt": rel(path)}
+    return checked
+
+
+def name_validation_evidence(cases, readers):
+    from name_validation import FIELDS, policy_sites
+
+    if not layout.find_result(ROOT, NAME_JOB):
+        return {"job": NAME_JOB, "state": "pending"}
+    job = Job(NAME_JOB)
+    result = {"job": NAME_JOB, "state": job.record["status"], "result": rel(job.folder / "result.json"),
+              "source": job.record["sourceCommit"], "cases": {}}
+    for number in FIELDS:
+        case = cases[number]
+        legs = result["cases"][number] = {}
+        for side in ("parent", "fix"):
+            base = Path("verification/java-domain-proof/name-validation") / number / side
+            if base / "measurement.json" not in job.files:
+                continue
+            path = job.output(base / "measurement.json")
+            report = read(path)
+            original = readers[number]["sides"][side]
+            provider = original["providers"]["org.apache.avro.Schema"]
+            cut = report["qualification"]
+            policy = "java.lang.Boolean" if number == "364" else "org.apache.avro.NameValidator$2"
+            require(report["example"] == number and report["side"] == side and report["source"] == result["source"]
+                    and report["binding"] == original["binding"] and report["jdkModules"] == original["jdkModules"]
+                    and report["schemaProvider"] == {"entry": provider["entry"], "jar": provider["jar"]}
+                    and cut["schemaClassSha256"] == provider["class"] and cut["field"] == FIELDS[number]
+                    and cut["rejectedChanges"] == ["field", "instruction", "pool"] and report["defaultPolicyClass"] == policy
+                    and report["baseline"]["checker"] == case["finalRun"]["checkerSha256"]
+                    and report["baseline"]["source"] == case["finalRun"]["source"]
+                    and report["checker"] == result.setdefault("checkerSha256", report["checker"])
+                    and report["checker"] != report["baseline"]["checker"], "different Avro name-validation binding")
+            expected = ("publicCalls=8 names=18 accepted=14 rejected=4 asciiPairs=16384 overrides=4 "
+                        f"publicUtf={18 if number == '367' else 0} policy={policy}")
+            logs = {}
+            for key in ("physical", "trace"):
+                stream = report[key]
+                log = job.output(base / stream["stdout"])
+                require(stream["exit"] == 0 and sha(log) == stream["stdoutSha256"], "different original JVM run")
+                logs[key] = log
+            require(logs["physical"].read_text().splitlines() == [expected], "incomplete original-JVM name controls")
+            rows = policy_sites(logs["trace"].read_text().splitlines(), number, side, cut, policy)
+            require(rows == report["callSites"], "public name-policy lookups differ from the original debugger stream")
+            legs[side] = {"revision": report["binding"]["revision"], "defaultPolicyClass": policy,
+                          "qualifiedConsumer": cut, "threadLocalFactory": report["threadLocalFactory"],
+                          "observedGets": sum(len(r["names"]) for r in rows), "publicCalls": len(rows),
+                          "namesAtPublicSite": sorted({name for r in rows for name in r["names"]}),
+                          "originalJvm": rel(logs["physical"]), "siteTrace": rel(logs["trace"]), "measurement": rel(path),
+                          "baseline": name_checks(job, base, report["baseline"]["proofs"], number),
+                          "followup": name_checks(job, base, report["proofs"], number)}
+    if result["state"] == "passed":
+        require(all(set(legs) == {"parent", "fix"} for legs in result["cases"].values()), "missing name-validation side")
+    sides = [leg for legs in result["cases"].values() for leg in legs.values()]
+    result["totals"] = {stage: dict(Counter(query["verdict"] for leg in sides for query in leg[stage].values()))
+                        for stage in ("baseline", "followup")}
+    result["totals"].update(publicCalls=sum(leg["publicCalls"] for leg in sides), observedGets=sum(leg["observedGets"] for leg in sides))
+    return result
+
+
 def compile_scorecard():
     result = {"schema": "java-domain-scorecard/v1", "planned": 20, "cases": {},
               "earlierPopulations": {"sixPRs": {"ordinary": [39, 46], "finite": [46, 46]},
@@ -469,6 +566,7 @@ def compile_scorecard():
     require(all(sum(c.values()) == result["planned"] for c in counts.values()), "wrong campaign denominator")
     result["cases"]["367"]["jvmControls"] = default_controls()
     result["foundations"] = foundation_results(result)
+    result["foundations"]["nameValidation"] = name_validation_evidence(result["cases"], result["foundations"]["readers"])
     for number, reader in result["foundations"]["readers"].items():
         for name, row in result["cases"][number]["obligations"].items():
             method, side = name.rsplit("-", 1)
@@ -498,6 +596,7 @@ if __name__ == "__main__":
                 "public measures are still outstanding")
         extra = data["foundations"]
         require(extra["parquet"]["experimentStatus"] == "passed" and extra["selectorTransfer"]["state"] == "measured"
+                and extra["nameValidation"]["state"] == "passed"
                 and extra["enumActions"]["state"] == "passed" and set(extra["readers"]) == {"364","367"}
                 and set(extra["inputSegmentation"]) == {"365","366"}
                 and all(leg["callSiteRows"] for reader in extra["readers"].values() for leg in reader["sides"].values())

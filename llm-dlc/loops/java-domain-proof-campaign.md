@@ -137,7 +137,9 @@ The eight public Avro receipts with three startup roots captured all stop at the
 
 The follow-up checks the default name-policy supplier and the instructions that consume its value on all four original Avro JARs. The same JVM controls exercise the public readers, eighteen named cases, all two-character ASCII names and an explicitly permissive policy. The native comparison runs the campaign verifier and its ASCII `Character.isLetterOrDigit(char)` extension on the same compiled companion. [Paired name-validation job](../../verification/jobs/20261122-133607-prove-the-name-validation-consumer-on-fo.json)
 
-- Status: waiting on jobs 20261122-133607-prove-the-name-validation-consumer-on-fo
+The name-validation job returned **10/10 strict native establishments** on the follow-up verifier, up from **0/10** on the campaign verifier. The debugger observed the default policy at all 344 lookups inside 32 public calls. Two establishments cover the unmodified public UTF validator. Eight cover the two checks on each historical artifact given the installed supplier’s value. Both complete decoders remain open. The public campaign totals are 8/20 ordinary and 20/20 finite. [Managed result](../../verification/results/20261122-133607-prove-the-name-validation-consumer-on-fo/result.json)
+
+- Status: done
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e
 [pilot]: https://github.com/pilifs/in-the-loop/blob/ae92d881c61581011ed494c0ce62fcdfd291343e/llm-dlc/loops/domain-foundations-strategy-results.md
