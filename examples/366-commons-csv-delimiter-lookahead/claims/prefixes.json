@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "prefixes",
+  "statement": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust.",
+  "assume": "code >= 0 && code < 14",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 128,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.DelimitedFields#prefixes(I)I",
+    "mapping": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 14
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "364",
+  "title": "Enum decoding across two schema namespaces",
+  "summary": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "deserialization",
+    "exceptions",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Avro",
+    "file": "lang/java/avro/src/main/java/org/apache/avro/Resolver.java",
+    "symbol": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 0/4, finite JVM 4/4",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/avro",
+    "url": "https://github.com/apache/avro/pull/1381"
+  },
+  "notes": [
+    "Both properties start at ordinary application startup on Temurin 21. The original module is built separately on each revision. The public driver records the full observations for the independent finite oracle.",
+    "The named regression failed on all 16 parent invocations and passed on all 16 fixed invocations. All four namespace and wire combinations distinguish the revisions, including reversed reader order. At ordinary native startup SLF4J reads an unknown system property. After capturing Schema, GenericData and GenericDatumReader, both public claims stop at Schema.validateNames.get() on each revision. The separate record-field helper reaches the opaque FIELD_RESERVED set.",
+    "On each original JAR, the debugger observed Boolean.TRUE at all 120 validation lookups inside the eight public reader calls. Given that value, the native checker established the eighteen named cases and all 16,384 two-character ASCII names, including typed rejections. The original public read still needs a startup proof for the thread-local."
+  ]
+}

@@ -303,8 +303,22 @@ impl Engine<'_> {
         self.advance(path);
         Ok(None)
     }
+    /// The property reference goes straight into String.equals. The caller can
+    /// observe only the boolean, so equality to the receiver partitions all values.
+    fn immediate_property_comparison(&self, path: &Path, frame: &Frame) -> Option<std::collections::BTreeSet<Vec<u16>>> {
+        let Insn::InvokeVirtual(index) = frame.code.insns.get(frame.at + 1)? else { return None };
+        let member = frame.class.pool.member(*index).ok()?;
+        if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+            != (STRING, "equals", "(Ljava/lang/Object;)Z") || !self.contracts.is_empty() { return None; }
+        // invoke_static has already taken the property key off the operand stack.
+        let Val::R(Some(receiver)) = frame.stack.last()? else { return None };
+        if path.objects[*receiver].class != STRING { return None; }
+        Some(std::collections::BTreeSet::from([Vec::new(), self.constant_units(path, *receiver)?]))
+    }
+
     fn compared_property(&mut self, path: &mut Path, key: &str) -> Option<Val> {
-        let literals = property_comparisons(path.frames.last()?)?;
+        let frame = path.frames.last()?;
+        let literals = property_comparisons(frame).or_else(|| self.immediate_property_comparison(path, frame))?;
         let owner = format!("<JVM.propertyComparisons>{key}");
         let slot = (owner.clone(), serde_json::to_string(&literals).ok()?);
         if let Some(value) = path.statics.get(&slot) { return Some(value.clone()); }

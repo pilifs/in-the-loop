@@ -51,7 +51,8 @@
 //! - With `--observed-runtime '{"preinitializeTogether":true}'`, startup precedes the checked entry. The named
 //!   roots are initialized in their specified order, and their transitive application classes share one object
 //!   table. The checker binds every class file, installs the fields and all represented aliases, and refuses
-//!   overlapping captures, absent application supertypes and operations that inspect opaque state. A reference
+//!   overlapping captures, absent application supertypes and operations that inspect opaque state. Selected
+//!   application receivers preserve their float and double fields by their observed IEEE 754 bits. A reference
 //!   can pass through an application constructor into a field until such an operation. This scope includes any
 //!   cross-class registration the JVM made. It assumes that unrecorded external state and aliases do not affect
 //!   the checked call. The ordinary first-use observation still compares each transitive class independently.
@@ -543,6 +544,8 @@ fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::Class
                     ("S", Slot::Number(n)) => i16::try_from(*n).is_ok(),
                     ("C", Slot::Number(n)) => u16::try_from(*n).is_ok(),
                     ("I", Slot::Number(n)) => i32::try_from(*n).is_ok(),
+                    ("F", Slot::Number(n)) if selected => i32::try_from(*n).is_ok(),
+                    ("D", Slot::Number(_)) if selected => true,
                     _ => false,
                 };
                 if (!selected && !f.is_final()) || !fits { return Err(mismatch()); }

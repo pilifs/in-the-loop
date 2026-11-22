@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-062500-build-and-check-366-commons-csv-delimite",
+  "title": "Build and check 366 commons csv delimiter lookahead at opening",
+  "description": "Build both pinned unmodified production revisions for PR 218. Run all named landed tests on each, including parameter-specific expectations and passing controls. At the pinned opening fingerprint execute the frozen ordinary strict properties and finite JVM cells through the public planner and retain measurements for each outcome.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "366"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T06:25:00+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "maven",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/commons-csv\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 366 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/366-commons-csv-delimiter-lookahead/records/original-build",
+      "cwd": "."
+    },
+    {
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 366 --stage opening",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/366-commons-csv-delimiter-lookahead/records/original-build",
+    "examples/366-commons-csv-delimiter-lookahead/records/opening"
+  ]
+}

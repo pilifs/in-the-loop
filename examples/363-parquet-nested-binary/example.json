@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "363",
+  "title": "Nested binary values have independent byte windows",
+  "summary": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "buffer-bounds",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Parquet",
+    "file": "parquet-variant/src/main/java/org/apache/parquet/variant/VariantUtil.java",
+    "symbol": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 4/4, finite JVM 4/4",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/parquet-java",
+    "url": "https://github.com/apache/parquet-java/pull/3333"
+  },
+  "notes": [
+    "Both properties start at ordinary application startup on Temurin 21. The original module is built separately on each revision. The public driver records the full observations for the independent finite oracle.",
+    "Native checks at the original builder entry establish all 64 fixed extents and all fresh lookups on both sides. Parent selector 36 replays with position 35 and limit 41 for an empty child. The fixed limit is 35. On the parent 32 of 64 selections exposed the following sibling. The measured backing arrays reach length 47."
+  ]
+}

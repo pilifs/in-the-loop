@@ -39,6 +39,65 @@ mod tests {
 }
 
 impl Engine<'_> {
+    /// Only the pinned public put overloads reach this helper, after their original
+    /// identity, read-only, cursor and bounds checks. They update the cursors on return.
+    pub(super) fn heap_byte_buffer_copy(&mut self, path: &mut Path, start: usize) -> Step {
+        let args = &path.frames.last().expect("a frame").stack[start..];
+        let [Val::R(Some(dst)), Val::I(dst_pos), Val::R(Some(src)), Val::I(src_pos), Val::I(len)] = args else {
+            return unsupported("heap ByteBuffer transfer requires two bound buffers");
+        };
+        let backing = |o: usize| {
+            let b = &path.objects[o];
+            if b.assumed || b.unknown || b.given || !matches!(b.fields.get("segment"), None | Some(Val::R(None))) {
+                return None;
+            }
+            let Some(Val::R(Some(array))) = b.fields.get("hb") else { return None };
+            let offset = match b.fields.get("offset") {
+                None => 0,
+                Some(Val::I(offset)) => self.b.constant_value(offset)?,
+                _ => return None,
+            };
+            let data = path.objects[*array].as_array()?;
+            (data.element == Type::Byte && !path.objects[*array].assumed && offset >= 0)
+                .then_some((*array, offset, data.cells.len(), data.length.clone()))
+        };
+        if path.objects[*dst].class != "java/nio/HeapByteBuffer"
+            || !matches!(path.objects[*src].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapByteBufferR") {
+            return unsupported("ByteBuffer transfer requires ordinary heap storage");
+        }
+        let (Some((src, src_base, src_cap, src_len)), Some((dst, dst_base, dst_cap, dst_len))) =
+            (backing(*src), backing(*dst)) else { return unsupported("unbound heap ByteBuffer storage or session") };
+        // Split on the public call's stack. A resumed path must still have buffer arguments.
+        let symbolic = [(3, src_pos, src_cap), (1, dst_pos, dst_cap), (4, len, src_cap.min(dst_cap))]
+            .into_iter().find(|(_, value, _)| self.b.constant_value(value).is_none())
+            .map(|(slot, value, cap)| (start + slot, value.clone(), cap + 1));
+        if let Some((slot, value, limit)) = symbolic {
+            return self.split_index(path, value, slot, limit);
+        }
+        let from = src_base + self.b.constant_value(src_pos).unwrap();
+        let into = dst_base + self.b.constant_value(dst_pos).unwrap();
+        let count = self.b.constant_value(len).unwrap();
+        if from < 0 || into < 0 || count < 0 || from + count > src_cap as i64 || into + count > dst_cap as i64 {
+            return unsupported("heap ByteBuffer range outside the bound backing arrays");
+        }
+        let end_src = self.b.constant(from + count, 32);
+        let end_dst = self.b.constant(into + count, 32);
+        let short_src = self.b.ult(&src_len, &end_src);
+        let short_dst = self.b.ult(&dst_len, &end_dst);
+        let outside = self.b.or(short_src, short_dst);
+        if !matches!(self.sides(path, outside)?, Sides::Else) {
+            return unsupported("heap ByteBuffer transfer lacks valid backing-array ranges");
+        }
+        // Arraycopy can now finish in this instruction. Its snapshot handles overlap
+        // and its ordinary read/write checks keep the caller's mutable-heap boundary.
+        if outside != FALSE { path.cond.push(-outside); }
+        let frame = path.frames.last_mut().expect("a frame");
+        frame.stack.truncate(start);
+        frame.stack.extend([Val::R(Some(src)), Val::I(self.b.constant(from,32)), Val::R(Some(dst)),
+                            Val::I(self.b.constant(into,32)), Val::I(self.b.constant(count,32))]);
+        self.array_copy(path)
+    }
+
     pub(super) fn array_copy(&mut self, path: &mut Path) -> Step {
         for depth in [4, 2] {
             if let Some(step) = self.concrete_ref(path, depth) { return step; }

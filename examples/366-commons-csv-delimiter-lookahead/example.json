@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "366",
+  "title": "CSV lookahead preserves complete fields and delimiter prefixes",
+  "summary": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "parser-differential",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons CSV",
+    "file": "src/main/java/org/apache/commons/csv/Lexer.java",
+    "symbol": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 4/4, finite JVM 4/4",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-csv",
+    "url": "https://github.com/apache/commons-csv/pull/218"
+  },
+  "notes": [
+    "Both properties start at ordinary application startup on Temurin 21. The original module is built separately on each revision. The public driver records the full observations for the independent finite oracle.",
+    "All four StringReader obligations decided natively. Parent selector 3 returns two fields for a||b|| and the fix returns three. With a conforming Reader capped at one, two or three characters, 8, 2 and 8 fixed field vectors change, respectively. Prefix controls hold at each cap. These separate experiments retain the fourteen-fixture primary scope."
+  ]
+}

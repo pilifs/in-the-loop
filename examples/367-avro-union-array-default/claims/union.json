@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "union",
+  "statement": "The fast binary reader returns a record with an empty array for its reader-only union field and retains each writer marker when present.",
+  "assume": "code >= 0 && code < 4",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 512,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.DefaultReader#union(I)I",
+    "mapping": "The fast binary reader returns a record with an empty array for its reader-only union field and retains each writer marker when present. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 4
+  }
+}

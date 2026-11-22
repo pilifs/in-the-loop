@@ -29,8 +29,8 @@
 //!   final sigma) and the locale's rules, which the engine has not: there the call is the gap it was, as it is
 //!   under a Locale the engine knows nothing of.
 //!
-//! `Character.isLetter(char)` of a unit below 128 is whether it is one of ASCII's 52 letters, as a formula; of any
-//! other unit it is the JDK's table's to say, and the call is the gap it was.
+//! For ASCII units, `Character.isLetter(char)` recognizes the 52 letters and `isLetterOrDigit(char)` also recognizes
+//! the ten decimal digits. Other units need the JDK's Unicode tables.
 //!
 //! A `StringBuilder` is an object with a content of its own, which its methods change: `StringBuilder()`,
 //! `StringBuilder(int)` of a constant capacity from 0 to [`MOST_BUILDER_CONTENT`] (empty; another capacity is the
@@ -74,7 +74,7 @@ pub fn models(name: &str, descriptor: &str) -> bool {
 
 /// Character operations on a symbolic unit or code point.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
-    owner == CHARACTER && matches!((name, descriptor), ("isLetter", "(C)Z") | ("toChars", "(I)[C"))
+    owner == CHARACTER && matches!((name, descriptor), ("isLetter" | "isLetterOrDigit", "(C)Z") | ("toChars", "(I)[C"))
 }
 
 /// Whether the engine models `StringBuilder.name(descriptor)`, its two constructors included.
@@ -368,19 +368,27 @@ impl Engine<'_> {
         (is_upper, self.b.ite_bits(is_upper, &lowered, unit))
     }
 
-    /// `Character.isLetter(char)`: of an ASCII unit, whether it is one of the 52 letters of ASCII (the units below
-    /// 128 whose general category is a letter's); of any other unit it is the JDK's table's to say, the gap the
-    /// call was.
-    pub(super) fn is_letter(&mut self, path: &mut Path, args: &[Val]) -> Step {
-        let [Val::I(c)] = args else { return unsupported(format!("Character.isLetter with arguments {args:?}")) };
+    /// Both char overloads have stable ASCII categories. Keep the original method's gap on every non-ASCII path.
+    pub(super) fn ascii_character_class(&mut self, path: &mut Path, name: &str, args: &[Val]) -> Step {
+        let [Val::I(c)] = args else { return unsupported(format!("Character.{name} with arguments {args:?}")) };
         let unit = self.b.trunc(c, 16);
         let lowered = self.lowered_ascii(&unit).1;
         let (a, z, limit) = (self.b.constant(i64::from(b'a'), 16), self.b.constant(i64::from(b'z'), 16), self.b.constant(128, 16));
         let below = self.b.ult(&lowered, &a);
         let above = self.b.ult(&z, &lowered);
         let letter = self.b.and(-below, -above);
+        let matches = if name == "isLetterOrDigit" {
+            let zero = self.b.constant(i64::from(b'0'), 16);
+            let nine = self.b.constant(i64::from(b'9'), 16);
+            let below_zero = self.b.ult(&unit, &zero);
+            let above_nine = self.b.ult(&nine, &unit);
+            let digit = self.b.and(-below_zero, -above_nine);
+            self.b.or(letter, digit)
+        } else {
+            letter
+        };
         let ascii = self.b.ult(&unit, &limit);
-        self.branch_gap_or(path, -ascii, (GapKind::JdkStaticMethod, CHARACTER, "isLetter", "(C)Z"), move |engine, path| engine.push_truth(path, letter))
+        self.branch_gap_or(path, -ascii, (GapKind::JdkStaticMethod, CHARACTER, name, "(C)Z"), move |engine, path| engine.push_truth(path, matches))
     }
 
     pub(super) fn to_chars(&mut self, path: &mut Path, ch: &Bits) -> Step {

@@ -381,6 +381,7 @@ pub struct ClassPath {
     plain_buffer_formatter: std::cell::OnceCell<bool>,
     string_unit_replacement: std::cell::OnceCell<bool>,
     basic_base64: std::cell::OnceCell<bool>,
+    heap_buffer_copy: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
@@ -405,7 +406,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), basic_base64: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -487,6 +488,7 @@ impl ClassPath {
         self.plain_buffer_formatter.take();
         self.string_unit_replacement.take();
         self.basic_base64.take();
+        self.heap_buffer_copy.take();
         self.concurrent_table_layout.take();
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
@@ -1181,6 +1183,16 @@ impl ClassPath {
               "31a8fdd027846b8e8cd5f7437707e581c34953dd609eced4d6b3b616ec06b08d"])) // Temurin 25.0.5
     }
 
+    /// On these images ByteBuffer.putBuffer copies bytes between base + address + index,
+    /// with reachability fences. Ordinary heap buffers have a byte array base and a null session.
+    pub(crate) fn heap_buffer_copy(&self) -> bool {
+        *self.heap_buffer_copy.get_or_init(|| self.matches_jdk_classes(
+            &["java/nio/Buffer", "java/nio/ByteBuffer", "java/nio/HeapByteBuffer", "java/nio/HeapByteBufferR",
+              "jdk/internal/misc/ScopedMemoryAccess", "jdk/internal/misc/Unsafe", "java/lang/ref/Reference"],
+            &["d522b4c7f2635ce9ab76083fee6c98a92c47d9943ad6bd3c10b92d1ecc3ea897", // Temurin 21.0.13
+              "73b5d438d5329a71d1e3c835d847bdc88e6c8a44d0d424ce18dcc598471a9940"])) // Temurin 25.0.5
+    }
+
     /// Both compact-string paths return the receiver on a miss, the canonical empty
     /// string on complete deletion, and a fresh string for a nonempty change.
     pub(crate) fn string_unit_replacement(&self) -> bool {
@@ -1248,7 +1260,7 @@ impl ClassPath {
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !Self::heap_buffer_owner(owner) || !matches!(name, "<init>" | "position" | "limit" | "capacity" | "remaining"
             | "hasRemaining" | "flip" | "rewind" | "clear" | "compact" | "discardMark" | "checkScope"
-            | "duplicate" | "asReadOnlyBuffer" | "markValue" | "checkSession" | "session"
+            | "duplicate" | "slice" | "asReadOnlyBuffer" | "markValue" | "checkSession" | "session"
             | "array" | "hasArray" | "arrayOffset" | "ix" | "isReadOnly" | "isDirect" | "nextGetIndex" | "nextPutIndex"
             | "get" | "put" | "checkIndex" | "createLimitException" | "createPositionException" | "mark" | "reset") { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
@@ -1270,6 +1282,42 @@ impl ClassPath {
         let Loaded { class, origin: Origin::Jdk } = self.load(QUEUE).ok()?? else { return None };
         let method = class.method(name, desc)?.clone();
         (!method.is_static() && method.code.is_some()).then_some((class, method))
+    }
+
+    /// Fresh linked blocking queues build two distinct locks, conditions, an atomic
+    /// count and a sentinel node. Only construction and the empty-state observers
+    /// execute here. Waiting, signaling and atomic updates retain their own boundaries.
+    pub(crate) fn blocking_queue_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        const QUEUE: &str = "java/util/concurrent/LinkedBlockingQueue";
+        const COUNT: &str = "java/util/concurrent/atomic/AtomicInteger";
+        const LOCK: &str = "java/util/concurrent/locks/ReentrantLock";
+        const SYNC: &str = "java/util/concurrent/locks/ReentrantLock$NonfairSync";
+        const CONDITION: &str = "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject";
+        let supported = match receiver {
+            QUEUE => matches!((owner, name, desc),
+                (QUEUE, "<init>", "()V" | "(I)V") | (QUEUE, "size" | "remainingCapacity", "()I") | ("java/util/AbstractCollection", "size", "()I")
+                | ("java/util/AbstractCollection" | QUEUE, "isEmpty", "()Z")),
+            "java/util/concurrent/LinkedBlockingQueue$Node" => owner == receiver && name == "<init>" && desc == "(Ljava/lang/Object;)V",
+            COUNT => matches!((owner, name, desc), (COUNT, "<init>", "()V" | "(I)V")
+                | ("java/lang/Number", "<init>", "()V") | (COUNT, "get", "()I")),
+            LOCK => owner == LOCK && matches!((name, desc), ("<init>", "()V") | ("newCondition", "()Ljava/util/concurrent/locks/Condition;")),
+            SYNC => matches!((owner,name,desc), (SYNC | "java/util/concurrent/locks/ReentrantLock$Sync"
+                | "java/util/concurrent/locks/AbstractQueuedSynchronizer" | "java/util/concurrent/locks/AbstractOwnableSynchronizer", "<init>","()V")
+                | ("java/util/concurrent/locks/ReentrantLock$Sync","newCondition","()Ljava/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject;")),
+            CONDITION => owner == CONDITION && name == "<init>" && desc == "(Ljava/util/concurrent/locks/AbstractQueuedSynchronizer;)V",
+            _ => false,
+        };
+        if !supported || special != (name == "<init>") { return None; }
+        let (class, method) = if special {
+            let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+            let method = class.method(name, desc)?.clone();
+            (class, method)
+        } else {
+            let (class,method) = self.find_method(receiver,name,desc)?;
+            if !matches!(self.load(&class.name).ok()??.origin,Origin::Jdk) { return None; }
+            (class,method)
+        };
+        (!method.is_static() && method.code.is_some()).then_some((class,method))
     }
 
     /// The count and cached key view of a freshly constructed, single-threaded concurrent map.

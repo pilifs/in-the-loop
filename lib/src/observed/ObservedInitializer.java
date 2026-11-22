@@ -651,7 +651,14 @@ public final class ObservedInitializer {
                     if (Modifier.isStatic(f.getModifiers())) continue;
                     f.setAccessible(true);
                     Object raw = f.get(instance);
-                    String held = f.getType().isPrimitive() ? primitive(f.getType(), raw) : value(raw);
+                    String held;
+                    if (kind.equals("instance") && f.getType() == float.class) {
+                        held = "{\"n\":" + Float.floatToRawIntBits((Float) raw) + "}";
+                    } else if (kind.equals("instance") && f.getType() == double.class) {
+                        held = "{\"n\":" + Double.doubleToRawLongBits((Double) raw) + "}";
+                    } else {
+                        held = f.getType().isPrimitive() ? primitive(f.getType(), raw) : value(raw);
+                    }
                     fields.add("{\"name\":" + text(f.getName()) + ",\"type\":" + text(f.getType().descriptorString()) + ",\"value\":" + held + "}");
                 }
                 String digest = sha256(c.getClassLoader(), name);
@@ -675,7 +682,7 @@ public final class ObservedInitializer {
                 if (c == null || c.getClassLoader() != ClassLoader.getSystemClassLoader()) return null;
                 for (Field f : c.getDeclaredFields()) {
                     if (Modifier.isStatic(f.getModifiers())) continue;
-                    if (f.getType() == float.class || f.getType() == double.class || !f.trySetAccessible()) return null;
+                    if (!f.trySetAccessible()) return null;
                 }
                 result.add(c);
             }

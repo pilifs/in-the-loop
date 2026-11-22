@@ -85,7 +85,48 @@ public class WrappedBuffers {
         }
     }
 
+    public static boolean transfer(boolean backwards) {
+        byte[] bytes = {10, 20, 30, 40};
+        ByteBuffer destination = ByteBuffer.wrap(bytes);
+        ByteBuffer source = destination.asReadOnlyBuffer();
+        destination.position(backwards ? 0 : 1);
+        source.position(backwards ? 1 : 0);
+        source.limit(source.position() + 3);
+        int destinationStart = destination.position();
+        if (destination.put(source) != destination || source.hasRemaining()
+                || destination.position() != destinationStart + 3) return false;
+        if (backwards) return bytes[0] == 20 && bytes[1] == 30 && bytes[2] == 40 && bytes[3] == 40;
+        return bytes[0] == 10 && bytes[1] == 10 && bytes[2] == 20 && bytes[3] == 30;
+    }
+
+    public static boolean indexedTransfer() {
+        byte[] bytes = {1, 2, 3, 4};
+        ByteBuffer dest = ByteBuffer.wrap(bytes, 1, 3).slice();
+        ByteBuffer source = ByteBuffer.wrap(new byte[]{5, 6, 7}).asReadOnlyBuffer();
+        dest.position(2);
+        source.position(1);
+        dest.put(1, source, 0, 2);
+        return dest.position() == 2 && source.position() == 1
+            && bytes[0] == 1 && bytes[1] == 2 && bytes[2] == 5 && bytes[3] == 6;
+    }
+
+    public static boolean rejectedTransfer() {
+        ByteBuffer dst = ByteBuffer.wrap(new byte[]{8});
+        ByteBuffer src = ByteBuffer.wrap(new byte[]{1, 2});
+        try { dst.put(src); return false; } catch (java.nio.BufferOverflowException expected) { }
+        try { dst.asReadOnlyBuffer().put(src); return false; }
+        catch (java.nio.ReadOnlyBufferException expected) { }
+        return dst.position() == 0 && src.position() == 0 && dst.get(0) == 8;
+    }
+
+    public static boolean wrongTransfer() {
+        byte[] data = {1, 2, 3, 4};
+        ByteBuffer.wrap(data, 1, 3).put(ByteBuffer.wrap(data, 0, 3));
+        return data[3] == 1;
+    }
+
     public static void main(String[] args) {
+        if (!transfer(false) || !transfer(true) || !indexedTransfer() || !rejectedTransfer() || wrongTransfer()) throw new AssertionError();
         if (!window(false) || !window(true) || !whole() || !invalid() || !duplicate(false) || !duplicate(true)
                 || !readOnly((byte) -17) || wrongSharedCursor()) throw new AssertionError();
     }

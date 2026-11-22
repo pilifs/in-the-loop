@@ -1,0 +1,174 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "parquet-nested-binary",
+    "family": "parquet-java",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/parquet-java",
+    "revisions": {
+      "parent": {
+        "commit": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+        "orderedClasses": [
+          "shaded.parquet.it.unimi.dsi.fastutil.booleans.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.bytes.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.chars.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.doubles.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.floats.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.ints.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.io.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.longs.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.objects.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.shorts.package-info"
+        ]
+      },
+      "fix": {
+        "commit": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+        "parent": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+        "orderedClasses": [
+          "shaded.parquet.it.unimi.dsi.fastutil.booleans.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.bytes.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.chars.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.doubles.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.floats.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.ints.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.io.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.longs.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.objects.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.package-info",
+          "shaded.parquet.it.unimi.dsi.fastutil.shorts.package-info"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/campaign/NestedBinary.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-Dthrift.executable=/work/tools/thrift",
+        "-Dspotless.check.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "parquet-variant",
+        "-am",
+        "-DskipTests",
+        "-Dinvoker.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "capturedBuilds": {
+      "parent": "records/qualified-build/build-parent.json",
+      "fix": "records/qualified-build/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;"
+    },
+    {
+      "id": "extent-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+      "claim": "claims/extent.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "extent-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+      "claim": "claims/extent.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "fresh-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+      "claim": "claims/fresh.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "fresh-fix",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+      "claim": "claims/fresh.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/campaign/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-123422-trace-and-check-the-original-avro-reader",
+  "title": "Trace and check the original Avro reader producers 364",
+  "description": "Trace the byte decoder and named-field lookups reached by the unmodified reader, bind code and providers on each revision, and check one-byte decoding, schema construction, earlier Jackson startup and the public reader with three recorded initializer roots. Retain every refusal and its precise scope.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "364"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T12:34:22+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "javac",
+    "java",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Qualify the two original Avro classpaths",
+      "run": "python3 -B lib/benchmark/java-domain-proof/companions.py 364 --output examples/364-avro-enum-namespace/records/reader-foundations",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/364-avro-enum-namespace/records/reader-foundations"
+  ]
+}

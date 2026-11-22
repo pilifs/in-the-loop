@@ -1,0 +1,143 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "jackson-async-token-offsets",
+    "family": "jackson-core",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/FasterXML/jackson-core",
+    "revisions": {
+      "parent": {
+        "commit": "99f749d958a55013724571d825625e1032af9d4b"
+      },
+      "fix": {
+        "commit": "596fd82955080ba7207b4adc54100781b5024a61",
+        "parent": "99f749d958a55013724571d825625e1032af9d4b"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/campaign/AsyncTokens.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-DjacocoStrict=false",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "capturedBuilds": {
+      "parent": "records/qualified-build/build-parent.json",
+      "fix": "records/qualified-build/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;"
+    },
+    {
+      "id": "offsets-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "claim": "claims/offsets.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "offsets-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "claim": "claims/offsets.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "tokens-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "claim": "claims/tokens.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "tokens-fix",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "claim": "claims/tokens.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/campaign/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

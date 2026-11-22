@@ -1,0 +1,203 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/apache/parquet-java",
+    "commit": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+    "class": "org.apache.parquet.variant.VariantUtil",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-Dthrift.executable=/work/tools/thrift",
+        "-Dspotless.check.skip=true",
+        "-f",
+        "pom.xml",
+        "-pl",
+        "parquet-variant",
+        "-am",
+        "-DskipTests",
+        "-Dinvoker.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "parent": "dfc025e17e21a326addaf0e43c493e085cbac8f4"
+  },
+  "artifacts": [
+    {
+      "path": "built/parquet-variant-1.17.0-SNAPSHOT.jar",
+      "sha256": "1a3b3a7bf9e55b522e4d8f62cfa774be91838e7418dba9d2b5185318941b0640",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/apache/parquet-java at 8e740f07c26783d6dec2c4ac2cffa9823fe18036: parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar"
+    },
+    {
+      "path": "lib/org/apache/parquet/parquet-common/1.17.0-SNAPSHOT/parquet-common-1.17.0-SNAPSHOT.jar",
+      "sha256": "abaf0ecb2d00834d6327c6fa4e4f692ea9dd77dc6feadc52b6b59c8ec7fcb51e",
+      "role": "dependency",
+      "coordinates": "org.apache.parquet:parquet-common:1.17.0-SNAPSHOT",
+      "origin": "installed in the build's local repository by the recipe"
+    },
+    {
+      "path": "lib/org/apache/parquet/parquet-format-structures/1.17.0-SNAPSHOT/parquet-format-structures-1.17.0-SNAPSHOT.jar",
+      "sha256": "363a87744fe4758bc703fec9faa87193852d90bf6b3bc997b4416b2c649170cb",
+      "role": "dependency",
+      "coordinates": "org.apache.parquet:parquet-format-structures:1.17.0-SNAPSHOT",
+      "origin": "installed in the build's local repository by the recipe"
+    },
+    {
+      "path": "lib/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
+      "sha256": "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
+      "role": "dependency",
+      "coordinates": "javax.annotation:javax.annotation-api:1.3.2",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/apache/parquet/parquet-column/1.17.0-SNAPSHOT/parquet-column-1.17.0-SNAPSHOT.jar",
+      "sha256": "d3d4aea6960e09d03f67bd67661e755e673eab163efb82ebaf2078fb4aa66e7c",
+      "role": "dependency",
+      "coordinates": "org.apache.parquet:parquet-column:1.17.0-SNAPSHOT",
+      "origin": "installed in the build's local repository by the recipe"
+    },
+    {
+      "path": "lib/org/apache/parquet/parquet-encoding/1.17.0-SNAPSHOT/parquet-encoding-1.17.0-SNAPSHOT.jar",
+      "sha256": "77575a92696f1c8ceec37f070cdb8a710a349acbc98ffb6d664ae5d584f3b901",
+      "role": "dependency",
+      "coordinates": "org.apache.parquet:parquet-encoding:1.17.0-SNAPSHOT",
+      "origin": "installed in the build's local repository by the recipe"
+    },
+    {
+      "path": "lib/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
+      "sha256": "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf",
+      "role": "dependency",
+      "coordinates": "org.locationtech.jts:jts-core:1.20.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+      "tree": "f53c430de450e0bd76cd5c8e4f2225aece1a30b9",
+      "parents": [
+        "dfc025e17e21a326addaf0e43c493e085cbac8f4"
+      ],
+      "fetchedFrom": "https://github.com/apache/parquet-java",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
+          "sha256": "1a3b3a7bf9e55b522e4d8f62cfa774be91838e7418dba9d2b5185318941b0640",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "org/apache/parquet/variant/VariantUtil.class",
+      "selectedClassSha256": "64ef928e0d389161ca7927899a669ee85bba7f2de6eba3bb62a269d0f8062644",
+      "sourceSha256": "0e4b1f45eb28f69c1353c1c9a8a47d201aadf83d6f90ad2850b0b676fd4e434a",
+      "buildTool": {
+        "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
+        "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
+        "member": "usr/bin/thrift",
+        "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
+      }
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "declaredCompilers": {}
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-Dthrift.executable=/work/tools/thrift",
+          "-Dspotless.check.skip=true",
+          "-f",
+          "pom.xml",
+          "-pl",
+          "parquet-variant",
+          "-am",
+          "-DskipTests",
+          "-Dinvoker.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 34.88,
+        "logSha256": "deca86f2ad3996fb12e0dc252428b863ea4a12cc37a76fd4b83db462d7c59642",
+        "errors": [],
+        "tail": [
+          "[INFO] Apache Parquet Encodings ........................... SUCCESS [  4.194 s]",
+          "[INFO] Apache Parquet Column .............................. SUCCESS [  8.036 s]",
+          "[INFO] Apache Parquet Variant ............................. SUCCESS [  2.804 s]",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  33.516 s",
+          "[INFO] Finished at: 2026-11-22T06:45:39Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "parquet-variant/pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/parquet-variant/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 3.08,
+        "logSha256": "b691181a0974ccce656677801f59ef40b6bd55585ed5ecb12424f5472827f919",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ parquet-variant ---",
+          "[INFO] Wrote classpath file '/project/parquet-variant/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  1.883 s",
+          "[INFO] Finished at: 2026-11-22T06:45:42Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}

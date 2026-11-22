@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-124440-jackson-logical-offsets-with-an-explicit",
+  "title": "Jackson logical offsets with an explicit parser context",
+  "description": "The same frozen nextToken loop uses the original concrete parser with an explicit context, fresh unpooled recycler and canonicalizer. Check a two-feed witness and all partitions. Compare each trace with the factory caller on both sides.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "java-input-segmentation"
+  ],
+  "links": {
+    "examples": [
+      "365"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T12:44:40+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Check the separate parser entry on paired original modules",
+      "run": "python3 -B lib/benchmark/java-domain-proof/window_experiments.py 365 --output examples/365-jackson-async-token-offsets/records/input-segmentation",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/365-jackson-async-token-offsets/records/input-segmentation"
+  ]
+}

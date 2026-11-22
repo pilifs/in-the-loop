@@ -1,0 +1,142 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-csv-delimiter-lookahead",
+    "family": "commons-csv",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-csv",
+    "revisions": {
+      "parent": {
+        "commit": "94711ebf25d79bd95df8a5e70885325660f94ddc"
+      },
+      "fix": {
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/campaign/DelimitedFields.java"
+    ],
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "capturedBuilds": {
+      "parent": "records/original-build/build-parent.json",
+      "fix": "records/original-build/build-fix.json"
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;"
+    },
+    {
+      "id": "fields-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "claim": "claims/fields.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "fields-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "claim": "claims/fields.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "prefixes-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "claim": "claims/prefixes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "prefixes-fix",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "claim": "claims/prefixes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/campaign/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

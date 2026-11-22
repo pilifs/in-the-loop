@@ -151,9 +151,28 @@ public final class ReaderAndListeners {
         lock.unlock();
         return !lock.isLocked();
     }
+    public static boolean queueConstruction(boolean bounded) {
+        java.util.concurrent.LinkedBlockingQueue<String> q = bounded
+                ? new java.util.concurrent.LinkedBlockingQueue<>(3) : new java.util.concurrent.LinkedBlockingQueue<>();
+        if (!q.isEmpty() || q.size() != 0 || q.remainingCapacity() != (bounded ? 3 : Integer.MAX_VALUE)) return false;
+        try {
+            new java.util.concurrent.LinkedBlockingQueue<String>(0);
+            return false;
+        } catch (IllegalArgumentException expected) {
+            java.util.concurrent.locks.ReentrantLock lock = new java.util.concurrent.locks.ReentrantLock();
+            return lock.newCondition() != lock.newCondition() && !lock.isLocked();
+        }
+    }
+    public static boolean propertyEquality() {
+        boolean initial = "true".equals(System.getProperty("test.reader.comparison"));
+        boolean again = "true".equals(System.getProperty("test.reader.comparison"));
+        System.setProperty("test.reader.comparison", "TRUE");
+        return initial == again && !"true".equals(System.getProperty("test.reader.comparison"));
+    }
     public static boolean unknownProperty() { return System.getProperty("test.reader.initial") == null; }
     public static boolean invalidRange() { "ab".getChars(0, 2, new char[1], 0); return true; }
     public static void main(String[] args) throws IOException {
+        if (!queueConstruction(false) || !queueConstruction(true) || !propertyEquality()) throw new AssertionError();
         if (!outputSlices(false) || !outputSlices(true) || wrongSnapshot()) throw new AssertionError();
         if (!chars(true) || !chars(false) || !buffered() || !listeners(true) || !listeners(false) || !mirrors() || !beans() || !cursor() || !propertyChanges(true) || !propertyChanges(false) || !nestedLock() || wrong()) throw new AssertionError();
     }

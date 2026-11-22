@@ -145,8 +145,8 @@ impl Engine<'_> {
             Slot::Null => return Ok(Val::R(None)),
             Slot::Number(n) => {
                 return Ok(match descriptor {
-                    Some("J") => Val::J(self.b.constant(*n, 64)),
-                    Some("Z" | "B" | "C" | "S" | "I") => Val::I(self.b.constant(*n, 32)),
+                    Some("J" | "D") => Val::J(self.b.constant(*n, 64)),
+                    Some("Z" | "B" | "C" | "S" | "I" | "F") => Val::I(self.b.constant(*n, 32)),
                     _ => return Err("a number where the field is none".to_string()),
                 })
             }

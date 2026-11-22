@@ -87,7 +87,7 @@
 //! | Integer lookup tables initialized by application bytecode | Strict checking can enter a looping initializer whose static fields are final primitive arrays. Whole-array integer fill and the Latin-1 path of `Character.isJavaIdentifierPart` execute the selected JDK's bytecode. The enclosing claim retains its loop bound. |
 //! | `new HashSet(Collection)` on an exact receiver | Strict checking executes the selected JDK constructor and its backing map, including the source iterator, key callbacks and their exceptions. The image must initialize its shared membership sentinel with a single fresh object. An explicitly requested HashSet model keeps its own layout. |
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` and `Character.isLetterOrDigit(char)` of ASCII units ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | `fconst`, `dconst`, floating-point loads, stores, returns, array cells and `ldc` constants, `fcmpl` / `fcmpg` and their double variants | exact IEEE 754 words and JVM comparison bias. Float and Double bit conversions and NaN tests, plus Math/StrictMath extrema, are bounded as described in [`floating`] |
 //! | floating point arithmetic (`fadd` …) and numeric conversions (`f2i` …) | exact `i2d` for every int and sign-bit negation for non-NaNs. Other operations evaluate up to 64 reachable operand tuples and check that their complement is unsatisfiable. Unspecified NaN result bits and wider domains have a named refusal. |
@@ -5392,6 +5392,16 @@ impl<'a> Engine<'a> {
                 }
             }
         }
+        let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
+        let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
+        if !contracted && !special && caller == "java/nio/ByteBuffer" && member.owner == caller && member.name == "putBuffer"
+            && member.descriptor == "(ILjava/nio/ByteBuffer;II)V" && self.cp.heap_buffer_copy() {
+            let frame = path.frames.last().expect("a frame");
+            if frame.method == "put" && matches!(frame.code.descriptor.as_str(),
+                "(Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;" | "(ILjava/nio/ByteBuffer;II)Ljava/nio/ByteBuffer;") {
+                return self.heap_byte_buffer_copy(path, receiver_at);
+            }
+        }
         let args = self.pop_args(path, descriptor.params.len())?;
         let receiver = self.pop_ref(path)?;
         let o = match self.null_check(path, receiver) {
@@ -5441,8 +5451,6 @@ impl<'a> Engine<'a> {
         }
         // A contract given for the call stands in place of the engine's own model of it ([`gaps::modelled_jdk_call`]):
         // the call is then the gap it is to a checker with no such model, closed as the contract says.
-        let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
-        let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
             if special && member.owner == STRING && member.name == "<init>"
                 && matches!(member.descriptor.as_str(), "([BLjava/nio/charset/Charset;)V" | "([BIILjava/nio/charset/Charset;)V") {
@@ -5468,6 +5476,17 @@ impl<'a> Engine<'a> {
                         full.extend(args);
                         return self.enter_method(path, &member.owner, cf, method, full);
                     }
+                }
+                if let Some((cf,method)) = self.cp.blocking_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                    if special && member.owner == runtime::REENTRANT_LOCK {
+                        // The original constructor initializes sync. The existing single-thread
+                        // lock operations also keep their public hold-count observation.
+                        path.objects[o].fields.insert(runtime::HOLD_COUNT.into(), Val::I(self.b.constant(0, 32)));
+                    }
+                    let owner=cf.name.clone();
+                    let mut full=vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path,&owner,cf,method,full);
                 }
                 if let Some((cf, method)) = self.cp.linked_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
                     let mut full = vec![Val::R(Some(o))];
@@ -6092,12 +6111,12 @@ impl<'a> Engine<'a> {
         }
         // The JVM's own objects ([`runtime`]): a class by name, a logger. Where the arguments are not ones it
         // answers for, the call is the gap it was.
-        // Whether a char is a letter, of an ASCII unit ([`strings`]): the JDK's call of any other.
+        // ASCII character classification and conversion of a code point to UTF-16 units.
         if strings::models_static(owner, name, descriptor) {
             if let ("toChars", [Val::I(ch)]) = (name, args.as_slice()) {
                 return self.to_chars(path, ch);
             }
-            return self.is_letter(path, &args);
+            return self.ascii_character_class(path, name, &args);
         }
         if runtime::models_static(owner, name, descriptor) || regex::models_static(owner, name, descriptor) || bytes::models_static(owner, name, descriptor) || locale::models_static(owner, name, descriptor) {
             let modelled = if runtime::models_static(owner, name, descriptor) {
@@ -6341,7 +6360,7 @@ pub fn models_jdk_static(owner: &str, name: &str) -> bool {
 /// `Objects.requireNonNull` of an object, with or without a message, and `Pattern.compile` of a regex (where it is a
 /// constant of the plain form, [`crate::jdk_facts::plain_regex`]; on any other the engine meets the call as the gap it
 /// was, where it runs it); or where its arguments let it be, the gap it was elsewhere: the calls of [`runtime`],
-/// [`regex`], [`bytes`] and [`locale`], and `Character.isLetter(char)` ([`strings`]).
+/// [`regex`], [`bytes`] and [`locale`], and ASCII character classification ([`strings`]).
 pub fn models_jdk_reference_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),

@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a1f5be-43bd-7532-a80c-5b4f5c304590",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "Here's some critical work to move our project forward. It was written for multiple agents, but I'd like you to execute all of it.\n\nThe brief's primary objective is to close the gap between us and indu",
   "client": {
@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-22T05:26:10.710Z",
-  "duration_seconds": 200921,
+  "ended": "2026-11-22T06:51:45.125Z",
+  "duration_seconds": 206055,
   "stats": {
-    "turns": 28,
-    "api_calls": 8447,
-    "tool_calls": 21077,
-    "tool_errors": 621,
-    "compactions": 27,
+    "turns": 32,
+    "api_calls": 8632,
+    "tool_calls": 21486,
+    "tool_errors": 635,
+    "compactions": 28,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 14263705,
-      "output_tokens": 4522662,
-      "cache_read_input_tokens": 2615217536,
+      "input_tokens": 14632360,
+      "output_tokens": 4643638,
+      "cache_read_input_tokens": 2663350144,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 12030,
-    "exec": 7893,
+    "Bash": 12260,
+    "exec": 8069,
     "apply_patch": 789,
     "send_message": 148,
-    "sleep": 87,
+    "sleep": 90,
     "wait": 85,
     "wait_agent": 14,
     "send_message_to_user_async": 10,
@@ -780,24 +780,38 @@
     {
       "index": 27,
       "started": "2026-11-22T03:48:42.541Z",
-      "ended": "2026-11-22T05:26:10.710Z",
+      "ended": "2026-11-22T05:32:38.046Z",
       "turns": 1,
-      "api_calls": 406,
+      "api_calls": 424,
       "usage": {
-        "input_tokens": 548272,
-        "output_tokens": 206940,
-        "cache_read_input_tokens": 142970368,
+        "input_tokens": 555929,
+        "output_tokens": 216325,
+        "cache_read_input_tokens": 152629632,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 533855
+      "peak_context_tokens": 540460
+    },
+    {
+      "index": 28,
+      "started": "2026-11-22T05:32:38.057Z",
+      "ended": "2026-11-22T06:51:45.125Z",
+      "turns": 4,
+      "api_calls": 167,
+      "usage": {
+        "input_tokens": 360998,
+        "output_tokens": 111591,
+        "cache_read_input_tokens": 38473344,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 343953
     }
   ],
   "log": {
-    "sha256": "781a79ba30c5c2f57879b2ad51d1e9f2f4e8893f4affc9147300c187db724711",
-    "bytes": 194063667,
-    "lines": 66545,
-    "gzip_bytes": 77232322,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/781a79ba30c5c2f57879b2ad51d1e9f2f4e8893f4affc9147300c187db724711.jsonl.gz"
+    "sha256": "fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946",
+    "bytes": 199413286,
+    "lines": 67981,
+    "gzip_bytes": 79248070,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3435,131 +3449,195 @@
     },
     {
       "change_id": "swukuluyomxktkmlqotklsuloomvrzkr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "54b3b23df5a7e78bdfeb15013d1e6acd6c94924f",
+      "immutable": true,
       "summary": "Record the user's review of fourteen watcher decisions",
       "body": "Reviewed with the watcher on 2026-11-22: thirteen accepted (plumbing D001-D003, lib-architecture D001, run 7 D001-D004, run 6 D001-D003 including flagged D002, run 5 D001, fast-follow D005), and domain-foundations-strategy D001 overturned. The user wants that run to continue with the startup probes (VF-054) while they write the next brief, and continuing briefs to be more aspirational for a few cycles. Decision records only.",
       "log_sha256": "1a849ac9199797b42551c8a33d4adabaad646d87e5c652191ece075117f1f949"
     },
     {
       "change_id": "lxvryyuprqwqsmqmtunkuwmvulvlrxzt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "891965e9d06616331f9d2a71cbd4229964c6dc5f",
+      "immutable": true,
       "summary": "Execute copying HashSets on the selected JDK (verification pending)",
       "body": "Execute the collection constructor and its actual HashMap, source iterator, hashCode and equals callbacks on exact new HashSets. Verify the selected JDK bytecode that creates the shared membership sentinel. Preserve the separate opt-in model and existing receiver layouts. Avro Schema and the JavaParser printer both use this constructor.\n\nOn Temurin 21.0.13, the original JavaParser postorder fix advanced from a refused constructor to a non-vacuous native proof in 15.7 seconds with only its line separator enum initialized. Both JDK 21 and 25 passed collision, independent-copy, exception, callback and wrong-answer controls. The changed suite passed 59 Rust binaries and three Python groups. Job 20261122-024332-check-javaparser-traversals-with-only-th checks all eight original enum-only contracts and their JVM witness obligations.",
       "log_sha256": "1a849ac9199797b42551c8a33d4adabaad646d87e5c652191ece075117f1f949"
     },
     {
       "change_id": "lxxxznmwxmxumpspszsroytppslnozvw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7609e1d99de212c117e7170eb66c5f461b7671e9",
+      "immutable": true,
       "summary": "Qualify Avro schema construction on both changes (verification pending)",
       "body": "Match all 56 instructions in the reserved-name producer against both original revisions of Avro 3878 and 729, including every literal, call and field. Fresh JVMs agreed at all four sites, and replacing aliases with alias invalidated the match. The pinned pilot refused the copy constructor. The current checker proved that the enum adds default without changing the schema set. The checked interval begins after Jackson startup.\n\nOriginal bytes-schema creation still refused at ordinary Schema initialization. With only Schema initialized, it returned BYTES, and passing RECORD raised the original exception after the JDK dispatched String.valueOf to the real enum. A callback with observable effects now refutes its old assertion. The final changed selection passed 59 Rust binaries and three Python groups. Job 20261122-025719-check-avro-reserved-names-and-original-s checks the before and after, real constructors, Jackson and negative controls on all four classpaths.\n\nCollected all 124 hashed outputs from the eight JavaParser separator-only contracts. Seven finished at 60 checker seconds, with five establishments and two original parent refutations. Job 20261122-025941-resolve-the-nonempty-javaparser-parent-w repeats the remaining nonempty parent on the identical checker with 180 seconds.",
       "log_sha256": "12ebafc86c8b2f480fd54af0b0f4caacff554bdf19db2cc578fbc86a79a978c6"
     },
     {
       "change_id": "nwoqkmxmzsqvvxmorloonxqxuypxsxxk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d973727e8b8a37a74a1510aad91faa47352d22ae",
+      "immutable": true,
       "summary": "Prove JavaParser startup from explicit JVM inputs (verification pending)",
       "body": "On the qualified Temurin 21 and 25 string implementations, strict checking replaces a one-unit literal over bounded symbolic UTF-16 while preserving the receiver on misses, fresh changed values, and canonical empty deletion. Arbitrary CharSequence callbacks retain their refusal. JavaParser's original enum now proves its text, escaped description, correlated reads and stability after a later write for all non-null inputs through three units, without a captured class. A cleared property produces the original initialization error and subsequent erroneous use.\n\nThe earlier Avro 729 compiler calls StringBuilder.append(Object) to format an invalid schema type. Execute its real forwarding bytecode through the application callback, observing mutation and exception order. This repaired the earlier managed Avro check on the old parent. JDK 21 and 25 passed the UTF-16, identity and refusal controls, including both compact-string settings. The original public RECORD rejection was reproved and the changed selection passed 59 Rust binaries and three Python groups. The nonempty JavaParser parent retry passed with 50.02 checker seconds on the identical executable, completing all eight separator-only claims.\n\nJob 20261122-030646-prove-javaparser-startup-for-supplied-an checks text, absence and actual traversals and replays any parent witness. Job 20261122-030957-confirm-both-avro-schema-producers-and-f repeats the original Avro consumers. Job 20261122-031102-recheck-original-startup-scopes-after-th repeats the ordinary historical obligations and four conditional decimal contracts on the same checker.",
       "log_sha256": "bff7064e175249f20cfd1da419671b4df0c7ba85b0a3b561183ae640eff4da45"
     },
     {
       "change_id": "turwxyvlvusqsxwnxnxspusyxzrxkzxw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "85b273568908a69431533c380440bff15da73eb4",
+      "immutable": true,
       "summary": "Prove Jackson's ordinary hex tables across Avro (verification pending)",
       "body": "Execute the JDK's integer fill and Latin-1 CharacterData path. A strict run may execute a looping application initializer that builds final primitive tables, preserving real failures and explicit initialization contracts. The existing primitive array-copy model continues to enforce the caller's mutable-heap boundary. Fresh JVMs checked every ASCII value on all four original Avro classpaths. The later Jackson maps 0x141 to 10 while the earlier Jackson returns -1, so the ASCII fact cannot be applied to arbitrary integers.\n\nA strict original-JAR probe proved the whole ASCII range at unwind 512. At the original unwind 64 the JsonFactory probe stopped at summarized array cells. At 512 it reached the actual System.currentTimeMillis call in ByteQuadsCanonicalizer.createRoot. Focused JDK 21 and 25 checks covered Latin-1, differing U+0100, exceptions, aliasing and unsuccessful table startup. All seven changed test groups passed, including 59 Rust binaries. Job 20261122-032239-qualify-ordinary-jackson-table-startup-o checks the positive, release-specific control, pilot and diagnostic scopes. Job 20261122-032303-repeat-frozen-claims-on-the-jackson-tabl repeats all seventeen ordinary and four conditioned decimal obligations.\n\nThe collected JavaParser verification retained the full separator text and description on both revisions, qualified both failed initializations, and proved the fixed traversal for all supplied zero-to-two-unit separators. The parent's empty-input counterexample reproduced on a fresh JVM. The four original Avro construction and formatting checks and the checked reserved-name producer all completed. All 30 collected output hashes across these two jobs matched.",
       "log_sha256": "d313dd9205c5ef18c0991d3874a575ab44f7b052119e0bffddfc390d748c5e85"
     },
     {
       "change_id": "zutzksuxxzluvvtuyznstquutoorxqos",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "acf976dfee77b5e0597540659d6f5b79db7e352c",
+      "immutable": true,
       "summary": "Report the qualified Avro and JavaParser startup follow-up",
       "body": "Publish the follow-up scorecard, report and three example records. All eight JavaParser contracts qualified with only the separator enum captured. The public traversal also qualified on a fresh application for every explicitly supplied separator through two UTF-16 units, and the independent text and failed-initialization controls held on both original revisions. The final common checker repeated the seventeen ordinary attempts and the four scoped decimals. The primary score remains 39/46, JavaParser 2/8 and the separate decimal adoption 2/4 at original scope.\n\nThe ordinary Jackson ASCII contract held at unwind 512 for every original Avro classpath, and the 0x141 control distinguished the two bundled releases. At unwind 64 the next obstruction was a copy of summarized cells, and after complete table initialization the actual symbol-table producer required the process clock. The scorecard keeps both scopes, the first failed batches, the retries and their actual bounds and checker identities.\n\nChecked all 860 output hashes across eight collected jobs, both machine-readable recounts, all 68 local report and example links, all three example validators and queue validation. The changed selection passed its 59 Rust binaries and 26 Python groups. The two further Python groups selected by the last collected evidence also passed, with 51 and seven tests. No jobs remain pending or running.",
       "log_sha256": "4038cd57ac4e3ad5f346d92d0ffafb662b4a8443c15766e88a26a78372f777d3"
     },
     {
       "change_id": "kouyxpoqsystovzpuponotsnuuuplptu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b964cd1c5e9c0006ed6bae75857d8687c93ae36c",
+      "immutable": true,
       "summary": "Pin Avro’s buffered encoder regression (verification pending)",
       "body": "Pin the original core module, commits and mapped-buffer regression from Avro #198. Job 20261122-035338-build-the-avro-198-encoder-and-run-its-m builds both unmodified revisions with JDK 8 and checks the landed test on both. Verified the fix’s first parent and source diff, passed all four organic runner tests and validated the job schema. The separate public encoder example will bind the build products once collected.",
       "log_sha256": "6ebf09be4fd8321c08b1b77ce980ed1157a0e01410b540f7a8d8e132f9cf60e5"
     },
     {
       "change_id": "nwtkymssktnstkqnkkkxtzxlsyyvuozl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a517da59bfceb694b927dcc49d63295a9ec62d51",
+      "immutable": true,
       "summary": "Build Avro’s original shaded dependency (verification pending)",
       "body": "The first build of Avro #198 identified a reactor-local Guava snapshot on both revisions. Bind its original module as a prerequisite and preserve both failed build diagnostics. Verified both collected files against the runner’s digests and passed four runner tests. Job 20261122-040311-build-the-original-avro-encoder-with-its repeats the two builds and the upstream mapped-buffer regression.",
       "log_sha256": "bf9c46ac9e4ff812317bb2d32a4a6641f236cb83f47ca7a9ad12d22b21785133"
     },
     {
       "change_id": "lmmrzpxzmoqozmpwuxqqxpwyvtmrrpny",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "40eb9e447514944f416dfabfee4b18af6baf3587",
+      "immutable": true,
       "summary": "Trace and check actual upgrade receivers (verification pending)",
       "body": "Run the registered caller itself in the native verifier on each original classpath. At the first qualified JVM entry, record constructor descriptors and their real call sites, declared and dynamic field types, nulls and aliases. Constructors are matched to the actual receiver. Retain ordinary overload and separately scoped finite caller results, including failures before entry. All eight upgrade review tests and six engineering tests passed. Temurin 8 and 21 independently checked UTF-16, null and exception observations. Seven jobs cover all 32 frozen pairs: 20261122-040728-trace-and-check-original-upgrade-receive and 20261122-040740-group-02 through group-07-original-upgrade-receivers-and.",
       "log_sha256": "e51eb91266c62f512e603fe71a1724e037e76cc033756b73389eff6cea857326"
     },
     {
       "change_id": "olpulpxplyxmlonvlwlypmrkrwwknkxu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9a516b0e886e915e7fe54c5e59fae84473a9d8ba",
+      "immutable": true,
       "summary": "Qualify the packaged Avro encoder class (verification pending)",
       "body": "The historical module’s mapped-buffer test observed position 17 and remaining zero on the parent, and passed on the fix. Both module builds succeeded but shading changed the literal class-file bytes. Require the original pre-shade archive to match the compiler, re-emit both class files through the same ASM visitor, compare the canonical bytes, and retain the actual final packaged class and all digests. A changed return instruction was rejected, an identical control passed, four runner tests passed and four collected upstream outputs were verified. Job 20261122-041348-qualify-avro-198-packaged-classes-after qualifies the complete products.",
       "log_sha256": "c5d6bdac21b9e6731390b2c2bbd194400094e70a9d115fed3d0cdb986a51bc8c"
     },
     {
       "change_id": "powtwtwyutrlntnyqmpvrrqpvkkkpxrs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a378f243b3285dbf74ee24abaa2e39ce100a9caf",
+      "immutable": true,
       "summary": "Execute startup and receiver producers on original JARs (verification pending)",
       "body": "Use independent wall-clock readings and stable per-object identity hashes in strict single-threaded proofs. A platform-dependent counterexample must hold across the possible platform values for the selected input. Execute the original atomic reference and heap read-only buffer code, the start of singleton initializers, and explicit concrete constructor collaborators for single-version properties. Keep the stronger field observations required for paired equivalence. The real Jackson factory proved from ordinary startup on Avro #3878 in a capped probe. A fresh original StreamingCell now proves its default cell style. The focused receiver and JDK tests, 59 Rust binaries and the 58-group changed selection passed; the older pilot and follow-up scorecards recounted.\n\nBind Avro #198 to the original packaged classes. Example 362 passed its five-task validator and replay. On each revision the debugger confirmed all 16 wrap sites and the 16 exact views consumed by the real encoder, including the read-only views. The older and fixed JVMs disagreed at the two bulk read-only inputs. Import 128 hashed outputs from all seven receiver groups, plus the six packaged Avro build and test outputs.\n\nManaged verification includes 20261122-042449-trace-avro-355-ordinary-factory-and-sche, 20261122-042449-trace-avro-361-ordinary-factory-and-sche, 20261122-042449-exercise-javaparser-parent-traversals-wi, 20261122-042450-exercise-javaparser-fix-traversals-with, 20261122-042450-avro-198-encoder-baseline-on-packaged-ar, 20261122-042450-avro-198-encoder-current-on-packaged-art, 20261122-042450-repeat-original-frozen-startup-scopes-af, 20261122-042802-measure-avro-198-reuse-at-its-actual-enc and 20261122-043152-check-original-spreadsheet-and-date-rece.",
       "log_sha256": "d8b60ef4d305aa5a9fd69602673d8ac4d7f366095823f7f3968f3d25f1338165"
     },
     {
       "change_id": "nskolnztkpryxtzltkvwwsvvzruqspkl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7315b6e8206f05bcd4a2baed45b28ee2aac91ff3",
+      "immutable": true,
       "summary": "Decode original receiver inputs on the selected JDK",
       "body": "Complete the canonical ASCII Base64 decoder for the exact JDK basic-decoder singleton, covering padded and unpadded input, independent returned arrays and malformed-input refusal. Concrete Boolean.parseBoolean inputs use the original null and ASCII rules. Six historical receiver cases first stopped at the decoder. Temurin 8u512, 21.0.13 and 25.0.5 passed the literal controls. The changed test run covered all 59 Rust binaries; two assertions that still expected unrelated reference fields to block a property were updated. Both affected tests passed on rerun, including an unknown dereference that still refuses.\n\nThe preceding managed job revision captured the decoder call before its body and could not compile. Its nine failed build receipts are retained. The repeated jobs will pin this complete revision after its tree is verified.",
       "log_sha256": "d87a24d1c28d82f55889a66a7cbc74a704552ef6506149b91a43a8a610b1c2fa"
     },
     {
       "change_id": "rwnpxmronswryuptvmllssvvlznvvzwk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "abce91096deb2ed7f5002232e12eba86ce4b0619",
+      "immutable": true,
       "summary": "Recheck all three directions on a built revision (verification pending)",
       "body": "Pin the nine replacement jobs and seven complete receiver groups to 86716cadfd37. A fresh offline export of its exact lib tree 6c9bdae34debeae244f13444a4031ad2e039aa3d compiled successfully. All nine superseded jobs stopped in the same earlier build and produced zero scientific outputs. The new encoder partition also preserves all 16 selectors. Sixteen fresh JVM challenges checked the actual bytes and cursor with and without a pending interrupt. Queue schema and tier lint passed.\n\nManaged jobs are 20261122-044515-avro-198-encoder-baseline-on-packaged-ar, 20261122-044515-avro-198-encoder-current-on-packaged-art, 20261122-044515-exercise-javaparser-parent-traversals-wi, 20261122-044515-trace-avro-355-ordinary-factory-and-sche, 20261122-044515-trace-avro-361-ordinary-factory-and-sche, 20261122-044516-01-receiver-rescore-after-literal-decodi, 20261122-044516-02-receiver-rescore-after-literal-decodi, 20261122-044516-03-receiver-rescore-after-literal-decodi, 20261122-044516-04-receiver-rescore-after-literal-decodi, 20261122-044516-check-original-spreadsheet-and-date-rece, 20261122-044516-exercise-javaparser-fix-traversals-with, 20261122-044516-measure-avro-198-reuse-at-its-actual-enc, 20261122-044516-repeat-original-frozen-startup-scopes-af, 20261122-044517-05-receiver-rescore-after-literal-decodi, 20261122-044517-06-receiver-rescore-after-literal-decodi, 20261122-044517-07-receiver-rescore-after-literal-decodi, 20261122-044517-prove-avro-encoder-paths-and-check-inter.",
       "log_sha256": "21f626fc6ee7ef213e5ce997fe810a58cc03c4aad1d8bdd831940858dedd4308"
     },
     {
       "change_id": "olrysyqmrvvstulyvpqtouotozkynqvx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d7243fab14af6a853c81a10c6e6019fb6a5eec57",
+      "immutable": true,
       "summary": "Retain loader premises in startup diagnostics (verification pending)",
       "body": "The original Jackson factory now proved at unwind 512 in the first ordinary runs of both Avro classpaths. The next ObjectMapper probe disclosed the verifier’s single-class-loader premise as text, without a contract ID. Preserve that premise when recording diagnostic probes, keep the unconditioned factory check strict, and distinguish a capture that could not bind from a verdict under that capture. Replayed the actual mapper record through the qualifier and checked that silently ignoring the premise still refuses. Both partial jobs and all ten output digests are retained. Jobs 20261122-045304-complete-avro-355-startup-and-reducer-ev and 20261122-045304-complete-avro-361-startup-and-reducer-ev use the same release executable for the full set.",
       "log_sha256": "561160cba1c611c00bf16e81145820979d2c7259102f810ce4af0c0ba5540b97"
     },
     {
       "change_id": "ozrslvmrtnssmolypozupxvytqsxrsqw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "062cad937fc408b8d1796bf8d5db0240b6f3f3a6",
+      "immutable": true,
       "summary": "Verify encoded receiver observations and startup (verification pending)",
       "body": "The original LZ4 caller reached the public read and then stopped converting its output to Base64. Execute the canonical basic encoder on concrete bytes, preserving singleton identity, fresh String results and padding. A capped check established the full upgraded caller. Admit String-result null and content assertions. Execute the actual JDK empty iterator that blocks Jackson Databind on both historical Avro pairs and the Properties setter reached by Hadoop overlays. At the older Avro constructor the next lookup moved to Class.getDeclaredConstructor. The focused JDK 21 and 25 checks passed, including output and identity controls. The changed suite passed all 59 Rust binaries and all 46 selected Python groups. Validated the original six-byte certificate and rejected it at twenty.\n\nThe preceding release build established all eight JavaParser traversals for a supplied separator with no application capture, fresh reducer count one under only JobConf and Credentials on both revisions, negative controls, and both isolated Jackson factories. The corrected jobs and expected full-scope refusals were collected. Repeat all frozen pairs, startup profiles and the encoder on the final common checker. Managed jobs are 20261122-050023-01-verify-original-callers-with-complete, 20261122-050023-02-verify-original-callers-with-complete, 20261122-050023-03-verify-original-callers-with-complete, 20261122-050023-04-verify-original-callers-with-complete, 20261122-050023-05-verify-original-callers-with-complete, 20261122-050024-06-verify-original-callers-with-complete, 20261122-050024-07-verify-original-callers-with-complete, 20261122-050024-final-avro-198-caller-and-cursor-compari, 20261122-050024-final-original-avro-and-javaparser-scope, 20261122-050024-finish-avro-encoder-path-and-interrupt-c, 20261122-050024-verify-original-receiver-getters-with-st, 20261122-050207-final-355-jackson-and-fresh-configuratio, 20261122-050207-final-361-jackson-and-fresh-configuratio, 20261122-050534-confirm-avro-encoder-adoption-on-the-fin, 20261122-050534-final-fixed-javaparser-separator-profile, 20261122-050534-final-parent-javaparser-separator-profil.",
       "log_sha256": "9927b135a6b2f9c31a1bebff43b4a17616632391a89d36e6e202ee1d0ee09699"
     },
     {
       "change_id": "lrtvusnvtnykmklruntrvkuovyruutvv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f89b7684c3c053e1708eaa9401cdaa9a92379460",
+      "immutable": true,
       "summary": "Report the three domain-foundations expansions",
       "body": "Publish the final scorecard and collected evidence from 54 managed jobs. Recounted 1,465 file digests, with 35 passed jobs, five mixed batches preserving open claims, five superseded diagnostic attempts and nine superseded build errors. The final verifier 20f7eebc6712 ran all frozen comparisons on one release binary. The six primary PRs retain 39/46 original-scope native decisions, JavaParser 2/8 at ambient entry and 8/8 for supplied separators, and Avro decimal conversion 2/4 at ordinary entry. The two-root Hadoop reducer lookup proved its fresh default on both revisions. Ordinary startup now identifies the SLF4J blocking queue and the reflective Jackson lookups.\n\nRechecked all 32 upgrade pairs, the historical 23 receiver cases and all 34 paired overloads. Sixteen actual callers reached the original method on both JVMs across their registered inputs. Commons CSV and framed LZ4 verified natively on both sides on all four original inputs each. The broader paired receiver threshold is still open. Avro 198 has four finite decisions and two native properties across 14 of 16 inputs on each revision. The two channel inputs reach JDK interrupt registration. The measured wrap-reuse workflow took 5.55 seconds versus 5.43 seconds with reuse disabled.\n\nThe new recount checked the final common revision and executable, physical input domains, constructor observations and original classpaths. The two earlier scorecards recounted independently. All four examples validated, example 362 replayed on the original Maven products, 85 local links resolved, the tier inventory and pipeline schemas passed, and the final changed-file selection passed all 59 Rust binaries and 53 Python groups. The result index gained only these 54 jobs; 1,037 previous entries agree byte for byte as data. The verification queue was empty.",
       "log_sha256": "781a79ba30c5c2f57879b2ad51d1e9f2f4e8893f4affc9147300c187db724711"
+    },
+    {
+      "change_id": "rupwzuollynztkrmnlyqmmmlqspzyyqp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze five Java public changes and their twenty proof obligations",
+      "body": "Pin the landed sources, first parents, original test methods, public adapters, startup, bounds and expected results for examples 363–367 before measuring the verifier. The independent grids contain 64 nested buffer inputs, four enum pairs, 128 JSON feed schedules, fourteen CSV fixtures and four evolved records. The opening inventory covers 233 verifier and workflow files.\n\nVerified every first parent and original production and test path, all 25 task plans and eleven deliberately wrong observations. The changed suite passed 59 Rust binaries and 32 Python groups. The example form checks still await the paired Maven artifacts and fresh replay receipts. The build jobs follow this freeze.",
+      "log_sha256": "d33172f17a39926fbf73e862afb5ebb1cacbf7ba4a6b9ea423b5c7ba7f2bd87c"
+    },
+    {
+      "change_id": "nlklprkolqvmtqwnnlpqsktqmrmorvos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Run the five original Java regressions and opening proof grids (verification pending)",
+      "body": "Build each pair in isolation, identify the actual artifacts and classpaths, and measure the twenty frozen properties through the normal planner. Preserve passing parent controls and every parameterized invocation. Pin both historical Jackson snapshot parents by source commit and Parquet’s 0.22.0 compiler by its Ubuntu package and executable digests. The committed examples precede these jobs.\n\nThe five build and public-verification jobs are 20261122-062459-build-and-check-363-parquet-nested-binar, 20261122-062459-build-and-check-364-avro-enum-namespace, 20261122-062459-build-and-check-365-jackson-async-token, 20261122-062500-build-and-check-366-commons-csv-delimite and 20261122-062500-build-and-check-367-avro-union-array-def. Checked all job schemas, the five organic-runner tests, compiler extraction, the opening fingerprint and the test tier inventory. The unchanged Rust binaries passed on the freeze.",
+      "log_sha256": "5b156412c80556f7ea941b4547ccca964ece779c99a5c18dfeb1c274f692ff53"
+    },
+    {
+      "change_id": "xwqmtkvzyouktrzrrlyttrlrsutpsvmn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify the original campaign builds (verification pending)",
+      "body": "Keep the original 178 output digests. Commons CSV already has three ordinary establishments and one original-JVM-replayed native refutation. The original Avro namespace test has sixteen named invocations on each revision, verified individually against its Surefire results. Its public decode stops in SLF4J's blocking queue. The other opening jobs exposed the historical Parquet Spotless property, a moved Jackson test and skipped-test coverage gate, and the later Avro module's JDK toolchain declarations.\n\nRepeat the exact frozen example claims on the opening verifier after correcting finite-mode argument order. Jobs 20261122-063655-qualify-363-original-artifacts-and-compl, 20261122-063655-qualify-364-original-artifacts-and-compl, 20261122-063655-qualify-365-original-artifacts-and-compl, 20261122-063655-qualify-366-original-artifacts-and-compl and 20261122-063655-qualify-367-original-artifacts-and-compl retain the distinct raw records. All five runner tests, 25 task plans, 11 oracle controls, the two prepared example forms, tier lint and queue validation passed.",
+      "log_sha256": "6a3c92b8548ebaebb3d9c26095542b413f88862200e20414665f67b2fa9baaf1"
+    },
+    {
+      "change_id": "qmtsuyrnumzpkumorlzypqspwkqxzvoq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind the remaining Java opening runs to JARs (verification pending)",
+      "body": "Retain the qualified Maven and JUnit records, resolve Parquet metadata in the original classpath order, and bind Jackson's call to the original async implementation. Both fresh public JVM replays and their example validations pass. The capstone has failures on both parent test parameters and passes on both fixed parameters. Its public workflow awaits the packaged core module.\n\nJobs 20261122-121129-measure-the-original-parquet-opening-cla, 20261122-121129-measure-the-original-jackson-opening-cla and 20261122-121129-measure-the-original-avro-fast-reader-op check the remaining opening grids. Each checks the recorded verifier executable and source inventory before counting a result.",
+      "log_sha256": "fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946"
+    },
+    {
+      "change_id": "qtzqwvrxxruulywoyosmurxrokqnzouu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261122-062459-build-and-check-363-parquet-nested-binar: failed: 2 failed step(s) in 2m27s, peak 1.3 GiB (estimated 9m00s, 5.0 GiB); 2 output file(s) changed 20261122-062500-build-and-check-367-avro-union-array-def: failed: 2 failed step(s) in 2m19s, peak 522.1 MiB (estimated 5m00s, 4.0 GiB); 2 output file(s) changed Collected by the watcher of the java-domain-proof-campaign run, which keeps the queue while the run is under way.",
+      "log_sha256": "fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946"
+    },
+    {
+      "change_id": "ymvontqyurnwloqsnsmtyquxylrkqyqx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261122-062459-build-and-check-364-avro-enum-namespace: failed: 2 failed step(s) in 4m57s, peak 1.8 GiB (estimated 5m00s, 4.0 GiB); 85 output file(s) changed 20261122-062459-build-and-check-365-jackson-async-token: failed: 2 failed step(s) in 3m33s, peak 1.3 GiB (estimated 5m00s, 4.0 GiB); 3 output file(s) changed 20261122-062500-build-and-check-366-commons-csv-delimite: failed: 1 passed, 1 failed step(s) in 3m14s, peak 1.2 GiB (estimated 5m00s, 4.0 GiB); 86 output file(s) changed Collected by the watcher of the java-domain-proof-campaign run, which keeps the queue while the run is under way.",
+      "log_sha256": "fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946"
+    },
+    {
+      "change_id": "nyuvtyluuvwwssnnwlmxxuntooyktsko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261122-063655-qualify-364-original-artifacts-and-compl: passed: 1 passed step(s) in 23.8s, peak 209.4 MiB (estimated 5m00s, 4.0 GiB); 84 output file(s) changed Applied 84 output(s). 20261122-063655-qualify-366-original-artifacts-and-compl: passed: 1 passed step(s) in 18.0s, peak 148.0 MiB (estimated 5m00s, 4.0 GiB); 85 output file(s) changed Applied 85 output(s). Collected by the watcher of the java-domain-proof-campaign run, which keeps the queue while the run is under way.",
+      "log_sha256": "fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946"
+    },
+    {
+      "change_id": "tlsmmqpnqnqqyoquzysmyzpuvrlrspvq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261122-063655-qualify-363-original-artifacts-and-compl: failed: 1 passed, 1 failed step(s) in 1m41s, peak 2.0 GiB (estimated 9m00s, 5.0 GiB); 7 output file(s) changed 20261122-063655-qualify-365-original-artifacts-and-compl: failed: 1 passed, 1 failed step(s) in 2m18s, peak 1.4 GiB (estimated 5m00s, 4.0 GiB); 7 output file(s) changed 20261122-063655-qualify-367-original-artifacts-and-compl: failed: 2 failed step(s) in 2m33s, peak 1.2 GiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed Collected by the watcher of the java-domain-proof-campaign run, which keeps the queue while the run is under way.",
+      "log_sha256": "fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946"
     }
   ],
   "logs": {
@@ -3983,6 +4061,12 @@
       "gzip_bytes": 5768697,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/5a675c140f87b787dbeb5719df34cc0fc155d7874fa4b4f8672b732eb6216065.jsonl.gz"
     },
+    "5b156412c80556f7ea941b4547ccca964ece779c99a5c18dfeb1c274f692ff53": {
+      "bytes": 197394304,
+      "lines": 67293,
+      "gzip_bytes": 78468733,
+      "url": null
+    },
     "5b85be3cc69199647c573000da6407ca97d2b62f495326a1e8205b69b1375ad3": {
       "bytes": 5759696,
       "lines": 1625,
@@ -4048,6 +4132,12 @@
       "lines": 50252,
       "gzip_bytes": 57690438,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/6910e48dbe58e6025740622e32826fa79d806e6f9f09ac24a60ff22c6040655b.jsonl.gz"
+    },
+    "6a3c92b8548ebaebb3d9c26095542b413f88862200e20414665f67b2fa9baaf1": {
+      "bytes": 198403848,
+      "lines": 67627,
+      "gzip_bytes": 78854414,
+      "url": null
     },
     "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852": {
       "bytes": 22693886,
@@ -4535,6 +4625,12 @@
       "gzip_bytes": 73252427,
       "url": null
     },
+    "d33172f17a39926fbf73e862afb5ebb1cacbf7ba4a6b9ea423b5c7ba7f2bd87c": {
+      "bytes": 197080446,
+      "lines": 67155,
+      "gzip_bytes": 78345291,
+      "url": null
+    },
     "d5b537034daa29cfbcefa570c161aad5c8106eb21fd82653eccf4e390361d002": {
       "bytes": 156731444,
       "lines": 54057,
@@ -4696,6 +4792,12 @@
       "lines": 3913,
       "gzip_bytes": 4447426,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/fada44c4a77bc0ea2f7f664ae596d9de213d61043ebc68d9290537658801e9d3.jsonl.gz"
+    },
+    "fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946": {
+      "bytes": 199413286,
+      "lines": 67981,
+      "gzip_bytes": 79248070,
+      "url": null
     }
   },
   "redaction_policy": 5,

@@ -237,10 +237,13 @@ fn a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_
     let o = run(&options(classes, "claims.P#dotInside", 4, "P-dotInside"));
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.output.contains("jdk-primitive-method:java.lang.String.matches(Ljava/lang/String;)Z"), "{}", o.output);
-    proved(classes, "claims.P#letter", 3);
-    let o = run(&options(classes, "claims.P#letterOutsideAscii", 3, "P-letterOutsideAscii"));
-    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.output.contains("jdk-static-method:java.lang.Character.isLetter(C)Z"), "{}", o.output);
+    for (method, jdk) in [("letter", "isLetter"), ("letterOrDigit", "isLetterOrDigit")] {
+        proved(classes, &format!("claims.P#{method}"), 3);
+        let outside = format!("{method}OutsideAscii");
+        let o = run(&options(classes, &format!("claims.P#{outside}"), 3, &format!("P-{outside}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.output.contains(&format!("jdk-static-method:java.lang.Character.{jdk}(C)Z")), "{}", o.output);
+    }
     let o = run(&options(classes, "claims.P#quiet", 3, "P-quiet"));
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let stated = o.stated.as_ref().expect("a statement");
@@ -1433,6 +1436,8 @@ fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     proved(classes, "claims.ReaderAndListeners#propertyChanges", 4);
     machine.monitor = false;
     proved(classes, "claims.ReaderAndListeners#nestedLock", 4);
+    proved(classes, "claims.ReaderAndListeners#queueConstruction", 4);
+    proved(classes, "claims.ReaderAndListeners#propertyEquality", 4);
     assert_eq!(machine.call_static("claims/ReaderAndListeners", "nestedLock", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     for flag in [0, 1] {
         assert_eq!(machine.call_static("claims/ReaderAndListeners", "propertyChanges", "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
@@ -1497,9 +1502,11 @@ fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.WrappedBuffers").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["window", "whole", "invalid", "duplicate", "readOnly"] {
+    for name in ["window", "whole", "invalid", "duplicate", "readOnly", "transfer", "indexedTransfer", "rejectedTransfer"] {
         proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
     }
+    let corrupted = run(&options(classes, "claims.WrappedBuffers#wrongTransfer", 4, "overlapping-heap-buffers"));
+    assert_eq!(corrupted.verdict, Verdict::Violation, "{}", corrupted.output);
     let wrong = run(&options(classes, "claims.WrappedBuffers#wrongSharedCursor", 4, "heap-buffer-cursor"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
 }

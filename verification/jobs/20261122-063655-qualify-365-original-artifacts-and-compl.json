@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-063655-qualify-365-original-artifacts-and-compl",
+  "title": "Qualify 365 original artifacts and complete the opening grid",
+  "description": "Apply the original Git rename when transplanting the unmasked test and disable the optional coverage-file enforcement for the skipped-test packaging phase. Both historical snapshot parents stay pinned. Capture all four public claims on the frozen opening fingerprint and verify raw JVM outcomes.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "365"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T06:36:55+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "maven",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/jackson-core\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 365 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/365-jackson-async-token-offsets/records/qualified-build",
+      "cwd": "."
+    },
+    {
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 365 --stage opening-qualified --build qualified-build",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/365-jackson-async-token-offsets/records/qualified-build",
+    "examples/365-jackson-async-token-offsets/records/opening-qualified"
+  ]
+}

@@ -135,7 +135,8 @@ public final class Samples {
             throw new AssertionError(e);
         }
         check(P.quiet(0), "quiet");
-        for (int c = 0; c < 65536; c++) check(P.letter((char) c) && P.letterOutsideAscii((char) c), "letter " + c);
+        for (int c = 0; c < 65536; c++) check(P.letter((char) c) && P.letterOutsideAscii((char) c)
+                && P.letterOrDigit((char) c) && P.letterOrDigitOutsideAscii((char) c), "character " + c);
         check(B.digits(), "digits");
         System.out.println("all hold on " + samples + " samples");
     }
