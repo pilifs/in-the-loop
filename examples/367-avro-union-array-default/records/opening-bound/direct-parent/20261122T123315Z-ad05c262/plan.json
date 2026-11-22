@@ -1,0 +1,240 @@
+{
+  "plan": {
+    "example": "367",
+    "task": "direct-parent",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "direct-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+      "file": "claims/direct.json",
+      "sha256": "161a864e3cb51e686054463ce030e814979c216603a724bc07fac25648c765aa",
+      "property": "direct",
+      "claimKind": "property",
+      "statement": "With a direct array field and the same empty default the fast binary reader returns the empty array and preserves each writer marker.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "69c33b95cd8f0e1268e69187208f02931e30bc6fd241588e36afc6c77d6d22e9"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "22bfc3967a261a07f1b579ddadca88d6a51252e7c6dbbd365eab03e1682ff6a0"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.DefaultReader#direct(I)I",
+        "mapping": "With a direct array field and the same empty default the fast binary reader returns the empty array and preserves each writer marker. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "6b4ff92968c5498a"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-Dinvoker.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/module-build/build-parent.json",
+          "sha256": "d1249fbc5ae8fccbc31395c5cb3095c72778a08a050e2d7b1688e4f461717d27"
+        },
+        "adapters": [
+          "adapter/campaign/DefaultReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/direct-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-122655-bind-the-four-avro-default-opening-rows/examples/367-avro-union-array-default",
+    "network": true
+  },
+  "inputs": {
+    "example": "367",
+    "task": "direct-parent",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "direct-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+      "file": "claims/direct.json",
+      "sha256": "161a864e3cb51e686054463ce030e814979c216603a724bc07fac25648c765aa",
+      "property": "direct",
+      "claimKind": "property",
+      "statement": "With a direct array field and the same empty default the fast binary reader returns the empty array and preserves each writer marker.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "69c33b95cd8f0e1268e69187208f02931e30bc6fd241588e36afc6c77d6d22e9"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "22bfc3967a261a07f1b579ddadca88d6a51252e7c6dbbd365eab03e1682ff6a0"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.DefaultReader#direct(I)I",
+        "mapping": "With a direct array field and the same empty default the fast binary reader returns the empty array and preserves each writer marker. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "6b4ff92968c5498a"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-Dinvoker.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/module-build/build-parent.json",
+          "sha256": "d1249fbc5ae8fccbc31395c5cb3095c72778a08a050e2d7b1688e4f461717d27"
+        },
+        "adapters": [
+          "adapter/campaign/DefaultReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/DefaultReader.java",
+        "sha256": "56f1b6b2183a5be9c36fdee93be97443bd2ab06f51bcde48d4adbd47a64aeab7"
+      }
+    ]
+  },
+  "key": "eb143019081f32a4869a164cdf1e29441300aa9fde42ccd9edb4979c3c16a324"
+}
