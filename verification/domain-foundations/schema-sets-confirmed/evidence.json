@@ -1,0 +1,299 @@
+{
+  "claims": [
+    {
+      "checkerSha256": "b61cd17e7c11b6011389677ec9581091ae3f71b6d4521efca67682f66a967cb8",
+      "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.HashSet.<init>(Ljava/util/Collection;)V@jdk-21.0.13 (java.util.HashSet.<init>(java.util.Collection) at foundation.ReservedNames.<clinit>:13). With --gaps assume it assumes instead that java.util.HashSet.<init>(java.util.Collection) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "libraryPremises": [],
+      "matchedExpectation": true,
+      "raw": "pilot-reserved.native.json",
+      "sha256": "655edf5b7f732ba01c6605ab30013d0011d9ebc49d00cf145d7b1731a0e71f9b",
+      "target": "foundation.ReservedNames#reserved",
+      "verdict": "unverifiable"
+    },
+    {
+      "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+      "firstUnknown": null,
+      "libraryPremises": [],
+      "matchedExpectation": true,
+      "raw": "current-reserved.native.json",
+      "sha256": "a52df4663a43bffdbf11364e6e6ea419204ebeebe9c7667c9f5519db8bca0373",
+      "target": "foundation.ReservedNames#reserved",
+      "verdict": "verified"
+    },
+    {
+      "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+      "firstUnknown": null,
+      "libraryPremises": [],
+      "matchedExpectation": true,
+      "raw": "current-defaultLeaks.native.json",
+      "sha256": "dc4738ac4394350514b2bfcb3571cbd4618adc8182f1249ea3ceb185086c2eb7",
+      "target": "foundation.ReservedNames#defaultLeaks",
+      "verdict": "violation"
+    }
+  ],
+  "producerSha256": "e2478a7eada64b87cef0beaf9e1395c5be09f5f7065091ec4b98182f7175b996",
+  "schema": "avro-reserved-name-producer/v1",
+  "sites": [
+    {
+      "buildReceipt": "examples/355-avro-writable-buffer-limit/records/build-avro-root/build-parent.json",
+      "buildSha256": "77ea572171a14e3623e4ff44ea7a882ace7a8afd6c5d0ca185304a6a7da32164",
+      "changedLiteral": "refused",
+      "classSha256": "93abb1fcb588b7ff63b42879077a4df504311156bfb835f0a5cc211258301f45",
+      "constructorAdapterSha256": "cebb8850b4ea97a21153f724d447295731ec4c644f064b45016b7a46b64fff09",
+      "constructorClaims": [
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<clinit>:80). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-firstFactory.native.json",
+          "sha256": "c0e646bf425994966a58492c68bfda02ac6190d3530d6abb7cad4a5c4cef8485",
+          "target": "foundation.BytesSchema#firstFactory",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.Schema.<clinit>()V (org.apache.avro.Schema.<clinit>() at foundation.BytesSchema.typed:11). With --gaps assume it assumes instead that org.apache.avro.Schema.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-typed.native.json",
+          "sha256": "ae8567c4d50ef5c23ffcb74507b0623b534503f647c654481b28a945f0b91f5b",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:93abb1fcb588b7ff63b42879077a4df504311156bfb835f0a5cc211258301f45:93917b5dd2815a8f69147b16be85fb19940d172eeeef6d7a16167a7d2d995b65"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-typed.native.json",
+          "sha256": "c90e9591fce6810813e755e88935e21c6fb899881669628dd72c239468ade631",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "verified"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:93abb1fcb588b7ff63b42879077a4df504311156bfb835f0a5cc211258301f45:93917b5dd2815a8f69147b16be85fb19940d172eeeef6d7a16167a7d2d995b65"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-rejectsRecord.native.json",
+          "sha256": "3e85bd6297605ae023f26e972b0d224b765761f410698d90aefd51223ffeef96",
+          "target": "foundation.BytesSchema#rejectsRecord",
+          "verdict": "verified"
+        }
+      ],
+      "endBciExclusive": 157,
+      "entry": "org/apache/avro/Schema.class",
+      "example": "355",
+      "instructions": 56,
+      "jarIndex": 2,
+      "jarSha256": "c3453376a9e8aab6a8dc58c8081fc3277a6f1f53563c097dc91a0e96e5820971",
+      "method": "org.apache.avro.Schema.<clinit>()V",
+      "ordinaryJvmContents": "held",
+      "originalJvmConstruction": "held",
+      "revision": "cc134b3ff6016d86a5f97798afc77ef1a47b7d73",
+      "side": "parent",
+      "startBci": 51
+    },
+    {
+      "buildReceipt": "examples/355-avro-writable-buffer-limit/records/build-avro-root/build-fix.json",
+      "buildSha256": "a66e86d7f7725c510796540b359ecc394c57b96a16a5499b43da3131313a9ebf",
+      "changedLiteral": "refused",
+      "classSha256": "93abb1fcb588b7ff63b42879077a4df504311156bfb835f0a5cc211258301f45",
+      "constructorAdapterSha256": "cebb8850b4ea97a21153f724d447295731ec4c644f064b45016b7a46b64fff09",
+      "constructorClaims": [
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<clinit>:80). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-firstFactory.native.json",
+          "sha256": "33570e24fd681943b930037042f0e9dcbeb4ae04b3cc59871c2bbb0f18bbee27",
+          "target": "foundation.BytesSchema#firstFactory",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.Schema.<clinit>()V (org.apache.avro.Schema.<clinit>() at foundation.BytesSchema.typed:11). With --gaps assume it assumes instead that org.apache.avro.Schema.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-typed.native.json",
+          "sha256": "006784ff5660b25ce31f99143fbceb457a3b15d4516c7f9d7ed26667123a7d28",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:93abb1fcb588b7ff63b42879077a4df504311156bfb835f0a5cc211258301f45:93917b5dd2815a8f69147b16be85fb19940d172eeeef6d7a16167a7d2d995b65"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-typed.native.json",
+          "sha256": "21a00337e2b926568ac1b570caf3437227e6145374e31f21b4f509f0b5a7e173",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "verified"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:93abb1fcb588b7ff63b42879077a4df504311156bfb835f0a5cc211258301f45:93917b5dd2815a8f69147b16be85fb19940d172eeeef6d7a16167a7d2d995b65"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-rejectsRecord.native.json",
+          "sha256": "60329317a6f21dd4721a9a5967daccde55d47b6091b09f227cec851ec00e1399",
+          "target": "foundation.BytesSchema#rejectsRecord",
+          "verdict": "verified"
+        }
+      ],
+      "endBciExclusive": 157,
+      "entry": "org/apache/avro/Schema.class",
+      "example": "355",
+      "instructions": 56,
+      "jarIndex": 2,
+      "jarSha256": "c3453376a9e8aab6a8dc58c8081fc3277a6f1f53563c097dc91a0e96e5820971",
+      "method": "org.apache.avro.Schema.<clinit>()V",
+      "ordinaryJvmContents": "held",
+      "originalJvmConstruction": "held",
+      "revision": "f3bb10eaea1f03eb17893bc779eb26213da8177c",
+      "side": "fix",
+      "startBci": 51
+    },
+    {
+      "buildReceipt": "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-parent.json",
+      "buildSha256": "4af73543c38ee91923db1298bd2dc9dadccd7741c8a4ab895b5b361afb8b6cf5",
+      "changedLiteral": "refused",
+      "classSha256": "56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3",
+      "constructorAdapterSha256": "cebb8850b4ea97a21153f724d447295731ec4c644f064b45016b7a46b64fff09",
+      "constructorClaims": [
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<clinit>:77). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-firstFactory.native.json",
+          "sha256": "97fe801df6cc58bf72f9e80a0f49cfa5c97a7f30f58bef869419e657bb1ced84",
+          "target": "foundation.BytesSchema#firstFactory",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.Schema.<clinit>()V (org.apache.avro.Schema.<clinit>() at foundation.BytesSchema.typed:11). With --gaps assume it assumes instead that org.apache.avro.Schema.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-typed.native.json",
+          "sha256": "5e00546607eca15f8d78add0d9fedac51ce94d3ac31c0d2890655f2cbedc3260",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3:f3961512806d97dea9b6bd0a250bf8393c6f6bcf315de549fa78df6c58d114f1"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-typed.native.json",
+          "sha256": "c87e8c3774a98056da26b48207b0f80db9c528c18edb6afe0326d51776b1c5b4",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "verified"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3:f3961512806d97dea9b6bd0a250bf8393c6f6bcf315de549fa78df6c58d114f1"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-rejectsRecord.native.json",
+          "sha256": "39c20afe2f3ba742a2e5292107fdd4e9624b9129a2cdecb42c9b2c58cf00dfb9",
+          "target": "foundation.BytesSchema#rejectsRecord",
+          "verdict": "verified"
+        }
+      ],
+      "endBciExclusive": 139,
+      "entry": "org/apache/avro/Schema.class",
+      "example": "361",
+      "instructions": 56,
+      "jarIndex": 0,
+      "jarSha256": "3a2263be9da55ab3c5219465b71411f83f4480e2ec5d076d0b43943043fc8280",
+      "method": "org.apache.avro.Schema.<clinit>()V",
+      "ordinaryJvmContents": "held",
+      "originalJvmConstruction": "held",
+      "revision": "afbda0798a4fe662bd5379cf535da79800c4e840",
+      "side": "parent",
+      "startBci": 43
+    },
+    {
+      "buildReceipt": "examples/361-avro-decimal-buffer-cursor/records/build-historical/build-fix.json",
+      "buildSha256": "9cefb3c81c5a7a869a15579a16af485e3b02adb616450847fcffc628e0a93128",
+      "changedLiteral": "refused",
+      "classSha256": "56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3",
+      "constructorAdapterSha256": "cebb8850b4ea97a21153f724d447295731ec4c644f064b45016b7a46b64fff09",
+      "constructorClaims": [
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<clinit>:77). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-firstFactory.native.json",
+          "sha256": "3649c23acd2aa897a8a3056cbea4e91fe64aa79c5cc8c1040ca9ab2a411300fe",
+          "target": "foundation.BytesSchema#firstFactory",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.Schema.<clinit>()V (org.apache.avro.Schema.<clinit>() at foundation.BytesSchema.typed:11). With --gaps assume it assumes instead that org.apache.avro.Schema.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "libraryPremises": [],
+          "matchedExpectation": true,
+          "raw": "ordinary-typed.native.json",
+          "sha256": "b13d206e72fe61a73bc50432c05258facdbe723719b016931f941adec843699d",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "unverifiable"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3:f3961512806d97dea9b6bd0a250bf8393c6f6bcf315de549fa78df6c58d114f1"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-typed.native.json",
+          "sha256": "41e480800d51f5428bbdf875335525292140c703bda45633e977291341101459",
+          "target": "foundation.BytesSchema#typed",
+          "verdict": "verified"
+        },
+        {
+          "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+          "firstUnknown": null,
+          "libraryPremises": [
+            "observed-initializer:org.apache.avro.Schema:56b60e47a9da122961b9953f40e91fd2f370db84b5af3f76e465a2603a0e21b3:f3961512806d97dea9b6bd0a250bf8393c6f6bcf315de549fa78df6c58d114f1"
+          ],
+          "matchedExpectation": true,
+          "raw": "schema-rejectsRecord.native.json",
+          "sha256": "ca63f5669364848b33dfaeca6f55d4b62705b1edbc0768f59d6d38fdd68b6835",
+          "target": "foundation.BytesSchema#rejectsRecord",
+          "verdict": "verified"
+        }
+      ],
+      "endBciExclusive": 139,
+      "entry": "org/apache/avro/Schema.class",
+      "example": "361",
+      "instructions": 56,
+      "jarIndex": 0,
+      "jarSha256": "e4ca6c32cc7a32b0f8bcdf6190feccea129ff11bb4bf955826cf8376d3444cbd",
+      "method": "org.apache.avro.Schema.<clinit>()V",
+      "ordinaryJvmContents": "held",
+      "originalJvmConstruction": "held",
+      "revision": "ce9032a4123e262341a3e746e6eb2b8476eae1ae",
+      "side": "fix",
+      "startBci": 43
+    }
+  ],
+  "subjectJdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
+}

@@ -1,0 +1,127 @@
+{
+  "claims": {
+    "current-absent": {
+      "budgetSeconds": 60,
+      "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+      "firstUnknown": null,
+      "guard": null,
+      "libraryPremises": [
+        "system properties use the standard JVM Properties table and the running JVM permits this property access"
+      ],
+      "maxArrayLength": 64,
+      "raw": "current-absent.native.json",
+      "seconds": 0.017,
+      "sha256": "e9b09a7a0957eae711a119b9d9bf19b979aa9a5a05415a44e0f524bfd5a9a215",
+      "target": "foundation.SeparatorInputs#absent",
+      "unwind": 96,
+      "verdict": "verified"
+    },
+    "current-postorder": {
+      "budgetSeconds": 180,
+      "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+      "firstUnknown": null,
+      "guard": "code >= 0 && code < 2 && length >= 0 && length <= 2",
+      "libraryPremises": [
+        "system properties use the standard JVM Properties table and the running JVM permits this property access"
+      ],
+      "maxArrayLength": 64,
+      "raw": "current-postorder.native.json",
+      "seconds": 20.793,
+      "sha256": "b9ae9277260ecc6e3fb3bc747ed511909b282f8fd93b9d1e871c85131424baa5",
+      "target": "foundation.SeparatorInputs#postorder",
+      "unwind": 96,
+      "verdict": "verified"
+    },
+    "current-text": {
+      "budgetSeconds": 60,
+      "checkerSha256": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+      "firstUnknown": null,
+      "guard": "value != null",
+      "libraryPremises": [
+        "system properties use the standard JVM Properties table and the running JVM permits this property access"
+      ],
+      "maxArrayLength": 3,
+      "raw": "current-text.native.json",
+      "seconds": 0.612,
+      "sha256": "4e367b7ac328ca9fbe847b374323878377ee46199737e58658a56bb22e86b6db",
+      "target": "foundation.SeparatorInputs#text",
+      "unwind": 96,
+      "verdict": "verified"
+    },
+    "pilot-text": {
+      "budgetSeconds": 60,
+      "checkerSha256": "b61cd17e7c11b6011389677ec9581091ae3f71b6d4521efca67682f66a967cb8",
+      "firstUnknown": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence) at com.github.javaparser.utils.LineSeparator.<clinit>:52). With --gaps assume it assumes instead that java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+      "guard": "value != null",
+      "libraryPremises": [
+        "system properties use the standard JVM Properties table and the running JVM permits this property access"
+      ],
+      "maxArrayLength": 3,
+      "raw": "pilot-text.native.json",
+      "seconds": 0.501,
+      "sha256": "0302feba3d3f85a7cad39278ed29962bf01b535fce23b0afb2e36d6c813846f7",
+      "target": "foundation.SeparatorInputs#text",
+      "unwind": 96,
+      "verdict": "unverifiable"
+    }
+  },
+  "freshJvmControls": [
+    [
+      "text",
+      0
+    ],
+    [
+      "text",
+      1
+    ],
+    [
+      "text",
+      2
+    ],
+    [
+      "text",
+      3
+    ],
+    [
+      "text",
+      4
+    ],
+    [
+      "text",
+      5
+    ],
+    [
+      "text",
+      6
+    ],
+    [
+      "text",
+      7
+    ],
+    [
+      "absent"
+    ],
+    [
+      "tree",
+      0,
+      1
+    ],
+    [
+      "tree",
+      1,
+      1
+    ]
+  ],
+  "inputs": {
+    "build": "examples/360-javaparser-postorder-root/records/build-historical/build-fix.json",
+    "buildSha256": "2a29cb8bb88d185048cb98b39375eb7d11130758dd24a7644e4460e19cbe48b5",
+    "orderedJars": [
+      "62cf2f2c4bb4be2ced24f7914b4d22ae9cc2a760a5ab11cd2cd867e68d69cd27"
+    ],
+    "revision": "6529f264066e31bd9e78c71111ade3a20142d285"
+  },
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "propertyAdapter": "5c031fae5f8e15fde206f4dfb89ab57d2fde06b44660b66e2a2965e734454b26",
+  "schema": "javaparser-explicit-separator/v1",
+  "traversalAdapter": "8dae5891f8d942dd2245170dab959740aea915a4cd8df3b105a95750d9f0e25f"
+}

@@ -1,0 +1,155 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "foundation.BytesSchema#firstFactory",
+    "domain": "",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<clinit>:80). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "statement": "/home/filip/.cache/in-the-loop/tmp/avro-schema-sets-9n2n4g3a/355-fix/ordinary-firstFactory/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "foundation.BytesSchema#firstFactory cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<clinit>:80). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "uri": null,
+        "line": 8
+      }
+    ],
+    "output": "✗ foundation.BytesSchema#firstFactory cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int) at com.fasterxml.jackson.core.io.CharTypes.<clinit>:80). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/avro-schema-sets-9n2n4g3a/355-fix/ordinary-firstFactory",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.059061168,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 128,
+      "stage": null,
+      "native": {
+        "paths": 16,
+        "merges": 0,
+        "solver_calls": 29,
+        "solving_seconds": 0.000480626,
+        "gates_evaluated": 7933,
+        "evaluating_seconds": 0.000134182,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1509,
+        "clauses": 2945,
+        "seconds": 0.011772884,
+        "loading_seconds": 0.001852942,
+        "decoding_seconds": 0.000215046,
+        "encoding_seconds": 0.000855253,
+        "witness_seconds": 0.0,
+        "loops": [
+          "com.fasterxml.jackson.core.io.CharTypes.<clinit> at pc 128"
+        ]
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.util.Arrays.fill([II)V@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.util.Arrays.fill(int[], int)",
+          "sites": [
+            "com.fasterxml.jackson.core.io.CharTypes.<clinit>:80"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.012,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.002,
+            "lowering": 0.0,
+            "symbolic": 0.008,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1509,
+            "clauses": 2945
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.121,
+        "setup": 0.005,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.012,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.105
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
