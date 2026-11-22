@@ -4,6 +4,52 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class CharacterFormats {
+    static boolean failTable;
+    static final class Lookup {
+        static final int[] TABLE = new int[2];
+        static {
+            for (int i = 0; i < TABLE.length; i++) {
+                if (i < 0) System.getProperties().size();
+                if (i == 1 && failTable) throw new IllegalArgumentException();
+                TABLE[i] = i;
+            }
+        }
+    }
+
+    public static boolean tableStartup(boolean fail) {
+        failTable = fail;
+        try {
+            int n = Lookup.TABLE[1];
+            return !fail && n == 1;
+        } catch (ExceptionInInitializerError error) {
+            if (!fail || !(error.getCause() instanceof IllegalArgumentException)) return false;
+            try { return Lookup.TABLE.length == 0; } catch (NoClassDefFoundError expected) { return true; }
+        }
+    }
+
+    public static boolean latinIdentifiers(char ch) {
+        boolean expected = ch <= 8 || (ch >= 14 && ch <= 27) || ch == '$' || (ch >= '0' && ch <= '9')
+            || (ch >= 'A' && ch <= 'Z') || ch == '_' || (ch >= 'a' && ch <= 'z')
+            || (ch >= 0x7f && ch <= 0x9f) || (ch >= 0xa2 && ch <= 0xa5) || ch == 0xaa || ch == 0xad
+            || ch == 0xb5 || ch == 0xba || (ch >= 0xc0 && ch <= 0xd6) || (ch >= 0xd8 && ch <= 0xf6) || ch >= 0xf8;
+        return Character.isJavaIdentifierPart(ch) == expected && Character.isJavaIdentifierPart((int) ch) == expected;
+    }
+
+    public static boolean copiesAndFills(int value) {
+        int[] source = {1, 2};
+        int[] alias = source;
+        Arrays.fill(source, value);
+        int[] copy = Arrays.copyOf(source, 2);
+        int[] grown = Arrays.copyOf(source, 3);
+        if (copy == source || grown[2] != 0 || copy[1] != value || alias[0] != value) return false;
+        copy[0] = ~value;
+        if (grown[0] != value || source[0] != value) return false;
+        try { Arrays.copyOf(source, -1); return false; } catch (NegativeArraySizeException expected) { }
+        try { Arrays.fill((int[]) null, value); return false; } catch (NullPointerException expected) { return true; }
+    }
+
+    public static boolean outsideLatin1() { return !Character.isJavaIdentifierPart('\u0100'); }
+
     private enum Quote { SINGLE, DOUBLE }
 
     public static boolean hashContract(boolean quoted, boolean limit) {
@@ -55,6 +101,13 @@ public final class CharacterFormats {
     public static boolean expectsInternedIdentity() { return System.lineSeparator() == "\n"; }
 
     public static void main(String[] args) {
+        if (args.length == 1) {
+            if (!tableStartup(Boolean.parseBoolean(args[0]))) throw new AssertionError("table initialization");
+            return;
+        }
+        for (int c = 0; c < 256; c++) if (!latinIdentifiers((char) c)) throw new AssertionError(c);
+        if (outsideLatin1()) throw new AssertionError("U+0100 uses a different character table");
+        if (!copiesAndFills(Integer.MIN_VALUE)) throw new AssertionError("array copy");
         if (!boxed(false) || !boxed(true) || !arrays(false) || !arrays(true) || wrong() || !separator()) throw new AssertionError();
         for (int i = 0; i < 4; i++) if (!cached(i)) throw new AssertionError();
         for (boolean q : new boolean[] {false, true}) if (!hashContract(q, false) || !hashContract(q, true)) throw new AssertionError();

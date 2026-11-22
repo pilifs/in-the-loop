@@ -1346,6 +1346,17 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     proved(classes, "claims.CharacterFormats#separator", 4);
     proved(classes, "claims.CharacterFormats#hashContract", 4);
+    proved(classes, "claims.CharacterFormats#copiesAndFills", 4);
+    proved(classes, "claims.CharacterFormats#tableStartup", 4);
+    for fail in ["false", "true"] {
+        assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.CharacterFormats").arg(fail).status().unwrap().success());
+    }
+    let mut latin = options(classes, "claims.CharacterFormats#latinIdentifiers", 4, "latin-identifiers");
+    latin.assume = Some("ch <= 255".into());
+    let o = run(&latin);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let outside = run(&options(classes, "claims.CharacterFormats#outsideLatin1", 4, "outside-latin-table"));
+    assert_ne!(outside.verdict, Verdict::Verified, "{}", outside.output);
     let collision = run(&options(classes, "claims.CharacterFormats#assumesDistinctHashes", 4, "identity-hash-collision"));
     assert_eq!(collision.verdict, Verdict::Unverifiable, "{}", collision.output);
     assert!(collision.output.contains("JVM-chosen identity hash"), "{}", collision.output);

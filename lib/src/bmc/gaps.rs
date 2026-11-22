@@ -738,6 +738,19 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
     }) && writes_constant
 }
 
+/// Try an application's primitive lookup-table initializer on the actual path. A
+/// conservative walk through every CharacterData plane would reject a loop whose
+/// indices always select Latin-1. Its writes, callees and exceptions still execute.
+pub(super) fn builds_primitive_tables(cf: &crate::classfile::ClassFile) -> bool {
+    let mut statics = cf.fields.iter().filter(|f| f.is_static()).peekable();
+    if statics.peek().is_none() || !statics.all(|f| f.is_final() && matches!(f.descriptor.as_str(),
+        "[B" | "[C" | "[S" | "[I" | "[J" | "[F" | "[D" | "[Z")) { return false; }
+    let Some(code) = cf.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
+    let Ok(insns) = code.instructions() else { return false };
+    insns.iter().any(|(_, op)| matches!(op, Insn::NewArray(_)))
+        && insns.iter().any(|(pc, op)| op.targets().iter().any(|target| target < pc))
+}
+
 /// Whether the engine runs `class`'s `<clinit>` when a use initializes the class, rather than meeting a
 /// `class-initializer` gap there: the class has one, and nothing in it, or in the application methods it calls,
 /// is outside the engine's fragment ([`scan`]'s refusals). That includes a static field it reads or writes of a

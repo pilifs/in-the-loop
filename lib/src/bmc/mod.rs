@@ -84,6 +84,7 @@
 //! | `invokespecial`, `invokevirtual` and `invokeinterface` of the constructors and methods of `java.util.ArrayList`, `java.util.ArrayDeque`, `java.util.HashSet`, `java.util.LinkedHashSet` (with the `HashSet` model), `java.util.StringJoiner` or `java.beans.PropertyChangeEvent` (with `java.util.EventObject`), in a check that asks for the class's model (`--model java.util.ArrayList`, [`crate::models::ON_REQUEST`]) | enter the model ([`ClassPath::runs_model`]) for what it keeps, and the run states it ([`Outcome::assumed`]); a method it does not keep, and every call in a check that did not ask, is the JDK call it was |
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
 //! | `Arrays.asList(T...)` and its fixed-size view | Strict checking on an image executes the JDK's array-backed list and iterator. The portable model supplies size, get and toArray when the image is unavailable. |
+//! | Integer lookup tables initialized by application bytecode | Strict checking can enter a looping initializer whose static fields are final primitive arrays. Whole-array integer fill and the Latin-1 path of `Character.isJavaIdentifierPart` execute the selected JDK's bytecode. The enclosing claim retains its loop bound. |
 //! | `new HashSet(Collection)` on an exact receiver | Strict checking executes the selected JDK constructor and its backing map, including the source iterator, key callbacks and their exceptions. The image must initialize its shared membership sentinel with a single fresh object. An explicitly requested HashSet model keeps its own layout. |
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
 //! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
@@ -4802,10 +4803,12 @@ impl<'a> Engine<'a> {
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
         }
+        let gap = Gap { kind: GapKind::ClassInitializer, owner: class.to_string(), name: "<clinit>".into(), descriptor: "()V".into() };
         let runs = match self.runs.get(class) {
             Some(&r) => r,
             None => {
-                let r = (self.gap_mode == GapMode::Strict && (self.cp.state_image_class(class).is_some() || gaps::builds_static_objects(self.cp, &cf)))
+                let r = (self.gap_mode == GapMode::Strict && (self.cp.state_image_class(class).is_some() || gaps::builds_static_objects(self.cp, &cf)
+                    || (self.cp.is_application(class) && gaps::builds_primitive_tables(&cf) && !self.contracts.contains_key(&gap))))
                     || gaps::runs_initializer(self.cp, class);
                 self.runs.insert(class.to_string(), r);
                 r
@@ -4821,7 +4824,6 @@ impl<'a> Engine<'a> {
             path.frames.last_mut().expect("a frame").initializes = Some(class.to_string());
             return Ok(Initialising::Running);
         }
-        let gap = Gap { kind: GapKind::ClassInitializer, owner: class.to_string(), name: "<clinit>".into(), descriptor: "()V".into() };
         if self.contracts.get(&gap).is_some_and(|k| k.how == Closing::Initialised) {
             self.apply(path, gap);
         } else if let Some(end) = self.meet(path, GapKind::ClassInitializer, class, "<clinit>", "()V") {

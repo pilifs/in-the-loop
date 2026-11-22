@@ -21,6 +21,13 @@ public final class BytesSchema {
     }
 
     public static void main(String[] args) {
-        if (!firstFactory() || !typed() || !rejectsRecord()) throw new AssertionError();
+        boolean result = switch (args.length == 0 ? "all" : args[0]) {
+            case "firstFactory" -> firstFactory();
+            case "typed" -> typed();
+            case "rejectsRecord" -> rejectsRecord();
+            case "all" -> firstFactory() && typed() && rejectsRecord();
+            default -> throw new IllegalArgumentException(args[0]);
+        };
+        if (!result) throw new AssertionError();
     }
 }

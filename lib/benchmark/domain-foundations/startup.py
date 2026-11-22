@@ -83,6 +83,15 @@ def materialize(folder, side, work):
                 "buildSha256": runtime_maven.sha256_of(path), "orderedJars": [a["sha256"] for a in record["artifacts"]]}
 
 
+def selected_class(jars, name, release=21):
+    for index, jar in enumerate(jars):
+        with zipfile.ZipFile(jar) as archive:
+            entry = runtime_jar.effective_entries(archive, release).get(name)
+            if entry is not None:
+                return index, entry.filename, archive.read(entry)
+    raise ValueError("pinned classpath has no "+name)
+
+
 def launcher(cmd, cwd, env=None):
     r = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, timeout=120)
     if r.returncode:

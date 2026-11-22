@@ -5,14 +5,23 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
-import zipfile
+import time
 
 from producers import PROFILE
-from startup import HERE, ROOT, compile_java, document, materialize, pilot_checker, runtime_jar, runtime_jdk, runtime_maven
+from startup import HERE, ROOT, compile_java, document, materialize, pilot_checker, runtime_jdk, runtime_maven, selected_class
 
 SHA = runtime_maven.sha256_of
 ENTRY = "org/apache/avro/Schema.class"
 PROOF = Path("foundation/ReservedNames.class")
+
+
+def fresh_schema_calls(subject, work, classes, jars):
+    methods = ["firstFactory", "typed", "rejectsRecord"]
+    cp = os.pathsep.join(map(str, [classes, *jars]))
+    for method in methods:
+        subprocess.run([subject/"bin/java", "-Djava.io.tmpdir="+str(work), "-XX:ActiveProcessorCount=2",
+                        "-cp", cp, "foundation.BytesSchema", method], cwd="/", env={}, check=True, timeout=40)
+    return methods
 
 
 def sites(work, subject, inspector, classes, output, checker):
@@ -35,14 +44,8 @@ def sites(work, subject, inspector, classes, output, checker):
             leg.mkdir()
             jars, binding = materialize(case, side, leg)
             selected = leg/"Schema.class"
-            for index, jar in enumerate(jars):
-                with zipfile.ZipFile(jar) as z:
-                    entry = runtime_jar.effective_entries(z, 21).get(ENTRY)
-                    if entry is not None:
-                        selected.write_bytes(z.read(entry))
-                        break
-            else:
-                raise ValueError("pinned classpath has no Schema")
+            index, entry, body = selected_class(jars, ENTRY)
+            selected.write_bytes(body)
             compare = [inspector/"bin/java", "-Djava.io.tmpdir="+str(work), "-cp", tools, "foundation.ReservedNameSite"]
             match = subprocess.check_output([*compare, classes/PROOF, selected], text=True, timeout=30)
             mismatch = subprocess.run([*compare, bad/PROOF, selected], capture_output=True, text=True, timeout=30)
@@ -55,8 +58,7 @@ def sites(work, subject, inspector, classes, output, checker):
             begin, end, count = map(int, match.split())
             calls = leg/"classes"
             compile_java(subject, work, calls, HERE/"BytesSchema.java", jars)
-            subprocess.run([subject/"bin/java", "-Djava.io.tmpdir="+str(work), "-XX:ActiveProcessorCount=2",
-                "-cp", os.pathsep.join(map(str, [calls, *jars])), "foundation.BytesSchema"], cwd="/", env={}, check=True, timeout=40)
+            fresh = fresh_schema_calls(subject, work, calls, jars)
             claims = []
             if checker:
                 dest = output/number/side
@@ -67,23 +69,28 @@ def sites(work, subject, inspector, classes, output, checker):
                         expected, jars, SHA(selected) if label == "schema" else None))
             records.append({"example": number, "side": side, "revision": binding["revision"],
                 "buildReceipt": binding["build"], "buildSha256": binding["buildSha256"],
-                "jarIndex": index, "jarSha256": binding["orderedJars"][index], "entry": entry.filename,
+                "jarIndex": index, "jarSha256": binding["orderedJars"][index], "entry": entry,
                 "classSha256": SHA(selected), "method": "org.apache.avro.Schema.<clinit>()V",
                 "startBci": begin, "endBciExclusive": end, "instructions": count,
-                "changedLiteral": "refused", "ordinaryJvmContents": "held", "originalJvmConstruction": "held",
+                "changedLiteral": "refused", "ordinaryJvmContents": "held", "originalJvmConstruction": "held", "freshJvmCalls": fresh,
                 "constructorAdapterSha256": SHA(calls/"foundation/BytesSchema.class"), "constructorClaims": claims})
     return records
 
 
-def native(executable, subject, work, classes, output, label, entry, expected, jars=(), observed_schema=None):
+def native(executable, subject, work, classes, output, label, entry, expected, jars=(), observed_schema=None,
+           *, unwind=64, guard=None, assertion=None, refusal=None):
     target = "foundation."+entry
     method = entry.split("#")[1]
     env = dict(os.environ, JAVA_HOME=str(subject), JVMCONTRACT_JAR_RELEASE="21", PATH=str(subject/"bin")+os.pathsep+os.defpath)
     cmd = [executable, "prove", target, "--classes", classes, "--engine", "native", "--gaps", "strict",
-        "--unwind", "64", "--max-array-length", "128", "--work", work/(label+"-"+method), "--json"]
+        "--unwind", str(unwind), "--max-array-length", "128", "--work", work/(label+"-"+method), "--json"]
+    if guard: cmd.extend(["--assume", guard])
+    if assertion: cmd.extend(["--assert", assertion])
     if jars: cmd.extend(["--classpath", os.pathsep.join(map(str, jars))])
     if observed_schema: cmd.extend(["--observed-initializer", "org.apache.avro.Schema", "--observed-runtime", json.dumps(PROFILE)])
+    start = time.monotonic()
     checked = subprocess.run(cmd, capture_output=True, env=env, timeout=60)
+    seconds = round(time.monotonic()-start, 3)
     if not checked.stdout:
         raise ValueError(checked.stderr.decode(errors="replace")[-900:])
     path = output/(label+"-"+method+".native.json")
@@ -91,7 +98,7 @@ def native(executable, subject, work, classes, output, label, entry, expected, j
     row, = json.loads(checked.stdout)
     stated = row["stated"]
     assumptions = [a["id"] for a in stated["assumptions"] if a["kind"] == "library"]
-    if row["target"] != target or stated["gap_mode"] != "strict":
+    if row["target"] != target or stated["gap_mode"] != "strict" or row["assume"] != guard or (assertion and row["assert"] != assertion):
         raise ValueError("unexpected producer or startup scope")
     if observed_schema:
         if len(assumptions) != 1 or not assumptions[0].startswith("observed-initializer:org.apache.avro.Schema:"+observed_schema+":"):
@@ -101,11 +108,11 @@ def native(executable, subject, work, classes, output, label, entry, expected, j
     allowed = {expected} if expected else {"verified", "unverifiable"}
     matched = row["verdict"] in allowed
     if row["verdict"] == "verified": matched &= stated["vacuity"]["status"] == "non-vacuous"
-    if label == "pilot": matched &= "java.util.HashSet.<init>(Ljava/util/Collection;)V" in (row["problem"] or "")
+    if refusal: matched &= refusal in (row["problem"] or "")
     if row["verdict"] == "violation": matched &= row.get("counterexample") is not None
     return {"target": target, "verdict": row["verdict"], "checkerSha256": SHA(executable),
             "raw": path.name, "sha256": SHA(path), "firstUnknown": row["problem"], "libraryPremises": assumptions,
-            "matchedExpectation": matched}
+            "matchedExpectation": matched, "unwind": unwind, "guard": guard, "seconds": seconds}
 
 
 def main():
@@ -129,7 +136,8 @@ def main():
         if not args.sites_only:
             if args.pilot:
                 previous = pilot_checker(exe, args.pilot)
-                result["claims"].append(native(previous, subject, work, classes, output, "pilot", "ReservedNames#reserved", "unverifiable"))
+                result["claims"].append(native(previous, subject, work, classes, output, "pilot", "ReservedNames#reserved", "unverifiable",
+                                               refusal="java.util.HashSet.<init>(Ljava/util/Collection;)V"))
             for method, expected in (("reserved","verified"), ("defaultLeaks","violation")):
                 result["claims"].append(native(exe, subject, work, classes, output, "current", "ReservedNames#"+method, expected))
         document(output/"evidence.json", result)

@@ -1,0 +1,332 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-030646-prove-javaparser-startup-for-supplied-an",
+  "title": "Prove JavaParser startup for supplied and cleared separators",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 45.9s, peak 189.9 MiB (estimated 5m00s, 3.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-030646-prove-javaparser-startup-for-supplied-an.json",
+    "sha256": "5a6e114413fdf0e94e0607edb11433f1312336a6cad6a185761a983a6ffced3d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-030646-prove-javaparser-startup-for-supplied-an",
+      "title": "Prove JavaParser startup for supplied and cleared separators",
+      "description": "Use the original parent and fix JARs on Temurin 21.0.13. Compare the pilot to the new native checker on every non-null separator through three UTF-16 units. Check both real initializer failures after a clear, and both frozen trees with an arbitrary caller-supplied separator through two units. No application class is preinitialized. Replay the native parent witness on a fresh unmodified JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvm:counterexample"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T03:06:46+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check explicit startup on the original parent",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --side parent --pilot --output verification/domain-foundations/separator-inputs",
+          "cwd": "."
+        },
+        {
+          "name": "Check explicit startup on the landed fix",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --side fix --pilot --output verification/domain-foundations/separator-inputs",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/separator-inputs"
+      ]
+    }
+  },
+  "sourceCommit": "1c914d34f1cf6bb4d7b11590cfaaf46ded3caee3",
+  "startedAt": "2026-11-22T03:16:27+00:00",
+  "finishedAt": "2026-11-22T03:20:37+00:00",
+  "wallSeconds": 250.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 338336,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 199139328,
+    "wallSeconds": 45.9,
+    "cpuSeconds": 48.8,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 193.458,
+      "cpuSeconds": 193.68,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2188845056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "4604c47d37fa2619e71b5f243a69d1131b39d80c35bcdb56e96e94ae3537fc56",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-030646-prove-javaparser-startup-for-supplied-an/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 13s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check explicit startup on the original parent",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --side parent --pilot --output verification/domain-foundations/separator-inputs",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 21.848,
+      "cpuSeconds": 23.379,
+      "cpuThrottledSeconds": 0.202,
+      "peakMemoryBytes": 185188352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-explicit-startup-on-the.log",
+        "lines": 4,
+        "bytes": 774,
+        "sha256": "ed392f0c2c4e1e9b2cf33933c34321a1017753691a83d0359a34fe293b0fe9da",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent pilot text unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.replace(",
+        "parent current text verified None",
+        "parent current absent verified None",
+        "parent current postorder violation None"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check explicit startup on the landed fix",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --side fix --pilot --output verification/domain-foundations/separator-inputs",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 24.049,
+      "cpuSeconds": 25.409,
+      "cpuThrottledSeconds": 0.289,
+      "peakMemoryBytes": 199139328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-explicit-startup-on-the.log",
+        "lines": 4,
+        "bytes": 761,
+        "sha256": "b14acc92301358a211a7dff46021c245491ec2d231b1d86240707ba9e209731c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fix pilot text unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;@jdk-21.0.13 (java.lang.String.replace(jav",
+        "fix current text verified None",
+        "fix current absent verified None",
+        "fix current postorder verified None"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/separator-inputs/fix/current-absent.native.json",
+      "change": "added",
+      "bytes": 4687,
+      "sha256": "e9b09a7a0957eae711a119b9d9bf19b979aa9a5a05415a44e0f524bfd5a9a215",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/fix/current-postorder.native.json",
+      "change": "added",
+      "bytes": 6620,
+      "sha256": "b9ae9277260ecc6e3fb3bc747ed511909b282f8fd93b9d1e871c85131424baa5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/fix/current-text.native.json",
+      "change": "added",
+      "bytes": 8067,
+      "sha256": "4e367b7ac328ca9fbe847b374323878377ee46199737e58658a56bb22e86b6db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/fix/evidence.json",
+      "change": "added",
+      "bytes": 4331,
+      "sha256": "1153b747e2bda624ce061f5c9b23c04c76dcc062ac2280af1616d66d7b7cc9da",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/fix/pilot-text.native.json",
+      "change": "added",
+      "bytes": 9421,
+      "sha256": "0302feba3d3f85a7cad39278ed29962bf01b535fce23b0afb2e36d6c813846f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/parent/current-absent.native.json",
+      "change": "added",
+      "bytes": 4686,
+      "sha256": "c01ea97b53f1932160517faf05f435b8a29b6cab367088ad903376d6bb840c0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/parent/current-postorder.native.json",
+      "change": "added",
+      "bytes": 8557,
+      "sha256": "40bd6ff32670f82c775346d0619e40744e1e8bb94f843b4342101e752d38e55c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/parent/current-text.native.json",
+      "change": "added",
+      "bytes": 8069,
+      "sha256": "53b31224d25314c7eea0503986d71e71d0d9193a505c1436684dfc3fac6a0088",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/parent/evidence.json",
+      "change": "added",
+      "bytes": 4748,
+      "sha256": "87b7a68ce072e15ce953921075334b7814e6bdcf063a067c870a4ffd89673440",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/separator-inputs/parent/pilot-text.native.json",
+      "change": "added",
+      "bytes": 9423,
+      "sha256": "46a0211a6a3e4dd5f2d63fdb50d075719163a56f365bc6979004d6ff66c58840",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T03:20:38+00:00",
+    "applied": [
+      "verification/domain-foundations/separator-inputs/fix/current-absent.native.json",
+      "verification/domain-foundations/separator-inputs/fix/current-postorder.native.json",
+      "verification/domain-foundations/separator-inputs/fix/current-text.native.json",
+      "verification/domain-foundations/separator-inputs/fix/evidence.json",
+      "verification/domain-foundations/separator-inputs/fix/pilot-text.native.json",
+      "verification/domain-foundations/separator-inputs/parent/current-absent.native.json",
+      "verification/domain-foundations/separator-inputs/parent/current-postorder.native.json",
+      "verification/domain-foundations/separator-inputs/parent/current-text.native.json",
+      "verification/domain-foundations/separator-inputs/parent/evidence.json",
+      "verification/domain-foundations/separator-inputs/parent/pilot-text.native.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a04fff32b8a618fcf88eb87527be55dce7dc82d8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a04fff32b8a618fcf88eb87527be55dce7dc82d8/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T032037Z-33617566a3b7a06d",
+      "outputs": "20261122T032037Z-365117f335483f5c",
+      "diff": "20261122T032037Z-398529e4320ff076"
+    }
+  }
+}

@@ -1077,11 +1077,11 @@ impl ClassPath {
             && get.descriptor == "()Ljdk/internal/access/JavaLangAccess;").then(|| provider.to_owned())
     }
 
-    /// Reference-array comparison and hashing call the actual elements' methods.
+    /// JDK array operations and the character and collection methods used by their callers.
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
-            ("java/util/Arrays", "fill", "([CC)V")
-            | ("java/util/Arrays", "fill", "([IIII)V")
+            ("java/util/Arrays", "fill", "([CC)V" | "([II)V" | "([IIII)V")
+            | ("java/lang/Character", "isJavaIdentifierPart", "(C)Z" | "(I)Z")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
             | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
@@ -1528,6 +1528,7 @@ impl ClassPath {
             return Some(class);
         }
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+            | "java/lang/CharacterData" | "java/lang/CharacterDataLatin1"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
             | "java/io/OutputStream" | "java/io/ByteArrayOutputStream" | "java/io/FilterOutputStream"
             | "java/io/InputStreamReader" | "sun/nio/cs/StreamDecoder" | "jdk/internal/misc/InternalLock" | "java/nio/charset/CodingErrorAction" | "java/nio/ByteOrder"
