@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-041348-qualify-avro-198-packaged-classes-after",
+  "title": "Qualify Avro 198 packaged classes after original shading",
+  "description": "Run the historical module with its Guava prerequisite, retain the exact packaged JAR and compare the original compiler class, pre-shade archive entry and canonical re-emission of the packaged class. Repeat the mapped-buffer regression. Require the named failure on the parent and pass on the fix.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test"
+  ],
+  "links": {
+    "examples": [
+      "362"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T04:13:48+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Qualify the untouched compiler and packaged products",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/upstream.py 362 --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/362-avro-buffered-encoder-cursor/records/build-packaged",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/362-avro-buffered-encoder-cursor/records/build-packaged"
+  ]
+}
