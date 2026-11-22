@@ -1,0 +1,203 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044517-07-receiver-rescore-after-literal-decodi",
+  "title": "07 receiver rescore after literal decoding",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.9s, peak 910.4 MiB (estimated 5m00s, 3.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-044517-07-receiver-rescore-after-literal-decodi.json",
+    "sha256": "18ef3f46160d71d54a1a70dde86b79952b65a7017d7e4ad51e94833272a09898",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044517-07-receiver-rescore-after-literal-decodi",
+      "title": "07 receiver rescore after literal decoding",
+      "description": "Repeat all frozen overloads and the original caller on both revisions after the recurring Base64 and Boolean intake fixes. Compare the same registered inputs, subject runtime, constructor path, observed outputs and full original classpaths with the first receiver run.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T04:45:17+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check the bound overloads and original caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 07",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/receiver-final/07"
+      ]
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:51:27+00:00",
+  "finishedAt": "2026-11-22T04:55:38+00:00",
+  "wallSeconds": 251.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 954597376,
+    "wallSeconds": 17.9,
+    "cpuSeconds": 21.3,
+    "memoryOfEstimate": 0.3,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 07",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 17.853,
+      "cpuSeconds": 21.264,
+      "cpuThrottledSeconds": 2.063,
+      "peakMemoryBytes": 954597376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-overloads-and.log",
+        "lines": 4,
+        "bytes": 922,
+        "sha256": "98cc7659f4e26b68a9631c6214d059b2e0334b61d87072a7f9943b918356e652",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-9 current open add is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.languagetool.dev.wikipedia.atom.MatchDatabase made by its constructor: the field conn of org.languagetool.dev.wikipedia.atom.MatchDatabase has type jav",
+        "open new input 0: the original caller method was never entered. java.lang.RuntimeException: Could not get database connection to jdbc:derby:atomFeedChecksDB;create=true at org.languagetool.dev.wikipedia.atom.MatchDatabase.<init>(MatchDatabase.java:45) caused by java.sql.SQLException: No suitable dri",
+        "compsuite-i-9 open",
+        "compsuite-i-9 open ['unverifiable', 'unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-final/07/callers/compsuite-i-9-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6413,
+      "sha256": "bca1a18bcbf61ba92f8fce53172c8c04541b9afc58864ada3236b62ca5de1421",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/07/callers/compsuite-i-9-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6412,
+      "sha256": "870f274daf3d4510e6e88992ae81a2ef1ce1d85da8a18adcb951fe0cdaee350d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/07/callers/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 122765,
+      "sha256": "9d5138a5262d002813ff1eb8a520153612d6be9e1249d339a00a170150f6b4cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/07/overloads/current/compsuite-i-9.json",
+      "change": "added",
+      "bytes": 25553,
+      "sha256": "d46090b6d09beeed0ace549ff8776857e561ab23ebaa99f0c64620104fda25d0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:48+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-final/07/callers/compsuite-i-9-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/07/callers/compsuite-i-9-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/07/callers/compsuite-i-9.json",
+      "verification/domain-foundations/receiver-final/07/overloads/current/compsuite-i-9.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045538Z-8446369c0f1f67ed",
+      "outputs": "20261122T045538Z-87001472a8326a36",
+      "diff": "20261122T045538Z-8910260aa87bec84"
+    }
+  }
+}

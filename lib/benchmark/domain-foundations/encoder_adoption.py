@@ -7,7 +7,8 @@ import tempfile
 import time
 
 from buffer_fact import certify, dependencies, elapsed, execute, site_inputs, validate_producer
-from startup import HERE, ROOT, document, runtime_jdk, runtime_maven
+from results import Job
+from startup import HERE, document, runtime_jdk, runtime_maven
 
 
 def run(output):
@@ -49,8 +50,15 @@ def run(output):
         try: validate_producer(producer,key,wrong,"wrap")
         except ValueError: pass
         else: raise ValueError("proof reused across different bounds")
-        original=ROOT/"verification/domain-foundations/buffer-adoption/clean-wrap.json"
+        historical=Job("20261121-234701-qualify-bounded-heap-buffer-facts-across")
+        historical_path,=[p for p in historical.files if p.match("buffer-adoption/clean-wrap.json")]
+        original=historical.output(historical_path)
         old=json.loads(original.read_bytes())
+        old_key=historical.files[historical_path]["sha256"]
+        validate_producer(original,old_key,old["dependencies"],"wrap")
+        try: validate_producer(original,old_key,{**old["dependencies"],"maxArrayLength":20},"wrap")
+        except ValueError: pass
+        else: raise ValueError("six-byte proof admitted for a wider caller")
         if wrong==old["dependencies"]: raise ValueError("expected the historical checker to differ")
         _, setup=execute([*compiler,"-g","-parameters","-d",work/"proof",HERE/"ReadOnlyRange.java"],work,env)
         _, read=certify(work,jdk,checker,env,output/"read-only.json","readOnly",20,"ReadOnlyRange")
@@ -59,6 +67,7 @@ def run(output):
         if len(small)!=8: raise ValueError("different pilot-bound coverage")
         document(output/"measurement.json",{"routes":costs,"originalCertificateSha256":runtime_maven.sha256_of(original),
             "originalBound":6,"selectorsWithinOriginalBound":small,"qualifiedBound":20,"changedBound":"declined",
+            "historicalSixAtTwenty":"declined","checkerSha256":runtime_maven.sha256_of(checker),
             "wideCertificateSha256":key,"readOnlySetup":setup,"readOnlyProof":read,"sitesSha256":runtime_maven.sha256_of(output/"sites.json"),
             "agentMinutes":None})
         print(json.dumps(costs))

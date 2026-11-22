@@ -1,0 +1,299 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044516-check-original-spreadsheet-and-date-rece",
+  "title": "Check original spreadsheet and date receiver producers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.3s, peak 392.0 MiB (estimated 2m00s, 2.0 GiB); 16 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-044516-check-original-spreadsheet-and-date-rece.json",
+    "sha256": "dcaf254833f49b6e8ed652af9e4a393a17a6121e0e0326b5ba252b536cae96ad",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044516-check-original-spreadsheet-and-date-rece",
+      "title": "Check original spreadsheet and date receiver producers",
+      "description": "Check fresh receiver properties on both actual versions of the streaming spreadsheet and Spring date validator. Compare the previous final checker against the current executable, challenge the null result on both versions and bind every classpath digest plus an ordinary JVM construction. These properties have their own domain alongside the registered caller comparisons.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T04:45:16+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Exercise both original receiver classes and counterclaims",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/receiver_properties.py --area \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-properties",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/receiver-properties"
+      ],
+      "supersedes": "20261122-043152-check-original-spreadsheet-and-date-rece",
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:50:52+00:00",
+  "finishedAt": "2026-11-22T04:51:14+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 411000832,
+    "wallSeconds": 5.3,
+    "cpuSeconds": 7.4,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise both original receiver classes and counterclaims",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/receiver_properties.py --area \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-properties",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 5.31,
+      "cpuSeconds": 7.358,
+      "cpuThrottledSeconds": 0.361,
+      "peakMemoryBytes": 411000832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-both-original-receive.log",
+        "lines": 4,
+        "bytes": 258,
+        "sha256": "d95ae92ff8d7b66a8a5218f9662dfc9ccecef25284da3ee7b6097515252391eb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-70 old ['unverifiable', 'verified', 'violation']",
+        "compsuite-i-70 new ['unverifiable', 'verified', 'violation']",
+        "compsuite-i-94 old ['unverifiable', 'unverifiable', 'unverifiable']",
+        "compsuite-i-94 new ['unverifiable', 'unverifiable', 'unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/new/baseline.native.json",
+      "change": "added",
+      "bytes": 1915,
+      "sha256": "b6db6d7a27731d7e2a8366608c19c3187a13269ded705bf4086a51b7d3d03094",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/new/current.native.json",
+      "change": "added",
+      "bytes": 5683,
+      "sha256": "bd4ba399fc2065332fbb4713793be317283b941299e38414928520ed9262de12",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/new/negative.native.json",
+      "change": "added",
+      "bytes": 8439,
+      "sha256": "b439885c58fc61b99d2585e6744a6e0c9aac28e4b4716b87424154a90567f256",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/new/result.json",
+      "change": "added",
+      "bytes": 2941,
+      "sha256": "c21c01787ea8110956c823eaaf9977a0b54f7cb03140ad2840f1b7abca9d1e5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/old/baseline.native.json",
+      "change": "added",
+      "bytes": 1915,
+      "sha256": "2c41b0d3e31b45c5514a3eb9d3687d4d8b0788c91941306515a035d5fa7d7632",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/old/current.native.json",
+      "change": "added",
+      "bytes": 5686,
+      "sha256": "ac2d65ced06b515d2d11234d7cf1d61deb599742359675d23bed7958167634ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/old/negative.native.json",
+      "change": "added",
+      "bytes": 8440,
+      "sha256": "fe4c5ac292af7223cd37118bedc60a56226cb829adc9038924582848a03eb34c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-70/old/result.json",
+      "change": "added",
+      "bytes": 2941,
+      "sha256": "b6f8fa6c79a88f8d94245c15d0477c29406b8194dac60e437415846fa5c0e010",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/new/baseline.native.json",
+      "change": "added",
+      "bytes": 2091,
+      "sha256": "ac61979a5b311d0c04e22e9f509e4ff64f1c6f35dc036f9b8b5ca6fd17cb0e01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/new/current.native.json",
+      "change": "added",
+      "bytes": 1274,
+      "sha256": "046fa381c7db3b138ab1ebacfe3160816881de3cd2bd35058926a3e75b5f1783",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/new/negative.native.json",
+      "change": "added",
+      "bytes": 1275,
+      "sha256": "b12497f5afbb3b6b56baa788b516321d1060fc7b5840f3f01367eb252cde584d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/new/result.json",
+      "change": "added",
+      "bytes": 5713,
+      "sha256": "2e9c45f89f68289b8de8f7beb445b44c0f33adc1940673941f2c67dc08c2e4ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/old/baseline.native.json",
+      "change": "added",
+      "bytes": 2091,
+      "sha256": "5b4a121f2b618b03857b5620ec13068b4cc8db58032189e87cfb9db07eb85d87",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/old/current.native.json",
+      "change": "added",
+      "bytes": 1274,
+      "sha256": "f7431435bf0fe532f823e7e2add5f3f480d10e40b545134ee41573ea95ec6abd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/old/negative.native.json",
+      "change": "added",
+      "bytes": 1275,
+      "sha256": "e65ac8c3bb52951dfe3f78db99663424c4d6ad112c130f99c1facd5a3ae76f28",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties/compsuite-i-94/old/result.json",
+      "change": "added",
+      "bytes": 5713,
+      "sha256": "93422421e8b49e09120af1cfd645834ef0fe9c0a14a272ce986b0c4d87d6fcbd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:18+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/new/baseline.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/new/current.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/new/negative.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/new/result.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/old/baseline.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/old/current.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/old/negative.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-70/old/result.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/new/baseline.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/new/current.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/new/negative.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/new/result.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/old/baseline.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/old/current.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/old/negative.native.json",
+      "verification/domain-foundations/receiver-properties/compsuite-i-94/old/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045114Z-3906974f33d876d6",
+      "outputs": "20261122T045114Z-422023b5713ad2bf",
+      "diff": "20261122T045114Z-445386493948d2e9"
+    }
+  }
+}

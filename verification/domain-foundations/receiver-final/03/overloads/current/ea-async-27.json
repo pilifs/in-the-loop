@@ -1,0 +1,193 @@
+{
+  "id": "ea-async-27",
+  "build": "current",
+  "operator": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "entry": "com.ea.async.instrumentation.Transformer#transform",
+  "observer": "Transform an async method holding an uninitialized value across await and read completion and result.",
+  "revisions": {
+    "old": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
+    "new": "a99e044708fac3654f621649d89bf1820bcd44a0"
+  },
+  "result": "open",
+  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
+  "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
+  "sides": {
+    "old": {
+      "commit": "bbb45620d0b1d6623dd7c56938ad9d39f60451bc",
+      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
+      "scope": "complete original Maven production module",
+      "module": "async/pom.xml",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "6f8ba097d94830c63908364c5882afe8c41bb2a06baefdf027cf445fcddda826",
+      "operandScope": "runtime",
+      "subjectJdk": "8.0.512.0+9-tem",
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "goals": [
+        "-pl",
+        "async",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "-DincludeScope=runtime",
+        "-Dmdep.outputFile=target/upgrade-runtime.cp",
+        "compile",
+        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
+      ],
+      "declaredReleaseRepositories": [],
+      "stage": "artifacts ready",
+      "compiledClasses": 24,
+      "resources": 1,
+      "seconds": 7.07,
+      "orderedSha256": [
+        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
+        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
+        "f2820ea6ef069b83f37d805f5cec58b2872a25650f5f95b4f3cc572156323df0",
+        "62b2c0d818fde5c52cf6404aa10836dbb170a2c3fa8466e656f0f991732fa01f",
+        "02317d9ed739dab470a96f44de712fde51a811362ca26852b34324388e61257c",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+      ],
+      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
+      "descriptors": [
+        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
+        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+      ]
+    },
+    "new": {
+      "commit": "a99e044708fac3654f621649d89bf1820bcd44a0",
+      "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de",
+      "scope": "complete original Maven production module",
+      "module": "async/pom.xml",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "f8261e3dc39157d1fd02e4566a7e22d3106325aea39ae5615149c6aad50f2567",
+      "operandScope": "runtime",
+      "subjectJdk": "8.0.512.0+9-tem",
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "goals": [
+        "-pl",
+        "async",
+        "-am",
+        "-Dmaven.test.skip=true",
+        "-DincludeScope=runtime",
+        "-Dmdep.outputFile=target/upgrade-runtime.cp",
+        "compile",
+        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
+      ],
+      "declaredReleaseRepositories": [],
+      "stage": "artifacts ready",
+      "compiledClasses": 24,
+      "resources": 1,
+      "seconds": 6.98,
+      "orderedSha256": [
+        "69aa4642a39bf66323ad0e8bc197ec05503a4038092be4e16f9d0c8be2480fe6",
+        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
+        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
+        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
+      ],
+      "callerClassSha256": "0aed37932d41d59924ad5e9b1c29213750792067cb512a66bc65611621a703ad",
+      "descriptors": [
+        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
+        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+      ]
+    }
+  },
+  "declarations": {
+    "common": [
+      "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
+      "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
+    ],
+    "removed": [],
+    "added": []
+  },
+  "native": {
+    "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
+    "exit": 1,
+    "seconds": 0.019,
+    "outputSha256": "305aca5bfd145bc3b45029bf70413d6bdb790ecde04302bc60a282971a06a4de",
+    "outcome": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
+      "domain": null,
+      "counterexample": null,
+      "proof": null,
+      "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
+      "statement": null,
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
+          "uri": null,
+          "line": 146
+        }
+      ],
+      "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
+      "work": "$WORK/checker-c70fpvyw/overload-0"
+    },
+    "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+  },
+  "firstBlocker": "review the recorded exact overloads",
+  "nativeOverloads": [
+    {
+      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
+      "exit": 1,
+      "seconds": 0.019,
+      "outputSha256": "305aca5bfd145bc3b45029bf70413d6bdb790ecde04302bc60a282971a06a4de",
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
+        "domain": null,
+        "counterexample": null,
+        "proof": null,
+        "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
+            "uri": null,
+            "line": 146
+          }
+        ],
+        "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
+        "work": "$WORK/checker-c70fpvyw/overload-0"
+      },
+      "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+    },
+    {
+      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)",
+      "exit": 1,
+      "seconds": 0.017,
+      "outputSha256": "a8596925c402d6826b7357ae82a687796d891cb8c53b4fe4c4f01ccd259287e2",
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)",
+        "domain": null,
+        "counterexample": null,
+        "proof": null,
+        "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
+            "uri": null,
+            "line": 226
+          }
+        ],
+        "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
+        "work": "$WORK/checker-c70fpvyw/overload-1"
+      },
+      "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+    }
+  ],
+  "elapsedSeconds": 0.132,
+  "sourceSha256": "d8c3522fa039ef987c2a3f0cd458362d2550101ff7c85b5be0bdaf087890c4de"
+}

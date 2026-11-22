@@ -1,0 +1,383 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044517-05-receiver-rescore-after-literal-decodi",
+  "title": "05 receiver rescore after literal decoding",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m45s, peak 295.6 MiB (estimated 5m00s, 3.0 GiB); 24 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-044517-05-receiver-rescore-after-literal-decodi.json",
+    "sha256": "00ff106015aff9762cc5b34264605412ec146db34f5af0d7698e54ee570e9794",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044517-05-receiver-rescore-after-literal-decodi",
+      "title": "05 receiver rescore after literal decoding",
+      "description": "Repeat all frozen overloads and the original caller on both revisions after the recurring Base64 and Boolean intake fixes. Compare the same registered inputs, subject runtime, constructor path, observed outputs and full original classpaths with the first receiver run.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T04:45:17+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check the bound overloads and original caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 05",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/receiver-final/05"
+      ]
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:51:14+00:00",
+  "finishedAt": "2026-11-22T04:53:15+00:00",
+  "wallSeconds": 121.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 309919744,
+    "wallSeconds": 106.0,
+    "cpuSeconds": 139.1,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.35
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 05",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 105.972,
+      "cpuSeconds": 139.12,
+      "cpuThrottledSeconds": 20.286,
+      "peakMemoryBytes": 309919744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-overloads-and.log",
+        "lines": 24,
+        "bytes": 3866,
+        "sha256": "3ba802afabfb42713f3c612cf7068efd954016cad58740971ad88ab1b5fc6d5c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-94 current open validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.vali",
+        "cucumber-reporting-1198 current open parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their c",
+        "commons-beanutils-440 current open parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans",
+        "commons-csv-8993be87 current open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of sever",
+        "reflector-35 current open newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassG",
+        "commons-fileupload-377 current open readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no con",
+        "preserved org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;",
+        "commons-beanutils-440 preserved",
+        "preserved org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+        "commons-csv-8993be87 preserved",
+        "preserved org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+        "commons-fileupload-377 preserved",
+        "open new input 0: the original caller method was never entered. java.lang.NoSuchFieldError: STANDARD_NUMBER_TYPES at org.springframework.web.context.request.ServletRequestAttributes.<clinit>(ServletRequestAttributes.java:57)",
+        "compsuite-i-94 open",
+        "preserved net.masterthought.cucumber.util.StepNameFormatter#format(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+        "cucumber-reporting-1198 preserved",
+        "open old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvi",
+        "reflector-35 open",
+        "commons-beanutils-440 preserved ['unverifiable', 'unverifiable']",
+        "commons-csv-8993be87 preserved ['verified', 'verified']",
+        "commons-fileupload-377 preserved ['unverifiable', 'unverifiable']",
+        "compsuite-i-94 open ['unverifiable', 'unverifiable']",
+        "cucumber-reporting-1198 preserved ['unverifiable', 'unverifiable']",
+        "reflector-35 open ['unverifiable', 'unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-beanutils-440-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6134,
+      "sha256": "92d18939714b24e69c784bdf5d1d15d699d378397bf1000fbcb46891b361758d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-beanutils-440-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6129,
+      "sha256": "f08d49969a399b9b8429bb5b1c841ab51eda7d5793a289ea86e50ead58268317",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 25167,
+      "sha256": "1ea06d746918904a6d0f605af748dc6f886083abb28033cc262dc2a8effc4ed6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-csv-8993be87-receipts/new.native.json",
+      "change": "added",
+      "bytes": 5434,
+      "sha256": "2511699e34b1550d95cf568c663a4b7bcfdfc33f136a63d58e5b7d7d756ecbec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-csv-8993be87-receipts/old.native.json",
+      "change": "added",
+      "bytes": 5433,
+      "sha256": "06262eedf1a2a98977e3f1b674f01b3467f83d83db7a8c6ffdd427ee39ddba40",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 52098,
+      "sha256": "0a9db50099d225e088ab83ccad1ba45e575cbb3bb3f138aafb16469862c84457",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-fileupload-377-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6404,
+      "sha256": "cd4af6ef86b39440df18e35cdb91d6d27d41b9606d884de90b8cd4ca6b49eeda",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-fileupload-377-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6402,
+      "sha256": "205988e4123dbce73fa65688281bff6e4003365e0d4e73e2a34587a0d452e620",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 53134,
+      "sha256": "394eea32cb263f2d8bf2d8fc1e07c3543e5e65f95310e2abe9a82300b8e3ac26",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/compsuite-i-94-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6361,
+      "sha256": "9c89d7e804679d18264b88ffb77aa7033d620a7bef8468a565aef07bfb2f5a3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/compsuite-i-94-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6357,
+      "sha256": "a919b8c428c8cac517459ab13b9641022d856dc068210652710e63c8193ca3d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 124366,
+      "sha256": "e952a1a5c6a17c7a83a00d7e8fdc0d77735a2b844ce496a0821049a573c98e04",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/cucumber-reporting-1198-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6824,
+      "sha256": "bc7d72bdac036451e358a221baff20fcb3a44d628d18023d3ee1e99e44d620a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/cucumber-reporting-1198-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6825,
+      "sha256": "00099199c7cc18922353a5b9c7a7c991be5ce938cc078db9666541ca4c263e91",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 28551,
+      "sha256": "8b6018f868fcd0738652cfb56100ec361cd5b6dec4c1a0f91d26cee25d99a304",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/reflector-35-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6523,
+      "sha256": "2c8a4a40b77abf582451ccbedbbec96b710edbe636565c4c88a167af675926b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/reflector-35-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6520,
+      "sha256": "d0f66573ab6ccf15b61e87cdca80014022d5c13ba44dbbc1f08a9c8af2f08568",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/callers/reflector-35.json",
+      "change": "added",
+      "bytes": 39291,
+      "sha256": "1bea3128e7dbf2396df116fb625125c4614b8d9534233213e50fa599350a460a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/overloads/current/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 6179,
+      "sha256": "3446f1d111f0fce7cf0e3b90d97a64ab74a005d860e95f0a52c5e84f90bf3a67",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/overloads/current/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 5325,
+      "sha256": "227699ffcb3deaf51ff04ef8e5bb959c306026ad163f8c727a0748b934b3065e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/overloads/current/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 5169,
+      "sha256": "f28f435a452a05c9fa32d00971dca1401990c8a526dd29e8faacbc983e158106",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/overloads/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 15330,
+      "sha256": "f5a3824448322311fcbfa34c103badb475c648e31cc683f8244a122d235f5e82",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/overloads/current/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 10600,
+      "sha256": "c41d7a0f92c1e6562e59a6c3cdaab3812b16e51ab7c1aafcec92e5fb5cf6356f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/05/overloads/current/reflector-35.json",
+      "change": "added",
+      "bytes": 8393,
+      "sha256": "5c18683475ce92ee2190376f2a7b8f3271553c749f57502357e9ede9f837117a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:19+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-final/05/callers/commons-beanutils-440-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-beanutils-440-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-beanutils-440.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-csv-8993be87-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-csv-8993be87-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-csv-8993be87.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-fileupload-377-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-fileupload-377-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/commons-fileupload-377.json",
+      "verification/domain-foundations/receiver-final/05/callers/compsuite-i-94-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/compsuite-i-94-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/compsuite-i-94.json",
+      "verification/domain-foundations/receiver-final/05/callers/cucumber-reporting-1198-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/cucumber-reporting-1198-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/cucumber-reporting-1198.json",
+      "verification/domain-foundations/receiver-final/05/callers/reflector-35-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/reflector-35-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/05/callers/reflector-35.json",
+      "verification/domain-foundations/receiver-final/05/overloads/current/commons-beanutils-440.json",
+      "verification/domain-foundations/receiver-final/05/overloads/current/commons-csv-8993be87.json",
+      "verification/domain-foundations/receiver-final/05/overloads/current/commons-fileupload-377.json",
+      "verification/domain-foundations/receiver-final/05/overloads/current/compsuite-i-94.json",
+      "verification/domain-foundations/receiver-final/05/overloads/current/cucumber-reporting-1198.json",
+      "verification/domain-foundations/receiver-final/05/overloads/current/reflector-35.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045315Z-08347529ff068c63",
+      "outputs": "20261122T045315Z-1137573ef55714bf",
+      "diff": "20261122T045315Z-1354964a5141b0b2"
+    }
+  }
+}

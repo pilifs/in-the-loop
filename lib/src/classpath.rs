@@ -1101,6 +1101,7 @@ impl ClassPath {
             | ("java/util/Arrays", "sort" | "legacyMergeSort", "([Ljava/lang/Object;Ljava/util/Comparator;)V" | "([Ljava/lang/Object;)V")
             | ("java/util/Arrays", "mergeSort", "([Ljava/lang/Object;[Ljava/lang/Object;III)V" | "([Ljava/lang/Object;[Ljava/lang/Object;IIILjava/util/Comparator;)V")
             | ("java/util/Collections", "reverseOrder", "(Ljava/util/Comparator;)Ljava/util/Comparator;")
+            | ("java/util/Collections", "emptyIterator", "()Ljava/util/Iterator;")
             | ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;")
             | ("java/util/stream/Stream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")
             | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
@@ -1294,6 +1295,8 @@ impl ClassPath {
             | ("java/util/Hashtable", "<init>", "(Ljava/lang/Void;)V") | ("java/util/Dictionary", "<init>", "()V")
             | (PROPS, "size", "()I") | (PROPS, "isEmpty", "()Z") | (PROPS, "containsKey", "(Ljava/lang/Object;)Z")
             | (PROPS, "get", "(Ljava/lang/Object;)Ljava/lang/Object;")
+            | (PROPS, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
+            | (PROPS, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "putAll", "(Ljava/util/Map;)V") | (PROPS, "entrySet", "()Ljava/util/Set;")
             | (PROPS, "getProperty", "(Ljava/lang/String;)Ljava/lang/String;" | "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) {
             return None;
@@ -1577,7 +1580,7 @@ impl ClassPath {
             | "java/util/Collections$UnmodifiableList" | "java/util/Collections$UnmodifiableRandomAccessList"
             | "java/util/Collections$UnmodifiableCollection$1"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
-            | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
+            | "java/util/Collections$EmptyList" | "java/util/Collections$EmptyIterator" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
             | "java/util/Spliterators$ArraySpliterator" | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
             | "java/util/stream/ReferencePipeline$3" | "java/util/stream/ReferencePipeline$3$1"

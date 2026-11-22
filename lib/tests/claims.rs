@@ -1358,6 +1358,12 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
     assert_ne!(outside.verdict, Verdict::Verified, "{}", outside.output);
     proved(classes, "claims.CharacterFormats#clockSeed", 4);
     proved(classes, "claims.CharacterFormats#decoder", 4);
+    proved(classes, "claims.CharacterFormats#emptyIterator", 4);
+    let mut text_result = options(classes, "claims.CharacterFormats#optionalText", 4, "string-result");
+    text_result.assert = Some("present ? result.equals(\"selected\") : result == null".into());
+    assert_eq!(run(&text_result).verdict, Verdict::Verified);
+    text_result.assert = Some("result != null".into());
+    assert_eq!(run(&text_result).verdict, Verdict::Violation);
     let invalid = run(&options(classes, "claims.CharacterFormats#invalidBase64", 4, "malformed-base64"));
     assert_eq!(invalid.verdict, Verdict::Unverifiable, "{}", invalid.output);
     for (method, reason) in [("sameTime", "wall-clock reading"), ("copiedHash", "identity hash")] {

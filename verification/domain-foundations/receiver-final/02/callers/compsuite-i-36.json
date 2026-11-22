@@ -1,0 +1,482 @@
+{
+  "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+  "observer": "Resolve and invoke an overloaded method for a boxed integer paired with a StringBuilder or a String.",
+  "domainBasis": "The service signatures and boxed-integer/StringBuilder setup mirror the original developer test. The expected overload accepts the exact boxed argument and the most specific compatible reference type.",
+  "cases": [
+    {
+      "args": [
+        "builder"
+      ],
+      "expected": {
+        "return": "Integer/CharSequence"
+      }
+    },
+    {
+      "args": [
+        "string"
+      ],
+      "expected": {
+        "return": "Integer/String"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "3ccb46f10d338e79e21a0b680c926a06ffec1a551839b43fd21a0e7d67351d6c",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "1.8.0_512",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "OS_ARCH": "amd64"
+  },
+  "sides": {
+    "old": {
+      "commit": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
+      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
+      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
+      "classpath": [
+        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+        "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
+        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
+        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
+        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
+        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
+        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
+      ],
+      "dependency": "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 58,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "Integer/CharSequence"
+            },
+            {
+              "return": "Integer/CharSequence"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            },
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "Integer/String"
+            },
+            {
+              "return": "Integer/String"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            },
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.Edge",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Item",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Type"
+      ]
+    },
+    "new": {
+      "commit": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
+      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
+      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
+      "classpath": [
+        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
+        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
+        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
+        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
+        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
+      ],
+      "dependency": "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 58,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            },
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "escapingExceptions": [
+            {
+              "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+              "codeIndex": 4,
+              "sourceLine": 89,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+              "observerCodeIndex": 129,
+              "throws": "java.lang.IllegalArgumentException"
+            },
+            {
+              "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+              "codeIndex": 4,
+              "sourceLine": 89,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+              "observerCodeIndex": 129,
+              "throws": "java.lang.IllegalArgumentException"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            },
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            },
+            {
+              "throws": "java.lang.IllegalArgumentException"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            },
+            {
+              "entry": {
+                "arguments": [
+                  "LUpgradeProbe$Impl;@0",
+                  "Ljava/lang/String;@1",
+                  "[Ljava/lang/Class;@2",
+                  "[Ljava/lang/Object;@3"
+                ],
+                "fields": {},
+                "this": "null"
+              },
+              "observedConstructorEntries": []
+            }
+          ],
+          "escapingExceptions": [
+            {
+              "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+              "codeIndex": 4,
+              "sourceLine": 89,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+              "observerCodeIndex": 129,
+              "throws": "java.lang.IllegalArgumentException"
+            },
+            {
+              "entry": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+              "codeIndex": 4,
+              "sourceLine": 89,
+              "artifact": "client",
+              "classpathIndex": 0,
+              "jarSha256": "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+              "observerCodeIndex": 129,
+              "throws": "java.lang.IllegalArgumentException"
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            },
+            {
+              "observerCodeIndex": 129,
+              "dispatchedTo": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.AnnotationVisitor",
+        "org.objectweb.asm.AnnotationWriter",
+        "org.objectweb.asm.ByteVector",
+        "org.objectweb.asm.ClassTooLargeException",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.ClassWriter",
+        "org.objectweb.asm.CurrentFrame",
+        "org.objectweb.asm.Edge",
+        "org.objectweb.asm.FieldVisitor",
+        "org.objectweb.asm.FieldWriter",
+        "org.objectweb.asm.Frame",
+        "org.objectweb.asm.Label",
+        "org.objectweb.asm.MethodTooLargeException",
+        "org.objectweb.asm.MethodVisitor",
+        "org.objectweb.asm.MethodWriter",
+        "org.objectweb.asm.ModuleVisitor",
+        "org.objectweb.asm.ModuleWriter",
+        "org.objectweb.asm.Symbol",
+        "org.objectweb.asm.SymbolTable",
+        "org.objectweb.asm.SymbolTable$Entry",
+        "org.objectweb.asm.Type"
+      ]
+    }
+  },
+  "status": "changed",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+    "codeIndices": [
+      129
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "org.jupiter.common.util.Reflects#fastInvoke(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
+    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
+    "UpgradeProbe$Impl": "37d8c0c73cd3ca011af528eb7d59ec77ae9b59658d19dbc45eb9e9b2332fda74",
+    "UpgradeProbe$Service": "bd5245f2da25c67e689ac3b0052d6abdac040dd853eea6351627ef3320fd32e6",
+    "UpgradeProbe": "f2d8258ee6f042456223d7225a168d5d01a536c1f3604550c9c253d3183b8a3d",
+    "UpgradeTrace": "bd0cf2e9519310ef6edfbcded4927ae58f877b0e508794f6ca46e27da1348fa0"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 2",
+    "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
+    "adapterClassSha256": "88347d7762f82ed20f67487f4a70b795503cf07dff7e3a93b5d660390a00f97b",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
+        "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
+        "orderedClasspathSha256": [
+          "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+          "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
+          "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
+          "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
+          "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
+          "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+          "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
+          "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "outside the fragment: java.lang.Class.getMethods on an object the engine does not model",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "c6687c910b8d9325a2cdfc8c03242c69839e15b7e9cbbbafab40d3bd4c9cf736",
+        "seconds": 0.084
+      },
+      "new": {
+        "commit": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
+        "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
+        "orderedClasspathSha256": [
+          "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
+          "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
+          "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
+          "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
+          "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
+          "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
+          "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
+          "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "outside the fragment: java.lang.Class.getMethods on an object the engine does not model",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 2",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "a592f547a06249541e50349b74385fede0a1b9fa4c7cc8c75b5bb269615959d8",
+        "seconds": 0.114
+      }
+    }
+  },
+  "differences": [
+    0,
+    1
+  ],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 7.621,
+  "specSha256": "a26e44e5da9470f3308c685b1997f07f20bb4e3718b27da44728b4d0fe220cfa"
+}

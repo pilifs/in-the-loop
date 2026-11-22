@@ -1015,6 +1015,7 @@ enum Literal {
     CollectionsEmptySet,
     HashSetPresent,
     BasicBase64Decoder,
+    BasicBase64Encoder,
     EmptySuppressedArray,
     ListEmptyStorage(bool),
     /// The private Character cache as read by valueOf on its ASCII branch.
@@ -2533,6 +2534,7 @@ impl<'a> Engine<'a> {
                         Literal::CollectionsEmptySet => "java/util/Collections$EmptySet",
                         Literal::HashSetPresent => "java/lang/Object",
                         Literal::BasicBase64Decoder => "java/util/Base64$Decoder",
+                        Literal::BasicBase64Encoder => "java/util/Base64$Encoder",
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
                         Literal::AsciiBoxes => "[Ljava/lang/Character;",
@@ -4891,7 +4893,7 @@ impl<'a> Engine<'a> {
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
                 o
             }
-            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::BasicBase64Decoder => self.alloc(path, class),
+            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::BasicBase64Decoder | Literal::BasicBase64Encoder => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
                 path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());
@@ -5198,12 +5200,18 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
-        if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
-            == ("java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;") && self.cp.basic_base64() {
-            let decoder = self.literal(path, Literal::BasicBase64Decoder, "java/util/Base64$Decoder");
-            self.push(path, Val::R(Some(decoder)));
-            self.advance(path);
-            return Ok(None);
+        if member.owner == "java/util/Base64" {
+            let singleton = match (member.name.as_str(), member.descriptor.as_str()) {
+                ("getDecoder", "()Ljava/util/Base64$Decoder;") => Some((Literal::BasicBase64Decoder, "java/util/Base64$Decoder")),
+                ("getEncoder", "()Ljava/util/Base64$Encoder;") => Some((Literal::BasicBase64Encoder, "java/util/Base64$Encoder")),
+                _ => None,
+            };
+            if let Some((key, class)) = singleton.filter(|_| self.cp.basic_base64()) {
+                let object = self.literal(path, key, class);
+                self.push(path, Val::R(Some(object)));
+                self.advance(path);
+                return Ok(None);
+            }
         }
         if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
             == ("java/lang/Boolean", "parseBoolean", "(Ljava/lang/String;)Z") {
@@ -5449,20 +5457,8 @@ impl<'a> Engine<'a> {
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
-            if !special && member.owner == "java/util/Base64$Decoder" && member.name == "decode"
-                && member.descriptor == "(Ljava/lang/String;)[B" && path.literals.get(&Literal::BasicBase64Decoder) == Some(&o) {
-                if let [Val::R(Some(text))] = args.as_slice() {
-                    if let Some(bytes) = self.constant_units(path, *text).and_then(|units| bytes::basic_base64_bytes(&units)) {
-                        let length = self.b.constant(bytes.len() as i64, 32);
-                        self.new_array_cells(path, &length)?;
-                        let cells = bytes.into_iter().map(|b| self.b.constant(i64::from(b), 8)).collect();
-                        let array = path.objects.len();
-                        path.objects.push(Obj { array: Some(Array { element: Type::Byte, length, cells, refs: Vec::new() }), ..Obj::new("[B") });
-                        self.push(path, Val::R(Some(array)));
-                        self.advance(path);
-                        return Ok(None);
-                    }
-                }
+            if !special {
+                if let Some(step) = self.basic_base64_call(path, o, member, &args) { return step; }
             }
             if !path.objects[o].assumed && !path.objects[o].given {
                 if member.owner == "java/util/concurrent/atomic/AtomicReference" && path.objects[o].class == member.owner

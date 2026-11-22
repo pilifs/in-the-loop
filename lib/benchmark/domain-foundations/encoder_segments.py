@@ -45,9 +45,9 @@ def run(output):
                     if row["assume"]!=guard or row["target"]!=target or row["assert"]!="result == 1" or row["stated"]["gap_mode"]!="strict":
                         raise ValueError("wrong encoder scope")
                     record["claims"][key]={"target":target,"guard":guard,"verdict":row["verdict"],"firstOutstanding":row["problem"],
-                        "vacuity":row["stated"]["vacuity"],"raw":p.name,"sha256":SHA(p)}
+                        "vacuity":row["stated"].get("vacuity"),"raw":p.name,"sha256":SHA(p)}
             document(out/"evidence.json",record)
-            if any(v["verdict"]!="verified" or v["vacuity"]["status"]!="non-vacuous" for k,v in record["claims"].items() if k.startswith("buffered")):
+            if any(v["verdict"]!="verified" or (v["vacuity"] or {}).get("status")!="non-vacuous" for k,v in record["claims"].items() if k.startswith("buffered")):
                 raise ValueError("unqualified buffered encoding")
 if __name__=="__main__":
     p=argparse.ArgumentParser(description=__doc__);p.add_argument("--output",type=Path,required=True);run(p.parse_args().output)

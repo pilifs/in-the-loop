@@ -1,0 +1,239 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044517-06-receiver-rescore-after-literal-decodi",
+  "title": "06 receiver rescore after literal decoding",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 31.1s, peak 164.3 MiB (estimated 5m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-044517-06-receiver-rescore-after-literal-decodi.json",
+    "sha256": "69ff5ae998bb63f900918cc0c1cbcf7ebad6dfa6a1b0046473f516ba15ed24a2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044517-06-receiver-rescore-after-literal-decodi",
+      "title": "06 receiver rescore after literal decoding",
+      "description": "Repeat all frozen overloads and the original caller on both revisions after the recurring Base64 and Boolean intake fixes. Compare the same registered inputs, subject runtime, constructor path, observed outputs and full original classpaths with the first receiver run.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T04:45:17+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check the bound overloads and original caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 06",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/receiver-final/06"
+      ]
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:51:27+00:00",
+  "finishedAt": "2026-11-22T04:52:12+00:00",
+  "wallSeconds": 45.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 172240896,
+    "wallSeconds": 31.1,
+    "cpuSeconds": 39.5,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 06",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 31.083,
+      "cpuSeconds": 39.484,
+      "cpuThrottledSeconds": 4.94,
+      "peakMemoryBytes": 172240896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-overloads-and.log",
+        "lines": 8,
+        "bytes": 1311,
+        "sha256": "b31ad8381ca943178a91b305bb6e597d9d154ae9a31b182f593a5fd8ff1e2854",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commons-vfs-55c96cfd current open doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.pro",
+        "commons-validator-86e32931 current open parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, boo",
+        "preserved org.apache.commons.validator.util.ValidatorUtils#getValueAsString(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;",
+        "commons-validator-86e32931 preserved",
+        "preserved org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
+        "commons-vfs-55c96cfd preserved",
+        "commons-validator-86e32931 preserved ['unverifiable', 'unverifiable']",
+        "commons-vfs-55c96cfd preserved ['unverifiable', 'unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-final/06/callers/commons-validator-86e32931-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6220,
+      "sha256": "8e5abfeb10f65eab58ecc67a4359ecb7e060c502422b0ddcc8225eff0ef95073",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/06/callers/commons-validator-86e32931-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6219,
+      "sha256": "6787cbc1a5e35bd088d79e9751c5d0b600b8a5727f9e2e1a2868dcc830f4f5bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/06/callers/commons-validator-86e32931.json",
+      "change": "added",
+      "bytes": 28788,
+      "sha256": "aa6ef1e774d445258bbf6c1f08dc2bb786725a6d9eb170452f8d283351205dbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/06/callers/commons-vfs-55c96cfd-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6556,
+      "sha256": "72b8411a740e568013917a42b97a29ff51b30bb75dfccde9e01e22c1790793c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/06/callers/commons-vfs-55c96cfd-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6555,
+      "sha256": "e9ad697c98b837b90fc026fbf0d301e1bd7f18b715b216466328155a20e11bee",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/06/callers/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 61143,
+      "sha256": "1c890d77dd5408811ed65bb6e63cee8e76942b348b0455ddf9af054aac21e713",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/06/overloads/current/commons-validator-86e32931.json",
+      "change": "added",
+      "bytes": 7701,
+      "sha256": "a85ac64b268e4ebc794d0539c2bd8ebe6231223f1697062a33544760634bc6dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-final/06/overloads/current/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 9008,
+      "sha256": "0dec5e9c7260d3c60cba85e7c11426ecb43b2bc0f4bd0d3ff2e7fad54296600a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:19+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-final/06/callers/commons-validator-86e32931-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/06/callers/commons-validator-86e32931-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/06/callers/commons-validator-86e32931.json",
+      "verification/domain-foundations/receiver-final/06/callers/commons-vfs-55c96cfd-receipts/new.native.json",
+      "verification/domain-foundations/receiver-final/06/callers/commons-vfs-55c96cfd-receipts/old.native.json",
+      "verification/domain-foundations/receiver-final/06/callers/commons-vfs-55c96cfd.json",
+      "verification/domain-foundations/receiver-final/06/overloads/current/commons-validator-86e32931.json",
+      "verification/domain-foundations/receiver-final/06/overloads/current/commons-vfs-55c96cfd.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045212Z-6777644e6ecbbff2",
+      "outputs": "20261122T045212Z-7026594e93dadee4",
+      "diff": "20261122T045212Z-722490f7a5840140"
+    }
+  }
+}

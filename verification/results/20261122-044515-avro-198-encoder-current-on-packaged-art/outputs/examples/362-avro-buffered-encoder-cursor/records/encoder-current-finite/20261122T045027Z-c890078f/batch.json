@@ -1,0 +1,84 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261122T045027Z-c890078f",
+  "retryOf": null,
+  "order": [
+    "cursor-parent",
+    "cursor-fix",
+    "repeated-parent",
+    "repeated-fix"
+  ],
+  "claims": {
+    "cursor-parent": {
+      "sourceClaim": "ed772c9e5fe9c4d5",
+      "inputsKey": "63355d16a4d70e97a2adf6bc4704b8b4957130c9594f0a504fd43686e83ac37b",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "parent": "211dec20e5bda046a2c94394b768db2b17eea6a4bee514b7d81660f2fe00ac27"
+      }
+    },
+    "cursor-fix": {
+      "sourceClaim": "ed772c9e5fe9c4d5",
+      "inputsKey": "7a02640945aa4767c83336b80a3ee8240224fa427831893d0805a5c68f0d1e57",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "74b4760c6a7ffae7bde13065c8fda5759c4d8f1199cf6a8dd681ec23a6860031"
+      }
+    },
+    "repeated-parent": {
+      "sourceClaim": "ebe2d3fd71d28cfc",
+      "inputsKey": "c86299b4865b54453bd32ffc6043b3ac97fc51a08f5f6b5eb3836281cae4215d",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "parent": "211dec20e5bda046a2c94394b768db2b17eea6a4bee514b7d81660f2fe00ac27"
+      }
+    },
+    "repeated-fix": {
+      "sourceClaim": "ebe2d3fd71d28cfc",
+      "inputsKey": "1b957c82ab4996cb67dcabe7cd34fdfca2592bd26a90c106351a177d91f98bf8",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "74b4760c6a7ffae7bde13065c8fda5759c4d8f1199cf6a8dd681ec23a6860031"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "cursor-parent",
+      "status": "refuted",
+      "sha256": "9e358fd5ac34cbdc7391465529112b019200e90f776ed1eea8622f557324cb06"
+    },
+    {
+      "task": "cursor-fix",
+      "status": "established",
+      "sha256": "58e7cbd4188a3c190ceb473a80eae00acd6c32c7b12aa1b193d8b70bc8108805"
+    },
+    {
+      "task": "repeated-parent",
+      "status": "refuted",
+      "sha256": "40f3c3d5b5126e581e6805639237109b4b61f770de539f9f53e169f2ca32f8b6"
+    },
+    {
+      "task": "repeated-fix",
+      "status": "established",
+      "sha256": "ad8c0d1cf0ef729ab60eed84b4a46443ac2e6254ae2200a613bab08f61126d57"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 60,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "Each input starts with fresh application classes on its pinned classpath. Boolean selections also start a fresh JVM for each value. Integer intervals above 4096 use consecutive JVM batches on one total deadline."
+}

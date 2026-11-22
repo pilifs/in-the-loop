@@ -1,0 +1,1195 @@
+{
+  "entry": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
+  "observer": "The exact bytes delivered by the real decompression stream up to EOF on four valid frames.",
+  "domainBasis": "The expected payloads are the independent bytes used to build the finite input frames. XZ uses Python liblzma. LZ4 uses literal blocks with an independent libxxhash header and content checksum.",
+  "cases": [
+    {
+      "args": [
+        "BCJNGGRApwAAAAAFXcwC"
+      ],
+      "expected": {
+        "return": ""
+      }
+    },
+    {
+      "args": [
+        "BCJNGGRApwYAAIBoZWxsbwoAAAAA+VtrlA=="
+      ],
+      "expected": {
+        "return": "aGVsbG8K"
+      }
+    },
+    {
+      "args": [
+        "BCJNGGRApwQAAIAA/wCAAAAAAO1tWiE="
+      ],
+      "expected": {
+        "return": "AP8AgA=="
+      }
+    },
+    {
+      "args": [
+        "BCJNGGRApxAAAIAAAQIDBAUGBwgJCgsMDQ4PAAAAAPQ3KLc="
+      ],
+      "expected": {
+        "return": "AAECAwQFBgcICQoLDA0ODw=="
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "df6b35a7cffd5a6ce6d35d67eff9719abceb5412543ddb18679c9a95aac0a54a",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "8a79b1fd5fd993e94f3487f8acd2cd3ee9d4f15d",
+      "sourceSha256": "2ea4c1a10d8773c40c396a3903a14338f455d6596a31e5c079c525127e7f4a98",
+      "callerClassSha256": "ea5e4ac8b72a5047a1a0a26102197450020db532821c2fcd334f0877e15984b2",
+      "classpath": [
+        "032192ed928455a1057d5a6d75457dab716df6bd8730eb1b6764a99dffd5a790",
+        "c9043e2da8a16c13b6cd7661a5cb56685a573c3546ef4bd0ead67b0b67c2e107",
+        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+        "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+        "78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f",
+        "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
+        "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe"
+      ],
+      "dependency": "78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 14,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": ""
+            },
+            {
+              "return": ""
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x0000764424003118;@5"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x0000735f3c003118;@5"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "aGVsbG8K"
+            },
+            {
+              "return": "aGVsbG8K"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x00007707fc003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x000076c934003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AP8AgA=="
+            },
+            {
+              "return": "AP8AgA=="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x00007fab64003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x00007b2888003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            },
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x00007b9684003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x0000731954003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.codec.digest.XXHash32"
+      ]
+    },
+    "new": {
+      "commit": "2cdf39ce4b191ac6c25a2e69905f82942872e587",
+      "sourceSha256": "2ea4c1a10d8773c40c396a3903a14338f455d6596a31e5c079c525127e7f4a98",
+      "callerClassSha256": "ea5e4ac8b72a5047a1a0a26102197450020db532821c2fcd334f0877e15984b2",
+      "classpath": [
+        "032192ed928455a1057d5a6d75457dab716df6bd8730eb1b6764a99dffd5a790",
+        "c9043e2da8a16c13b6cd7661a5cb56685a573c3546ef4bd0ead67b0b67c2e107",
+        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+        "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+        "47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b",
+        "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
+        "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe"
+      ],
+      "dependency": "47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 14,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": ""
+            },
+            {
+              "return": ""
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x000072fd20003118;@5"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x0000783be8003118;@5"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "aGVsbG8K"
+            },
+            {
+              "return": "aGVsbG8K"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x0000727ba4003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x0000786da4003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AP8AgA=="
+            },
+            {
+              "return": "AP8AgA=="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x00007a3c58003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x00007fb7a8003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            },
+            {
+              "return": "AAECAwQFBgcICQoLDA0ODw=="
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x0000737b88003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.compress.compressors.CompressorInputStream#bytesRead:J": "J",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockDependencyBuffer:[B": "null",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#blockHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@1",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#contentHash:Lorg/apache/commons/codec/digest/XXHash32;": "Lorg/apache/commons/codec/digest/XXHash32;@2",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#currentBlock:Ljava/io/InputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@3",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#decompressConcatenated:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#endReached:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectBlockDependency:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#expectContentChecksum:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inUncompressed:Z": "Z",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#inputStream:Lorg/apache/commons/io/input/BoundedInputStream;": "Lorg/apache/commons/io/input/BoundedInputStream;@4",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#oneByte:[B": "[B@5",
+                  "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#supplier:Lorg/apache/commons/compress/utils/ByteUtils$ByteSupplier;": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream$$Lambda.0x00007db8a0003118;@6"
+                },
+                "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/InputStream;)V",
+                  "calledBy": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 22,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                },
+                {
+                  "descriptor": "(Ljava/io/InputStream;Z)V",
+                  "calledBy": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#<init>(Ljava/io/InputStream;)V",
+                  "codeIndex": 3,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/ByteArrayInputStream;@1",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/compress/compressors/lz4/FramedLZ4CompressorInputStream;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            },
+            {
+              "observerCodeIndex": 35,
+              "dispatchedTo": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.codec.digest.XXHash32"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
+    "codeIndices": [
+      35
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()I",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
+    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+    "UpgradeProbe": "cde936930b4c394c3aea7ecc173f4f5c659b12330a9be722ee12962b0112e31b",
+    "UpgradeTrace": "d5359fa3264eeb31b99378b21d4102bd39c3733b454baf875712a8b2f0e0283c"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 4",
+    "checkerSha256": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80",
+    "adapterClassSha256": "b2002f3d3d70ab8829e177c6918aa1f6972bcfc3fea9eede5ef05366102d5067",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "8a79b1fd5fd993e94f3487f8acd2cd3ee9d4f15d",
+        "callerClassSha256": "ea5e4ac8b72a5047a1a0a26102197450020db532821c2fcd334f0877e15984b2",
+        "orderedClasspathSha256": [
+          "032192ed928455a1057d5a6d75457dab716df6bd8730eb1b6764a99dffd5a790",
+          "c9043e2da8a16c13b6cd7661a5cb56685a573c3546ef4bd0ead67b0b67c2e107",
+          "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+          "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+          "78a5d732fbd715e2d10bd7150d2f8030bae57267f8aacc5c88f642cb6c2e5d3f",
+          "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
+          "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Base64.getEncoder()Ljava/util/Base64$Encoder;@jdk-21.0.13 (java.util.Base64.getEncoder() at UpgradeProbe.observe:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "53beec86a42e8a7dea8ada5896747e4a1d32b508b2e3386bc1a0302a51097b4d",
+        "seconds": 0.061
+      },
+      "new": {
+        "commit": "2cdf39ce4b191ac6c25a2e69905f82942872e587",
+        "callerClassSha256": "ea5e4ac8b72a5047a1a0a26102197450020db532821c2fcd334f0877e15984b2",
+        "orderedClasspathSha256": [
+          "032192ed928455a1057d5a6d75457dab716df6bd8730eb1b6764a99dffd5a790",
+          "c9043e2da8a16c13b6cd7661a5cb56685a573c3546ef4bd0ead67b0b67c2e107",
+          "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+          "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+          "47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b",
+          "ed825d10ab1399c8c0cb669e688cf0c8c82629b4c8399b58352b68e92ca10fcb",
+          "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Base64.getEncoder()Ljava/util/Base64$Encoder;@jdk-21.0.13 (java.util.Base64.getEncoder() at UpgradeProbe.observe:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "242d34c227b57d8849b211ecbccb76906ab8263f1b8f3c3eed0f10bebbb4886a",
+        "seconds": 0.067
+      }
+    }
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 12.6,
+  "specSha256": "faafc5f54c36be5a660a84434fe7ed2c10ce43fba92ed415714973c23a21e291"
+}

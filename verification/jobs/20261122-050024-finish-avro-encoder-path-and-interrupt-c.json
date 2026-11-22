@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-050024-finish-avro-encoder-path-and-interrupt-c",
+  "title": "Finish Avro encoder path and interrupt comparisons",
+  "description": "Retain all sixteen JVM interrupt controls and both guarded native observations on each side. A diagnostic refusal may have no vacuity field; affirmative decisions must still demonstrate reachability.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "362"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T05:00:24+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check both paths and the interrupt controls",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_segments.py --output verification/domain-foundations/encoder-paths-final",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/domain-foundations/encoder-paths-final"
+  ]
+}

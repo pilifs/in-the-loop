@@ -1,0 +1,507 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "54140de8690a6cb2",
+    "format": 1,
+    "example": "361",
+    "statement": {
+      "approach": "target",
+      "task": "cursor-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "cursor-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+        "file": "claims/cursor.json",
+        "sha256": "e51ce47646b155506629314e409098cc38fcdd772a88adb3af610d125922e184",
+        "property": "cursor",
+        "claimKind": "property",
+        "statement": "After one public conversion the caller retains its initial position and limit.",
+        "assume": "code >= 0 && code < 12",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 64,
+          "maxArrayLength": 128
+        },
+        "explicitBounds": {
+          "unwind": 64,
+          "maxArrayLength": 128
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/organic/Cases.java",
+            "sha256": "494971034e593b96f907239e154b54e3c2db351c00a9df8e136698920ff33c4f"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "1c67662b4c18c6770a738f6118d9c5bb661841f0fd7a1422ecd96c40cc3c7043"
+          }
+        ],
+        "adapter": {
+          "entry": "organic.DecimalWindow#cursor(I)I",
+          "mapping": "After one public conversion the caller retains its initial position and limit. Each selector maps to its original observation in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 12
+        },
+        "key": "cc553815947450a5"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 128
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "cursor-fix",
+      "sidecar": "6415f17b0b2101b68daf03f5c28d122f434752c33e23c823c14bb8bef3b3c42e",
+      "revisions": {
+        "fix": "ce9032a4123e262341a3e746e6eb2b8476eae1ae"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "312c206250ceaa53172f8ba08471b2e999705658b3bdf903e2a538e12b3e00c6"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "964e6aa2ddfc777b08619d3fc77a96e4bdbe7966303ea8e6676da7db0036de47"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "e4ca6c32cc7a32b0f8bcdf6190feccea129ff11bb4bf955826cf8376d3444cbd"
+        },
+        {
+          "revision": "fix",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "69e7695b1e40834fa1242fc328a4010607911ced3706ab79abc769d451197513",
+          "coordinates": "com.fasterxml.jackson.core:jackson-core:2.10.0"
+        },
+        {
+          "revision": "fix",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "8e6c566c67fc61a96c5dfc4a71d430f2565765778ec9a6ef216c5460a9911b60",
+          "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.10.0"
+        },
+        {
+          "revision": "fix",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "77a0846219774a8269bc1b38cc00294908d34e77f8a9da34d97673982f75853d",
+          "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
+        },
+        {
+          "revision": "fix",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
+          "coordinates": "org.apache.commons:commons-compress:1.19"
+        },
+        {
+          "revision": "fix",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "7eea31c0a25d35cd092d8aec08bed04f22152409b58d63d43839074a9ab7ab97",
+          "coordinates": "org.xerial.snappy:snappy-java:1.1.7.3"
+        },
+        {
+          "revision": "fix",
+          "position": 8,
+          "role": "dependency",
+          "sha256": "8c7964b36fe3f0cbe644b04fcbff84e491ce81917db2f5bfa0cba8e9548aff5d",
+          "coordinates": "org.tukaani:xz:1.8"
+        },
+        {
+          "revision": "fix",
+          "position": 9,
+          "role": "dependency",
+          "sha256": "8370149f5bd16a83d27240a8ce5a64204f3c70647ed180801dcf95f7be27ef87",
+          "coordinates": "com.github.luben:zstd-jni:1.4.3-1"
+        },
+        {
+          "revision": "fix",
+          "position": 10,
+          "role": "dependency",
+          "sha256": "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
+          "coordinates": "org.slf4j:slf4j-api:1.7.25"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/organic/DecimalWindow.java": "f4f205f678d85cdc6ed30336021b2b7143db105febc3fa191e02d9beeb04e978",
+        "claims/cursor.json": "e51ce47646b155506629314e409098cc38fcdd772a88adb3af610d125922e184",
+        "controls/table.json": "1c67662b4c18c6770a738f6118d9c5bb661841f0fd7a1422ecd96c40cc3c7043",
+        "driver/organic/Cases.java": "494971034e593b96f907239e154b54e3c2db351c00a9df8e136698920ff33c4f"
+      },
+      "claimKey": "cc553815947450a5"
+    }
+  },
+  "attempt": {
+    "id": "20261122T045250Z-33ca71f8",
+    "claim": "54140de8690a6cb2",
+    "startedAt": "2026-11-22T04:52:50+00:00",
+    "seconds": 0.3,
+    "engine": "native",
+    "options": [
+      "prove",
+      "organic.DecimalWindow#cursor(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/avro-1.10.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-core/2.10.0/jackson-core-2.10.0.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-databind/2.10.0/jackson-databind-2.10.0.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-annotations/2.10.0/jackson-annotations-2.10.0.jar",
+      "--classpath",
+      "prepare/fix/lib/org/apache/commons/commons-compress/1.19/commons-compress-1.19.jar",
+      "--classpath",
+      "prepare/fix/lib/org/xerial/snappy/snappy-java/1.1.7.3/snappy-java-1.1.7.3.jar",
+      "--classpath",
+      "prepare/fix/lib/org/tukaani/xz/1.8/xz-1.8.jar",
+      "--classpath",
+      "prepare/fix/lib/com/github/luben/zstd-jni/1.4.3-1/zstd-jni-1.4.3-1.jar",
+      "--classpath",
+      "prepare/fix/lib/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar",
+      "--assume",
+      "code >= 0 && code < 12",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "64",
+      "--max-array-length",
+      "128",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "878eead4dee3040202b09d9695446f1ebdc651093d489c57bc04364db7dc648a",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-044516-repeat-original-frozen-startup-scopes-af",
+      "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-044516-repeat-original-frozen-startup-scopes-af"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.215,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.041,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 64,
+      "maxArrayLength": 128,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "54140de8690a6cb2",
+    "attempt": "20261122T045250Z-33ca71f8",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 12",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.LogicalTypes.<clinit>()V (org.apache.avro.LogicalTypes.<clinit>() at organic.DecimalWindow.cursor:21). With --gaps assume it assumes instead that org.apache.avro.LogicalTypes.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.014,
+            "properties": 1,
+            "unwind": 64,
+            "maxArrayLength": 128,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.008,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.002,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.001,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 1245,
+                  "clauses": 3952
+                }
+              }
+            ],
+            "native": {
+              "paths": 3,
+              "merges": 0,
+              "solverCalls": 2,
+              "solvingSeconds": 4.4493e-05,
+              "gatesEvaluated": 86,
+              "evaluatingSeconds": 4.197e-06,
+              "divisions": 1,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 1245,
+              "clauses": 3952,
+              "seconds": 0.0082729,
+              "loadingSeconds": 0.001915047,
+              "decodingSeconds": 4.3932e-05,
+              "encodingSeconds": 0.000550064,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "class-initializer:org.apache.avro.LogicalTypes.<clinit>()V",
+                "kind": "class-initializer",
+                "call": "org.apache.avro.LogicalTypes.<clinit>()",
+                "sites": [
+                  "organic.DecimalWindow.cursor:21"
+                ],
+                "approximation": "has run already, and threw nothing",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 12",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.avro.LogicalTypes.<clinit>()V (org.apache.avro.LogicalTypes.<clinit>() at organic.DecimalWindow.cursor:21). With --gaps assume it assumes instead that org.apache.avro.LogicalTypes.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 12"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "a786b18afcd29a9db2ada70da6b7006356d6f8f5ace1d8b0a870fd9922c135af",
+        "bytes": 34431
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "b63f335fbec5970d6927a991af6927f3212fb32f7b4cff60a4024bfce40c94f4",
+        "bytes": 468
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "daf7821f7182944249c4f317a390999e6917ff45d06268a6e5e6ed954351ef71",
+        "bytes": 1949
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+        "bytes": 1698
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+        "bytes": 210
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "cc06ba2989da8a9e86e99ca7a3e6fb2dfdb583b8178e9c474d0f1da618f82b6d",
+        "bytes": 11928
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "51d05b6c7445abebf1f5b7b6003a77ee6c7bcb46b3d7145c7c1b9998d484ae81",
+        "bytes": 5906
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "3e28ebdfb142161114c0763ca8c5678d46a7003ea824b8f4f9eadcb48ae56c02",
+        "bytes": 22114
+      }
+    ]
+  }
+}

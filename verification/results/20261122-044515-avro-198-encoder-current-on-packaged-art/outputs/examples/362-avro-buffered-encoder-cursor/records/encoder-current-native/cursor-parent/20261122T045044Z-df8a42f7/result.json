@@ -1,0 +1,534 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "e6be13ad93d9c7b6",
+    "format": 1,
+    "example": "362",
+    "statement": {
+      "approach": "target",
+      "task": "cursor-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "cursor-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+        "file": "claims/cursor.json",
+        "sha256": "27e30f2587d09586b3b393dad351148d01e13b6e4cd1a632deb8fb52b339dac9",
+        "property": "cursor",
+        "claimKind": "property",
+        "statement": "One write preserves the source position and limit.",
+        "assume": "code >= 0 && code < 16",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 64,
+          "maxArrayLength": 128
+        },
+        "explicitBounds": {
+          "unwind": 64,
+          "maxArrayLength": 128
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/organic/Cases.java",
+            "sha256": "25a61bca512b5cb12e8ebaf0b2c4590431106c94647d47bf9649309d438c1c22"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "9fdd5808da619a51f921d2dff76e1fee4ade20474498187e491c1411abac9ffe"
+          }
+        ],
+        "adapter": {
+          "entry": "organic.EncoderWindow#cursor(I)I",
+          "mapping": "One write preserves the source position and limit. Each selector maps to its independent raw JVM observation.",
+          "correspondence": "finite-oracle",
+          "cases": 16
+        },
+        "key": "ed772c9e5fe9c4d5"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 128
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "cursor-parent",
+      "sidecar": "d62c4a4f0a093ba20a6c3c5fd32f4f57c89327f5179d040b91a6de4e017f02ab",
+      "revisions": {
+        "parent": "0b74bd5e7a37ccdb42918a0ab7768e9292df5dab"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ea208dbe275524157898418db101f4fdc4d14e8951db79142aa319b897733944"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "202d93792c0c147f7e6378a29542f68c3b429219fc31177e1083863ed450933b"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "d4728a000318587a727f958117c82598a50d9027e0b7537f882b2406691d291e"
+        },
+        {
+          "revision": "parent",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "064095af8f83306d1b9e57dc8c725674162e661b0957cb2a43abe31b28e1e0d0",
+          "coordinates": "org.apache.avro:avro-guava-dependencies:1.9.0-SNAPSHOT"
+        },
+        {
+          "revision": "parent",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "1e651066ed9ae35d7e3001d635d1dbba1c2965db0e4e33e2c14ad610543f225c",
+          "coordinates": "com.github.stephenc.findbugs:findbugs-annotations:1.3.9-1"
+        },
+        {
+          "revision": "parent",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "440a9cb5ca95b215f953d3a20a6b1a10da1f09b529a9ddea5f8a4905ddab4f5a",
+          "coordinates": "org.codehaus.jackson:jackson-core-asl:1.9.13"
+        },
+        {
+          "revision": "parent",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "74e7a07a76f2edbade29312a5a2ebccfa019128bc021ece3856d76197e9be0c2",
+          "coordinates": "org.codehaus.jackson:jackson-mapper-asl:1.9.13"
+        },
+        {
+          "revision": "parent",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "688cb118a6021d819138e855208c956031688be4b47a24bb615becc63acedf07",
+          "coordinates": "com.thoughtworks.paranamer:paranamer:2.8"
+        },
+        {
+          "revision": "parent",
+          "position": 8,
+          "role": "dependency",
+          "sha256": "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
+          "coordinates": "org.xerial.snappy:snappy-java:1.1.2.6"
+        },
+        {
+          "revision": "parent",
+          "position": 9,
+          "role": "dependency",
+          "sha256": "2a8c2b97cd33211589197fb807d4461f75d80086c21271d62b8feb2df9651b98",
+          "coordinates": "org.apache.commons:commons-compress:1.13"
+        },
+        {
+          "revision": "parent",
+          "position": 10,
+          "role": "dependency",
+          "sha256": "a594643d73cc01928cf6ca5ce100e094ea9d73af760a5d4fb6b75fa673ecec96",
+          "coordinates": "org.tukaani:xz:1.6"
+        },
+        {
+          "revision": "parent",
+          "position": 11,
+          "role": "dependency",
+          "sha256": "2bcac56802ec8d6f16941ef8a8d5fee4032902ba9937549be220f0a06eb9f503",
+          "coordinates": "joda-time:joda-time:2.9.7"
+        },
+        {
+          "revision": "parent",
+          "position": 12,
+          "role": "dependency",
+          "sha256": "3a4cd4969015f3beb4b5b4d81dbafc01765fb60b8a439955ca64d8476fef553e",
+          "coordinates": "org.slf4j:slf4j-api:1.7.22"
+        },
+        {
+          "revision": "parent",
+          "position": 13,
+          "role": "dependency",
+          "sha256": "7605dbb722c612623ac7a61a2e8c0e03dce5e4385705934a6d13028ce85edaf9",
+          "coordinates": "org.slf4j:slf4j-simple:1.7.22"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/organic/EncoderWindow.java": "f8db624992f925d673bb0fc4cd6e75727f6f2416e20035b2c5ddb6cb0e6823dc",
+        "claims/cursor.json": "27e30f2587d09586b3b393dad351148d01e13b6e4cd1a632deb8fb52b339dac9",
+        "controls/table.json": "9fdd5808da619a51f921d2dff76e1fee4ade20474498187e491c1411abac9ffe",
+        "driver/organic/Cases.java": "25a61bca512b5cb12e8ebaf0b2c4590431106c94647d47bf9649309d438c1c22"
+      },
+      "claimKey": "ed772c9e5fe9c4d5"
+    }
+  },
+  "attempt": {
+    "id": "20261122T045044Z-df8a42f7",
+    "claim": "e6be13ad93d9c7b6",
+    "startedAt": "2026-11-22T04:50:44+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "organic.EncoderWindow#cursor(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/avro-1.9.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/org/apache/avro/avro-guava-dependencies/1.9.0-SNAPSHOT/avro-guava-dependencies-1.9.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/com/github/stephenc/findbugs/findbugs-annotations/1.3.9-1/findbugs-annotations-1.3.9-1.jar",
+      "--classpath",
+      "prepare/parent/lib/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar",
+      "--classpath",
+      "prepare/parent/lib/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar",
+      "--classpath",
+      "prepare/parent/lib/com/thoughtworks/paranamer/paranamer/2.8/paranamer-2.8.jar",
+      "--classpath",
+      "prepare/parent/lib/org/xerial/snappy/snappy-java/1.1.2.6/snappy-java-1.1.2.6.jar",
+      "--classpath",
+      "prepare/parent/lib/org/apache/commons/commons-compress/1.13/commons-compress-1.13.jar",
+      "--classpath",
+      "prepare/parent/lib/org/tukaani/xz/1.6/xz-1.6.jar",
+      "--classpath",
+      "prepare/parent/lib/joda-time/joda-time/2.9.7/joda-time-2.9.7.jar",
+      "--classpath",
+      "prepare/parent/lib/org/slf4j/slf4j-api/1.7.22/slf4j-api-1.7.22.jar",
+      "--classpath",
+      "prepare/parent/lib/org/slf4j/slf4j-simple/1.7.22/slf4j-simple-1.7.22.jar",
+      "--assume",
+      "code >= 0 && code < 16",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "64",
+      "--max-array-length",
+      "128",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "04a932337f4cef4ad1c003a8766b744385194a80ae9fd439010179657f895f80"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "9d1d3d7196ff75efdec85532bc5fcee16c8df4bb114c77e91ea0903810157339",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-044515-avro-198-encoder-current-on-packaged-art",
+      "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-avro-198-encoder-current-on-packaged-art"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.052,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 64,
+      "maxArrayLength": 128,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "e6be13ad93d9c7b6",
+    "attempt": "20261122T045044Z-df8a42f7",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 16",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:jdk.internal.access.SharedSecrets.getJavaLangAccess()Ljdk/internal/access/JavaLangAccess;@jdk-21.0.13 (jdk.internal.access.SharedSecrets.getJavaLangAccess() at java.nio.channels.spi.AbstractInterruptibleChannel.blockedOn:209). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.028,
+            "properties": 1,
+            "unwind": 64,
+            "maxArrayLength": 128,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.024,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.002,
+                  "lowering": 0.0,
+                  "symbolic": 0.018,
+                  "encoding": 0.002,
+                  "solving": 0.001,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 2255,
+                  "clauses": 554
+                }
+              }
+            ],
+            "native": {
+              "paths": 34,
+              "merges": 0,
+              "solverCalls": 33,
+              "solvingSeconds": 0.001042263,
+              "gatesEvaluated": 976,
+              "evaluatingSeconds": 3.7502e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 2255,
+              "clauses": 554,
+              "seconds": 0.023600391,
+              "loadingSeconds": 0.001817745,
+              "decodingSeconds": 0.000478508,
+              "encodingSeconds": 0.002352559,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:jdk.internal.access.SharedSecrets.getJavaLangAccess()Ljdk/internal/access/JavaLangAccess;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "jdk.internal.access.SharedSecrets.getJavaLangAccess()",
+                "sites": [
+                  "java.nio.channels.spi.AbstractInterruptibleChannel.blockedOn:209"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 16",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:jdk.internal.access.SharedSecrets.getJavaLangAccess()Ljdk/internal/access/JavaLangAccess;@jdk-21.0.13 (jdk.internal.access.SharedSecrets.getJavaLangAccess() at java.nio.channels.spi.AbstractInterruptibleChannel.blockedOn:209). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 16"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "4af1e29468616680d67adc2b01a4512939758de30fba8d89d847bd3e01d698f3",
+        "bytes": 44968
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "3baf664e490cdf18f857d390e9ece2efe585b6d563ef17d80025bff46a33e1e0",
+        "bytes": 547
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c350e48902b596ba9f0c5c6c19bd57cff02e65d11cff19b0f6220ad9ba57c870",
+        "bytes": 1969
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "dff74de6247112ca84ae0157709314b80449f20de8ae61dc8922a5dbf0ffe183",
+        "bytes": 3155
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "11dea7fe0de95cfb275aa214e7a2d6be068f48ab641e21d5460e7edd1dd06545",
+        "bytes": 17934
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "e0ad5a693d55dd3199e389aadaccc3c93bc5d9c8efc4df7b09d606663baba0f9",
+        "bytes": 6369
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "3ead2aae18fdd928ee20d6bcadac617ebb128c7eeaaaf45b7b199b565afe5bfe",
+        "bytes": 26500
+      }
+    ]
+  }
+}

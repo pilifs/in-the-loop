@@ -1,0 +1,236 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044516-measure-avro-198-reuse-at-its-actual-enc",
+  "title": "Measure Avro 198 reuse at its actual encoder call sites",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 44.4s, peak 141.4 MiB (estimated 4m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-044516-measure-avro-198-reuse-at-its-actual-enc.json",
+    "sha256": "a61d031875584f3bcf27aa3d73c3422458c9a4a079bb16587f20eb0e54a3f1a6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044516-measure-avro-198-reuse-at-its-actual-enc",
+      "title": "Measure Avro 198 reuse at its actual encoder call sites",
+      "description": "Requalify the JDK heap-window guarantee through backing length 20. Prove a read-only view keeps the backing contents and advances its own cursor. Compare fresh, clean and reused wrap proofs; trace the exact view passed to both original encoders and reject the old six-byte bound for the large windows.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "362",
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:45:16+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "18m"
+      },
+      "steps": [
+        {
+          "name": "Prove and qualify the shared heap-buffer facts",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_adoption.py --output verification/domain-foundations/encoder-adoption",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/encoder-adoption"
+      ],
+      "supersedes": "20261122-042802-measure-avro-198-reuse-at-its-actual-enc",
+      "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+    }
+  },
+  "sourceCommit": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "startedAt": "2026-11-22T04:51:01+00:00",
+  "finishedAt": "2026-11-22T04:51:59+00:00",
+  "wallSeconds": 58.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1080.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 148320256,
+    "wallSeconds": 44.4,
+    "cpuSeconds": 54.7,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove and qualify the shared heap-buffer facts",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_adoption.py --output verification/domain-foundations/encoder-adoption",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 44.368,
+      "cpuSeconds": 54.743,
+      "cpuThrottledSeconds": 1.835,
+      "peakMemoryBytes": 148320256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-and-qualify-the-shared-h.log",
+        "lines": 1,
+        "bytes": 601,
+        "sha256": "f3dae9a30330625aaa675d5e91bd6393374a76b851866f85bc2794fc4006195d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"disabled\": {\"sourceExample\": \"362\", \"proofExecutions\": 1, \"setupSeconds\": 1.282987, \"proofOrValidationSeconds\": 0.160302, \"siteSeconds\": 4.270654, \"totalSeconds\": 5.714228, \"peakRssBytes\": 100966400}, \"clean\": {\"sourceExample\": \"355\", \"proofExecutions\": 1, \"setupSeconds\": 1.365285, \"proofOrValidat"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/encoder-adoption/disabled-wrap.json",
+      "change": "added",
+      "bytes": 966,
+      "sha256": "45d9a0c384caa35de1eeffc55772b4ae66f75bc72f234821c3ad9450ea107402",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-adoption/disabled-wrap.native.json",
+      "change": "added",
+      "bytes": 6479,
+      "sha256": "36bef9c9d783951d1dcaf16b73fbcf06ec8d26c36cb3f114ed87973a1a836df2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-adoption/measurement.json",
+      "change": "added",
+      "bytes": 1471,
+      "sha256": "1133b4c2f40e463a5181d77b6aa1ec1fc75497baf78e38175fa1ad5ddb09a791",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-adoption/read-only.json",
+      "change": "added",
+      "bytes": 968,
+      "sha256": "c7e1235093c7f2a8408d6004985f847084c992a61503cfd141d99aa0c7ec1561",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-adoption/read-only.native.json",
+      "change": "added",
+      "bytes": 6526,
+      "sha256": "c5225875f61f9f6025552bdf7994011b6312d71e57da57735526b321a2861669",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-adoption/sites.json",
+      "change": "added",
+      "bytes": 136326,
+      "sha256": "8bd89d3ef6a54c37a5dafc1b1a0642a70ecdbf10e66e9e20b5e47ea51ca9c98c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-adoption/wide-wrap.json",
+      "change": "added",
+      "bytes": 961,
+      "sha256": "e5849a9066efcdd2271a161af02c7583a8144701381a39da975f1cf6517594e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-adoption/wide-wrap.native.json",
+      "change": "added",
+      "bytes": 6477,
+      "sha256": "dc18d6f449acf3a3ba3a97597eef2e61398b4318c72ed2439066b561452cdb0c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:18+00:00",
+    "applied": [
+      "verification/domain-foundations/encoder-adoption/disabled-wrap.json",
+      "verification/domain-foundations/encoder-adoption/disabled-wrap.native.json",
+      "verification/domain-foundations/encoder-adoption/measurement.json",
+      "verification/domain-foundations/encoder-adoption/read-only.json",
+      "verification/domain-foundations/encoder-adoption/read-only.native.json",
+      "verification/domain-foundations/encoder-adoption/sites.json",
+      "verification/domain-foundations/encoder-adoption/wide-wrap.json",
+      "verification/domain-foundations/encoder-adoption/wide-wrap.native.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6c9bdae34debeae244f13444a4031ad2e039aa3d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6c9bdae34debeae244f13444a4031ad2e039aa3d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045159Z-0477510e862de46f",
+      "outputs": "20261122T045159Z-0724790251e43865",
+      "diff": "20261122T045159Z-0992004ff82b6d38"
+    }
+  }
+}

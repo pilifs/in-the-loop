@@ -113,7 +113,20 @@ public final class CharacterFormats {
         if (d != java.util.Base64.getDecoder() || a == b || a.length != 2 || a[0] != -5 || a[1] != -1
                 || b[1] != -1 || c.length != 1 || c[0] != 'a' || d.decode("").length != 0) return false;
         a[0] = 0;
-        return b[0] == -5 && Boolean.parseBoolean("tRuE") && !Boolean.parseBoolean(null) && !Boolean.parseBoolean("yes");
+        java.util.Base64.Encoder e = java.util.Base64.getEncoder();
+        String first = e.encodeToString(b);
+        return b[0] == -5 && e == java.util.Base64.getEncoder() && first.equals("+/8=") && first != e.encodeToString(b)
+                && e.encodeToString(c).equals("YQ==") && e.encodeToString(new byte[]{0, -1, 64}).equals("AP9A")
+                && e.encodeToString(new byte[0]).isEmpty() && e.encodeToString(new byte[0]) != ""
+                && Boolean.parseBoolean("tRuE") && !Boolean.parseBoolean(null) && !Boolean.parseBoolean("yes");
+    }
+    public static String optionalText(boolean present) { return present ? "selected" : null; }
+    public static boolean emptyIterator() {
+        java.util.Iterator<?> it = java.util.Collections.emptyIterator();
+        if (it != java.util.Collections.emptyIterator() || it.hasNext()) return false;
+        try { it.next(); return false; } catch (java.util.NoSuchElementException exhausted) { }
+        try { it.remove(); return false; } catch (IllegalStateException noElement) { }
+        try { it.forEachRemaining(null); return false; } catch (NullPointerException noConsumer) { return true; }
     }
     public static boolean invalidBase64() { return java.util.Base64.getDecoder().decode("A=").length == 0; }
     static final class Copyable implements Cloneable {
@@ -133,7 +146,7 @@ public final class CharacterFormats {
             if (!tableStartup(Boolean.parseBoolean(args[0]))) throw new AssertionError("table initialization");
             return;
         }
-        if (!clockSeed() || !decoder()) throw new AssertionError("clock, identity or decoder");
+        if (!clockSeed() || !decoder() || !emptyIterator()) throw new AssertionError("clock, identity, codec or iterator");
         for (int c = 0; c < 256; c++) if (!latinIdentifiers((char) c)) throw new AssertionError(c);
         if (outsideLatin1()) throw new AssertionError("U+0100 uses a different character table");
         if (!copiesAndFills(Integer.MIN_VALUE)) throw new AssertionError("array copy");

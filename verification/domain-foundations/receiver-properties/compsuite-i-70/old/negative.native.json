@@ -1,0 +1,242 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
+    "domain": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
+    "assume": null,
+    "assert": "result != null",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "getCellStyle(this=new StreamingCell(0, 0, false))",
+      "outcome": "null",
+      "values": [
+        "0",
+        "0",
+        "false"
+      ],
+      "found": "getCellStyle(this=new StreamingCell(20, 20, true))",
+      "shrink_runs": 3,
+      "inputs": [
+        {
+          "name": "this.columnIndex",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "this.rowIndex",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "this.use1904Dates",
+          "type": "boolean",
+          "value": false
+        }
+      ],
+      "found_inputs": [
+        {
+          "name": "this.columnIndex",
+          "type": "int",
+          "value": 20
+        },
+        {
+          "name": "this.rowIndex",
+          "type": "int",
+          "value": 20
+        },
+        {
+          "name": "this.use1904Dates",
+          "type": "boolean",
+          "value": true
+        }
+      ],
+      "call": {
+        "class": "com.monitorjbl.xlsx.impl.StreamingCell",
+        "class_file": "com/monitorjbl/xlsx/impl/StreamingCell.class",
+        "classes": "after",
+        "method": "getCellStyle",
+        "descriptor": "()Lorg/apache/poi/ss/usermodel/CellStyle;",
+        "static": false,
+        "receiver": {
+          "name": "this",
+          "type": "com.monitorjbl.xlsx.impl.StreamingCell",
+          "components": [
+            {
+              "name": "columnIndex",
+              "type": "int",
+              "value": 0,
+              "from": "this.columnIndex"
+            },
+            {
+              "name": "rowIndex",
+              "type": "int",
+              "value": 0,
+              "from": "this.rowIndex"
+            },
+            {
+              "name": "use1904Dates",
+              "type": "boolean",
+              "value": false,
+              "from": "this.use1904Dates"
+            }
+          ]
+        },
+        "arguments": []
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as getCellStyle(this=new StreamingCell(20, 20, true)), shrunk to the input above in 3 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/tmp/receiver-property-mwmci24b/negative/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle violated: `result != null`:\n  getCellStyle(this=new StreamingCell(0, 0, false))\n    outcome: null",
+        "uri": null,
+        "line": 266
+      }
+    ],
+    "output": "✗ Property of com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle violated: `result != null`:\n  getCellStyle(this=new StreamingCell(0, 0, false))\n    outcome: null\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as getCellStyle(this=new StreamingCell(20, 20, true)), shrunk to the input above in 3 interpreter runs, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-mwmci24b/negative",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.021868908,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 8,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 2,
+        "solving_seconds": 0.000014858,
+        "gates_evaluated": 0,
+        "evaluating_seconds": 0.0,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 199,
+        "clauses": 462,
+        "seconds": 0.006085712,
+        "loading_seconds": 0.000242596,
+        "decoding_seconds": 0.000045085,
+        "encoding_seconds": 0.000072855,
+        "witness_seconds": 0.000011063
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.006,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.006,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 199,
+            "clauses": 462
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.666,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.006,
+        "replay": 0.006,
+        "jvm": 0.574,
+        "other": 0.079
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "this",
+            "type": "com.monitorjbl.xlsx.impl.StreamingCell",
+            "kind": "object",
+            "null": false,
+            "components": [
+              "columnIndex: int",
+              "rowIndex: int",
+              "use1904Dates: boolean"
+            ]
+          }
+        ],
+        "shared_arrays": false,
+        "text": "this: a StreamingCell made by its constructor, StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean), from any arguments it accepts",
+        "input_objects": [
+          1,
+          1
+        ]
+      },
+      "assumptions": [
+        {
+          "kind": "constructible",
+          "text": "the constructor StreamingCell(columnIndex: int, rowIndex: int, use1904Dates: boolean) accepts the arguments of this: an input it rejects is skipped, so the property is about the objects it makes",
+          "basis": "harness"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result != null",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
