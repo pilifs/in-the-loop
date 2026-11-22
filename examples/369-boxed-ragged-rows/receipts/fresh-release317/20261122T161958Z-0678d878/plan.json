@@ -1,0 +1,214 @@
+{
+  "plan": {
+    "example": "369",
+    "task": "fresh-release317",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+    "revisions": [
+      "release317"
+    ],
+    "claim": {
+      "task": "fresh-release317",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "file": "claims/fresh.json",
+      "sha256": "7d2a50481b0bec693b585e9db772290e8c367ce91a87921cb9d8df4b3db34c23",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+      "assume": "code >= 0 && code < 187",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "50db65851326e65b1d5b2507530de50e454582b1139dbbfe3fb03c9cdf8d1e97"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "602a010d95cf25b94db02f572e9a90abecbf1d1b57c292e8a0855931dd3dd820"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.RowChecks#fresh(I)I",
+        "mapping": "The six layouts include repeated rows, equal clones and distinct ragged rows. The observer writes each output cell and checks the separate invocation.",
+        "correspondence": "finite-oracle",
+        "cases": 187
+      },
+      "key": "488d28802bebf7ac"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "release317",
+        "route": "fixture",
+        "repository": "https://github.com/apache/commons-lang",
+        "fixture": "application",
+        "compileLibraries": [
+          "commons-lang3-317"
+        ],
+        "runtimeLibraries": [
+          "commons-lang3-317"
+        ],
+        "libraries": {
+          "commons-lang3-317": {
+            "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+          }
+        },
+        "adapters": [
+          "adapter/datawork/RowChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/fresh-release317"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-161543-boxed-parser-values-and-independent-resu/examples/369-boxed-ragged-rows",
+    "network": true
+  },
+  "inputs": {
+    "example": "369",
+    "task": "fresh-release317",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+    "revisions": [
+      "release317"
+    ],
+    "claim": {
+      "task": "fresh-release317",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "file": "claims/fresh.json",
+      "sha256": "7d2a50481b0bec693b585e9db772290e8c367ce91a87921cb9d8df4b3db34c23",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+      "assume": "code >= 0 && code < 187",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "50db65851326e65b1d5b2507530de50e454582b1139dbbfe3fb03c9cdf8d1e97"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "602a010d95cf25b94db02f572e9a90abecbf1d1b57c292e8a0855931dd3dd820"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.RowChecks#fresh(I)I",
+        "mapping": "The six layouts include repeated rows, equal clones and distinct ragged rows. The observer writes each output cell and checks the separate invocation.",
+        "correspondence": "finite-oracle",
+        "cases": 187
+      },
+      "key": "488d28802bebf7ac"
+    },
+    "artifacts": [
+      {
+        "revision": "release317",
+        "route": "fixture",
+        "repository": "https://github.com/apache/commons-lang",
+        "fixture": "application",
+        "compileLibraries": [
+          "commons-lang3-317"
+        ],
+        "runtimeLibraries": [
+          "commons-lang3-317"
+        ],
+        "libraries": {
+          "commons-lang3-317": {
+            "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+          }
+        },
+        "adapters": [
+          "adapter/datawork/RowChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/datawork/RowChecks.java",
+        "sha256": "f19f872666a2fc43945266de8d16a1713e1660ab831139dd1ba16e91338b44ef"
+      }
+    ]
+  },
+  "key": "12a67ddda84570404ee63facd68d3eee0ed450d1189c4946652f60fd189d0965"
+}

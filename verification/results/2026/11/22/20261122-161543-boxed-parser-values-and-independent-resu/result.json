@@ -1,0 +1,885 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-161543-boxed-parser-values-and-independent-resu",
+  "title": "Boxed parser values and independent result rows (opening)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 21.5s, peak 148.2 MiB (estimated 4m00s, 3.0 GiB); 84 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-161543-boxed-parser-values-and-independent-resu.json",
+    "sha256": "7740637fddabbaacfba37c5da1aa22a6ab71ca0edf320e87f428beeed78086de",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-161543-boxed-parser-values-and-independent-resu",
+      "title": "Boxed parser values and independent result rows (opening)",
+      "description": "Run the frozen strict native tasks at ordinary startup and the independent real JVM implementation on each pinned graph. Boxed parser values and independent result rows. Each result names its checker, original artifacts, guard, receipt and cost.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "369"
+        ]
+      },
+      "expected": "A fresh measured disposition for each ordinary claim and an independent finite result with the admitted controls. A strict refusal leaves that native claim open.",
+      "submitted": {
+        "at": "2026-11-22T16:15:43+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Measure the ordinary and finite public entries",
+          "run": "python3 -B lib/benchmark/spring-java-data/measure.py 369 --stage opening",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/369-boxed-ragged-rows/records/opening",
+        "examples/369-boxed-ragged-rows/records/finite-proofs",
+        "examples/369-boxed-ragged-rows/receipts"
+      ]
+    }
+  },
+  "sourceCommit": "3089187967c7051c99429aa72a175d23e537accb",
+  "startedAt": "2026-11-22T16:16:42+00:00",
+  "finishedAt": "2026-11-22T16:20:00+00:00",
+  "wallSeconds": 198.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3099576,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 155381760,
+    "wallSeconds": 21.5,
+    "cpuSeconds": 37.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 167.041,
+      "cpuSeconds": 167.293,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2287214592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "fd0461cb467cfecb27f317fbec321d394b34d8596e24e1c5b4ca575ca1e3e993",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-161543-boxed-parser-values-and-independent-resu/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 46s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Measure the ordinary and finite public entries",
+      "run": "python3 -B lib/benchmark/spring-java-data/measure.py 369 --stage opening",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 21.458,
+      "cpuSeconds": 37.888,
+      "cpuThrottledSeconds": 2.497,
+      "peakMemoryBytes": 155381760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-ordinary-and-finit.log",
+        "lines": 1,
+        "bytes": 131,
+        "sha256": "98142b77a00a1efe54a47b76c8fb0e6957430d08e99a5a799be1328a3b6be943",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"values-landed\": \"unresolved\", \"fresh-landed\": \"unresolved\", \"values-release317\": \"unresolved\", \"fresh-release317\": \"unresolved\"}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/369-boxed-ragged-rows/records/opening/finite.log",
+      "change": "added",
+      "bytes": 182,
+      "sha256": "b2cf597d496e15153eb629c821fb31973a6c7d2cbca7feb25403ba9038b7c701",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/opening/fresh-landed.log",
+      "change": "added",
+      "bytes": 229,
+      "sha256": "4b5f6dcd4bbe4da0a8e8476687db0fe64ef29b18e40bfd74ea90c92486a56abc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/opening/fresh-release317.log",
+      "change": "added",
+      "bytes": 241,
+      "sha256": "3b741f251ea71962b8c282ec6ad8b6d07eb5cc7b2b578ce6bec4db7097cc1c86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/opening/replay.log",
+      "change": "added",
+      "bytes": 187,
+      "sha256": "39f6dedbefdfa784927d23143ba8f05858db8eb10cc18cf76a72e26655b16084",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/opening/run.json",
+      "change": "added",
+      "bytes": 2679,
+      "sha256": "ac45ccf06b9853438ca24faf5cbd0d46edc669a50fd9d389ee87d9ead3e231e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/opening/values-landed.log",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "fcb12a17d85ad68b23c33d52fbd383adf507544a873937930bd94db3f7d4d761",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/opening/values-release317.log",
+      "change": "added",
+      "bytes": 244,
+      "sha256": "97a2ab2b2bb1ee75e3a83cdc2e28f7130b95660aac0c823a296fcebc7438fdf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/batch.json",
+      "change": "added",
+      "bytes": 2695,
+      "sha256": "d297e3e86b09ebdd828c9e171a6c256b3ad877373d320884172b1cbdb5c70d62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/fresh-landed.json",
+      "change": "added",
+      "bytes": 37088,
+      "sha256": "cd093d45efea57619e3b812f3c1e8fc9291b4e777d6d5f6bdcf7fe11860e480f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/fresh-release317.json",
+      "change": "added",
+      "bytes": 37116,
+      "sha256": "02a631cb2aa10a53d9e756f3eff30ca6c9000fa378b0363ce17aeacbefe4bfd9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/values-landed.json",
+      "change": "added",
+      "bytes": 37074,
+      "sha256": "b554c1119713938c85998e5e9fbf9435f67446dcab3eac480030dc99ad5502d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/values-release317.json",
+      "change": "added",
+      "bytes": 37104,
+      "sha256": "430408bcbbd4e2e2ad4e65bc229739a395a4a65a5630e984bc45a5959b063898",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fc4c06c4e35b84c0222128edaca158951b76e204f2cb0cb38099cdd977ce63f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/plan.json",
+      "change": "added",
+      "bytes": 7498,
+      "sha256": "0bdbe55a0a2bdc951e294d1c9ee88f1f18d14adca55a65225f6df57da7ec29dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/control-landed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/control-landed-jdk21.stdout",
+      "change": "added",
+      "bytes": 32643,
+      "sha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/controls.json",
+      "change": "added",
+      "bytes": 149397,
+      "sha256": "fdf2fc80cc827bf789d70e9e27cb6de0ef034fac49ad265abaaabab7db092ade",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/execution.json",
+      "change": "added",
+      "bytes": 171993,
+      "sha256": "82acefa60daa545d8fdbd230fbaff07c6cc2320b80528b83a27bfb5869db6039",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "9c6741022584b01b4043df5463664487f4c08db6abcaaafd50eef3222e5acde7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 198,
+      "sha256": "9ea5a14dabd24a899155868bbe7572e74421818408a7ebeb326bc1bd461d6ebe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier.json",
+      "change": "added",
+      "bytes": 22180,
+      "sha256": "1527dd5b907674e33a234507ac42db04b6308546c4798ddd1fa670c28c056495",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4712,
+      "sha256": "8fe528eec048a9fd7a71393f63f0cbdeb176fa7bb6ff010f58da0abdd7228d4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/result.json",
+      "change": "added",
+      "bytes": 13878,
+      "sha256": "e8198c8a4aca017196977fe950ceada71753d890b62b1ba165bdf6921dcc471a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/executions/20261122T161953Z-58f9079d/attempt.json",
+      "change": "added",
+      "bytes": 19852,
+      "sha256": "ffe96746f2ecb90a0deec38c079e8382803e727c70a6e27434568ae375b045a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/executions/20261122T161953Z-58f9079d/checker.json",
+      "change": "added",
+      "bytes": 6065,
+      "sha256": "155b1cdb459cf6abe705b7c41eb100665f196205ba28b8da8e7db23dee7f7c25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-landed/executions/20261122T161953Z-58f9079d/correspondence.json",
+      "change": "added",
+      "bytes": 1491,
+      "sha256": "151c9ca516d73dcd4baed65192db547dc22cdcf13566c9df8768d5cc1e7a6311",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4a4c0ada34aab7604374b0093e57b5dcb13c6b05af682ae665e93e083745aac5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/plan.json",
+      "change": "added",
+      "bytes": 6458,
+      "sha256": "0d207d14691521cb0fdc1565132992b6801b2f0e5fb94586f6b84062390fd6c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/control-release317-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/control-release317-jdk21.stdout",
+      "change": "added",
+      "bytes": 32643,
+      "sha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/controls.json",
+      "change": "added",
+      "bytes": 149427,
+      "sha256": "d6b0b1e679a7c995f8e2675eb2ef8523ec2eefb35e21a1887660d8ce60ad18a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/execution.json",
+      "change": "added",
+      "bytes": 172082,
+      "sha256": "0bc44da3bb37fe3a834068e52b24f2639b4c9cb0905e649c5245ed15b23bd73a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/streams.json",
+      "change": "added",
+      "bytes": 2005,
+      "sha256": "f6bb2d9b55a908dbd6e8662175aaa79b62f3de88c2fd26399ea558c292b2a47b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 198,
+      "sha256": "9ea5a14dabd24a899155868bbe7572e74421818408a7ebeb326bc1bd461d6ebe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier.json",
+      "change": "added",
+      "bytes": 22263,
+      "sha256": "1203e9eb9a26212192d1518a5b99aae14e54aeb9fac6ae0cbe62c16007c58c90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4715,
+      "sha256": "6855cfa437028f8a3e368e1336c7fa34cd5ed4ff2e4a5c91b1855717a4e19c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/result.json",
+      "change": "added",
+      "bytes": 14026,
+      "sha256": "54b5bd5338e4d2142ea702d30bdd63be64d6f1f6a85093c95845d1570fdb82b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/executions/20261122T161958Z-0678d878/attempt.json",
+      "change": "added",
+      "bytes": 19988,
+      "sha256": "97cf4759cfd5abdaa7a4250ef21ccb26a4d9a8a8d40772a8e522f465225e30bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/executions/20261122T161958Z-0678d878/checker.json",
+      "change": "added",
+      "bytes": 6082,
+      "sha256": "ad24802af88dc4f04f7dbc64e683ec6eba056fee4b1afbabb689cd2134391629",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/fresh-release317/executions/20261122T161958Z-0678d878/correspondence.json",
+      "change": "added",
+      "bytes": 1499,
+      "sha256": "8c89ec78b8c6845ebae8a3558d46459b7a564a8af7692bfdd3576b121b99da09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8b82d103442af79b7d2ee60077765ea3113c5496b91dca81bc98edceb45a5e2b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/plan.json",
+      "change": "added",
+      "bytes": 7360,
+      "sha256": "78942fd8ada908f541cb4743df0babe7d3ca361dd4c0092415470f175cfa4abb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-landed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-landed-jdk21.stdout",
+      "change": "added",
+      "bytes": 32643,
+      "sha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-release317-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-release317-jdk21.stdout",
+      "change": "added",
+      "bytes": 32643,
+      "sha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/controls.json",
+      "change": "added",
+      "bytes": 298734,
+      "sha256": "6da02ba8ac382025441f4401ec1724f12f06092ed08f59b84194d9b55dae2012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/execution.json",
+      "change": "added",
+      "bytes": 298156,
+      "sha256": "b91b9464583186cadadf2bb74fff430daa8b30bb326824442d43d0e41e8ff3ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/streams.json",
+      "change": "added",
+      "bytes": 1755,
+      "sha256": "b9ce5fa9f9af36625e97a3f77bab48aa77f994e7c245d9f73de17f4c69368bc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/summary.txt",
+      "change": "added",
+      "bytes": 313,
+      "sha256": "5cbaf4f937863489b21937c5bbbd7b9a63ed07373351204629364540a8206ba2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/result.json",
+      "change": "added",
+      "bytes": 8536,
+      "sha256": "84e88a4929f1329408fe448b121fc5fdedb6b61f9b9dabefe3d3cafe69feb443",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/replay/executions/20261122T161939Z-03fc9905/attempt.json",
+      "change": "added",
+      "bytes": 6416,
+      "sha256": "10517b7863e31c4f962d00bfc376e05b7c2ff6795b68b7c258de702247c597a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "86dddd526efa3a497842dccd23782537c92e5bf7e8de5570953273ed13b8cb5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/plan.json",
+      "change": "added",
+      "bytes": 7487,
+      "sha256": "17d69b16d3d08abdcba6254e2b9809fa264c906607474479ce62d88ad53063c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/control-landed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/control-landed-jdk21.stdout",
+      "change": "added",
+      "bytes": 32643,
+      "sha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/controls.json",
+      "change": "added",
+      "bytes": 149400,
+      "sha256": "5900b220368484513d61f9edfdd0cb6b5123bd75f104d3e7bdf7a8b882801d9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/execution.json",
+      "change": "added",
+      "bytes": 171947,
+      "sha256": "921602c27d348dfeb24e3d25cc9915ebca6f58943551662a9715542856e92ea0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "9e7cb424b5792c2389cb7d5dbdaf65cfd54816a0c75ea88af5099e00458b9883",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 199,
+      "sha256": "e0a6afb407581b34db3d6faa8989b0e8e64e2db9128221292f08beca499cbbf1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier.json",
+      "change": "added",
+      "bytes": 22136,
+      "sha256": "3abee2f441ccbf2f100f7868165f2259bc809820783933b9e8f5c9d70976d1e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4715,
+      "sha256": "d020c375c9e74876f8066025cf048be5e7babb1d95231cc78194c4135a5eef4e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/result.json",
+      "change": "added",
+      "bytes": 13875,
+      "sha256": "3307f0602ce95202ac054ae81678ede02ad35b5cfaf9e3f79efb2268858c973a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/executions/20261122T161951Z-10b16b31/attempt.json",
+      "change": "added",
+      "bytes": 19804,
+      "sha256": "b735112098c68c7a12fff11ed7360952e3e3baad05ae828a40b1187e25021250",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/executions/20261122T161951Z-10b16b31/checker.json",
+      "change": "added",
+      "bytes": 6069,
+      "sha256": "978857c17429197b26078d1ee61e22191d8c08a9a076277d015a8094deb144b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-landed/executions/20261122T161951Z-10b16b31/correspondence.json",
+      "change": "added",
+      "bytes": 1473,
+      "sha256": "b182b221fa4396e1a971175587879ac9c13870fa069bcda669cb167f24bf89b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ab278390e4e85fff865843843a6d662d18ed3dcf45e742ad875ef391c85e6474",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/plan.json",
+      "change": "added",
+      "bytes": 6447,
+      "sha256": "8cc9091a16e972c8c83d73f4578cc097b918ca42509d4a1af7bba193cb535c31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/control-release317-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/control-release317-jdk21.stdout",
+      "change": "added",
+      "bytes": 32643,
+      "sha256": "b564e480922a61aebc5d7c1216e481aeb1ee57360173e9756f65a8d51bc20427",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/controls.json",
+      "change": "added",
+      "bytes": 149430,
+      "sha256": "486f735ea4c4bd16d76e9ea2cb4e3b417f8b0b7454f46609c76fa4bedccc0c37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/execution.json",
+      "change": "added",
+      "bytes": 172030,
+      "sha256": "41f8ed8df00bb8e5465164f7f4029fadad7a422a0168c7250590c20a5a8a92bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/streams.json",
+      "change": "added",
+      "bytes": 2005,
+      "sha256": "f2bae46889b3f116b54b6d8b380436c825003cb602df71dd70ba7ce59303cdc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 199,
+      "sha256": "e0a6afb407581b34db3d6faa8989b0e8e64e2db9128221292f08beca499cbbf1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier.json",
+      "change": "added",
+      "bytes": 22213,
+      "sha256": "00d7ce543a17def4a4a2241c22f54f8cd4cd4cfd7b0d9b4395bdfe1453d0cbdc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4715,
+      "sha256": "139336dc8bdfce025b271f65ef0f80389bb421dc780e9467a19ef68cf11896cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/result.json",
+      "change": "added",
+      "bytes": 14020,
+      "sha256": "774d9e5b210bec0f6903e45eafe11174f869700c8ccb22a7801afad308e9fbcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/executions/20261122T161955Z-9de30457/attempt.json",
+      "change": "added",
+      "bytes": 19936,
+      "sha256": "1d1edb10b968ef9e83d0c56f5999ff520467d932e924598c128ae3a3b990a197",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/executions/20261122T161955Z-9de30457/checker.json",
+      "change": "added",
+      "bytes": 6082,
+      "sha256": "deb80754ba3c9dc830ef185f13ad1653b60e7548a07cd13c01902fabe809f5b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/369-boxed-ragged-rows/receipts/values-release317/executions/20261122T161955Z-9de30457/correspondence.json",
+      "change": "added",
+      "bytes": 1481,
+      "sha256": "4c9347a376553f287af1b4568f61015eb82cb0d335908d73a71faa5c09682654",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T16:20:29+00:00",
+    "applied": [
+      "examples/369-boxed-ragged-rows/records/opening/finite.log",
+      "examples/369-boxed-ragged-rows/records/opening/fresh-landed.log",
+      "examples/369-boxed-ragged-rows/records/opening/fresh-release317.log",
+      "examples/369-boxed-ragged-rows/records/opening/replay.log",
+      "examples/369-boxed-ragged-rows/records/opening/run.json",
+      "examples/369-boxed-ragged-rows/records/opening/values-landed.log",
+      "examples/369-boxed-ragged-rows/records/opening/values-release317.log",
+      "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/batch.json",
+      "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/fresh-landed.json",
+      "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/fresh-release317.json",
+      "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/values-landed.json",
+      "examples/369-boxed-ragged-rows/records/finite-proofs/20261122T161943Z-53ec40c2/values-release317.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/completion.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/plan.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/control-landed-jdk21.stderr",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/control-landed-jdk21.stdout",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/controls.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/execution.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/streams.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier-output.txt",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier.stderr",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/records/verifier.stdout",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/20261122T161953Z-58f9079d/result.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/executions/20261122T161953Z-58f9079d/attempt.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/executions/20261122T161953Z-58f9079d/checker.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-landed/executions/20261122T161953Z-58f9079d/correspondence.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/completion.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/plan.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/control-release317-jdk21.stderr",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/control-release317-jdk21.stdout",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/controls.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/execution.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/streams.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier-output.txt",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier.stderr",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/records/verifier.stdout",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/20261122T161958Z-0678d878/result.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/executions/20261122T161958Z-0678d878/attempt.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/executions/20261122T161958Z-0678d878/checker.json",
+      "examples/369-boxed-ragged-rows/receipts/fresh-release317/executions/20261122T161958Z-0678d878/correspondence.json",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/completion.json",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/plan.json",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-landed-jdk21.stderr",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-landed-jdk21.stdout",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-release317-jdk21.stderr",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/control-release317-jdk21.stdout",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/controls.json",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/execution.json",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/streams.json",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/records/summary.txt",
+      "examples/369-boxed-ragged-rows/receipts/replay/20261122T161939Z-03fc9905/result.json",
+      "examples/369-boxed-ragged-rows/receipts/replay/executions/20261122T161939Z-03fc9905/attempt.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/completion.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/plan.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/control-landed-jdk21.stderr",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/control-landed-jdk21.stdout",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/controls.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/execution.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/streams.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier-output.txt",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier.stderr",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/records/verifier.stdout",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/20261122T161951Z-10b16b31/result.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/executions/20261122T161951Z-10b16b31/attempt.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/executions/20261122T161951Z-10b16b31/checker.json",
+      "examples/369-boxed-ragged-rows/receipts/values-landed/executions/20261122T161951Z-10b16b31/correspondence.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/completion.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/plan.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/control-release317-jdk21.stderr",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/control-release317-jdk21.stdout",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/controls.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/execution.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/streams.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier-output.txt",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier.stderr",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/records/verifier.stdout",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/20261122T161955Z-9de30457/result.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/executions/20261122T161955Z-9de30457/attempt.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/executions/20261122T161955Z-9de30457/checker.json",
+      "examples/369-boxed-ragged-rows/receipts/values-release317/executions/20261122T161955Z-9de30457/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2695760,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "02ee1ec461c3d58af585b7bfa843f53d430919cb",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/02ee1ec461c3d58af585b7bfa843f53d430919cb/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T162000Z-43112066ba2a26a5",
+      "outputs": "20261122T162000Z-469436bf5160b528",
+      "diff": "20261122T162000Z-5049341c8831f94e"
+    }
+  }
+}

@@ -1,0 +1,322 @@
+{
+  "plan": {
+    "example": "368",
+    "task": "ledger-combined",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+    "revisions": [
+      "combined"
+    ],
+    "claim": {
+      "task": "ledger-combined",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "file": "claims/ledger.json",
+      "sha256": "63163a7222f05285efbc6d36b1b6704706c447aaf1a44b58d13b201e885c2525",
+      "property": "ledger",
+      "claimKind": "property",
+      "statement": "At each prefix the error count, field, rejected value and counts on both children match the ordered edit history.",
+      "assume": "code >= 0 && code < 12",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "ce33cb84b13661ba78afea274e7c1016c0004c2d9edc584d03a5df7360099060"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "9f20fc55f8742765c58ceab87a495ced8b6be93de72ab97be4b28ba6fb23f27a"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.BindingChecks#ledger(I)I",
+        "mapping": "Each invocation starts a fresh bean and binder. The same binder executes every edit in its selected permutation.",
+        "correspondence": "finite-oracle",
+        "cases": 12
+      },
+      "key": "3dc16102418e1734"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "combined",
+        "route": "fixture",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "fixture": "application",
+        "compileLibraries": [
+          "combined-spring-security-core",
+          "combined-spring-security-crypto",
+          "combined-spring-aop",
+          "combined-spring-beans",
+          "combined-spring-core",
+          "combined-spring-jcl",
+          "combined-spring-expression",
+          "combined-micrometer-observation",
+          "combined-micrometer-commons",
+          "combined-spring-context"
+        ],
+        "runtimeLibraries": [
+          "combined-spring-security-core",
+          "combined-spring-security-crypto",
+          "combined-spring-aop",
+          "combined-spring-beans",
+          "combined-spring-core",
+          "combined-spring-jcl",
+          "combined-spring-expression",
+          "combined-micrometer-observation",
+          "combined-micrometer-commons",
+          "combined-spring-context"
+        ],
+        "libraries": {
+          "combined-spring-security-core": {
+            "coordinates": "org.springframework.security:spring-security-core:6.3.0",
+            "sha256": "038a52f99d98f2843be8a382f5b18a2583be8dcb78bf4f7b4ab177fb7b36bd91"
+          },
+          "combined-spring-security-crypto": {
+            "coordinates": "org.springframework.security:spring-security-crypto:6.3.0",
+            "sha256": "dcce78f18b8cc2bf1cd5dc019b57d3ea43d05aa30e3d01c6be1625853f2e7f66"
+          },
+          "combined-spring-aop": {
+            "coordinates": "org.springframework:spring-aop:6.1.7",
+            "sha256": "726bea14ab37a1898f2aaeeb1e4f4ddc058e13df0b7ee5b29c24403b128180d6"
+          },
+          "combined-spring-beans": {
+            "coordinates": "org.springframework:spring-beans:6.1.7",
+            "sha256": "c65ed71bfbb708a8498c21ac247db22ca8b423639f62f831603e1128a447c8c4"
+          },
+          "combined-spring-core": {
+            "coordinates": "org.springframework:spring-core:6.1.7",
+            "sha256": "9391d13158b83106ea8d26f03619940ec8cc097254084c98fb0e3061c0eefaa6"
+          },
+          "combined-spring-jcl": {
+            "coordinates": "org.springframework:spring-jcl:6.1.7",
+            "sha256": "cd05cf5b2293b5fda10df5b82329af9126fcc45ecea0c1a9d7a0c425e29f67ef"
+          },
+          "combined-spring-expression": {
+            "coordinates": "org.springframework:spring-expression:6.1.7",
+            "sha256": "cca4a10eed0b05348826093b33b9b8794ea73998b26f8e23648e3fbcfd09c275"
+          },
+          "combined-micrometer-observation": {
+            "coordinates": "io.micrometer:micrometer-observation:1.12.6",
+            "sha256": "bbf73132b0fa6e49a36a2c1429422204809f50946caf5806c5446cebff19f7b2"
+          },
+          "combined-micrometer-commons": {
+            "coordinates": "io.micrometer:micrometer-commons:1.12.6",
+            "sha256": "1cefa7dbb651f35ae886158c9d4cf4dd3cc0997fa71e89c119102e2272bfa44c"
+          },
+          "combined-spring-context": {
+            "coordinates": "org.springframework:spring-context:6.1.7",
+            "sha256": "43cef52930f112dbb8787f7a64eb777c7881408b4c090a03a22cce2b852a3bec"
+          }
+        },
+        "adapters": [
+          "adapter/springwork/BindingChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/ledger-combined"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-161543-spring-binder-edits-and-the-persistent-f/examples/368-spring-binding-history",
+    "network": true
+  },
+  "inputs": {
+    "example": "368",
+    "task": "ledger-combined",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+    "revisions": [
+      "combined"
+    ],
+    "claim": {
+      "task": "ledger-combined",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;",
+      "file": "claims/ledger.json",
+      "sha256": "63163a7222f05285efbc6d36b1b6704706c447aaf1a44b58d13b201e885c2525",
+      "property": "ledger",
+      "claimKind": "property",
+      "statement": "At each prefix the error count, field, rejected value and counts on both children match the ordered edit history.",
+      "assume": "code >= 0 && code < 12",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "ce33cb84b13661ba78afea274e7c1016c0004c2d9edc584d03a5df7360099060"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "9f20fc55f8742765c58ceab87a495ced8b6be93de72ab97be4b28ba6fb23f27a"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.BindingChecks#ledger(I)I",
+        "mapping": "Each invocation starts a fresh bean and binder. The same binder executes every edit in its selected permutation.",
+        "correspondence": "finite-oracle",
+        "cases": 12
+      },
+      "key": "3dc16102418e1734"
+    },
+    "artifacts": [
+      {
+        "revision": "combined",
+        "route": "fixture",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "fixture": "application",
+        "compileLibraries": [
+          "combined-spring-security-core",
+          "combined-spring-security-crypto",
+          "combined-spring-aop",
+          "combined-spring-beans",
+          "combined-spring-core",
+          "combined-spring-jcl",
+          "combined-spring-expression",
+          "combined-micrometer-observation",
+          "combined-micrometer-commons",
+          "combined-spring-context"
+        ],
+        "runtimeLibraries": [
+          "combined-spring-security-core",
+          "combined-spring-security-crypto",
+          "combined-spring-aop",
+          "combined-spring-beans",
+          "combined-spring-core",
+          "combined-spring-jcl",
+          "combined-spring-expression",
+          "combined-micrometer-observation",
+          "combined-micrometer-commons",
+          "combined-spring-context"
+        ],
+        "libraries": {
+          "combined-spring-security-core": {
+            "coordinates": "org.springframework.security:spring-security-core:6.3.0",
+            "sha256": "038a52f99d98f2843be8a382f5b18a2583be8dcb78bf4f7b4ab177fb7b36bd91"
+          },
+          "combined-spring-security-crypto": {
+            "coordinates": "org.springframework.security:spring-security-crypto:6.3.0",
+            "sha256": "dcce78f18b8cc2bf1cd5dc019b57d3ea43d05aa30e3d01c6be1625853f2e7f66"
+          },
+          "combined-spring-aop": {
+            "coordinates": "org.springframework:spring-aop:6.1.7",
+            "sha256": "726bea14ab37a1898f2aaeeb1e4f4ddc058e13df0b7ee5b29c24403b128180d6"
+          },
+          "combined-spring-beans": {
+            "coordinates": "org.springframework:spring-beans:6.1.7",
+            "sha256": "c65ed71bfbb708a8498c21ac247db22ca8b423639f62f831603e1128a447c8c4"
+          },
+          "combined-spring-core": {
+            "coordinates": "org.springframework:spring-core:6.1.7",
+            "sha256": "9391d13158b83106ea8d26f03619940ec8cc097254084c98fb0e3061c0eefaa6"
+          },
+          "combined-spring-jcl": {
+            "coordinates": "org.springframework:spring-jcl:6.1.7",
+            "sha256": "cd05cf5b2293b5fda10df5b82329af9126fcc45ecea0c1a9d7a0c425e29f67ef"
+          },
+          "combined-spring-expression": {
+            "coordinates": "org.springframework:spring-expression:6.1.7",
+            "sha256": "cca4a10eed0b05348826093b33b9b8794ea73998b26f8e23648e3fbcfd09c275"
+          },
+          "combined-micrometer-observation": {
+            "coordinates": "io.micrometer:micrometer-observation:1.12.6",
+            "sha256": "bbf73132b0fa6e49a36a2c1429422204809f50946caf5806c5446cebff19f7b2"
+          },
+          "combined-micrometer-commons": {
+            "coordinates": "io.micrometer:micrometer-commons:1.12.6",
+            "sha256": "1cefa7dbb651f35ae886158c9d4cf4dd3cc0997fa71e89c119102e2272bfa44c"
+          },
+          "combined-spring-context": {
+            "coordinates": "org.springframework:spring-context:6.1.7",
+            "sha256": "43cef52930f112dbb8787f7a64eb777c7881408b4c090a03a22cce2b852a3bec"
+          }
+        },
+        "adapters": [
+          "adapter/springwork/BindingChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/springwork/BindingChecks.java",
+        "sha256": "60ae0539c55d09afb690fbca76e02142105566a667094b7fa39cd6251ee1b60a"
+      }
+    ]
+  },
+  "key": "78045ccaae80349a96e45430fa60fb042e5e3a8d109f70d2dd285272b58c3a94"
+}

@@ -1,0 +1,244 @@
+{
+  "plan": {
+    "example": "369",
+    "task": "fresh-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "fresh-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "file": "claims/fresh.json",
+      "sha256": "7d2a50481b0bec693b585e9db772290e8c367ce91a87921cb9d8df4b3db34c23",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+      "assume": "code >= 0 && code < 187",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "50db65851326e65b1d5b2507530de50e454582b1139dbbfe3fb03c9cdf8d1e97"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "602a010d95cf25b94db02f572e9a90abecbf1d1b57c292e8a0855931dd3dd820"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.RowChecks#fresh(I)I",
+        "mapping": "The six layouts include repeated rows, equal clones and distinct ragged rows. The observer writes each output cell and checks the separate invocation.",
+        "correspondence": "finite-oracle",
+        "cases": 187
+      },
+      "key": "488d28802bebf7ac"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "fixture",
+        "repository": "https://github.com/apache/commons-lang",
+        "fixture": "application",
+        "compileLibraries": [
+          "commons-lang-1635-landed"
+        ],
+        "runtimeLibraries": [
+          "commons-lang-1635-landed"
+        ],
+        "libraries": {
+          "commons-lang-1635-landed": {
+            "repository": "https://github.com/apache/commons-lang",
+            "commit": "5904c573ffacaa5d8836ffc2b346f400c8901ed1",
+            "class": "org.apache.commons.lang3.math.NumberUtils",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "-DskipTests",
+                "-Dmaven.javadoc.skip=true",
+                "-Dmaven.source.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+            "parent": "1dd7cb14c233140a8e76ba5441b6360a239a98dc"
+          }
+        },
+        "adapters": [
+          "adapter/datawork/RowChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/fresh-landed"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-161543-boxed-parser-values-and-independent-resu/examples/369-boxed-ragged-rows",
+    "network": true
+  },
+  "inputs": {
+    "example": "369",
+    "task": "fresh-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "fresh-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "datawork.RowMapper#parseRows([[Ljava/lang/String;)[[Ljava/lang/Integer;",
+      "file": "claims/fresh.json",
+      "sha256": "7d2a50481b0bec693b585e9db772290e8c367ce91a87921cb9d8df4b3db34c23",
+      "property": "fresh",
+      "claimKind": "property",
+      "statement": "Output rows and separate calls have fresh identities, writes are isolated, and the input retains its references and cells.",
+      "assume": "code >= 0 && code < 187",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "50db65851326e65b1d5b2507530de50e454582b1139dbbfe3fb03c9cdf8d1e97"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "602a010d95cf25b94db02f572e9a90abecbf1d1b57c292e8a0855931dd3dd820"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.RowChecks#fresh(I)I",
+        "mapping": "The six layouts include repeated rows, equal clones and distinct ragged rows. The observer writes each output cell and checks the separate invocation.",
+        "correspondence": "finite-oracle",
+        "cases": 187
+      },
+      "key": "488d28802bebf7ac"
+    },
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "fixture",
+        "repository": "https://github.com/apache/commons-lang",
+        "fixture": "application",
+        "compileLibraries": [
+          "commons-lang-1635-landed"
+        ],
+        "runtimeLibraries": [
+          "commons-lang-1635-landed"
+        ],
+        "libraries": {
+          "commons-lang-1635-landed": {
+            "repository": "https://github.com/apache/commons-lang",
+            "commit": "5904c573ffacaa5d8836ffc2b346f400c8901ed1",
+            "class": "org.apache.commons.lang3.math.NumberUtils",
+            "build": {
+              "tool": "maven",
+              "argv": [
+                "mvn",
+                "-DskipTests",
+                "-Dmaven.javadoc.skip=true",
+                "-Dmaven.source.skip=true",
+                "package"
+              ],
+              "jdk": "21"
+            },
+            "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+            "parent": "1dd7cb14c233140a8e76ba5441b6360a239a98dc"
+          }
+        },
+        "adapters": [
+          "adapter/datawork/RowChecks.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/datawork/RowChecks.java",
+        "sha256": "f19f872666a2fc43945266de8d16a1713e1660ab831139dd1ba16e91338b44ef"
+      }
+    ]
+  },
+  "key": "d2f15aa567c03529b7ccd316d3eb94a1079cdd1a0ba977541c921622a3ce647c"
+}

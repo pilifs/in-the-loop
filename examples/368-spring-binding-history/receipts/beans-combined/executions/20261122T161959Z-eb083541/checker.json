@@ -1,0 +1,235 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/02ee1ec461c3d58af585b7bfa843f53d430919cb/jvmcontract",
+    "prove",
+    "springwork.BindingChecks#beans(int)",
+    "--classes",
+    "prepare/combined/adapter-combined.jar",
+    "--classpath",
+    "prepare/combined/combined.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-security-core.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-security-crypto.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-aop.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-beans.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-core.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-jcl.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-expression.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-micrometer-observation.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-micrometer-commons.jar",
+    "--classpath",
+    "prepare/combined/libraries/combined-spring-context.jar",
+    "--assume",
+    "code >= 0 && code < 12",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "256",
+    "--max-array-length",
+    "16384",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.062,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "springwork.BindingChecks#beans(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 12",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13 (java.util.ArrayDeque.<init>() at org.springframework.validation.AbstractErrors.<init>:45). With --gaps assume it assumes instead that java.util.ArrayDeque.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "springwork.BindingChecks#beans(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13 (java.util.ArrayDeque.<init>() at org.springframework.validation.AbstractErrors.<init>:45). With --gaps assume it assumes instead that java.util.ArrayDeque.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "uri": null,
+          "line": 6
+        }
+      ],
+      "output": "✗ springwork.BindingChecks#beans(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13 (java.util.ArrayDeque.<init>() at org.springframework.validation.AbstractErrors.<init>:45). With --gaps assume it assumes instead that java.util.ArrayDeque.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.035067865,
+        "properties": 1,
+        "unwind": 256,
+        "max_array_length": 16384,
+        "stage": null,
+        "native": {
+          "paths": 14,
+          "merges": 0,
+          "solver_calls": 40,
+          "solving_seconds": 0.002476784,
+          "gates_evaluated": 582,
+          "evaluating_seconds": 3.2991e-05,
+          "divisions": 1,
+          "divisions_built": 1,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 5238,
+          "clauses": 18013,
+          "seconds": 0.029237695,
+          "loading_seconds": 0.004140581,
+          "decoding_seconds": 0.00038984,
+          "encoding_seconds": 0.008989726,
+          "witness_seconds": 0.0,
+          "assumed": [
+            "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+          ]
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.ArrayDeque.<init>()",
+            "sites": [
+              "org.springframework.validation.AbstractErrors.<init>:45"
+            ],
+            "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.029,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.004,
+              "lowering": 0.0,
+              "symbolic": 0.013,
+              "encoding": 0.009,
+              "solving": 0.002,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 5238,
+              "clauses": 18013
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.05,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.029,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.02
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 12",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 256,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6786,
+    "sha256": "7ca9ce6b319cb844b5c01f521c125a35185810a551b11322d78ed1b28adf3b72"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}
