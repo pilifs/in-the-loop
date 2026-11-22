@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-182432-prove-inclusive-positive-tolerance-on-bo",
+  "title": "Prove inclusive positive tolerance on both Commons Lang histories",
+  "description": "Run ArrayUtils.indexOf(double[], double, int, double) on the original #1589 parent and landed JARs at tolerance 0.25 and three exact binary centers. Compare two independent 64-bit element sources, every Java int start and raw input preservation against an integer oracle with ordinary strict native startup. Compare the physical JVM on both artifacts with an exact-rational oracle, including immediately adjacent doubles and lower-exclusive, upper-exclusive and last-match controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "373"
+    ]
+  },
+  "expected": "Each original passes a non-vacuous native proof over both cell words and every start and a complete 18,900-row finite replay. Preserve the original primary claim population.",
+  "submitted": {
+    "at": "2026-11-22T18:24:32+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Check inclusive endpoints and first matches on both original JARs",
+      "run": "python3 -B lib/benchmark/spring-java-data/positive_tolerance.py --output examples/373-commons-lang-nan-search/records/positive-tolerance",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/373-commons-lang-nan-search/records/positive-tolerance"
+  ]
+}

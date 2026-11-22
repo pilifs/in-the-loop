@@ -30,6 +30,7 @@ PROVIDERS = "20261122-165839-bind-the-loaded-spring-and-data-classes"
 JUNIT = "20261122-162530-run-spring-s-original-formatter-preceden"
 ALL_ROWS = "20261122-164436-check-every-realizable-bounded-boxed-row"
 TRANSFER = "20261122-164436-price-binder-prefix-reuse-in-the-public"
+TOLERANCE = "20261122-182432-prove-inclusive-positive-tolerance-on-bo"
 
 def require(ok,what):
     if not ok: raise ValueError(what)
@@ -255,6 +256,57 @@ def registrar_callbacks(cases):
     return report
 
 
+def tolerance_search(cases):
+    import positive_tolerance as tolerance
+
+    job = managed(TOLERANCE)
+    if not job:
+        return {"state": "pending"}
+    folder = tolerance.FOLDER
+    report = {**job_info(job), "tolerance": 0.25, "centers": [-0.5, 0.0, 0.5],
+              "cells": "Two independent binary64 words. Signaling input encodings are quieted before the public call.",
+              "start": "Every signed 32-bit Java int", "sides": {}}
+    for side in ("parent", "landed"):
+        base = folder.relative_to(ROOT) / "records/positive-tolerance" / side
+        measurement = job.output(base / "measurement.json")
+        data = read(measurement)
+        opening = cases["373"]["claims"]["numbers-" + side]["opening"]
+        build = read(folder / f"records/setup/build-{side}.json")
+        original, = build["artifacts"]
+        observer = data["classes"][tolerance.ENTRY]
+        bindings = {tolerance.ENTRY: observer, tolerance.SUBJECT: opening["binding"]["subjectClassSha256"]}
+        sources = [tolerance.SOURCES / "ToleranceSearch.java", tolerance.SOURCES / "ToleranceReplay.java", tolerance.LOADED]
+        require(data["source"] == job.record["sourceCommit"] and data["job"] == TOLERANCE
+                and data["libTree"] == job.record["jvmcontract"]["libTree"]
+                and data["commit"] == build["recipe"]["commit"] and data["jdk"] == opening["jdk"]
+                and data["jarSha256"] == original["sha256"] == opening["classpath"][-1]
+                and data["classpath"] == tolerance.CLASSPATH and data["classes"] == bindings
+                and data["sources"] == {p.name: sha(p) for p in sources}
+                and data["words"] == [f"{w:016x}" for w in tolerance.words()] and data["starts"] == list(tolerance.STARTS),
+                "different historical tolerance subject, observer or grid")
+        jvm = job.output(base / data["jvm"]["stdout"])
+        require(not data["jvm"]["exit"] and sha(jvm) == data["jvm"]["stdoutSha256"]
+                and jvm.read_text().splitlines() == [f"{name}\t{provider}\t{digest}" for (name, digest), provider
+                                                     in zip(bindings.items(), tolerance.CLASSPATH, strict=True)],
+                "different public tolerance class bindings")
+        packed = job.output(base / "observations.bin.gz")
+        grid = tolerance.check_grid(packed)
+        require(sha(packed) == data["observationsSha256"] and grid == data["grid"], "different tolerance observations")
+        query = data["native"]
+        raw = job.output(base / query["stdout"])
+        outcome, = read(raw)
+        tolerance.check_native(outcome)
+        require(sha(raw) == query["stdoutSha256"] and query["verdict"] == outcome["verdict"] and not query["exit"]
+                and not query["observedRoots"] and not query["states"], "different positive-tolerance proof")
+        report["sides"][side] = {"commit": data["commit"], "measurement": rel(measurement), "verdict": query["verdict"],
+                                 "proof": rel(raw), "checkerSha256": data["checkerSha256"], "nativeSeconds": query["seconds"],
+                                 "observations": rel(packed), "finiteGrid": grid}
+    parent, landed = report["sides"].values()
+    require(parent["finiteGrid"] == landed["finiteGrid"] and parent["checkerSha256"] == landed["checkerSha256"],
+            "the positive-tolerance revisions have different physical outcomes or checkers")
+    return report
+
+
 def recount(complete):
     out={}
     for track,numbers in [("spring",(368,370,372,374)),("data",(369,371,373,375))]:
@@ -269,6 +321,8 @@ def recount(complete):
                     else {"allRows":supplement("allRows",ALL_ROWS,"examples/369-boxed-ragged-rows/records/all-rows")})
         if track == "spring":
             companions["registrarCallbacks"]=registrar_callbacks(cases)
+        else:
+            companions["positiveTolerance"]=tolerance_search(cases)
         bound=managed(PROVIDERS)
         if bound:
             source=bound.output(Path("verification/spring-java-data/public-providers/classes.json"))
