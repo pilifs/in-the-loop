@@ -211,13 +211,36 @@ def reader_evidence(number, primary):
                                                "observedRoots", "seconds", "peakRssBytes")}
             proofs[name].update(states=p.get("states",{}), premises=p.get("assumptions",[]), receipt=rel(body))
         traces = data.get("callSites")
+        targets = {}
         if traces:
             for route in ("ordinary","traced"):
                 require(sha(job.output(base/traces[route]["stdout"])) == traces[route]["stdoutSha256"],
                         "different traced reader events")
+            for row in traces["rows"]:
+                selector = row["input"]
+                if number == "364" and row["value"] in ("A","B"):
+                    required = (str(2*(selector%2)), str(selector%2), "org.apache.avro.io.BinaryDecoder#readEnum()I")
+                elif number == "367" and row["value"] == "1" and selector:
+                    # A union tag of zero can precede a zero marker in a different
+                    # decoder. The marker must be read by the fast integer reader.
+                    required = (str((1,0,2)[selector-1]), str(selector-2),
+                                "org.apache.avro.io.FastReaderBuilder#lambda$getReaderForBaseType")
+                else:
+                    required = None
+                if required:
+                    wire, value, caller = required
+                    require(any(s["owner"] == "org.apache.avro.io.BinaryDecoder" and s["argument"] == wire and
+                                s["result"] == value and s["caller"].startswith(caller) for s in row["sites"]),
+                            "missing enum ordinal or integer marker at the original call site")
+                for site in row["sites"]:
+                    code, pool = site["codeAndPool"].split("/")
+                    target = targets.setdefault(site["owner"], {"codeSha256":code, "poolSha256":pool, "callers":[]})
+                    require((code,pool) == (target["codeSha256"],target["poolSha256"]), "ambiguous reader producer")
+                    if site["caller"] not in target["callers"]:
+                        target["callers"].append(site["caller"])
         out["sides"][side] = {"binding":data["binding"],"providers":data["providers"],"jdkModules":data["jdkModules"],
                               "producerClass":data["producerClass"],"callSiteRows":len(traces["rows"]) if traces else 0,
-                              "proofs":proofs,"measurement":rel(path)}
+                              "proofs":proofs,"tracedTargets":targets,"measurement":rel(path)}
     return out
 
 
@@ -378,6 +401,9 @@ def foundation_results(result):
                                 "sameOrderedJars":first["binding"]["orderedJars"] == later["binding"]["orderedJars"],
                                 "sameProviderClass":{n:c["class"] == later["providers"][n]["class"]
                                                      for n,c in first["providers"].items()},
+                                "tracedMethods":{n:{"sameCode":v["codeSha256"] == later["tracedTargets"][n]["codeSha256"],
+                                                     "sameConstantPool":v["poolSha256"] == later["tracedTargets"][n]["poolSha256"]}
+                                                 for n,v in first["tracedTargets"].items() if n in later["tracedTargets"]},
                                 "checkedAgain":sorted(first["proofs"].keys() & later["proofs"].keys())}
     segments={}
     for number,job in (("365","20261122-124440-jackson-logical-offsets-with-an-explicit"),
@@ -443,8 +469,19 @@ def compile_scorecard():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--require-complete", action="store_true",
+                        help="require both measurements of all public claims and the collected companion experiments")
     args = parser.parse_args()
     data = compile_scorecard()
+    if args.require_complete:
+        require(all(c[s]["state"] == "measured" for c in data["cases"].values() for s in ("openingRun","finalRun")),
+                "public measures are still outstanding")
+        extra = data["foundations"]
+        require(extra["parquet"]["experimentStatus"] == "passed" and extra["selectorTransfer"]["state"] == "measured"
+                and extra["enumActions"]["state"] == "passed" and set(extra["readers"]) == {"364","367"}
+                and set(extra["inputSegmentation"]) == {"365","366"}
+                and all(leg["callSiteRows"] for reader in extra["readers"].values() for leg in reader["sides"].values()),
+                "companion measures are still outstanding")
     rendered = json.dumps(data, indent=2) + "\n"
     if args.check:
         require(OUTPUT.read_text() == rendered, "scorecard differs from the recorded jobs")

@@ -1,0 +1,379 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-125537-qualify-avro-enum-actions-and-the-utf8-d",
+  "title": "Qualify Avro enum actions and the Utf8 decoder prerequisite",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.0s, peak 142.8 MiB (estimated 2m00s, 3.0 GiB); 22 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-125537-qualify-avro-enum-actions-and-the-utf8-d.json",
+    "sha256": "4f4a9d4a01bfdcd5695789343d3d03f47be07ef221ebf2e4a9f56efdafe4eb90",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-125537-qualify-avro-enum-actions-and-the-utf8-d",
+      "title": "Qualify Avro enum actions and the Utf8 decoder prerequisite",
+      "description": "Check Resolver.resolve on the unchanged enum pair, reversed symbol order and a different short name. The older binary decoder constructs Utf8 and stops at its initializer. The separately named companion captures just that initializer before checking all three wire bytes and EOF, to compare with the later reader's ordinary producer.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "avro-schema-resolution"
+      ],
+      "links": {
+        "examples": [
+          "364",
+          "367"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T12:55:37+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "14m"
+      },
+      "steps": [
+        {
+          "name": "Check enum actions and Utf8-conditioned decoding on parent and fix",
+          "run": "python3 -B lib/benchmark/java-domain-proof/enum_producers.py --output examples/364-avro-enum-namespace/records/enum-producers",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/364-avro-enum-namespace/records/enum-producers"
+      ]
+    }
+  },
+  "sourceCommit": "48a15810332691c9dd82f112dd7c48c47f3cb6dd",
+  "startedAt": "2026-11-22T13:02:44+00:00",
+  "finishedAt": "2026-11-22T13:05:58+00:00",
+  "wallSeconds": 194.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 556869,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 840.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 149774336,
+    "wallSeconds": 9.0,
+    "cpuSeconds": 16.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 174.406,
+      "cpuSeconds": 174.626,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2206527488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "a62b77f2d152d59112c37dc64544acc959d17e0cd45dcc5c137351f167d935c8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-125537-qualify-avro-enum-actions-and-the-utf8-d/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 54s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check enum actions and Utf8-conditioned decoding on parent and fix",
+      "run": "python3 -B lib/benchmark/java-domain-proof/enum_producers.py --output examples/364-avro-enum-namespace/records/enum-producers",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 840.0,
+      "cancelled": false,
+      "wallSeconds": 9.022,
+      "cpuSeconds": 15.964,
+      "cpuThrottledSeconds": 2.831,
+      "peakMemoryBytes": 149774336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-enum-actions-and-utf8-co.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/different-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/different-recorded.stdout",
+      "change": "added",
+      "bytes": 24483,
+      "sha256": "534a414c08978006266e5964f4fe46cdc719a82406a983a0cc020c4dd32e15ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-ordinary.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-ordinary.stdout",
+      "change": "added",
+      "bytes": 6223,
+      "sha256": "d3626656fd546e3ae308866c01b035d30ecdf96041311cfc2c56fa34789aa5eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-recorded.stdout",
+      "change": "added",
+      "bytes": 24462,
+      "sha256": "20d3efa0da59a9d11e89b44fc360c6b22668f4bb7ddb0e4af12c20423589b663",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/measurement.json",
+      "change": "added",
+      "bytes": 29234,
+      "sha256": "beedfced86119534ed1e84ed3649fc1c1fcacbf5730f71770281ca582166af27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/one-byte-utf8.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/one-byte-utf8.stdout",
+      "change": "added",
+      "bytes": 8880,
+      "sha256": "0f64c5e5f95b9df9d3655f97553c070e233b5ea762a7e7bb7f5c3a17b4a3d3dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/physical.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/fix/physical.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/different-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/different-recorded.stdout",
+      "change": "added",
+      "bytes": 24474,
+      "sha256": "3e35d4c7040071cd05ec29eb230b151529014bed27bfafd9e587f5e45960772f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-ordinary.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-ordinary.stdout",
+      "change": "added",
+      "bytes": 6223,
+      "sha256": "abdc29fb918d67fc5391183e95fe960dba1fcfd8ea907662278520379a4b3b6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-recorded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-recorded.stdout",
+      "change": "added",
+      "bytes": 24460,
+      "sha256": "80639e11d991cf0fd4b82e997679576973a420822d28ab7d59e8a3654009101a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/measurement.json",
+      "change": "added",
+      "bytes": 29236,
+      "sha256": "473bf650e12ec58015ce6f8cb02b876a10154e46a2c9167eab85ce2179c1bde3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/one-byte-utf8.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/one-byte-utf8.stdout",
+      "change": "added",
+      "bytes": 8881,
+      "sha256": "5959ea5d12c74435d17cb2375abe8d469bdbd73b255f806e5dd373567bae007c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/physical.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/enum-producers/parent/physical.stdout",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T13:06:02+00:00",
+    "applied": [
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/different-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/different-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-ordinary.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-ordinary.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/enum-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/measurement.json",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/one-byte-utf8.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/one-byte-utf8.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/physical.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/fix/physical.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/different-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/different-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-ordinary.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-ordinary.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-recorded.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/enum-recorded.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/measurement.json",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/one-byte-utf8.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/one-byte-utf8.stdout",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/physical.stderr",
+      "examples/364-avro-enum-namespace/records/enum-producers/parent/physical.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5b71676e8d3a17cd8c01f63f69e6876f2a9fa443",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5b71676e8d3a17cd8c01f63f69e6876f2a9fa443/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T130558Z-081624ab97e4fc4d",
+      "outputs": "20261122T130558Z-104043ecea620982",
+      "diff": "20261122T130558Z-123633985ccafa23"
+    }
+  }
+}

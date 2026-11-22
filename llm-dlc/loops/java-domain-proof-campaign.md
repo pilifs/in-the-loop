@@ -129,7 +129,11 @@ The first two Avro producer jobs exposed a qualification error in the campaign d
 
 On the final verifier, native selector checks establish all 64 fixed Parquet extents and fresh lookups on both revisions. The parent extent counterexample is admitted and replays on selector 36. CSV retains its four decisions. The final ordinary score is **8/20**, comprising six establishments and two replayed refutations. The two Avro readers and Jackson remain open. The first transfer experiment measured the unsplit query that timed out on both routes. A second pair prices the public selector proof that succeeded. A narrower Avro experiment checks direct enum actions and the older binary decoder with its Utf8 initializer captured. [Decided public cost comparison](../../verification/jobs/20261122-125536-price-checked-avro-reuse-on-the-decided.json) · [Enum and decoder producers](../../verification/jobs/20261122-125537-qualify-avro-enum-actions-and-the-utf8-d.json)
 
-- Status: waiting on jobs 20261122-125536-price-checked-avro-reuse-on-the-decided 20261122-125537-qualify-avro-enum-actions-and-the-utf8-d
+All paired builds, named regressions and final jobs have returned. The final score is **8/20 ordinary native** (six establishments and two original-JVM refutations) and **20/20 finite JVM** (15 establishments and five refutations). Parquet and Commons CSV established their fixed changes at ordinary startup. Both Avro decodes and the Jackson factory caller are deferred by the timebox. The report names their opening and final jobs, first remaining producers and estimates for the next experiments.
+
+The recertified Avro wrap fact qualified 26 of 64 Parquet value wraps and 32 of 64 metadata wraps at bound 20. Both routes still needed bound 47 and established all 64 fixed public extents. The paired downstream times were **13.33 s fresh and 13.57 s with checked reuse**, with a separate **4.46 s** to replay and recertify the earlier producer. Across the two Avro features the harness transferred, while both traced methods and their constant pools changed. The capstone established its own one-byte decoder and EOF check. [Results and named deferrals](java-domain-proof-campaign-results.md) · [Recountable scorecard](../../verification/java-domain-proof/scorecard.json)
+
+- Status: done
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e
 [pilot]: https://github.com/pilifs/in-the-loop/blob/ae92d881c61581011ed494c0ce62fcdfd291343e/llm-dlc/loops/domain-foundations-strategy-results.md
