@@ -1,0 +1,235 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-000446-rescore-receiver-group-01-with-inherited",
+  "title": "Rescore receiver group 01 with inherited construction",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 passed step(s) in 9.4s, peak 157.9 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "declared output verification/domain-foundations/receiver-native/01 was not produced",
+    "step 1 (Recheck all original native overloads) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-000446-rescore-receiver-group-01-with-inherited.json",
+    "sha256": "42691de226150b33ed310e2fb86d47e0db1a1dbbe05c98690dbe2b41c8cf3b12",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-000446-rescore-receiver-group-01-with-inherited",
+      "title": "Rescore receiver group 01 with inherited construction",
+      "description": "Re-run the original native member and every recorded overload on the frozen old and new classpaths. For the preselected callers, also execute their real construction and public observations on fresh JVMs. Report later construction or parameter refusals and review scope before crediting a decision.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T00:04:46+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Recheck all original native overloads",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-native/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+          "cwd": "."
+        },
+        {
+          "name": "Check the preselected real caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/receiver-callers/01 --case compsuite-i-4",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-native/01",
+        "verification/domain-foundations/receiver-callers/01"
+      ]
+    }
+  },
+  "sourceCommit": "d291dbb85fd5a3f5e6ab76d0b685d68fa9f00295",
+  "startedAt": "2026-11-22T00:11:01+00:00",
+  "finishedAt": "2026-11-22T00:14:22+00:00",
+  "wallSeconds": 201.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2832466,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 165568512,
+    "wallSeconds": 9.4,
+    "cpuSeconds": 10.5,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recheck all original native overloads",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-native/01 --case compsuite-i-1 --case compsuite-i-38 --case compsuite-i-4 --case compsuite-i-70 --case compsuite-i-81",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.199,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 43900928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-all-original-native-ov.log",
+        "lines": 13,
+        "bytes": 1180,
+        "sha256": "a64e8155803113a18b096456a2dbe4a4b019809aa939e6fa2a78cff0ae8eea32",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-000446-rescore-receiver-group-01-with-inherited/lib/benchmark/external-upgrades/engineering.py\", line 376, in <module>",
+        "    main()",
+        "    ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-000446-rescore-receiver-group-01-with-inherited/lib/benchmark/external-upgrades/engineering.py\", line 369, in main",
+        "    report=screen(case,inputs,build,checkers[build],a)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-000446-rescore-receiver-group-01-with-inherited/lib/benchmark/external-upgrades/engineering.py\", line 263, in screen",
+        "    directories = runtime._class_dirs(sides, work, work, {s: [{\"path\": a[0].path}] for s,a in originals.items()},",
+        "                                      feature, bindings if feature is not None else None)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-000446-rescore-receiver-group-01-with-inherited/examples/tools/targets/runtime.py\", line 1874, in _class_dirs",
+        "    selected = dict(logical[r][\"entries\"])",
+        "                    ~~~~~~~^^^",
+        "TypeError: 'int' object is not subscriptable"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the preselected real caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/receiver-callers/01 --case compsuite-i-4",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 9.045,
+      "cpuSeconds": 10.305,
+      "cpuThrottledSeconds": 1.439,
+      "peakMemoryBytes": 165568512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-preselected-real-cal.log",
+        "lines": 2,
+        "bytes": 834,
+        "sha256": "d05e79664020a75e2b7c1cc59ede4c2af52424ab470ebafd1fae43d530771e59",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "open new input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused b",
+        "compsuite-i-4 open"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-callers/01/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 101250,
+      "sha256": "b98c13577307c2823c1b8e9abdaa71a8fa93ba6c8027e9759d0961d73f4b05a3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:15:19+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/domain-foundations/receiver-callers/01/compsuite-i-4.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "a9d57121116ace758cf667b74b481435298cd0a1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a9d57121116ace758cf667b74b481435298cd0a1/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T001422Z-20770010503eb5d2",
+      "outputs": "20261122T001422Z-242010c3f133e7ee",
+      "diff": "20261122T001422Z-2714647c6b8713d4",
+      "workdir": "20261122T001516Z-2878387cf73fa0ea"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-000446-rescore-receiver-group-01-with-inherited"
+}
