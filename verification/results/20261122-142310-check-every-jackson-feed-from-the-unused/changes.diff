@@ -1,0 +1,2573 @@
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/fix/ReadyTokens.java
+@@ -0,0 +1,58 @@
++package campaign;
++
++import java.io.IOException;
++import com.fasterxml.jackson.core.JsonFactory;
++import com.fasterxml.jackson.core.JsonParser;
++import com.fasterxml.jackson.core.JsonToken;
++import com.fasterxml.jackson.core.async.ByteArrayFeeder;
++import com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase;
++
++public final class ReadyTokens {
++    // Three triples, the total number of tokens, and the terminal state (1 for final EOF).
++    static long[] trace(int mask, int padding) throws IOException {
++        byte[] document = {'[', 't', 'r', 'u', 'e', ']'};
++        long[] result = new long[11];
++        try (JsonParser parser = ReadyParser.INSTANCE) {
++            ByteArrayFeeder feeder = (ByteArrayFeeder) parser.getNonBlockingInputFeeder();
++            int start = 0;
++            for (int end = 1; end <= document.length; end++) {
++                boolean last = end == document.length;
++                if (!last && (mask & (1 << (end - 1))) == 0) continue;
++                int width = end - start;
++                byte[] bytes = new byte[padding + width + 1];
++                for (int i = 0; i < padding; i++) bytes[i] = '!';
++                bytes[bytes.length - 1] = '?';
++                System.arraycopy(document, start, bytes, padding, width);
++                feeder.feedInput(bytes, padding, padding + width);
++                if (last) feeder.endOfInput();
++                while (true) {
++                    JsonToken token = ((NonBlockingUtf8JsonParserBase) parser).nextToken();
++                    if (token == null) {
++                        result[10] = last ? 1 : -1;
++                        return result;
++                    }
++                    if (token == JsonToken.NOT_AVAILABLE) break;
++                    int n = (int) result[9]++;
++                    if (n >= 3) return result;
++                    result[3 * n] = token.id();
++                    result[3 * n + 1] = parser.currentTokenLocation().getByteOffset();
++                    result[3 * n + 2] = parser.currentLocation().getByteOffset();
++                }
++                start = end;
++            }
++        }
++        return result;
++    }
++
++    static boolean correctOffsets(long[] t) {
++        return t[0] == 3 && t[1] == 1 && t[2] == 1 && t[3] == 9 && t[4] == 2 && t[5] == 5
++            && t[6] == 4 && t[7] == 5 && t[8] == 6 && t[9] == 3 && t[10] == 1;
++    }
++    public static int offsets(int code) throws IOException {
++        return correctOffsets(trace(code & 31, code >> 5)) ? 1 : 0;
++    }
++    public static int tokens(int code) throws IOException {
++        long[] t = trace(code & 31, code >> 5);
++        return t[0] == 3 && t[3] == 9 && t[6] == 4 && t[9] == 3 && t[10] == 1 ? 1 : 0;
++    }
++}
+Binary file examples/365-jackson-async-token-offsets/records/ready-parser/fix/WindowSchedules.jvm-bytecode changed
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/fix/baseline-grid.stdout
+@@ -0,0 +1,161 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.WindowSchedules#closing",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 5",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++    "statement": "/tmp/jackson-ready-tdizraky/baseline-grid/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.WindowSchedules#closing cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "uri": null,
++        "line": 4
++      }
++    ],
++    "output": "✗ campaign.WindowSchedules#closing cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)\n",
++    "work": "/tmp/jackson-ready-tdizraky/baseline-grid",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.077107172,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 130,
++        "solving_seconds": 0.003721808,
++        "gates_evaluated": 3540,
++        "evaluating_seconds": 0.000088011,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 3556,
++        "clauses": 10594,
++        "seconds": 0.040787334,
++        "loading_seconds": 0.002000633,
++        "decoding_seconds": 0.000147766,
++        "encoding_seconds": 0.002253122,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 58.98,
++          "seconds": 0.041,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.033,
++            "encoding": 0.002,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 3556,
++            "clauses": 10594
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.087,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.041,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.045
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 5",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/fix/baseline-padded.stdout
+@@ -0,0 +1,161 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.ReadyTokens#offsets",
++    "domain": "code: int",
++    "assume": "code == 32",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++    "statement": "/tmp/jackson-ready-tdizraky/baseline-padded/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.ReadyTokens#offsets cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "uri": null,
++        "line": 52
++      }
++    ],
++    "output": "✗ campaign.ReadyTokens#offsets cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)\n",
++    "work": "/tmp/jackson-ready-tdizraky/baseline-padded",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.055835176,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 1,
++        "solving_seconds": 0.000013125,
++        "gates_evaluated": 63,
++        "evaluating_seconds": 2.765e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 64,
++        "clauses": 94,
++        "seconds": 0.006502578,
++        "loading_seconds": 0.001999868,
++        "decoding_seconds": 0.000081432,
++        "encoding_seconds": 0.000026431,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 58.952,
++          "seconds": 0.007,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 64,
++            "clauses": 94
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.064,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.007,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.056
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code == 32",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-grid.stdout
+@@ -0,0 +1,182 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.WindowSchedules#closing",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 5",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.3 s; loops unwound 512 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/jackson-ready-tdizraky/followup-grid/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.WindowSchedules#closing satisfies `result == 5` on every input where code >= 0 && code < 128 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.3 s; loops unwound 512 times with unwinding assertions)\n  not vacuous: closing(code=20) reaches the calls\n",
++    "work": "/tmp/jackson-ready-tdizraky/followup-grid",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.311882245,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 130,
++        "merges": 0,
++        "solver_calls": 130,
++        "solving_seconds": 0.003816404,
++        "gates_evaluated": 3540,
++        "evaluating_seconds": 0.000101971,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 3556,
++        "clauses": 10594,
++        "seconds": 0.276914606,
++        "loading_seconds": 0.002693706,
++        "decoding_seconds": 0.000499647,
++        "encoding_seconds": 0.023358439,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 58.967,
++          "seconds": 0.277,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.0,
++            "symbolic": 0.247,
++            "encoding": 0.023,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 3556,
++            "clauses": 10594
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 58.688,
++          "seconds": 0.009,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 170,
++            "clauses": 467
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.331,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.286,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.044
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:decc8fa2bed52d77e39cdef88772fcc51d78124bf5a24993c91c4c90aae69af4"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 5",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found closing(code=20).",
++        "witness": "closing(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-padded.stdout
+@@ -0,0 +1,182 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.ReadyTokens#offsets",
++    "domain": "code: int",
++    "assume": "code == 32",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 18.5 s; loops unwound 512 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/jackson-ready-tdizraky/followup-padded/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.ReadyTokens#offsets satisfies `result == 1` on every input where code == 32 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 18.5 s; loops unwound 512 times with unwinding assertions)\n  not vacuous: offsets(code=32) reaches the calls\n",
++    "work": "/tmp/jackson-ready-tdizraky/followup-padded",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 18.450627046,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 182,
++        "solving_seconds": 12.718024544,
++        "gates_evaluated": 5048,
++        "evaluating_seconds": 0.000785765,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 2397115,
++        "clauses": 7291488,
++        "seconds": 17.031868788,
++        "loading_seconds": 0.003069612,
++        "decoding_seconds": 0.000845816,
++        "encoding_seconds": 4.280668081,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 58.895,
++          "seconds": 17.032,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.029,
++            "encoding": 4.281,
++            "solving": 12.718,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 2397115,
++            "clauses": 7291488
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 41.549,
++          "seconds": 0.008,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 250,
++            "clauses": 738
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 18.471,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 17.04,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.43
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code == 32",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:48c89c7ddc97891324823470f4d34f9090ef1a8138b69b090dd960bed381f90a"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found offsets(code=32).",
++        "witness": "offsets(code=32)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/fix/measurement.json
+@@ -0,0 +1,247 @@
++{
++  "baseline": {
++    "checker": "2b31cb1c7508723ff9ea48b4358baeaa4248796d2c62186d4dcf22efc612e726",
++    "proofs": {
++      "grid": {
++        "assertion": "result == 5",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code >= 0 && code < 128"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 1,
++        "guard": "code >= 0 && code < 128",
++        "log": "baseline-grid.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 145522688,
++        "seconds": 1.098778,
++        "states": {
++          "campaign.ReadyParser": "cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9"
++        },
++        "stderr": "baseline-grid.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "baseline-grid.stdout",
++        "stdoutSha256": "5702053341822630aec3625ea9b4bb94e3f6ab09adfc109471b258055867e775",
++        "target": "campaign.WindowSchedules#closing",
++        "verdict": "unverifiable"
++      },
++      "padded": {
++        "assertion": "result == 1",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code == 32"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 1,
++        "guard": "code == 32",
++        "log": "baseline-padded.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 141799424,
++        "seconds": 1.068373,
++        "states": {
++          "campaign.ReadyParser": "cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9"
++        },
++        "stderr": "baseline-padded.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "baseline-padded.stdout",
++        "stdoutSha256": "cc9562c559e52908cb3608c657442535ab6ea3d477f2d47cfe78de4e9160953d",
++        "target": "campaign.ReadyTokens#offsets",
++        "verdict": "unverifiable"
++      }
++    },
++    "source": "78923c2e419cca1619a4261038065806cec2360f"
++  },
++  "binding": {
++    "build": "examples/365-jackson-async-token-offsets/records/qualified-build/build-fix.json",
++    "buildSha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21",
++    "orderedJars": [
++      "c192c74ad67290633866a01efec660f04875d8c011ee07557f265986e01c931b",
++      "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f"
++    ],
++    "revision": "596fd82955080ba7207b4adc54100781b5024a61"
++  },
++  "classHashes": {
++    "ReadyParser": "65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169",
++    "ReadyTokens": "fa51981aa09c037e051aafa891f6167808a89317306ee87913521fe37aa10ed7",
++    "ReadyTrace": "8c34bf0cda0818f798acad27d0a17730db74ad8a2bc18759dc8546717011a61a",
++    "WindowSchedules": "12b777641696f4c4de3484a73ef55ff6f71b2eba3fc31183ab4b885265a2f8b1"
++  },
++  "companionSourceSha256": "51ecdfb11f576a8b0778e93aac26cd5c6aa1e1bbd737c68ae88d73afa06c486f",
++  "counts": {
++    "matchingOffsets": 128,
++    "matchingTokensAndEof": 128,
++    "schedules": 128
++  },
++  "followup": {
++    "checker": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
++    "proofs": {
++      "grid": {
++        "assertion": "result == 5",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code >= 0 && code < 128"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:decc8fa2bed52d77e39cdef88772fcc51d78124bf5a24993c91c4c90aae69af4",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": null,
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 0,
++        "guard": "code >= 0 && code < 128",
++        "log": "followup-grid.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 141299712,
++        "seconds": 1.342406,
++        "states": {
++          "campaign.ReadyParser": "decc8fa2bed52d77e39cdef88772fcc51d78124bf5a24993c91c4c90aae69af4"
++        },
++        "stderr": "followup-grid.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "followup-grid.stdout",
++        "stdoutSha256": "b1b1339d849b42f1086f600e324aa0d00fe2efcd411d234efc96ea37a65e9671",
++        "target": "campaign.WindowSchedules#closing",
++        "verdict": "verified"
++      },
++      "padded": {
++        "assertion": "result == 1",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code == 32"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:48c89c7ddc97891324823470f4d34f9090ef1a8138b69b090dd960bed381f90a",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": null,
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 0,
++        "guard": "code == 32",
++        "log": "followup-padded.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 1637011456,
++        "seconds": 18.549696,
++        "states": {
++          "campaign.ReadyParser": "48c89c7ddc97891324823470f4d34f9090ef1a8138b69b090dd960bed381f90a"
++        },
++        "stderr": "followup-padded.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "followup-padded.stdout",
++        "stdoutSha256": "39c2a233514febe2ffc88257b0b6dad2a7654c1d43af84e80be6afe435a971f6",
++        "target": "campaign.ReadyTokens#offsets",
++        "verdict": "verified"
++      }
++    },
++    "source": "b5812de89d47ebb0491d24264f042569fb6b462d"
++  },
++  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "oracleSha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f",
++  "ordinary": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-fix-jdk21.stdout",
++  "ordinarySha256": "b1f1567fa3d123e4126496f1ebae727fee23c6d21b0f5705ec669d1efe530491",
++  "originalAdapterSha256": "06e1c9eee95e7efab1d4ae0f55f2c854d680d55f0ee375f33d4434f6ed7b77e7",
++  "physical": {
++    "exit": 0,
++    "log": "physical.stdout",
++    "peakRssBytes": 353882112,
++    "seconds": 2.79733,
++    "stderr": "physical.stderr",
++    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++    "stdout": "physical.stdout",
++    "stdoutSha256": "5b747a5b60c81dda2691d8d219c39fea17ffa7849f42d9429798328fb1ba8f95"
++  },
++  "runtime": {
++    "captureObjects": [
++      "com.fasterxml.jackson.core.StreamReadConstraints",
++      "com.fasterxml.jackson.core.io.ContentReference",
++      "com.fasterxml.jackson.core.io.IOContext",
++      "com.fasterxml.jackson.core.json.JsonReadContext",
++      "com.fasterxml.jackson.core.json.async.NonBlockingJsonParser",
++      "com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer",
++      "com.fasterxml.jackson.core.util.BufferRecycler",
++      "com.fasterxml.jackson.core.util.JacksonFeatureSet",
++      "com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer",
++      "com.fasterxml.jackson.core.util.TextBuffer"
++    ],
++    "emptyEnvironment": true,
++    "preinitializeTogether": true,
++    "processors": 2,
++    "rootWorkingDirectory": true
++  },
++  "selectorCodeSha256": "51ccab1efc5a0ebac90024437618e1567151fae94a7ba32222d5731ed98b5b7e",
++  "side": "fix",
++  "target": {
++    "classSha256": "23c4657233ceaa0658aa4dcfebdb0e9d9d0cae47bfce8b2eb02611b107d48971",
++    "entry": "com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.class",
++    "jar": "c192c74ad67290633866a01efec660f04875d8c011ee07557f265986e01c931b"
++  }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/fix/physical.stdout
+@@ -0,0 +1,128 @@
++0	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++1	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++2	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++3	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++4	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++5	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++6	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++7	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++8	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++9	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++10	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++11	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++12	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++13	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++14	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++15	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++16	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++17	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++18	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++19	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++20	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++21	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++22	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++23	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++24	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++25	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++26	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++27	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++28	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++29	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++30	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++31	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++32	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++33	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++34	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++35	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++36	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++37	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++38	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++39	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++40	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++41	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++42	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++43	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++44	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++45	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++46	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++47	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++48	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++49	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++50	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++51	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++52	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++53	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++54	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++55	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++56	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++57	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++58	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++59	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++60	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++61	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++62	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++63	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++64	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++65	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++66	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++67	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++68	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++69	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++70	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++71	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++72	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++73	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++74	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++75	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++76	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++77	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++78	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++79	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++80	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++81	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++82	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++83	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++84	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++85	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++86	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++87	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++88	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++89	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++90	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++91	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++92	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++93	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++94	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++95	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++96	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++97	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++98	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++99	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++100	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++101	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++102	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++103	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++104	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++105	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++106	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++107	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++108	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++109	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++110	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++111	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++112	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++113	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++114	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++115	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++116	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++117	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++118	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++119	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++120	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++121	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++122	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++123	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++124	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++125	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++126	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++127	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/ReadyTokens.java
+@@ -0,0 +1,58 @@
++package campaign;
++
++import java.io.IOException;
++import com.fasterxml.jackson.core.JsonFactory;
++import com.fasterxml.jackson.core.JsonParser;
++import com.fasterxml.jackson.core.JsonToken;
++import com.fasterxml.jackson.core.async.ByteArrayFeeder;
++import com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase;
++
++public final class ReadyTokens {
++    // Three triples, the total number of tokens, and the terminal state (1 for final EOF).
++    static long[] trace(int mask, int padding) throws IOException {
++        byte[] document = {'[', 't', 'r', 'u', 'e', ']'};
++        long[] result = new long[11];
++        try (JsonParser parser = ReadyParser.INSTANCE) {
++            ByteArrayFeeder feeder = (ByteArrayFeeder) parser.getNonBlockingInputFeeder();
++            int start = 0;
++            for (int end = 1; end <= document.length; end++) {
++                boolean last = end == document.length;
++                if (!last && (mask & (1 << (end - 1))) == 0) continue;
++                int width = end - start;
++                byte[] bytes = new byte[padding + width + 1];
++                for (int i = 0; i < padding; i++) bytes[i] = '!';
++                bytes[bytes.length - 1] = '?';
++                System.arraycopy(document, start, bytes, padding, width);
++                feeder.feedInput(bytes, padding, padding + width);
++                if (last) feeder.endOfInput();
++                while (true) {
++                    JsonToken token = ((NonBlockingUtf8JsonParserBase) parser).nextToken();
++                    if (token == null) {
++                        result[10] = last ? 1 : -1;
++                        return result;
++                    }
++                    if (token == JsonToken.NOT_AVAILABLE) break;
++                    int n = (int) result[9]++;
++                    if (n >= 3) return result;
++                    result[3 * n] = token.id();
++                    result[3 * n + 1] = parser.currentTokenLocation().getByteOffset();
++                    result[3 * n + 2] = parser.currentLocation().getByteOffset();
++                }
++                start = end;
++            }
++        }
++        return result;
++    }
++
++    static boolean correctOffsets(long[] t) {
++        return t[0] == 3 && t[1] == 1 && t[2] == 1 && t[3] == 9 && t[4] == 2 && t[5] == 5
++            && t[6] == 4 && t[7] == 5 && t[8] == 6 && t[9] == 3 && t[10] == 1;
++    }
++    public static int offsets(int code) throws IOException {
++        return correctOffsets(trace(code & 31, code >> 5)) ? 1 : 0;
++    }
++    public static int tokens(int code) throws IOException {
++        long[] t = trace(code & 31, code >> 5);
++        return t[0] == 3 && t[3] == 9 && t[6] == 4 && t[9] == 3 && t[10] == 1 ? 1 : 0;
++    }
++}
+Binary file examples/365-jackson-async-token-offsets/records/ready-parser/parent/WindowSchedules.jvm-bytecode changed
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/baseline-grid.stdout
+@@ -0,0 +1,161 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.WindowSchedules#closing",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 5 + (code >> 5)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++    "statement": "/tmp/jackson-ready-5qqkl4tk/baseline-grid/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.WindowSchedules#closing cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "uri": null,
++        "line": 4
++      }
++    ],
++    "output": "✗ campaign.WindowSchedules#closing cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)\n",
++    "work": "/tmp/jackson-ready-5qqkl4tk/baseline-grid",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.027536234,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 130,
++        "solving_seconds": 0.00375761,
++        "gates_evaluated": 3540,
++        "evaluating_seconds": 0.000083971,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 3556,
++        "clauses": 10594,
++        "seconds": 0.040219999,
++        "loading_seconds": 0.001992472,
++        "decoding_seconds": 0.000152413,
++        "encoding_seconds": 0.00220843,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 59.029,
++          "seconds": 0.04,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.032,
++            "encoding": 0.002,
++            "solving": 0.004,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 3556,
++            "clauses": 10594
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.041,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.04,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.0
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 5 + (code >> 5)",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/baseline-padded.stdout
+@@ -0,0 +1,161 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "campaign.ReadyTokens#offsets",
++    "domain": "code: int",
++    "assume": "code == 32",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++    "statement": "/tmp/jackson-ready-5qqkl4tk/baseline-padded/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "campaign.ReadyTokens#offsets cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "uri": null,
++        "line": 52
++      }
++    ],
++    "output": "✗ campaign.ReadyTokens#offsets cannot be verified: outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)\n",
++    "work": "/tmp/jackson-ready-5qqkl4tk/baseline-padded",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.002112732,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 1,
++        "solving_seconds": 0.000012032,
++        "gates_evaluated": 63,
++        "evaluating_seconds": 2.715e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 64,
++        "clauses": 94,
++        "seconds": 0.006753871,
++        "loading_seconds": 0.00196934,
++        "decoding_seconds": 0.000081351,
++        "encoding_seconds": 0.000029497,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 59.006,
++          "seconds": 0.007,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 64,
++            "clauses": 94
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.011,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.007,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.003
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code == 32",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/candidate.json
+@@ -0,0 +1,10 @@
++{
++  "inputs": [
++    {
++      "name": "code",
++      "type": "int",
++      "value": 32
++    }
++  ],
++  "sourceReceiptSha256": "1317e2598de00e135d1be0f175a26a8917c41811d794150c98a25dc107f3279f"
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-grid.stdout
+@@ -0,0 +1,182 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.WindowSchedules#closing",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 128",
++    "assert": "result == 5 + (code >> 5)",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.4 s; loops unwound 512 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/jackson-ready-5qqkl4tk/followup-grid/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.WindowSchedules#closing satisfies `result == 5 + (code >> 5)` on every input where code >= 0 && code < 128 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 1.4 s; loops unwound 512 times with unwinding assertions)\n  not vacuous: closing(code=20) reaches the calls\n",
++    "work": "/tmp/jackson-ready-5qqkl4tk/followup-grid",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.376068408,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 130,
++        "merges": 0,
++        "solver_calls": 258,
++        "solving_seconds": 0.008842611,
++        "gates_evaluated": 15444,
++        "evaluating_seconds": 0.000407347,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 3743,
++        "clauses": 11186,
++        "seconds": 0.282175436,
++        "loading_seconds": 0.002801272,
++        "decoding_seconds": 0.000522151,
++        "encoding_seconds": 0.02388007,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 58.908,
++          "seconds": 0.282,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.246,
++            "encoding": 0.024,
++            "solving": 0.009,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 3743,
++            "clauses": 11186
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 58.624,
++          "seconds": 0.008,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 170,
++            "clauses": 467
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.393,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.29,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.102
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 128",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:e1bd21278e264cb697c14bcc4572c8d901d915d7fc374e5535120a5b7b2afe89"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 5 + (code >> 5)",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found closing(code=20).",
++        "witness": "closing(code=20)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-padded.stdout
+@@ -0,0 +1,195 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "campaign.ReadyTokens#offsets",
++    "domain": "code: int",
++    "assume": "code == 32",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "offsets(code=32)",
++      "outcome": "throws JsonParseException(\"Already closed, can not feed more input\\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 7]\")",
++      "values": [
++        "32"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 32
++        }
++      ],
++      "call": {
++        "class": "campaign.ReadyTokens",
++        "class_file": "campaign/ReadyTokens.class",
++        "classes": "after",
++        "method": "offsets",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 32,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 19.5 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/jackson-ready-5qqkl4tk/followup-padded/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of campaign.ReadyTokens#offsets violated: `result == 1` where code == 32:\n  offsets(code=32)\n    outcome: throws JsonParseException(\"Already closed, can not feed more input\\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 7]\")",
++        "uri": null,
++        "line": 52
++      }
++    ],
++    "output": "✗ Property of campaign.ReadyTokens#offsets violated: `result == 1` where code == 32:\n  offsets(code=32)\n    outcome: throws JsonParseException(\"Already closed, can not feed more input\\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 7]\")\n  (found by jvmcontract's own checker (CaDiCaL) in 19.5 s searching inputs in [-100000:100000], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/jackson-ready-5qqkl4tk/followup-padded",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 19.543816056,
++      "properties": 1,
++      "unwind": 512,
++      "max_array_length": 16384,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 185,
++        "solving_seconds": 13.74201127,
++        "gates_evaluated": 4872,
++        "evaluating_seconds": 0.000735735,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 2397270,
++        "clauses": 7292037,
++        "seconds": 18.206932909,
++        "loading_seconds": 0.003422586,
++        "decoding_seconds": 0.000818943,
++        "encoding_seconds": 4.353806334,
++        "witness_seconds": 0.043415646,
++        "assumed": [
++          "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 58.99,
++          "seconds": 18.207,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.063,
++            "encoding": 4.354,
++            "solving": 13.742,
++            "trace": 0.043,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 2397270,
++            "clauses": 7292037
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 19.636,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 18.207,
++        "replay": 0.009,
++        "jvm": 0.072,
++        "other": 1.348
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code == 32",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer].",
++          "basis": "engine",
++          "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:8b5ec9992415913ee3c681c86a003f20749129f9a13c70e8288c51f416445395"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 512,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/measurement.json
+@@ -0,0 +1,252 @@
++{
++  "baseline": {
++    "checker": "2b31cb1c7508723ff9ea48b4358baeaa4248796d2c62186d4dcf22efc612e726",
++    "proofs": {
++      "grid": {
++        "assertion": "result == 5 + (code >> 5)",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code >= 0 && code < 128"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 1,
++        "guard": "code >= 0 && code < 128",
++        "log": "baseline-grid.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 144105472,
++        "seconds": 1.05345,
++        "states": {
++          "campaign.ReadyParser": "1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760"
++        },
++        "stderr": "baseline-grid.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "baseline-grid.stdout",
++        "stdoutSha256": "6f55f48f19a7b8fad9883a5edc98b1712a5d05220fccaf1c970e297af58c165d",
++        "target": "campaign.WindowSchedules#closing",
++        "verdict": "unverifiable"
++      },
++      "padded": {
++        "assertion": "result == 1",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code == 32"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 1,
++        "guard": "code == 32",
++        "log": "baseline-padded.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 133951488,
++        "seconds": 1.014446,
++        "states": {
++          "campaign.ReadyParser": "1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760"
++        },
++        "stderr": "baseline-padded.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "baseline-padded.stdout",
++        "stdoutSha256": "8359965a21a8a1724b01cc132a6be43d84a1a7210e516fe7cb1dcce4093efc0f",
++        "target": "campaign.ReadyTokens#offsets",
++        "verdict": "unverifiable"
++      }
++    },
++    "source": "78923c2e419cca1619a4261038065806cec2360f"
++  },
++  "binding": {
++    "build": "examples/365-jackson-async-token-offsets/records/qualified-build/build-parent.json",
++    "buildSha256": "353c2b38d584c0ddb09510a39b574a343778b756df50d288d30ae52aeb42d44d",
++    "orderedJars": [
++      "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
++      "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f"
++    ],
++    "revision": "99f749d958a55013724571d825625e1032af9d4b"
++  },
++  "classHashes": {
++    "ReadyParser": "65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169",
++    "ReadyTokens": "fa51981aa09c037e051aafa891f6167808a89317306ee87913521fe37aa10ed7",
++    "ReadyTrace": "8c34bf0cda0818f798acad27d0a17730db74ad8a2bc18759dc8546717011a61a",
++    "WindowSchedules": "12b777641696f4c4de3484a73ef55ff6f71b2eba3fc31183ab4b885265a2f8b1"
++  },
++  "companionSourceSha256": "51ecdfb11f576a8b0778e93aac26cd5c6aa1e1bbd737c68ae88d73afa06c486f",
++  "counts": {
++    "matchingOffsets": 32,
++    "matchingTokensAndEof": 128,
++    "schedules": 128
++  },
++  "followup": {
++    "checker": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
++    "proofs": {
++      "grid": {
++        "assertion": "result == 5 + (code >> 5)",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code >= 0 && code < 128"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:e1bd21278e264cb697c14bcc4572c8d901d915d7fc374e5535120a5b7b2afe89",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": null,
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 0,
++        "guard": "code >= 0 && code < 128",
++        "log": "followup-grid.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 132067328,
++        "seconds": 1.406243,
++        "states": {
++          "campaign.ReadyParser": "e1bd21278e264cb697c14bcc4572c8d901d915d7fc374e5535120a5b7b2afe89"
++        },
++        "stderr": "followup-grid.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "followup-grid.stdout",
++        "stdoutSha256": "c74d96297b3561d612e5aca04da53472d935829c5c6edc22875bc72bc273e874",
++        "target": "campaign.WindowSchedules#closing",
++        "verdict": "verified"
++      },
++      "padded": {
++        "assertion": "result == 1",
++        "assumptions": [
++          {
++            "basis": "stated",
++            "kind": "precondition",
++            "text": "code == 32"
++          },
++          {
++            "basis": "engine",
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
++          },
++          {
++            "basis": "engine",
++            "id": "observed-initializer:campaign.ReadyParser:65d718a8ab30ed6926ed8943c6b6cf071aca8dae2e65545c92d019bdf3810169:8b5ec9992415913ee3c681c86a003f20749129f9a13c70e8288c51f416445395",
++            "kind": "library",
++            "text": "the class initializer of campaign.ReadyParser was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 65d718a8ab30), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties com.fasterxml.jackson.core.util.BufferRecyclers.trackReusableBuffers, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 37 other initialized application classes [com.fasterxml.jackson.core.ErrorReportConfiguration, com.fasterxml.jackson.core.JsonFactory, com.fasterxml.jackson.core.JsonFactory$Feature, com.fasterxml.jackson.core.JsonGenerator$Feature, com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.core.JsonParser$Feature, com.fasterxml.jackson.core.JsonStreamContext, com.fasterxml.jackson.core.StreamReadCapability, com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.StreamWriteConstraints, com.fasterxml.jackson.core.TokenStreamFactory, com.fasterxml.jackson.core.base.ParserBase, com.fasterxml.jackson.core.base.ParserMinimalBase, com.fasterxml.jackson.core.io.CharTypes, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.io.JsonStringEncoder, com.fasterxml.jackson.core.io.SerializedString, com.fasterxml.jackson.core.json.JsonParserBase, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.json.async.NonBlockingJsonParserBase, com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer$TableInfo, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer, com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer$TableInfo, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.BufferRecyclers, com.fasterxml.jackson.core.util.InternCache, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.JsonRecyclerPools, com.fasterxml.jackson.core.util.JsonRecyclerPools$ThreadLocalPool, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.RecyclerPool, com.fasterxml.jackson.core.util.RecyclerPool$ThreadLocalPoolBase, com.fasterxml.jackson.core.util.TextBuffer], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call) The joint heap includes requested objects of classes [com.fasterxml.jackson.core.StreamReadConstraints, com.fasterxml.jackson.core.io.ContentReference, com.fasterxml.jackson.core.io.IOContext, com.fasterxml.jackson.core.json.JsonReadContext, com.fasterxml.jackson.core.json.async.NonBlockingJsonParser, com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer, com.fasterxml.jackson.core.util.BufferRecycler, com.fasterxml.jackson.core.util.JacksonFeatureSet, com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer, com.fasterxml.jackson.core.util.TextBuffer]."
++          }
++        ],
++        "blocker": null,
++        "bounds": [
++          512,
++          16384
++        ],
++        "exit": 1,
++        "guard": "code == 32",
++        "log": "followup-padded.stdout",
++        "observedRoots": [
++          "campaign.ReadyParser"
++        ],
++        "peakRssBytes": 1637826560,
++        "seconds": 19.728855,
++        "states": {
++          "campaign.ReadyParser": "8b5ec9992415913ee3c681c86a003f20749129f9a13c70e8288c51f416445395"
++        },
++        "stderr": "followup-padded.stderr",
++        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "stdout": "followup-padded.stdout",
++        "stdoutSha256": "1317e2598de00e135d1be0f175a26a8917c41811d794150c98a25dc107f3279f",
++        "target": "campaign.ReadyTokens#offsets",
++        "verdict": "violation"
++      }
++    },
++    "source": "b5812de89d47ebb0491d24264f042569fb6b462d"
++  },
++  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "oracleSha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f",
++  "ordinary": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-parent-jdk21.stdout",
++  "ordinarySha256": "00acc837dec516562b489d5af7af8a471ca2eb8904c9b69e92a89e7930026fca",
++  "originalAdapterSha256": "06e1c9eee95e7efab1d4ae0f55f2c854d680d55f0ee375f33d4434f6ed7b77e7",
++  "originalWitness": {
++    "claimKey": "3451a7e7f8f361d0",
++    "file": "receipts/offsets-parent/executions/20261122T142730Z-88266c9c/replay.json",
++    "sha256": "0eee13ac23f9a138c1ce2dba39fb401b13dc7702941b847645476393f2c00381"
++  },
++  "physical": {
++    "exit": 0,
++    "log": "physical.stdout",
++    "peakRssBytes": 355127296,
++    "seconds": 2.602363,
++    "stderr": "physical.stderr",
++    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++    "stdout": "physical.stdout",
++    "stdoutSha256": "535bd70853747fd0df406026c38b2bc94271a04d7e85c5c0ed68a28afdb64113"
++  },
++  "runtime": {
++    "captureObjects": [
++      "com.fasterxml.jackson.core.StreamReadConstraints",
++      "com.fasterxml.jackson.core.io.ContentReference",
++      "com.fasterxml.jackson.core.io.IOContext",
++      "com.fasterxml.jackson.core.json.JsonReadContext",
++      "com.fasterxml.jackson.core.json.async.NonBlockingJsonParser",
++      "com.fasterxml.jackson.core.sym.ByteQuadsCanonicalizer",
++      "com.fasterxml.jackson.core.util.BufferRecycler",
++      "com.fasterxml.jackson.core.util.JacksonFeatureSet",
++      "com.fasterxml.jackson.core.util.ReadConstrainedTextBuffer",
++      "com.fasterxml.jackson.core.util.TextBuffer"
++    ],
++    "emptyEnvironment": true,
++    "preinitializeTogether": true,
++    "processors": 2,
++    "rootWorkingDirectory": true
++  },
++  "selectorCodeSha256": "51ccab1efc5a0ebac90024437618e1567151fae94a7ba32222d5731ed98b5b7e",
++  "side": "parent",
++  "target": {
++    "classSha256": "de63294fd5c43b5cf05bbe77da5ae15026accd47f59735dce88e56b32db17383",
++    "entry": "com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.class",
++    "jar": "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec"
++  }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/ready-parser/parent/physical.stdout
+@@ -0,0 +1,128 @@
++0	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++1	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++2	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++3	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++4	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++5	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++6	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++7	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++8	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++9	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++10	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++11	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++12	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++13	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++14	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++15	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++16	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++17	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++18	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++19	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++20	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++21	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++22	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++23	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++24	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++25	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++26	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++27	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++28	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++29	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++30	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++31	[3, 1, 1, 9, 2, 5, 4, 5, 6, 3, 1]
++32	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++33	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++34	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++35	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++36	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++37	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++38	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++39	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++40	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++41	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++42	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++43	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++44	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++45	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++46	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++47	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++48	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++49	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++50	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++51	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++52	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++53	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++54	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++55	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++56	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++57	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++58	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++59	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++60	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++61	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++62	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++63	[3, 1, 1, 9, 2, 5, 4, 6, 6, 3, 1]
++64	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++65	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++66	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++67	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++68	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++69	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++70	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++71	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++72	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++73	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++74	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++75	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++76	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++77	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++78	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++79	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++80	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++81	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++82	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++83	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++84	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++85	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++86	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++87	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++88	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++89	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++90	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++91	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++92	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++93	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++94	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++95	[3, 1, 1, 9, 2, 5, 4, 7, 6, 3, 1]
++96	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++97	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++98	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++99	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++100	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++101	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++102	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++103	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++104	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++105	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++106	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++107	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++108	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++109	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++110	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++111	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++112	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++113	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++114	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++115	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++116	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++117	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++118	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++119	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++120	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++121	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++122	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++123	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++124	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++125	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++126	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
++127	[3, 1, 1, 9, 2, 5, 4, 8, 6, 3, 1]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/receipts/offsets-parent/executions/20261122T142730Z-88266c9c/attempt.json
+@@ -0,0 +1,122 @@
++{
++  "schema": "target-execution/v1",
++  "id": "20261122T142730Z-88266c9c",
++  "task": "offsets-parent",
++  "claimKey": "3451a7e7f8f361d0",
++  "revisions": [
++    "parent"
++  ],
++  "startedAt": "2026-11-22T14:27:30.557670+00:00",
++  "retryOf": null,
++  "retryBinding": null,
++  "budget": {
++    "jvmSecondsPerRevision": 30
++  },
++  "strategy": {
++    "engine": "jvm",
++    "operation": "review-witness"
++  },
++  "host": {
++    "machine": "x86_64",
++    "kernel": "7.0.0-43-generic",
++    "node": "claude-vm"
++  },
++  "job": "20261122-142310-check-every-jackson-feed-from-the-unused",
++  "sourceCommit": "b5812de89d47ebb0491d24264f042569fb6b462d",
++  "cache": "fresh verifier work directory",
++  "stages": [
++    {
++      "stage": "planned",
++      "elapsedSeconds": 0.0
++    },
++    {
++      "stage": "witness-supplied",
++      "elapsedSeconds": 0.0002
++    },
++    {
++      "stage": "artifacts-ready",
++      "elapsedSeconds": 1.1709
++    },
++    {
++      "stage": "witness-replayed",
++      "elapsedSeconds": 1.7275
++    }
++  ],
++  "status": "witness-reproduced",
++  "lastCompletedStage": "witness-replayed",
++  "witnessFile": "candidate.json",
++  "witnessSha256": "3c894566c2d67299a848cb4fb53c7e2fa483c3599ad4cf947cf81a04a1342194",
++  "bindings": {
++    "parent": {
++      "revision": "99f749d958a55013724571d825625e1032af9d4b",
++      "target": {
++        "class": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase",
++        "method": "nextToken",
++        "descriptor": "()Lcom/fasterxml/jackson/core/JsonToken;",
++        "loadedFrom": "built/jackson-core-2.19.0-SNAPSHOT.jar",
++        "classSha256": "de63294fd5c43b5cf05bbe77da5ae15026accd47f59735dce88e56b32db17383",
++        "adapterCalls": [
++          "com.fasterxml.jackson.core.JsonFactory#<init>()V",
++          "com.fasterxml.jackson.core.JsonFactory#createNonBlockingByteArrayParser()Lcom/fasterxml/jackson/core/JsonParser;",
++          "com.fasterxml.jackson.core.JsonLocation#getByteOffset()J",
++          "com.fasterxml.jackson.core.JsonParser#close()V",
++          "com.fasterxml.jackson.core.JsonParser#currentLocation()Lcom/fasterxml/jackson/core/JsonLocation;",
++          "com.fasterxml.jackson.core.JsonParser#currentTokenLocation()Lcom/fasterxml/jackson/core/JsonLocation;",
++          "com.fasterxml.jackson.core.JsonParser#getNonBlockingInputFeeder()Lcom/fasterxml/jackson/core/async/NonBlockingInputFeeder;",
++          "com.fasterxml.jackson.core.JsonToken#id()I",
++          "com.fasterxml.jackson.core.async.ByteArrayFeeder#endOfInput()V",
++          "com.fasterxml.jackson.core.async.ByteArrayFeeder#feedInput([BII)V",
++          "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "jdk": {
++        "feature": "25",
++        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
++        "release": {
++          "JAVA_VERSION": "25.0.5",
++          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
++          "OS_ARCH": "x86_64"
++        }
++      },
++      "classpath": [
++        {
++          "path": "driver.jar",
++          "sha256": "b13f56f75a5b842787d4dd138fbc8f3c296675d633d4d9b1e7777ddf108212d2",
++          "role": "driver",
++          "coordinates": null,
++          "origin": "built from driver"
++        },
++        {
++          "path": "adapter-parent.jar",
++          "sha256": "07e422a3cf15e72e28aae5d788e64b59c6f5d94d2c2efe52af9bf0aef434603a",
++          "role": "adapter",
++          "coordinates": null,
++          "origin": "built from adapter"
++        },
++        {
++          "path": "built/jackson-core-2.19.0-SNAPSHOT.jar",
++          "sha256": "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
++          "role": "original",
++          "coordinates": null,
++          "origin": "built by maven from https://github.com/FasterXML/jackson-core at 99f749d958a55013724571d825625e1032af9d4b: target/jackson-core-2.19.0-SNAPSHOT.jar"
++        },
++        {
++          "path": "lib/ch/randelshofer/fastdoubleparser/1.0.90/fastdoubleparser-1.0.90.jar",
++          "sha256": "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f",
++          "role": "dependency",
++          "coordinates": "ch.randelshofer:fastdoubleparser:1.0.90",
++          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++        }
++      ]
++    }
++  },
++  "bindingId": "c3699ff55e9b2129e91c23d5db830d3a4088e018041d56ceb0a8de287dc0a141",
++  "firstBlocker": null,
++  "replayEvidence": "replay.json",
++  "endedAt": "2026-11-22T14:27:32.285202+00:00",
++  "missing": []
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/receipts/offsets-parent/executions/20261122T142730Z-88266c9c/candidate.json
+@@ -0,0 +1,10 @@
++{
++  "inputs": [
++    {
++      "name": "code",
++      "type": "int",
++      "value": 32
++    }
++  ],
++  "sourceReceiptSha256": "1317e2598de00e135d1be0f175a26a8917c41811d794150c98a25dc107f3279f"
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/receipts/offsets-parent/executions/20261122T142730Z-88266c9c/correspondence.json
+@@ -0,0 +1,39 @@
++[
++  {
++    "revision": "parent",
++    "entry": "campaign.AsyncTokens#offsets(I)I",
++    "adapterSha256": "07e422a3cf15e72e28aae5d788e64b59c6f5d94d2c2efe52af9bf0aef434603a",
++    "adapterClassSha256": "7ce1c6f80b251f9684114201166a6c5d5101021fa3a8e52fe9e76a5c8ff2ef77",
++    "subject": {
++      "class": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase",
++      "method": "nextToken",
++      "descriptor": "()Lcom/fasterxml/jackson/core/JsonToken;",
++      "loadedFrom": "built/jackson-core-2.19.0-SNAPSHOT.jar",
++      "classSha256": "de63294fd5c43b5cf05bbe77da5ae15026accd47f59735dce88e56b32db17383",
++      "adapterCalls": [
++        "com.fasterxml.jackson.core.JsonFactory#<init>()V",
++        "com.fasterxml.jackson.core.JsonFactory#createNonBlockingByteArrayParser()Lcom/fasterxml/jackson/core/JsonParser;",
++        "com.fasterxml.jackson.core.JsonLocation#getByteOffset()J",
++        "com.fasterxml.jackson.core.JsonParser#close()V",
++        "com.fasterxml.jackson.core.JsonParser#currentLocation()Lcom/fasterxml/jackson/core/JsonLocation;",
++        "com.fasterxml.jackson.core.JsonParser#currentTokenLocation()Lcom/fasterxml/jackson/core/JsonLocation;",
++        "com.fasterxml.jackson.core.JsonParser#getNonBlockingInputFeeder()Lcom/fasterxml/jackson/core/async/NonBlockingInputFeeder;",
++        "com.fasterxml.jackson.core.JsonToken#id()I",
++        "com.fasterxml.jackson.core.async.ByteArrayFeeder#endOfInput()V",
++        "com.fasterxml.jackson.core.async.ByteArrayFeeder#feedInput([BII)V",
++        "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;"
++      ],
++      "adapterCallsTarget": true
++    },
++    "mapping": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference. Each selector corresponds to one explicit row of the finite oracle.",
++    "jdk": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    },
++    "cases": 128,
++    "disagreements": 0
++  }
++]
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/receipts/offsets-parent/executions/20261122T142730Z-88266c9c/replay.json
+@@ -0,0 +1,77 @@
++{
++  "claimKey": "3451a7e7f8f361d0",
++  "entry": "campaign.AsyncTokens#offsets(I)I",
++  "inputs": [
++    {
++      "name": "code",
++      "type": "int",
++      "value": 32
++    }
++  ],
++  "observations": [
++    "result",
++    "exception"
++  ],
++  "by": "jvm",
++  "reproduced": true,
++  "sides": {
++    "parent": {
++      "entryClassSha256": "7ce1c6f80b251f9684114201166a6c5d5101021fa3a8e52fe9e76a5c8ff2ef77",
++      "classpath": [
++        "07e422a3cf15e72e28aae5d788e64b59c6f5d94d2c2efe52af9bf0aef434603a",
++        "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
++        "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f"
++      ],
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 32;\nif (!(code >= 0 && code < 128)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = campaign.AsyncTokens.offsets(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "admitted": true,
++      "values": [
++        0,
++        null
++      ],
++      "satisfies": false
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "finiteObservation": {
++    "id": 32,
++    "input": {
++      "cuts": 0,
++      "padding": 1
++    },
++    "field": "offsets",
++    "direct": {
++      "parent": {
++        "offsets": {
++          "trace": [
++            3,
++            1,
++            1,
++            9,
++            2,
++            5,
++            4,
++            6,
++            6,
++            3,
++            1
++          ],
++          "matchesUnpadded": false
++        },
++        "tokens": [
++          3,
++          9,
++          4,
++          3,
++          1
++        ]
++      }
++    },
++    "tableSha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
++  }
++}

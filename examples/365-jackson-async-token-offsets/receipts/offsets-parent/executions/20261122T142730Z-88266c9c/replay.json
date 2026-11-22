@@ -1,0 +1,77 @@
+{
+  "claimKey": "3451a7e7f8f361d0",
+  "entry": "campaign.AsyncTokens#offsets(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 32
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": true,
+  "sides": {
+    "parent": {
+      "entryClassSha256": "7ce1c6f80b251f9684114201166a6c5d5101021fa3a8e52fe9e76a5c8ff2ef77",
+      "classpath": [
+        "07e422a3cf15e72e28aae5d788e64b59c6f5d94d2c2efe52af9bf0aef434603a",
+        "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
+        "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 32;\nif (!(code >= 0 && code < 128)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = campaign.AsyncTokens.offsets(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        0,
+        null
+      ],
+      "satisfies": false
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "finiteObservation": {
+    "id": 32,
+    "input": {
+      "cuts": 0,
+      "padding": 1
+    },
+    "field": "offsets",
+    "direct": {
+      "parent": {
+        "offsets": {
+          "trace": [
+            3,
+            1,
+            1,
+            9,
+            2,
+            5,
+            4,
+            6,
+            6,
+            3,
+            1
+          ],
+          "matchesUnpadded": false
+        },
+        "tokens": [
+          3,
+          9,
+          4,
+          3,
+          1
+        ]
+      }
+    },
+    "tableSha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+  }
+}
