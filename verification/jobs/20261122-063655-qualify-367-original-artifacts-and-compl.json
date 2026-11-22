@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-063655-qualify-367-original-artifacts-and-compl",
+  "title": "Qualify 367 original artifacts and complete the opening grid",
+  "description": "Expose the original Maven project's declared JDK 11, 17 and 21 toolchains inside its isolated build, then run its parameterized binary and JSON regressions. Capture all four public claims on the frozen opening fingerprint and verify raw JVM outcomes.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "367"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T06:36:55+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "maven",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/qualified-build",
+      "cwd": "."
+    },
+    {
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening-qualified --build qualified-build",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/367-avro-union-array-default/records/qualified-build",
+    "examples/367-avro-union-array-default/records/opening-qualified"
+  ]
+}

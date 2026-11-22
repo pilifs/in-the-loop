@@ -58,7 +58,7 @@ def build_args(case):
 
 def toolchains(command, case, work, jdk26):
     """Expose the project's requested compilers and test JVMs inside the isolated Maven build."""
-    if case["module"] != "guava" and not case.get("providedHost"):
+    if case["module"] != "guava" and not case.get("providedHost") and not case.get("declaredToolchains"):
         return command, {}
     homes = {v: runtime_jdk.home(v) for v in ("11", "17", "21")}
     if case["module"] == "guava":
@@ -244,6 +244,16 @@ def tests(case, side, project, command, scratch, out):
         if (project / name).read_bytes() != data:
             raise ValueError("the transplanted regression differs from its landed source")
         sources[name] = hashlib.sha256(data).hexdigest()
+    if side == "parent":
+        # A moved test can retain its old Java package. Leaving its parent copy in
+        # place would compile the same class twice. Only move paths in the actual diff.
+        moves = git(project, "diff", "--find-renames", "--name-status", case["parent"], case["fix"], "--",
+                    ":(glob)**/src/test/**", ":(glob)src/test/**").decode().splitlines()
+        for change in moves:
+            fields = change.split("\t")
+            if len(fields) == 3 and fields[0].startswith("R") and fields[2] in sources:
+                (project / fields[1]).unlink()
+                transplanted.append(fields[1])
     changed = set(git(project, "diff", "--name-only", "HEAD").decode().splitlines())
     new_sources = git(project, "ls-files", "--others", "--exclude-standard").decode().splitlines()
     changed.update(path for path in new_sources if "/src/" in "/" + path)

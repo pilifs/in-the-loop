@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-063655-qualify-363-original-artifacts-and-compl",
+  "title": "Qualify 363 original artifacts and complete the opening grid",
+  "description": "Use the historical project's own Spotless check skip property to avoid running a code-style plugin against the JDK 21 compiler ABI during the original reactor build. Capture all four public claims on the frozen opening fingerprint and verify raw JVM outcomes.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "363"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T06:36:55+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "maven",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "9m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/parquet-java\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 363 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/363-parquet-nested-binary/records/qualified-build",
+      "cwd": "."
+    },
+    {
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 363 --stage opening-qualified --build qualified-build",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/363-parquet-nested-binary/records/qualified-build",
+    "examples/363-parquet-nested-binary/records/opening-qualified"
+  ]
+}

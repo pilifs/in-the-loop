@@ -1,0 +1,227 @@
+{
+  "revision": "99f749d958a55013724571d825625e1032af9d4b",
+  "side": "parent",
+  "prerequisites": [
+    {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-N",
+        "-f",
+        "/work/build-parents/0/pom.xml",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 69.29,
+      "logSha256": "bdfbcc2f4b1b7f1519c1df10cd172b084699cff7f99759d0321a6b53de660774",
+      "errors": [],
+      "tail": [
+        "[INFO] ",
+        "[INFO] --- install:3.1.4:install (default-install) @ jackson-parent ---",
+        "[INFO] Installing /work/build-parents/0/pom.xml to /work/repository/com/fasterxml/jackson/jackson-parent/2.19-SNAPSHOT/jackson-parent-2.19-SNAPSHOT.pom",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  01:07 min",
+        "[INFO] Finished at: 2026-11-22T06:30:29Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ],
+      "repository": "https://github.com/FasterXML/jackson-parent",
+      "commit": "4c3047abc2c9701bee527cc13773c4f1313cb942",
+      "pom": "pom.xml",
+      "pomSha256": "c82da5f31d4f781e2b198a77ace674cdd5607ef7597f18cf1a25f7ab530c0010"
+    },
+    {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-N",
+        "-f",
+        "/work/build-parents/1/pom.xml",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 5.1,
+      "logSha256": "f7da0bafb7ece574471230601cfb2315955dba8fa2e1ee7b12af2c53bfd83a14",
+      "errors": [],
+      "tail": [
+        "[INFO] ",
+        "[INFO] --- install:3.1.4:install (default-install) @ jackson-bom ---",
+        "[INFO] Installing /work/build-parents/1/pom.xml to /work/repository/com/fasterxml/jackson/jackson-bom/2.19.0-SNAPSHOT/jackson-bom-2.19.0-SNAPSHOT.pom",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  3.495 s",
+        "[INFO] Finished at: 2026-11-22T06:30:34Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ],
+      "repository": "https://github.com/FasterXML/jackson-bom",
+      "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
+      "pom": "pom.xml",
+      "pomSha256": "88af4c8d39738532135d3a592f7365b9373979f4113348178f72ffe0baf6e158"
+    },
+    {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-N",
+        "-f",
+        "/work/build-parents/1/base/pom.xml",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 40.35,
+      "logSha256": "337c46716a02853d976c401340b8c5ea8f4471be7bbeb72e20f7239a4bc0ee42",
+      "errors": [],
+      "tail": [
+        "[INFO] ",
+        "[INFO] --- install:3.1.4:install (default-install) @ jackson-base ---",
+        "[INFO] Installing /work/build-parents/1/base/pom.xml to /work/repository/com/fasterxml/jackson/jackson-base/2.19.0-SNAPSHOT/jackson-base-2.19.0-SNAPSHOT.pom",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  38.845 s",
+        "[INFO] Finished at: 2026-11-22T06:31:14Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ],
+      "repository": "https://github.com/FasterXML/jackson-bom",
+      "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
+      "pom": "base/pom.xml",
+      "pomSha256": "d002e6a19b8d31d89253073823b240ebc589f95ae08e8fae8bd729c8154023ea"
+    }
+  ],
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 1,
+    "seconds": 28.85,
+    "logSha256": "d6d77fb891e917f63700e93e3afa69e184fc10368c0716bd90289944e0be9180",
+    "errors": [
+      "[ERROR] BUILD FAILURE",
+      "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-enforcer-plugin:3.5.0:enforce (enforce-jacoco-exec) on project jackson-core: ",
+      "[ERROR] Rule 0: org.apache.maven.enforcer.rules.files.RequireFilesExist failed with message:",
+      "[ERROR] Some required files are missing:",
+      "[ERROR] /project/target/jacoco.exec",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException"
+    ],
+    "tail": [
+      "[ERROR] Some required files are missing:",
+      "[ERROR] /project/target/jacoco.exec",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException"
+    ]
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset,AsyncLocation1412Test#feedByteByByteFromNonZeroOffset,AsyncLocation1412Test#feedByteByByteFromOffsetZero",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 14.67,
+      "logSha256": "07d66ca5816d2ef6a323ea35ea4903869ab590d766070e9597844108ffd8151c",
+      "errors": [
+        "[ERROR] COMPILATION ERROR : ",
+        "[ERROR] /project/src/test/java/com/fasterxml/jackson/core/tofix/async/AsyncLocation1412Test.java:[18,1] duplicate class: com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.0:testCompile (default-testCompile) on project jackson-core: Compilation failure",
+        "[ERROR] /project/src/test/java/com/fasterxml/jackson/core/tofix/async/AsyncLocation1412Test.java:[18,1] duplicate class: com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      ],
+      "tail": [
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.0:testCompile (default-testCompile) on project jackson-core: Compilation failure",
+        "[ERROR] /project/src/test/java/com/fasterxml/jackson/core/tofix/async/AsyncLocation1412Test.java:[18,1] duplicate class: com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testPrerequisites": [],
+    "testSourceSha256": {
+      "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java": "f7ff96bbdf145c98be408cc0cd4089c91d4e941fd469a5e95cb82edc604eba16"
+    },
+    "transplant": [
+      "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java"
+    ],
+    "named": {
+      "AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset": [],
+      "AsyncLocation1412Test#feedByteByByteFromNonZeroOffset": [],
+      "AsyncLocation1412Test#feedByteByByteFromOffsetZero": []
+    }
+  },
+  "mirror": {
+    "from https://repo.maven.apache.org/maven2/": 1082,
+    "downloadedBytes": 54007977,
+    "downloadedFiles": 1082,
+    "cachedRequests": 730
+  }
+}

@@ -1,0 +1,262 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-062459-build-and-check-365-jackson-async-token",
+  "title": "Build and check 365 jackson async token offsets at opening",
+  "status": "failed",
+  "summary": "failed: 2 failed step(s) in 3m33s, peak 1.3 GiB (estimated 5m00s, 4.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (Build unchanged artifacts and run the original regression) exited 1, expected 0",
+    "step 1 (Build unchanged artifacts and run the original regression) was held back 6m43s by its 2-CPU quota in 3m33s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Measure four ordinary native claims and their finite JVM grid) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-062459-build-and-check-365-jackson-async-token.json",
+    "sha256": "efc8031ab4d08231d46cefd74320912150ef508c90b6f3e51c6516020813eddb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-062459-build-and-check-365-jackson-async-token",
+      "title": "Build and check 365 jackson async token offsets at opening",
+      "description": "Build both pinned unmodified production revisions for PR 1415. Run all named landed tests on each, including parameter-specific expectations and passing controls. At the pinned opening fingerprint execute the frozen ordinary strict properties and finite JVM cells through the public planner and retain measurements for each outcome.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "365"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:24:59+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Build unchanged artifacts and run the original regression",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/jackson-core\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 365 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/365-jackson-async-token-offsets/records/original-build",
+          "cwd": "."
+        },
+        {
+          "name": "Measure four ordinary native claims and their finite JVM grid",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 365 --stage opening",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/365-jackson-async-token-offsets/records/original-build",
+        "examples/365-jackson-async-token-offsets/records/opening"
+      ]
+    }
+  },
+  "sourceCommit": "3f7cf6c73b47e626bd2daa5614a8e26b53f17002",
+  "startedAt": "2026-11-22T06:26:19+00:00",
+  "finishedAt": "2026-11-22T06:32:53+00:00",
+  "wallSeconds": 394.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2985157,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1390186496,
+    "wallSeconds": 213.9,
+    "cpuSeconds": 217.5,
+    "memoryOfEstimate": 0.32,
+    "durationOfEstimate": 0.71
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/jackson-core\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 365 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/365-jackson-async-token-offsets/records/original-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 213.697,
+      "cpuSeconds": 217.367,
+      "cpuThrottledSeconds": 403.034,
+      "peakMemoryBytes": 1390186496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-unchanged-artifacts-and.log",
+        "lines": 2,
+        "bytes": 29,
+        "sha256": "d3b1194131bced1d764d2641a2f0a12fb8db78062aa4ea8c76057a7338574cdf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "365 parent open",
+        "365 fix open"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 365 --stage opening",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.089,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16908288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-four-ordinary-native-c.log",
+        "lines": 17,
+        "bytes": 1564,
+        "sha256": "c87f0f7de56ce0804ef387719133c0e842c7be144b1aec5347a8a649031c15f1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-365-jackson-async-token/lib/benchmark/java-domain-proof/public_run.py\", line 110, in <module>",
+        "    run(args.example,args.stage,args.seconds)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-365-jackson-async-token/lib/benchmark/java-domain-proof/public_run.py\", line 66, in run",
+        "    upstream.bind(case,folder/\"records/original-build\")",
+        "    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-365-jackson-async-token/lib/benchmark/organic-java/upstream.py\", line 435, in bind",
+        "    record = json.loads(path.read_text())",
+        "                        ~~~~~~~~~~~~~~^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 788, in read_text",
+        "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+        "         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 772, in open",
+        "    return io.open(self, mode, buffering, encoding, errors, newline)",
+        "           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-365-jackson-async-token/examples/365-jackson-async-token-offsets/records/original-build/build-parent.json'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/original-build/fix-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz",
+      "change": "added",
+      "bytes": 1603,
+      "sha256": "8758ecae84fd3e800c27181332eac6fafce3e04107da619d25088993766d3e54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/original-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 9210,
+      "sha256": "1a345970e81031b7fa1ddd32b3fdec5a4e20b3cdf6848c483c7307dd844344e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/original-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 9892,
+      "sha256": "cfbdfbac8bb5903e5e511165a50b683c34d180469b37c68c71ec1d55acf90c53",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T06:36:00+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/365-jackson-async-token-offsets/records/original-build/fix-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz",
+      "examples/365-jackson-async-token-offsets/records/original-build/fix-upstream.json",
+      "examples/365-jackson-async-token-offsets/records/original-build/parent-upstream.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "1e292a1cf678e2478b5e0ec34c706d4bfb984c1f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1e292a1cf678e2478b5e0ec34c706d4bfb984c1f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T063253Z-649664b93651f81a",
+      "outputs": "20261122T063253Z-672397a1f115d86a",
+      "diff": "20261122T063253Z-69159642edfea107",
+      "workdir": "20261122T063257Z-0652894bd318fb74"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-365-jackson-async-token"
+}

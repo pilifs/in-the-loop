@@ -1,0 +1,913 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-062459-build-and-check-364-avro-enum-namespace",
+  "title": "Build and check 364 avro enum namespace at opening",
+  "status": "failed",
+  "summary": "failed: 2 failed step(s) in 4m57s, peak 1.8 GiB (estimated 5m00s, 4.0 GiB); 85 output file(s) changed",
+  "attention": [
+    "step 1 (Build unchanged artifacts and run the original regression) exited 1, expected 0",
+    "step 1 (Build unchanged artifacts and run the original regression) was held back 13m51s by its 2-CPU quota in 4m43s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Measure four ordinary native claims and their finite JVM grid) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-062459-build-and-check-364-avro-enum-namespace.json",
+    "sha256": "17245aa1a76504493b7edc8ed2b846f79911bef4cdd59265205eef1a4c57cf9f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-062459-build-and-check-364-avro-enum-namespace",
+      "title": "Build and check 364 avro enum namespace at opening",
+      "description": "Build both pinned unmodified production revisions for PR 1381. Run all named landed tests on each, including parameter-specific expectations and passing controls. At the pinned opening fingerprint execute the frozen ordinary strict properties and finite JVM cells through the public planner and retain measurements for each outcome.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "364"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:24:59+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Build unchanged artifacts and run the original regression",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 364 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/364-avro-enum-namespace/records/original-build",
+          "cwd": "."
+        },
+        {
+          "name": "Measure four ordinary native claims and their finite JVM grid",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 364 --stage opening",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/364-avro-enum-namespace/records/original-build",
+        "examples/364-avro-enum-namespace/records/opening"
+      ]
+    }
+  },
+  "sourceCommit": "3f7cf6c73b47e626bd2daa5614a8e26b53f17002",
+  "startedAt": "2026-11-22T06:26:19+00:00",
+  "finishedAt": "2026-11-22T06:34:17+00:00",
+  "wallSeconds": 478.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2985157,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1961349120,
+    "wallSeconds": 297.9,
+    "cpuSeconds": 383.7,
+    "memoryOfEstimate": 0.46,
+    "durationOfEstimate": 0.99
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 364 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/364-avro-enum-namespace/records/original-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 283.267,
+      "cpuSeconds": 361.443,
+      "cpuThrottledSeconds": 831.724,
+      "peakMemoryBytes": 1961349120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-unchanged-artifacts-and.log",
+        "lines": 2,
+        "bytes": 29,
+        "sha256": "dacba039e9d13b35a9ec2dd157b96f665cf037e91c7fc99ec36c818cd61c4d47",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "364 parent open",
+        "364 fix open"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 364 --stage opening",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 14.633,
+      "cpuSeconds": 22.216,
+      "cpuThrottledSeconds": 1.143,
+      "peakMemoryBytes": 224817152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-four-ordinary-native-c.log",
+        "lines": 7,
+        "bytes": 635,
+        "sha256": "c9803feddc67396a01047a62400c4940eb3cc57b08cd1f0f827f9ac894f8c1b1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-364-avro-enum-namespace/lib/benchmark/java-domain-proof/public_run.py\", line 110, in <module>",
+        "    run(args.example,args.stage,args.seconds)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-364-avro-enum-namespace/lib/benchmark/java-domain-proof/public_run.py\", line 94, in run",
+        "    raise ValueError(\"the public replay or finite evidence is incomplete\")",
+        "ValueError: the public replay or finite evidence is incomplete"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/364-avro-enum-namespace/records/original-build/build-fix.json",
+      "change": "added",
+      "bytes": 10608,
+      "sha256": "52bfec76fb9dc246626c28701a450fa6f4f562e9cba72906d46718f60749826f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/original-build/build-parent.json",
+      "change": "added",
+      "bytes": 10498,
+      "sha256": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/original-build/fix-TEST-org.apache.avro.io.parsing.TestResolvingGrammarGenerator.xml.gz",
+      "change": "added",
+      "bytes": 1916,
+      "sha256": "02db9307c03bebff8da2afcbe584aacb73b9e8444aabeb75b9a02545a8c24b65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/original-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 14495,
+      "sha256": "1833baa4170d340e3719e917ffa3945524a2465aefce8e3afff79410f6835337",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/original-build/parent-TEST-org.apache.avro.io.parsing.TestResolvingGrammarGenerator.xml.gz",
+      "change": "added",
+      "bytes": 3329,
+      "sha256": "07985c4d1593b82f3e0843b409ab0ddb754036aa63b18e3b123240ee77c37075",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/original-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 19044,
+      "sha256": "0f41b354a4b7c2b23584ec857d5c03132310091535a4090d18f443b7494e4bc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/finite.log",
+      "change": "added",
+      "bytes": 70,
+      "sha256": "a7468d3c33e5296da84dc5d0e5ca10bc2db4c7b2a4d5ceed65653e80657f0171",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "deb85e13ca7009669ac3870cf04b1be7283af57d256efbedcbb9c223ad42d951",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/plan.json",
+      "change": "added",
+      "bytes": 7647,
+      "sha256": "01bac7cbfa3f6d46176f3aac1f69d0f03e2a761be359fe74faaad5fbfdbe9b22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 646,
+      "sha256": "18df780a641be67a17f58ba28f67cf199be03726f049f9b206b33ed027948c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/controls.json",
+      "change": "added",
+      "bytes": 7217,
+      "sha256": "0e4bfd4f710681546d5f303424a6468ed4e170c6efa9a19cb56c3e8fa21d90be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/execution.json",
+      "change": "added",
+      "bytes": 113560,
+      "sha256": "6ccee8e3fba336a3690d47fc54a0786c40c63ffb1bc06aaccb574a2fd50bf0f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "329c60dfcef1c61a7d1eb1daaca7bf4ab6746cfca3c956495fba1a94419dc758",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 592,
+      "sha256": "d51b89f4209d4d329850c2370fc052932fc5265414be537d423ecf7cbea8026c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier.json",
+      "change": "added",
+      "bytes": 102713,
+      "sha256": "8f1644d8da4ccfcbaf02cd205c68e21004249df4cb55d9be4a80cf412ae5bc7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6394,
+      "sha256": "20c197b3f4a9ac36098a064f7e0c53658d6c17878d78e5aa378b42d8b78523dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/result.json",
+      "change": "added",
+      "bytes": 17951,
+      "sha256": "801306cef4fccad2a4d992e22f198895dfd24b40f20ad56140e3322db6824da7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/executions/20261122T063415Z-0f50d00a/attempt.json",
+      "change": "added",
+      "bytes": 99375,
+      "sha256": "4c50532231317168f8288bb7d745da194824e995817d3de201c33fffb9164a82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/executions/20261122T063415Z-0f50d00a/checker.json",
+      "change": "added",
+      "bytes": 8540,
+      "sha256": "e3942f5095ae72404e7a0c65a43ee9ef679140cb2c51cc15c469e6570a903af9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix/executions/20261122T063415Z-0f50d00a/correspondence.json",
+      "change": "added",
+      "bytes": 2084,
+      "sha256": "55fdad174cebc44bdf814a1dae71c20edad31604a0780dfa203abed6b61758e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-fix.log",
+      "change": "added",
+      "bytes": 236,
+      "sha256": "ed3ee0340c28c353171284fd0dcdd3eed82ec02b4828818c6a25374f6117653d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "105b5e5d92c471357b255829b78a405195d34563847cd47bad62b49ae240dfca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/plan.json",
+      "change": "added",
+      "bytes": 7556,
+      "sha256": "524111742e6db2595d905cb5f29cfdd2d2af7186c77484292ec7513805256a52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 774,
+      "sha256": "cee3dee31dd70fb90c71cff4b96060924953cabf42a298b4eefd2db24f344cc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/controls.json",
+      "change": "added",
+      "bytes": 7372,
+      "sha256": "99619aa43ae8e6d305cab9f6b95b7f349c61bb3a4d7c295b75d5e49f38b12f5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/execution.json",
+      "change": "added",
+      "bytes": 113800,
+      "sha256": "cdec7617c6f5cfb4bdc6c04c052f05f722f6ac93313abaecf8faf36a8241d768",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "339130989c859ceafc619920d7cde75c16eddf1a8162e93f36e7a5461aa1464c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 592,
+      "sha256": "d51b89f4209d4d329850c2370fc052932fc5265414be537d423ecf7cbea8026c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier.json",
+      "change": "added",
+      "bytes": 102816,
+      "sha256": "cf69395b2b2e6e5eb403ad3e6e3afe0e75f6537991fcfd5610b32f34e45f553a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6392,
+      "sha256": "d4e86831676d1e53f3decc38d28a650a16f1ccd75949f77456a8d735846916cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/result.json",
+      "change": "added",
+      "bytes": 18052,
+      "sha256": "d58d426f81308bd52457136758aa4eb91d20c373ec3210c4bb0d046b805064d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/executions/20261122T063412Z-4b673df3/attempt.json",
+      "change": "added",
+      "bytes": 99482,
+      "sha256": "43778b6d4953b13cfcdf91b4bbca71d4269965b024df8d487f88e77baaf4befd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/executions/20261122T063412Z-4b673df3/checker.json",
+      "change": "added",
+      "bytes": 8571,
+      "sha256": "9ef5adb0735e0c01bd6dece4ec13ecc55e752bddb570b05edf3869a1c442354e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent/executions/20261122T063412Z-4b673df3/correspondence.json",
+      "change": "added",
+      "bytes": 2087,
+      "sha256": "330b2a96958aa0831028709559f866e300a815c6e1b2af78547b904662104b94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/preserved-parent.log",
+      "change": "added",
+      "bytes": 245,
+      "sha256": "c6025eaddc09ef8bdf5d5380e0ef74ef7e06575591c1954a2396625f435adab3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ae4f1ce34fb4f62d1172d9e6cb43f7a911a1ec5d490970f0e84cbf9a0e1c8e06",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/plan.json",
+      "change": "added",
+      "bytes": 7705,
+      "sha256": "645c0f07c07db26c58b6aebceb2c9760a061607f8549422a37f4dea0c8d52cfd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 646,
+      "sha256": "18df780a641be67a17f58ba28f67cf199be03726f049f9b206b33ed027948c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/controls.json",
+      "change": "added",
+      "bytes": 7211,
+      "sha256": "ce682af48be62fd31557986c80888f32acb04ae0e624e12bc00044d02de903e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/execution.json",
+      "change": "added",
+      "bytes": 113600,
+      "sha256": "ad7c73d70d53406b0ba3bd7a3a7b6e5bdae5750bc19c2ceca8ef49175747f9d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "b9f1120b76131b92c94263133ad06ab9d668b58e52d6c6b14d2d996fff945e3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 590,
+      "sha256": "8f105d5012f079d584f79bcf6300d2b22ed0fd40b532691b1ccb01092b981cb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier.json",
+      "change": "added",
+      "bytes": 102749,
+      "sha256": "cec60feea2bd0612088856bf2ff0f93e35b552eab9b4cfde1733e6bb27c1bd09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6387,
+      "sha256": "b14fe9006118d87a60f81dc5d680e5da567dff5aa94269760bae250ad36f804c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/result.json",
+      "change": "added",
+      "bytes": 17975,
+      "sha256": "e02a54f516eaacd0e580b4ecd515b20e9b00f17d8bae4d98b6c8157f5421b018",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/executions/20261122T063409Z-a314c642/attempt.json",
+      "change": "added",
+      "bytes": 99418,
+      "sha256": "0d6b8ce3b217ba97d08343d021da7c2b880d86caf0780d623c54dac9297e3326",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/executions/20261122T063409Z-a314c642/checker.json",
+      "change": "added",
+      "bytes": 8531,
+      "sha256": "2ca939da1c44dd95c24da1cc92a884c6a9ae008cd7c08d43ad13b35bbd7c83ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix/executions/20261122T063409Z-a314c642/correspondence.json",
+      "change": "added",
+      "bytes": 2103,
+      "sha256": "733135fd3e2da451ea3a5e0f10842559429d52e79a936cede9e7005c9af93c15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-fix.log",
+      "change": "added",
+      "bytes": 230,
+      "sha256": "0cdd11953e45af9efdba250c1643be42578df40bc736c6c19ff7416f0976d08d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "927982b2513072c8b40af20cafe2dcc5549182e16eccaefc0cf613b30c11a03e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/plan.json",
+      "change": "added",
+      "bytes": 7610,
+      "sha256": "7009c5c6947533275a74b5cfafc8e069fa9ed981fbcf674b1ebfaa34df69ac76",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 774,
+      "sha256": "cee3dee31dd70fb90c71cff4b96060924953cabf42a298b4eefd2db24f344cc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/controls.json",
+      "change": "added",
+      "bytes": 7366,
+      "sha256": "a1a352303bea841c39ebb708930679ee09ace4b57b81882780b3987e0f988dd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/execution.json",
+      "change": "added",
+      "bytes": 113846,
+      "sha256": "fbb6335f9aac63c5a9fec42bb0f9edd5282f301a30789e2cbeacd91be5e5f4b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "eeb54515763b525a56a7849c128503065538c068e5ba848c0147fa677d46400c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 590,
+      "sha256": "8f105d5012f079d584f79bcf6300d2b22ed0fd40b532691b1ccb01092b981cb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier.json",
+      "change": "added",
+      "bytes": 102858,
+      "sha256": "08eed0b55536fd298b0c8409cb3277eb4a7c480f95c866d8bb1f7c0fe1cc1182",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6391,
+      "sha256": "f8a591836da3663883916f1c882a2a17020f83c28979acdd3cc63474e7e37941",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/result.json",
+      "change": "added",
+      "bytes": 18076,
+      "sha256": "8f99c3a4a8dd28cf9a3ebf4a51fe9703e64561892a310cbd121a1d3a5c84a2cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/executions/20261122T063407Z-0a2860f6/attempt.json",
+      "change": "added",
+      "bytes": 99526,
+      "sha256": "e037bd307d238291be751e91617b4b92fb251a2acccba1313e855984afe88c5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/executions/20261122T063407Z-0a2860f6/checker.json",
+      "change": "added",
+      "bytes": 8568,
+      "sha256": "01c070b0ded5c0e66ae8bfeb95105fd3fe789fb38493d8f547eaf5d1b9f911b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent/executions/20261122T063407Z-0a2860f6/correspondence.json",
+      "change": "added",
+      "bytes": 2106,
+      "sha256": "aa92b25884fe297e1beb30b5e4a5a4573c7f7191f45f2c1a14b5e1bb4a5ffe6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/renamed-parent.log",
+      "change": "added",
+      "bytes": 235,
+      "sha256": "ef2c9175817cb32a868a9b80804294f8e2c2d8769032714fc1699fd488636e11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "50de8c4b6b4f3b2e3c4582e6cb8e35ac3efb7ae2777cecb7de9d37644a0910e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/plan.json",
+      "change": "added",
+      "bytes": 8020,
+      "sha256": "3562692bba72ee317895316439b3b12cc29805b7f394e4d133c0183564d28748",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 646,
+      "sha256": "18df780a641be67a17f58ba28f67cf199be03726f049f9b206b33ed027948c84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 774,
+      "sha256": "cee3dee31dd70fb90c71cff4b96060924953cabf42a298b4eefd2db24f344cc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/controls.json",
+      "change": "added",
+      "bytes": 14496,
+      "sha256": "c9e49cade4552441a710cfde60aa83bc731582b07cfb4a58ffcfe7ef40acb5bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/execution.json",
+      "change": "added",
+      "bytes": 14185,
+      "sha256": "f48d1a8e7741acc2ab20659dbd9fb122df1e3ff159e2981fb86e981aa8ad1310",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/streams.json",
+      "change": "added",
+      "bytes": 1711,
+      "sha256": "7ebc1e09e1a7594d01e1f9d07080e687324b200d0f7051734aaea8df606b0af6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/summary.txt",
+      "change": "added",
+      "bytes": 370,
+      "sha256": "b6bfdcdf3f9a926c1628d46431df77f8a0ddcc4e0da997aea94815ed916887db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/result.json",
+      "change": "added",
+      "bytes": 12660,
+      "sha256": "2dc953b61783492718b363f0989aff661b8c882290705cee7d6583e57db4eb10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay/executions/20261122T063403Z-45001338/attempt.json",
+      "change": "added",
+      "bytes": 13393,
+      "sha256": "c43774fc9c180139968e7d16fc9f6989b6f1b4b852cd8ad75e89fe25c49c930b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/replay.log",
+      "change": "added",
+      "bytes": 191,
+      "sha256": "84c9adad13ac0a3e56765cf0bd8ad21155312b229e738b0f1b781e179550e99e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/364-avro-enum-namespace/records/opening/run.json",
+      "change": "added",
+      "bytes": 3085,
+      "sha256": "1a29bda26e1aa6e75657871bb8aa06677b20efb7472aaea3465d71267107c17f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T06:36:00+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/364-avro-enum-namespace/records/original-build/build-fix.json",
+      "examples/364-avro-enum-namespace/records/original-build/build-parent.json",
+      "examples/364-avro-enum-namespace/records/original-build/fix-TEST-org.apache.avro.io.parsing.TestResolvingGrammarGenerator.xml.gz",
+      "examples/364-avro-enum-namespace/records/original-build/fix-upstream.json",
+      "examples/364-avro-enum-namespace/records/original-build/parent-TEST-org.apache.avro.io.parsing.TestResolvingGrammarGenerator.xml.gz",
+      "examples/364-avro-enum-namespace/records/original-build/parent-upstream.json",
+      "examples/364-avro-enum-namespace/records/opening/finite.log",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/completion.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/plan.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/control-fix-jdk21.stderr",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/control-fix-jdk21.stdout",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/controls.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/execution.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/streams.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier-output.txt",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier.stderr",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/records/verifier.stdout",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/20261122T063415Z-0f50d00a/result.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/executions/20261122T063415Z-0f50d00a/attempt.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/executions/20261122T063415Z-0f50d00a/checker.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix/executions/20261122T063415Z-0f50d00a/correspondence.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-fix.log",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/completion.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/plan.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/control-parent-jdk21.stderr",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/control-parent-jdk21.stdout",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/controls.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/execution.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/streams.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier-output.txt",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier.stderr",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/records/verifier.stdout",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/20261122T063412Z-4b673df3/result.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/executions/20261122T063412Z-4b673df3/attempt.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/executions/20261122T063412Z-4b673df3/checker.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent/executions/20261122T063412Z-4b673df3/correspondence.json",
+      "examples/364-avro-enum-namespace/records/opening/preserved-parent.log",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/completion.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/plan.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/control-fix-jdk21.stderr",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/control-fix-jdk21.stdout",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/controls.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/execution.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/streams.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier-output.txt",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier.stderr",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/records/verifier.stdout",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/20261122T063409Z-a314c642/result.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/executions/20261122T063409Z-a314c642/attempt.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/executions/20261122T063409Z-a314c642/checker.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix/executions/20261122T063409Z-a314c642/correspondence.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-fix.log",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/completion.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/plan.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/control-parent-jdk21.stderr",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/control-parent-jdk21.stdout",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/controls.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/execution.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/streams.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier-output.txt",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier.stderr",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/records/verifier.stdout",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/20261122T063407Z-0a2860f6/result.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/executions/20261122T063407Z-0a2860f6/attempt.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/executions/20261122T063407Z-0a2860f6/checker.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent/executions/20261122T063407Z-0a2860f6/correspondence.json",
+      "examples/364-avro-enum-namespace/records/opening/renamed-parent.log",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/completion.json",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/plan.json",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-fix-jdk21.stderr",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-fix-jdk21.stdout",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-parent-jdk21.stderr",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/control-parent-jdk21.stdout",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/controls.json",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/execution.json",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/streams.json",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/records/summary.txt",
+      "examples/364-avro-enum-namespace/records/opening/replay/20261122T063403Z-45001338/result.json",
+      "examples/364-avro-enum-namespace/records/opening/replay/executions/20261122T063403Z-45001338/attempt.json",
+      "examples/364-avro-enum-namespace/records/opening/replay.log",
+      "examples/364-avro-enum-namespace/records/opening/run.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 1651327,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "1e292a1cf678e2478b5e0ec34c706d4bfb984c1f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1e292a1cf678e2478b5e0ec34c706d4bfb984c1f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T063417Z-844648b91a323f51",
+      "outputs": "20261122T063417Z-88553582f7578f24",
+      "diff": "20261122T063417Z-919915f654204c0a",
+      "workdir": "20261122T063421Z-837848f1743db1e1"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-062459-build-and-check-364-avro-enum-namespace"
+}

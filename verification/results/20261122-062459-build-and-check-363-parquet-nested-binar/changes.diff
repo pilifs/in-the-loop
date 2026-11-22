@@ -1,0 +1,259 @@
+--- /dev/null
++++ b/examples/363-parquet-nested-binary/records/original-build/fix-upstream.json
+@@ -0,0 +1,124 @@
++{
++  "revision": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
++  "side": "fix",
++  "buildTool": {
++    "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++    "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++    "member": "usr/bin/thrift",
++    "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++  },
++  "prerequisites": [],
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-Dthrift.executable=/work/tools/thrift",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "parquet-variant",
++      "-am",
++      "-DskipTests",
++      "-Dinvoker.skip=true",
++      "install"
++    ],
++    "exit": 1,
++    "seconds": 21.67,
++    "logSha256": "e204422ae70ee3181245ddf1da47c838adbeab3e7e3af9b7145d1985f23620a1",
++    "errors": [
++      "[ERROR] Step 'removeUnusedImports' found problem in 'src/test/java/org/apache/parquet/format/TestUtil.java':",
++      "[ERROR] Apache Parquet Format Structures ................... FAILURE [  8.478 s]",
++      "[ERROR] BUILD FAILURE",
++      "[ERROR] Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:2.30.0:check (default) on project parquet-format-structures: Execution default of goal com.diffplug.spotless:spotless-maven-plugin:2.30.0:check failed: java.lang.reflect.InvocationTargetException: 'com.sun.tools.javac.tree.JCTree com.sun.tools.javac.tree.JCTree$JCImport.getQualifiedIdentifier()' -> [Help 1]",
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginExecutionException",
++      "[ERROR] ",
++      "[ERROR] After correcting the problems, you can resume the build with the command"
++    ],
++    "tail": [
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginExecutionException",
++      "[ERROR] ",
++      "[ERROR] After correcting the problems, you can resume the build with the command",
++      "[ERROR]   mvn <args> -rf :parquet-format-structures"
++    ]
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-Dthrift.executable=/work/tools/thrift",
++        "-f",
++        "parquet-variant/pom.xml",
++        "-Dmaven.build.cache.enabled=false",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=TestVariantObjectBuilder#testMixedBinaryBuilder",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 2.46,
++      "logSha256": "09612951eba6c5a12f79c9f594751df6fbd06172cae84f32ef4a546985080ce5",
++      "errors": [
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal on project parquet-variant: Could not resolve dependencies for project org.apache.parquet:parquet-variant:jar:1.17.0-SNAPSHOT",
++        "[ERROR] dependency: org.apache.parquet:parquet-common:jar:1.17.0-SNAPSHOT (compile)",
++        "[ERROR] \tCould not find artifact org.apache.parquet:parquet-common:jar:1.17.0-SNAPSHOT in isolated-central (http://127.0.0.1:46399/)",
++        "[ERROR] dependency: org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT (compile)",
++        "[ERROR] \tCould not find artifact org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT in isolated-central (http://127.0.0.1:46399/)",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:"
++      ],
++      "tail": [
++        "[ERROR] dependency: org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT (compile)",
++        "[ERROR] \tCould not find artifact org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT in isolated-central (http://127.0.0.1:46399/)",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++      ]
++    },
++    "packagedTestSupport": null,
++    "testPrerequisites": [],
++    "testSourceSha256": {
++      "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java": "2a51585b442dc471a7ac96a8a538420a776b2cc842d35c98198aee1e7b4cb675"
++    },
++    "transplant": [],
++    "named": {
++      "TestVariantObjectBuilder#testMixedBinaryBuilder": []
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1656,
++    "upstreamHttp404": 6
++  }
++}
+--- /dev/null
++++ b/examples/363-parquet-nested-binary/records/original-build/parent-upstream.json
+@@ -0,0 +1,129 @@
++{
++  "revision": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
++  "side": "parent",
++  "buildTool": {
++    "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++    "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++    "member": "usr/bin/thrift",
++    "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++  },
++  "prerequisites": [],
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-Dthrift.executable=/work/tools/thrift",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "parquet-variant",
++      "-am",
++      "-DskipTests",
++      "-Dinvoker.skip=true",
++      "install"
++    ],
++    "exit": 1,
++    "seconds": 116.27,
++    "logSha256": "2d802e165565377825022452313c395cc6bfb7e791fa3c62a96ebfcbaff3b288",
++    "errors": [
++      "[ERROR] Step 'removeUnusedImports' found problem in 'src/test/java/org/apache/parquet/format/TestUtil.java':",
++      "[ERROR] Apache Parquet Format Structures ................... FAILURE [ 29.044 s]",
++      "[ERROR] BUILD FAILURE",
++      "[ERROR] Failed to execute goal com.diffplug.spotless:spotless-maven-plugin:2.30.0:check (default) on project parquet-format-structures: Execution default of goal com.diffplug.spotless:spotless-maven-plugin:2.30.0:check failed: java.lang.reflect.InvocationTargetException: 'com.sun.tools.javac.tree.JCTree com.sun.tools.javac.tree.JCTree$JCImport.getQualifiedIdentifier()' -> [Help 1]",
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginExecutionException",
++      "[ERROR] ",
++      "[ERROR] After correcting the problems, you can resume the build with the command"
++    ],
++    "tail": [
++      "[ERROR] ",
++      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++      "[ERROR] ",
++      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginExecutionException",
++      "[ERROR] ",
++      "[ERROR] After correcting the problems, you can resume the build with the command",
++      "[ERROR]   mvn <args> -rf :parquet-format-structures"
++    ]
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-Dthrift.executable=/work/tools/thrift",
++        "-f",
++        "parquet-variant/pom.xml",
++        "-Dmaven.build.cache.enabled=false",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=TestVariantObjectBuilder#testMixedBinaryBuilder",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 5.23,
++      "logSha256": "9d0d658b057bb604b4475ca96d9287007756e9888bf71cfffbd792b7501e9ce3",
++      "errors": [
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal on project parquet-variant: Could not resolve dependencies for project org.apache.parquet:parquet-variant:jar:1.17.0-SNAPSHOT",
++        "[ERROR] dependency: org.apache.parquet:parquet-common:jar:1.17.0-SNAPSHOT (compile)",
++        "[ERROR] \tCould not find artifact org.apache.parquet:parquet-common:jar:1.17.0-SNAPSHOT in isolated-central (http://127.0.0.1:33409/)",
++        "[ERROR] dependency: org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT (compile)",
++        "[ERROR] \tCould not find artifact org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT in isolated-central (http://127.0.0.1:33409/)",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:"
++      ],
++      "tail": [
++        "[ERROR] dependency: org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT (compile)",
++        "[ERROR] \tCould not find artifact org.apache.parquet:parquet-column:jar:1.17.0-SNAPSHOT in isolated-central (http://127.0.0.1:33409/)",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException"
++      ]
++    },
++    "packagedTestSupport": null,
++    "testPrerequisites": [],
++    "testSourceSha256": {
++      "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java": "2a51585b442dc471a7ac96a8a538420a776b2cc842d35c98198aee1e7b4cb675"
++    },
++    "transplant": [
++      "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java"
++    ],
++    "named": {
++      "TestVariantObjectBuilder#testMixedBinaryBuilder": []
++    }
++  },
++  "mirror": {
++    "cachedRequests": 614,
++    "from https://repo.maven.apache.org/maven2/": 1042,
++    "downloadedBytes": 103616598,
++    "downloadedFiles": 1042,
++    "upstreamHttp404": 6
++  }
++}

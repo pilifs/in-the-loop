@@ -1,0 +1,170 @@
+{
+  "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+  "side": "parent",
+  "prerequisites": [],
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 128.4,
+    "logSha256": "45416340bf9550d9cd4498f2908bc816270c515f3931f0edb8db8578b4c73ff1",
+    "errors": [],
+    "tail": [
+      "[INFO] Installing /project/pom.xml to /work/repository/org/apache/commons/commons-csv/1.10.0-SNAPSHOT/commons-csv-1.10.0-SNAPSHOT.pom",
+      "[INFO] Installing /project/target/commons-csv-1.10.0-SNAPSHOT-sources.jar to /work/repository/org/apache/commons/commons-csv/1.10.0-SNAPSHOT/commons-csv-1.10.0-SNAPSHOT-sources.jar",
+      "[INFO] Installing /project/target/commons-csv-1.10.0-SNAPSHOT-test-sources.jar to /work/repository/org/apache/commons/commons-csv/1.10.0-SNAPSHOT/commons-csv-1.10.0-SNAPSHOT-test-sources.jar",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  02:06 min",
+      "[INFO] Finished at: 2026-11-22T06:31:28Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 4.7,
+    "logSha256": "5d0860671774eadf18543f2619951f98766bdb0475bc8856f1ad541985edcf60",
+    "errors": [],
+    "tail": [
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ commons-csv ---",
+      "[INFO] No dependencies found.",
+      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  3.190 s",
+      "[INFO] Finished at: 2026-11-22T06:31:33Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "target/commons-csv-1.10.0-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "target/commons-csv-1.10.0-SNAPSHOT.jar",
+        "sha256": "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "org/apache/commons/csv/Lexer.class",
+    "selectedClassSha256": "7f0506de439cdfd787a9054e20712035594b16e5478f948eaee4b142833a0c6f",
+    "sourceSha256": "eecc99ed6f163c3b97d1ad00b1e7a3bfd0b64c9b9ccc16fb93d16f6f599d6d09"
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "pom.xml",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=JiraCsv288Test#testParseWithDoublePipeDelimiter,JiraCsv288Test#testParseWithDoublePipeDelimiterQuoted",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 15.17,
+      "logSha256": "7596c84734e15a502e9f1a6f12a8751235d97f41ffd962c7e8c3284200abb21d",
+      "errors": [
+        "[ERROR] Tests run: 2, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.082 s <<< FAILURE! - in org.apache.commons.csv.issues.JiraCsv288Test",
+        "[ERROR] testParseWithDoublePipeDelimiterQuoted  Time elapsed: 0.029 s  <<< FAILURE!",
+        "[ERROR] testParseWithDoublePipeDelimiter  Time elapsed: 0.001 s  <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   JiraCsv288Test.testParseWithDoublePipeDelimiter:44 expected: <a,b,c,d,,f> but was: <a,b|c,d,|f>",
+        "[ERROR]   JiraCsv288Test.testParseWithDoublePipeDelimiterQuoted:95 expected: <a,b||c,d,,f> but was: <a,b||c,d,|f>",
+        "[ERROR] Tests run: 2, Failures: 2, Errors: 0, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project commons-csv: There are test failures.",
+        "[ERROR] ",
+        "[ERROR] Please refer to /project/target/surefire-reports for the individual test results.",
+        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream."
+      ],
+      "tail": [
+        "[ERROR] Please refer to /project/target/surefire-reports for the individual test results.",
+        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testPrerequisites": [],
+    "testSourceSha256": {
+      "src/test/java/org/apache/commons/csv/issues/JiraCsv288Test.java": "ac7b37613e0cf2f48d739ee52573ac0aeee5bc2dd5a8047c66aa45bf08e051ab"
+    },
+    "transplant": [
+      "src/test/java/org/apache/commons/csv/issues/JiraCsv288Test.java"
+    ],
+    "named": {
+      "JiraCsv288Test#testParseWithDoublePipeDelimiter": [
+        {
+          "status": "failure",
+          "class": "org.apache.commons.csv.issues.JiraCsv288Test",
+          "method": "testParseWithDoublePipeDelimiter",
+          "xmlSha256": "574927b93d0cc5237556e4b378cab90e26f5fafea71d93152f2165b7500b1c9a",
+          "failureType": "org.opentest4j.AssertionFailedError",
+          "message": "expected: <a,b,c,d,,f> but was: <a,b|c,d,|f>",
+          "atNamedTest": true
+        }
+      ],
+      "JiraCsv288Test#testParseWithDoublePipeDelimiterQuoted": [
+        {
+          "status": "failure",
+          "class": "org.apache.commons.csv.issues.JiraCsv288Test",
+          "method": "testParseWithDoublePipeDelimiterQuoted",
+          "xmlSha256": "574927b93d0cc5237556e4b378cab90e26f5fafea71d93152f2165b7500b1c9a",
+          "failureType": "org.opentest4j.AssertionFailedError",
+          "message": "expected: <a,b||c,d,,f> but was: <a,b||c,d,|f>",
+          "atNamedTest": true
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1576,
+    "from https://repo.maven.apache.org/maven2/": 784,
+    "downloadedBytes": 40679839,
+    "downloadedFiles": 784
+  }
+}

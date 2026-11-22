@@ -1,0 +1,288 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-062500-build-and-check-367-avro-union-array-def",
+  "title": "Build and check 367 avro union array default at opening",
+  "status": "failed",
+  "summary": "failed: 2 failed step(s) in 2m19s, peak 522.1 MiB (estimated 5m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (Build unchanged artifacts and run the original regression) exited 1, expected 0",
+    "step 1 (Build unchanged artifacts and run the original regression) was held back 2m03s by its 2-CPU quota in 2m19s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Measure four ordinary native claims and their finite JVM grid) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-062500-build-and-check-367-avro-union-array-def.json",
+    "sha256": "60c1c111c2aa11f07461214231706c6d585fe640b33b6bd25d99724f0573d092",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-062500-build-and-check-367-avro-union-array-def",
+      "title": "Build and check 367 avro union array default at opening",
+      "description": "Build both pinned unmodified production revisions for PR 3730. Run all named landed tests on each, including parameter-specific expectations and passing controls. At the pinned opening fingerprint execute the frozen ordinary strict properties and finite JVM cells through the public planner and retain measurements for each outcome.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "367"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:25:00+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Build unchanged artifacts and run the original regression",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/original-build",
+          "cwd": "."
+        },
+        {
+          "name": "Measure four ordinary native claims and their finite JVM grid",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/367-avro-union-array-default/records/original-build",
+        "examples/367-avro-union-array-default/records/opening"
+      ]
+    }
+  },
+  "sourceCommit": "3f7cf6c73b47e626bd2daa5614a8e26b53f17002",
+  "startedAt": "2026-11-22T06:26:19+00:00",
+  "finishedAt": "2026-11-22T06:31:39+00:00",
+  "wallSeconds": 320.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2985157,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 547475456,
+    "wallSeconds": 139.5,
+    "cpuSeconds": 94.2,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.47
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 166.053,
+      "cpuSeconds": 166.293,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2227351552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "7647436ef72a1abf934351ec92f5755f7100d5730c36da09e366c2bb28cb587b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-367-avro-union-array-def/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 45s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/original-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 139.314,
+      "cpuSeconds": 94.104,
+      "cpuThrottledSeconds": 123.323,
+      "peakMemoryBytes": 547475456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-unchanged-artifacts-and.log",
+        "lines": 2,
+        "bytes": 29,
+        "sha256": "95597cb528d2800d70de36673d7200e42867856a36427e80eb2bf006b9bb015c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "367 parent open",
+        "367 fix open"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.087,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16941056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-four-ordinary-native-c.log",
+        "lines": 17,
+        "bytes": 1565,
+        "sha256": "5d411afa021a924e8016338d046bdf7e92bfd882cf529cf5c8d23577bc35f6cb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-367-avro-union-array-def/lib/benchmark/java-domain-proof/public_run.py\", line 110, in <module>",
+        "    run(args.example,args.stage,args.seconds)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-367-avro-union-array-def/lib/benchmark/java-domain-proof/public_run.py\", line 66, in run",
+        "    upstream.bind(case,folder/\"records/original-build\")",
+        "    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-367-avro-union-array-def/lib/benchmark/organic-java/upstream.py\", line 435, in bind",
+        "    record = json.loads(path.read_text())",
+        "                        ~~~~~~~~~~~~~~^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 788, in read_text",
+        "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+        "         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 772, in open",
+        "    return io.open(self, mode, buffering, encoding, errors, newline)",
+        "           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-367-avro-union-array-def/examples/367-avro-union-array-default/records/original-build/build-parent.json'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/367-avro-union-array-default/records/original-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 12185,
+      "sha256": "a7f2fa8214f79327b0d2425fe544db1a3160e3dcf5aa13a95544a81a3be955e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/original-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 12405,
+      "sha256": "596adeeed07637d69f70bdceed8bb54b5fd9ac5f246cd3fb8663d778c9ccb719",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T06:32:15+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/367-avro-union-array-default/records/original-build/fix-upstream.json",
+      "examples/367-avro-union-array-default/records/original-build/parent-upstream.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "1e292a1cf678e2478b5e0ec34c706d4bfb984c1f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1e292a1cf678e2478b5e0ec34c706d4bfb984c1f/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T063139Z-257844361cb03f54",
+      "outputs": "20261122T063139Z-28230903a4c5be6f",
+      "diff": "20261122T063139Z-297949375791f5b0",
+      "workdir": "20261122T063142Z-71683858b1936be4"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-367-avro-union-array-def"
+}

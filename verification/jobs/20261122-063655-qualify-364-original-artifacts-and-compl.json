@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-063655-qualify-364-original-artifacts-and-compl",
+  "title": "Qualify 364 original artifacts and complete the opening grid",
+  "description": "Recheck all sixteen parameterized original tests using their recorded named Surefire failures or passes and unchanged compiled JARs. Capture all four public claims on the frozen opening fingerprint and verify raw JVM outcomes.",
+  "kind": "real-world",
+  "capabilities": [
+    "build:from-source",
+    "original-upstream-test",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "364"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T06:36:55+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "maven",
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 364 --stage opening-qualified",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/364-avro-enum-namespace/records/opening-qualified"
+  ]
+}

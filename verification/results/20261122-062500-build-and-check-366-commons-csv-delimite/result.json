@@ -1,0 +1,915 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-062500-build-and-check-366-commons-csv-delimite",
+  "title": "Build and check 366 commons csv delimiter lookahead at opening",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 3m14s, peak 1.2 GiB (estimated 5m00s, 4.0 GiB); 86 output file(s) changed",
+  "attention": [
+    "step 1 (Build unchanged artifacts and run the original regression) was held back 3m03s by its 2-CPU quota in 3m02s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Measure four ordinary native claims and their finite JVM grid) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-062500-build-and-check-366-commons-csv-delimite.json",
+    "sha256": "10d03638056837bdc8ba5e615023878edcebee8272fcd93040688e1c1efd9177",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-062500-build-and-check-366-commons-csv-delimite",
+      "title": "Build and check 366 commons csv delimiter lookahead at opening",
+      "description": "Build both pinned unmodified production revisions for PR 218. Run all named landed tests on each, including parameter-specific expectations and passing controls. At the pinned opening fingerprint execute the frozen ordinary strict properties and finite JVM cells through the public planner and retain measurements for each outcome.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "366"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:25:00+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Build unchanged artifacts and run the original regression",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/commons-csv\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 366 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/366-commons-csv-delimiter-lookahead/records/original-build",
+          "cwd": "."
+        },
+        {
+          "name": "Measure four ordinary native claims and their finite JVM grid",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 366 --stage opening",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/366-commons-csv-delimiter-lookahead/records/original-build",
+        "examples/366-commons-csv-delimiter-lookahead/records/opening"
+      ]
+    }
+  },
+  "sourceCommit": "3f7cf6c73b47e626bd2daa5614a8e26b53f17002",
+  "startedAt": "2026-11-22T06:26:19+00:00",
+  "finishedAt": "2026-11-22T06:32:33+00:00",
+  "wallSeconds": 374.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2985157,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1331916800,
+    "wallSeconds": 194.0,
+    "cpuSeconds": 154.1,
+    "memoryOfEstimate": 0.31,
+    "durationOfEstimate": 0.65
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/commons-csv\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 366 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/366-commons-csv-delimiter-lookahead/records/original-build",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 182.213,
+      "cpuSeconds": 135.396,
+      "cpuThrottledSeconds": 183.194,
+      "peakMemoryBytes": 1331916800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-unchanged-artifacts-and.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "b26c3d1011bf9cb4e86826610f4e7af3a1a81f90f002889e89b996a885b3cfd1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "366 parent qualified",
+        "366 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 366 --stage opening",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 11.822,
+      "cpuSeconds": 18.751,
+      "cpuThrottledSeconds": 0.962,
+      "peakMemoryBytes": 151072768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-four-ordinary-native-c.log",
+        "lines": 7,
+        "bytes": 637,
+        "sha256": "d53610beffbbdfa41a7661f628a55f3bd360658d9843955342862c960885a8ee",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-366-commons-csv-delimite/lib/benchmark/java-domain-proof/public_run.py\", line 110, in <module>",
+        "    run(args.example,args.stage,args.seconds)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-366-commons-csv-delimite/lib/benchmark/java-domain-proof/public_run.py\", line 94, in run",
+        "    raise ValueError(\"the public replay or finite evidence is incomplete\")",
+        "ValueError: the public replay or finite evidence is incomplete"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-fix.json",
+      "change": "added",
+      "bytes": 5396,
+      "sha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-parent.json",
+      "change": "added",
+      "bytes": 5281,
+      "sha256": "a35228d6735ca45a21ee4c6383d9777631635f48ce9caaee6396700768ac4bf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/original-build/fix-TEST-org.apache.commons.csv.issues.JiraCsv288Test.xml.gz",
+      "change": "added",
+      "bytes": 1667,
+      "sha256": "fe5fbbce911bdb29043af313b5849665a7c05327599bbd977b765b7ab34e8b78",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/original-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 5569,
+      "sha256": "ec3f15208a21f84983184d71524267d86792fc8376c9aade2f5176f4591438a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/original-build/parent-TEST-org.apache.commons.csv.issues.JiraCsv288Test.xml.gz",
+      "change": "added",
+      "bytes": 1821,
+      "sha256": "5e898abe80e729e59edf14c14b5f929ac298a8c48004a1dfa16c55c28adb53ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/original-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 7401,
+      "sha256": "f9da6390ab9f7f5d3044435b3063f84b67c38bc1bc9253238c57b6172bfcd163",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b83196c189222e17ad994ff2868a05a2b8673f6ac448f1fbee30ca18a576bbc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/plan.json",
+      "change": "added",
+      "bytes": 7724,
+      "sha256": "6ea8115ff7b930328a2203bf5fd11663bcb09ac009292563b2042b3bf9972b51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 2851,
+      "sha256": "e89471c5be06fac6844c1304c9aa639ec1ca3a4a85ab06f2425f75d0d4592d48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/controls.json",
+      "change": "added",
+      "bytes": 11396,
+      "sha256": "0de3fa90a37ab9a5fed452bbde6fa9218a70f497591e2e5ef529071bb39cab7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/execution.json",
+      "change": "added",
+      "bytes": 38400,
+      "sha256": "1703251d03e4c4f723917f640492a86cca6588cb256f298077dd29ba966a8efc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "79d7798f9a246d8a79990b9ee826a14602fd2cc43f39f483fd5641cbc8b90fd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 291,
+      "sha256": "7e84997c6804764fec1fa690aae383cf2283061a0fd4f467e0d326c17ce3b401",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier.json",
+      "change": "added",
+      "bytes": 26371,
+      "sha256": "1c316017d3afce7a30d798774b0ebe70ed1d54fee36aa61fc7f5414f5c065227",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5268,
+      "sha256": "cfde16681e7ac5ef75a848346323d5d530411d361047a7ede052c31ce79f9300",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/result.json",
+      "change": "added",
+      "bytes": 16756,
+      "sha256": "c67564c2984dfc9fb0c2bb0ce020414e7e1f3f29f0667997b637df6d82f58f00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/executions/20261122T063228Z-19e8d286/attempt.json",
+      "change": "added",
+      "bytes": 23302,
+      "sha256": "72ee093d6d9777f6907a2ef8610454108fd6fe5de915c34f704566f7ca304907",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/executions/20261122T063228Z-19e8d286/checker.json",
+      "change": "added",
+      "bytes": 6608,
+      "sha256": "d468d943aa66f55e022f5960bbf211840b250e8ab4346cd7f914043a584b4f76",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/executions/20261122T063228Z-19e8d286/correspondence.json",
+      "change": "added",
+      "bytes": 2009,
+      "sha256": "724aeb7aa7cc9383a0639ce2c0cc433983fdb2b5b5acc9947eac1928b008c135",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix.log",
+      "change": "added",
+      "bytes": 234,
+      "sha256": "04252bce9e342291285e1bdc475b8d124dad4f1aa9047fa042f753f9522f7b84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5f2894a0fb35dda58146c1ccedec07c19e87a8b29eca2a9f2abfc506f5eeadd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/plan.json",
+      "change": "added",
+      "bytes": 7629,
+      "sha256": "af6cadfa383dbeafad5e1739a9a75468772bb90b4d811741b538f3a66d0df575",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2828,
+      "sha256": "f070beb4f5481a84eba0ebbd3f19bb60a1e8cfda8d020766e4697500f1d22ebc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/controls.json",
+      "change": "added",
+      "bytes": 11213,
+      "sha256": "2c6f7f60d946faf0af0bb9b16ec51489e1ed47060ecac25bde1b53b52138e5e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/execution.json",
+      "change": "added",
+      "bytes": 41506,
+      "sha256": "6bd86a8c0e82b83d0da6187d718be7acd691081263f1ebfe5a5cf634ac49ddcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "7489bda04aba3ee3ccbdf4de60d48c6c0c7c1b240469b3340f66118fab64ad6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 552,
+      "sha256": "dca68103d683f0890322d463df1e73931041310f0a5c6e28c0b17b34e26349e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier.json",
+      "change": "added",
+      "bytes": 26967,
+      "sha256": "009347f50e3a85e962c4c74402b80f56e10467761ea2ad9d440bd527c4dcf9ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5754,
+      "sha256": "d6e9b5b3930fb9dd6f53e939444df6f4d663c5278f5a1aa47ff6d2421c1741ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/result.json",
+      "change": "added",
+      "bytes": 17610,
+      "sha256": "7105806cbfbe2d310343872954083b858ea2fcdd301d9805cfe2bef775196e85",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/attempt.json",
+      "change": "added",
+      "bytes": 23485,
+      "sha256": "e93ff1355d1e4e7ac717d97bdf4f82333e1d4288709f0841c30e64ce54de54e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/checker.json",
+      "change": "added",
+      "bytes": 7130,
+      "sha256": "15c6851a07ea8ea84b1ee38e5ea37d5efaceb5978035df268baab834da026c37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/correspondence.json",
+      "change": "added",
+      "bytes": 2012,
+      "sha256": "91136a0d3a8db75deb9652e9a491cfcd42376a6a89e524e2ce20a7e74f3df9af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/replay.json",
+      "change": "added",
+      "bytes": 2119,
+      "sha256": "a23eda5a387d11be56fd11cf28a13f5f7ba438b9c0ccbd1632f7c4eab4451265",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent.log",
+      "change": "added",
+      "bytes": 239,
+      "sha256": "d7b0bc473f76d378a5bff2ce09a0059b81f9b17efac633ac173f13c3d8712371",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/finite.log",
+      "change": "added",
+      "bytes": 70,
+      "sha256": "a7468d3c33e5296da84dc5d0e5ca10bc2db4c7b2a4d5ceed65653e80657f0171",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "add6befcfb4c8801d16a29cd2200bc00cc9f10ec887635e75dbaeba46e859895",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/plan.json",
+      "change": "added",
+      "bytes": 7738,
+      "sha256": "d8861796a6c5b5a7c99af6fa888ee5846892518f9238ffe320dd22cc332d4d9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 2851,
+      "sha256": "e89471c5be06fac6844c1304c9aa639ec1ca3a4a85ab06f2425f75d0d4592d48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/controls.json",
+      "change": "added",
+      "bytes": 11402,
+      "sha256": "ceb30d548536ad63416665f9836626b8214b39ef8d3ee3827ca54c23d8e37d1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/execution.json",
+      "change": "added",
+      "bytes": 38423,
+      "sha256": "2667f23af0f1c7e096084ad4ecd2c45a009703cf78a7df354292914941e07fb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "93adbe47fc8358170f88d3437d91752a8d6c8d54278cc7d77857cbf31b03a11f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 295,
+      "sha256": "e1410ccd5e113fe04acbd441c1e9c90bfde54fa9feab77b76a4ce05363a9cdb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier.json",
+      "change": "added",
+      "bytes": 26398,
+      "sha256": "672fa84a954264b6377404160d3a9f47946e25f4cf1ec67392c847a01e612ec7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5284,
+      "sha256": "b9370d2e9445e1d10d7215d7a3c0ecbf785cb9a76715414dbe7f62494d1f78a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/result.json",
+      "change": "added",
+      "bytes": 16783,
+      "sha256": "640fe6957b47367761a79d88d1cb33e8acd0ebaf6028b11c9a8023b940158135",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/executions/20261122T063231Z-daa7c0fb/attempt.json",
+      "change": "added",
+      "bytes": 23309,
+      "sha256": "090aa9e3c427bed4de09f79d7ed9fcec6816594d27060221b14391c65beafd42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/executions/20261122T063231Z-daa7c0fb/checker.json",
+      "change": "added",
+      "bytes": 6626,
+      "sha256": "2e7e80be0716fe6364ab631bd7858967519929a2e06e5d0fa3eeb5e0af880319",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/executions/20261122T063231Z-daa7c0fb/correspondence.json",
+      "change": "added",
+      "bytes": 2008,
+      "sha256": "dae9dfb0bf117f08114839351840d408f7cb2c38cf0678ef156cb3dd1332a7ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix.log",
+      "change": "added",
+      "bytes": 240,
+      "sha256": "d8e17c17bdf70ce7bc57351ded3b63d75aeb8608820a868473723181b310fc5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4d7cc8c287d9fc870d56c46ad023ff6be04b2cdb83d970370941e91d5948aa33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/plan.json",
+      "change": "added",
+      "bytes": 7647,
+      "sha256": "64b3f47ce56b7ea09160cf1f073fa23f8244e52ecaf100a20cbe2b3e50ae16fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2828,
+      "sha256": "f070beb4f5481a84eba0ebbd3f19bb60a1e8cfda8d020766e4697500f1d22ebc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/controls.json",
+      "change": "added",
+      "bytes": 11219,
+      "sha256": "66fdb1f3bd0920f50fa3a5e550a9695a6d1a2c0816a9d3cd978687e6e18a9a51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/execution.json",
+      "change": "added",
+      "bytes": 38279,
+      "sha256": "93657cb50d033345406db8dd583c4bd86a361ed4845299d0dd159bd04c49fb75",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "7b89ec4f7096309b1657d35cc75dea51586905dddd4cafab685a2ab2c3be4f54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 295,
+      "sha256": "e1410ccd5e113fe04acbd441c1e9c90bfde54fa9feab77b76a4ce05363a9cdb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier.json",
+      "change": "added",
+      "bytes": 26455,
+      "sha256": "c71dfacb576cb479f9b8b9df75a65ff01073d9d9be7b417748e8426b47b7f566",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5284,
+      "sha256": "410d86c6ede04f7d834142144cd7274c19389faeeba7b5a013d7846c0c7621d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/result.json",
+      "change": "added",
+      "bytes": 16837,
+      "sha256": "a64768fcc4e8dab898a0cab8bb2a4b2fd771caa38cb1f16056b87ca0ddcd27af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/executions/20261122T063230Z-01000721/attempt.json",
+      "change": "added",
+      "bytes": 23373,
+      "sha256": "3f6315bfa329e945cffa37c8258a0cd57d501767abbbd6a47cd1af59b27cf8d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/executions/20261122T063230Z-01000721/checker.json",
+      "change": "added",
+      "bytes": 6635,
+      "sha256": "a510edd7778a5d2f5b567c0a6c9101e24a74ab310fa5a9e9cf4fc46ce2066dc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/executions/20261122T063230Z-01000721/correspondence.json",
+      "change": "added",
+      "bytes": 2011,
+      "sha256": "89e9d3a66131e191cd3c35d39e7b0fe1801f747c1411087f9f8b0ef8146557ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent.log",
+      "change": "added",
+      "bytes": 249,
+      "sha256": "5648437602a83b04c0cc60874903e3c31ff2a66c4e56969dcc56c22766ce0fa2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9664adb47feaa66b71024431c6494c686f8cbed92996ab0d90c05ad19327fca7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/plan.json",
+      "change": "added",
+      "bytes": 8070,
+      "sha256": "48b8184ed1c622c2a3eb1670332d90f285c6c69718cc90a42bb6d74f2fc7f143",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 2851,
+      "sha256": "e89471c5be06fac6844c1304c9aa639ec1ca3a4a85ab06f2425f75d0d4592d48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2828,
+      "sha256": "f070beb4f5481a84eba0ebbd3f19bb60a1e8cfda8d020766e4697500f1d22ebc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/controls.json",
+      "change": "added",
+      "bytes": 22534,
+      "sha256": "0438542bce3341a9c038073ee72c1fede59f22bcdbfa9f745f8c3dbb71eb1c59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/execution.json",
+      "change": "added",
+      "bytes": 22584,
+      "sha256": "d4d669c38db7ec19fcbeccdea80f4789c97af3dade7bef583a8d76d59e933c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/streams.json",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "c8ef58107362d541694309cf98a1262e12d24e71739aa65d409cc2b8a7656132",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/summary.txt",
+      "change": "added",
+      "bytes": 480,
+      "sha256": "1a447afd4a03418745193485eddcfe460da16a851cb42bd4e92bc7965ebac9c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/result.json",
+      "change": "added",
+      "bytes": 9401,
+      "sha256": "6f867700ada2248f3497a1a0a091300c971cb2977d82113b883a4d51fc3c1a38",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/executions/20261122T063222Z-38c57c42/attempt.json",
+      "change": "added",
+      "bytes": 6817,
+      "sha256": "c2b42ab9ef11cadba267de0a2b7ef4cf9f40a767069cc10c5348c6a6e247bf7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/replay.log",
+      "change": "added",
+      "bytes": 215,
+      "sha256": "dbee294b1a019d33baeb0a899cb9005678ec14819f39d250e5f1a0bc93fbe84f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/366-commons-csv-delimiter-lookahead/records/opening/run.json",
+      "change": "added",
+      "bytes": 3066,
+      "sha256": "5752855f33a19e72de56da6b60b334bd4bb0b3ee2f4b2afab6b411ab9a3b8202",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T06:36:00+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-fix.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-parent.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/original-build/fix-TEST-org.apache.commons.csv.issues.JiraCsv288Test.xml.gz",
+      "examples/366-commons-csv-delimiter-lookahead/records/original-build/fix-upstream.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/original-build/parent-TEST-org.apache.commons.csv.issues.JiraCsv288Test.xml.gz",
+      "examples/366-commons-csv-delimiter-lookahead/records/original-build/parent-upstream.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/completion.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/plan.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/control-fix-jdk21.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/control-fix-jdk21.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/controls.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/execution.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/streams.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier-output.txt",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/records/verifier.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/20261122T063228Z-19e8d286/result.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/executions/20261122T063228Z-19e8d286/attempt.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/executions/20261122T063228Z-19e8d286/checker.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix/executions/20261122T063228Z-19e8d286/correspondence.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-fix.log",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/completion.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/plan.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/control-parent-jdk21.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/control-parent-jdk21.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/controls.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/execution.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/streams.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier-output.txt",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/records/verifier.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/20261122T063225Z-9bbf7d5c/result.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/attempt.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/checker.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/correspondence.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent/executions/20261122T063225Z-9bbf7d5c/replay.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/fields-parent.log",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/finite.log",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/completion.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/plan.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/control-fix-jdk21.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/control-fix-jdk21.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/controls.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/execution.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/streams.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier-output.txt",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/records/verifier.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/20261122T063231Z-daa7c0fb/result.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/executions/20261122T063231Z-daa7c0fb/attempt.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/executions/20261122T063231Z-daa7c0fb/checker.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix/executions/20261122T063231Z-daa7c0fb/correspondence.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-fix.log",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/completion.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/plan.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/control-parent-jdk21.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/control-parent-jdk21.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/controls.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/execution.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/streams.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier-output.txt",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/records/verifier.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/20261122T063230Z-01000721/result.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/executions/20261122T063230Z-01000721/attempt.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/executions/20261122T063230Z-01000721/checker.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent/executions/20261122T063230Z-01000721/correspondence.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/prefixes-parent.log",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/completion.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/plan.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-fix-jdk21.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-fix-jdk21.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-parent-jdk21.stderr",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/control-parent-jdk21.stdout",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/controls.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/execution.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/streams.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/records/summary.txt",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/20261122T063222Z-38c57c42/result.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay/executions/20261122T063222Z-38c57c42/attempt.json",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/replay.log",
+      "examples/366-commons-csv-delimiter-lookahead/records/opening/run.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "1e292a1cf678e2478b5e0ec34c706d4bfb984c1f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1e292a1cf678e2478b5e0ec34c706d4bfb984c1f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T063233Z-9608196896088214",
+      "outputs": "20261122T063233Z-986315e12b31eb81",
+      "diff": "20261122T063234Z-007243b52c239383",
+      "workdir": "20261122T063238Z-193099ce55ad130b"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-062500-build-and-check-366-commons-csv-delimite"
+}

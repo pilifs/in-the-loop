@@ -39,10 +39,10 @@ def measure(argv, output):
             "peakRssBytes":usage.ru_maxrss*1024, "command":argv, "log":output.name}
 
 
-def native(folder, task, argv, dest):
+def native(folder, task, argv, dest, budget=()):
     source = folder / "receipts" / task
     previous = set(source.glob("*/result.json"))
-    record = measure([*argv, "--task", task], dest/(task+".log"))
+    record = measure([*argv, "--task", task, *budget], dest/(task+".log"))
     results = set(source.glob("*/result.json")) - previous
     if len(results) != 1:
         raise ValueError(f"{task}: expected exactly one fresh qualified workflow result, found {len(results)}")
@@ -58,36 +58,42 @@ def native(folder, task, argv, dest):
     return record
 
 
-def run(number, stage, seconds):
+def run(number, stage, seconds, build):
     case = read(HERE/"cases.json")["cases"][number]
     folder = ROOT/"examples"/case["folder"]
     out = folder/"records"/stage
     out.mkdir(parents=True)
-    upstream.bind(case,folder/"records/original-build")
+    products = folder/"records"/build
+    for side in ("parent", "fix"):
+        upstream_result = read(products/(side+"-upstream.json"))
+        if not upstream.qualified_tests(case, side, upstream_result["upstreamTest"]["named"]):
+            raise ValueError(f"{number}: original named regression did not qualify on {side}")
+    upstream.bind(case,products)
     spec = read(folder/"target.json")
     checker = Path(os.environ["JVMCONTRACT"])
     pin = read(HERE/"opening.json")
     fingerprint = organic.baseline_inputs(pin["inputs"], ROOT)
-    if stage == "opening" and fingerprint != (pin["engineAndWorkflowFiles"], pin["engineAndWorkflowSha256"]):
+    if stage.startswith("opening") and fingerprint != (pin["engineAndWorkflowFiles"], pin["engineAndWorkflowSha256"]):
         raise ValueError("the opening workflow or engine inputs differ from the frozen inventory")
     receipt = {"schema":"java-domain-public-run/v1","stage":stage,"example":number,
                "sourceCommit":os.environ["VERIFY_SOURCE_COMMIT"],"libTree":os.environ["JVMCONTRACT_LIB_TREE"],
                "checkerSha256":digest(checker),"inventory":pin["inputs"],"fingerprint":fingerprint[1],
                "subjectJdk":spec["preparation"]["jdks"],"claims":{}}
     receipt["artifacts"] = {side:digest(folder/path) for side,path in spec["preparation"]["capturedBuilds"].items()}
-    argv = [sys.executable,"examples/tools/build.py",number,"--checker-seconds",str(seconds)]
+    argv = [sys.executable,"examples/tools/build.py",number]
+    budget = ["--checker-seconds",str(seconds)]
     receipt["replay"] = native(folder,"replay",argv,out)
     write(out/"run.json",receipt)
     tasks = [t["id"] for t in spec["tasks"] if t["kind"]=="prove"]
     finite = folder/"records/finite-proofs"
     previous = set(finite.glob("*"))
-    receipt["finite"] = measure([*argv,"--finite-domain","--tasks",",".join(tasks)],out/"finite.log")
+    receipt["finite"] = measure([*argv,"--finite-domain","--tasks",",".join(tasks),*budget],out/"finite.log")
     batches = set(finite.glob("*")) - previous
     if len(batches) == 1:
         batch, = batches
         shutil.copytree(batch,out/"finite")
     for task in tasks:
-        receipt["claims"][task] = native(folder,task,argv,out)
+        receipt["claims"][task] = native(folder,task,argv,out, budget)
         write(out/"run.json",receipt)
     if (receipt["replay"]["exit"] or receipt["finite"]["exit"] or
             any(not (out/"finite"/(t+".json")).is_file() for t in tasks)):
@@ -104,7 +110,8 @@ def run(number, stage, seconds):
 if __name__=="__main__":
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("example",choices=read(HERE/"cases.json")["cases"])
-    p.add_argument("--stage",required=True)
+    p.add_argument("--stage",choices=("opening","opening-qualified","final"),required=True)
+    p.add_argument("--build",choices=("original-build","qualified-build"),default="original-build")
     p.add_argument("--seconds",type=int,default=60)
     args=p.parse_args()
-    run(args.example,args.stage,args.seconds)
+    run(args.example,args.stage,args.seconds,args.build)
