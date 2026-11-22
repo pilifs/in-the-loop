@@ -1,0 +1,14 @@
+355 parent 64 firstFactory unverifiable outside the fragment: arraycopy of summarized array cells
+355 parent 64 typed unverifiable outside the fragment: arraycopy of summarized array cells
+355 parent 512 firstFactory verified None
+Traceback (most recent call last):
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-355-ordinary-factory-and-sche/lib/benchmark/domain-foundations/startup_probes.py", line 107, in <module>
+    for side in ("parent","fix"): run(a.example,side,a.output)
+                                  ~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-355-ordinary-factory-and-sche/lib/benchmark/domain-foundations/startup_probes.py", line 89, in run
+    row=native(exe,jdk,work,classes,out,"unwind-"+str(limit),"BytesSchema#"+method,
+               "verified" if limit==512 and method=="firstFactory" else None,jars,unwind=limit)
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261122-044515-trace-avro-355-ordinary-factory-and-sche/lib/benchmark/domain-foundations/schema_sets.py", line 100, in native
+    assumptions = [a["id"] for a in stated["assumptions"] if a["kind"] == "library"]
+                   ~^^^^^^
+KeyError: 'id'
