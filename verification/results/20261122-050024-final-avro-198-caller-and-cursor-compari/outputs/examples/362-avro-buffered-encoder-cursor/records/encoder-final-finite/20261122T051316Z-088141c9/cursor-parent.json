@@ -1,0 +1,422 @@
+{
+  "status": "refuted",
+  "entry": "organic.EncoderWindow#cursor(I)I",
+  "inputs": 16,
+  "differences": 2,
+  "sides": {
+    "parent": {
+      "commit": "0b74bd5e7a37ccdb42918a0ab7768e9292df5dab",
+      "entry": {
+        "entry": "organic.EncoderWindow#cursor(I)I",
+        "classSha256": "39952774758cdb374a9dc16f6b196b545758b59927912be99345003ea69141e5",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+        "subjectClassSha256": "45b6a9982b462d5647a2b002f4cba3ba7b62112fee9c7081f1cea644e2cef16d"
+      },
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "202d93792c0c147f7e6378a29542f68c3b429219fc31177e1083863ed450933b",
+          "role": "adapter"
+        },
+        {
+          "path": "built/avro-1.9.0-SNAPSHOT.jar",
+          "sha256": "d4728a000318587a727f958117c82598a50d9027e0b7537f882b2406691d291e",
+          "role": "original"
+        },
+        {
+          "path": "lib/org/apache/avro/avro-guava-dependencies/1.9.0-SNAPSHOT/avro-guava-dependencies-1.9.0-SNAPSHOT.jar",
+          "sha256": "064095af8f83306d1b9e57dc8c725674162e661b0957cb2a43abe31b28e1e0d0",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/com/github/stephenc/findbugs/findbugs-annotations/1.3.9-1/findbugs-annotations-1.3.9-1.jar",
+          "sha256": "1e651066ed9ae35d7e3001d635d1dbba1c2965db0e4e33e2c14ad610543f225c",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar",
+          "sha256": "440a9cb5ca95b215f953d3a20a6b1a10da1f09b529a9ddea5f8a4905ddab4f5a",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar",
+          "sha256": "74e7a07a76f2edbade29312a5a2ebccfa019128bc021ece3856d76197e9be0c2",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/com/thoughtworks/paranamer/paranamer/2.8/paranamer-2.8.jar",
+          "sha256": "688cb118a6021d819138e855208c956031688be4b47a24bb615becc63acedf07",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/xerial/snappy/snappy-java/1.1.2.6/snappy-java-1.1.2.6.jar",
+          "sha256": "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/apache/commons/commons-compress/1.13/commons-compress-1.13.jar",
+          "sha256": "2a8c2b97cd33211589197fb807d4461f75d80086c21271d62b8feb2df9651b98",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/tukaani/xz/1.6/xz-1.6.jar",
+          "sha256": "a594643d73cc01928cf6ca5ce100e094ea9d73af760a5d4fb6b75fa673ecec96",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/joda-time/joda-time/2.9.7/joda-time-2.9.7.jar",
+          "sha256": "2bcac56802ec8d6f16941ef8a8d5fee4032902ba9937549be220f0a06eb9f503",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/slf4j/slf4j-api/1.7.22/slf4j-api-1.7.22.jar",
+          "sha256": "3a4cd4969015f3beb4b5b4d81dbafc01765fb60b8a439955ca64d8476fef553e",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/slf4j/slf4j-simple/1.7.22/slf4j-simple-1.7.22.jar",
+          "sha256": "7605dbb722c612623ac7a61a2e8c0e03dce5e4385705934a6d13028ce85edaf9",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 16)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.EncoderWindow.cursor(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "9c1c5b04aa30690fe193bc9cff4c861026ee96b967785ab5fa417cc9fa8f55a8",
+      "stdoutSha256": "25b9b16103a13005f5fa6aa2803cab24af1cc2422a894fefb6e2ffc8c1e2acd1",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+      ],
+      "interval": [
+        0,
+        15
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 4,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 5,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 6,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 7,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 8,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 9,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 10,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 11,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 12,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 13,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 14,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 15,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.124,
+      "cpuSeconds": 0.2088,
+      "peakRssBytes": 64684032,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "organic.EncoderWindow#cursor(I)I",
+      "adapterSha256": "202d93792c0c147f7e6378a29542f68c3b429219fc31177e1083863ed450933b",
+      "adapterClassSha256": "39952774758cdb374a9dc16f6b196b545758b59927912be99345003ea69141e5",
+      "subject": {
+        "class": "org.apache.avro.io.BufferedBinaryEncoder",
+        "method": "writeFixed",
+        "descriptor": "(Ljava/nio/ByteBuffer;)V",
+        "loadedFrom": "built/avro-1.9.0-SNAPSHOT.jar",
+        "classSha256": "45b6a9982b462d5647a2b002f4cba3ba7b62112fee9c7081f1cea644e2cef16d",
+        "orderedClasses": {
+          "org.apache.avro.GuavaClasses": [
+            {
+              "path": "built/avro-1.9.0-SNAPSHOT.jar",
+              "classSha256": "3aa57be62f5f1b5fb2fc99c8cdcfcf5b521d4508e689e35ce8bdd4252ec01fe6"
+            },
+            {
+              "path": "lib/org/apache/avro/avro-guava-dependencies/1.9.0-SNAPSHOT/avro-guava-dependencies-1.9.0-SNAPSHOT.jar",
+              "classSha256": "d03d4cbc2255746cad705bab1fc7e2c941ff947b0368c86c44c6b65614528852"
+            }
+          ]
+        },
+        "adapterCalls": [
+          "org.apache.avro.io.BufferedBinaryEncoder#flush()V",
+          "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+          "org.apache.avro.io.EncoderFactory#<init>()V",
+          "org.apache.avro.io.EncoderFactory#binaryEncoder(Ljava/io/OutputStream;Lorg/apache/avro/io/BinaryEncoder;)Lorg/apache/avro/io/BinaryEncoder;",
+          "org.apache.avro.io.EncoderFactory#configureBufferSize(I)Lorg/apache/avro/io/EncoderFactory;"
+        ],
+        "adapterCallsTarget": true,
+        "jvmClassOrigins": {
+          "org.apache.avro.GuavaClasses": {
+            "path": "built/avro-1.9.0-SNAPSHOT.jar",
+            "classSha256": "3aa57be62f5f1b5fb2fc99c8cdcfcf5b521d4508e689e35ce8bdd4252ec01fe6"
+          }
+        },
+        "jvmClassOriginJdks": [
+          {
+            "JAVA_VERSION": "21.0.13",
+            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+            "OS_ARCH": "x86_64"
+          }
+        ]
+      },
+      "mapping": "One write preserves the source position and limit. Each selector maps to its independent raw JVM observation.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 16,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 2.3345,
+  "controlSeconds": 0.1487,
+  "replay": {
+    "claimKey": "ed772c9e5fe9c4d5",
+    "entry": "organic.EncoderWindow#cursor(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 11
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "39952774758cdb374a9dc16f6b196b545758b59927912be99345003ea69141e5",
+        "classpath": [
+          "202d93792c0c147f7e6378a29542f68c3b429219fc31177e1083863ed450933b",
+          "d4728a000318587a727f958117c82598a50d9027e0b7537f882b2406691d291e",
+          "064095af8f83306d1b9e57dc8c725674162e661b0957cb2a43abe31b28e1e0d0",
+          "1e651066ed9ae35d7e3001d635d1dbba1c2965db0e4e33e2c14ad610543f225c",
+          "440a9cb5ca95b215f953d3a20a6b1a10da1f09b529a9ddea5f8a4905ddab4f5a",
+          "74e7a07a76f2edbade29312a5a2ebccfa019128bc021ece3856d76197e9be0c2",
+          "688cb118a6021d819138e855208c956031688be4b47a24bb615becc63acedf07",
+          "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
+          "2a8c2b97cd33211589197fb807d4461f75d80086c21271d62b8feb2df9651b98",
+          "a594643d73cc01928cf6ca5ce100e094ea9d73af760a5d4fb6b75fa673ecec96",
+          "2bcac56802ec8d6f16941ef8a8d5fee4032902ba9937549be220f0a06eb9f503",
+          "3a4cd4969015f3beb4b5b4d81dbafc01765fb60b8a439955ca64d8476fef553e",
+          "7605dbb722c612623ac7a61a2e8c0e03dce5e4385705934a6d13028ce85edaf9"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 11;\nif (!(code >= 0 && code < 16)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.EncoderWindow.cursor(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 11,
+      "input": {
+        "readOnly": true,
+        "start": 0,
+        "width": 17,
+        "capacity": 20
+      },
+      "field": "cursor",
+      "direct": {
+        "parent": {
+          "cursor": [
+            17,
+            17
+          ],
+          "repeated": [
+            3,
+            10,
+            17,
+            24,
+            31,
+            38,
+            45,
+            52,
+            59,
+            66,
+            73,
+            80,
+            87,
+            94,
+            101,
+            108,
+            115
+          ]
+        }
+      },
+      "tableSha256": "9fdd5808da619a51f921d2dff76e1fee4ade20474498187e491c1411abac9ffe"
+    }
+  },
+  "wallSeconds": 3.6875,
+  "task": "cursor-parent",
+  "sourceClaim": "ed772c9e5fe9c4d5",
+  "inputsKey": "63355d16a4d70e97a2adf6bc4704b8b4957130c9594f0a504fd43686e83ac37b",
+  "revisions": [
+    "parent"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "parent": "211dec20e5bda046a2c94394b768db2b17eea6a4bee514b7d81660f2fe00ac27"
+  }
+}
