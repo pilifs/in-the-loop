@@ -1,0 +1,170 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-042449-trace-avro-355-ordinary-factory-and-sche",
+  "title": "Trace Avro 355 ordinary factory and schema producers",
+  "status": "error",
+  "summary": "error: ",
+  "attention": [
+    "jvmcontract did not build at this commit; see the build step's log"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-042449-trace-avro-355-ordinary-factory-and-sche.json",
+    "sha256": "4d0fd3f7cf7304cbbe2868d338fa702622df874167bccc842721529c0bdec59d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-042449-trace-avro-355-ordinary-factory-and-sche",
+      "title": "Trace Avro 355 ordinary factory and schema producers",
+      "description": "Execute the original Jackson factory and successive Avro schema producers at the frozen 64 unwind and the separately qualified 512. On Hadoop also check a fresh JobConf(false), isolated and malformed overlays, explicit resources and progressively smaller startup captures. Keep every strict refusal and the original JVM controls.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "355"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:24:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Check both historical sides",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/startup_probes.py --example 355 --output verification/domain-foundations/startup-expansion",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/startup-expansion/355"
+      ]
+    }
+  },
+  "sourceCommit": "36a48fe942f44450423197882a17b7401b61064a",
+  "startedAt": "2026-11-22T04:35:33+00:00",
+  "finishedAt": "2026-11-22T04:37:50+00:00",
+  "wallSeconds": 137.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1467222,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": null,
+    "wallSeconds": 0,
+    "cpuSeconds": 0,
+    "memoryOfEstimate": null,
+    "durationOfEstimate": null
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 101,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 12.43,
+      "cpuSeconds": 12.233,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1038102528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 9,
+        "bytes": 679,
+        "sha256": "8eac89dd1f28fd49fad31c383fa10228a1e34049e64404bbe407c7a2d1cb4440",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-042449-trace-avro-355-ordinary-factory-and-sche/lib)",
+        "error[E0425]: cannot find function `basic_base64_bytes` in module `bytes`",
+        "    --> src/bmc/mod.rs:5455:99",
+        "     |",
+        "5455 |                     if let Some(bytes) = self.constant_units(path, *text).and_then(|units| bytes::basic_base64_bytes(&units)) {",
+        "     |                                                                                                   ^^^^^^^^^^^^^^^^^^ not found in `bytes`",
+        "",
+        "For more information about this error, try `rustc --explain E0425`.",
+        "error: could not compile `jvmcontract` (lib) due to 1 previous error"
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-22T04:40:37+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job error"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T043750Z-7984154c0827a206",
+      "outputs": "20261122T043750Z-830742f2b6a02c47",
+      "workdir": "20261122T043758Z-88150719f91dfd62"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-042449-trace-avro-355-ordinary-factory-and-sche"
+}
