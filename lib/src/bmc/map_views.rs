@@ -38,13 +38,16 @@ impl Engine<'_> {
         }
         let marked = path.objects[o].fields.contains_key(IMAGE);
         let constructor = special && name == "<init>";
-        let new_map = constructor && class == MAP && owner == MAP && descriptor == "()V";
         let image_caller = path.frames.last().is_some_and(|f| self.cp.is_map_image(&f.class));
+        let new_map = constructor && class == MAP && owner == MAP
+            && (descriptor == "()V" || (image_caller && descriptor == "(I)V"));
+        let new_set = constructor && self.gap_mode == GapMode::Strict && class == "java/util/HashSet"
+            && owner == class && descriptor == "(Ljava/util/Collection;)V";
         let nested = constructor && image_caller && class.starts_with("java/util/HashMap$") && class == owner;
         // The Commons Collections view itself extends AbstractSet. These two JDK constructors
         // just chain to Object; their actual bodies run on the application's receiver as well.
         let base = constructor && descriptor == "()V" && matches!(owner, "java/util/AbstractCollection" | "java/util/AbstractSet" | "java/util/AbstractMap");
-        if !(marked || new_map || nested || base) { return None; }
+        if !(marked || new_map || new_set || nested || base) { return None; }
         let lookup = if special { owner } else { class.as_str() };
         let Some((cf, method)) = self.cp.map_image_method(lookup, name, descriptor) else {
             // A method only in the old model cannot read or mutate these real JDK fields.
@@ -54,7 +57,7 @@ impl Engine<'_> {
             return None;
         };
         if method.is_static() { return None; }
-        if new_map || nested { path.objects[o].fields.insert(IMAGE.into(), Val::I(self.b.constant(1, 32))); }
+        if new_map || new_set || nested { path.objects[o].fields.insert(IMAGE.into(), Val::I(self.b.constant(1, 32))); }
         let mut full = vec![Val::R(Some(o))];
         full.extend_from_slice(args);
         Some(self.enter_method(path, owner, cf, method, full))

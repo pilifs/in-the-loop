@@ -1539,13 +1539,33 @@ impl ClassPath {
         class.method("<clinit>", "()V").is_none().then_some(class)
     }
 
+    /// HashSet's copy constructor and methods share the image map layout. Its only
+    /// static initialization must create one fresh sentinel, used by every set.
+    /// An explicitly selected model keeps its own field layout and dispatch.
+    fn native_map_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if name != "java/util/HashSet" { return self.map_image_class(name); }
+        if self.runs_model(name) || self.observed_initializers.borrow().contains(name) { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        let code = class.method("<clinit>", "()V")?.code.as_ref()?;
+        let ops = code.instructions().ok()?;
+        use crate::classfile::Insn::*;
+        let [(_, New(object)), (_, Dup), (_, InvokeSpecial(init)), (_, PutStatic(write)), (_, Return(None))] = ops.as_slice() else { return None };
+        let ctor = class.pool.member(*init).ok()?;
+        let field = class.pool.member(*write).ok()?;
+        let declared = class.field("PRESENT")?;
+        (code.exception_table.is_empty() && class.pool.class_name(*object).ok()? == "java/lang/Object"
+            && (ctor.owner.as_str(), ctor.name.as_str(), ctor.descriptor.as_str()) == ("java/lang/Object", "<init>", "()V")
+            && (field.owner.as_str(), field.name.as_str(), field.descriptor.as_str()) == (name, "PRESENT", "Ljava/lang/Object;")
+            && declared.is_static() && declared.is_final() && declared.descriptor == field.descriptor).then_some(class)
+    }
+
     pub(crate) fn map_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
-        let (cf, m) = self.method_in(owner, name, descriptor, &|c| self.map_image_class(c))?;
+        let (cf, m) = self.method_in(owner, name, descriptor, &|c| self.native_map_image_class(c))?;
         (m.code.is_some() && (name != "<init>" || cf.name == owner)).then_some((cf, m))
     }
 
     pub(crate) fn is_map_image(&self, cf: &Rc<ClassFile>) -> bool {
-        self.map_image_class(&cf.name).is_some_and(|image| Rc::ptr_eq(cf, &image))
+        self.native_map_image_class(&cf.name).is_some_and(|image| Rc::ptr_eq(cf, &image))
     }
 
     /// The class whose static fields and initializer the tool's own checker holds and runs (JVMS §5.5): an

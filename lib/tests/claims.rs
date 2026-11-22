@@ -596,6 +596,20 @@ fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definiti
     assert!(left_out.output.contains("remove(Ljava/lang/Object;)Z"), "{}", left_out.output);
 }
 
+#[test]
+fn copied_hash_sets_preserve_key_callbacks_collisions_and_independent_membership() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.CopiedSets").status().unwrap().success());
+    for method in ["independent", "callbacks", "nullSource", "retainsDuplicates"] {
+        let mut opts = options(classes, &format!("claims.CopiedSets#{method}"), 32, method);
+        opts.unwind = 64;
+        let result = run(&opts);
+        let expected = if method == "retainsDuplicates" { Verdict::Violation } else { Verdict::Verified };
+        assert_eq!(result.verdict, expected, "{method}: {}", result.output);
+    }
+}
+
 /// A `java.util.LinkedHashSet` of names, as Spring's `DefaultMessageCodesResolver` collects a binding error's message
 /// codes (`claims.LinkedSets`, example 286): the JDK's until a check asks for the model (`--model
 /// java.util.LinkedHashSet`, which runs the `HashSet` model above it too), then the definition written out over
