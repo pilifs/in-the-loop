@@ -1,0 +1,1354 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-001142-prove-avro-729-decimals-and-replay-its-o",
+  "title": "Prove Avro 729 decimals and replay its original parent failures",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 27.5s, peak 227.9 MiB (estimated 4m00s, 3.0 GiB); 136 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-001142-prove-avro-729-decimals-and-replay-its-o.json",
+    "sha256": "dd3e6a9336bffe98ba11b7b6c63e0d015263886cded8eed2483c3a61929b7404",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-001142-prove-avro-729-decimals-and-replay-its-o",
+      "title": "Prove Avro 729 decimals and replay its original parent failures",
+      "description": "Check cursor and the two signed decimal results on both historical revisions after the recorded LogicalTypes and Schema startup. Use the actual JDK heap duplicate and numeric constructors. Reproduce both native parent witnesses on fresh JVMs at the original entry.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer",
+        "jvm:counterexample"
+      ],
+      "links": {
+        "examples": [
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:11:42+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Decide all four conditional obligations",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route native --stage decimal-startup --tasks cursor-parent-startup,cursor-fix-startup,decimals-parent-startup,decimals-fix-startup",
+          "cwd": "."
+        },
+        {
+          "name": "Reproduce cursor-parent on the original parent",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 examples/tools/build.py 361 --original-witness cursor-parent --from-task cursor-parent-startup",
+          "cwd": "."
+        },
+        {
+          "name": "Reproduce decimals-parent on the original parent",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 examples/tools/build.py 361 --original-witness decimals-parent --from-task decimals-parent-startup",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native",
+        "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup",
+        "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup",
+        "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup",
+        "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup",
+        "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions",
+        "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions",
+        "examples/361-avro-decimal-buffer-cursor/records/original-witnesses"
+      ]
+    }
+  },
+  "sourceCommit": "c5ddadb5389144713057cafbe97552157a34a6a0",
+  "startedAt": "2026-11-22T00:29:48+00:00",
+  "finishedAt": "2026-11-22T00:34:02+00:00",
+  "wallSeconds": 254.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2901987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 238968832,
+    "wallSeconds": 27.5,
+    "cpuSeconds": 42.1,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Decide all four conditional obligations",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route native --stage decimal-startup --tasks cursor-parent-startup,cursor-fix-startup,decimals-parent-startup,decimals-fix-startup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 19.042,
+      "cpuSeconds": 29.389,
+      "cpuThrottledSeconds": 3.298,
+      "peakMemoryBytes": 238968832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-decide-all-four-conditional-ob.log",
+        "lines": 1,
+        "bytes": 556,
+        "sha256": "c7402ddd5bb7832b89bbf4287eb7d50b9b09103612a5d2439047474ace09bb36",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"example\": \"361\", \"route\": \"native\", \"stage\": \"decimal-startup\", \"workflowExit\": 0, \"seconds\": 18.867, \"checkerSeconds\": 60, \"tasks\": [\"cursor-parent-startup\", \"cursor-fix-startup\", \"decimals-parent-startup\", \"decimals-fix-startup\"], \"verifierCommit\": \"c5ddadb5389144713057cafbe97552157a34a6a0\", \"ch"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Reproduce cursor-parent on the original parent",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 examples/tools/build.py 361 --original-witness cursor-parent --from-task cursor-parent-startup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 4.617,
+      "cpuSeconds": 6.541,
+      "cpuThrottledSeconds": 0.171,
+      "peakMemoryBytes": 139288576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-reproduce-cursor-parent-on-the.log",
+        "lines": 1,
+        "bytes": 141,
+        "sha256": "c7b93255c7decce109c809c5c7845687233871ef8c523c94a218b1d1fc52777b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cursor-parent refuted [{'name': 'code', 'type': 'int', 'value': 10}] receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Reproduce decimals-parent on the original parent",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 examples/tools/build.py 361 --original-witness decimals-parent --from-task decimals-parent-startup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 3.847,
+      "cpuSeconds": 6.146,
+      "cpuThrottledSeconds": 0.32,
+      "peakMemoryBytes": 133275648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-reproduce-decimals-parent-on-t.log",
+        "lines": 1,
+        "bytes": 144,
+        "sha256": "e6093d4fed58ecb3cee10ef34208e9e0d71610d9ac02f439a96d5974ac1ab565",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "decimals-parent refuted [{'name': 'code', 'type': 'int', 'value': 9}] receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cb32a11776496cd4fafaba515a1b2f1f57c39c844382c1d396df8a2567c7b39a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/plan.json",
+      "change": "added",
+      "bytes": 8546,
+      "sha256": "7f14f04577348ccbdf7d14f038d18ba182be42608efa398c907cad1ae52a252b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/controls.json",
+      "change": "added",
+      "bytes": 11952,
+      "sha256": "292a13e5001a9f140f2588c69d0165388fdc856dc0064c733a66b8a28d104a94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/execution.json",
+      "change": "added",
+      "bytes": 54062,
+      "sha256": "e98f7c4de02265e0fb64a35489437228d1a7ec05307a6127821449af991ba129",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "49fd30e260ea834f60eb5f8af8155df15f86c8af1ed0eb81236bae7ff7513790",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "a105bb3f6425a6fea5bc14521f036489d8437b64dcea190d6313227d40f47a60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.json",
+      "change": "added",
+      "bytes": 41647,
+      "sha256": "9d3e32b77fe53bafc4c5098179326971bb31eb064f649cc7311bc1ecdd9019b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stdout",
+      "change": "added",
+      "bytes": 23860,
+      "sha256": "21052e308ea5396404e0702a7d4ced777110f9f40e256d1f4a46d2b1e84b6442",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/result.json",
+      "change": "added",
+      "bytes": 48665,
+      "sha256": "fc1ae16f7433c21f1ad5f26fb5d8c11af2c272d6cf67a22293b287dabc85e602",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/executions/20261122T003339Z-b35a0838/attempt.json",
+      "change": "added",
+      "bytes": 22894,
+      "sha256": "b24f0c1d1abeb192359c79cc453fd955666dde7bf18cfbd8c86923126712a56c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/executions/20261122T003339Z-b35a0838/checker.json",
+      "change": "added",
+      "bytes": 26319,
+      "sha256": "433f35ed5076b3a5e7cdd6522d06a5a0351dbce2ce2f32450e99369c29b7e194",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/executions/20261122T003339Z-b35a0838/correspondence.json",
+      "change": "added",
+      "bytes": 1557,
+      "sha256": "7f67b070484f8c172eaefca01bcf5445e30c25b83f7352e2380158468a7844b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7ed08973f0dee1df8f04b2cdafe50d977f6b32a493b5ed3763b99713b6b77cd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/plan.json",
+      "change": "added",
+      "bytes": 8451,
+      "sha256": "300f6808b44d2156393cd6f2ef37e547e3c8b9baac17b69d74af2c8875541334",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/controls.json",
+      "change": "added",
+      "bytes": 11695,
+      "sha256": "dbc279e16cc40fd94fe198c3a5033dc4ebb1afd852d92fdeb56e36617a26ba2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/execution.json",
+      "change": "added",
+      "bytes": 58221,
+      "sha256": "acd8351a9ef62f6d59ababb7fbd7eb00a5dd7f089870d8ccb7813d984ac51e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "4fde514e955eab48a339ed9071f8b61d62a49bd15b7cc0074294a52c15a52e0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "3e4b90a2bb461142a627693a7791018bf2fffa2fcc1f47e9b0dfc29956cc783d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.json",
+      "change": "added",
+      "bytes": 41937,
+      "sha256": "2471763ec682247a63d82dcf892ed7cb53724766df3a18d45225e75cf8d88e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 24354,
+      "sha256": "f147e8b2e18cf2f4bddf64eed0545ee00b339267148ea265165f17bf1796b05f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/result.json",
+      "change": "added",
+      "bytes": 49563,
+      "sha256": "163fff5829b13789c70f662f2fc28ce20bd90c2f505361fd1ce935738677c184",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/attempt.json",
+      "change": "added",
+      "bytes": 22777,
+      "sha256": "f6b98b0c8b62598d547aa2e717840927349ae7075a6138f743222ccd8683e5de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/checker.json",
+      "change": "added",
+      "bytes": 26871,
+      "sha256": "8728662861d350768979ee1ff8d7e48fd5ff32d0e6d0336b36b2910bb4708d35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/correspondence.json",
+      "change": "added",
+      "bytes": 1560,
+      "sha256": "bff18eb863d5a1762f042936b8461afb7fb847a7791d0cf913ac61ba1d535a68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/replay.json",
+      "change": "added",
+      "bytes": 3464,
+      "sha256": "9c0a66a03f51a3fb0218f879deade22410edaed9a78c422219b7045f6717c6d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6c1feea48d9e2ec45a3a8e81405ecdac1eaad28eca587ff315917bd2c4d67ade",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/plan.json",
+      "change": "added",
+      "bytes": 8672,
+      "sha256": "3be2cff6a7d0b7e1c701b939ebf3ecb02f5a9d3fd8f6335f57ead5218b46924f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/controls.json",
+      "change": "added",
+      "bytes": 11956,
+      "sha256": "a2bb3fd29f11edfb81673b77ac59a1789ea4ada0c08277d574b6a07992778910",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/execution.json",
+      "change": "added",
+      "bytes": 54551,
+      "sha256": "83825fc458f95263f701ad8a5a8112e093cbf5693dbed2faf813d4fdea420b70",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "d5c0a810e1b58d672884f2a13e54360f16bc561ed6f5559118551f3fc6cf53bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 291,
+      "sha256": "3314c88c30826f7fb2c9c38912bbe561e500539aed94d895cf5339001d9bdc5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.json",
+      "change": "added",
+      "bytes": 42124,
+      "sha256": "9852e7c133fb43ff174302644ecb8635376b8c7ebe3a1b76a77f77ce6394247c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stdout",
+      "change": "added",
+      "bytes": 23872,
+      "sha256": "b58d4d19068fe8897f5de51ba8edfd9ef2b1cfadd022749058a7fa47d730b724",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/result.json",
+      "change": "added",
+      "bytes": 48742,
+      "sha256": "fddb99b5f91977e5b87f862b0233629696a7b447fbdc1cf9a455fd33211924a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/executions/20261122T003349Z-02426723/attempt.json",
+      "change": "added",
+      "bytes": 23342,
+      "sha256": "d9e73ca714339120f94d66cbecad3d3a46668b18abeb82327537b560389fdf36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/executions/20261122T003349Z-02426723/checker.json",
+      "change": "added",
+      "bytes": 26333,
+      "sha256": "ce3151c22968d9ead2a75ecb22d5a2ee9d590cf6355645e8a251f9a4902151bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/executions/20261122T003349Z-02426723/correspondence.json",
+      "change": "added",
+      "bytes": 1585,
+      "sha256": "564b864dd2ae8c2150b4181689490097171f6ec196eb54f8fe9672ab8647f93f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "deafbd728dbc842fb660440842d8b9e93808b8e899eed3168d4a648ae0e9067f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/plan.json",
+      "change": "added",
+      "bytes": 8577,
+      "sha256": "afc51a2407e94ae054a342b40324873bf08d066e48c83d00fee71cbbd080f100",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/controls.json",
+      "change": "added",
+      "bytes": 11699,
+      "sha256": "c5c7f60409f49b6c30025f89f181adb707b34f09f43130dcca5b130aeb18e14b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/execution.json",
+      "change": "added",
+      "bytes": 58706,
+      "sha256": "21a7fded3c3aa460e0888f95fa6c19004066b1da78d46681ddecd1d9c7f03c8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "dc833975f43a98bf2c47304fb6855a7eba3743d3e22e9690e1eff2a75daf7f40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 553,
+      "sha256": "b0ea2a842ee13cf5cde9650f1d213fb74580a04ebd3667d2e4deea224f3d75e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.json",
+      "change": "added",
+      "bytes": 42409,
+      "sha256": "d59bcddd25f20a367b3b73ed1c3bc573daa94319868399a6a8ef94ed9c632274",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 24359,
+      "sha256": "6c179fb52e2221adfcee8fd406625a9fd6091319c06ec129e3d1179051e7b72d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/result.json",
+      "change": "added",
+      "bytes": 49638,
+      "sha256": "6fd9377e7731316c8434565d884b9aa63c774baf1d41f629af90bc8b0868f37b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/attempt.json",
+      "change": "added",
+      "bytes": 23225,
+      "sha256": "dfad6826b4e63c60e3d88b66b405dc724dd850120a4ba802aef256b3bc71c3a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/checker.json",
+      "change": "added",
+      "bytes": 26879,
+      "sha256": "2f9c66fb67317e67dbf426bf62a8f5c871ac57f820260bb436148bd9ce8e52d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/correspondence.json",
+      "change": "added",
+      "bytes": 1588,
+      "sha256": "5f13bb4caaf942f32d5ade6b364424743e35f4d32062f2493e15ab94491991ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/replay.json",
+      "change": "added",
+      "bytes": 3465,
+      "sha256": "0816a2899d0e76d7b5429f5ca8cf03e7741cd2e3c1f921b82f4907b56898f587",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/run.json",
+      "change": "added",
+      "bytes": 610,
+      "sha256": "d2c3e23ff63fe739082ad5d3ca7a4724986afd66e127af22bc822097ae31a2f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/workflow.log",
+      "change": "added",
+      "bytes": 1014,
+      "sha256": "b4df8e34b7820ca2d0a6923816f65bd5548162c54528de200b328407f0e9221d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7ed08973f0dee1df8f04b2cdafe50d977f6b32a493b5ed3763b99713b6b77cd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/plan.json",
+      "change": "added",
+      "bytes": 8451,
+      "sha256": "300f6808b44d2156393cd6f2ef37e547e3c8b9baac17b69d74af2c8875541334",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/controls.json",
+      "change": "added",
+      "bytes": 11695,
+      "sha256": "dbc279e16cc40fd94fe198c3a5033dc4ebb1afd852d92fdeb56e36617a26ba2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/execution.json",
+      "change": "added",
+      "bytes": 58221,
+      "sha256": "acd8351a9ef62f6d59ababb7fbd7eb00a5dd7f089870d8ccb7813d984ac51e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "4fde514e955eab48a339ed9071f8b61d62a49bd15b7cc0074294a52c15a52e0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "3e4b90a2bb461142a627693a7791018bf2fffa2fcc1f47e9b0dfc29956cc783d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.json",
+      "change": "added",
+      "bytes": 41937,
+      "sha256": "2471763ec682247a63d82dcf892ed7cb53724766df3a18d45225e75cf8d88e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 24354,
+      "sha256": "f147e8b2e18cf2f4bddf64eed0545ee00b339267148ea265165f17bf1796b05f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/result.json",
+      "change": "added",
+      "bytes": 49563,
+      "sha256": "163fff5829b13789c70f662f2fc28ce20bd90c2f505361fd1ce935738677c184",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/attempt.json",
+      "change": "added",
+      "bytes": 22777,
+      "sha256": "f6b98b0c8b62598d547aa2e717840927349ae7075a6138f743222ccd8683e5de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/checker.json",
+      "change": "added",
+      "bytes": 26871,
+      "sha256": "8728662861d350768979ee1ff8d7e48fd5ff32d0e6d0336b36b2910bb4708d35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/correspondence.json",
+      "change": "added",
+      "bytes": 1560,
+      "sha256": "bff18eb863d5a1762f042936b8461afb7fb847a7791d0cf913ac61ba1d535a68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/replay.json",
+      "change": "added",
+      "bytes": 3464,
+      "sha256": "9c0a66a03f51a3fb0218f879deade22410edaed9a78c422219b7045f6717c6d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cb32a11776496cd4fafaba515a1b2f1f57c39c844382c1d396df8a2567c7b39a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/plan.json",
+      "change": "added",
+      "bytes": 8546,
+      "sha256": "7f14f04577348ccbdf7d14f038d18ba182be42608efa398c907cad1ae52a252b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/controls.json",
+      "change": "added",
+      "bytes": 11952,
+      "sha256": "292a13e5001a9f140f2588c69d0165388fdc856dc0064c733a66b8a28d104a94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/execution.json",
+      "change": "added",
+      "bytes": 54062,
+      "sha256": "e98f7c4de02265e0fb64a35489437228d1a7ec05307a6127821449af991ba129",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "49fd30e260ea834f60eb5f8af8155df15f86c8af1ed0eb81236bae7ff7513790",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 287,
+      "sha256": "a105bb3f6425a6fea5bc14521f036489d8437b64dcea190d6313227d40f47a60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.json",
+      "change": "added",
+      "bytes": 41647,
+      "sha256": "9d3e32b77fe53bafc4c5098179326971bb31eb064f649cc7311bc1ecdd9019b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stdout",
+      "change": "added",
+      "bytes": 23860,
+      "sha256": "21052e308ea5396404e0702a7d4ced777110f9f40e256d1f4a46d2b1e84b6442",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/result.json",
+      "change": "added",
+      "bytes": 48665,
+      "sha256": "fc1ae16f7433c21f1ad5f26fb5d8c11af2c272d6cf67a22293b287dabc85e602",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/executions/20261122T003339Z-b35a0838/attempt.json",
+      "change": "added",
+      "bytes": 22894,
+      "sha256": "b24f0c1d1abeb192359c79cc453fd955666dde7bf18cfbd8c86923126712a56c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/executions/20261122T003339Z-b35a0838/checker.json",
+      "change": "added",
+      "bytes": 26319,
+      "sha256": "433f35ed5076b3a5e7cdd6522d06a5a0351dbce2ce2f32450e99369c29b7e194",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/executions/20261122T003339Z-b35a0838/correspondence.json",
+      "change": "added",
+      "bytes": 1557,
+      "sha256": "7f67b070484f8c172eaefca01bcf5445e30c25b83f7352e2380158468a7844b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "deafbd728dbc842fb660440842d8b9e93808b8e899eed3168d4a648ae0e9067f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/plan.json",
+      "change": "added",
+      "bytes": 8577,
+      "sha256": "afc51a2407e94ae054a342b40324873bf08d066e48c83d00fee71cbbd080f100",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 2002,
+      "sha256": "46a38b68cd7ecd5c37e6ad219fe26899b99108d3d0a509a9777c23a50498a210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/controls.json",
+      "change": "added",
+      "bytes": 11699,
+      "sha256": "c5c7f60409f49b6c30025f89f181adb707b34f09f43130dcca5b130aeb18e14b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/execution.json",
+      "change": "added",
+      "bytes": 58706,
+      "sha256": "21a7fded3c3aa460e0888f95fa6c19004066b1da78d46681ddecd1d9c7f03c8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "dc833975f43a98bf2c47304fb6855a7eba3743d3e22e9690e1eff2a75daf7f40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 553,
+      "sha256": "b0ea2a842ee13cf5cde9650f1d213fb74580a04ebd3667d2e4deea224f3d75e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.json",
+      "change": "added",
+      "bytes": 42409,
+      "sha256": "d59bcddd25f20a367b3b73ed1c3bc573daa94319868399a6a8ef94ed9c632274",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 24359,
+      "sha256": "6c179fb52e2221adfcee8fd406625a9fd6091319c06ec129e3d1179051e7b72d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/result.json",
+      "change": "added",
+      "bytes": 49638,
+      "sha256": "6fd9377e7731316c8434565d884b9aa63c774baf1d41f629af90bc8b0868f37b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/attempt.json",
+      "change": "added",
+      "bytes": 23225,
+      "sha256": "dfad6826b4e63c60e3d88b66b405dc724dd850120a4ba802aef256b3bc71c3a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/checker.json",
+      "change": "added",
+      "bytes": 26879,
+      "sha256": "2f9c66fb67317e67dbf426bf62a8f5c871ac57f820260bb436148bd9ce8e52d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/correspondence.json",
+      "change": "added",
+      "bytes": 1588,
+      "sha256": "5f13bb4caaf942f32d5ade6b364424743e35f4d32062f2493e15ab94491991ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/replay.json",
+      "change": "added",
+      "bytes": 3465,
+      "sha256": "0816a2899d0e76d7b5429f5ca8cf03e7741cd2e3c1f921b82f4907b56898f587",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6c1feea48d9e2ec45a3a8e81405ecdac1eaad28eca587ff315917bd2c4d67ade",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/plan.json",
+      "change": "added",
+      "bytes": 8672,
+      "sha256": "3be2cff6a7d0b7e1c701b939ebf3ecb02f5a9d3fd8f6335f57ead5218b46924f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1698,
+      "sha256": "fcb5b1920f9eddc531cf8d2196f50418963da7c6065c6497e50c928e9743ab8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/controls.json",
+      "change": "added",
+      "bytes": 11956,
+      "sha256": "a2bb3fd29f11edfb81673b77ac59a1789ea4ada0c08277d574b6a07992778910",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/execution.json",
+      "change": "added",
+      "bytes": 54551,
+      "sha256": "83825fc458f95263f701ad8a5a8112e093cbf5693dbed2faf813d4fdea420b70",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "d5c0a810e1b58d672884f2a13e54360f16bc561ed6f5559118551f3fc6cf53bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 291,
+      "sha256": "3314c88c30826f7fb2c9c38912bbe561e500539aed94d895cf5339001d9bdc5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.json",
+      "change": "added",
+      "bytes": 42124,
+      "sha256": "9852e7c133fb43ff174302644ecb8635376b8c7ebe3a1b76a77f77ce6394247c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stdout",
+      "change": "added",
+      "bytes": 23872,
+      "sha256": "b58d4d19068fe8897f5de51ba8edfd9ef2b1cfadd022749058a7fa47d730b724",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/result.json",
+      "change": "added",
+      "bytes": 48742,
+      "sha256": "fddb99b5f91977e5b87f862b0233629696a7b447fbdc1cf9a455fd33211924a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/executions/20261122T003349Z-02426723/attempt.json",
+      "change": "added",
+      "bytes": 23342,
+      "sha256": "d9e73ca714339120f94d66cbecad3d3a46668b18abeb82327537b560389fdf36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/executions/20261122T003349Z-02426723/checker.json",
+      "change": "added",
+      "bytes": 26333,
+      "sha256": "ce3151c22968d9ead2a75ecb22d5a2ee9d590cf6355645e8a251f9a4902151bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/executions/20261122T003349Z-02426723/correspondence.json",
+      "change": "added",
+      "bytes": 1585,
+      "sha256": "564b864dd2ae8c2150b4181689490097171f6ec196eb54f8fe9672ab8647f93f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/attempt.json",
+      "change": "added",
+      "bytes": 6941,
+      "sha256": "90130a002e182093a4cf9363f17c56d2a001c58397c0a7ef3e3e7ec7c34c182e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/candidate.json",
+      "change": "added",
+      "bytes": 188,
+      "sha256": "daccdd4d5eec02ce8f38e4cda2e03bd69942946e652697abd50c4f53208fedf2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/correspondence.json",
+      "change": "added",
+      "bytes": 1560,
+      "sha256": "bff18eb863d5a1762f042936b8461afb7fb847a7791d0cf913ac61ba1d535a68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/replay.json",
+      "change": "added",
+      "bytes": 2555,
+      "sha256": "2c37a3defbd022e55b15945913f05e15b93cc498ef5790252c86d908b8ab49b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/attempt.json",
+      "change": "added",
+      "bytes": 6942,
+      "sha256": "c80c8e0c3889508f6142f2e3903c898645c4061ba661c355791ed0dbaa7d61bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/candidate.json",
+      "change": "added",
+      "bytes": 187,
+      "sha256": "9eea34257e9e2ff93df1b7d61a94d9ef2a307cfd5383458f1e74aca0cc09087e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/correspondence.json",
+      "change": "added",
+      "bytes": 1588,
+      "sha256": "5f13bb4caaf942f32d5ade6b364424743e35f4d32062f2493e15ab94491991ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/replay.json",
+      "change": "added",
+      "bytes": 2556,
+      "sha256": "07b1355f2532003e975a97b20126bf586f20057596547221ebced6f24bf56e9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/original-witnesses/cursor-parent/20261122T003353Z-cb03ef40.json",
+      "change": "added",
+      "bytes": 1916,
+      "sha256": "1ca1085fa203c48cab256018ecea5ba6e0638ca29e45d14b4b2a4ec3244315e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/361-avro-decimal-buffer-cursor/records/original-witnesses/decimals-parent/20261122T003358Z-6de4cbf2.json",
+      "change": "added",
+      "bytes": 1925,
+      "sha256": "593498e46f75dd36b2d195a459a70f91e0ba26ec5f780a7a361f865592ff5c26",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:34:33+00:00",
+    "applied": [
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/20261122T003339Z-b35a0838/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/executions/20261122T003339Z-b35a0838/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/executions/20261122T003339Z-b35a0838/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-fix-startup/executions/20261122T003339Z-b35a0838/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/20261122T003334Z-a39e731b/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/cursor-parent-startup/executions/20261122T003334Z-a39e731b/replay.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/20261122T003349Z-02426723/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/executions/20261122T003349Z-02426723/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/executions/20261122T003349Z-02426723/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-fix-startup/executions/20261122T003349Z-02426723/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/20261122T003344Z-512b660c/result.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/decimals-parent-startup/executions/20261122T003344Z-512b660c/replay.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/run.json",
+      "examples/361-avro-decimal-buffer-cursor/records/decimal-startup-native/workflow.log",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/20261122T003334Z-a39e731b/result.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent-startup/executions/20261122T003334Z-a39e731b/replay.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/20261122T003339Z-b35a0838/result.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/executions/20261122T003339Z-b35a0838/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/executions/20261122T003339Z-b35a0838/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-fix-startup/executions/20261122T003339Z-b35a0838/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/control-parent-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/20261122T003344Z-512b660c/result.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent-startup/executions/20261122T003344Z-512b660c/replay.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/completion.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/plan.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/control-fix-jdk21.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/controls.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/execution.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/streams.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier-output.txt",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stderr",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/records/verifier.stdout",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/20261122T003349Z-02426723/result.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/executions/20261122T003349Z-02426723/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/executions/20261122T003349Z-02426723/checker.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-fix-startup/executions/20261122T003349Z-02426723/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/candidate.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/cursor-parent/executions/20261122T003353Z-cb03ef40/replay.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/attempt.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/candidate.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/correspondence.json",
+      "examples/361-avro-decimal-buffer-cursor/receipts/decimals-parent/executions/20261122T003358Z-6de4cbf2/replay.json",
+      "examples/361-avro-decimal-buffer-cursor/records/original-witnesses/cursor-parent/20261122T003353Z-cb03ef40.json",
+      "examples/361-avro-decimal-buffer-cursor/records/original-witnesses/decimals-parent/20261122T003358Z-6de4cbf2.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2080949,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "e13c1ac9ae92b3221196a954311b8ac3f139ec2a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e13c1ac9ae92b3221196a954311b8ac3f139ec2a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T003402Z-78179883207509e8",
+      "outputs": "20261122T003402Z-906103919970de97",
+      "diff": "20261122T003402Z-9627783ad64290bb"
+    }
+  }
+}

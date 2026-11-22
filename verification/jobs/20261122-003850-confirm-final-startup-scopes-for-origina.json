@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-003850-confirm-final-startup-scopes-for-origina",
+  "title": "Confirm final startup scopes for original example 355",
+  "description": "Check every previously open original native establishment at the frozen bounds and every selected observed-startup companion on the exact release checker that decided Avro decimal conversion. Keep the original refusals and scoped decisions in their separate stages.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "observed-initializer"
+  ],
+  "links": {
+    "examples": [
+      "355"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T00:38:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "revision": "c5ddadb5389144713057cafbe97552157a34a6a0",
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check foundation-final",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 355 --route native --stage foundation-final --tasks direct-limit-fix,full-length-fix,full-length-parent,prefix-parent,prefix-fix,bounds-fix,rejected-fix",
+      "cwd": "."
+    },
+    {
+      "name": "Check foundation-final-observed",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 355 --route native --stage foundation-final-observed --tasks direct-limit-parent-writable-startup,direct-limit-fix-writable-startup,full-length-parent-lookup-startup,full-length-fix-lookup-startup,prefix-parent-lookup-startup,prefix-fix-lookup-startup,bounds-parent-lookup-startup,bounds-fix-lookup-startup,rejected-parent-lookup-startup,rejected-fix-lookup-startup",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/355-avro-writable-buffer-limit/records/foundation-final-native",
+    "examples/355-avro-writable-buffer-limit/records/foundation-final-observed-native"
+  ]
+}

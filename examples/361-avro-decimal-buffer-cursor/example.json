@@ -30,13 +30,14 @@
     "description": "The landed fromBytes reads through a duplicate. The parent advances the caller’s position to its limit, so a second conversion attempts to form an integer from zero bytes."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen for original upstream replay",
+  "verdictLabel": "Native 2/4 at original scope, 4/4 after recorded startup, finite JVM 4/4",
   "source": {
     "kind": "pull-request",
     "repository": "https://github.com/apache/avro",
     "url": "https://github.com/apache/avro/pull/729"
   },
   "notes": [
-    "Twelve selectors cross three nonzero positions, one- and two-byte windows and scales zero and two. Every window has prefix and suffix bytes. The independent oracle decodes only the selected bytes as a signed big-endian integer."
+    "Twelve selectors cross three nonzero positions, one- and two-byte windows and scales zero and two. Every window has prefix and suffix bytes. The independent oracle decodes only the selected bytes as a signed big-endian integer.",
+    "Both original parent refutations reproduced on an ordinary JVM. At selector 10 the position moves from three to five after the first read. At selector 9 the first decimal is 1.27 and the second conversion throws NumberFormatException. Both fixed obligations hold natively under the registered LogicalTypes and Schema startup. All four finite obligations were decided. The ordinary native fixed calls first stop at LogicalTypes.<clinit>."
   ]
 }

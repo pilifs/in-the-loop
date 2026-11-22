@@ -1,0 +1,73 @@
+{
+  "claimKey": "9cdbe2c2f8f1bd48",
+  "entry": "organic.DecimalWindow#decimals(I)I",
+  "inputs": [
+    {
+      "name": "code",
+      "type": "int",
+      "value": 9
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "by": "jvm",
+  "reproduced": true,
+  "sides": {
+    "parent": {
+      "entryClassSha256": "2d877fb639609c13bd0a8f2989c696885f6164fe2990e9b1f8119006401dccd5",
+      "classpath": [
+        "964e6aa2ddfc777b08619d3fc77a96e4bdbe7966303ea8e6676da7db0036de47",
+        "3a2263be9da55ab3c5219465b71411f83f4480e2ec5d076d0b43943043fc8280",
+        "69e7695b1e40834fa1242fc328a4010607911ced3706ab79abc769d451197513",
+        "8e6c566c67fc61a96c5dfc4a71d430f2565765778ec9a6ef216c5460a9911b60",
+        "77a0846219774a8269bc1b38cc00294908d34e77f8a9da34d97673982f75853d",
+        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
+        "7eea31c0a25d35cd092d8aec08bed04f22152409b58d63d43839074a9ab7ab97",
+        "8c7964b36fe3f0cbe644b04fcbff84e491ce81917db2f5bfa0cba8e9548aff5d",
+        "8370149f5bd16a83d27240a8ce5a64204f3c70647ed180801dcf95f7be27ef87",
+        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
+      ],
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 9;\nif (!(code >= 0 && code < 12)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.DecimalWindow.decimals(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "admitted": true,
+      "values": [
+        0,
+        null
+      ],
+      "satisfies": false
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "finiteObservation": {
+    "id": 9,
+    "input": {
+      "start": 3,
+      "width": 1,
+      "scale": 2
+    },
+    "field": "decimals",
+    "direct": {
+      "parent": {
+        "cursor": [
+          4,
+          4
+        ],
+        "decimals": [
+          [
+            127,
+            2
+          ],
+          "java.lang.NumberFormatException"
+        ]
+      }
+    },
+    "tableSha256": "1c67662b4c18c6770a738f6118d9c5bb661841f0fd7a1422ecd96c40cc3c7043"
+  }
+}
