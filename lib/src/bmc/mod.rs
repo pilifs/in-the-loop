@@ -778,6 +778,12 @@ fn captured_key(i: usize) -> String {
 static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 
 impl Obj {
+    fn initialized_big_number(&self) -> bool {
+        !self.assumed && !self.given && !self.unknown &&
+            ((self.class == "java/math/BigInteger" && self.fields.contains_key("mag"))
+                || (self.class == "java/math/BigDecimal" && self.fields.contains_key("intVal")))
+    }
+
     fn is_instance(&self, cp: &ClassPath, target: &str) -> bool {
         cp.is_subtype(&self.class, target)
             || (target == "java/io/Serializable" && self.lambda.as_ref().is_some_and(|l| l.serializable))
@@ -3624,7 +3630,7 @@ impl<'a> Engine<'a> {
                 path.classes.insert(c, ClassState::Erroneous);
                 if !self.cp.is_subtype(&class, "java/lang/Error") {
                     class = "java/lang/ExceptionInInitializerError".to_string();
-                    obj = self.alloc(path, &class);
+                    obj = self.initialization_error(path, obj);
                 }
             }
         }
@@ -4344,6 +4350,16 @@ impl<'a> Engine<'a> {
         // `chars()` enters the model of its stream, which reads the String unit by unit as any caller does.
         if let Some((class, method, entry)) = crate::models::entry(STRING, name, descriptor) {
             return Some(self.call(path, class, method, entry, vec![Val::R(Some(o))]));
+        }
+        // A String already in this path's literal pool is its own canonical instance.
+        // For any other receiver the process may have interned an equal string earlier.
+        if name == "intern" {
+            if !path.literals.iter().any(|(key, id)| *id == o && matches!(key, Literal::Str(_))) {
+                return Some(unsupported("String.intern on a receiver not established as a canonical literal"));
+            }
+            self.push(path, Val::R(Some(o)));
+            self.advance(path);
+            return Some(Ok(None));
         }
         // `toString()` of a String is the String itself (its Javadoc), whatever the engine holds of its content.
         if name == "toString" {
@@ -5449,6 +5465,16 @@ impl<'a> Engine<'a> {
                 let mut full = vec![Val::R(Some(o))];
                 full.extend(args);
                 return self.call(path, &wrapper, &member.name, &member.descriptor, full);
+            }
+            // Only the selected JDK implementation on an exact receiver whose magnitude
+            // or unscaled value was installed by its constructor. A subclass keeps its dispatch.
+            let object = &path.objects[o];
+            if object.class == member.owner && object.initialized_big_number() && member.name != "<init>" {
+                if let Some((cf, method)) = self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, &member.owner, cf, method, full);
+                }
             }
             if !special && path.objects[o].class == runtime::BOOLEAN && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z" {
                 if let Some(step) = self.boolean_equals(path, o, &args) { return step; }

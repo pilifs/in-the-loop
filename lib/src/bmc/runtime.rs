@@ -491,7 +491,7 @@ impl Engine<'_> {
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
             let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
             let list_storage = class == "java/util/ArrayList" && !self.cp.runs_model(&class) && o_.fields.contains_key("elementData");
-            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || self.cp.state_image_class(&class).is_some());
+            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || o_.initialized_big_number() || self.cp.state_image_class(&class).is_some());
             let final_image_class = !o_.assumed && self.cp.load(&class).ok().flatten()
                 .is_some_and(|loaded| loaded.origin == crate::classpath::Origin::Jdk && loaded.class.is_final());
             if o_.lambda.is_some() || !(array || image_object || final_image_class || self.cp.is_application(&class) || class == STRING || exception) {

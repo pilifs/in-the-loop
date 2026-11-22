@@ -11,6 +11,11 @@ public class Trimmed {
         return actual == source || start != 0 || end != 3;
     }
 
+    public static boolean freshPoolIdentity(char ch) {
+        String fresh = new String(new char[]{ch});
+        return fresh.intern() == fresh;
+    }
+
     public static boolean samples() {
         String empty = new String(new char[0]);
         String identity = new String(new char[]{'a', 0, 'b'});

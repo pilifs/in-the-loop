@@ -152,6 +152,11 @@ public final class Operations {
                 && (m == 0 || joined.charAt(n) == (char) last);
     }
 
+    static int canonicalLiteral(int choice) {
+        String value = choice == 0 ? "decimal" : choice == 1 ? "\ud800" : null;
+        return value.intern() == value ? 1 : 0;
+    }
+
     static int trimmedUnits(int n, int a, int b, int c, int m, int d, int e, int f) {
         return of(n, a, b, c).trim().equals(of(m, d, e, f)) ? 1 : 0;
     }

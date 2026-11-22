@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-001142-confirm-the-ordinary-avro-729-native-and",
+  "title": "Confirm the ordinary Avro 729 native and finite contracts",
+  "description": "Re-run all four frozen obligations with ordinary startup on the decimal-capable verifier. Preserve the earliest native refusal and exhaustive independent JVM controls for all twelve input windows.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "361"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T00:11:42+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Check the original native scope",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route native --stage decimal-confirmation",
+      "cwd": "."
+    },
+    {
+      "name": "Check original finite outcomes",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/organic-java/run.py 361 --route finite --stage decimal-confirmation",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-native",
+    "examples/361-avro-decimal-buffer-cursor/records/decimal-confirmation-finite"
+  ]
+}

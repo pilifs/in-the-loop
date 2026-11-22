@@ -1,0 +1,269 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261121-234701-qualify-bounded-heap-buffer-facts-across",
+  "title": "Qualify bounded heap buffer facts across two historical Avro changes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 31.5s, peak 269.9 MiB (estimated 3m00s, 2.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261121-234701-qualify-bounded-heap-buffer-facts-across.json",
+    "sha256": "be3addbe0fbd35a4fa97e7d785a21e0d5f322f39c7772db811807bc6531b1ce3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261121-234701-qualify-bounded-heap-buffer-facts-across",
+      "title": "Qualify bounded heap buffer facts across two historical Avro changes",
+      "description": "Prove the selected JDK heap-window theorem on symbolic bytes, then check every original wrap operand and the receiving decimal buffer at the actual call sites. Compare disabled, clean and reused checks, validate stale and unrelated-change controls, and prove duplicate cursor independence and contents.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "proof:reuse"
+      ],
+      "links": {
+        "examples": [
+          "355",
+          "361"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:47:01+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Certify the common JDK fact and validate both Avro call sites",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/buffer_fact.py --output verification/domain-foundations/buffer-adoption",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/buffer-adoption"
+      ]
+    }
+  },
+  "sourceCommit": "b3ed4c25adb1bfff57148c664b7739e0a5d69fa5",
+  "startedAt": "2026-11-21T23:57:29+00:00",
+  "finishedAt": "2026-11-22T00:01:51+00:00",
+  "wallSeconds": 262.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2683971,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 282980352,
+    "wallSeconds": 31.5,
+    "cpuSeconds": 40.7,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 211.149,
+      "cpuSeconds": 211.322,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2271178752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "74a191745c3f1b06416e074e1bdb472b58726fbb405f6a609ee05e48d6833a10",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261121-234701-qualify-bounded-heap-buffer-facts-across/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 31s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Certify the common JDK fact and validate both Avro call sites",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 lib/benchmark/domain-foundations/buffer_fact.py --output verification/domain-foundations/buffer-adoption",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 31.467,
+      "cpuSeconds": 40.681,
+      "cpuThrottledSeconds": 1.462,
+      "peakMemoryBytes": 282980352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-certify-the-common-jdk-fact-an.log",
+        "lines": 1,
+        "bytes": 594,
+        "sha256": "e516fdede4a2bcd42d7708dfbbf8c47b0eb2254539afa48857100f10ac8012bd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"disabled\": {\"example\": \"361\", \"proofExecutions\": 1, \"producerSeconds\": 0.13512, \"setupSeconds\": 0.8187789999999999, \"validationSeconds\": 7.265019000000001, \"totalSeconds\": 8.219169, \"peakRssBytes\": 103481344}, \"clean\": {\"example\": \"355\", \"proofExecutions\": 1, \"producerSeconds\": 0.144528, \"setupSec"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/buffer-adoption/clean-wrap.json",
+      "change": "added",
+      "bytes": 962,
+      "sha256": "eca702a39534544a3a82d365bada7e08dc868199c8a72638dd29d427122d7365",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/buffer-adoption/clean-wrap.native.json",
+      "change": "added",
+      "bytes": 6295,
+      "sha256": "da548ac9ba732c096d39e71ea85552dfca36f51b2f8ad72684dab086d74cad46",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/buffer-adoption/disabled-wrap.json",
+      "change": "added",
+      "bytes": 965,
+      "sha256": "addb927fe7236af459f3677d3550a87c7fbd01725535c3901ed17b7b5d46c4a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/buffer-adoption/disabled-wrap.native.json",
+      "change": "added",
+      "bytes": 6290,
+      "sha256": "a625204e031ed648d9ea47108d62edd44db546e7f0741210213a593e70013496",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/buffer-adoption/duplicate.json",
+      "change": "added",
+      "bytes": 966,
+      "sha256": "cab716d105a3b5de0249d250af231b7c9544d971d5e68321016f1a94e428c27a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/buffer-adoption/duplicate.native.json",
+      "change": "added",
+      "bytes": 6324,
+      "sha256": "d070f1eeacdaddcb7d7f5b95198d50cb05ed26a3729d901f17cb0f798d86e837",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/buffer-adoption/measurement.json",
+      "change": "added",
+      "bytes": 1400,
+      "sha256": "fa8052a7fb663c03e5ea3474c37737fbccaeb1a86edaee3c75a1df7aa0a59590",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/buffer-adoption/sites.json",
+      "change": "added",
+      "bytes": 114686,
+      "sha256": "e752ccfa95b13ce097ac54b1a06f69d7247878a56d3870aa308bce869170ce46",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:02:08+00:00",
+    "applied": [
+      "verification/domain-foundations/buffer-adoption/clean-wrap.json",
+      "verification/domain-foundations/buffer-adoption/clean-wrap.native.json",
+      "verification/domain-foundations/buffer-adoption/disabled-wrap.json",
+      "verification/domain-foundations/buffer-adoption/disabled-wrap.native.json",
+      "verification/domain-foundations/buffer-adoption/duplicate.json",
+      "verification/domain-foundations/buffer-adoption/duplicate.native.json",
+      "verification/domain-foundations/buffer-adoption/measurement.json",
+      "verification/domain-foundations/buffer-adoption/sites.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1d9f58ec38bf8f281bdb74d20770b12ed54525af",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1d9f58ec38bf8f281bdb74d20770b12ed54525af/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T000151Z-6183911569b09a42",
+      "outputs": "20261122T000151Z-641130dedffb31fe",
+      "diff": "20261122T000151Z-6604960a09e3386e"
+    }
+  }
+}

@@ -1429,6 +1429,9 @@ fn trim_keeps_utf16_units_and_the_original_unchanged_receiver() {
     let mut machine = Machine::new(&cp);
     assert_eq!(machine.call_static("claims/Trimmed", "samples", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     assert!(machine.call_static("claims/Trimmed", "changedIdentity", "()Z", vec![]).is_err());
+    let pool = run(&options(classes, "claims.Trimmed#freshPoolIdentity", 4, "string-pool-identity"));
+    assert_eq!(pool.verdict, Verdict::Unverifiable, "{}", pool.output);
+    assert!(machine.call_static("claims/Trimmed", "freshPoolIdentity", "(C)Z", vec![Value::Int(97)]).is_err());
     let unknown = run(&options(classes, "claims.Trimmed#changedIdentity", 4, "trim-identity"));
     assert_eq!(unknown.verdict, Verdict::Unverifiable, "{}", unknown.output);
 }
@@ -1443,5 +1446,18 @@ fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
         proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
     }
     let wrong = run(&options(classes, "claims.WrappedBuffers#wrongSharedCursor", 4, "heap-buffer-cursor"));
+    assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+}
+
+#[test]
+fn byte_decimals_keep_the_signed_magnitude_and_scale_of_the_selected_window() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let java = Command::new("java").arg("-cp").arg(classes).arg("claims.DecimalBytes").output().unwrap();
+    assert!(java.status.success(), "{}", String::from_utf8_lossy(&java.stderr));
+    for name in ["exact", "empty"] {
+        proved(classes, &format!("claims.DecimalBytes#{name}"), 4);
+    }
+    let wrong = run(&options(classes, "claims.DecimalBytes#wrongSign", 4, "signed-decimal"));
     assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
 }

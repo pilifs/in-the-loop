@@ -142,6 +142,14 @@ pub fn jdk_throwable(cp: &ClassPath, class: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// The first failed initialization wraps the original non-Error throwable with a null detail message.
+    pub(super) fn initialization_error(&mut self, path: &mut Path, cause: usize) -> usize {
+        let wrapper = self.alloc(path, "java/lang/ExceptionInInitializerError");
+        path.objects[wrapper].fields.insert(MESSAGE.into(), Val::R(None));
+        path.objects[wrapper].fields.insert(CAUSE.into(), Val::R(Some(cause)));
+        wrapper
+    }
+
     /// A constructor or a message method of `Throwable` on the object `o`: see the module's notes. `None` where the
     /// call stays the JDK's.
     pub(super) fn throwable_method(&mut self, path: &mut Path, o: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {

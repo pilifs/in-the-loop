@@ -1,0 +1,39 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "decimals",
+  "statement": "Two conversions of the same buffer return the independently decoded signed integer and scale both times.",
+  "assume": "code >= 0 && code < 12",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 64,
+    "maxArrayLength": 128
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "organic.DecimalWindow#decimals(I)I",
+    "mapping": "Two conversions of the same buffer return the independently decoded signed integer and scale both times. Each selector maps to its original observation in controls/table.json.",
+    "correspondence": "finite-oracle",
+    "cases": 12
+  },
+  "observedInitializers": {
+    "org.apache.avro.LogicalTypes": "4fad771837678b64785d4e53c29aa911d92f10bc9d3cb72e7153394e847dbc9e",
+    "org.apache.avro.Schema": "4fad771837678b64785d4e53c29aa911d92f10bc9d3cb72e7153394e847dbc9e"
+  },
+  "observedRuntime": {
+    "processors": 2,
+    "emptyEnvironment": true,
+    "preinitializeTogether": true,
+    "rootWorkingDirectory": true
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  },
+  "notes": [
+    "The subject JVM initializes LogicalTypes and Schema in that order before the public entry. The returned decimal values and cursor are still computed by the original conversion on each of the twelve windows."
+  ]
+}
