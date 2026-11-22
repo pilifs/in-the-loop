@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "preserved",
+  "statement": "The short decimals return the expected Float bits, 17 returns Integer, and 1eE throws NumberFormatException.",
+  "assume": "code >= 0 && code < 3",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "datawork.Decimals#preserved(I)I",
+    "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+    "correspondence": "finite-oracle",
+    "cases": 3
+  }
+}

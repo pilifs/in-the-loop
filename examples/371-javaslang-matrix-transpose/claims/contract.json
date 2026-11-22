@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "contract",
+  "statement": "Every rectangle returns its transposed cells and every ragged matrix throws exactly IllegalArgumentException.",
+  "assume": "code >= 0 && code < 400",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "datawork.Matrices#contract(I)I",
+    "mapping": "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+    "correspondence": "finite-oracle",
+    "cases": 400
+  }
+}

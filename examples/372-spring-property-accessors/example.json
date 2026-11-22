@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "372",
+  "title": "Spring property names follow record metadata",
+  "summary": "A record component preserves its exact spelling. An additional getter of the same spelling has no backing field and follows bean naming.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "data-binding",
+    "schema-drift",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "spring-projects/spring-framework",
+    "file": "spring-core/src/main/java/org/springframework/core/convert/Property.java",
+    "symbol": "org.springframework.core.convert.Property#getName()Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A record component preserves its exact spelling. An additional getter of the same spelling has no backing field and follows bean naming."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims",
+  "notes": [
+    "Pair one of three altered component names with one preserved record or bean accessor.",
+    "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+  ],
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/36911"
+  }
+}

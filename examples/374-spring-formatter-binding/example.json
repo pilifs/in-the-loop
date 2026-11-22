@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "374",
+  "title": "Global formatting preserves an annotated local date pattern",
+  "summary": "Under US locale and UTC the local date is stored on the fix while the parent displays the same text from a rejected field. A later valid edit preserves the earlier field error.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "data-binding",
+    "validation-gap",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Spring Framework",
+    "file": "spring-context/src/main/java/org/springframework/format/datetime/DateFormatterRegistrar.java",
+    "symbol": "org.springframework.format.datetime.DateFormatterRegistrar#registerFormatters(Lorg/springframework/format/FormatterRegistry;)V"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Under US locale and UTC the local date is stored on the fix while the parent displays the same text from a rejected field. A later valid edit preserves the earlier field error."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims",
+  "notes": [
+    "The exact historical registrar is compiled against the released Framework 5.2.0 graph. Both sides use the subject JVM in UTC. The stored 2009 instant, error count, first field error, rejected text and displayed value are separately observed. This source slice has a distinct evidence scope from a historical Gradle build."
+  ],
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/spring-projects/spring-framework",
+    "url": "https://github.com/spring-projects/spring-framework/pull/23893"
+  }
+}

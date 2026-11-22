@@ -409,6 +409,7 @@ def _lock_slice(plan, revision, entry, folder):
                   **({"companionClasses": recipe["companionClasses"]} if recipe.get("companionClasses") else {}),
                   "scope": SCOPES["extracted-source-slice"]},
         "published": items,
+        **({"orderedClasses": list(entry["orderedClasses"])} if entry.get("orderedClasses") else {}),
         **_controls_source(folder, entry),
         "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
                                           "the slice is compiled by its own recorded JDK and flags", **_fixture_recipe()},
@@ -689,7 +690,7 @@ def _loaded_classes(build, source, workdir, classpath, names, step="loaded-class
     return seen, releases
 
 
-def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=(), observe=None):
+def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=(), compiled_slice=(), observe=None):
     """The loaded target's origin, after refusing shadowed classes and a missing target method; and the original
     methods the adapter calls. A replay task's adapter must reference the target. The prepared record carries this
     reference check for the verifier and the JVM controls.
@@ -706,7 +707,8 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
     for name, holders in runtime_jar.duplicates(classpath, workdir):
         # A shaded module may contain a non-target dependency class also present in
         # the Maven runtime. The subject JVM must confirm which bytes actually load.
-        if (name in declared and name != target_name and (original not in holders or holders[0] == original)
+        if (name in declared and (name != target_name or (name in compiled_slice and holders[0] == original))
+                and (original not in holders or holders[0] == original)
                 and all(path == original or path in dependencies for path in holders)):
             resolution[name.replace("/", ".")] = [
                 {"path": path, "classSha256": hashlib.sha256(runtime_jar.read_class(workdir / path, name)).hexdigest()}
@@ -794,11 +796,11 @@ def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_cla
     return found
 
 
-def _ordered_target(plan, build, source, classpath, original, adapter, dependencies):
+def _ordered_target(plan, build, source, classpath, original, adapter, dependencies, *, compiled_slice=()):
     """Verify explicitly named collisions between dependency JARs against each subject JVM."""
     workdir = build.workdir
     target = _check_classpath(plan, workdir, classpath, original, adapter,
-                              ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies,
+                              ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies, compiled_slice=compiled_slice,
                               observe=_observer(build, source, workdir, classpath))
     selected = target.get("orderedClasses")
     if not selected:
@@ -1342,8 +1344,8 @@ def _prepare_slice(plan, revision, locked, workdir):
         source["slice"] = {**recipe, "compiled": compiled, "jar": name, **({"matched": matched} if matched else {}),
                            **({"companionSources": origins} if origins else {})}
         classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *acquired])
-        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter,
-                                            observe=_observer(build, source, workdir, classpath))
+        source["target"] = _ordered_target(plan, build, source, classpath, original, adapter, acquired,
+                                           compiled_slice=made.keys())
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)

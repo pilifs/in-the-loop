@@ -1,0 +1,131 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-lang-nan-search",
+    "family": "commons-lang-nan-search",
+    "role": "calibration",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-lang",
+    "revisions": {
+      "parent": {
+        "commit": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4"
+      },
+      "landed": {
+        "commit": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c",
+        "parent": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4"
+      }
+    },
+    "pairs": [
+      {
+        "name": "repair",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "landed"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "-DskipTests",
+        "-Dmaven.javadoc.skip=true",
+        "-Dmaven.source.skip=true",
+        "package"
+      ],
+      "jdk": "21"
+    },
+    "capturedBuilds": {
+      "parent": "records/setup/build-parent.json",
+      "landed": "records/setup/build-landed.json"
+    },
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/datawork/NanSearch.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "pair": "repair"
+    },
+    {
+      "id": "nans-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "revision": "parent",
+      "claim": "claims/nans.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted"
+    },
+    {
+      "id": "nans-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "revision": "landed",
+      "claim": "claims/nans.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "numbers-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "revision": "parent",
+      "claim": "claims/numbers.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "numbers-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "revision": "landed",
+      "claim": "claims/numbers.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/datawork/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

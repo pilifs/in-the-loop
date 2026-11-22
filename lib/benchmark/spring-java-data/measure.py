@@ -61,6 +61,8 @@ def measure(number, stage, budget, only):
     folder, = (ROOT / "examples").glob(f"{number}-*")
     spec = read(folder / "target.json")
     seed(folder)
+    if spec["history"]["repository"].startswith("local-git:"):
+        os.environ.setdefault("TARGETS_LOCAL_GIT_ROOT", str(SETUP / "src"))
     out = folder / "records" / stage
     out.mkdir(parents=True, exist_ok=True)
     tasks = [t for t in spec["tasks"] if t["kind"] == "prove" and (not only or t["id"] in only)]
@@ -74,7 +76,9 @@ def measure(number, stage, budget, only):
     def save():
         write(out / "run.json", report)
     failures = []
-    for task_id in dict.fromkeys(t for task in tasks for t in task["requires"]):
+    replays = (dict.fromkeys(r for task in tasks for r in task["requires"]) if only else
+               [t["id"] for t in spec["tasks"] if t["kind"] == "replay"])
+    for task_id in replays:
         measured = run_cmd([*argv, "--task",task_id], out / f"{task_id}.log")
         report.setdefault("replays", {})[task_id] = measured
         if measured["exit"]:

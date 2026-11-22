@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "preservation",
+  "statement": "The global ISO input stores the expected instant on the unannotated property and malformed local text produces the expected field error.",
+  "assume": "code >= 0 && code < 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "springwork.DateEdits#preservation(I)I",
+    "mapping": "The first selector uses the unannotated field; the second uses the malformed local input.",
+    "correspondence": "finite-oracle",
+    "cases": 2
+  }
+}

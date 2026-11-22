@@ -206,6 +206,8 @@ class UpstreamCase(base.FixtureCopy):
 class UpstreamTest(UpstreamCase):
     @cost("tool")
     def test_an_upstream_lock_fetches_nothing_and_refuses_a_recipe_that_is_not_immutable(self):
+        entry = dict(self.plan().artifacts[0], build={"tool": "gradle-wrapper", "argv": ["./gradlew", "--offline", "jar"], "jdk": "21"})
+        self.assertEqual(runtime_upstream.check_recipe("after", entry)["argv"], ["./gradlew", "--offline", "jar"])
         with mock.patch.object(runtime_upstream, "REMOTE", side_effect=AssertionError("a source lock fetched")), \
                 mock.patch.object(subprocess, "run", side_effect=AssertionError("a source lock ran a process")):
             locked = runtime.lock(self.plan(), "after")

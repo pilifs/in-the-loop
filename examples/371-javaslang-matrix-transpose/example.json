@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "371",
+  "title": "Javaslang transpose preserves coordinates and rejects ragged matrices",
+  "summary": "The public transpose rejects nonrectangular inputs and maps each coordinate of rectangular matrices, including the identity fast paths.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "vavr-io/vavr",
+    "file": "javaslang/src/main/java/javaslang/collection/List.java",
+    "symbol": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The public transpose rejects nonrectangular inputs and maps each coordinate of rectangular matrices, including the identity fast paths."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims",
+  "notes": [
+    "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+    "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+  ],
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/vavr-io/vavr",
+    "url": "https://github.com/vavr-io/vavr/pull/1829"
+  }
+}

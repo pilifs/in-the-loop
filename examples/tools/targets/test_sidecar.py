@@ -93,6 +93,10 @@ class SidecarTest(unittest.TestCase):
              "url": "https://repo.maven.apache.org/maven2/org/springframework/spring-core/5.3.19/spring-core-5.3.19.jar",
              "sha256": "0" * 64}]}))
         sidecar.check(ok, self.folder)
+        dated = ok["preparation"]["artifacts"][0]
+        dated["coordinates"] = "org.springframework:spring-core:5.2.0.RELEASE"
+        dated["url"] = dated["url"].replace("5.3.19", "5.2.0.RELEASE")
+        sidecar.check(ok, self.folder)
 
     def test_a_download_from_elsewhere_is_refused(self):
         t = edited(p=lambda t: t.update(preparation={"route": "published-artifact", "artifacts": [

@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "375",
+  "title": "Exact decimal parsing preserves coefficient and scale",
+  "summary": "Three adjacent or signed decimals return BigDecimal with the coefficient and scale specified by their text. Float, Integer and malformed controls keep their types.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "special-values",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "apache/commons-lang",
+    "file": "src/main/java/org/apache/commons/lang3/math/NumberUtils.java",
+    "symbol": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Three adjacent or signed decimals return BigDecimal with the coefficient and scale specified by their text. Float, Integer and malformed controls keep their types."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims",
+  "notes": [
+    "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+    "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+  ],
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/pull/1635"
+  }
+}

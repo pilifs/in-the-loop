@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "components",
+  "statement": "The names of record components budget, issue and getWidget match their actual declarations.",
+  "assume": "code >= 0 && code < 3",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "springwork.Accessors#components(I)I",
+    "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
+    "correspondence": "finite-oracle",
+    "cases": 3
+  }
+}

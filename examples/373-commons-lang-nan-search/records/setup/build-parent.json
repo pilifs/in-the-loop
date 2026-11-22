@@ -1,0 +1,58 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "commit": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+    "class": "org.apache.commons.lang3.ArrayUtils",
+    "repository": "https://github.com/apache/commons-lang",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "-DskipTests",
+        "-Dmaven.javadoc.skip=true",
+        "-Dmaven.source.skip=true",
+        "package"
+      ],
+      "jdk": "21"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "sha256": "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425",
+      "role": "original",
+      "coordinates": null,
+      "origin": "Original commons-lang-1589-parent module, prepared in spring-java-data setup"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+      "tree": "720946d836bcbd7b27096f9ada7e119bd62a64c6",
+      "parents": [],
+      "fetchedFrom": "https://github.com/apache/commons-lang",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "target/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "4487945e5a4bbcfbf0eeae7c9a0b96bb09968d66236657e9523f2c2d9be50425",
+          "auxiliary": false
+        }
+      ]
+    },
+    "toolchain": {
+      "tool": "maven",
+      "buildJdk": "21"
+    },
+    "steps": [
+      {
+        "step": "recorded setup build",
+        "log": "commons-lang-1589-parent.package.log",
+        "logSha256": "652412ac6505b2562b6f9eb354dcb258bda8fc7078c9e7a956e417bfe749cd41"
+      }
+    ]
+  }
+}

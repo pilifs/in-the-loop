@@ -114,7 +114,7 @@ def check_recipe(revision, entry):
         refuse("the build's argv is not a non-empty list of strings")
     if argv[0] != TOOLS[tool]:
         refuse(f"a {tool} build runs {TOOLS[tool]}, and its argv starts with {argv[0]!r}")
-    own = [a for a in argv[1:] if OWN_OPTIONS.match(a)]
+    own = [a for a in argv[1:] if OWN_OPTIONS.match(a) and not (tool.startswith("gradle") and a == "--offline")]
     if own:
         refuse(f"the argv sets {', '.join(own)}, which preparation sets itself: the build's repositories are Maven "
                f"Central alone and its local repository is fresh")

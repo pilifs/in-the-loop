@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "getters",
+  "statement": "The plain component, bean getter and additional record getter resolve to name, name and widget respectively.",
+  "assume": "code >= 0 && code < 3",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "springwork.Accessors#getters(I)I",
+    "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
+    "correspondence": "finite-oracle",
+    "cases": 3
+  }
+}

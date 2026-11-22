@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "annotated",
+  "statement": "An annotated date stores the UTC instant, reports the full error count, first field and rejected text, and displays the expected value at each prefix.",
+  "assume": "code >= 0 && code < 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "springwork.DateEdits#annotated(I)I",
+    "mapping": "The first history binds the local input. The second binds malformed text and then the same valid local edit.",
+    "correspondence": "finite-oracle",
+    "cases": 2
+  }
+}

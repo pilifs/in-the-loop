@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "legacy-decision",
+  "statement": "The public manager grants exactly when the selected roles imply the complete D authority.",
+  "assume": "code >= 0 && code < 32",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "springwork.RoleChecks#legacyDecision(I)I",
+    "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
+    "correspondence": "finite-oracle",
+    "cases": 32
+  }
+}

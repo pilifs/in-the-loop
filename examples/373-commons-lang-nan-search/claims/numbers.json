@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "numbers",
+  "statement": "Both signs of zero and the finite sentinel retain their first-match indices and the input bits.",
+  "assume": "code >= 0 && code < 902",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "datawork.NanSearch#numbers(I)I",
+    "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+    "correspondence": "finite-oracle",
+    "cases": 902
+  }
+}

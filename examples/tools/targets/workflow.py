@@ -152,8 +152,8 @@ def artifact_sources(folder, target, revisions):
                 return f"revision {source}: fixtureClasspath requires a fixture"
             entry["fixtureClasspath"] = list(defined[source]["fixtureClasspath"])
         if "orderedClasses" in defined[source]:
-            if route not in ("fixture", "upstream-build"):
-                return f"revision {source}: orderedClasses requires a fixture or an upstream build"
+            if route not in ("fixture", "upstream-build", "source-slice"):
+                return f"revision {source}: orderedClasses requires a fixture, upstream build or source slice"
             entry["orderedClasses"] = list(defined[source]["orderedClasses"])
         if "fixtureCompiler" in defined[source]:
             compiler = defined[source]["fixtureCompiler"]

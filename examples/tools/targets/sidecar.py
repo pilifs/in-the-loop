@@ -13,10 +13,10 @@ import json
 import re
 from pathlib import Path
 
+from targets import runtime_maven
+
 SCHEMA = Path(__file__).resolve().parents[2] / "schema" / "target.schema.json"
 VERSION = "example-target/v1"
-# A version a resolver could move: refused even where the schema's pattern lets it through.
-MUTABLE_VERSION = re.compile(r"(SNAPSHOT|LATEST|RELEASE|[+\[\](),])", re.I)
 
 
 class SidecarError(ValueError):
@@ -123,7 +123,7 @@ def consistency_problems(target, folder):
     for a in target.get("preparation", {}).get("artifacts", []):
         if a["revision"] not in revisions:
             problems.append(f"artifact {a['coordinates']}: revision {a['revision']} is not defined")
-        if MUTABLE_VERSION.search(a["coordinates"].rsplit(":", 1)[-1]):
+        if runtime_maven.DYNAMIC.search(a["coordinates"].rsplit(":", 1)[-1]):
             problems.append(f"artifact {a['coordinates']}: a mutable version is not an artifact identity")
     tasks = {}
     for t in target["tasks"]:

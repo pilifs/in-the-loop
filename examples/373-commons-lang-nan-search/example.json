@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "373",
+  "title": "Find the first NaN in a bounded double array",
+  "summary": "Two different quiet NaN encodings select the first NaN at or after the clamped start. Both zero signs have the same search index.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "special-values",
+    "numeric-code",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "apache/commons-lang",
+    "file": "src/main/java/org/apache/commons/lang3/ArrayUtils.java",
+    "symbol": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Two different quiet NaN encodings select the first NaN at or after the clamped start. Both zero signs have the same search index."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims",
+  "notes": [
+    "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+    "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+  ],
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/pull/1589"
+  }
+}

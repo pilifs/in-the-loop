@@ -18773,7 +18773,7 @@
             "execution": "completed",
             "status": null,
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 1
           }
         },
         "staleReceipts": [],
@@ -18883,6 +18883,605 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 369 TASK"
+      }
+    },
+    {
+      "id": "370",
+      "path": "examples/370-spring-role-hierarchy",
+      "title": "Role hierarchy construction determines the public decision",
+      "summary": "The legacy and fluent graphs propagate A to B and B to C and D under either prefix. A real authority manager decides from the selected authorities.",
+      "origin": "real-world",
+      "system": "Spring Security",
+      "symbol": "springwork.RoleApplication#decide(IZZ)Z",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "access-control"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The pre-feature artifact supplies the legacy API only. The client links its optional builder path against landed code and executes it only where the original runtime provides it. The historical core uses the setup graph with released 6.2.0 crypto. The release graph uses Security 6.3.0 and Framework 6.1.7."
+      ],
+      "source": "https://github.com/spring-projects/spring-security/pull/14196",
+      "target": {
+        "family": "spring-role-hierarchy",
+        "role": "control",
+        "case": "spring-role-hierarchy",
+        "tasks": [
+          "replay",
+          "replay-feature",
+          "replay-release",
+          "legacy-names-before",
+          "legacy-names-landed",
+          "legacy-decision-before",
+          "legacy-decision-landed",
+          "fluent-names-landed",
+          "fluent-decision-landed"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-feature": "scaffolded",
+          "replay-release": "scaffolded",
+          "legacy-names-before": "scaffolded",
+          "legacy-names-landed": "scaffolded",
+          "legacy-decision-before": "scaffolded",
+          "legacy-decision-landed": "scaffolded",
+          "fluent-names-landed": "scaffolded",
+          "fluent-decision-landed": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-feature": null,
+          "replay-release": null,
+          "legacy-names-before": "established",
+          "legacy-names-landed": "established",
+          "legacy-decision-before": "established",
+          "legacy-decision-landed": "established",
+          "fluent-names-landed": "established",
+          "fluent-decision-landed": "established"
+        },
+        "claims": {
+          "legacy-names-before": null,
+          "legacy-names-landed": null,
+          "legacy-decision-before": null,
+          "legacy-decision-landed": null,
+          "fluent-names-landed": null,
+          "fluent-decision-landed": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T162123Z-6e7a9a26/result.json",
+            "attempt": "20261122T162123Z-6e7a9a26",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-feature": {
+            "path": "receipts/replay-feature/20261122T162128Z-7f08b9d1/result.json",
+            "attempt": "20261122T162128Z-7f08b9d1",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-release": {
+            "path": "receipts/replay-release/20261122T162131Z-1a39a786/result.json",
+            "attempt": "20261122T162131Z-1a39a786",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": "https://github.com/spring-projects/spring-security/pull/14196",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 370 TASK"
+      }
+    },
+    {
+      "id": "371",
+      "path": "examples/371-javaslang-matrix-transpose",
+      "title": "Javaslang transpose preserves coordinates and rejects ragged matrices",
+      "summary": "The public transpose rejects nonrectangular inputs and maps each coordinate of rectangular matrices, including the identity fast paths.",
+      "origin": "real-world",
+      "system": "vavr-io/vavr",
+      "symbol": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+        "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+      ],
+      "source": "https://github.com/vavr-io/vavr/pull/1829",
+      "target": {
+        "family": "javaslang-matrix-transpose",
+        "role": "calibration",
+        "case": "javaslang-matrix-transpose",
+        "tasks": [
+          "replay",
+          "contract-parent",
+          "contract-landed",
+          "rectangle-parent",
+          "rectangle-landed"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "contract-parent": "scaffolded",
+          "contract-landed": "scaffolded",
+          "rectangle-parent": "scaffolded",
+          "rectangle-landed": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "contract-parent": "refuted",
+          "contract-landed": "established",
+          "rectangle-parent": "established",
+          "rectangle-landed": "established"
+        },
+        "claims": {
+          "contract-parent": null,
+          "contract-landed": null,
+          "rectangle-parent": null,
+          "rectangle-landed": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T162019Z-9e17aa70/result.json",
+            "attempt": "20261122T162019Z-9e17aa70",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": "https://github.com/vavr-io/vavr/pull/1829",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 371 TASK"
+      }
+    },
+    {
+      "id": "372",
+      "path": "examples/372-spring-property-accessors",
+      "title": "Spring property names follow record metadata",
+      "summary": "A record component preserves its exact spelling. An additional getter of the same spelling has no backing field and follows bean naming.",
+      "origin": "real-world",
+      "system": "spring-projects/spring-framework",
+      "symbol": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "schema-drift"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Pair one of three altered component names with one preserved record or bean accessor.",
+        "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/36911",
+      "target": {
+        "family": "spring-property-accessors",
+        "role": "calibration",
+        "case": "spring-property-accessors",
+        "tasks": [
+          "replay",
+          "components-parent",
+          "components-landed",
+          "getters-parent",
+          "getters-landed"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "components-parent": "scaffolded",
+          "components-landed": "scaffolded",
+          "getters-parent": "scaffolded",
+          "getters-landed": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "components-parent": "refuted",
+          "components-landed": "established",
+          "getters-parent": "established",
+          "getters-landed": "established"
+        },
+        "claims": {
+          "components-parent": null,
+          "components-landed": null,
+          "getters-parent": null,
+          "getters-landed": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T162123Z-6bfd4065/result.json",
+            "attempt": "20261122T162123Z-6bfd4065",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": "https://github.com/spring-projects/spring-framework/pull/36911",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 372 TASK"
+      }
+    },
+    {
+      "id": "373",
+      "path": "examples/373-commons-lang-nan-search",
+      "title": "Find the first NaN in a bounded double array",
+      "summary": "Two different quiet NaN encodings select the first NaN at or after the clamped start. Both zero signs have the same search index.",
+      "origin": "real-world",
+      "system": "apache/commons-lang",
+      "symbol": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities",
+          "numeric-code"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+        "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+      ],
+      "source": "https://github.com/apache/commons-lang/pull/1589",
+      "target": {
+        "family": "commons-lang-nan-search",
+        "role": "calibration",
+        "case": "commons-lang-nan-search",
+        "tasks": [
+          "replay",
+          "nans-parent",
+          "nans-landed",
+          "numbers-parent",
+          "numbers-landed"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "nans-parent": "scaffolded",
+          "nans-landed": "scaffolded",
+          "numbers-parent": "scaffolded",
+          "numbers-landed": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "nans-parent": "refuted",
+          "nans-landed": "established",
+          "numbers-parent": "established",
+          "numbers-landed": "established"
+        },
+        "claims": {
+          "nans-parent": null,
+          "nans-landed": null,
+          "numbers-parent": null,
+          "numbers-landed": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T162019Z-9e1e0f2a/result.json",
+            "attempt": "20261122T162019Z-9e1e0f2a",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": "https://github.com/apache/commons-lang/pull/1589",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 373 TASK"
+      }
+    },
+    {
+      "id": "374",
+      "path": "examples/374-spring-formatter-binding",
+      "title": "Global formatting preserves an annotated local date pattern",
+      "summary": "Under US locale and UTC the local date is stored on the fix while the parent displays the same text from a rejected field. A later valid edit preserves the earlier field error.",
+      "origin": "real-world",
+      "system": "Spring Framework",
+      "symbol": "org.springframework.format.datetime.DateFormatterRegistrar#registerFormatters(Lorg/springframework/format/FormatterRegistry;)V",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "validation-gap"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The exact historical registrar is compiled against the released Framework 5.2.0 graph. Both sides use the subject JVM in UTC. The stored 2009 instant, error count, first field error, rejected text and displayed value are separately observed. This source slice has a distinct evidence scope from a historical Gradle build."
+      ],
+      "source": "https://github.com/spring-projects/spring-framework/pull/23893",
+      "target": {
+        "family": "spring-formatter-binding",
+        "role": "calibration",
+        "case": "spring-formatter-binding",
+        "tasks": [
+          "replay",
+          "annotated-parent",
+          "annotated-landed",
+          "preservation-parent",
+          "preservation-landed"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "annotated-parent": "scaffolded",
+          "annotated-landed": "scaffolded",
+          "preservation-parent": "scaffolded",
+          "preservation-landed": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "annotated-parent": "refuted",
+          "annotated-landed": "established",
+          "preservation-parent": "established",
+          "preservation-landed": "established"
+        },
+        "claims": {
+          "annotated-parent": null,
+          "annotated-landed": null,
+          "preservation-parent": null,
+          "preservation-landed": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T162023Z-61b2b7b4/result.json",
+            "attempt": "20261122T162023Z-61b2b7b4",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": "https://github.com/spring-projects/spring-framework/pull/23893",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 374 TASK"
+      }
+    },
+    {
+      "id": "375",
+      "path": "examples/375-commons-lang-decimal-precision",
+      "title": "Exact decimal parsing preserves coefficient and scale",
+      "summary": "Three adjacent or signed decimals return BigDecimal with the coefficient and scale specified by their text. Float, Integer and malformed controls keep their types.",
+      "origin": "real-world",
+      "system": "apache/commons-lang",
+      "symbol": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen public claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+        "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence."
+      ],
+      "source": "https://github.com/apache/commons-lang/pull/1635",
+      "target": {
+        "family": "commons-lang-decimal-precision",
+        "role": "calibration",
+        "case": "commons-lang-decimal-precision",
+        "tasks": [
+          "replay",
+          "precise-parent",
+          "precise-landed",
+          "preserved-parent",
+          "preserved-landed"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "precise-parent": "scaffolded",
+          "precise-landed": "scaffolded",
+          "preserved-parent": "scaffolded",
+          "preserved-landed": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "precise-parent": "refuted",
+          "precise-landed": "established",
+          "preserved-parent": "established",
+          "preserved-landed": "established"
+        },
+        "claims": {
+          "precise-parent": null,
+          "precise-landed": null,
+          "preserved-parent": null,
+          "preserved-landed": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T162020Z-15a34e9b/result.json",
+            "attempt": "20261122T162020Z-15a34e9b",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public claims",
+          "source": "https://github.com/apache/commons-lang/pull/1635",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 375 TASK"
       }
     }
   ]

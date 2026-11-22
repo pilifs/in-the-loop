@@ -1,0 +1,59 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "commit": "a8cace88bfb12a9a7e1977a5765753798962e942",
+    "class": "javaslang.collection.List",
+    "repository": "https://github.com/vavr-io/vavr",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "-pl",
+        "javaslang",
+        "-am",
+        "-DskipTests",
+        "package"
+      ],
+      "jdk": "8"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "built/javaslang-2.1.0-SNAPSHOT.jar",
+      "sha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
+      "role": "original",
+      "coordinates": null,
+      "origin": "Original vavr-1829-parent module, prepared in spring-java-data setup"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "a8cace88bfb12a9a7e1977a5765753798962e942",
+      "tree": "2f14c9a300b7d2f321571648d1217739dc65e1db",
+      "parents": [],
+      "fetchedFrom": "https://github.com/vavr-io/vavr",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "javaslang/target/javaslang-2.1.0-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "javaslang/target/javaslang-2.1.0-SNAPSHOT.jar",
+          "sha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
+          "auxiliary": false
+        }
+      ]
+    },
+    "toolchain": {
+      "tool": "maven",
+      "buildJdk": "8"
+    },
+    "steps": [
+      {
+        "step": "recorded setup build",
+        "log": "vavr-1829-parent.package.log",
+        "logSha256": "6521a00a99e0ec3e70196434980d5242aee079dd914ab49b7e788bc237a2264c"
+      }
+    ]
+  }
+}

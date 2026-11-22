@@ -1,0 +1,266 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "spring-role-hierarchy",
+    "family": "spring-role-hierarchy",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/spring-projects/spring-security",
+    "revisions": {
+      "before": {
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-security-14196-landed",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ],
+        "runtimeLibraries": [
+          "spring-security-14196-before",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ]
+      },
+      "feature": {
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-security-14196-feature",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ],
+        "runtimeLibraries": [
+          "spring-security-14196-feature",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ]
+      },
+      "landed": {
+        "fixture": "application",
+        "compileLibraries": [
+          "spring-security-14196-landed",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ],
+        "runtimeLibraries": [
+          "spring-security-14196-landed",
+          "spring-security-crypto",
+          "spring-aop",
+          "spring-beans",
+          "spring-core",
+          "spring-jcl",
+          "spring-expression",
+          "micrometer-observation",
+          "micrometer-commons",
+          "spring-context"
+        ]
+      },
+      "release": {
+        "fixture": "application",
+        "compileLibraries": [
+          "release-spring-security-core",
+          "release-spring-security-crypto",
+          "release-spring-aop",
+          "release-spring-beans",
+          "release-spring-core",
+          "release-spring-jcl",
+          "release-spring-expression",
+          "release-micrometer-observation",
+          "release-micrometer-commons",
+          "release-spring-context"
+        ],
+        "runtimeLibraries": [
+          "release-spring-security-core",
+          "release-spring-security-crypto",
+          "release-spring-aop",
+          "release-spring-beans",
+          "release-spring-core",
+          "release-spring-jcl",
+          "release-spring-expression",
+          "release-micrometer-observation",
+          "release-micrometer-commons",
+          "release-spring-context"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "history",
+        "kind": "positive",
+        "before": "before",
+        "after": "landed"
+      },
+      {
+        "name": "feature-release",
+        "kind": "positive",
+        "before": "feature",
+        "after": "release"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "libraryCatalog": "controls/libraries.json",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/springwork/RoleChecks.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "pair": "history"
+    },
+    {
+      "id": "replay-feature",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "revision": "feature"
+    },
+    {
+      "id": "replay-release",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "revision": "release"
+    },
+    {
+      "id": "legacy-names-before",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;",
+      "revision": "before",
+      "claim": "claims/legacyNames.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "legacy-names-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;",
+      "revision": "landed",
+      "claim": "claims/legacyNames.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "legacy-decision-before",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "revision": "before",
+      "claim": "claims/legacyDecision.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "legacy-decision-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "revision": "landed",
+      "claim": "claims/legacyDecision.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "fluent-names-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#reachable(IZ)Ljava/util/Collection;",
+      "revision": "landed",
+      "claim": "claims/fluentNames.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "fluent-decision-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "revision": "landed",
+      "claim": "claims/fluentDecision.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/springwork/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

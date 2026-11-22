@@ -1,0 +1,132 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "javaslang-matrix-transpose",
+    "family": "javaslang-matrix-transpose",
+    "role": "calibration",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/vavr-io/vavr",
+    "revisions": {
+      "parent": {
+        "commit": "a8cace88bfb12a9a7e1977a5765753798962e942"
+      },
+      "landed": {
+        "commit": "84a4c690a009c55098ec8f7106c4867e0af747c0",
+        "parent": "a8cace88bfb12a9a7e1977a5765753798962e942"
+      }
+    },
+    "pairs": [
+      {
+        "name": "repair",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "landed"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "upstream-build",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "-pl",
+        "javaslang",
+        "-am",
+        "-DskipTests",
+        "package"
+      ],
+      "jdk": "8"
+    },
+    "capturedBuilds": {
+      "parent": "records/setup/build-parent.json",
+      "landed": "records/setup/build-landed.json"
+    },
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/datawork/Matrices.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "pair": "repair"
+    },
+    {
+      "id": "contract-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "revision": "parent",
+      "claim": "claims/contract.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted"
+    },
+    {
+      "id": "contract-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "revision": "landed",
+      "claim": "claims/contract.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "rectangle-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "revision": "parent",
+      "claim": "claims/rectangle.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    },
+    {
+      "id": "rectangle-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+      "revision": "landed",
+      "claim": "claims/rectangle.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/datawork/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}
