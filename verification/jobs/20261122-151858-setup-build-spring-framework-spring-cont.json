@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-151858-setup-build-spring-framework-spring-cont",
+  "title": "Setup: build Spring Framework spring-context at both #23893 revisions and run DateFormattingTests",
+  "description": "Setup for Brief A4, no claims. In the setup worktrees under ~/.cache/in-the-loop/spring-java-data/src, builds spring-context at 4beb25b3 (landed) and 43a86565 (parent), Spring 5.2.1.BUILD-SNAPSHOT, with Gradle 5.6.3 on JDK 8 (Temurin 1.8.0_512). Runs each side's DateFormattingTests, then the landed file transplanted onto the parent, where testBindDateAnnotatedPatternWithGlobalFormat is expected to fail. The build reads repo.spring.io/libs-spring-framework-build (anonymous, 200 on 2026-11-22) and lists repo.spring.io/plugins-release after the plugin portal (401 anonymously): a plugin found only there would stop the build, which is itself a setup finding. Jars to .../artifacts with sha256, classpath to .../logs, landed tests rerun --offline, build trees removed. Results go into llm-dlc/loops/spring-and-java-data-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/spring-and-java-data-setup.md"
+    ]
+  },
+  "expected": "every step exits 0: both sides' own DateFormattingTests pass; the transplanted landed test fails on the parent with testBindDateAnnotatedPatternWithGlobalFormat; offline rerun BUILD SUCCESSFUL",
+  "submitted": {
+    "at": "2026-11-22T15:18:58+00:00",
+    "session": "b30353b6-2017-49c9-b550-ea9010226406",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "30m",
+    "notes": "Gradle -Xmx1536M on JDK 8 plus Kotlin 1.3 compile of spring-core/spring-context and the test JVM; first run downloads dependencies"
+  },
+  "steps": [
+    {
+      "name": "spring-framework-23893-landed: build spring-context, run DateFormattingTests",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-framework-23893-landed; cd $W; echo worktree=spring-framework-23893-landed commit=$(git rev-parse HEAD); $G :spring-context:jar; $G :spring-context:test --tests 'org.springframework.format.datetime.DateFormattingTests' 2>&1 | tee $B/logs/spring-framework-23893-landed.spring-context.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/spring-context/build/test-results/test | tee $B/logs/spring-framework-23893-landed.spring-context.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-framework-23893-landed.spring-context.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/spring-context/build/libs/spring-context-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-framework-23893-landed.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-framework-23893-landed.jar; $G :spring-context:dependencies --configuration runtimeClasspath > $B/logs/spring-framework-23893-landed.spring-context.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-framework-23893-landed.spring-context.runtimeClasspath.txt | head -40; ",
+      "cwd": "."
+    },
+    {
+      "name": "spring-framework-23893-parent: build spring-context, run its own DateFormattingTests",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-framework-23893-parent; cd $W; echo worktree=spring-framework-23893-parent commit=$(git rev-parse HEAD); $G :spring-context:jar; $G :spring-context:test --tests 'org.springframework.format.datetime.DateFormattingTests' 2>&1 | tee $B/logs/spring-framework-23893-parent.spring-context.test.log; rc=${PIPESTATUS[0]}; echo gradle-test-exit=$rc; summarize $W/spring-context/build/test-results/test | tee $B/logs/spring-framework-23893-parent.spring-context.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-framework-23893-parent.spring-context.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/spring-context/build/libs/spring-context-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-framework-23893-parent.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-framework-23893-parent.jar; $G :spring-context:dependencies --configuration runtimeClasspath > $B/logs/spring-framework-23893-parent.spring-context.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-framework-23893-parent.spring-context.runtimeClasspath.txt | head -40; ",
+      "cwd": "."
+    },
+    {
+      "name": "spring-framework-23893-parent: the landed DateFormattingTests transplanted (failure expected)",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; \nsummarize() {  # summarize DIR: count JUnit XML results and name the failures\npython3 -I - \"$1\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor p in sorted(glob.glob(sys.argv[1] + \"/TEST-*.xml\")):\n    r = E.parse(p).getroot()\n    t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n    for c in r.iter(\"testcase\"):\n        if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n            bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; W=$B/src/spring-framework-23893-parent; cd $W; echo worktree=spring-framework-23893-parent commit=$(git rev-parse HEAD); git -C $W show 4beb25b318486baef65fbc3c1118b43aab9f3dc5:spring-context/src/test/java/org/springframework/format/datetime/DateFormattingTests.java > $W/spring-context/src/test/java/org/springframework/format/datetime/DateFormattingTests.java; echo transplanted spring-context/src/test/java/org/springframework/format/datetime/DateFormattingTests.java from 4beb25b318486baef65fbc3c1118b43aab9f3dc5; $G :spring-context:jar; set +e; $G :spring-context:test --tests 'org.springframework.format.datetime.DateFormattingTests' 2>&1 | tee $B/logs/spring-framework-23893-parent.spring-context.test.log; rc=${PIPESTATUS[0]}; set -e; rm -f $W/spring-context/src/test/java/org/springframework/format/datetime/DateFormattingTests.java; echo gradle-test-exit=$rc; summarize $W/spring-context/build/test-results/test | tee $B/logs/spring-framework-23893-parent.spring-context.junit.txt; test $(grep -o 'tests=[0-9]*' $B/logs/spring-framework-23893-parent.spring-context.junit.txt | cut -d= -f2) -gt 0; J=$(ls $W/spring-context/build/libs/spring-context-*.jar | grep -v -E 'sources|javadoc|test' | head -1); cp $J $B/artifacts/spring-framework-23893-parent.jar; echo built-jar=$J; sha256sum $B/artifacts/spring-framework-23893-parent.jar; $G :spring-context:dependencies --configuration runtimeClasspath > $B/logs/spring-framework-23893-parent.spring-context.runtimeClasspath.txt; grep -E '^[+\\\\]' $B/logs/spring-framework-23893-parent.spring-context.runtimeClasspath.txt | head -40; test $rc -ne 0; grep -q 'failed DateFormattingTests#testBindDateAnnotatedPatternWithGlobalFormat' $B/logs/spring-framework-23893-parent.spring-context.junit.txt",
+      "cwd": "."
+    },
+    {
+      "name": "spring-framework-23893-landed: DateFormattingTests offline",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; G=\"./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false \"; cd $B/src/spring-framework-23893-landed; $G --offline :spring-context:cleanTest :spring-context:test --tests 'org.springframework.format.datetime.DateFormattingTests' 2>&1 | tee $B/logs/spring-framework-23893-landed.spring-context.offline-test.log | tail -5; grep -q 'BUILD SUCCESSFUL' $B/logs/spring-framework-23893-landed.spring-context.offline-test.log",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; B=$HOME/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp; mkdir -p $B/tmp $B/logs $B/artifacts; git -C $B/src/spring-framework-23893-parent clean -fdxq; git -C $B/src/spring-framework-23893-parent status --short | wc -l; git -C $B/src/spring-framework-23893-landed clean -fdxq; git -C $B/src/spring-framework-23893-landed status --short | wc -l; du -sh $B/src",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

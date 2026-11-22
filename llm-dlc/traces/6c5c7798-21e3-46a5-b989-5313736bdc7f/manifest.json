@@ -8298,6 +8298,46 @@
       "summary": "Record the watcher's stop of spring-setup: setup complete",
       "body": "single-spring-setup-D002: stop. The Opus setup pass finished all mechanical setup for the Spring and Java data briefs in two cycles, with no drift. The one gap, A4's historical build (two plugins only at repo.spring.io/plugins-release, 401), is left to the domain agent with a pointer in the Setup Agent Notes. Decision record only.",
       "log_sha256": "6d739002e19f488c7e251ae55657bef7923235c6df9603ac2176e0428a9293e5"
+    },
+    {
+      "change_id": "xolysqzllrrplwmqtwlynswqvyyornyy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the data-side setup for the Spring and Java data briefs",
+      "body": "Setup only, for llm-dlc/loops/spring-and-java-data-workstream-briefs.md: the pinned Commons Lang (#1589, #1635) and Vavr (#1829) revisions are fetched into bare mirrors under ~/.cache/in-the-loop/git-mirrors, checked out as worktrees, signature-checked where signed, built offline (JDK 21 and JDK 8), and their named upstream tests run on both sides. The landed tests fail on the parent code as expected, and the brief's B1-B4 headline JVM witnesses replay exactly. Commons Lang 3.17.0 is fetched and its signature checked. No claims, examples or library changes. The Spring side follows.",
+      "log_sha256": "6d739002e19f488c7e251ae55657bef7923235c6df9603ac2176e0428a9293e5"
+    },
+    {
+      "change_id": "svtruourplpkwmlylzrvlvolzlopwlrz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the Spring setup and queue the historical Spring builds (verification pending)",
+      "body": "Setup only, for llm-dlc/loops/spring-and-java-data-workstream-briefs.md. The five released dependency graphs the Spring brief names (Framework 6.2.3; Security 6.3.0 with Framework 6.1.7; Security 6.2.0 with Framework 6.1.1; spring-core 7.0.4 with JSpecify 1.0.0; Framework 5.2.0.RELEASE) are resolved from Central with strict checksums, their main jars' signatures checked (all but 5.2.0's, whose key is unavailable), and the brief's A1 table and A2 14-of-16 counts replayed on them. Gradle 5.6.3, 8.5 and 9.7.0 are fetched and checked against gradle.org. The record is llm-dlc/loops/spring-and-java-data-setup.md. Two long-token findings in this session's log (a public SSH signature header and a public key fingerprint) are proposed for the allow list.\n\nVerification pending: jobs 20261122-151858-setup-build-spring-security-core-at-the (A2), 20261122-151858-setup-build-spring-framework-spring-core (A3) and 20261122-151858-setup-build-spring-framework-spring-cont (A4) build the historical modules at each pinned revision and run the named upstream tests, including the landed tests transplanted onto the parent where they are expected to fail.",
+      "log_sha256": "6d739002e19f488c7e251ae55657bef7923235c6df9603ac2176e0428a9293e5"
+    },
+    {
+      "change_id": "nyoupmnrqpkyqmplussuqzoowrnlswrp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Summarize the Spring and Java data setup",
+      "body": "Adds the summary table to llm-dlc/loops/spring-and-java-data-setup.md: what is fetched, built, and replayed for each of A1-A4 and B1-B4, what waits for the three queued Spring build jobs, and what was left to the domain agent on purpose.",
+      "log_sha256": "6d739002e19f488c7e251ae55657bef7923235c6df9603ac2176e0428a9293e5"
+    },
+    {
+      "change_id": "kmorvwornlvomyrunkntpntxtpkvqutl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the Spring build results and the A2, A3 and A4 replays in the setup record",
+      "body": "The setup record for the Spring and Java data briefs now carries the outcome of the three historical Spring build jobs. A2 (Spring Security #14196) built at all three revisions with each side's tests passing and an offline rerun; A3 (Framework #36911) built at both, with the landed PropertyTests passing and failing 9 of 18 on the parent as expected. A4 (Framework #23893) could not build: repo.spring.io/plugins-release answered 401 for two build plugins, which is recorded as refused and left for a decision. Jar digests, runtime classpaths and the snapshot dependencies the Framework 7.1 build pulled are recorded, and a wrong statement about that build's repositories is corrected.\n\nThe brief's Spring preflights were replayed inline with throwaway probes on JDK 21.0.13: A2's 32 configurations give identical reachable sets and 14/16 decisions per prefix for legacy text and builder on the three built jars and the 6.3.0 release; A3's table matches on the built jars and on each Property.java ahead of spring-core 7.0.4; A4's stored date, error count and displayed value match on each revision's registrar ahead of 5.2.0.RELEASE, on JDK 21 and 8. No claims, examples or verifier runs.",
+      "log_sha256": "6d739002e19f488c7e251ae55657bef7923235c6df9603ac2176e0428a9293e5"
+    },
+    {
+      "change_id": "uloyqyrlzuvpqrnpzowvnunrpkvlqslz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run spring-setup into the line",
+      "body": "The single-agent run spring-setup (session b30353b6-2017-49c9-b550-ea9010226406) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "6d739002e19f488c7e251ae55657bef7923235c6df9603ac2176e0428a9293e5"
     }
   ],
   "logs": {
