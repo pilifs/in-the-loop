@@ -1,0 +1,305 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-001934-confirm-receiver-targets-05-using-the-se",
+  "title": "Confirm receiver targets 05 using the selected class bindings",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m53s, peak 309.8 MiB (estimated 5m00s, 3.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-001934-confirm-receiver-targets-05-using-the-se.json",
+    "sha256": "8abac0961bc5e62ab8fc8f21196a203c95a5392d62ab840d41fe0a58a31813f9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-001934-confirm-receiver-targets-05-using-the-se",
+      "title": "Confirm receiver targets 05 using the selected class bindings",
+      "description": "Rescore the frozen original native overloads after repairing the post-architecture caller extraction. The running verifier selects each original class and JAR entry. Repeat the preselected physical caller controls once the input is prepared.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T00:19:34+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Recheck all original native overloads",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/05 --case commons-beanutils-440 --case commons-csv-8993be87 --case commons-fileupload-377 --case compsuite-i-94 --case cucumber-reporting-1198 --case reflector-35",
+          "cwd": "."
+        },
+        {
+          "name": "Check the preselected real caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/caller-confirmation/05 --case commons-csv-8993be87",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-confirmation/05",
+        "verification/domain-foundations/caller-confirmation/05"
+      ]
+    }
+  },
+  "sourceCommit": "ec7c6fcddbc40030379bd2e9a5efaeda87b09f0d",
+  "startedAt": "2026-11-22T00:23:30+00:00",
+  "finishedAt": "2026-11-22T00:29:46+00:00",
+  "wallSeconds": 376.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2901987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 324841472,
+    "wallSeconds": 113.7,
+    "cpuSeconds": 91.7,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.38
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 244.144,
+      "cpuSeconds": 244.526,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2219900928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "e4a937b38e885769711270623403877e6d4e86d49c5d37f8cfab2571603a9b28",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-001934-confirm-receiver-targets-05-using-the-se/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 04s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Recheck all original native overloads",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/05 --case commons-beanutils-440 --case commons-csv-8993be87 --case commons-fileupload-377 --case compsuite-i-94 --case cucumber-reporting-1198 --case reflector-35",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 103.03,
+      "cpuSeconds": 81.653,
+      "cpuThrottledSeconds": 38.376,
+      "peakMemoryBytes": 324841472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-all-original-native-ov.log",
+        "lines": 6,
+        "bytes": 2215,
+        "sha256": "b8532ef7e1aa951a3d70cd16d999d7e93ee6be3081f13456af1619b19a4a6ba4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-94 current open validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.vali",
+        "cucumber-reporting-1198 current open parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their c",
+        "commons-beanutils-440 current open parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans",
+        "commons-csv-8993be87 current open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of sever",
+        "reflector-35 current open newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassG",
+        "commons-fileupload-377 current open readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no con"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the preselected real caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/caller-confirmation/05 --case commons-csv-8993be87",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 10.621,
+      "cpuSeconds": 10.072,
+      "cpuThrottledSeconds": 1.128,
+      "peakMemoryBytes": 141615104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-preselected-real-cal.log",
+        "lines": 2,
+        "bytes": 121,
+        "sha256": "a8fabea60faf880f9c882933e73d21a290b8e92355cd551342bf8045dd6340cd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+        "commons-csv-8993be87 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/05/current/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 6180,
+      "sha256": "ec2ea58587b159bf80fce3d63d30056043623020360e8bbe2285003c4fa1224d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/05/current/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 5326,
+      "sha256": "06be58ab5b51e62be9d0432eae4f2e8dea82de4f6f62b213d0e98cf72d75ade0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/05/current/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 5170,
+      "sha256": "ec0b3fe71b02334091c0434131f643306fd1eaae30699d0e6928cc2c8cc615c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/05/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 15330,
+      "sha256": "422595c0093d84e0f4942b56a3c15f22370e01768f00717dd6886ca1168bb071",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/05/current/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 10601,
+      "sha256": "00e5fd57e3228a7bd1d39f65f6b0c2200fa64b31b5fb3c501988265529364267",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/05/current/reflector-35.json",
+      "change": "added",
+      "bytes": 8393,
+      "sha256": "cdf4297214195a4e28f2f0ce50302246a1de902d9696e96d5daa3dd7ad80dacf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/caller-confirmation/05/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 13015,
+      "sha256": "cdf174849e72af79fdf9fcf6b8d9b219be4422042c411a725b7a1881841bdc2c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:32:11+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-confirmation/05/current/commons-beanutils-440.json",
+      "verification/domain-foundations/receiver-confirmation/05/current/commons-csv-8993be87.json",
+      "verification/domain-foundations/receiver-confirmation/05/current/commons-fileupload-377.json",
+      "verification/domain-foundations/receiver-confirmation/05/current/compsuite-i-94.json",
+      "verification/domain-foundations/receiver-confirmation/05/current/cucumber-reporting-1198.json",
+      "verification/domain-foundations/receiver-confirmation/05/current/reflector-35.json",
+      "verification/domain-foundations/caller-confirmation/05/commons-csv-8993be87.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "26e5c3c58faddaf3b5feff241744f0493101a18b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/26e5c3c58faddaf3b5feff241744f0493101a18b/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T002946Z-072202428e0586d9",
+      "outputs": "20261122T002946Z-097008ebfd1b0b26",
+      "diff": "20261122T002946Z-115971ccb60ac9f4"
+    }
+  }
+}

@@ -537,9 +537,6 @@ fn node(cp: &crate::classpath::ClassPath, plan: &ConstructionPlan, id: u32, path
     if cf.is_interface() || cf.is_abstract() || cf.is_enum() {
         return Err(gap(format!("node {id}'s class {} is not a concrete class made by its constructor", n.class)));
     }
-    if cf.super_class.as_deref() != Some("java/lang/Object") {
-        return Err(gap(format!("node {id}'s class {} extends {}; a class that extends another is not supported yet", n.class, cf.super_class.as_deref().unwrap_or("nothing").replace('/', "."))));
-    }
     let constructors: Vec<String> = cf.methods.iter().filter(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic()).map(|m| m.descriptor.clone()).collect();
     let Some(constructor) = cf.methods.iter().find(|m| m.is_constructor() && !m.is_private() && !m.is_synthetic() && m.descriptor == *descriptor) else {
         return Err(gap(format!("node {id}'s class {} has no constructor {descriptor} a caller can use; it has {}", n.class, if constructors.is_empty() { "none".to_string() } else { constructors.join(", ") })));

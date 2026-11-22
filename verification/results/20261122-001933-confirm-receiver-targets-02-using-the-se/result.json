@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-001933-confirm-receiver-targets-02-using-the-se",
+  "title": "Confirm receiver targets 02 using the selected class bindings",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 38.3s, peak 366.5 MiB (estimated 5m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-001933-confirm-receiver-targets-02-using-the-se.json",
+    "sha256": "1df45670211822f15f2cf4f019379b19962ac86c510f24034d8d5674c1b06360",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-001933-confirm-receiver-targets-02-using-the-se",
+      "title": "Confirm receiver targets 02 using the selected class bindings",
+      "description": "Rescore the frozen original native overloads after repairing the post-architecture caller extraction. The running verifier selects each original class and JAR entry. Repeat the preselected physical caller controls once the input is prepared.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T00:19:33+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Recheck all original native overloads",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/02 --case compsuite-i-10 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-confirmation/02"
+      ]
+    }
+  },
+  "sourceCommit": "ec7c6fcddbc40030379bd2e9a5efaeda87b09f0d",
+  "startedAt": "2026-11-22T00:23:30+00:00",
+  "finishedAt": "2026-11-22T00:28:30+00:00",
+  "wallSeconds": 300.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2901987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 384339968,
+    "wallSeconds": 38.3,
+    "cpuSeconds": 16.5,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recheck all original native overloads",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/02 --case compsuite-i-10 --case compsuite-i-103 --case compsuite-i-29 --case compsuite-i-36 --case compsuite-i-37 --case compsuite-i-39",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 38.276,
+      "cpuSeconds": 16.461,
+      "cpuThrottledSeconds": 2.198,
+      "peakMemoryBytes": 384339968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-all-original-native-ov.log",
+        "lines": 6,
+        "bytes": 1299,
+        "sha256": "0212a17581eeb22a6ea7043abf43bafecdb4d2ea1d7c40024a38395723a75628",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-10 current open review the recorded exact overloads",
+        "compsuite-i-39 current open review the recorded exact overloads",
+        "compsuite-i-29 current open runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
+        "compsuite-i-36 current open parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "compsuite-i-103 current open postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibab",
+        "compsuite-i-37 current open review the recorded exact overloads"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-10.json",
+      "change": "added",
+      "bytes": 21319,
+      "sha256": "916bf74bc2f3c529d508a30ab2f8e82626ac3cf2a8287c7016f08b5c8e1e3904",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 10847,
+      "sha256": "ead286fcc5b78358d59549ed4e5f9c36f4f38c33538cfa77031db0bc51d50cd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 7511,
+      "sha256": "46ce786dc412ea7c5fcf6a153dd97b9a3d81d7ba50a75b71eb25f803523f540f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 7524,
+      "sha256": "a71c53fc9b22db000591d7bd51632910a2a6494ba3b82333320c8ab202a9af98",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 11321,
+      "sha256": "7c2accf6649e8ec26c600b2d1083f5e14b0a6553f4b28d3097a3555126ef7558",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 13487,
+      "sha256": "3ea72b39dfdfdbd2b9c52ce5d772b287e8c2329fecb25e9aac84e31f3902cbf3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:32:11+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-10.json",
+      "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-103.json",
+      "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-29.json",
+      "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-36.json",
+      "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-37.json",
+      "verification/domain-foundations/receiver-confirmation/02/current/compsuite-i-39.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "26e5c3c58faddaf3b5feff241744f0493101a18b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/26e5c3c58faddaf3b5feff241744f0493101a18b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T002830Z-666839425b24b912",
+      "outputs": "20261122T002830Z-69862785dff88855",
+      "diff": "20261122T002830Z-71455623fdd186e0"
+    }
+  }
+}

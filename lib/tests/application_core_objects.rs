@@ -1075,6 +1075,12 @@ public final class Counter extends Base {
     assert_eq!(diff.verdict, Verdict::Violation, "{}", diff.output);
     assert!(diff.replay.as_ref().is_some_and(|r| r.reproduced) && diff.counterexample.as_ref().is_some_and(|c| c.jvm.is_some()),
         "{}", diff.output);
+    let overloaded = source.replace("public Counter(int seed)", "public Counter() { this(3); } public Counter(int seed)");
+    let selected = compile("subclass-selected", &[(class, &overloaded)]);
+    let noarg = r#"{"nodes":[{"id":0,"class":"state.Counter","maker":{"kind":"constructor","descriptor":"()V"},"args":[]}],
+        "roots":[{"name":"this","value":{"kind":"node","id":0}}],"bounds":{"nodes":1,"max_array_length":0,"setup_calls":0}}"#;
+    let planned = planned("subclass-selected", &selected, &selected, "state.Counter#value", plans(noarg, noarg));
+    assert_eq!(planned.verdict, Verdict::Verified, "{}", planned.output);
     let hidden = compile("subclass-hidden", &[(class, &source.replace("private int extra", "private int cell; private int extra"))]);
     let gap = prove("subclass-hidden", &hidden, "state.Counter#value", None, "true");
     assert!(gap.problem.as_deref().unwrap_or_default().contains("hides the inherited field cell"), "{}", gap.output);

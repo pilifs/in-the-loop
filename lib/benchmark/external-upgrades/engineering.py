@@ -322,6 +322,9 @@ def screen(case, inputs, build, checker, args):
             cmd = [str(checker), "equivalence", "--before", str(work / directories["old"]["dir"]),
                    "--after", str(work / directories["new"]["dir"]), "--engine", "native", "--gaps", "strict",
                    "--target", target, "--timeout", str(seconds), "--work", str(stage), "--json"]
+            if plan := getattr(args, "construction_plan", None):
+                cmd.extend(["--plan", str(plan.resolve())])
+                report["constructionPlanSha256"] = digest(plan)
             for side, flag in (("old", "--before-classpath"), ("new", "--classpath")):
                 for jar in paths[side][1:]:
                     cmd.extend([flag, str(jar)])
@@ -367,7 +370,10 @@ def main():
     ap.add_argument("--resolve-seconds", type=int, default=180)
     ap.add_argument("--compile-seconds", type=int, default=60)
     ap.add_argument("--check-seconds", type=int, default=90)
+    ap.add_argument("--construction-plan", type=Path, help="before/after receiver plan for a single named current case")
     a=ap.parse_args()
+    if a.construction_plan and (len(a.case) != 1 or a.build != ["current"]):
+        ap.error("an explicit construction plan qualifies one named case on the current verifier")
     a.work=a.work.resolve(); a.maven_cache=a.maven_cache.resolve()
     if a.work.is_relative_to(ROOT) or a.maven_cache.is_relative_to(ROOT):
         ap.error("put compilation and the Maven cache outside the checkout")
