@@ -1,0 +1,317 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-003204-check-actual-no-argument-json-and-yaml-c",
+  "title": "Check actual no-argument JSON and YAML configuration receivers",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 37.5s, peak 165.0 MiB (estimated 4m00s, 3.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-003204-check-actual-no-argument-json-and-yaml-c.json",
+    "sha256": "ab11f8eecd721ad7a39cae5d398a912797087e96d57a2ffb97f09094d91b3b2c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-003204-check-actual-no-argument-json-and-yaml-c",
+      "title": "Check actual no-argument JSON and YAML configuration receivers",
+      "description": "Apply the original public caller’s no-argument constructor on both sides of each Commons Configuration upgrade, preserving inherited construction, side effects and field layout. Keep this caller-specific experiment separate from the unconstrained 32-case score. Recheck physical read-method reachability on the original JARs.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T00:32:04+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Check the original constructor for commons-configuration-565",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/planned-receivers/native --case commons-configuration-565 --construction-plan lib/benchmark/domain-foundations/receiver-plans/commons-configuration-565.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check the original constructor for commons-configuration-601",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/planned-receivers/native --case commons-configuration-601 --construction-plan lib/benchmark/domain-foundations/receiver-plans/commons-configuration-601.json",
+          "cwd": "."
+        },
+        {
+          "name": "Observe both original client constructors and read methods",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/planned-receivers/jvm --case commons-configuration-565 --case commons-configuration-601",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/planned-receivers"
+      ]
+    }
+  },
+  "sourceCommit": "b8ab79fabd4dc3ad2bf55769bb916626c02fe7a9",
+  "startedAt": "2026-11-22T00:38:25+00:00",
+  "finishedAt": "2026-11-22T00:42:05+00:00",
+  "wallSeconds": 220.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3237649,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 172986368,
+    "wallSeconds": 37.5,
+    "cpuSeconds": 51.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 174.25,
+      "cpuSeconds": 174.616,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2224017408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "eb0003e2208d5836829e13448853332a217f3a8375509845ee63d93fa4eec1a5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-003204-check-actual-no-argument-json-and-yaml-c/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 54s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the original constructor for commons-configuration-565",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/planned-receivers/native --case commons-configuration-565 --construction-plan lib/benchmark/domain-foundations/receiver-plans/commons-configuration-565.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 0.601,
+      "cpuSeconds": 0.563,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 102260736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-constructor.log",
+        "lines": 1,
+        "bytes": 75,
+        "sha256": "99660a3248c1c55a7b5ba6cea45b31ec89217cb1de1e8f7d0097bf1f717ced08",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commons-configuration-565 current open review the recorded exact overloads"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the original constructor for commons-configuration-601",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/planned-receivers/native --case commons-configuration-601 --construction-plan lib/benchmark/domain-foundations/receiver-plans/commons-configuration-601.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.508,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 89223168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-original-constructor.log",
+        "lines": 1,
+        "bytes": 75,
+        "sha256": "b869a917586a77e41a185709d768a8211f059c5f2e75f1a471a212862d10d12f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commons-configuration-601 current open review the recorded exact overloads"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Observe both original client constructors and read methods",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/planned-receivers/jvm --case commons-configuration-565 --case commons-configuration-601",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 36.276,
+      "cpuSeconds": 50.099,
+      "cpuThrottledSeconds": 13.729,
+      "peakMemoryBytes": 172986368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-observe-both-original-client-c.log",
+        "lines": 4,
+        "bytes": 244,
+        "sha256": "ac7393c5d49fab80b79bb7e00aea4a824323780524d3f1946483682e75871199",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.configuration2.JSONConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-565 preserved",
+        "preserved org.apache.commons.configuration2.YAMLConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-601 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/planned-receivers/jvm/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 60386,
+      "sha256": "8fc2fc0a1e529b1920c74e16e0dfa2fdbee78c7cd5896b7f8cfebc6f25252d4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/planned-receivers/jvm/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 30359,
+      "sha256": "a03eac0d1cff5281c0ba74d35f2bf8420aa80b2dbd8b0504ace526a5cd235779",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/planned-receivers/native/current/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 16844,
+      "sha256": "fc858d48bf6eac9879ddc26669b9f23f2692413519665b55fd46a06405aafb24",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/planned-receivers/native/current/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 22345,
+      "sha256": "d95dad185f51419829853c5510200801d9a0f69802fe57d195a98e28e869f97a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:42:17+00:00",
+    "applied": [
+      "verification/domain-foundations/planned-receivers/jvm/commons-configuration-565.json",
+      "verification/domain-foundations/planned-receivers/jvm/commons-configuration-601.json",
+      "verification/domain-foundations/planned-receivers/native/current/commons-configuration-565.json",
+      "verification/domain-foundations/planned-receivers/native/current/commons-configuration-601.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "da70c4cdd2e79c3b0343dfb96a5a5c838a8f87c0",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/da70c4cdd2e79c3b0343dfb96a5a5c838a8f87c0/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T004205Z-45975905fb0e20bf",
+      "outputs": "20261122T004205Z-481352bb6b10af2e",
+      "diff": "20261122T004205Z-499721e801eebe62"
+    }
+  }
+}
