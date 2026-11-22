@@ -179,3 +179,30 @@ All historical rows except the role builder use the landed commit’s first pare
 [fp]: https://github.com/pilifs/in-the-loop/blob/209ecb6e4eb61fec5b72ad03113b066a9e204ce5/lib/src/bmc/floating.rs
 [double]: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Double.html
 [loop]: https://github.com/pilifs/in-the-loop/blob/209ecb6e4eb61fec5b72ad03113b066a9e204ce5/llm-dlc/loops/brief-template.md#standing-rules
+
+## Setup Agent Notes
+
+*Added 2026-11-22 by the watcher, after a setup pass by Claude Opus 5.5 (run `spring-setup`, session `b30353b6`) that did only mechanical setup before the domain work. The full record, with every path, digest and command, is [`llm-dlc/loops/spring-and-java-data-setup.md`](spring-and-java-data-setup.md) in the repository: read its Summary table first.*
+
+**What is ready, under `~/.cache/in-the-loop/`** (3.2 GB, outside the checkout):
+
+- **Sources.** One bare mirror per upstream (`git-mirrors/{spring-framework,spring-security,commons-lang,vavr}.git`), holding only the 13 pinned commits, and a detached worktree per pinned revision in `spring-java-data/src/`. Every landed commit's first parent is this brief's "before" commit, and Spring Security's `10d88cdf → 7d366242 → ee8bc78c` chain is confirmed. The six signed commits verify, in a keyring kept apart from the user's.
+- **Toolchains.** JDKs 8, 11, 17, 21.0.13 (the brief's preflight JVM) and 25 were already installed under SDKMAN, and Maven 3.10.0. Gradle 5.6.3, 8.5 and 9.7.0 and all seven wrapper jars match gradle.org's checksums.
+- **Dependencies.** A Maven repository (`spring-java-data/m2`, use `mvn -s spring-java-data/maven-settings.xml`) and a `GRADLE_USER_HOME` (`spring-java-data/gradle-home`). They cache B1–B4 and the A2 and A3 historical builds, and offline reruns were checked. Released sets, each checked against Central with a classpath file, are in `spring-java-data/releases`: Framework 6.2.3 (A1), Security 6.3.0 with Framework 6.1.7, Security 6.2.0 with Framework 6.1.1, spring-core 7.0.4 with JSpecify 1.0.0, Framework 5.2.0.RELEASE and Commons Lang 3.17.0.
+- **Built originals.** Jars for each pinned revision are in `spring-java-data/artifacts`, with digests and runtime classpaths in the record: Commons Lang (4), Vavr (2), Spring Security core before, feature and landed (3), and spring-core at both #36911 revisions (2).
+
+**What was verified on a JVM:**
+
+- **B1–B4.** Each side's named upstream tests pass, and the landed tests, copied onto the parent code, fail as expected. Every headline witness in this brief reproduces on JDK 21.0.13: B1's row, distinct pairs and four lambda sites; B2's four table rows; B3's −1 against 1; B4's `Float 0.1` against `BigDecimal` with scale 18, controls unchanged.
+- **A1.** The whole prefix table on the released 6.2.3.
+- **A2** (verification job passed). Each side's tests pass at all three revisions. On the three built jars and on 6.3.0 with 6.1.7, the legacy text configuration and the builder agree: 14 of 16 subsets granted per prefix, with identical reachable sets. This compares the two routes with each other only. No independent graph oracle exists yet.
+- **A3** (job passed). The landed `PropertyTests` pass 18/18, and transplanted onto the parent they fail 9/18. The table reproduces exactly on the built jars and on each revision's `Property.java` compiled ahead of spring-core 7.0.4.
+- **A4.** Reproduced through this brief's slice route only: each revision's registrar ahead of 5.2.0.RELEASE, on JDK 21 and on JDK 8. The parent gives date `null` with 1 field error, the fix `2009-10-31T01:05:00Z` with 0 errors.
+
+**What to know before starting:**
+
+- **A4 has no historical build.** The Framework 5.2 build needs two build plugins, `io.spring.asciidoctor:spring-asciidoctor-extensions:0.1.3.RELEASE` and `org.jfrog.buildinfo:build-info-extractor:2.13.10`, only from `repo.spring.io/plugins-release`, which has refused anonymous access since 2023 (401). The slice route above is the brief's own and needs no build. If the full build or `DateFormattingTests` is wanted, the watcher's suggestion is a Gradle init script under `~/.cache/in-the-loop/spring-java-data/`. It would point the `repo.spring.io/*` repositories at Maven Central and the Gradle Plugin Portal (most of that repository's plugins are on one or the other under the same coordinates) and leave the upstream build files unchanged. Verify the checksums of what resolves, and record any coordinate that cannot be found.
+- **A3's build pulls Reactor and Micrometer snapshots,** and also uses `repo.spring.io/milestone` and `/snapshot`. The cached copies are recorded with digests, but an online rebuild may fetch different bytes, so rebuild A3 with `--offline` to keep the recorded inputs.
+- **The Spring 5.2.0.RELEASE signature is unchecked:** its 2019 key isn't published with a user ID. Its checksums match Central's.
+- **Left for the domain work, on purpose:** all claims, examples and example ids (this brief's note on reserved ids still applies), sidecars, adapters, recipes and verifier runs. Also the grids still to freeze: B2's 400 matrices, A2's omitted-edge control and 64 combined histories, A1's six permutations and fresh-binder control, A4's preservation inputs, and B3's and B4's bounded families.
+- **Network access is unchanged.** These caches let the work start at once and keep builds reproducible. Nothing here requires working offline.
