@@ -97,6 +97,25 @@ public final class CharacterFormats {
         return separator != null && separator == System.lineSeparator();
     }
 
+    public static boolean clockSeed() {
+        long time = System.currentTimeMillis();
+        int seed = ((int)time + (int)(time >>> 32)) | 1;
+        Object object = new Object();
+        java.util.concurrent.atomic.AtomicReference<Object> ref = new java.util.concurrent.atomic.AtomicReference<>(object);
+        if (ref.get() != object || System.identityHashCode(object) != System.identityHashCode(ref.get())) return false;
+        ref.set(null);
+        return (seed & 1) == 1 && ref.get() == null && System.identityHashCode(null) == 0;
+    }
+    public static boolean sameTime() { return System.currentTimeMillis() == System.currentTimeMillis(); }
+    static final class Copyable implements Cloneable {
+        Copyable copy() throws CloneNotSupportedException { return (Copyable) super.clone(); }
+    }
+    public static boolean copiedHash() throws CloneNotSupportedException {
+        Copyable source = new Copyable();
+        int hash = System.identityHashCode(source);
+        return hash == System.identityHashCode(source.copy());
+    }
+
     public static boolean expectsUnixContents() { return System.lineSeparator().equals("\n"); }
     public static boolean expectsInternedIdentity() { return System.lineSeparator() == "\n"; }
 
@@ -105,6 +124,7 @@ public final class CharacterFormats {
             if (!tableStartup(Boolean.parseBoolean(args[0]))) throw new AssertionError("table initialization");
             return;
         }
+        if (!clockSeed()) throw new AssertionError("clock and identity");
         for (int c = 0; c < 256; c++) if (!latinIdentifiers((char) c)) throw new AssertionError(c);
         if (outsideLatin1()) throw new AssertionError("U+0100 uses a different character table");
         if (!copiesAndFills(Integer.MIN_VALUE)) throw new AssertionError("array copy");

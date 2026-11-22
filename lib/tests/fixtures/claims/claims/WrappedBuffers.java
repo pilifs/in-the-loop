@@ -66,7 +66,27 @@ public class WrappedBuffers {
         return original.position() == 1;
     }
 
+    public static boolean readOnly(byte value) {
+        byte[] backing = {1, 2, 3, 4};
+        ByteBuffer original = ByteBuffer.wrap(backing, 1, 2);
+        original.mark();
+        ByteBuffer view = original.asReadOnlyBuffer();
+        ByteBuffer copy = view.duplicate();
+        backing[1] = value;
+        if (view == original || copy == view || !copy.isReadOnly() || copy.hasArray()
+                || copy.capacity() != 4 || copy.limit() != 3 || copy.get() != value
+                || original.position() != 1 || view.position() != 1) return false;
+        copy.reset();
+        try {
+            copy.put((byte) 7);
+            return false;
+        } catch (java.nio.ReadOnlyBufferException expected) {
+            return copy.position() == 1 && backing[1] == value;
+        }
+    }
+
     public static void main(String[] args) {
-        if (!window(false) || !window(true) || !whole() || !invalid() || !duplicate(false) || !duplicate(true) || wrongSharedCursor()) throw new AssertionError();
+        if (!window(false) || !window(true) || !whole() || !invalid() || !duplicate(false) || !duplicate(true)
+                || !readOnly((byte) -17) || wrongSharedCursor()) throw new AssertionError();
     }
 }

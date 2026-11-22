@@ -1,0 +1,382 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-040740-group-03-original-upgrade-receivers-and",
+  "title": "Group 03 original upgrade receivers and native callers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m28s, peak 246.8 MiB (estimated 6m00s, 3.0 GiB); 24 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-040740-group-03-original-upgrade-receivers-and.json",
+    "sha256": "92279dae913342e9d2b9c5f9b4b2aabd2df8b97e838432305c07667331018e3d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-040740-group-03-original-upgrade-receivers-and",
+      "title": "Group 03 original upgrade receivers and native callers",
+      "description": "Repeat each frozen native overload on its pinned modules. Exercise each registered original public caller on both sides under strict native checking and on two fresh JVMs per input. Record the actual constructor descriptors, calling bytecode offsets, field and argument types, nulls, and within-frame aliases at the selected method. Preserve pre-entry failures and bounded caller scopes.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T04:07:40+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check the bound overloads and original caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-callers --group 03",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/receiver-callers/03"
+      ]
+    }
+  },
+  "sourceCommit": "398b88a95054b92127ab7b653af7d2217d2b27c7",
+  "startedAt": "2026-11-22T04:13:48+00:00",
+  "finishedAt": "2026-11-22T04:18:37+00:00",
+  "wallSeconds": 289.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1150082,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 258789376,
+    "wallSeconds": 88.8,
+    "cpuSeconds": 99.8,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-callers --group 03",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 88.8,
+      "cpuSeconds": 99.77,
+      "cpuThrottledSeconds": 13.699,
+      "peakMemoryBytes": 258789376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-overloads-and.log",
+        "lines": 24,
+        "bytes": 2999,
+        "sha256": "12da6304be088ea6118cbaff2884ce57951af4a03fe0246a9636ed1474dce413",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-62 current open the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13 (java.util.LinkedHashSet.<init>() at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPa",
+        "compsuite-i-80 current open review the recorded exact overloads",
+        "ea-async-27 current open review the recorded exact overloads",
+        "whatjdk-12 current open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of",
+        "incremental-analysis-28 current open review the recorded exact overloads",
+        "commons-text-775 current open review the recorded exact overloads",
+        "preserved org.apache.commons.text.WordUtils#capitalizeFully(Ljava/lang/String;[C)Ljava/lang/String;",
+        "commons-text-775 preserved",
+        "open new input 0: the original caller method was never entered. org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'carServiceImpl' defined in URL [jar:file:/home/filip/.cache/in-the-loop/tmp/domain-foundations-receivers/modules/assets/66b24b6ae6c879be223854530d98",
+        "compsuite-i-62 open",
+        "changed org.zeroturnaround.exec.stream.slf4j.Slf4jStream#of(Ljava/lang/String;)Lorg/zeroturnaround/exec/stream/slf4j/Slf4jStream;",
+        "compsuite-i-80 changed",
+        "preserved com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+        "ea-async-27 preserved",
+        "preserved com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
+        "incremental-analysis-28 preserved",
+        "preserved com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+        "whatjdk-12 preserved",
+        "commons-text-775 preserved ['unverifiable', 'unverifiable']",
+        "compsuite-i-62 open ['unverifiable', 'unverifiable']",
+        "compsuite-i-80 changed ['unverifiable', 'unverifiable']",
+        "ea-async-27 preserved ['unverifiable', 'unverifiable']",
+        "incremental-analysis-28 preserved ['unverifiable', 'unverifiable']",
+        "whatjdk-12 preserved ['unverifiable', 'unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/commons-text-775-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6287,
+      "sha256": "defc0a83251ec5989f285adf0f8660d1e1234be53bd5f80a618523d1390a54ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/commons-text-775-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6289,
+      "sha256": "67b974b3aa4a8ccfaaa401f5ba93eece16b7e38c70ec0cf3641e3343ef1bcba7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/commons-text-775.json",
+      "change": "added",
+      "bytes": 21632,
+      "sha256": "413d96929f4bcd70e92a21987bbee69dcd1ca7c3b4f1a4bd94edf8bc54a375e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-62-receipts/new.native.json",
+      "change": "added",
+      "bytes": 5999,
+      "sha256": "682195795dffd336d6cd8c76259f4df1b1edad18dc0a648a2225063c87718b71",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-62-receipts/old.native.json",
+      "change": "added",
+      "bytes": 5998,
+      "sha256": "bab54b5edb0e72e5a30d0534b3d56c0a92c3077630a1b85afa96a586eec0735a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 67573,
+      "sha256": "70f7a4a8c2ca106090f7724227aae754f626302f8f362e8733406a787f265735",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-80-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6310,
+      "sha256": "ea1bf4dd0f5ffb7c0d98146385be6d1ebbaf049e4a99ebaf3cff86399915e505",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-80-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6312,
+      "sha256": "717a6db935ba243cf954b5946cdf36aee2ac2c4dd3e28a23c676ca6f6fad2020",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-80.json",
+      "change": "added",
+      "bytes": 15551,
+      "sha256": "0374021e608e76f76e9ef5f77c7b24d244cd73e21b587cdb53cde25d679b6a66",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/ea-async-27-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6098,
+      "sha256": "c797dc1980406c419902e518b1a14116915241c5589e1447cddd4b844d23cf47",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/ea-async-27-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6098,
+      "sha256": "a2a002962c1fd77745aa96f3269150463b4c56c7a7208b291a04ff9de67043cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/ea-async-27.json",
+      "change": "added",
+      "bytes": 60950,
+      "sha256": "defc8663a242fdf6164dedc3a3a1fdd9553dc5d96dcc83b7a2b633cfe6ac16d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/incremental-analysis-28-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6608,
+      "sha256": "b2074d88729e572c15fa196756b2087fcb5c074e68878638099b34f3245f989f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/incremental-analysis-28-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6609,
+      "sha256": "9c595632699d7133dda27a41d0fe0d4f3970d216d9db24ef0dc2533cf42f5d7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 47774,
+      "sha256": "6d52c34708e911e60ecfa4db10fe86d40277f3b5f285286ae1fbeb4db74d71ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/whatjdk-12-receipts/new.native.json",
+      "change": "added",
+      "bytes": 6647,
+      "sha256": "dd469dd38ac2553fe61216c1f36ae0d345bc60614a240d3956c8031237293402",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/whatjdk-12-receipts/old.native.json",
+      "change": "added",
+      "bytes": 6647,
+      "sha256": "46414631cc2a60c99082b712ec7b0c936bf5cd36534bf3341e4bce962057ad4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/callers/whatjdk-12.json",
+      "change": "added",
+      "bytes": 40785,
+      "sha256": "261d115f3d8da684ac19dd71fb9562a294c8f34d7650b7a0f42de604b9ed99f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/overloads/current/commons-text-775.json",
+      "change": "added",
+      "bytes": 33525,
+      "sha256": "a75a48e1eb663e300910b11412b5679fd20d117838b7b66be74eb6fac66879ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/overloads/current/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 21944,
+      "sha256": "194179b615613a975f11f667d44bbdabca8d1254aac713c66ef09734a1d14f0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/overloads/current/compsuite-i-80.json",
+      "change": "added",
+      "bytes": 29879,
+      "sha256": "257de447fa71c3e5828c829eeaa582a536b3e24c822af69a2baf487aeb9b1bce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/overloads/current/ea-async-27.json",
+      "change": "added",
+      "bytes": 13513,
+      "sha256": "2dcd21efabd71432fcf98fd010a8169439411d22c61c92593788ac986029126b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/overloads/current/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 22183,
+      "sha256": "d66d8e07e81146786b631e4c2d68111ec2c49818de8de17e7d8af90b66e2ae0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-callers/03/overloads/current/whatjdk-12.json",
+      "change": "added",
+      "bytes": 5796,
+      "sha256": "2b1ef70d65d74fc5ef6daa415eb078a54bad41986cf63ccf906e29cf1fd82a7b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:21:31+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-callers/03/callers/commons-text-775-receipts/new.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/commons-text-775-receipts/old.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/commons-text-775.json",
+      "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-62-receipts/new.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-62-receipts/old.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-62.json",
+      "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-80-receipts/new.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-80-receipts/old.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/compsuite-i-80.json",
+      "verification/domain-foundations/receiver-callers/03/callers/ea-async-27-receipts/new.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/ea-async-27-receipts/old.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/ea-async-27.json",
+      "verification/domain-foundations/receiver-callers/03/callers/incremental-analysis-28-receipts/new.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/incremental-analysis-28-receipts/old.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/incremental-analysis-28.json",
+      "verification/domain-foundations/receiver-callers/03/callers/whatjdk-12-receipts/new.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/whatjdk-12-receipts/old.native.json",
+      "verification/domain-foundations/receiver-callers/03/callers/whatjdk-12.json",
+      "verification/domain-foundations/receiver-callers/03/overloads/current/commons-text-775.json",
+      "verification/domain-foundations/receiver-callers/03/overloads/current/compsuite-i-62.json",
+      "verification/domain-foundations/receiver-callers/03/overloads/current/compsuite-i-80.json",
+      "verification/domain-foundations/receiver-callers/03/overloads/current/ea-async-27.json",
+      "verification/domain-foundations/receiver-callers/03/overloads/current/incremental-analysis-28.json",
+      "verification/domain-foundations/receiver-callers/03/overloads/current/whatjdk-12.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "db8f1289e4038f8e6daf7f903772b4e6b8031e50",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/db8f1289e4038f8e6daf7f903772b4e6b8031e50/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T041837Z-481907d0273030c5",
+      "outputs": "20261122T041837Z-512182ce128f02e7",
+      "diff": "20261122T041837Z-535243132aa58c30"
+    }
+  }
+}

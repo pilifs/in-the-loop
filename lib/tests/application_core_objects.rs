@@ -140,6 +140,32 @@ fn o1_a_property_over_an_ordinary_receiver() {
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let c = o.counterexample.as_ref().unwrap();
     assert!(c.input.contains("this="), "the witness names its receiver: {}", c.input);
+
+    let reader = compile("property-collaborator", &[("app/Reader.java", r#"package app;
+        public class Reader {
+            public interface Source { int read(); }
+            public static final class Real implements Source { public int read() { return 17; } }
+            private Object saved;
+            private int number;
+            public Reader(Source input) { saved = input; number = input.read(); }
+            public int value() { return number; }
+        }"#)]);
+    let recipe = r#"{"nodes":[{"id":1,"class":"app.Reader$Real","maker":{"kind":"constructor","descriptor":"()V"},"args":[]},
+            {"id":0,"class":"app.Reader","maker":{"kind":"constructor","descriptor":"(Lapp/Reader$Source;)V"},"args":[{"kind":"node","id":1}]}],
+            "roots":[{"name":"this","value":{"kind":"node","id":0}}],"bounds":{"nodes":2,"max_array_length":8,"setup_calls":0}}"#;
+    let check = |plan: &str, assertion: &str| {
+        let mut options = property::Options::new(std::slice::from_ref(&reader), "app.Reader#value");
+        options.engine = jvmcontract::Engine::Native;
+        options.plan = Some(plans(plan, plan));
+        options.assert = Some(assertion.into());
+        property::run(&options).unwrap()
+    };
+    let held = check(recipe, "result == 17 && this.saved != null");
+    assert_eq!(held.verdict, Verdict::Verified, "{}", held.output);
+    assert_eq!(check(recipe, "this.saved == null").verdict, Verdict::Violation);
+    let invalid = check(&recipe.replace("app.Reader$Real", "app.Reader"), "result == 17");
+    assert_eq!(invalid.verdict, Verdict::Unverifiable);
+    assert!(invalid.output.contains("constructor takes"), "{}", invalid.output);
 }
 
 /// A receiver outside what a check makes is refused by name: a dependency among its constructor's arguments that

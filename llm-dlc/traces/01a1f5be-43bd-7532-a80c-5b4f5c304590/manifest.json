@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-22T04:14:46.574Z",
-  "duration_seconds": 196637,
+  "ended": "2026-11-22T04:32:32.204Z",
+  "duration_seconds": 197702,
   "stats": {
     "turns": 28,
-    "api_calls": 8168,
-    "tool_calls": 20513,
-    "tool_errors": 616,
+    "api_calls": 8252,
+    "tool_calls": 20682,
+    "tool_errors": 618,
     "compactions": 27,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 14007033,
-      "output_tokens": 4370388,
-      "cache_read_input_tokens": 2499614336,
+      "input_tokens": 14083434,
+      "output_tokens": 4408108,
+      "cache_read_input_tokens": 2527429504,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 11771,
-    "exec": 7614,
-    "apply_patch": 763,
+    "Bash": 11843,
+    "exec": 7698,
+    "apply_patch": 776,
     "send_message": 148,
     "sleep": 87,
     "wait": 85,
@@ -166,6 +166,7 @@
     "lib/benchmark/domain-foundations/schema_sets.py",
     "lib/benchmark/domain-foundations/separator_inputs.py",
     "lib/benchmark/domain-foundations/startup.py",
+    "lib/benchmark/domain-foundations/startup_probes.py",
     "lib/benchmark/external-upgrades/README.md",
     "lib/benchmark/external-upgrades/baselines/compcheck-aws.md",
     "lib/benchmark/external-upgrades/baselines/compcheck_aws.py",
@@ -232,8 +233,10 @@
     "lib/src/bmc/throwables.rs",
     "lib/src/bmc/trig.rs",
     "lib/src/classpath.rs",
+    "lib/src/construction.rs",
     "lib/src/equivalence.rs",
     "lib/src/harness/expr.rs",
+    "lib/src/harness/mod.rs",
     "lib/src/interp/mod.rs",
     "lib/src/interp/natives.rs",
     "lib/src/interp/value.rs",
@@ -247,6 +250,7 @@
     "lib/src/reuse.rs",
     "lib/src/statement.rs",
     "lib/src/values.rs",
+    "lib/tests/application_core_objects.rs",
     "lib/tests/claims.rs",
     "lib/tests/conformance.rs",
     "lib/tests/fixtures/claims/claims/Arrayed.java",
@@ -772,24 +776,24 @@
     {
       "index": 27,
       "started": "2026-11-22T03:48:42.541Z",
-      "ended": "2026-11-22T04:14:46.574Z",
+      "ended": "2026-11-22T04:32:32.204Z",
       "turns": 1,
-      "api_calls": 127,
+      "api_calls": 211,
       "usage": {
-        "input_tokens": 291600,
-        "output_tokens": 54666,
-        "cache_read_input_tokens": 27367168,
+        "input_tokens": 368001,
+        "output_tokens": 92386,
+        "cache_read_input_tokens": 55182336,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 295716
+      "peak_context_tokens": 366575
     }
   ],
   "log": {
-    "sha256": "c5d6bdac21b9e6731390b2c2bbd194400094e70a9d115fed3d0cdb986a51bc8c",
-    "bytes": 188840556,
-    "lines": 64505,
-    "gzip_bytes": 75057290,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/c5d6bdac21b9e6731390b2c2bbd194400094e70a9d115fed3d0cdb986a51bc8c.jsonl.gz"
+    "sha256": "d8b60ef4d305aa5a9fd69602673d8ac4d7f366095823f7f3968f3d25f1338165",
+    "bytes": 190318652,
+    "lines": 65096,
+    "gzip_bytes": 75619955,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/d8b60ef4d305aa5a9fd69602673d8ac4d7f366095823f7f3968f3d25f1338165.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3498,20 +3502,20 @@
       "log_sha256": "e51eb91266c62f512e603fe71a1724e037e76cc033756b73389eff6cea857326"
     },
     {
-      "change_id": "vkqtpxmvurqvzxxowlvqtkqxvuwrxrmo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "c5d6bdac21b9e6731390b2c2bbd194400094e70a9d115fed3d0cdb986a51bc8c"
-    },
-    {
       "change_id": "olpulpxplyxmlonvlwlypmrkrwwknkxu",
       "commit_id": null,
       "immutable": false,
       "summary": "Qualify the packaged Avro encoder class (verification pending)",
       "body": "The historical module’s mapped-buffer test observed position 17 and remaining zero on the parent, and passed on the fix. Both module builds succeeded but shading changed the literal class-file bytes. Require the original pre-shade archive to match the compiler, re-emit both class files through the same ASM visitor, compare the canonical bytes, and retain the actual final packaged class and all digests. A changed return instruction was rejected, an identical control passed, four runner tests passed and four collected upstream outputs were verified. Job 20261122-041348-qualify-avro-198-packaged-classes-after qualifies the complete products.",
       "log_sha256": "c5d6bdac21b9e6731390b2c2bbd194400094e70a9d115fed3d0cdb986a51bc8c"
+    },
+    {
+      "change_id": "powtwtwyutrlntnyqmpvrrqpvkkkpxrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Execute startup and receiver producers on original JARs (verification pending)",
+      "body": "Use independent wall-clock readings and stable per-object identity hashes in strict single-threaded proofs. A platform-dependent counterexample must hold across the possible platform values for the selected input. Execute the original atomic reference and heap read-only buffer code, the start of singleton initializers, and explicit concrete constructor collaborators for single-version properties. Keep the stronger field observations required for paired equivalence. The real Jackson factory proved from ordinary startup on Avro #3878 in a capped probe. A fresh original StreamingCell now proves its default cell style. The focused receiver and JDK tests, 59 Rust binaries and the 58-group changed selection passed; the older pilot and follow-up scorecards recounted.\n\nBind Avro #198 to the original packaged classes. Example 362 passed its five-task validator and replay. On each revision the debugger confirmed all 16 wrap sites and the 16 exact views consumed by the real encoder, including the read-only views. The older and fixed JVMs disagreed at the two bulk read-only inputs. Import 128 hashed outputs from all seven receiver groups, plus the six packaged Avro build and test outputs.\n\nManaged verification includes 20261122-042449-trace-avro-355-ordinary-factory-and-sche, 20261122-042449-trace-avro-361-ordinary-factory-and-sche, 20261122-042449-exercise-javaparser-parent-traversals-wi, 20261122-042450-exercise-javaparser-fix-traversals-with, 20261122-042450-avro-198-encoder-baseline-on-packaged-ar, 20261122-042450-avro-198-encoder-current-on-packaged-art, 20261122-042450-repeat-original-frozen-startup-scopes-af, 20261122-042802-measure-avro-198-reuse-at-its-actual-enc and 20261122-043152-check-original-spreadsheet-and-date-rece.",
+      "log_sha256": "d8b60ef4d305aa5a9fd69602673d8ac4d7f366095823f7f3968f3d25f1338165"
     }
   ],
   "logs": {
@@ -4473,6 +4477,12 @@
       "bytes": 175675654,
       "lines": 60332,
       "gzip_bytes": 69932859,
+      "url": null
+    },
+    "d8b60ef4d305aa5a9fd69602673d8ac4d7f366095823f7f3968f3d25f1338165": {
+      "bytes": 190318652,
+      "lines": 65096,
+      "gzip_bytes": 75619955,
       "url": null
     },
     "d92e3ef2b35400f865f99dfb43e73c81ab5561ccd93dde994745f2540581c118": {

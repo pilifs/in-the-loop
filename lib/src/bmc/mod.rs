@@ -1014,6 +1014,7 @@ enum Literal {
     CollectionsEmptyList,
     CollectionsEmptySet,
     HashSetPresent,
+    BasicBase64Decoder,
     EmptySuppressedArray,
     ListEmptyStorage(bool),
     /// The private Character cache as read by valueOf on its ASCII branch.
@@ -2531,6 +2532,7 @@ impl<'a> Engine<'a> {
                         Literal::CollectionsEmptyList => throwables::EMPTY_LIST,
                         Literal::CollectionsEmptySet => "java/util/Collections$EmptySet",
                         Literal::HashSetPresent => "java/lang/Object",
+                        Literal::BasicBase64Decoder => "java/util/Base64$Decoder",
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
                         Literal::AsciiBoxes => "[Ljava/lang/Character;",
@@ -4807,8 +4809,9 @@ impl<'a> Engine<'a> {
         let runs = match self.runs.get(class) {
             Some(&r) => r,
             None => {
-                let r = (self.gap_mode == GapMode::Strict && (self.cp.state_image_class(class).is_some() || gaps::builds_static_objects(self.cp, &cf)
-                    || (self.cp.is_application(class) && gaps::builds_primitive_tables(&cf) && !self.contracts.contains_key(&gap))))
+                let r = (self.gap_mode == GapMode::Strict && (self.cp.state_image_class(class).is_some() ||
+                    (!self.contracts.contains_key(&gap) && (gaps::builds_static_objects(self.cp, &cf)
+                        || self.cp.is_application(class) && gaps::builds_primitive_tables(&cf)))))
                     || gaps::runs_initializer(self.cp, class);
                 self.runs.insert(class.to_string(), r);
                 r
@@ -4888,7 +4891,7 @@ impl<'a> Engine<'a> {
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
                 o
             }
-            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent => self.alloc(path, class),
+            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::BasicBase64Decoder => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
                 path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());
@@ -5195,16 +5198,47 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
-        if path.frames.last().is_some_and(|f| runtime::enum_identity_read(caller, &f.method, member)) {
-            if let [Val::R(Some(o))] = args.as_slice() {
-                // Every int is permitted, including zero or another object's hash. The value is stable
-                // for this object even if the JDK's cached hash still contains its zero sentinel.
-                let value = path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone();
-                path.unbound_platform_value = Some("a JVM-chosen identity hash");
-                self.push(path, value);
+        if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+            == ("java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;") && self.cp.basic_base64() {
+            let decoder = self.literal(path, Literal::BasicBase64Decoder, "java/util/Base64$Decoder");
+            self.push(path, Val::R(Some(decoder)));
+            self.advance(path);
+            return Ok(None);
+        }
+        if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+            == ("java/lang/Boolean", "parseBoolean", "(Ljava/lang/String;)Z") {
+            let parsed = match args.as_slice() {
+                [Val::R(None)] => Some(false),
+                [Val::R(Some(o))] => self.constant_units(path, *o).and_then(|units| {
+                    units.iter().all(|&c| c < 128).then(|| units.iter().map(|&c| (c as u8).to_ascii_lowercase()).eq(b"true".iter().copied()))
+                }),
+                _ => None,
+            };
+            if let Some(value) = parsed {
+                self.push(path, Val::I(self.b.constant(i64::from(value), 32)));
                 self.advance(path);
                 return Ok(None);
             }
+        }
+        if self.cp.platform_native(member) || path.frames.last().is_some_and(|f| runtime::enum_identity_read(caller, &f.method, member)) {
+            let value = match (member.name.as_str(), args.as_slice()) {
+                // Read a fresh word even when the previous read was in the same method.
+                // Wall time may jump in either direction. A platform-dependent witness must qualify.
+                ("currentTimeMillis", []) => {
+                    path.unbound_platform_value = Some("a JVM wall-clock reading");
+                    Val::J(self.b.fresh(64))
+                }
+                ("identityHashCode", [Val::R(None)]) => Val::I(self.b.constant(0, 32)),
+                ("identityHashCode", [Val::R(Some(o))]) => {
+                    // Stable for the same object. Distinct objects may collide, including at zero.
+                    path.unbound_platform_value = Some("a JVM-chosen identity hash");
+                    path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone()
+                }
+                _ => return unsupported("the JVM identity hash needs a resolved reference"),
+            };
+            self.push(path, value);
+            self.advance(path);
+            return Ok(None);
         }
         if self.cp.collection_static(&member.owner, &member.name, &member.descriptor) && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
@@ -5415,14 +5449,37 @@ impl<'a> Engine<'a> {
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
+            if !special && member.owner == "java/util/Base64$Decoder" && member.name == "decode"
+                && member.descriptor == "(Ljava/lang/String;)[B" && path.literals.get(&Literal::BasicBase64Decoder) == Some(&o) {
+                if let [Val::R(Some(text))] = args.as_slice() {
+                    if let Some(bytes) = self.constant_units(path, *text).and_then(|units| bytes::basic_base64_bytes(&units)) {
+                        let length = self.b.constant(bytes.len() as i64, 32);
+                        self.new_array_cells(path, &length)?;
+                        let cells = bytes.into_iter().map(|b| self.b.constant(i64::from(b), 8)).collect();
+                        let array = path.objects.len();
+                        path.objects.push(Obj { array: Some(Array { element: Type::Byte, length, cells, refs: Vec::new() }), ..Obj::new("[B") });
+                        self.push(path, Val::R(Some(array)));
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
+            }
             if !path.objects[o].assumed && !path.objects[o].given {
+                if member.owner == "java/util/concurrent/atomic/AtomicReference" && path.objects[o].class == member.owner
+                    && !path.objects[o].unknown {
+                    if let Some((cf, method)) = self.cp.fresh_atomic_method(&member.name, &member.descriptor, special) {
+                        let mut full = vec![Val::R(Some(o))];
+                        full.extend(args);
+                        return self.enter_method(path, &member.owner, cf, method, full);
+                    }
+                }
                 if let Some((cf, method)) = self.cp.linked_queue_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
                     let mut full = vec![Val::R(Some(o))];
                     full.extend(args);
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
-            if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
+            if matches!(path.objects[o].class.as_str(), "java/nio/HeapByteBuffer" | "java/nio/HeapByteBufferR" | "java/nio/HeapCharBuffer")
                 && !path.objects[o].assumed && !path.objects[o].given && ClassPath::heap_buffer_owner(&member.owner) {
                 let target = if special { member.owner.clone() } else {
                     self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor)
@@ -5445,6 +5502,7 @@ impl<'a> Engine<'a> {
                 if self.there_before(path, o) { self.reads(path, || "Object.clone reads all fields of its receiver".into())?; }
                 let copy = self.alloc(path, &class);
                 path.objects[copy].fields = path.objects[o].fields.clone();
+                path.objects[copy].fields.remove("<JVM.identityHashCode>");
                 self.push(path, Val::R(Some(copy)));
                 self.advance(path);
                 return Ok(None);

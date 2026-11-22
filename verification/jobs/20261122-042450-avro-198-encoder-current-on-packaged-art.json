@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-042450-avro-198-encoder-current-on-packaged-art",
+  "title": "Avro 198 encoder-current on packaged artifacts",
+  "description": "Check the four frozen cursor and repeated-byte observations on both original shaded products. Each run binds the same sixteen inputs, expected bytes, both manifests and the executable digest. Native refusals remain recorded in the comparison.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "362"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T04:24:50+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "finite",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/run.py 362 --stage encoder-current --route finite",
+      "cwd": "."
+    },
+    {
+      "name": "native",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/organic-java/run.py 362 --stage encoder-current --route native",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/362-avro-buffered-encoder-cursor/records/encoder-current-finite",
+    "examples/362-avro-buffered-encoder-cursor/records/encoder-current-native"
+  ]
+}

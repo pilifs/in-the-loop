@@ -380,6 +380,7 @@ pub struct ClassPath {
     pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
     plain_buffer_formatter: std::cell::OnceCell<bool>,
     string_unit_replacement: std::cell::OnceCell<bool>,
+    basic_base64: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
@@ -404,7 +405,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), basic_base64: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -485,6 +486,7 @@ impl ClassPath {
     fn reset_runtime_caches(&mut self) {
         self.plain_buffer_formatter.take();
         self.string_unit_replacement.take();
+        self.basic_base64.take();
         self.concurrent_table_layout.take();
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
@@ -1089,6 +1091,7 @@ impl ClassPath {
             | ("java/util/Arrays", "checkLength", "(II)V")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
             | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
+            | ("java/nio/channels/Channels", "newChannel", "(Ljava/io/OutputStream;)Ljava/nio/channels/WritableByteChannel;")
             | ("java/nio/CharBuffer", "wrap", "([CII)Ljava/nio/CharBuffer;" | "([C)Ljava/nio/CharBuffer;")
             | ("java/lang/String", "decodeASCII", "([BI[CII)I")
             | ("java/lang/String", "rangeCheck", "([CII)Ljava/lang/Void;")
@@ -1147,10 +1150,11 @@ impl ClassPath {
 
     /// Fingerprint the complete bootstrap class files in order for a qualified JDK operation.
     fn matches_jdk_classes(&self, names: &[&str], digests: &[&str]) -> bool {
-        let Some(image) = self.jdk() else { return false };
         let mut bytes = Vec::new();
         for &name in names {
-            let Ok(Some(body)) = image.read_class(name) else { return false };
+            let body = if let Some(image) = self.jdk() { image.read_class(name).ok().flatten() }
+                else { self.legacy_boot.as_ref().and_then(|archive| archive.read(&format!("{name}.class")).ok().flatten()) };
+            let Some(body) = body else { return false };
             bytes.extend(body);
         }
         digests.contains(&crate::digest::sha256_hex(&bytes).as_str())
@@ -1167,6 +1171,15 @@ impl ClassPath {
               "50d5a86221a41a6b52d2bb0e43cf79432d32d8c4855c11c5969f8b38751cc2a0"])) // Temurin 25.0.5
     }
 
+    /// The basic decoder singleton and its standard alphabet on the subject JVM.
+    pub(crate) fn basic_base64(&self) -> bool {
+        *self.basic_base64.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/Base64", "java/util/Base64$Decoder", "java/util/Base64$Encoder", "java/lang/String"],
+            &["df41fe30f3d956b4ac136e8ffba2efb4acfc22d5ada1c697b008050a6e14a988", // Temurin 8u512
+              "01f87d4df37d231720d9366da567b2433b06e5d8f0cd882030e148b57fbee6df", // Temurin 21.0.13
+              "31a8fdd027846b8e8cd5f7437707e581c34953dd609eced4d6b3b616ec06b08d"])) // Temurin 25.0.5
+    }
+
     /// Both compact-string paths return the receiver on a miss, the canonical empty
     /// string on complete deletion, and a fresh string for a nonempty change.
     pub(crate) fn string_unit_replacement(&self) -> bool {
@@ -1178,7 +1191,14 @@ impl ClassPath {
 
     pub(crate) fn heap_buffer_owner(name: &str) -> bool {
         matches!(name, "java/nio/Buffer" | "java/nio/ByteBuffer" | "java/nio/CharBuffer"
-            | "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
+            | "java/nio/HeapByteBuffer" | "java/nio/HeapByteBufferR" | "java/nio/HeapCharBuffer")
+    }
+
+    pub(crate) fn platform_native(&self, member: &crate::classfile::MemberRef) -> bool {
+        if member.owner != "java/lang/System" || !matches!((member.name.as_str(), member.descriptor.as_str()),
+            ("currentTimeMillis", "()J") | ("identityHashCode", "(Ljava/lang/Object;)I")) { return false; }
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(&member.owner) else { return false };
+        class.method(&member.name, &member.descriptor).is_some_and(|m| m.is_public() && m.is_static() && m.is_native())
     }
 
     /// In these JDKs WeakHashMap.get and put hash the supplied key, and compare with
@@ -1212,12 +1232,22 @@ impl ClassPath {
             && !field.is_static() && field.access & crate::classfile::flags::VOLATILE != 0).then_some((class, method))
     }
 
+    /// Execute the selected image's constructor on a fresh, exact AtomicReference.
+    /// Its get and set accessors use the same volatile field as a captured reference.
+    pub(crate) fn fresh_atomic_method(&self, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        if !special { return self.atomic_reference_accessor(name, desc); }
+        if name != "<init>" || !matches!(desc, "()V" | "(Ljava/lang/Object;)V") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load("java/util/concurrent/atomic/AtomicReference").ok()?? else { return None };
+        let method = class.method(name, desc)?.clone();
+        (method.is_public() && !method.is_static() && method.code.is_some()).then_some((class, method))
+    }
+
     /// Methods of an image-backed byte or char buffer with an ordinary Java heap array.
     /// Foreign segments and native memory operations keep their separate call boundaries.
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !Self::heap_buffer_owner(owner) || !matches!(name, "<init>" | "position" | "limit" | "capacity" | "remaining"
             | "hasRemaining" | "flip" | "rewind" | "clear" | "compact" | "discardMark" | "checkScope"
-            | "duplicate" | "markValue" | "checkSession" | "session"
+            | "duplicate" | "asReadOnlyBuffer" | "markValue" | "checkSession" | "session"
             | "array" | "hasArray" | "arrayOffset" | "ix" | "isReadOnly" | "isDirect" | "nextGetIndex" | "nextPutIndex"
             | "get" | "put" | "checkIndex" | "createLimitException" | "createPositionException" | "mark" | "reset") { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
@@ -1513,6 +1543,14 @@ impl ClassPath {
     /// Ordinary single-threaded JDK objects whose instance and static fields both engines
     /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
     pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if matches!(name, "java/nio/channels/Channels$WritableByteChannelImpl" | "java/nio/channels/spi/AbstractInterruptibleChannel"
+            | "java/nio/channels/spi/AbstractInterruptibleChannel$1") {
+            let base = "java/nio/channels/spi/AbstractInterruptibleChannel";
+            let Loaded { class: parent, origin: Origin::Jdk } = self.load(base).ok()?? else { return None };
+            if parent.method("<clinit>", "()V").is_some() { return None; }
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return class.method("<clinit>", "()V").is_none().then_some(class);
+        }
         if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
             | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"

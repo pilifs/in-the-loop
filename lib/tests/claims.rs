@@ -1357,6 +1357,12 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let outside = run(&options(classes, "claims.CharacterFormats#outsideLatin1", 4, "outside-latin-table"));
     assert_ne!(outside.verdict, Verdict::Verified, "{}", outside.output);
+    proved(classes, "claims.CharacterFormats#clockSeed", 4);
+    for (method, reason) in [("sameTime", "wall-clock reading"), ("copiedHash", "identity hash")] {
+        let result = run(&options(classes, &format!("claims.CharacterFormats#{method}"), 4, method));
+        assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
+        assert!(result.output.contains(reason), "{}", result.output);
+    }
     let collision = run(&options(classes, "claims.CharacterFormats#assumesDistinctHashes", 4, "identity-hash-collision"));
     assert_eq!(collision.verdict, Verdict::Unverifiable, "{}", collision.output);
     assert!(collision.output.contains("JVM-chosen identity hash"), "{}", collision.output);
@@ -1483,7 +1489,7 @@ fn wrapped_byte_buffers_keep_the_backing_array_and_the_absolute_limit() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.WrappedBuffers").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["window", "whole", "invalid", "duplicate"] {
+    for name in ["window", "whole", "invalid", "duplicate", "readOnly"] {
         proved(classes, &format!("claims.WrappedBuffers#{name}"), 4);
     }
     let wrong = run(&options(classes, "claims.WrappedBuffers#wrongSharedCursor", 4, "heap-buffer-cursor"));

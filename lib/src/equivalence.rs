@@ -942,6 +942,12 @@ pub(crate) fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) ->
     fields_in(cp, name, within, false)
 }
 
+/// A property observes the fields it names. An external reference can be compared
+/// with null or another reference while its real constructor and method still run.
+pub(crate) fn property_fields(cp: &ClassPath, name: &str) -> Result<Result<harness::Fields, String>, Error> {
+    fields_in(cp, name, &mut Vec::new(), true)
+}
+
 /// [`fields_of`], and with `framed` for a write set's check (`prove --writes`, and so an effect contract's proof,
 /// through [`made_of_framed`]): a field of a reference type it makes no object of (`java.util.Map someMap`) is laid
 /// out as a reference compared by identity ([`harness::FieldKind::Reference`]) instead of refused. The object is

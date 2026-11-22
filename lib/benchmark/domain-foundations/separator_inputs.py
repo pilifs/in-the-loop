@@ -20,15 +20,17 @@ def physical(jdk, work, cp, args):
 
 
 def check(exe, jdk, work, classes, jars, label, method, out):
-    target = "foundation.SeparatorInputs#"+method
+    entry = "postorder" if method == "nonempty" else method
+    traversal = entry in ("postorder", "preorder", "terminal")
+    target = "foundation.SeparatorInputs#"+entry
     bound = 3 if method == "text" else 64
-    guard = {"text": "value != null", "postorder": GUARD}.get(method)
-    budget = 180 if method == "postorder" else 60
+    guard = ("value != null" if method == "text" else GUARD.replace("code >= 0", "code >= 1") if method == "nonempty" else GUARD if traversal else None)
+    budget = 180 if traversal else 60
     cmd = [exe, "prove", target, "--engine", "native", "--gaps", "strict", "--classes", classes,
            "--classpath", os.pathsep.join(map(str, jars)), "--unwind", "96", "--max-array-length", str(bound),
            "--work", work/(label+"-"+method), "--json"]
     if guard: cmd.extend(["--assume", guard])
-    if method == "postorder": cmd.extend(["--assert", "result == 1"])
+    if traversal: cmd.extend(["--assert", "result == 1"])
     env = dict(os.environ, JAVA_HOME=str(jdk), JVMCONTRACT_JAR_RELEASE="21", PATH=str(jdk/"bin")+os.pathsep+os.defpath)
     summary = {"target": target, "checkerSha256": runtime_maven.sha256_of(exe), "guard": guard,
                "unwind": 96, "maxArrayLength": bound, "budgetSeconds": budget}
@@ -51,14 +53,14 @@ def check(exe, jdk, work, classes, jars, label, method, out):
     if method == "text" and stated["domain"]["parameters"] != [
             {"name":"value", "type":"java.lang.String", "kind":"value", "null":False, "max_length":3}]:
         raise ValueError("wrong UTF-16 input domain")
-    if row["verdict"] == "violation" and method == "postorder":
+    if row["verdict"] == "violation" and traversal:
         inputs = row["counterexample"]["inputs"]
         if [(x["name"], x["type"]) for x in inputs] != [("code","int"), ("first","char"), ("second","char"), ("length","int")]:
             raise ValueError("incomplete traversal witness")
         values = [x["value"] for x in inputs]
         if not (values[0] in (0,1) and 0 <= values[1] <= 65535 and 0 <= values[2] <= 65535 and 0 <= values[3] <= 2):
             raise ValueError("witness outside the registered inputs")
-        physical(jdk, work, os.pathsep.join(map(str, [classes, *jars])), ["replay", *values])
+        physical(jdk, work, os.pathsep.join(map(str, [classes, *jars])), ["replay", *values, entry])
         summary["replayedInputs"] = inputs
     return {**summary, "verdict": row["verdict"], "firstUnknown": row["problem"], "raw": path.name,
             "sha256": runtime_maven.sha256_of(path), "libraryPremises": premises, "seconds": seconds}
@@ -69,6 +71,7 @@ def main():
     ap.add_argument("--side", choices=("parent","fix"), required=True)
     ap.add_argument("--output", type=Path, required=True)
     ap.add_argument("--pilot", nargs="?", const="cached", help="compare to the pinned pilot checker")
+    ap.add_argument("--all-traversals", action="store_true", help="repeat every frozen tree observer under the supplied separator")
     ap.add_argument("--jvm-only", action="store_true")
     args = ap.parse_args()
     case, = (ROOT/"examples").glob("360-*")
@@ -84,6 +87,9 @@ def main():
         compile_java(jdk, work, classes, HERE/"SeparatorInputs.java", [classes, *jars])
         cp = os.pathsep.join(map(str, [classes, *jars]))
         controls = [["text", i] for i in range(8)] + [["absent"], ["tree", 0, int(args.side == "fix")], ["tree", 1, 1]]
+        if args.all_traversals:
+            controls.extend([[method, code, int(method == "preorder" or code == 1 or args.side == "fix")]
+                             for method in ("preorder", "terminal") for code in range(2)])
         for control in controls: physical(jdk, work, cp, control)
         record = {"schema":"javaparser-explicit-separator/v1", "inputs":binding, "jdkModules":runtime_maven.sha256_of(jdk/"lib/modules"),
                   "traversalAdapter": runtime_maven.sha256_of(classes/"organic/TreeOrder.class"),
@@ -97,6 +103,9 @@ def main():
             plans.append(("pilot", pilot_checker(current, args.pilot), "text", "unverifiable"))
         plans.extend(("current", current, m, v) for m,v in
                      (("text","verified"), ("absent","verified"), ("postorder","verified" if args.side == "fix" else "violation")))
+        if args.all_traversals:
+            plans.extend(("current", current, method, "violation" if method == "terminal" and args.side == "parent" else "verified")
+                         for method in ("nonempty", "preorder", "terminal"))
         ok = True
         for label, exe, method, expected in plans:
             row = check(exe, jdk, work, classes, jars, label, method, out)

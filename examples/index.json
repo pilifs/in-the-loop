@@ -18119,6 +18119,100 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 361 TASK"
       }
+    },
+    {
+      "id": "362",
+      "path": "examples/362-avro-buffered-encoder-cursor",
+      "title": "Avro buffered encoding preserves the caller’s byte window",
+      "summary": "Writing a bounded window twice must emit the same bytes twice and leave the caller’s cursor usable across the bulk-write threshold.",
+      "origin": "real-world",
+      "system": "Apache Avro",
+      "symbol": "org.apache.avro.io.BufferedBinaryEncoder#writeFixed(Ljava/nio/ByteBuffer;)V",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen for original upstream replay",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Sixteen inputs cross writable and read-only heap views, starting positions zero and two, and lengths zero, four, sixteen and seventeen. The encoder uses its public minimum buffer size of 32. The upstream regression uses a mapped buffer of length seventeen."
+      ],
+      "source": "https://github.com/apache/avro/pull/198",
+      "target": {
+        "family": "avro",
+        "role": "calibration",
+        "case": "avro-buffered-encoder-cursor",
+        "tasks": [
+          "replay",
+          "cursor-parent",
+          "cursor-fix",
+          "repeated-parent",
+          "repeated-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "cursor-parent": "scaffolded",
+          "cursor-fix": "scaffolded",
+          "repeated-parent": "scaffolded",
+          "repeated-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "cursor-parent": "refuted",
+          "cursor-fix": "established",
+          "repeated-parent": "refuted",
+          "repeated-fix": "established"
+        },
+        "claims": {
+          "cursor-parent": null,
+          "cursor-fix": null,
+          "repeated-parent": null,
+          "repeated-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261122T042250Z-556ba6b7/result.json",
+            "attempt": "20261122T042250Z-556ba6b7",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen for original upstream replay",
+          "source": "https://github.com/apache/avro/pull/198",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 362 TASK"
+      }
     }
   ]
 }

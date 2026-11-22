@@ -469,14 +469,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         None
     } else if let Some(p) = plan {
-        match crate::construction::root(&cp, p, "this") {
+        match crate::construction::property_root(&cp, p, "this") {
             Ok(Some(crate::construction::Rooted::Object(r))) if r.class == class_internal => Some((r, None)),
             Ok(Some(_)) => return refuse(&mut out, line, format!("the plan's root this is not an object of {}", class_internal.replace('/', "."))),
             Ok(None) => return refuse(&mut out, line, format!("{method_name} is an instance method, and the plan has no root this")),
             Err(u) => return refuse(&mut out, line, u.what),
         }
     } else {
-        let made = if options.writes.is_some() { crate::construction::receiver_framed(&cp, &class_internal) } else { crate::construction::receiver(&cp, &class_internal) };
+        let made = crate::construction::receiver_framed(&cp, &class_internal);
         match made {
             Ok(r) => Some((r, None)),
             Err(u) => return refuse(&mut out, line, format!("{method_name} is an instance method, whose receiver is outside the objects a property check makes: {}", u.what)),
@@ -493,7 +493,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut given = Vec::new();
     for (name, t) in names.iter().zip(&descriptor.params) {
         if let Some(p) = plan {
-            match crate::construction::root(&cp, p, name) {
+            match crate::construction::property_root(&cp, p, name) {
                 Ok(Some(crate::construction::Rooted::Object(r))) if Type::Object(r.class.clone()) == *t => {
                     records.push(Some((r, None)));
                     continue;
@@ -523,8 +523,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 given.push(g);
                 Ok(record)
             }
-            Type::Object(class) if cp.application(class)?.is_some() && options.writes.is_some() => crate::equivalence::made_of_framed(&cp, class)?,
-            Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::made_of(&cp, class, &mut Vec::new())?,
+            Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::made_of_framed(&cp, class)?,
             _ => return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.{}", t.java_name(), crate::equivalence::adapted_refusal(t, options.max_array_length))),
         };
         match made {

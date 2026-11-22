@@ -36,10 +36,22 @@ public final class SeparatorInputs {
         }
     }
 
-    public static int postorder(int code, char first, char second, int length) {
+    private static void set(char first, char second, int length) {
         String value = new String(new char[]{first, second}, 0, length);
         System.setProperty("line.separator", value);
+    }
+
+    public static int postorder(int code, char first, char second, int length) {
+        set(first, second, length);
         return TreeOrder.postorder(code);
+    }
+    public static int preorder(int code, char first, char second, int length) {
+        set(first, second, length);
+        return TreeOrder.preorder(code);
+    }
+    public static int terminal(int code, char first, char second, int length) {
+        set(first, second, length);
+        return TreeOrder.terminal(code);
     }
 
     public static void main(String[] args) {
@@ -51,10 +63,16 @@ public final class SeparatorInputs {
         } else if (args[0].equals("replay")) {
             int code = Integer.parseInt(args[1]);
             int length = Integer.parseInt(args[4]);
-            ok = postorder(code, (char) Integer.parseInt(args[2]), (char) Integer.parseInt(args[3]), length) == 0;
+            char first = (char) Integer.parseInt(args[2]), second = (char) Integer.parseInt(args[3]);
+            ok = (args.length > 5 && args[5].equals("terminal") ? terminal(code, first, second, length)
+                    : postorder(code, first, second, length)) == 0;
         } else {
             int code = Integer.parseInt(args[1]);
-            ok = postorder(code, '\r', '\n', 2) == Integer.parseInt(args[2]);
+            ok = switch (args[0]) {
+                case "terminal" -> terminal(code, '\r', '\n', 2);
+                case "preorder" -> preorder(code, '\r', '\n', 2);
+                default -> postorder(code, '\r', '\n', 2);
+            } == Integer.parseInt(args[2]);
         }
         if (!ok) throw new AssertionError(args[0]);
     }

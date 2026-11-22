@@ -1,0 +1,173 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "org.apache.commons.csv.UpgradeCallerClaim#matches",
+    "domain": "selector: int",
+    "assume": "selector >= 0 && selector < 4",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over selector: int in 0.0 s; loops unwound 64 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/tmp/upgrade-case-4k7ac4cs/native-old/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ org.apache.commons.csv.UpgradeCallerClaim#matches satisfies `result` on every input where selector >= 0 && selector < 4 (jvmcontract's own checker (CaDiCaL): 1 properties proved over selector: int in 0.0 s; loops unwound 64 times with unwinding assertions)\n  not vacuous: matches(selector=0) reaches the calls\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/upgrade-case-4k7ac4cs/native-old",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.040007692,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 128,
+      "stage": null,
+      "native": {
+        "paths": 6,
+        "merges": 0,
+        "solver_calls": 14,
+        "solving_seconds": 0.000048553,
+        "gates_evaluated": 213,
+        "evaluating_seconds": 6.482e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 243,
+        "clauses": 660,
+        "seconds": 0.037272344,
+        "loading_seconds": 0.004929078,
+        "decoding_seconds": 0.001011359,
+        "encoding_seconds": 0.001817488,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.037,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.005,
+            "lowering": 0.001,
+            "symbolic": 0.029,
+            "encoding": 0.002,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 243,
+            "clauses": 660
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.96,
+          "seconds": 0.005,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 185,
+            "clauses": 517
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.058,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.042,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.015
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "selector",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "selector: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "selector >= 0 && selector < 4",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
+        "witness": "matches(selector=0)"
+      }
+    }
+  }
+]

@@ -1,0 +1,1041 @@
+{
+  "entry": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+  "observer": "Read all records through the original parser. Compare each field in order up to end of input.",
+  "domainBasis": "The four CSV literals cover a quoted separator, doubled quotes, embedded LF, empty fields and multiple records. An independent CSV reader supplies the expected field sequences. Length prefixes preserve the field boundaries.",
+  "cases": [
+    {
+      "args": [
+        "a,b\r\n"
+      ],
+      "expected": {
+        "return": "[1:a1:b]"
+      }
+    },
+    {
+      "args": [
+        "\"a,b\",c\r\n"
+      ],
+      "expected": {
+        "return": "[3:a,b1:c]"
+      }
+    },
+    {
+      "args": [
+        "\"a\"\"b\",\"x\ny\"\r\n"
+      ],
+      "expected": {
+        "return": "[3:a\"b3:x\ny]"
+      }
+    },
+    {
+      "args": [
+        "a,,c\n,,\n"
+      ],
+      "expected": {
+        "return": "[1:a0:1:c]|[0:0:0:]"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "394bfa23dc95f65fa739ec04091eafb7480891e5f188640c99dea1512c5a71d2",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "classpath": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "dependency": "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a1:b]"
+            },
+            {
+              "return": "[1:a1:b]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a,b1:c]"
+            },
+            {
+              "return": "[3:a,b1:c]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a\"b3:x\ny]"
+            },
+            {
+              "return": "[3:a\"b3:x\ny]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            },
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.AbstractInputStream",
+        "org.apache.commons.io.input.Input",
+        "org.apache.commons.io.input.ReaderInputStream",
+        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
+        "org.apache.commons.io.input.UnsynchronizedReader",
+        "org.apache.commons.io.output.AppendableOutputStream"
+      ]
+    },
+    "new": {
+      "commit": "8993be875a32fdc336780b1610a2e002d320571e",
+      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
+      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+      "classpath": [
+        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+      ],
+      "dependency": "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 19,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a1:b]"
+            },
+            {
+              "return": "[1:a1:b]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a,b1:c]"
+            },
+            {
+              "return": "[3:a,b1:c]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[3:a\"b3:x\ny]"
+            },
+            {
+              "return": "[3:a\"b3:x\ny]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            },
+            {
+              "return": "[1:a0:1:c]|[0:0:0:]"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "org.apache.commons.csv.CSVParser#characterOffset:J": "J",
+                  "org.apache.commons.csv.CSVParser#csvRecordIterator:Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;": "Lorg/apache/commons/csv/CSVParser$CSVRecordIterator;@1",
+                  "org.apache.commons.csv.CSVParser#format:Lorg/apache/commons/csv/CSVFormat;": "Lorg/apache/commons/csv/CSVFormat;@2",
+                  "org.apache.commons.csv.CSVParser#headerComment:Ljava/lang/String;": "null",
+                  "org.apache.commons.csv.CSVParser#headers:Lorg/apache/commons/csv/CSVParser$Headers;": "Lorg/apache/commons/csv/CSVParser$Headers;@3",
+                  "org.apache.commons.csv.CSVParser#lexer:Lorg/apache/commons/csv/Lexer;": "Lorg/apache/commons/csv/Lexer;@4",
+                  "org.apache.commons.csv.CSVParser#recordList:Ljava/util/List;": "Ljava/util/ArrayList;@5",
+                  "org.apache.commons.csv.CSVParser#recordNumber:J": "J",
+                  "org.apache.commons.csv.CSVParser#reusableToken:Lorg/apache/commons/csv/Token;": "Lorg/apache/commons/csv/Token;@6",
+                  "org.apache.commons.csv.CSVParser#trailerComment:Ljava/lang/String;": "null"
+                },
+                "this": "Lorg/apache/commons/csv/CSVParser;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;JJLjava/nio/charset/Charset;Z)V",
+                  "calledBy": "org.apache.commons.csv.CSVParser$Builder#get()Lorg/apache/commons/csv/CSVParser;",
+                  "codeIndex": 41,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/io/StringReader;@1",
+                      "Lorg/apache/commons/csv/CSVFormat;@2",
+                      "J",
+                      "J",
+                      "Lsun/nio/cs/UTF_8;@3",
+                      "Z"
+                    ],
+                    "fields": {},
+                    "this": "Lorg/apache/commons/csv/CSVParser;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            },
+            {
+              "observerCodeIndex": 19,
+              "dispatchedTo": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.apache.commons.io.build.AbstractOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$AbstractRandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ByteArrayOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$CharSequenceOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$FileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$IORandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$InputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$OutputStreamOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$PathOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$RandomAccessFileOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$ReaderOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$URIOrigin",
+        "org.apache.commons.io.build.AbstractOrigin$WriterOrigin",
+        "org.apache.commons.io.build.AbstractOriginSupplier",
+        "org.apache.commons.io.build.AbstractStreamBuilder",
+        "org.apache.commons.io.build.AbstractSupplier",
+        "org.apache.commons.io.file.DeleteOption",
+        "org.apache.commons.io.file.PathUtils",
+        "org.apache.commons.io.function.IOSupplier",
+        "org.apache.commons.io.input.AbstractInputStream",
+        "org.apache.commons.io.input.Input",
+        "org.apache.commons.io.input.ReaderInputStream",
+        "org.apache.commons.io.input.UnsynchronizedBufferedReader",
+        "org.apache.commons.io.input.UnsynchronizedReader",
+        "org.apache.commons.io.output.AppendableOutputStream"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+    "codeIndices": [
+      19
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
+    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+    "UpgradeTrace": "d5359fa3264eeb31b99378b21d4102bd39c3733b454baf875712a8b2f0e0283c",
+    "org/apache/commons/csv/UpgradeProbe": "561db0dc507bf575bf4f0f851bd27bf27a22e75a8cc696d68409a04d8dc65da5"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "org.apache.commons.csv.UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 4",
+    "checkerSha256": "a1f20dc441801e3c55d2d541479ef82f349eafc36b3ae3506652cf170c557bdb",
+    "adapterClassSha256": "e95e4a76fdc6c51c83993275517f62e1951a0855eccf2a0d0d3900e5c0ade94f",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
+        "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+        "orderedClasspathSha256": [
+          "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+          "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
+          "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+        ],
+        "verdict": "verified",
+        "firstOutstanding": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
+          "witness": "matches(selector=0)"
+        },
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": true
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "04a389c35306b65f05710b086fc24d344a71d79e8880b18f7d3628ba8b070684",
+        "seconds": 0.064
+      },
+      "new": {
+        "commit": "8993be875a32fdc336780b1610a2e002d320571e",
+        "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
+        "orderedClasspathSha256": [
+          "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
+          "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+          "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
+        ],
+        "verdict": "verified",
+        "firstOutstanding": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
+          "witness": "matches(selector=0)"
+        },
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": true
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "320e532601f8e594a5897f37ec65fac6988a853c52b9d15c082542c18a41c34d",
+        "seconds": 0.074
+      }
+    }
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 11.311,
+  "specSha256": "9cb096cb64288f28ee19ec9a83eb0407fc2d868b5b1580114bdbd8dbf7dafb0a"
+}
