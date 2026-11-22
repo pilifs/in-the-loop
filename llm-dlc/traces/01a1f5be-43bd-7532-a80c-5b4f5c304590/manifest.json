@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-22T03:30:45.861Z",
-  "duration_seconds": 193996,
+  "ended": "2026-11-22T03:43:16.217Z",
+  "duration_seconds": 194746,
   "stats": {
     "turns": 27,
-    "api_calls": 7984,
-    "tool_calls": 20051,
+    "api_calls": 8032,
+    "tool_calls": 20177,
     "tool_errors": 605,
     "compactions": 26,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 13671967,
-      "output_tokens": 4284166,
-      "cache_read_input_tokens": 2450100736,
+      "input_tokens": 13709735,
+      "output_tokens": 4307972,
+      "cache_read_input_tokens": 2468609152,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 11503,
-    "exec": 7437,
-    "apply_patch": 751,
+    "Bash": 11577,
+    "exec": 7483,
+    "apply_patch": 755,
     "send_message": 148,
     "wait": 85,
-    "sleep": 82,
+    "sleep": 84,
     "wait_agent": 14,
     "send_message_to_user_async": 10,
     "followup_task": 8,
@@ -91,6 +91,8 @@
     "examples/350-rocker-with-declaration/README.md",
     "examples/351-aws-joda-instant/README.md",
     "examples/352-cucumber-duration/README.md",
+    "examples/355-avro-writable-buffer-limit/README.md",
+    "examples/360-javaparser-postorder-root/README.md",
     "examples/360-javaparser-postorder-root/adapter/organic/TreeOrder.java",
     "examples/approaches.md",
     "examples/schema/result.schema.json",
@@ -153,6 +155,7 @@
     "lib/benchmark/domain-foundations/SeparatorInputs.java",
     "lib/benchmark/domain-foundations/buffer_fact.py",
     "lib/benchmark/domain-foundations/dependencies.py",
+    "lib/benchmark/domain-foundations/followup_results.py",
     "lib/benchmark/domain-foundations/jackson_tables.py",
     "lib/benchmark/domain-foundations/producers.py",
     "lib/benchmark/domain-foundations/schema_sets.py",
@@ -279,6 +282,7 @@
     "lib/tests/pairing.rs",
     "lib/tests/setting_countermodels.rs",
     "lib/tests/values.rs",
+    "llm-dlc/loops/domain-foundations-strategy-results.md",
     "llm-dlc/loops/domain-foundations-strategy.md",
     "llm-dlc/loops/external-upgrade-evaluation-results.md",
     "llm-dlc/loops/foundation-and-python-results.md",
@@ -749,24 +753,24 @@
     {
       "index": 26,
       "started": "2026-11-22T00:56:03.904Z",
-      "ended": "2026-11-22T03:30:45.861Z",
+      "ended": "2026-11-22T03:43:16.217Z",
       "turns": 2,
-      "api_calls": 212,
+      "api_calls": 260,
       "usage": {
-        "input_tokens": 368967,
-        "output_tokens": 131101,
-        "cache_read_input_tokens": 53646208,
+        "input_tokens": 406735,
+        "output_tokens": 154907,
+        "cache_read_input_tokens": 72154624,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 367550
+      "peak_context_tokens": 402118
     }
   ],
   "log": {
-    "sha256": "d313dd9205c5ef18c0991d3874a575ab44f7b052119e0bffddfc390d748c5e85",
-    "bytes": 183808127,
-    "lines": 63104,
-    "gzip_bytes": 73252427,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/d313dd9205c5ef18c0991d3874a575ab44f7b052119e0bffddfc390d748c5e85.jsonl.gz"
+    "sha256": "4038cd57ac4e3ad5f346d92d0ffafb662b4a8443c15766e88a26a78372f777d3",
+    "bytes": 184655979,
+    "lines": 63486,
+    "gzip_bytes": 73617992,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/4038cd57ac4e3ad5f346d92d0ffafb662b4a8443c15766e88a26a78372f777d3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3441,6 +3445,14 @@
       "summary": "Prove Jackson's ordinary hex tables across Avro (verification pending)",
       "body": "Execute the JDK's integer fill and Latin-1 CharacterData path. A strict run may execute a looping application initializer that builds final primitive tables, preserving real failures and explicit initialization contracts. The existing primitive array-copy model continues to enforce the caller's mutable-heap boundary. Fresh JVMs checked every ASCII value on all four original Avro classpaths. The later Jackson maps 0x141 to 10 while the earlier Jackson returns -1, so the ASCII fact cannot be applied to arbitrary integers.\n\nA strict original-JAR probe proved the whole ASCII range at unwind 512. At the original unwind 64 the JsonFactory probe stopped at summarized array cells. At 512 it reached the actual System.currentTimeMillis call in ByteQuadsCanonicalizer.createRoot. Focused JDK 21 and 25 checks covered Latin-1, differing U+0100, exceptions, aliasing and unsuccessful table startup. All seven changed test groups passed, including 59 Rust binaries. Job 20261122-032239-qualify-ordinary-jackson-table-startup-o checks the positive, release-specific control, pilot and diagnostic scopes. Job 20261122-032303-repeat-frozen-claims-on-the-jackson-tabl repeats all seventeen ordinary and four conditioned decimal obligations.\n\nThe collected JavaParser verification retained the full separator text and description on both revisions, qualified both failed initializations, and proved the fixed traversal for all supplied zero-to-two-unit separators. The parent's empty-input counterexample reproduced on a fresh JVM. The four original Avro construction and formatting checks and the checked reserved-name producer all completed. All 30 collected output hashes across these two jobs matched.",
       "log_sha256": "d313dd9205c5ef18c0991d3874a575ab44f7b052119e0bffddfc390d748c5e85"
+    },
+    {
+      "change_id": "zutzksuxxzluvvtuyznstquutoorxqos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Report the qualified Avro and JavaParser startup follow-up",
+      "body": "Publish the follow-up scorecard, report and three example records. All eight JavaParser contracts qualified with only the separator enum captured. The public traversal also qualified on a fresh application for every explicitly supplied separator through two UTF-16 units, and the independent text and failed-initialization controls held on both original revisions. The final common checker repeated the seventeen ordinary attempts and the four scoped decimals. The primary score remains 39/46, JavaParser 2/8 and the separate decimal adoption 2/4 at original scope.\n\nThe ordinary Jackson ASCII contract held at unwind 512 for every original Avro classpath, and the 0x141 control distinguished the two bundled releases. At unwind 64 the next obstruction was a copy of summarized cells, and after complete table initialization the actual symbol-table producer required the process clock. The scorecard keeps both scopes, the first failed batches, the retries and their actual bounds and checker identities.\n\nChecked all 860 output hashes across eight collected jobs, both machine-readable recounts, all 68 local report and example links, all three example validators and queue validation. The changed selection passed its 59 Rust binaries and 26 Python groups. The two further Python groups selected by the last collected evidence also passed, with 51 and seven tests. No jobs remain pending or running.",
+      "log_sha256": "4038cd57ac4e3ad5f346d92d0ffafb662b4a8443c15766e88a26a78372f777d3"
     }
   ],
   "logs": {
@@ -3719,6 +3731,12 @@
       "lines": 10745,
       "gzip_bytes": 12510938,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/3e667726d76bb2b598939603b07b0bec99d745b9d15ca7fde87e86c0d807cfc3.jsonl.gz"
+    },
+    "4038cd57ac4e3ad5f346d92d0ffafb662b4a8443c15766e88a26a78372f777d3": {
+      "bytes": 184655979,
+      "lines": 63486,
+      "gzip_bytes": 73617992,
+      "url": null
     },
     "4089333a97cce46a1adf7fadf7164318cac7743abc75f2985cf502ba569e67b2": {
       "bytes": 79880386,

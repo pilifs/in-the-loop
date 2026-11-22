@@ -1,0 +1,758 @@
+{
+  "task": "terminal-fix",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "fix",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp",
+        "-cp",
+        "driver.jar:adapter-fix.jar:built/javaparser-core-3.26.2-SNAPSHOT.jar",
+        "organic.Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.114,
+      "stdout": "controls/control-fix-jdk21.stdout",
+      "stderr": "controls/control-fix-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "87b9c6f47b572e0e9a3ba9d25e21e84cb5d6996bb7fc075ee33ba80473276c15",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f",
+            "role": "adapter"
+          },
+          {
+            "path": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+            "sha256": "62cf2f2c4bb4be2ced24f7914b4d22ae9cc2a760a5ab11cd2cd867e68d69cd27",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "organic.Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/table.json",
+          "oracleSha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC",
+          "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261122T032046Z-69e1681d",
+        "startedAt": "2026-11-22T03:20:46.433686+00:00"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "package": ""
+          },
+          "direct": {
+            "postorder": [
+              "root"
+            ],
+            "preorder": [
+              "root"
+            ],
+            "terminal": {
+              "nodes": [
+                "root"
+              ],
+              "exhausted": true
+            }
+          },
+          "adapter": {
+            "postorder": 1,
+            "preorder": 1,
+            "terminal": 1
+          }
+        },
+        {
+          "id": 1,
+          "input": {
+            "package": "com"
+          },
+          "direct": {
+            "postorder": [
+              "name",
+              "package",
+              "root"
+            ],
+            "preorder": [
+              "root",
+              "package",
+              "name"
+            ],
+            "terminal": {
+              "nodes": [
+                "name",
+                "package",
+                "root"
+              ],
+              "exhausted": true
+            }
+          },
+          "adapter": {
+            "postorder": 1,
+            "preorder": 1,
+            "terminal": 1
+          }
+        }
+      ],
+      "control": "driver",
+      "record": "controls/controls.json",
+      "reason": null
+    },
+    {
+      "kind": "verifier",
+      "revision": "fix",
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a04fff32b8a618fcf88eb87527be55dce7dc82d8/jvmcontract",
+        "prove",
+        "organic.TreeOrder#terminal(int)",
+        "--classes",
+        "prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "prepare/fix/built/javaparser-core-3.26.2-SNAPSHOT.jar",
+        "--assume",
+        "code >= 0 && code < 2",
+        "--assert",
+        "result == 1",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "96",
+        "--max-array-length",
+        "64",
+        "--timeout",
+        "60",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.041,
+      "stdout": "verifier/verifier.stdout",
+      "stderr": "verifier/verifier.stderr",
+      "identities": {
+        "jvmcontract": "525782964c0ff9f8a499c3e78690123543cb46425d1782df3e1ecabcd0b1e7b8",
+        "commit": "1c914d34f1cf6bb4d7b11590cfaaf46ded3caee3",
+        "libTree": "a04fff32b8a618fcf88eb87527be55dce7dc82d8",
+        "command": "prove",
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "engine": "native",
+        "gaps": "strict",
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 64
+        },
+        "timeout": 60,
+        "scope": {
+          "label": "adapter",
+          "meaning": "The actual postorder iterator returns each original object and stays exhausted after the final root. Its original receiver and direct outcome are indexed in controls/table.json.",
+          "method": "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+          "revisions": {
+            "fix": {
+              "commit": "6529f264066e31bd9e78c71111ade3a20142d285",
+              "loadedFrom": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+              "classSha256": "d857993e3e1fe30629c334cd7db10ad846234a323df7bd232c627ffd0ec729c6",
+              "origin": "built by maven from https://github.com/javaparser/javaparser at 6529f264066e31bd9e78c71111ade3a20142d285: javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+              "parameters": {
+                "names": [
+                  "root"
+                ],
+                "recordedIn": "MethodParameters"
+              }
+            }
+          },
+          "adapter": {
+            "entry": "organic.TreeOrder#terminal(I)I",
+            "mapping": "The actual postorder iterator returns each original object and stays exhausted after the final root. Its original receiver and direct outcome are indexed in controls/table.json.",
+            "correspondence": "finite-oracle",
+            "cases": 2
+          },
+          "models": [],
+          "assumptions": []
+        },
+        "classpath": {
+          "fix": [
+            {
+              "path": "adapter-fix.jar",
+              "sha256": "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f",
+              "role": "adapter"
+            },
+            {
+              "path": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+              "sha256": "62cf2f2c4bb4be2ced24f7914b4d22ae9cc2a760a5ab11cd2cd867e68d69cd27",
+              "role": "original"
+            }
+          ]
+        },
+        "checkedEntry": "organic.TreeOrder#terminal(I)I",
+        "entryBindings": {
+          "fix": {
+            "entry": "organic.TreeOrder#terminal(I)I",
+            "classSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
+            "loadedFrom": "adapter-fix.jar",
+            "subject": "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+            "subjectClassSha256": "d857993e3e1fe30629c334cd7db10ad846234a323df7bd232c627ffd0ec729c6"
+          }
+        },
+        "recipe": {
+          "kind": "adapter",
+          "command": "prove",
+          "subject": "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+          "checkedEntry": "organic.TreeOrder#terminal(I)I",
+          "arguments": [
+            {
+              "field": "assume",
+              "flag": "--assume",
+              "value": "code >= 0 && code < 2"
+            },
+            {
+              "field": "assert",
+              "flag": "--assert",
+              "value": "result == 1"
+            },
+            {
+              "field": "engine",
+              "flag": "--engine",
+              "value": "native"
+            },
+            {
+              "field": "gaps",
+              "flag": "--gaps",
+              "value": "strict"
+            },
+            {
+              "field": "bounds.unwind",
+              "flag": "--unwind",
+              "value": "96"
+            },
+            {
+              "field": "bounds.maxArrayLength",
+              "flag": "--max-array-length",
+              "value": "64"
+            }
+          ],
+          "checkerDefaults": {
+            "observations": {
+              "values": [
+                "result",
+                "exception"
+              ],
+              "evidence": "stated.observations"
+            },
+            "nullable": {
+              "values": [],
+              "evidence": "stated.domain"
+            },
+            "mayAlias": {
+              "values": [],
+              "evidence": "stated.domain"
+            }
+          },
+          "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+          "correspondence": {
+            "entry": "organic.TreeOrder#terminal(I)I",
+            "mapping": "The actual postorder iterator returns each original object and stays exhausted after the final root. Its original receiver and direct outcome are indexed in controls/table.json.",
+            "correspondence": "finite-oracle",
+            "cases": 2
+          }
+        },
+        "commits": {
+          "fix": "6529f264066e31bd9e78c71111ade3a20142d285"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC",
+          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+          "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+          "JVMCONTRACT_JAR_RELEASE": "21"
+        },
+        "cwd": "the attempt directory",
+        "probe": {
+          "fix": {
+            "argv": [
+              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a04fff32b8a618fcf88eb87527be55dce7dc82d8/jvmcontract",
+              "gaps",
+              "--target",
+              "organic.TreeOrder#terminal(int)",
+              "--classes",
+              "prepare/fix/adapter-fix.jar",
+              "--classpath",
+              "prepare/fix/built/javaparser-core-3.26.2-SNAPSHOT.jar",
+              "--json"
+            ],
+            "status": "exited",
+            "exitCode": 0,
+            "seconds": 0.065,
+            "stdout": "verifier/probe-fix.stdout",
+            "stderr": "verifier/probe-fix.stderr",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.lang.ArrayIndexOutOfBoundsException.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.ArrayIndexOutOfBoundsException.<init>(int)",
+                "sites": [
+                  "java.util.Vector.get:750",
+                  "java.util.Vector.removeElementAt:553"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+                "sites": [
+                  "com.github.javaparser.utils.Utils.assertNonEmpty:52",
+                  "com.github.javaparser.utils.Utils.assertNotNull:45"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.ArrayList.<init>(int)",
+                "sites": [
+                  "com.github.javaparser.ast.Node.<init>:183",
+                  "com.github.javaparser.ast.Node.<init>:186",
+                  "com.github.javaparser.ast.Node.<init>:195",
+                  "com.github.javaparser.ast.NodeList.<init>:50"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.util.Collections$UnmodifiableList$1.<init>(Ljava/util/Collections$UnmodifiableList;I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.Collections$UnmodifiableList$1.<init>(java.util.Collections$UnmodifiableList, int)",
+                "sites": [
+                  "java.util.Collections$UnmodifiableList.listIterator:1530"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.util.HashSet.<init>(Ljava/util/Collection;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.HashSet.<init>(java.util.Collection)",
+                "sites": [
+                  "com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.<init>:130"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.util.Vector$Itr.<init>(Ljava/util/Vector;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.Vector$Itr.<init>(java.util.Vector)",
+                "sites": [
+                  "java.util.Vector.iterator:1229"
+                ]
+              },
+              {
+                "id": "jdk-constructor:java.util.Vector$ListItr.<init>(Ljava/util/Vector;I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.Vector$ListItr.<init>(java.util.Vector, int)",
+                "sites": [
+                  "java.util.Vector.listIterator:1218"
+                ]
+              },
+              {
+                "id": "jdk-void-method:java.util.ArrayList.forEach(Ljava/util/function/Consumer;)V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.util.ArrayList.forEach(java.util.function.Consumer)",
+                "sites": [
+                  "com.github.javaparser.ast.Node.notifyPropertyChange:665",
+                  "com.github.javaparser.ast.Node.setParentNode:456"
+                ]
+              },
+              {
+                "id": "jdk-void-method:java.util.ArrayList.trimToSize()V@jdk-21.0.13",
+                "kind": "jdk-void-method",
+                "call": "java.util.ArrayList.trimToSize()",
+                "sites": [
+                  "com.github.javaparser.ast.Node.setParentNode:465"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)",
+                "sites": [
+                  "com.github.javaparser.utils.LineSeparator.<clinit>:52"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.util.Collection.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.util.Collection.iterator()",
+                "sites": [
+                  "java.util.Collections$UnmodifiableCollection$1.<init>:1076"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.util.Iterator.next()",
+                "sites": [
+                  "com.github.javaparser.ast.NodeList.setAsParentNodeOf:549",
+                  "java.util.Collections$UnmodifiableCollection$1.next:1079",
+                  "organic.TreeOrder.terminal:41"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.util.List.getClass()Ljava/lang/Class;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.util.List.getClass()",
+                "sites": [
+                  "java.util.Collections.unmodifiableList:1474"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.util.List.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.util.List.iterator()",
+                "sites": [
+                  "com.github.javaparser.ast.NodeList.setAsParentNodeOf:549"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.util.List.listIterator()Ljava/util/ListIterator;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.util.List.listIterator()",
+                "sites": [
+                  "com.github.javaparser.ast.NodeList$NodeListIterator.<init>:574"
+                ]
+              },
+              {
+                "id": "jdk-reference-method:java.util.ListIterator.next()Ljava/lang/Object;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.util.ListIterator.next()",
+                "sites": [
+                  "com.github.javaparser.ast.NodeList$NodeListIterator.next:588"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.lang.Character.charValue()C@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.lang.Character.charValue()",
+                "sites": [
+                  "com.github.javaparser.printer.configuration.Indentation.format:143"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.ArrayList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.ArrayList.add(java.lang.Object)",
+                "sites": [
+                  "com.github.javaparser.ast.Node.setParentNode:470"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.ArrayList.size()I@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.ArrayList.size()",
+                "sites": [
+                  "com.github.javaparser.ast.Node.setParentNode:460"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.Collection.isEmpty()",
+                "sites": [
+                  "java.util.Collections$UnmodifiableCollection.isEmpty:1067"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.Collection.size()I@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.Collection.size()",
+                "sites": [
+                  "java.util.Collections$UnmodifiableCollection.size:1066"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.Iterator.hasNext()",
+                "sites": [
+                  "com.github.javaparser.ast.NodeList.setAsParentNodeOf:549",
+                  "java.util.Collections$UnmodifiableCollection$1.hasNext:1078",
+                  "organic.TreeOrder.terminal:41",
+                  "organic.TreeOrder.terminal:42"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.List.isEmpty()Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.List.isEmpty()",
+                "sites": [
+                  "com.github.javaparser.ast.Node$PostOrderIterator.expand:1183",
+                  "com.github.javaparser.ast.NodeList.isEmpty:165"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.List.size()",
+                "sites": [
+                  "com.github.javaparser.ast.Node$PostOrderIterator$Level.done:1209",
+                  "com.github.javaparser.ast.NodeList.size:126"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.ListIterator.hasNext()Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.ListIterator.hasNext()",
+                "sites": [
+                  "com.github.javaparser.ast.NodeList$NodeListIterator.hasNext:583"
+                ]
+              },
+              {
+                "id": "jdk-primitive-method:java.util.Set.remove(Ljava/lang/Object;)Z@jdk-21.0.13",
+                "kind": "jdk-primitive-method",
+                "call": "java.util.Set.remove(java.lang.Object)",
+                "sites": [
+                  "com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.removeOption:161"
+                ]
+              },
+              {
+                "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+                "sites": [
+                  "com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:65"
+                ]
+              }
+            ]
+          }
+        },
+        "usage": {
+          "cpuSeconds": 0.0321,
+          "peakRssBytes": 65990656,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        "executionId": "20261122T032046Z-69e1681d",
+        "startedAt": "2026-11-22T03:20:46.433686+00:00"
+      },
+      "observations": [
+        {
+          "wire_version": 1,
+          "verdict": "unverifiable",
+          "target": "organic.TreeOrder#terminal(int)",
+          "domain": "code: int",
+          "assume": "code >= 0 && code < 2",
+          "assert": "result == 1",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": null,
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "statement": "verifier/work/harness/PropertyHarness.java",
+          "findings": [
+            {
+              "rule_id": "unverifiable",
+              "message": "organic.TreeOrder#terminal(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+              "uri": null,
+              "line": 37
+            }
+          ],
+          "output": "✗ organic.TreeOrder#terminal(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+          "work": "verifier/work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.015871094,
+            "properties": 1,
+            "unwind": 96,
+            "max_array_length": 64,
+            "stage": null,
+            "native": {
+              "paths": 4,
+              "merges": 0,
+              "solver_calls": 3,
+              "solving_seconds": 4.7339e-05,
+              "gates_evaluated": 122,
+              "evaluating_seconds": 7.305e-06,
+              "divisions": 0,
+              "divisions_built": 0,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "variables": 153,
+              "clauses": 391,
+              "seconds": 0.012989932,
+              "loading_seconds": 0.004611629,
+              "decoding_seconds": 0.000205546,
+              "encoding_seconds": 0.000158888,
+              "witness_seconds": 0.0
+            },
+            "gap_mode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.System.getProperty(java.lang.String)",
+                "sites": [
+                  "com.github.javaparser.utils.LineSeparator.<clinit>:50"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ],
+            "deadline_seconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 60.0,
+                "seconds": 0.013,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.005,
+                  "lowering": 0.0,
+                  "symbolic": 0.008,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 153,
+                  "clauses": 391
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 0.028,
+              "setup": 0.002,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 0.013,
+              "replay": 0.0,
+              "jvm": 0.0,
+              "other": 0.013
+            }
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 2",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          }
+        }
+      ],
+      "control": null,
+      "record": "verifier/verifier.json",
+      "reason": null
+    }
+  ]
+}
