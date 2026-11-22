@@ -163,6 +163,24 @@ class Redaction(unittest.TestCase):
         self.assertTrue(r.hits_of_line(line)[0])  # check flags it where a log still has it
         self.assertFalse(r.hits_of_line(out.strip())[0])
 
+    def test_encrypted_reasoning(self):
+        r = sync.Redactor()
+        blob = "gAAAAABmadeUpCiphertext" + "QUJD" * 40          # made up: the shape of a Fernet token, no real bytes
+        lines = [{"type": "response_item", "payload": {"type": "reasoning", "summary": [], "encrypted_content": blob}},
+                 {"type": "response_item", "payload": {"type": "message", "content": [{"type": "encrypted_content", "encrypted_content": blob}]}},
+                 {"type": "compacted", "payload": {"replacement_history": [{"type": "compaction", "encrypted_content": blob}]}},
+                 {"type": "response_item", "payload": {"type": "reasoning", "encrypted_content": None}}]
+        for e in lines:
+            line = json.dumps(e)
+            out = r(line + "\n").decode()
+            self.assertNotIn(blob, out)
+            self.assertEqual(r(out).decode(), out)                   # idempotent
+            self.assertFalse(r.hits_of_line(out.strip())[0])
+            if blob in line:
+                self.assertIn('"encrypted_content":"[REDACTED:encrypted-reasoning]"', out)
+                self.assertFalse(r.hits_of_line(line)[0])            # a log stored before policy 6 is not an error
+        self.assertIn('"encrypted_content":null', r(json.dumps(lines[-1]) + "\n").decode())  # only strings go
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,12 +17,18 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, NamedTuple
 
-REDACTION_POLICY = 5           # bump when redaction changes the bytes it produces (5: Codex account identifiers and usage)
+REDACTION_POLICY = 6           # bump when redaction changes the bytes it produces (5: Codex account identifiers and usage; 6: Codex encrypted reasoning)
 REDACT_KEYS = {"organizationUuid", "accountUuid", "userID",  # account identifiers Claude Code records,
                "creator_user_id", "creator_account_id", "chatgpt_user_id", "chatgpt_account_id"}  # and Codex
 # Account usage Codex records with its token counts (plan, credit balance, how much of each limit is used):
 # not secret, but about the account, so the whole object goes.
 REDACT_OBJECTS = {"rate_limits": "[REDACTED:account-usage]"}
+# Opaque ciphertext that only the model's provider can read: Codex records its reasoning, encrypted by OpenAI, under
+# `encrypted_content` (in reasoning items, content parts and compaction history). Not a credential, but bytes a reader
+# can do nothing with, each a fresh long-token warning that no evidence can vouch for. The string goes, as the
+# signature of a Claude thinking block does. Not audited as a leak (`_unscrubbed`): a log stored before policy 6 that
+# holds one is no secret's carrier, and its long-token warnings stay what they were.
+REDACT_VALUES = {"encrypted_content": "[REDACTED:encrypted-reasoning]"}
 # Email addresses that are public by design or placeholders; every other address is redacted.
 PUBLIC_EMAILS = ("@example.com", "@example.org", "@users.noreply.github.com", "noreply@github.com",
                  "noreply@anthropic.com", "git@github.com", "@langfuse.local", "@localhost")
@@ -218,12 +224,13 @@ def _walk(obj, fn):
 
 def _scrub(obj):
     """Rules that act on JSON structure rather than on strings: account identifiers that
-    Claude Code and Codex record under known keys, Codex's account usage, and thinking-block
-    signatures (opaque bytes)."""
+    Claude Code and Codex record under known keys, Codex's account usage, Codex's encrypted
+    reasoning, and thinking-block signatures (opaque bytes)."""
     if isinstance(obj, list):
         return [_scrub(v) for v in obj]
     if isinstance(obj, dict):
         return {k: "[REDACTED:account-id]" if k in REDACT_KEYS and isinstance(v, str)
+                else REDACT_VALUES[k] if k in REDACT_VALUES and isinstance(v, str)
                 else REDACT_OBJECTS[k] if k in REDACT_OBJECTS and v is not None else _scrub(v)
                 for k, v in obj.items() if not (k == "signature" and obj.get("type") == "thinking")}
     return obj
