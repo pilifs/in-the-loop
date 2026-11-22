@@ -1,0 +1,286 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-063655-qualify-365-original-artifacts-and-compl",
+  "title": "Qualify 365 original artifacts and complete the opening grid",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 2m18s, peak 1.4 GiB (estimated 5m00s, 4.0 GiB); 7 output file(s) changed",
+  "attention": [
+    "step 1 (Build unchanged artifacts and run the original regression) was held back 7m51s by its 2-CPU quota in 2m16s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Measure four ordinary native claims and their finite JVM grid) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-063655-qualify-365-original-artifacts-and-compl.json",
+    "sha256": "d8e860f7e3eb245cb0a700b0367935da2dd12540f7f345313800eb9b7d8699f3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-063655-qualify-365-original-artifacts-and-compl",
+      "title": "Qualify 365 original artifacts and complete the opening grid",
+      "description": "Apply the original Git rename when transplanting the unmasked test and disable the optional coverage-file enforcement for the skipped-test packaging phase. Both historical snapshot parents stay pinned. Capture all four public claims on the frozen opening fingerprint and verify raw JVM outcomes.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "365"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:36:55+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Build unchanged artifacts and run the original regression",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/jackson-core\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 365 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/365-jackson-async-token-offsets/records/qualified-build",
+          "cwd": "."
+        },
+        {
+          "name": "Measure four ordinary native claims and their finite JVM grid",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 365 --stage opening-qualified --build qualified-build",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/365-jackson-async-token-offsets/records/qualified-build",
+        "examples/365-jackson-async-token-offsets/records/opening-qualified"
+      ]
+    }
+  },
+  "sourceCommit": "d3f87a34ce0d74e10da8fd51d318dbdbb3f5674a",
+  "startedAt": "2026-11-22T06:41:00+00:00",
+  "finishedAt": "2026-11-22T06:46:26+00:00",
+  "wallSeconds": 326.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3071770,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1491181568,
+    "wallSeconds": 138.5,
+    "cpuSeconds": 252.1,
+    "memoryOfEstimate": 0.35,
+    "durationOfEstimate": 0.46
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/jackson-core\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 365 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/365-jackson-async-token-offsets/records/qualified-build",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 136.726,
+      "cpuSeconds": 249.363,
+      "cpuThrottledSeconds": 471.004,
+      "peakMemoryBytes": 1491181568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-unchanged-artifacts-and.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "ba4ec08109949b240d2c5df706f479f88a5d3d6776c9eff002f17030937a2a37",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "365 parent qualified",
+        "365 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 365 --stage opening-qualified --build qualified-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 1.804,
+      "cpuSeconds": 2.719,
+      "cpuThrottledSeconds": 0.172,
+      "peakMemoryBytes": 142483456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-four-ordinary-native-c.log",
+        "lines": 10,
+        "bytes": 1011,
+        "sha256": "2b26f00666077b15ea57bbc3e46bb4b2e5dd48318019c4d8080d6c1ab586e7fc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-365-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 117, in <module>",
+        "    run(args.example,args.stage,args.seconds,args.build)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-365-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 85, in run",
+        "    receipt[\"replay\"] = native(folder,\"replay\",argv,out)",
+        "                        ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-365-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 48, in native",
+        "    raise ValueError(f\"{task}: expected exactly one fresh qualified workflow result, found {len(results)}\")",
+        "ValueError: replay: expected exactly one fresh qualified workflow result, found 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/qualified-build/build-fix.json",
+      "change": "added",
+      "bytes": 10511,
+      "sha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/qualified-build/build-parent.json",
+      "change": "added",
+      "bytes": 10398,
+      "sha256": "353c2b38d584c0ddb09510a39b574a343778b756df50d288d30ae52aeb42d44d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/qualified-build/fix-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz",
+      "change": "added",
+      "bytes": 1617,
+      "sha256": "18fa61e7dcb4a901a97d88d18a796dc68d559c6b19ebb7fa89ec20e5217da584",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/qualified-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 10490,
+      "sha256": "1b0d9da7ba9a17bf5c526f49f6f5d0bd6ecdc7e46ee89f6a8af4e71e5a4e58cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/qualified-build/parent-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz",
+      "change": "added",
+      "bytes": 2058,
+      "sha256": "dee36b2bbbc3c77733e0491f8518ab69e767729a1e5bbdefec986143fb1d19d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/qualified-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 14508,
+      "sha256": "ff93e7533839b966e2834cbcd1da6f2dd58ea860fbdc1fa5767279ff29495a7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-qualified/replay.log",
+      "change": "added",
+      "bytes": 270,
+      "sha256": "93bfec0391a726a7981193616fdfc58ff03e443d453b3f878f600675c73609f3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T06:48:49+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/365-jackson-async-token-offsets/records/qualified-build/build-fix.json",
+      "examples/365-jackson-async-token-offsets/records/qualified-build/build-parent.json",
+      "examples/365-jackson-async-token-offsets/records/qualified-build/fix-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz",
+      "examples/365-jackson-async-token-offsets/records/qualified-build/fix-upstream.json",
+      "examples/365-jackson-async-token-offsets/records/qualified-build/parent-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz",
+      "examples/365-jackson-async-token-offsets/records/qualified-build/parent-upstream.json",
+      "examples/365-jackson-async-token-offsets/records/opening-qualified/replay.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "53043f8a8a8de6b663ffc644651fa0fcebb0b71e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53043f8a8a8de6b663ffc644651fa0fcebb0b71e/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T064626Z-86566887aff6aba6",
+      "outputs": "20261122T064626Z-8868775b0c79f4ca",
+      "diff": "20261122T064626Z-904789227f082290",
+      "workdir": "20261122T064630Z-4828176e2da963af"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-365-original-artifacts-and-compl"
+}

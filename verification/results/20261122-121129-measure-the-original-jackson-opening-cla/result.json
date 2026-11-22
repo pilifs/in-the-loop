@@ -1,0 +1,851 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-121129-measure-the-original-jackson-opening-cla",
+  "title": "Measure the original Jackson opening claims on bound JARs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 23.9s, peak 273.0 MiB (estimated 5m00s, 4.0 GiB); 84 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-121129-measure-the-original-jackson-opening-cla.json",
+    "sha256": "c945967c9300a4fbbc054c513bac2c26774bb4502ead81535ed7308acd545ab2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-121129-measure-the-original-jackson-opening-cla",
+      "title": "Measure the original Jackson opening claims on bound JARs",
+      "description": "The unmasked historical tests qualify on both packaged modules. The adapter dispatches nextToken on the original async implementation, with the same factory, bytes, oracle, budgets and 128 partitions and paddings.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-upstream-test"
+      ],
+      "links": {
+        "examples": [
+          "365"
+        ],
+        "jobs": [
+          "20261122-063655-qualify-365-original-artifacts-and-compl"
+        ]
+      },
+      "expected": "Both named regressions qualify, four finite results match their frozen outcomes, and every ordinary claim has an opening verifier receipt.",
+      "submitted": {
+        "at": "2026-11-22T12:11:29+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen public obligations",
+          "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 365 --stage opening-bound --build qualified-build",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/365-jackson-async-token-offsets/records/opening-bound"
+      ]
+    }
+  },
+  "sourceCommit": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+  "startedAt": "2026-11-22T12:15:42+00:00",
+  "finishedAt": "2026-11-22T12:19:08+00:00",
+  "wallSeconds": 206.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 88963,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 286244864,
+    "wallSeconds": 23.9,
+    "cpuSeconds": 39.8,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen public obligations",
+      "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 365 --stage opening-bound --build qualified-build",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 23.859,
+      "cpuSeconds": 39.753,
+      "cpuThrottledSeconds": 1.656,
+      "peakMemoryBytes": 286244864,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-public-obliga.log",
+        "lines": 1,
+        "bytes": 121,
+        "sha256": "64b7cf605ba1d00f44a2b389d3b3c7aea2364237e36e361bab5c8cf73e8df928",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"offsets-parent\": \"unresolved\", \"offsets-fix\": \"unresolved\", \"tokens-parent\": \"unresolved\", \"tokens-fix\": \"unresolved\"}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/batch.json",
+      "change": "added",
+      "bytes": 2629,
+      "sha256": "16e852925417e14d607b9c723f13e022f20409c99262867152fa2a3f3670bd3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/offsets-fix.json",
+      "change": "added",
+      "bytes": 27632,
+      "sha256": "a64ebda9761226daf7c9cd113a2d0ce17b4a871a758a75ef50bab481737edb61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/offsets-parent.json",
+      "change": "added",
+      "bytes": 30084,
+      "sha256": "8570b7b9e1c328435c09050e4e625403405bbc04e352d3572f90cf1752505dd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/tokens-fix.json",
+      "change": "added",
+      "bytes": 27647,
+      "sha256": "bbe06c5f8b2a62f5e9c21e2fe04f276ac410a21ff8806818673e2f3da4b4b99c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/finite/tokens-parent.json",
+      "change": "added",
+      "bytes": 27669,
+      "sha256": "45261f06fd2c0d35cbb6d2d7fd659e3f03c792e64b28a32943c3439e65cf6045",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/finite.log",
+      "change": "added",
+      "bytes": 168,
+      "sha256": "bfa5424b837416b58117b3d9aa29c68e83bd3decc357bf78e7cc1f4b5323cbf7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b137e301d3475c14d05acc8238bcb4cb15c8ca0ab80e394e2aeb8a229df974c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/plan.json",
+      "change": "added",
+      "bytes": 7685,
+      "sha256": "b09da3f456cf004a0f14670c752bcb57e4d18f6b0255152827357196bae76c4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 22506,
+      "sha256": "b1f1567fa3d123e4126496f1ebae727fee23c6d21b0f5705ec669d1efe530491",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/controls.json",
+      "change": "added",
+      "bytes": 92250,
+      "sha256": "24c12f57b0ef078362fac3e12e58e854e9450346173684ef58cfd446115f6c77",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/execution.json",
+      "change": "added",
+      "bytes": 126830,
+      "sha256": "ee213051966f2035e557a5b3b9c47879594436800054ac1ec59240333c38e846",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "8fcfa466673d01db382021db51937e3dc32c66d4d9b5dfd6121ad2d9ecbf3854",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 512,
+      "sha256": "ce7a9e6a2d2ffc9d9b636ec98613b9b9c5e3441669c43438b35c96916cfb821a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier.json",
+      "change": "added",
+      "bytes": 33784,
+      "sha256": "10a79616b1241c4aa58e92be40e0f5f79af22576be4a03e1e9540851de059e93",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6227,
+      "sha256": "49fa45f462f7677ae4edf576f756fd73c5e765380eb78f870b4d00bb6905a5a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/result.json",
+      "change": "added",
+      "bytes": 15280,
+      "sha256": "b7ffbbb9585316cdeeb7c224fe3114cd97ccbae21706e63765c15c940393df4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/executions/20261122T121903Z-02df4cb9/attempt.json",
+      "change": "added",
+      "bytes": 30678,
+      "sha256": "7808f2ad74ffab7a2c7104d44ca1f99c29a56fa1f2c6a68fb6f9fe3baa603aaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/executions/20261122T121903Z-02df4cb9/checker.json",
+      "change": "added",
+      "bytes": 7659,
+      "sha256": "d876d80b806b260483149a95e705db9b6aab247e622a30b9eb8f22fa8b164004",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/executions/20261122T121903Z-02df4cb9/correspondence.json",
+      "change": "added",
+      "bytes": 2164,
+      "sha256": "73a8eaebccf243e483c8d3f46812a5ce4fcd75857ee8ed4898d9fdfae62a740d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix.log",
+      "change": "added",
+      "bytes": 246,
+      "sha256": "8738f812f687ca4df109892da034c68f61ec53e473659d86119b8f33d8fcc10c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5ca02a548a9baffa33257d9d3b44a3b7c280dd9a26f0bcae98cf723b95336767",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/plan.json",
+      "change": "added",
+      "bytes": 7590,
+      "sha256": "a150c9198b3f459006486807b2487160c2f61706ad9620a82f76aefb35096270",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 22602,
+      "sha256": "00acc837dec516562b489d5af7af8a471ca2eb8904c9b69e92a89e7930026fca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/controls.json",
+      "change": "added",
+      "bytes": 92373,
+      "sha256": "149f360762364d172e70b153b94805975ef8dc3f814d78e995ee732e7fb7b217",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/execution.json",
+      "change": "added",
+      "bytes": 126997,
+      "sha256": "1eb6a74142399a0d46be41cb7ee1d425abdf1f60e9c64ea6d7449cd49ac9e7af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "72155e20856f94dfa51d56a68a4d862dd7ca7776292418bcf69758604b650169",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 512,
+      "sha256": "ce7a9e6a2d2ffc9d9b636ec98613b9b9c5e3441669c43438b35c96916cfb821a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier.json",
+      "change": "added",
+      "bytes": 33846,
+      "sha256": "69cd638221db5a68ae5c3569f7193a00a8816e3bef536bace8a707a123000c40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6226,
+      "sha256": "ef5b5c6000173328cecb6db0c2c2bb1bf800f0332b27bc327d379475d38fa15b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/result.json",
+      "change": "added",
+      "bytes": 15335,
+      "sha256": "684d60593e725e04e396eb8618b26170828a11ff549c86a922d7e4bdd914a0a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/executions/20261122T121901Z-2d3b18ee/attempt.json",
+      "change": "added",
+      "bytes": 30747,
+      "sha256": "4307eb7a0b07d0816ffa79ea512f9505be93122e0c12839b7b7b93734145e2de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/executions/20261122T121901Z-2d3b18ee/checker.json",
+      "change": "added",
+      "bytes": 7670,
+      "sha256": "6de84887f5e179c7597f0d744c01021b72a272947debe77487f254f527e4b172",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/executions/20261122T121901Z-2d3b18ee/correspondence.json",
+      "change": "added",
+      "bytes": 2167,
+      "sha256": "2388d2e7461edc6a9749464a9697f0ac21caad893203ca7852b5dd07e0d3b296",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent.log",
+      "change": "added",
+      "bytes": 251,
+      "sha256": "0d1fab33ee08eb7c7c4ea1f9ed1bbfb5e335d6decf5d83491a3c2138727dfa8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "453b3be16e638a861c220478eebd2971756bb4aacdb397569a56ced2fb9acf00",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/plan.json",
+      "change": "added",
+      "bytes": 8182,
+      "sha256": "2c9b2a6f1ab4bbc2b7868ba81a25b525e36d8c94c31bb8641eb7a08d812e94df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 22506,
+      "sha256": "b1f1567fa3d123e4126496f1ebae727fee23c6d21b0f5705ec669d1efe530491",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 22602,
+      "sha256": "00acc837dec516562b489d5af7af8a471ca2eb8904c9b69e92a89e7930026fca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/controls.json",
+      "change": "added",
+      "bytes": 184542,
+      "sha256": "053618d172490651205d84d83fc2081b2329f0c3532fd86cf0eb92a1c3a71d55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/execution.json",
+      "change": "added",
+      "bytes": 190055,
+      "sha256": "b5a06a326694b9d083815a430ffd210761eafe9b6fe29eb3a6e955ff2ca84824",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/streams.json",
+      "change": "added",
+      "bytes": 1713,
+      "sha256": "197e22247e55bdc7942e8ac44ef7fbce0c2b7378bfc04d1f9cf5f523dba1159c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/summary.txt",
+      "change": "added",
+      "bytes": 2366,
+      "sha256": "91ca4efc97840291f9a94b253d12a1837689dca8efe262598ed67beafc9ec9db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/result.json",
+      "change": "added",
+      "bytes": 23325,
+      "sha256": "66fcfe09c2b7a6fd08721f828c597b7335ca44ba455ad35e5df9432af9281797",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay/executions/20261122T121845Z-118eed9c/attempt.json",
+      "change": "added",
+      "bytes": 8010,
+      "sha256": "78b1556e028a47efece7273479ebef15d76c5dd9f07fb94b995681d296bc6768",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/replay.log",
+      "change": "added",
+      "bytes": 207,
+      "sha256": "99eca698ac0336bd33d38c7fe7d2c71684254607f18250b7870ea690053e2593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/run.json",
+      "change": "added",
+      "bytes": 3023,
+      "sha256": "e2b5f70955ba71627ee6811d8152cd87088bdcea54416d3f82e197346e614510",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5aecd47f8920d7ddb1d3aac7c3ec7c71c07448aa42081f66ba93481fabefd02a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/plan.json",
+      "change": "added",
+      "bytes": 7762,
+      "sha256": "90bbd551e49bf5a76d13e698c28b1f87b63e55ff29ded70612dcae851baddafb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 22506,
+      "sha256": "b1f1567fa3d123e4126496f1ebae727fee23c6d21b0f5705ec669d1efe530491",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/controls.json",
+      "change": "added",
+      "bytes": 92247,
+      "sha256": "22f2e9c1c65be085de91ec8b0bed1c229afe970154da4e97f24fe5e363b5f56d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/execution.json",
+      "change": "added",
+      "bytes": 126881,
+      "sha256": "611e2bc780c813c4ac54264eb592323c33f0c03d24b394ba0e5029c57845cc4d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "67585548aae04b537d82605943e95f84ed8619423b84ab5a3e127e5240c36e39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 511,
+      "sha256": "4fc7e473eb569ee735754e10e76aebbe1b6383d4f7ebd0a42021b49f34456885",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier.json",
+      "change": "added",
+      "bytes": 33833,
+      "sha256": "21c3b5035cf358d106d72bc084137309169cdf2f334fa163ffa661a0a3343400",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6223,
+      "sha256": "737551ea36b3ba37176f30e4c5079be6e85b9bd28f8133a6361614bc2a56d053",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/result.json",
+      "change": "added",
+      "bytes": 15315,
+      "sha256": "5473e247a0521d506568dad10b4ba53dd4dd309f1583bdabf75583bbd9af33f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/executions/20261122T121906Z-ba07b7f5/attempt.json",
+      "change": "added",
+      "bytes": 30734,
+      "sha256": "18eab6cf30574c7a59e9d8a739b245a55cd64cd82b257dcf34e66849eda02dfc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/executions/20261122T121906Z-ba07b7f5/checker.json",
+      "change": "added",
+      "bytes": 7654,
+      "sha256": "a577ae714c2fa4a16dbf256fa176ddbb0f0e153b017d2249cf644ad74d233c21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/executions/20261122T121906Z-ba07b7f5/correspondence.json",
+      "change": "added",
+      "bytes": 2184,
+      "sha256": "59cc9d2cb4f355f1390f807bdb35c55e9bcb5a8d4c772678253967e90e575777",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix.log",
+      "change": "added",
+      "bytes": 243,
+      "sha256": "32f406ae5bb6331b3454e64032455c554ad2e4dd89c42d5901cf13613f3358f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ada1af31ecd60eedd9b17732cd1ee40485d4a4debeeef0270e87da9e7ad85ae8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/plan.json",
+      "change": "added",
+      "bytes": 7671,
+      "sha256": "439fd2d185abe5488b5ab6a50a35e3b742cb43ea21800b23898a738ac50ba1a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 22602,
+      "sha256": "00acc837dec516562b489d5af7af8a471ca2eb8904c9b69e92a89e7930026fca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/controls.json",
+      "change": "added",
+      "bytes": 92370,
+      "sha256": "0ddc9c0f4cf5b3cc02dcc4d359ab23dc230426800e5c87d187b59e49ab07f027",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/execution.json",
+      "change": "added",
+      "bytes": 127050,
+      "sha256": "54d2b1acbfbe66c1ce6f68fb514d6f4f73e885003f175bf0875d419645138fd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "143e9199ba22bf4f77ca2ee39e75be1f4abde0be78a1bbfe62855edcaa38fed7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 511,
+      "sha256": "4fc7e473eb569ee735754e10e76aebbe1b6383d4f7ebd0a42021b49f34456885",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier.json",
+      "change": "added",
+      "bytes": 33897,
+      "sha256": "773f35456cfada5f1cea24c4dd4571a8dbba8c55be18e5c24188b05a54d4509f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6224,
+      "sha256": "93712b5c060cf9dd8532eadcc0ed84a2454780cfb815f581a9807d2c7594d0e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/result.json",
+      "change": "added",
+      "bytes": 15376,
+      "sha256": "7ca77ce65a730cc5921e15225a71f742f2b31d8469e57a00edd21bc59ec9ccba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/executions/20261122T121904Z-e2203bc3/attempt.json",
+      "change": "added",
+      "bytes": 30801,
+      "sha256": "2d1d750840c0484b448fd4a178342e7f799c4c84e980a305b77427516a9b67d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/executions/20261122T121904Z-e2203bc3/checker.json",
+      "change": "added",
+      "bytes": 7667,
+      "sha256": "53a0bb31e48e8ebdf406ada9a1bc55df201ea2bff0ef86b5bd93374f0209ba62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/executions/20261122T121904Z-e2203bc3/correspondence.json",
+      "change": "added",
+      "bytes": 2187,
+      "sha256": "be8ab6bcab0f3398ad42b4ad9517b3ea79693fd18c37896481963d1f454d5cd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent.log",
+      "change": "added",
+      "bytes": 252,
+      "sha256": "e89b3c7c9bdaa302825ec0730de1a57c1fcbea110385087db8f8b1daf5bb336b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:19:12+00:00",
+    "applied": [
+      "examples/365-jackson-async-token-offsets/records/opening-bound/finite/batch.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/finite/offsets-fix.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/finite/offsets-parent.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/finite/tokens-fix.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/finite/tokens-parent.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/finite.log",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/completion.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/plan.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/control-fix-jdk21.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/control-fix-jdk21.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/controls.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/execution.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/streams.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier-output.txt",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/records/verifier.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/20261122T121903Z-02df4cb9/result.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/executions/20261122T121903Z-02df4cb9/attempt.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/executions/20261122T121903Z-02df4cb9/checker.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix/executions/20261122T121903Z-02df4cb9/correspondence.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-fix.log",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/completion.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/plan.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/control-parent-jdk21.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/control-parent-jdk21.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/controls.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/execution.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/streams.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier-output.txt",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/records/verifier.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/20261122T121901Z-2d3b18ee/result.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/executions/20261122T121901Z-2d3b18ee/attempt.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/executions/20261122T121901Z-2d3b18ee/checker.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent/executions/20261122T121901Z-2d3b18ee/correspondence.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/offsets-parent.log",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/completion.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/plan.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-fix-jdk21.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-fix-jdk21.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-parent-jdk21.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/control-parent-jdk21.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/controls.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/execution.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/streams.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/records/summary.txt",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/20261122T121845Z-118eed9c/result.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay/executions/20261122T121845Z-118eed9c/attempt.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/replay.log",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/run.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/completion.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/plan.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/control-fix-jdk21.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/control-fix-jdk21.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/controls.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/execution.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/streams.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier-output.txt",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/records/verifier.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/20261122T121906Z-ba07b7f5/result.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/executions/20261122T121906Z-ba07b7f5/attempt.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/executions/20261122T121906Z-ba07b7f5/checker.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix/executions/20261122T121906Z-ba07b7f5/correspondence.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-fix.log",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/completion.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/plan.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/control-parent-jdk21.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/control-parent-jdk21.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/controls.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/execution.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/streams.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier-output.txt",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier.stderr",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/records/verifier.stdout",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/20261122T121904Z-e2203bc3/result.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/executions/20261122T121904Z-e2203bc3/attempt.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/executions/20261122T121904Z-e2203bc3/checker.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent/executions/20261122T121904Z-e2203bc3/correspondence.json",
+      "examples/365-jackson-async-token-offsets/records/opening-bound/tokens-parent.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2064818,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "9d1e2762d625d1e742068118a5ccfd929be10885",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9d1e2762d625d1e742068118a5ccfd929be10885/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff.gz",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T121908Z-796176acd082c0d4",
+      "outputs": "20261122T121908Z-829073d20381e53b",
+      "diff": "20261122T121908Z-859089a697489767"
+    }
+  }
+}

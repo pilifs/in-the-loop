@@ -1,0 +1,283 @@
+{
+  "plan": {
+    "example": "365",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+        }
+      ],
+      "key": "b5de6634eefde2ad"
+    },
+    "prerequisites": [],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-parent.json",
+          "sha256": "353c2b38d584c0ddb09510a39b574a343778b756df50d288d30ae52aeb42d44d"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "596fd82955080ba7207b4adc54100781b5024a61",
+        "parent": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-fix.json",
+          "sha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven"
+      ],
+      "optional": []
+    },
+    "engine": null,
+    "gaps": null,
+    "expected": null,
+    "outputs": {
+      "receipts": "receipts/replay"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-jackson-opening-cla/examples/365-jackson-async-token-offsets",
+    "network": true
+  },
+  "inputs": {
+    "example": "365",
+    "task": "replay",
+    "kind": "replay",
+    "relation": "calibration",
+    "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "claim": {
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;",
+      "file": null,
+      "sha256": null,
+      "property": null,
+      "claimKind": null,
+      "statement": null,
+      "assume": null,
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {},
+      "explicitBounds": {},
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": null,
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "d12fb7b3db8b47608a28b2d121a3b326b8d2186abd3d1be0e4f85cdee2eaa298"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "07c64133d332261cff9618123842b506bf8793774175d4d85ea7c5f55420352f"
+        }
+      ],
+      "key": "b5de6634eefde2ad"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-parent.json",
+          "sha256": "353c2b38d584c0ddb09510a39b574a343778b756df50d288d30ae52aeb42d44d"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/FasterXML/jackson-core",
+        "commit": "596fd82955080ba7207b4adc54100781b5024a61",
+        "parent": "99f749d958a55013724571d825625e1032af9d4b",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-DjacocoStrict=false",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/qualified-build/build-fix.json",
+          "sha256": "8da0f36f15d8702d9bd64430d354543e467b04a542e0bb7636e2b0fb0a792e21"
+        },
+        "adapters": [
+          "adapter/campaign/AsyncTokens.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/AsyncTokens.java",
+        "sha256": "06e1c9eee95e7efab1d4ae0f55f2c854d680d55f0ee375f33d4434f6ed7b77e7"
+      }
+    ]
+  },
+  "key": "6eeb71cea9879d061f89f4c78acf1bef08190250b18019236ce5104b9c79097d"
+}

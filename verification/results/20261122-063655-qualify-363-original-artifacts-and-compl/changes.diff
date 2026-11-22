@@ -1,0 +1,760 @@
+--- /dev/null
++++ b/examples/363-parquet-nested-binary/records/qualified-build/build-fix.json
+@@ -0,0 +1,203 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/apache/parquet-java",
++    "commit": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
++    "class": "org.apache.parquet.variant.VariantUtil",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-Dthrift.executable=/work/tools/thrift",
++        "-Dspotless.check.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "parquet-variant",
++        "-am",
++        "-DskipTests",
++        "-Dinvoker.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    },
++    "parent": "dfc025e17e21a326addaf0e43c493e085cbac8f4"
++  },
++  "artifacts": [
++    {
++      "path": "built/parquet-variant-1.17.0-SNAPSHOT.jar",
++      "sha256": "1a3b3a7bf9e55b522e4d8f62cfa774be91838e7418dba9d2b5185318941b0640",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/apache/parquet-java at 8e740f07c26783d6dec2c4ac2cffa9823fe18036: parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-common/1.17.0-SNAPSHOT/parquet-common-1.17.0-SNAPSHOT.jar",
++      "sha256": "abaf0ecb2d00834d6327c6fa4e4f692ea9dd77dc6feadc52b6b59c8ec7fcb51e",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-common:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-format-structures/1.17.0-SNAPSHOT/parquet-format-structures-1.17.0-SNAPSHOT.jar",
++      "sha256": "363a87744fe4758bc703fec9faa87193852d90bf6b3bc997b4416b2c649170cb",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-format-structures:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
++      "sha256": "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++      "role": "dependency",
++      "coordinates": "javax.annotation:javax.annotation-api:1.3.2",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-column/1.17.0-SNAPSHOT/parquet-column-1.17.0-SNAPSHOT.jar",
++      "sha256": "d3d4aea6960e09d03f67bd67661e755e673eab163efb82ebaf2078fb4aa66e7c",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-column:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-encoding/1.17.0-SNAPSHOT/parquet-encoding-1.17.0-SNAPSHOT.jar",
++      "sha256": "77575a92696f1c8ceec37f070cdb8a710a349acbc98ffb6d664ae5d584f3b901",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-encoding:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
++      "sha256": "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf",
++      "role": "dependency",
++      "coordinates": "org.locationtech.jts:jts-core:1.20.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
++      "tree": "f53c430de450e0bd76cd5c8e4f2225aece1a30b9",
++      "parents": [
++        "dfc025e17e21a326addaf0e43c493e085cbac8f4"
++      ],
++      "fetchedFrom": "https://github.com/apache/parquet-java",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++          "sha256": "1a3b3a7bf9e55b522e4d8f62cfa774be91838e7418dba9d2b5185318941b0640",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "org/apache/parquet/variant/VariantUtil.class",
++      "selectedClassSha256": "64ef928e0d389161ca7927899a669ee85bba7f2de6eba3bb62a269d0f8062644",
++      "sourceSha256": "0e4b1f45eb28f69c1353c1c9a8a47d201aadf83d6f90ad2850b0b676fd4e434a",
++      "buildTool": {
++        "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++        "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++        "member": "usr/bin/thrift",
++        "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++      }
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      },
++      "declaredCompilers": {}
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-Dthrift.executable=/work/tools/thrift",
++          "-Dspotless.check.skip=true",
++          "-f",
++          "pom.xml",
++          "-pl",
++          "parquet-variant",
++          "-am",
++          "-DskipTests",
++          "-Dinvoker.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 34.88,
++        "logSha256": "deca86f2ad3996fb12e0dc252428b863ea4a12cc37a76fd4b83db462d7c59642",
++        "errors": [],
++        "tail": [
++          "[INFO] Apache Parquet Encodings ........................... SUCCESS [  4.194 s]",
++          "[INFO] Apache Parquet Column .............................. SUCCESS [  8.036 s]",
++          "[INFO] Apache Parquet Variant ............................. SUCCESS [  2.804 s]",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  33.516 s",
++          "[INFO] Finished at: 2026-11-22T06:45:39Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "parquet-variant/pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/parquet-variant/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 3.08,
++        "logSha256": "b691181a0974ccce656677801f59ef40b6bd55585ed5ecb12424f5472827f919",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ parquet-variant ---",
++          "[INFO] Wrote classpath file '/project/parquet-variant/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  1.883 s",
++          "[INFO] Finished at: 2026-11-22T06:45:42Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+--- /dev/null
++++ b/examples/363-parquet-nested-binary/records/qualified-build/build-parent.json
+@@ -0,0 +1,200 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/apache/parquet-java",
++    "commit": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
++    "class": "org.apache.parquet.variant.VariantUtil",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-Dthrift.executable=/work/tools/thrift",
++        "-Dspotless.check.skip=true",
++        "-f",
++        "pom.xml",
++        "-pl",
++        "parquet-variant",
++        "-am",
++        "-DskipTests",
++        "-Dinvoker.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    }
++  },
++  "artifacts": [
++    {
++      "path": "built/parquet-variant-1.17.0-SNAPSHOT.jar",
++      "sha256": "3ef6cb525dfbc9546c958e595ae47e68be7d685d27d2747811375f9e1dae4f03",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/apache/parquet-java at dfc025e17e21a326addaf0e43c493e085cbac8f4: parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-common/1.17.0-SNAPSHOT/parquet-common-1.17.0-SNAPSHOT.jar",
++      "sha256": "5f6a25492d3f4e624d198cd7a616d9937650706ed96ec55d8c740b701871e609",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-common:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-format-structures/1.17.0-SNAPSHOT/parquet-format-structures-1.17.0-SNAPSHOT.jar",
++      "sha256": "2dbc14d38d0a9c447f0340cf23bdd960881b2ac1765052b1730e15f36964bced",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-format-structures:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
++      "sha256": "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++      "role": "dependency",
++      "coordinates": "javax.annotation:javax.annotation-api:1.3.2",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-column/1.17.0-SNAPSHOT/parquet-column-1.17.0-SNAPSHOT.jar",
++      "sha256": "c080ebd102bd4c569d2acdbf47dfa1c43c40c6034a00bc4cb13e3ef28d7f1212",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-column:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/org/apache/parquet/parquet-encoding/1.17.0-SNAPSHOT/parquet-encoding-1.17.0-SNAPSHOT.jar",
++      "sha256": "38aa8df0835db985a41ca806cbeab196bbcbf105edb56addb54d5821b600f3cd",
++      "role": "dependency",
++      "coordinates": "org.apache.parquet:parquet-encoding:1.17.0-SNAPSHOT",
++      "origin": "installed in the build's local repository by the recipe"
++    },
++    {
++      "path": "lib/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
++      "sha256": "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf",
++      "role": "dependency",
++      "coordinates": "org.locationtech.jts:jts-core:1.20.0",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
++      "tree": "e7e97dcc7cc177587d10002994b90304d74515b4",
++      "parents": [],
++      "fetchedFrom": "https://github.com/apache/parquet-java",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++          "sha256": "3ef6cb525dfbc9546c958e595ae47e68be7d685d27d2747811375f9e1dae4f03",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "org/apache/parquet/variant/VariantUtil.class",
++      "selectedClassSha256": "e263094139623c0f4862a0b4b54aac2e0c6549a184ecf6dcecc1fa79ba35bdb0",
++      "sourceSha256": "86ce8a697514687ebf2950ea0fefc1e21fe2fca4a5f6b87932740950ce570dbf",
++      "buildTool": {
++        "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++        "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++        "member": "usr/bin/thrift",
++        "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++      }
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      },
++      "declaredCompilers": {}
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-Dthrift.executable=/work/tools/thrift",
++          "-Dspotless.check.skip=true",
++          "-f",
++          "pom.xml",
++          "-pl",
++          "parquet-variant",
++          "-am",
++          "-DskipTests",
++          "-Dinvoker.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 44.8,
++        "logSha256": "bcc4a5ccdfb61fc20dc97f445dfa6da6fb210b75ea3583c3a5bd0f0ad01bebff",
++        "errors": [],
++        "tail": [
++          "[INFO] Apache Parquet Encodings ........................... SUCCESS [  4.677 s]",
++          "[INFO] Apache Parquet Column .............................. SUCCESS [  9.496 s]",
++          "[INFO] Apache Parquet Variant ............................. SUCCESS [  2.930 s]",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  43.393 s",
++          "[INFO] Finished at: 2026-11-22T06:44:53Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "parquet-variant/pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/parquet-variant/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 3.58,
++        "logSha256": "2bb7b4ff1620bb060708745466d762c7db4041b063ccd6629cc477d4340c37ed",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ parquet-variant ---",
++          "[INFO] Wrote classpath file '/project/parquet-variant/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  2.255 s",
++          "[INFO] Finished at: 2026-11-22T06:44:56Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+Binary file examples/363-parquet-nested-binary/records/qualified-build/fix-TEST-org.apache.parquet.variant.TestVariantObjectBuilder.xml.gz changed
+--- /dev/null
++++ b/examples/363-parquet-nested-binary/records/qualified-build/fix-upstream.json
+@@ -0,0 +1,158 @@
++{
++  "revision": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
++  "side": "fix",
++  "buildTool": {
++    "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++    "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++    "member": "usr/bin/thrift",
++    "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++  },
++  "prerequisites": [],
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-Dthrift.executable=/work/tools/thrift",
++      "-Dspotless.check.skip=true",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "parquet-variant",
++      "-am",
++      "-DskipTests",
++      "-Dinvoker.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 34.88,
++    "logSha256": "deca86f2ad3996fb12e0dc252428b863ea4a12cc37a76fd4b83db462d7c59642",
++    "errors": [],
++    "tail": [
++      "[INFO] Apache Parquet Encodings ........................... SUCCESS [  4.194 s]",
++      "[INFO] Apache Parquet Column .............................. SUCCESS [  8.036 s]",
++      "[INFO] Apache Parquet Variant ............................. SUCCESS [  2.804 s]",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  33.516 s",
++      "[INFO] Finished at: 2026-11-22T06:45:39Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "parquet-variant/pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/parquet-variant/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 3.08,
++    "logSha256": "b691181a0974ccce656677801f59ef40b6bd55585ed5ecb12424f5472827f919",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ parquet-variant ---",
++      "[INFO] Wrote classpath file '/project/parquet-variant/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  1.883 s",
++      "[INFO] Finished at: 2026-11-22T06:45:42Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++        "sha256": "1a3b3a7bf9e55b522e4d8f62cfa774be91838e7418dba9d2b5185318941b0640",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "org/apache/parquet/variant/VariantUtil.class",
++    "selectedClassSha256": "64ef928e0d389161ca7927899a669ee85bba7f2de6eba3bb62a269d0f8062644",
++    "sourceSha256": "0e4b1f45eb28f69c1353c1c9a8a47d201aadf83d6f90ad2850b0b676fd4e434a",
++    "buildTool": {
++      "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++      "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++      "member": "usr/bin/thrift",
++      "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++    }
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-Dthrift.executable=/work/tools/thrift",
++        "-Dspotless.check.skip=true",
++        "-f",
++        "parquet-variant/pom.xml",
++        "-Dmaven.build.cache.enabled=false",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=TestVariantObjectBuilder#testMixedBinaryBuilder",
++        "test"
++      ],
++      "exit": 0,
++      "seconds": 4.22,
++      "logSha256": "72f10c7b6d42a8024f3bbbd7f2ee24d8ce2146de5e6a215e00873327ab308836",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- apache-rat:0.16.1:check (default) @ parquet-variant ---",
++        "[INFO] RAT will not execute since it is configured to be skipped via system property 'rat.skip'.",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  2.926 s",
++        "[INFO] Finished at: 2026-11-22T06:45:46Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ]
++    },
++    "packagedTestSupport": null,
++    "testPrerequisites": [],
++    "testSourceSha256": {
++      "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java": "2a51585b442dc471a7ac96a8a538420a776b2cc842d35c98198aee1e7b4cb675"
++    },
++    "transplant": [],
++    "named": {
++      "TestVariantObjectBuilder#testMixedBinaryBuilder": [
++        {
++          "status": "passed",
++          "class": "org.apache.parquet.variant.TestVariantObjectBuilder",
++          "method": "testMixedBinaryBuilder",
++          "xmlSha256": "cafb61cc658f3255b6929ad83f302b4cd3104b1bf14bec7b61527c148413a2ff"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1830
++  }
++}
+Binary file examples/363-parquet-nested-binary/records/qualified-build/parent-TEST-org.apache.parquet.variant.TestVariantObjectBuilder.xml.gz changed
+--- /dev/null
++++ b/examples/363-parquet-nested-binary/records/qualified-build/parent-upstream.json
+@@ -0,0 +1,179 @@
++{
++  "revision": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
++  "side": "parent",
++  "buildTool": {
++    "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++    "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++    "member": "usr/bin/thrift",
++    "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++  },
++  "prerequisites": [],
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-Dthrift.executable=/work/tools/thrift",
++      "-Dspotless.check.skip=true",
++      "-f",
++      "pom.xml",
++      "-pl",
++      "parquet-variant",
++      "-am",
++      "-DskipTests",
++      "-Dinvoker.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 44.8,
++    "logSha256": "bcc4a5ccdfb61fc20dc97f445dfa6da6fb210b75ea3583c3a5bd0f0ad01bebff",
++    "errors": [],
++    "tail": [
++      "[INFO] Apache Parquet Encodings ........................... SUCCESS [  4.677 s]",
++      "[INFO] Apache Parquet Column .............................. SUCCESS [  9.496 s]",
++      "[INFO] Apache Parquet Variant ............................. SUCCESS [  2.930 s]",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  43.393 s",
++      "[INFO] Finished at: 2026-11-22T06:44:53Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "parquet-variant/pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/parquet-variant/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 3.58,
++    "logSha256": "2bb7b4ff1620bb060708745466d762c7db4041b063ccd6629cc477d4340c37ed",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ parquet-variant ---",
++      "[INFO] Wrote classpath file '/project/parquet-variant/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  2.255 s",
++      "[INFO] Finished at: 2026-11-22T06:44:56Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
++        "sha256": "3ef6cb525dfbc9546c958e595ae47e68be7d685d27d2747811375f9e1dae4f03",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "org/apache/parquet/variant/VariantUtil.class",
++    "selectedClassSha256": "e263094139623c0f4862a0b4b54aac2e0c6549a184ecf6dcecc1fa79ba35bdb0",
++    "sourceSha256": "86ce8a697514687ebf2950ea0fefc1e21fe2fca4a5f6b87932740950ce570dbf",
++    "buildTool": {
++      "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
++      "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
++      "member": "usr/bin/thrift",
++      "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
++    }
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-Dthrift.executable=/work/tools/thrift",
++        "-Dspotless.check.skip=true",
++        "-f",
++        "parquet-variant/pom.xml",
++        "-Dmaven.build.cache.enabled=false",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=TestVariantObjectBuilder#testMixedBinaryBuilder",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 7.05,
++      "logSha256": "e7d48110ced77314cb114b7d8e39b4637b602709f1d45151d9098b01a86f14df",
++      "errors": [
++        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.059 s <<< FAILURE! -- in org.apache.parquet.variant.TestVariantObjectBuilder",
++        "[ERROR] org.apache.parquet.variant.TestVariantObjectBuilder.testMixedBinaryBuilder -- Time elapsed: 0.020 s <<< FAILURE!",
++        "[ERROR] Failures: ",
++        "[ERROR]   TestVariantObjectBuilder.testMixedBinaryBuilder:133->lambda$testMixedBinaryBuilder$3:136 expected:<java.nio.HeapByteBuffer[pos=0 lim=10 cap=10]> but was:<java.nio.HeapByteBufferR[pos=12 lim=52 cap=1024]>",
++        "[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0",
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.3.0:test (default-test) on project parquet-variant: There are test failures.",
++        "[ERROR] ",
++        "[ERROR] Please refer to /project/parquet-variant/target/surefire-reports for the individual test results.",
++        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] "
++      ],
++      "tail": [
++        "[ERROR] Please refer to /project/parquet-variant/target/surefire-reports for the individual test results.",
++        "[ERROR] Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ]
++    },
++    "packagedTestSupport": null,
++    "testPrerequisites": [],
++    "testSourceSha256": {
++      "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java": "2a51585b442dc471a7ac96a8a538420a776b2cc842d35c98198aee1e7b4cb675"
++    },
++    "transplant": [
++      "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java"
++    ],
++    "named": {
++      "TestVariantObjectBuilder#testMixedBinaryBuilder": [
++        {
++          "status": "failure",
++          "class": "org.apache.parquet.variant.TestVariantObjectBuilder",
++          "method": "testMixedBinaryBuilder",
++          "xmlSha256": "6bf94ae49aef5630f57f7d7bdd42f5b756971e1383ce3a9438307a5bed02be29",
++          "failureType": "java.lang.AssertionError",
++          "message": "expected:<java.nio.HeapByteBuffer[pos=0 lim=10 cap=10]> but was:<java.nio.HeapByteBufferR[pos=12 lim=52 cap=1024]>",
++          "atNamedTest": true
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1732,
++    "from https://repo.maven.apache.org/maven2/": 98,
++    "downloadedBytes": 31414846,
++    "downloadedFiles": 98
++  }
++}
+--- /dev/null
++++ b/examples/363-parquet-nested-binary/records/opening-qualified/replay.log
+@@ -0,0 +1,3 @@
++363-parquet-nested-binary: running task replay (target route)
++363-parquet-nested-binary: not-executed (task replay: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)
++Not executed: 363-parquet-nested-binary

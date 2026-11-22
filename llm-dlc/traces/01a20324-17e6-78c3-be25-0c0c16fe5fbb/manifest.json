@@ -12,53 +12,60 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-22T12:15:04.374Z",
-  "duration_seconds": 677,
+  "ended": "2026-11-22T12:31:58.949Z",
+  "duration_seconds": 1692,
   "stats": {
     "turns": 1,
-    "api_calls": 53,
-    "tool_calls": 200,
-    "tool_errors": 6,
+    "api_calls": 120,
+    "tool_calls": 346,
+    "tool_errors": 8,
     "compactions": 0,
-    "peak_context_tokens": 160472,
+    "peak_context_tokens": 226374,
     "usage": {
-      "input_tokens": 150855,
-      "output_tokens": 18353,
-      "cache_read_input_tokens": 6098944,
+      "input_tokens": 221582,
+      "output_tokens": 47171,
+      "cache_read_input_tokens": 19305216,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 145,
-    "exec": 53,
-    "apply_patch": 2
+    "Bash": 218,
+    "exec": 118,
+    "apply_patch": 8,
+    "request_user_input_async": 1,
+    "send_message_to_user_async": 1
   },
   "files_touched": [
+    "examples/367-avro-union-array-default/driver/campaign/Cases.java",
     "lib/benchmark/java-domain-proof/public_run.py",
+    "lib/benchmark/java-domain-proof/transfer.py",
+    "lib/src/bmc/runtime.rs",
+    "lib/tests/claims.rs",
+    "lib/tests/fixtures/claims/claims/ReaderAndListeners.java",
     "llm-dlc/loops/java-domain-proof-campaign.md"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-22T12:03:47.185Z",
-      "ended": "2026-11-22T12:15:04.374Z",
+      "ended": "2026-11-22T12:31:58.949Z",
       "turns": 1,
-      "api_calls": 53,
+      "api_calls": 120,
       "usage": {
-        "input_tokens": 150855,
-        "output_tokens": 18353,
-        "cache_read_input_tokens": 6098944,
+        "input_tokens": 221582,
+        "output_tokens": 47171,
+        "cache_read_input_tokens": 19305216,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 160472
+      "peak_context_tokens": 226374
     }
   ],
   "log": {
-    "sha256": "0167baf8567d658ed6da9fae73133976ae16857b213fab1c0a8433fe13a86adf",
-    "bytes": 1975906,
-    "lines": 478,
-    "gzip_bytes": 604742,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/0167baf8567d658ed6da9fae73133976ae16857b213fab1c0a8433fe13a86adf.jsonl.gz"
+    "sha256": "5090cb55fb0d7d0aa9c449d15df622c85dc46cc5f86e0b815b8680e41855ab7a",
+    "bytes": 3197216,
+    "lines": 969,
+    "gzip_bytes": 1082228,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/5090cb55fb0d7d0aa9c449d15df622c85dc46cc5f86e0b815b8680e41855ab7a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -69,6 +76,30 @@
       "summary": "Bind the remaining Java opening runs to JARs (verification pending)",
       "body": "Retain the qualified Maven and JUnit records, resolve Parquet metadata in the original classpath order, and bind Jackson's call to the original async implementation. Both fresh public JVM replays and their example validations pass. The capstone has failures on both parent test parameters and passes on both fixed parameters. Its public workflow awaits the packaged core module.\n\nJobs 20261122-121129-measure-the-original-parquet-opening-cla, 20261122-121129-measure-the-original-jackson-opening-cla and 20261122-121129-measure-the-original-avro-fast-reader-op check the remaining opening grids. Each checks the recorded verifier executable and source inventory before counting a result.",
       "log_sha256": "0167baf8567d658ed6da9fae73133976ae16857b213fab1c0a8433fe13a86adf"
+    },
+    {
+      "change_id": "zkpyywonzqpovzuwvvsopzkykkpkkomy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261122-121129-measure-the-original-jackson-opening-cla: passed: 1 passed step(s) in 23.9s, peak 273.0 MiB (estimated 5m00s, 4.0 GiB); 84 output file(s) changed Applied 84 output(s). 20261122-121129-measure-the-original-parquet-opening-cla: passed: 1 passed step(s) in 24.7s, peak 173.6 MiB (estimated 5m00s, 4.0 GiB); 84 output file(s) changed Applied 84 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "5090cb55fb0d7d0aa9c449d15df622c85dc46cc5f86e0b815b8680e41855ab7a"
+    },
+    {
+      "change_id": "xkwysltzvqsvlxnkrqurrukwysmzxmky",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261122-121129-measure-the-original-avro-fast-reader-op: failed: 1 passed, 1 failed step(s) in 2m29s, peak 1.1 GiB (estimated 5m00s, 4.0 GiB); 27 output file(s) changed Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "5090cb55fb0d7d0aa9c449d15df622c85dc46cc5f86e0b815b8680e41855ab7a"
+    },
+    {
+      "change_id": "rxnkzmuwxsyqnslkkwllltpqxplowtsu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify the Avro default reader grid (verification pending)",
+      "body": "Integrate the collector's historical results, including the previously missing Avro core packages. All four fast-reader inputs now emit the machine-readable correspondence grid when the workflow supplies its revision argument. The explicit diagnostic option retains the binary, JSON, standard-reader and required-field controls.\n\nExample 367 passes validation and two fresh replays. Job 20261122-122655-bind-the-four-avro-default-opening-rows runs the opening verifier against those bound JARs. Both existing result indexes were strict subsets of the collector's index.",
+      "log_sha256": "5090cb55fb0d7d0aa9c449d15df622c85dc46cc5f86e0b815b8680e41855ab7a"
     }
   ],
   "logs": {
@@ -76,6 +107,12 @@
       "bytes": 1975906,
       "lines": 478,
       "gzip_bytes": 604742,
+      "url": null
+    },
+    "5090cb55fb0d7d0aa9c449d15df622c85dc46cc5f86e0b815b8680e41855ab7a": {
+      "bytes": 3197216,
+      "lines": 969,
+      "gzip_bytes": 1082228,
       "url": null
     }
   },

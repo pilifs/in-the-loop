@@ -16,7 +16,7 @@ public final class Cases {
     }
     public static void main(String[] args) throws Exception {
         for (int code=0; code<4; code++) {
-            if (args.length != 0) {
+            if (args.length == 1 && args[0].equals("--controls")) {
                 for (boolean fast : new boolean[]{false,true}) for (boolean json : new boolean[]{false,true}) {
                     System.out.println(code + " " + fast + " " + json + " "
                         + outcome(code, true, false, fast, json) + " " + outcome(code, false, false, fast, json)

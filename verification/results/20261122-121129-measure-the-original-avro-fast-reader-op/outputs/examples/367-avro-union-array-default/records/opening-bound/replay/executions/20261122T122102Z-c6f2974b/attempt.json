@@ -1,0 +1,344 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261122T122102Z-c6f2974b",
+  "task": "replay",
+  "claimKey": "39f9e1f915f9aae6",
+  "revisions": [
+    "parent",
+    "fix"
+  ],
+  "startedAt": "2026-11-22T12:21:02.814889+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": null,
+    "gaps": null
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261122-121129-measure-the-original-avro-fast-reader-op",
+  "sourceCommit": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "revision-prepared",
+      "elapsedSeconds": 1.6624
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 3.1957
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 3.9661
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 4.118
+    }
+  ],
+  "status": "invalid-output",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "parent": {
+      "revision": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+      "target": {
+        "class": "org.apache.avro.generic.GenericDatumReader",
+        "method": "read",
+        "descriptor": "(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+        "loadedFrom": "built/avro-1.13.0-SNAPSHOT.jar",
+        "classSha256": "f1df8eb8120496c890cf8545297e958b8a54871acd5f4ed08b03e39d2359585c",
+        "adapterCalls": [
+          "org.apache.avro.Schema#create(Lorg/apache/avro/Schema$Type;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema#createArray(Lorg/apache/avro/Schema;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema#createRecord(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema#createUnion(Ljava/util/List;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema$Field#<init>(Ljava/lang/String;Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.Schema$Field#<init>(Ljava/lang/String;Lorg/apache/avro/Schema;Ljava/lang/String;Ljava/lang/Object;)V",
+          "org.apache.avro.generic.GenericData#<init>()V",
+          "org.apache.avro.generic.GenericData#setFastReaderEnabled(Z)Lorg/apache/avro/generic/GenericData;",
+          "org.apache.avro.generic.GenericDatumReader#<init>(Lorg/apache/avro/Schema;Lorg/apache/avro/Schema;Lorg/apache/avro/generic/GenericData;)V",
+          "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "org.apache.avro.generic.GenericDatumReader#setExpected(Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.generic.GenericDatumReader#setSchema(Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.generic.GenericRecord#get(Ljava/lang/String;)Ljava/lang/Object;",
+          "org.apache.avro.io.DecoderFactory#binaryDecoder([BLorg/apache/avro/io/BinaryDecoder;)Lorg/apache/avro/io/BinaryDecoder;",
+          "org.apache.avro.io.DecoderFactory#get()Lorg/apache/avro/io/DecoderFactory;",
+          "org.apache.avro.io.DecoderFactory#jsonDecoder(Lorg/apache/avro/Schema;Ljava/lang/String;)Lorg/apache/avro/io/JsonDecoder;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "bcfc9b8410afe5deed7b2a5ba3e4d97e1e3e9727feddb3312c889680ff97c2fc",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "e9ebffb8ee7fa35543f08eaa273a99a17acb1d22ddcf0e804076ed0348185ff0",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/avro-1.13.0-SNAPSHOT.jar",
+          "sha256": "f41143027a7175da792575909f6a6a8b682b66684631afa43e31324125bfe16c",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/apache/avro at 974961d97a84d3601113d0f3cdc41db6580d1b6b: lang/java/avro/target/avro-1.13.0-SNAPSHOT.jar"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-core/2.21.3/jackson-core-2.21.3.jar",
+          "sha256": "baf8b739e9d9b93bcdb33f25046bfdb8dbd74c97de2a8698539fbe0c7eeac0bb",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-core:2.21.3",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-databind/2.21.3/jackson-databind-2.21.3.jar",
+          "sha256": "f397563d8e67630c10cab8c2334ca0e55af832fa3ebde160a379c2c96d43bf25",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.21.3",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar",
+          "sha256": "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.21",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar",
+          "sha256": "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-compress:1.28.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar",
+          "sha256": "5c3881e4f556855e9c532927ee0c9dfde94cc66760d5805c031a59887070af5f",
+          "role": "dependency",
+          "coordinates": "commons-codec:commons-codec:1.19.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/commons-io/commons-io/2.20.0/commons-io-2.20.0.jar",
+          "sha256": "df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72",
+          "role": "dependency",
+          "coordinates": "commons-io:commons-io:2.20.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.jar",
+          "sha256": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-lang3:3.20.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/xerial/snappy/snappy-java/1.1.10.8/snappy-java-1.1.10.8.jar",
+          "sha256": "50485d06037fea3d6e40c968386feeca6338cc9872e25549593ff3eb352cefcc",
+          "role": "dependency",
+          "coordinates": "org.xerial.snappy:snappy-java:1.1.10.8",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/tukaani/xz/1.12/xz-1.12.jar",
+          "sha256": "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+          "role": "dependency",
+          "coordinates": "org.tukaani:xz:1.12",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/com/github/luben/zstd-jni/1.5.7-8/zstd-jni-1.5.7-8.jar",
+          "sha256": "69c9ef4e2ec232fae8febfb3280bec567bdfb7406627174b1a3c163031e29367",
+          "role": "dependency",
+          "coordinates": "com.github.luben:zstd-jni:1.5.7-8",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+          "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832",
+          "role": "dependency",
+          "coordinates": "org.slf4j:slf4j-api:2.0.17",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        }
+      ]
+    },
+    "fix": {
+      "revision": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+      "target": {
+        "class": "org.apache.avro.generic.GenericDatumReader",
+        "method": "read",
+        "descriptor": "(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+        "loadedFrom": "built/avro-1.13.0-SNAPSHOT.jar",
+        "classSha256": "f1df8eb8120496c890cf8545297e958b8a54871acd5f4ed08b03e39d2359585c",
+        "adapterCalls": [
+          "org.apache.avro.Schema#create(Lorg/apache/avro/Schema$Type;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema#createArray(Lorg/apache/avro/Schema;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema#createRecord(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema#createUnion(Ljava/util/List;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema$Field#<init>(Ljava/lang/String;Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.Schema$Field#<init>(Ljava/lang/String;Lorg/apache/avro/Schema;Ljava/lang/String;Ljava/lang/Object;)V",
+          "org.apache.avro.generic.GenericData#<init>()V",
+          "org.apache.avro.generic.GenericData#setFastReaderEnabled(Z)Lorg/apache/avro/generic/GenericData;",
+          "org.apache.avro.generic.GenericDatumReader#<init>(Lorg/apache/avro/Schema;Lorg/apache/avro/Schema;Lorg/apache/avro/generic/GenericData;)V",
+          "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "org.apache.avro.generic.GenericDatumReader#setExpected(Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.generic.GenericDatumReader#setSchema(Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.generic.GenericRecord#get(Ljava/lang/String;)Ljava/lang/Object;",
+          "org.apache.avro.io.DecoderFactory#binaryDecoder([BLorg/apache/avro/io/BinaryDecoder;)Lorg/apache/avro/io/BinaryDecoder;",
+          "org.apache.avro.io.DecoderFactory#get()Lorg/apache/avro/io/DecoderFactory;",
+          "org.apache.avro.io.DecoderFactory#jsonDecoder(Lorg/apache/avro/Schema;Ljava/lang/String;)Lorg/apache/avro/io/JsonDecoder;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "bcfc9b8410afe5deed7b2a5ba3e4d97e1e3e9727feddb3312c889680ff97c2fc",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "e9ebffb8ee7fa35543f08eaa273a99a17acb1d22ddcf0e804076ed0348185ff0",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/avro-1.13.0-SNAPSHOT.jar",
+          "sha256": "e23ef3027f1ec643459d9cb1733e3c3d58a78e65849444067d45dfcd823048c3",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/apache/avro at 892d6997dcb65627560b04bd76c5a3dd97666cdf: lang/java/avro/target/avro-1.13.0-SNAPSHOT.jar"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-core/2.21.3/jackson-core-2.21.3.jar",
+          "sha256": "baf8b739e9d9b93bcdb33f25046bfdb8dbd74c97de2a8698539fbe0c7eeac0bb",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-core:2.21.3",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-databind/2.21.3/jackson-databind-2.21.3.jar",
+          "sha256": "f397563d8e67630c10cab8c2334ca0e55af832fa3ebde160a379c2c96d43bf25",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.21.3",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar",
+          "sha256": "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.21",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar",
+          "sha256": "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-compress:1.28.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar",
+          "sha256": "5c3881e4f556855e9c532927ee0c9dfde94cc66760d5805c031a59887070af5f",
+          "role": "dependency",
+          "coordinates": "commons-codec:commons-codec:1.19.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/commons-io/commons-io/2.20.0/commons-io-2.20.0.jar",
+          "sha256": "df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72",
+          "role": "dependency",
+          "coordinates": "commons-io:commons-io:2.20.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.jar",
+          "sha256": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-lang3:3.20.0",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/xerial/snappy/snappy-java/1.1.10.8/snappy-java-1.1.10.8.jar",
+          "sha256": "50485d06037fea3d6e40c968386feeca6338cc9872e25549593ff3eb352cefcc",
+          "role": "dependency",
+          "coordinates": "org.xerial.snappy:snappy-java:1.1.10.8",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/tukaani/xz/1.12/xz-1.12.jar",
+          "sha256": "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+          "role": "dependency",
+          "coordinates": "org.tukaani:xz:1.12",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/com/github/luben/zstd-jni/1.5.7-8/zstd-jni-1.5.7-8.jar",
+          "sha256": "69c9ef4e2ec232fae8febfb3280bec567bdfb7406627174b1a3c163031e29367",
+          "role": "dependency",
+          "coordinates": "com.github.luben:zstd-jni:1.5.7-8",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        },
+        {
+          "path": "lib/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+          "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832",
+          "role": "dependency",
+          "coordinates": "org.slf4j:slf4j-api:2.0.17",
+          "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+        }
+      ]
+    }
+  },
+  "bindingId": "7a502185d593c5956b60e002655d75ff979346a4f13586b3dd6f5f1a102d7122",
+  "receipt": "receipts/replay/20261122T122102Z-c6f2974b/result.json",
+  "preparedClaim": "fc561304e0b22def",
+  "firstBlocker": "revision parent on JDK 21: the driver's output is missing or malformed; revision fix on JDK 21: the driver's output is missing or malformed; revision parent has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced; revision fix has no complete control on JDK 21: a one-sided or incomplete replay is not reproduced",
+  "missing": [
+    "eligible conclusion"
+  ],
+  "endedAt": "2026-11-22T12:21:06.932975+00:00"
+}

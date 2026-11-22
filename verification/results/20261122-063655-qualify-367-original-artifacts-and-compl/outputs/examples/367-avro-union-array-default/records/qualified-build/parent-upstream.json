@@ -1,0 +1,269 @@
+{
+  "revision": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+  "side": "parent",
+  "prerequisites": [
+    {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-N",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 11.98,
+      "logSha256": "ec8851298af3b762ce3621581d5d881dde440840b5cd0b4e2c2e5fb6415cc4e4",
+      "errors": [],
+      "tail": [
+        "[INFO] --- install:3.1.4:install (default-install) @ avro-toplevel ---",
+        "[INFO] Installing /project/pom.xml to /work/repository/org/apache/avro/avro-toplevel/1.13.0-SNAPSHOT/avro-toplevel-1.13.0-SNAPSHOT.pom",
+        "[INFO] Saved Build to local file: /work/build-cache/v1/org.apache.avro/avro-toplevel/8d8bbc49a04f779f/local/buildinfo.xml",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  8.617 s",
+        "[INFO] Finished at: 2026-11-22T06:44:20Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-N",
+        "-f",
+        "lang/java/pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 16.54,
+      "logSha256": "e6c986684aa96335db87e028d897b8c25bd1e37df8b5391b8cd057e2857ea429",
+      "errors": [],
+      "tail": [
+        "[INFO] Installing /project/lang/java/target/bom.xml to /work/repository/org/apache/avro/avro-parent/1.13.0-SNAPSHOT/avro-parent-1.13.0-SNAPSHOT-cyclonedx.xml",
+        "[INFO] Installing /project/lang/java/target/bom.json to /work/repository/org/apache/avro/avro-parent/1.13.0-SNAPSHOT/avro-parent-1.13.0-SNAPSHOT-cyclonedx.json",
+        "[INFO] Saved Build to local file: /work/build-cache/v1/org.apache.avro/avro-parent/b41a471e1b6f503f/local/buildinfo.xml",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  14.121 s",
+        "[INFO] Finished at: 2026-11-22T06:44:37Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    }
+  ],
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/avro/pom.xml",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 1,
+    "seconds": 29.35,
+    "logSha256": "8ad64b67da09a5d782bbf37560dab3708ab21ad731f31122f834fab180e22d2e",
+    "errors": [
+      "[ERROR] -------------------------------------------------",
+      "[ERROR] ",
+      "[ERROR] BUILD FAILURE",
+      "[ERROR] Plugin org.apache.maven.plugins:maven-clean-plugin:3.5.0 or one of its dependencies could not be resolved:",
+      "[ERROR] \tThe following artifacts could not be resolved: org.apache.maven.plugins:maven-clean-plugin:pom:3.5.0 (absent): Could not transfer artifact org.apache.maven.plugins:maven-clean-plugin:pom:3.5.0 from/to central (https://repo.maven.apache.org/maven2): repo.maven.apache.org",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
+    ],
+    "tail": [
+      "[INFO] Finished at: 2026-11-22T06:45:06Z",
+      "[INFO] ------------------------------------------------------------------------",
+      "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-invoker-plugin:3.9.1:run (Run all tests under Java 11) on project avro: 1 build failed. See console output above for details. -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+    ]
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "lang/java/avro/pom.xml",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied*",
+        "test"
+      ],
+      "exit": 1,
+      "seconds": 20.71,
+      "logSha256": "674c38f5ea3159f5814657a52587d86a797e3a191b2e7ab6e70c6399babf0ff7",
+      "errors": [
+        "[ERROR] Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.402 s <<< FAILURE! -- in org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+        "[ERROR] org.apache.avro.TestReadingWritingDataInEvolvedSchemas.readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[1] -- Time elapsed: 0.056 s <<< ERROR!",
+        "[ERROR] org.apache.avro.TestReadingWritingDataInEvolvedSchemas.readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[2] -- Time elapsed: 0.010 s <<< ERROR!",
+        "[ERROR] Errors: ",
+        "[ERROR]   TestReadingWritingDataInEvolvedSchemas.readerWithEmptyListAsDefaultValueForUnionFieldIsApplied:411->decodeGenericBlob:461 \u00bb AvroRuntime Not an array: [{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RecordA\",\"fields\":[{\"name\":\"fieldA\",\"type\":\"int\"}]}},\"null\"]",
+        "[ERROR]   TestReadingWritingDataInEvolvedSchemas.readerWithEmptyListAsDefaultValueForUnionFieldIsApplied:411->decodeGenericBlob:461 \u00bb AvroRuntime Not an array: [{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RecordA\",\"fields\":[{\"name\":\"fieldA\",\"type\":\"int\"}]}},\"null\"]",
+        "[ERROR] Tests run: 2, Failures: 0, Errors: 2, Skipped: 0",
+        "[ERROR] BUILD FAILURE",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.5:test (default-test) on project avro: ",
+        "[ERROR] ",
+        "[ERROR] See /project/lang/java/avro/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream."
+      ],
+      "tail": [
+        "[ERROR] See /project/lang/java/avro/target/surefire-reports for the individual test results.",
+        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testPrerequisites": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-N",
+          "-f",
+          "pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 3.21,
+        "logSha256": "8128c0c1007e7024147304f6d12540733d6f337752ee0a17938a33c375378f29",
+        "errors": [],
+        "tail": [
+          "[INFO] Skipping plugin execution (cached): remote-resources:process",
+          "[INFO] Skipping plugin execution (cached): apache-rat:check",
+          "[INFO] Skipping plugin execution (cached): install:install",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  0.605 s",
+          "[INFO] Finished at: 2026-11-22T06:45:09Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-N",
+          "-f",
+          "lang/java/pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 4.35,
+        "logSha256": "355dca02b7e7a44efe1e261d60f00508649a0c62102cfaf97e998f0bb2f3d49e",
+        "errors": [],
+        "tail": [
+          "[INFO] Skipping plugin execution (cached): checkstyle:check",
+          "[INFO] Skipping plugin execution (cached): cyclonedx:makeBom",
+          "[INFO] Skipping plugin execution (cached): install:install",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  1.885 s",
+          "[INFO] Finished at: 2026-11-22T06:45:14Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ],
+    "testSourceSha256": {
+      "lang/java/avro/src/test/java/org/apache/avro/TestReadingWritingDataInEvolvedSchemas.java": "17234c8a4dc92f6287ad1990fa923509f56facbff51912400a995bd2e6c70da2"
+    },
+    "transplant": [
+      "lang/java/avro/src/test/java/org/apache/avro/TestReadingWritingDataInEvolvedSchemas.java"
+    ],
+    "named": {
+      "TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied": [
+        {
+          "status": "error",
+          "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+          "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[1]",
+          "xmlSha256": "783bc7431a6867095c2fce87e1fc6d5272e3b318b1028b665d6cf4643a8d8981",
+          "failureType": "org.apache.avro.AvroRuntimeException",
+          "message": "Not an array: [{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RecordA\",\"fields\":[{\"name\":\"fieldA\",\"type\":\"int\"}]}},\"null\"]",
+          "atNamedTest": true
+        },
+        {
+          "status": "error",
+          "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+          "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[2]",
+          "xmlSha256": "783bc7431a6867095c2fce87e1fc6d5272e3b318b1028b665d6cf4643a8d8981",
+          "failureType": "org.apache.avro.AvroRuntimeException",
+          "message": "Not an array: [{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"RecordA\",\"fields\":[{\"name\":\"fieldA\",\"type\":\"int\"}]}},\"null\"]",
+          "atNamedTest": true
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1302,
+    "from https://repo.maven.apache.org/maven2/": 484,
+    "downloadedBytes": 56638859,
+    "downloadedFiles": 484
+  }
+}

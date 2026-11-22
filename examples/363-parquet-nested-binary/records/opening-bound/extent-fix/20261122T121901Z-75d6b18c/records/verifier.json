@@ -1,0 +1,638 @@
+{
+  "task": "extent-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9d1e2762d625d1e742068118a5ccfd929be10885/jvmcontract",
+      "prove",
+      "campaign.NestedBinary#extent(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/parquet-variant-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/org/apache/parquet/parquet-common/1.17.0-SNAPSHOT/parquet-common-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/org/apache/parquet/parquet-format-structures/1.17.0-SNAPSHOT/parquet-format-structures-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
+      "--classpath",
+      "prepare/fix/lib/org/apache/parquet/parquet-column/1.17.0-SNAPSHOT/parquet-column-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/org/apache/parquet/parquet-encoding/1.17.0-SNAPSHOT/parquet-encoding-1.17.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
+      "--assume",
+      "code >= 0 && code < 64",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "2048",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.042,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+      "commit": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+      "libTree": "9d1e2762d625d1e742068118a5ccfd929be10885",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 2048
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child. Each selector corresponds to one explicit row of the finite oracle.",
+        "method": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+        "revisions": {
+          "fix": {
+            "commit": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+            "loadedFrom": "built/parquet-variant-1.17.0-SNAPSHOT.jar",
+            "classSha256": "477c0a67773153ac1fe267a97b038649d7da553e681b2c5c2a6a0f17f0e66c7f",
+            "origin": "built by maven from https://github.com/apache/parquet-java at 8e740f07c26783d6dec2c4ac2cffa9823fe18036: parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
+            "parameters": {
+              "names": [],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "campaign.NestedBinary#extent(I)I",
+          "mapping": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 64
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "7ee4a418859cef1554aafa991e7bcaa0f2a2b3dbe4344ae596c18dfcefae276e",
+            "role": "adapter"
+          },
+          {
+            "path": "built/parquet-variant-1.17.0-SNAPSHOT.jar",
+            "sha256": "1a3b3a7bf9e55b522e4d8f62cfa774be91838e7418dba9d2b5185318941b0640",
+            "role": "original"
+          },
+          {
+            "path": "lib/org/apache/parquet/parquet-common/1.17.0-SNAPSHOT/parquet-common-1.17.0-SNAPSHOT.jar",
+            "sha256": "abaf0ecb2d00834d6327c6fa4e4f692ea9dd77dc6feadc52b6b59c8ec7fcb51e",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/apache/parquet/parquet-format-structures/1.17.0-SNAPSHOT/parquet-format-structures-1.17.0-SNAPSHOT.jar",
+            "sha256": "363a87744fe4758bc703fec9faa87193852d90bf6b3bc997b4416b2c649170cb",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
+            "sha256": "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/apache/parquet/parquet-column/1.17.0-SNAPSHOT/parquet-column-1.17.0-SNAPSHOT.jar",
+            "sha256": "d3d4aea6960e09d03f67bd67661e755e673eab163efb82ebaf2078fb4aa66e7c",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/apache/parquet/parquet-encoding/1.17.0-SNAPSHOT/parquet-encoding-1.17.0-SNAPSHOT.jar",
+            "sha256": "77575a92696f1c8ceec37f070cdb8a710a349acbc98ffb6d664ae5d584f3b901",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
+            "sha256": "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "campaign.NestedBinary#extent(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "campaign.NestedBinary#extent(I)I",
+          "classSha256": "929d2ed872bf6446043dccebe127966a62cb0ca2c93829f514ec78c62513d0aa",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+          "subjectClassSha256": "477c0a67773153ac1fe267a97b038649d7da553e681b2c5c2a6a0f17f0e66c7f"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.parquet.variant.Variant#getBinary()Ljava/nio/ByteBuffer;",
+        "checkedEntry": "campaign.NestedBinary#extent(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 64"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "2048"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "campaign.NestedBinary#extent(I)I",
+          "mapping": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 64
+        }
+      },
+      "commits": {
+        "fix": "8e740f07c26783d6dec2c4ac2cffa9823fe18036"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9d1e2762d625d1e742068118a5ccfd929be10885/jvmcontract",
+            "gaps",
+            "--target",
+            "campaign.NestedBinary#extent(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/built/parquet-variant-1.17.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/fix/lib/org/apache/parquet/parquet-common/1.17.0-SNAPSHOT/parquet-common-1.17.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/fix/lib/org/apache/parquet/parquet-format-structures/1.17.0-SNAPSHOT/parquet-format-structures-1.17.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/fix/lib/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
+            "--classpath",
+            "prepare/fix/lib/org/apache/parquet/parquet-column/1.17.0-SNAPSHOT/parquet-column-1.17.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/fix/lib/org/apache/parquet/parquet-encoding/1.17.0-SNAPSHOT/parquet-encoding-1.17.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/fix/lib/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.nio.HeapByteBuffer.<init>([BIILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.HeapByteBuffer.<init>(byte[], int, int, java.lang.foreign.MemorySegment)",
+              "sites": [
+                "java.nio.ByteBuffer.wrap:436"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.asReadOnlyBuffer()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.asReadOnlyBuffer()",
+              "sites": [
+                "org.apache.parquet.variant.Variant.<init>:61",
+                "org.apache.parquet.variant.Variant.<init>:62"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.duplicate()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.duplicate()",
+              "sites": [
+                "campaign.NestedBinary.rewrap:24",
+                "org.apache.parquet.variant.VariantUtil.slice:668"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.get([BII)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.get(byte[], int, int)",
+              "sites": [
+                "campaign.NestedBinary.rewrap:24"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.limit(I)Ljava/nio/Buffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.limit(int)",
+              "sites": [
+                "org.apache.parquet.variant.VariantUtil.getBinary:616"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.position(I)Ljava/nio/Buffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.position(int)",
+              "sites": [
+                "org.apache.parquet.variant.VariantUtil.slice:669"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.put(Ljava/nio/ByteBuffer;)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.put(java.nio.ByteBuffer)",
+              "sites": [
+                "org.apache.parquet.variant.VariantBuilder.appendBinary:377"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.ArrayList.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.ArrayList.iterator()",
+              "sites": [
+                "org.apache.parquet.variant.MetadataBuilder.getEncodedBuffer:39"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "org.apache.parquet.variant.MetadataBuilder.getEncodedBuffer:39"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "org.apache.parquet.variant.VariantBuilder.<clinit>:31"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.get()B@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.get()",
+              "sites": [
+                "campaign.NestedBinary.exhausted:41",
+                "campaign.NestedBinary.matches:50"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.get(I)B@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.get(int)",
+              "sites": [
+                "org.apache.parquet.variant.Variant.<init>:65",
+                "org.apache.parquet.variant.Variant.<init>:68",
+                "org.apache.parquet.variant.VariantUtil.getArrayInfo:758",
+                "org.apache.parquet.variant.VariantUtil.getArrayInfo:759",
+                "org.apache.parquet.variant.VariantUtil.getBinary:607",
+                "org.apache.parquet.variant.VariantUtil.getBinary:608",
+                "org.apache.parquet.variant.VariantUtil.getType:311",
+                "org.apache.parquet.variant.VariantUtil.getType:312",
+                "org.apache.parquet.variant.VariantUtil.getTypeDebugString:379",
+                "org.apache.parquet.variant.VariantUtil.getTypeDebugString:380",
+                "org.apache.parquet.variant.VariantUtil.readUnsigned:293"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.limit()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.limit()",
+              "sites": [
+                "org.apache.parquet.variant.VariantUtil.getArrayInfo:757",
+                "org.apache.parquet.variant.VariantUtil.getBinary:606",
+                "org.apache.parquet.variant.VariantUtil.getBinary:614",
+                "org.apache.parquet.variant.VariantUtil.getType:310",
+                "org.apache.parquet.variant.VariantUtil.readUnsigned:288",
+                "org.apache.parquet.variant.VariantUtil.readUnsigned:289"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.position()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.position()",
+              "sites": [
+                "org.apache.parquet.variant.Variant.<init>:65",
+                "org.apache.parquet.variant.Variant.<init>:68",
+                "org.apache.parquet.variant.Variant.getElementAtIndex:336",
+                "org.apache.parquet.variant.Variant.getElementAtIndex:337",
+                "org.apache.parquet.variant.VariantUtil.getArrayInfo:757",
+                "org.apache.parquet.variant.VariantUtil.getArrayInfo:758",
+                "org.apache.parquet.variant.VariantUtil.getArrayInfo:759",
+                "org.apache.parquet.variant.VariantUtil.getArrayInfo:768",
+                "org.apache.parquet.variant.VariantUtil.getBinary:606",
+                "org.apache.parquet.variant.VariantUtil.getBinary:607",
+                "org.apache.parquet.variant.VariantUtil.getBinary:608",
+                "org.apache.parquet.variant.VariantUtil.getBinary:612",
+                "org.apache.parquet.variant.VariantUtil.getBinary:613",
+                "org.apache.parquet.variant.VariantUtil.getType:310",
+                "org.apache.parquet.variant.VariantUtil.getType:311",
+                "org.apache.parquet.variant.VariantUtil.getType:312",
+                "org.apache.parquet.variant.VariantUtil.getTypeDebugString:379",
+                "org.apache.parquet.variant.VariantUtil.getTypeDebugString:380"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.remaining()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.remaining()",
+              "sites": [
+                "campaign.NestedBinary.matches:49",
+                "campaign.NestedBinary.rewrap:21",
+                "org.apache.parquet.variant.VariantBuilder.appendBinary:371"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.ArrayList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.ArrayList.add(java.lang.Object)",
+              "sites": [
+                "org.apache.parquet.variant.VariantArrayBuilder.onAppend:54",
+                "org.apache.parquet.variant.VariantArrayBuilder.onStartNested:61"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.ArrayList.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.ArrayList.size()",
+              "sites": [
+                "org.apache.parquet.variant.MetadataBuilder.getEncodedBuffer:36",
+                "org.apache.parquet.variant.VariantArrayBuilder.validateAndGetOffsets:43",
+                "org.apache.parquet.variant.VariantArrayBuilder.validateAndGetOffsets:45",
+                "org.apache.parquet.variant.VariantBuilder.endArray:576"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "org.apache.parquet.variant.MetadataBuilder.getEncodedBuffer:39"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+              "sites": [
+                "org.apache.parquet.variant.Variant.<init>:66",
+                "org.apache.parquet.variant.VariantArrayBuilder.validateAndGetOffsets:44",
+                "org.apache.parquet.variant.VariantUtil.checkIndex:242",
+                "org.apache.parquet.variant.VariantUtil.getType:365",
+                "org.apache.parquet.variant.VariantUtil.getTypeDebugString:381",
+                "org.apache.parquet.variant.VariantUtil.readUnsigned:297",
+                "org.apache.parquet.variant.VariantUtil.unexpectedType:387"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0405,
+        "peakRssBytes": 68706304,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "campaign.NestedBinary#extent(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 64",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13 (java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) at java.nio.ByteBuffer.put:1040). With --gaps assume it assumes instead that java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "campaign.NestedBinary#extent(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13 (java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) at java.nio.ByteBuffer.put:1040). With --gaps assume it assumes instead that java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 55
+          }
+        ],
+        "output": "✗ campaign.NestedBinary#extent(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13 (java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) at java.nio.ByteBuffer.put:1040). With --gaps assume it assumes instead that java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.018940462,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 2048,
+          "stage": null,
+          "native": {
+            "paths": 18,
+            "merges": 0,
+            "solver_calls": 43,
+            "solving_seconds": 0.000420222,
+            "gates_evaluated": 956,
+            "evaluating_seconds": 3.0205e-05,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1255,
+            "clauses": 632,
+            "seconds": 0.013122226,
+            "loading_seconds": 0.001545265,
+            "decoding_seconds": 0.000211544,
+            "encoding_seconds": 0.000817779,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-void-method:java.nio.ByteBuffer.putBuffer(ILjava/nio/ByteBuffer;II)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.nio.ByteBuffer.putBuffer(int, java.nio.ByteBuffer, int, int)",
+              "sites": [
+                "java.nio.ByteBuffer.put:1040"
+              ],
+              "approximation": "returns and does nothing: it throws nothing and changes neither its receiver nor its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.013,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.002,
+                "lowering": 0.0,
+                "symbolic": 0.01,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1255,
+                "clauses": 632
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.036,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.013,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.021
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 64",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-parquet-opening-cla/.build-py/examples-xv_0hkwg/targets/363/extent-fix/20261122T121901Z-75d6b18c",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-parquet-opening-cla/.build-py/examples-xv_0hkwg/targets/363/extent-fix/20261122T121901Z-75d6b18c"
+  }
+}

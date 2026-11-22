@@ -1,0 +1,240 @@
+{
+  "plan": {
+    "example": "366",
+    "task": "prefixes-fix",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "prefixes-fix",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "file": "claims/prefixes.json",
+      "sha256": "ee320756437e240c114207e4cc80f92002b430502c99257bcd60f2b404cc820e",
+      "property": "prefixes",
+      "claimKind": "property",
+      "statement": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust.",
+      "assume": "code >= 0 && code < 14",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "e64d8c00b0752b64a427a3eaa2e92e97324d856f6b5a2c9f681532148c520097"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.DelimitedFields#prefixes(I)I",
+        "mapping": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 14
+      },
+      "key": "f8394f58c0c305df"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-fix.json",
+          "sha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/prefixes-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-366-original-artifacts-and-compl/examples/366-commons-csv-delimiter-lookahead",
+    "network": true
+  },
+  "inputs": {
+    "example": "366",
+    "task": "prefixes-fix",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "prefixes-fix",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+      "file": "claims/prefixes.json",
+      "sha256": "ee320756437e240c114207e4cc80f92002b430502c99257bcd60f2b404cc820e",
+      "property": "prefixes",
+      "claimKind": "property",
+      "statement": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust.",
+      "assume": "code >= 0 && code < 14",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 128,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "e64d8c00b0752b64a427a3eaa2e92e97324d856f6b5a2c9f681532148c520097"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.DelimitedFields#prefixes(I)I",
+        "mapping": "Every proper delimiter prefix followed by a mismatch remains literal. The single-character and ordinary quoted controls preserve all fields and exhaust. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 14
+      },
+      "key": "f8394f58c0c305df"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-fix.json",
+          "sha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424"
+        },
+        "adapters": [
+          "adapter/campaign/DelimitedFields.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/DelimitedFields.java",
+        "sha256": "f330ac8324d3e2aecdb06b02986b9b36a41fe64c477745be06935236fb1a78aa"
+      }
+    ]
+  },
+  "key": "93766d55b23a99a3939c2f87dd98e9198f2b778b8d07e3d2ee7eb1d04b6689b0"
+}

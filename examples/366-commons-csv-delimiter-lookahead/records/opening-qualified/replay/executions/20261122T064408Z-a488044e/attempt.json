@@ -1,0 +1,174 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261122T064408Z-a488044e",
+  "task": "replay",
+  "claimKey": "5970757f90033f66",
+  "revisions": [
+    "parent",
+    "fix"
+  ],
+  "startedAt": "2026-11-22T06:44:08.673920+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": null,
+    "gaps": null
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261122-063655-qualify-366-original-artifacts-and-compl",
+  "sourceCommit": "d3f87a34ce0d74e10da8fd51d318dbdbb3f5674a",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "revision-prepared",
+      "elapsedSeconds": 1.4172
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 2.8408
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 3.1069
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 3.2775
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "parent": {
+      "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+      "target": {
+        "class": "org.apache.commons.csv.CSVParser",
+        "method": "parse",
+        "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+        "loadedFrom": "built/commons-csv-1.10.0-SNAPSHOT.jar",
+        "classSha256": "c4fc923e6f275f3af7dcbca28bdcb85422fd65c359d0080f7367fec93b6b4e2f",
+        "adapterCalls": [
+          "org.apache.commons.csv.CSVFormat$Builder#build()Lorg/apache/commons/csv/CSVFormat;",
+          "org.apache.commons.csv.CSVFormat$Builder#create()Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVFormat$Builder#setDelimiter(Ljava/lang/String;)Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVFormat$Builder#setQuote(C)Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVParser#close()V",
+          "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+          "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+          "org.apache.commons.csv.CSVRecord#get(I)Ljava/lang/String;",
+          "org.apache.commons.csv.CSVRecord#size()I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "4eba05db969e5de7c2fe8a7810cf816394d5eec8969c7e29aeb71d11d29baeaa",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "f20665c4f013f4ca1411e161c6abcc8a58071260339b2131aaff0f17886b07ec",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/commons-csv-1.10.0-SNAPSHOT.jar",
+          "sha256": "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/apache/commons-csv at 94711ebf25d79bd95df8a5e70885325660f94ddc: target/commons-csv-1.10.0-SNAPSHOT.jar"
+        }
+      ]
+    },
+    "fix": {
+      "revision": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+      "target": {
+        "class": "org.apache.commons.csv.CSVParser",
+        "method": "parse",
+        "descriptor": "(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+        "loadedFrom": "built/commons-csv-1.10.0-SNAPSHOT.jar",
+        "classSha256": "c4fc923e6f275f3af7dcbca28bdcb85422fd65c359d0080f7367fec93b6b4e2f",
+        "adapterCalls": [
+          "org.apache.commons.csv.CSVFormat$Builder#build()Lorg/apache/commons/csv/CSVFormat;",
+          "org.apache.commons.csv.CSVFormat$Builder#create()Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVFormat$Builder#setDelimiter(Ljava/lang/String;)Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVFormat$Builder#setQuote(C)Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVParser#close()V",
+          "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+          "org.apache.commons.csv.CSVParser#parse(Ljava/io/Reader;Lorg/apache/commons/csv/CSVFormat;)Lorg/apache/commons/csv/CSVParser;",
+          "org.apache.commons.csv.CSVRecord#get(I)Ljava/lang/String;",
+          "org.apache.commons.csv.CSVRecord#size()I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "4eba05db969e5de7c2fe8a7810cf816394d5eec8969c7e29aeb71d11d29baeaa",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "f20665c4f013f4ca1411e161c6abcc8a58071260339b2131aaff0f17886b07ec",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/commons-csv-1.10.0-SNAPSHOT.jar",
+          "sha256": "b71afe50e79e1df7e577206e92872c697e8c17a1101938739507251834132446",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/apache/commons-csv at c15a06eee95e227fbe5c61849dd12b7bf126016a: target/commons-csv-1.10.0-SNAPSHOT.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "a1dbe1a59e7c3412db451d3cb5dc65dae6e686051ea7e5bc5df919c819befcc3",
+  "receipt": "receipts/replay/20261122T064408Z-a488044e/result.json",
+  "preparedClaim": "29e624a8bc8c2d0a",
+  "firstBlocker": null,
+  "missing": [],
+  "endedAt": "2026-11-22T06:44:11.951529+00:00"
+}

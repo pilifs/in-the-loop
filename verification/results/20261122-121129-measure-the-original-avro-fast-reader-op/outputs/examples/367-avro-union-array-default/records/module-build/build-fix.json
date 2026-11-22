@@ -1,0 +1,325 @@
+{
+  "schema": "upstream-jar-build/v1",
+  "recipe": {
+    "repository": "https://github.com/apache/avro",
+    "commit": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+    "class": "org.apache.avro.io.FastReaderBuilder",
+    "build": {
+      "tool": "maven",
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-Dinvoker.skip=true",
+        "-f",
+        "lang/java/avro/pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "jdk": "21"
+    },
+    "parent": "974961d97a84d3601113d0f3cdc41db6580d1b6b"
+  },
+  "artifacts": [
+    {
+      "path": "built/avro-1.13.0-SNAPSHOT.jar",
+      "sha256": "e23ef3027f1ec643459d9cb1733e3c3d58a78e65849444067d45dfcd823048c3",
+      "role": "original",
+      "coordinates": null,
+      "origin": "built by maven from https://github.com/apache/avro at 892d6997dcb65627560b04bd76c5a3dd97666cdf: lang/java/avro/target/avro-1.13.0-SNAPSHOT.jar"
+    },
+    {
+      "path": "lib/com/fasterxml/jackson/core/jackson-core/2.21.3/jackson-core-2.21.3.jar",
+      "sha256": "baf8b739e9d9b93bcdb33f25046bfdb8dbd74c97de2a8698539fbe0c7eeac0bb",
+      "role": "dependency",
+      "coordinates": "com.fasterxml.jackson.core:jackson-core:2.21.3",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/com/fasterxml/jackson/core/jackson-databind/2.21.3/jackson-databind-2.21.3.jar",
+      "sha256": "f397563d8e67630c10cab8c2334ca0e55af832fa3ebde160a379c2c96d43bf25",
+      "role": "dependency",
+      "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.21.3",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar",
+      "sha256": "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
+      "role": "dependency",
+      "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.21",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar",
+      "sha256": "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
+      "role": "dependency",
+      "coordinates": "org.apache.commons:commons-compress:1.28.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/commons-codec/commons-codec/1.19.0/commons-codec-1.19.0.jar",
+      "sha256": "5c3881e4f556855e9c532927ee0c9dfde94cc66760d5805c031a59887070af5f",
+      "role": "dependency",
+      "coordinates": "commons-codec:commons-codec:1.19.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/commons-io/commons-io/2.20.0/commons-io-2.20.0.jar",
+      "sha256": "df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72",
+      "role": "dependency",
+      "coordinates": "commons-io:commons-io:2.20.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/apache/commons/commons-lang3/3.20.0/commons-lang3-3.20.0.jar",
+      "sha256": "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+      "role": "dependency",
+      "coordinates": "org.apache.commons:commons-lang3:3.20.0",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/xerial/snappy/snappy-java/1.1.10.8/snappy-java-1.1.10.8.jar",
+      "sha256": "50485d06037fea3d6e40c968386feeca6338cc9872e25549593ff3eb352cefcc",
+      "role": "dependency",
+      "coordinates": "org.xerial.snappy:snappy-java:1.1.10.8",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/tukaani/xz/1.12/xz-1.12.jar",
+      "sha256": "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+      "role": "dependency",
+      "coordinates": "org.tukaani:xz:1.12",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/com/github/luben/zstd-jni/1.5.7-8/zstd-jni-1.5.7-8.jar",
+      "sha256": "69c9ef4e2ec232fae8febfb3280bec567bdfb7406627174b1a3c163031e29367",
+      "role": "dependency",
+      "coordinates": "com.github.luben:zstd-jni:1.5.7-8",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    },
+    {
+      "path": "lib/org/slf4j/slf4j-api/2.0.17/slf4j-api-2.0.17.jar",
+      "sha256": "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832",
+      "role": "dependency",
+      "coordinates": "org.slf4j:slf4j-api:2.0.17",
+      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
+    }
+  ],
+  "build": {
+    "checkout": {
+      "commit": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+      "tree": "98810a003a26bc4a126d3908e781354466a4c2e1",
+      "parents": [
+        "974961d97a84d3601113d0f3cdc41db6580d1b6b"
+      ],
+      "fetchedFrom": "https://github.com/apache/avro",
+      "changedByBuild": []
+    },
+    "outputs": {
+      "original": "lang/java/avro/target/avro-1.13.0-SNAPSHOT.jar",
+      "jars": [
+        {
+          "path": "lang/java/avro/target/avro-1.13.0-SNAPSHOT.jar",
+          "sha256": "e23ef3027f1ec643459d9cb1733e3c3d58a78e65849444067d45dfcd823048c3",
+          "auxiliary": false
+        }
+      ],
+      "selectedClass": "org/apache/avro/io/FastReaderBuilder.class",
+      "selectedClassSha256": "b878e398a6881ccb11fa755d80e6385484896ea6d758d20656290606f784aa5c",
+      "sourceSha256": "987276935d28c44bf559ba644c85180f155462ca99143539b01f58c7f424de42"
+    },
+    "toolchain": {
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "declaredCompilers": {
+        "11": {
+          "feature": "11",
+          "version": "openjdk version \"11.0.33\" 2026-10-20",
+          "home": "/home/filip/.sdkman/candidates/java/11.0.33.0+10-tem",
+          "release": {
+            "JAVA_VERSION": "11.0.33",
+            "JAVA_RUNTIME_VERSION": "11.0.33+10",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-11.0.33+10",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "17": {
+          "feature": "17",
+          "version": "openjdk version \"17.0.21\" 2026-10-20",
+          "home": "/home/filip/.sdkman/candidates/java/17.0.21.0+9-tem",
+          "release": {
+            "JAVA_VERSION": "17.0.21",
+            "JAVA_RUNTIME_VERSION": "17.0.21+9",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-17.0.21+9",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "21": {
+          "feature": "21",
+          "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+          "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "release": {
+            "JAVA_VERSION": "21.0.13",
+            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+            "OS_ARCH": "x86_64"
+          }
+        }
+      }
+    },
+    "steps": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-N",
+          "-f",
+          "pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 6.61,
+        "logSha256": "41dd0462ab124556170717ac540251bf20c1f4ba0425d01ce1c1f31b11f68d48",
+        "errors": [],
+        "tail": [
+          "[INFO] --- install:3.1.4:install (default-install) @ avro-toplevel ---",
+          "[INFO] Installing /project/pom.xml to /work/repository/org/apache/avro/avro-toplevel/1.13.0-SNAPSHOT/avro-toplevel-1.13.0-SNAPSHOT.pom",
+          "[INFO] Saved Build to local file: /work/build-cache/v1/org.apache.avro/avro-toplevel/8d8bbc49a04f779f/local/buildinfo.xml",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  3.450 s",
+          "[INFO] Finished at: 2026-11-22T12:19:57Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-N",
+          "-f",
+          "lang/java/pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 9.55,
+        "logSha256": "ee82997a8e9e45992cacbbe9449ec720c7e6a73dacd27c84da37ebc5c9cbd965",
+        "errors": [],
+        "tail": [
+          "[INFO] Installing /project/lang/java/target/bom.xml to /work/repository/org/apache/avro/avro-parent/1.13.0-SNAPSHOT/avro-parent-1.13.0-SNAPSHOT-cyclonedx.xml",
+          "[INFO] Installing /project/lang/java/target/bom.json to /work/repository/org/apache/avro/avro-parent/1.13.0-SNAPSHOT/avro-parent-1.13.0-SNAPSHOT-cyclonedx.json",
+          "[INFO] Saved Build to local file: /work/build-cache/v1/org.apache.avro/avro-parent/b41a471e1b6f503f/local/buildinfo.xml",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  7.035 s",
+          "[INFO] Finished at: 2026-11-22T12:20:07Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-Dinvoker.skip=true",
+          "-f",
+          "lang/java/avro/pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 20.09,
+        "logSha256": "269e348aa100a4223fa8cfe47be2a4826ef7eb78365c07f2d8256b40be066b28",
+        "errors": [],
+        "tail": [
+          "[INFO] Installing org/apache/avro/avro/1.13.0-SNAPSHOT/avro-1.13.0-SNAPSHOT.jar",
+          "[INFO] Writing OBR metadata",
+          "[INFO] Saved Build to local file: /work/build-cache/v1/org.apache.avro/avro/54316088a1425bb1/local/buildinfo.xml",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  17.593 s",
+          "[INFO] Finished at: 2026-11-22T12:20:27Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-f",
+          "lang/java/avro/pom.xml",
+          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+          "-DincludeScope=runtime",
+          "-Dmdep.outputFile=/project/lang/java/avro/target/organic-runtime.txt"
+        ],
+        "exit": 0,
+        "seconds": 5.6,
+        "logSha256": "df915b06f5ad01fd92ab647b822aaa1a0eb52ce3c278d16ef4564484cc0a7220",
+        "errors": [],
+        "tail": [
+          "[INFO] ",
+          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ avro ---",
+          "[INFO] Wrote classpath file '/project/lang/java/avro/target/organic-runtime.txt'.",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  3.219 s",
+          "[INFO] Finished at: 2026-11-22T12:20:32Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ]
+  }
+}
