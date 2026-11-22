@@ -72,7 +72,8 @@ class Repo:
     def submit(self, title, *args):
         out = self.pipeline("submit", "--title", title, "--description", "A stub job, for testing the pipeline itself.",
                             "--capability", "test", *args).stdout
-        return out.split("verification/jobs/")[1].split(".json")[0]
+        # The job's id, wherever its file went: verification/jobs/ID.json, or under its day with layout.WRITE "shards".
+        return out.split("verification/jobs/")[1].split(".json")[0].rsplit("/", 1)[-1]
 
     def result(self, job_id, collected=True):
         base = self.dir / ("verification/results" if collected else "verification/.state/results")

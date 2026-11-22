@@ -141,9 +141,9 @@ The name-validation job returned **10/10 strict native establishments** on the f
 
 The Jackson follow-up starts at the unused parser returned by the frozen public factory. It captures the parser before the first feed, then executes the original token loop, locations and EOF. A capped probe on fixed selector 32 refused the parser's inherited floating-point fields on the earlier checker. Preserving their exact bits let the same probe establish the trace. The paired experiment will check all 32 partitions at each padding, the parent closing-offset law `5 + padding`, and the fixed offset 5. It will replay a native parent witness through the original factory with ordinary startup.
 
-[Managed Jackson parser comparison](../../verification/jobs/20261122-142310-check-every-jackson-feed-from-the-unused.json)
+The Jackson job proved the complete trace on all 128 schedules per revision after factory return. The parent closing offset was 5 plus the leading padding. The fixed offset was always 5. The native counterexample at selector 32 replayed with ordinary startup on the original parent. This brings ordinary public decisions to **9/20** (six establishments and three replayed refutations). The two Avro readers and three Jackson claims still lack ordinary native decisions. [Managed Jackson comparison](../../verification/results/20261122-142310-check-every-jackson-feed-from-the-unused/result.json) · [Results and deferrals](java-domain-proof-campaign-results.md)
 
-- Status: waiting on jobs 20261122-142310-check-every-jackson-feed-from-the-unused
+- Status: done
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e
 [pilot]: https://github.com/pilifs/in-the-loop/blob/ae92d881c61581011ed494c0ce62fcdfd291343e/llm-dlc/loops/domain-foundations-strategy-results.md

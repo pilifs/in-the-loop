@@ -520,6 +520,128 @@ def name_validation_evidence(cases, readers):
     return result
 
 
+READY_JOB = "20261122-142310-check-every-jackson-feed-from-the-unused"
+
+
+def ready_query(job, base, item, expected, root_digest):
+    from ready_parser import RUNTIME, START
+
+    path = job.output(base / item["stdout"])
+    raw, = read(path)
+    stated = raw["stated"]
+    target, guard, assertion = expected
+    require(sha(path) == item["stdoutSha256"] and sha(job.output(base / item["stderr"])) == item["stderrSha256"]
+            and raw["target"] == item["target"] == target and raw["assume"] == item["guard"] == guard
+            and raw["assert"] == item["assertion"] == assertion and item["observedRoots"] == [START]
+            and raw["verdict"] == item["verdict"] and raw["problem"] == item["blocker"]
+            and stated["checker"]["engine"] == "native" and stated["checker"]["fallback"] is None
+            and stated["gap_mode"] == "strict" and item["bounds"] == [512, 16384]
+            and stated["domain"]["parameters"] == [{"name": "code", "type": "int", "kind": "primitive", "null": False}]
+            and stated["observations"]["exceptions"] == "none may be thrown"
+            and stated["bounds"]["unwind"] == 512 and raw["search"]["max_array_length"] == 16384,
+            "different Jackson native scope or result")
+    assumptions = stated["assumptions"]
+    captured = [a for a in assumptions if a.get("id", "").startswith("observed-initializer:")]
+    if raw["verdict"] in ("verified", "violation"):
+        require(len(captured) == 1 and set(item["states"]) == {START}
+                and captured[0]["id"] == f"observed-initializer:{START}:{root_digest}:{item['states'][START]}"
+                and all(name in captured[0]["text"] for name in RUNTIME["captureObjects"])
+                and "JDK 21.0.13, Eclipse Adoptium" in captured[0]["text"]
+                and {a["text"] for a in assumptions if a not in captured} == {guard,
+                     "every JDK class is initialized already, its static initializer having run and thrown nothing"},
+                "Jackson result has an unbound parser, runtime or assumption")
+    if raw["verdict"] == "verified":
+        require(not item["exit"] and not raw["problem"] and stated["bounds"]["complete"]
+                and stated["vacuity"]["status"] == "non-vacuous", "incomplete or vacuous Jackson establishment")
+    if raw["verdict"] == "violation":
+        require(raw["counterexample"] and raw["counterexample"]["inputs"], "missing Jackson counterexample")
+    return {"entry": target, "guard": guard, "assertion": assertion, "verdict": raw["verdict"],
+            "firstBlocker": raw["problem"], "stateSha256": item["states"].get(START), "receipt": rel(path),
+            "seconds": item["seconds"], "checkerSeconds": raw["search"]["seconds"], "peakRssBytes": item["peakRssBytes"]}
+
+
+def ready_parser_evidence(case, foundations):
+    from ready_parser import FOLDER, SOURCE, RUNTIME, correspondence, qualify_schedule, queries, ready_source
+
+    if not layout.find_result(ROOT, READY_JOB):
+        return {"job": READY_JOB, "state": "pending"}
+    job = Job(READY_JOB)
+    result = {"job": READY_JOB, "source": job.record["sourceCommit"], "state": job.record["status"],
+              "result": rel(job.folder / "result.json"), "sides": {}}
+    folder = FOLDER.relative_to(ROOT)
+    table = FOLDER / "controls/table.json"
+    prior = foundations["nameValidation"]
+    for side in ("parent", "fix"):
+        base = folder / "records/ready-parser" / side
+        if base / "measurement.json" not in job.files:
+            continue
+        path = job.output(base / "measurement.json")
+        report = read(path)
+        row = case["obligations"]["offsets-" + side]
+        original = row["final"]
+        finite = read(ROOT / original["finite"]["receipt"])
+        cp = [a["sha256"] for a in finite["sides"][side]["classpath"]]
+        binding = report["binding"]
+        build = ROOT / binding["build"]
+        require(report["side"] == side and report["runtime"] == RUNTIME and binding["revision"] == row["revision"]
+                and sha(build) == binding["buildSha256"] == case["finalRun"]["builds"][side]
+                and cp[1:] == binding["orderedJars"] == [a["sha256"] for a in read(build)["artifacts"]]
+                and report["target"]["jar"] == cp[1] and report["target"]["classSha256"] == original["binding"]["subjectClassSha256"]
+                and report["jdkModules"] == foundations["readers"]["367"]["sides"][side]["jdkModules"]
+                and sha(table) == report["oracleSha256"] and sha(SOURCE) == report["originalAdapterSha256"]
+                and report["baseline"]["checker"] == prior["checkerSha256"] and report["baseline"]["source"] == prior["source"]
+                and report["followup"]["source"] == result["source"], "different historical Jackson or verifier inputs")
+        checker = report["followup"]["checker"]
+        require(len(checker) == 64 and checker != prior["checkerSha256"]
+                and result.setdefault("checkerSha256", checker) == checker, "different Jackson follow-up checkers")
+        tokens = job.output(base / "ReadyTokens.java")
+        dispatch = job.output(base / "WindowSchedules.jvm-bytecode")
+        require(tokens.read_text() == ready_source() and sha(tokens) == report["companionSourceSha256"]
+                and sha(dispatch) == report["classHashes"]["WindowSchedules"]
+                and qualify_schedule(dispatch.read_bytes()) == report["selectorCodeSha256"], "different parser or selector dispatch")
+        reference = ROOT / report["ordinary"]
+        historical = Job(JOBS["365"][1]).single(f"replay/*/records/control-{side}-jdk21.stdout")
+        require(sha(historical) == sha(reference) == report["ordinarySha256"], "different ordinary Jackson controls")
+        ordinary = [json.loads(line) for line in reference.read_text().splitlines()]
+        runs = report["physical"]
+        log = job.output(base / runs["stdout"])
+        require(not runs["exit"] and sha(log) == runs["stdoutSha256"], "different JVM parser correspondence")
+        counts = correspondence(log.read_text().splitlines(), ordinary, read(table)["cases"], side)
+        require(counts == report["counts"], "wrong schedule counts")
+        leg = result["sides"][side] = {"revision": binding["revision"], "measurement": rel(path), "physical": rel(log),
+                                       "counts": counts}
+        for stage in ("baseline", "followup"):
+            proofs = report[stage]["proofs"]
+            require(set(proofs) == set(queries(side)), "incomplete Jackson measurements")
+            leg[stage] = {k: ready_query(job, base, proofs[k], spec, report["classHashes"]["ReadyParser"])
+                          for k, spec in queries(side).items()}
+        if side == "parent" and leg["followup"]["padded"]["verdict"] == "violation":
+            source = ROOT / leg["followup"]["padded"]["receipt"]
+            candidate = read(job.output(base / "candidate.json"))
+            packet = report["originalWitness"]
+            replay_path = job.output(folder / packet["file"])
+            replay = read(replay_path)
+            value = replay["sides"]["parent"]
+            evidence = replay["finiteObservation"]
+            require(candidate["sourceReceiptSha256"] == sha(source) and packet["sha256"] == sha(replay_path)
+                    and candidate["inputs"] == read(source)[0]["counterexample"]["inputs"] == replay["inputs"]
+                    == [{"name": "code", "type": "int", "value": 32}]
+                    and packet["claimKey"] == replay["claimKey"] == original["claimKey"]
+                    and replay["by"] == "jvm" and replay["reproduced"] and replay["entry"] == row["entry"]
+                    and replay["observations"] == row["observations"] and replay["jdkRelease"] == finite["jdkRelease"]
+                    and set(replay["sides"]) == {"parent"} and value["entryClassSha256"] == original["binding"]["classSha256"]
+                    and value["classpath"] == cp and value["admitted"] and value["satisfies"] is False and value["values"] == [0, None]
+                    and evidence == {"id": 32, "input": ordinary[32]["input"], "field": "offsets",
+                                     "direct": {"parent": ordinary[32]["direct"]}, "tableSha256": sha(table)},
+                    "native candidate did not reproduce on the original Jackson factory")
+            leg["originalWitness"] = {"status": "refuted", "entry": row["entry"], "inputs": candidate["inputs"],
+                                      "nativeReceipt": rel(source), "ordinaryReplay": rel(replay_path),
+                                      "trace": ordinary[32]["direct"]["offsets"]["trace"]}
+    if result["state"] == "passed":
+        require(set(result["sides"]) == {"parent", "fix"}, "missing Jackson revision")
+    return result
+
+
 def compile_scorecard():
     result = {"schema": "java-domain-scorecard/v1", "planned": 20, "cases": {},
               "earlierPopulations": {"sixPRs": {"ordinary": [39, 46], "finite": [46, 46]},
@@ -580,6 +702,30 @@ def compile_scorecard():
                     and proof["bounds"] == [row["bounds"]["unwind"], row["bounds"]["maxArrayLength"]],
                     f"{number}/{name}: recorded-startup companion differs from the frozen public entry")
             row["recordedStartup"] = {k: proof[k] for k in ("verdict", "blocker", "observedRoots", "states", "receipt")}
+    ready = ready_parser_evidence(result["cases"]["365"], result["foundations"])
+    result["foundations"]["jacksonReadyParser"] = ready
+    ordinary = counts["final"].copy()
+    for side, evidence in ready.get("sides", {}).items():
+        rows = result["cases"]["365"]["obligations"]
+        grid = evidence["followup"]["grid"]
+        if grid["verdict"] == "verified":
+            for method in ("offsets", "tokens"):
+                rejects = side == "parent" and method == "offsets"
+                decision = evidence["followup"]["padded"] if rejects else grid
+                if rejects and (decision["verdict"] != "violation" or "originalWitness" not in evidence):
+                    continue
+                rows[method + "-" + side]["afterFactoryReturn"] = {
+                    "status": "refuted" if rejects else "established", "receipt": decision["receipt"],
+                    "stateSha256": decision["stateSha256"], "traceLawReceipt": grid["receipt"], "schedules": 128,
+                    "offsetLaw": "5 + padding" if side == "parent" else "5"}
+        if witness := evidence.get("originalWitness"):
+            row = rows["offsets-parent"]
+            require(row["final"]["status"] in ("unresolved", "refuted"), "Jackson witness contradicts a public establishment")
+            if row["final"]["status"] == "unresolved":
+                ordinary["unresolved"] -= 1
+                ordinary["refuted"] += 1
+            row["ordinaryFollowup"] = witness
+    counts["ordinaryIncludingFollowups"] = ordinary
     result["totals"] = counts
     return result
 
@@ -596,7 +742,7 @@ if __name__ == "__main__":
                 "public measures are still outstanding")
         extra = data["foundations"]
         require(extra["parquet"]["experimentStatus"] == "passed" and extra["selectorTransfer"]["state"] == "measured"
-                and extra["nameValidation"]["state"] == "passed"
+                and extra["nameValidation"]["state"] == "passed" and extra["jacksonReadyParser"]["state"] == "passed"
                 and extra["enumActions"]["state"] == "passed" and set(extra["readers"]) == {"364","367"}
                 and set(extra["inputSegmentation"]) == {"365","366"}
                 and all(leg["callSiteRows"] for reader in extra["readers"].values() for leg in reader["sides"].values())

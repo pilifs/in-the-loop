@@ -1764,6 +1764,40 @@
               "seconds": 6.4665,
               "receipt": "examples/365-jackson-async-token-offsets/records/final/finite/offsets-parent.json"
             }
+          },
+          "afterFactoryReturn": {
+            "status": "refuted",
+            "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-padded.stdout",
+            "stateSha256": "8b5ec9992415913ee3c681c86a003f20749129f9a13c70e8288c51f416445395",
+            "traceLawReceipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-grid.stdout",
+            "schedules": 128,
+            "offsetLaw": "5 + padding"
+          },
+          "ordinaryFollowup": {
+            "status": "refuted",
+            "entry": "campaign.AsyncTokens#offsets(I)I",
+            "inputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 32
+              }
+            ],
+            "nativeReceipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-padded.stdout",
+            "ordinaryReplay": "examples/365-jackson-async-token-offsets/receipts/offsets-parent/executions/20261122T142730Z-88266c9c/replay.json",
+            "trace": [
+              3,
+              1,
+              1,
+              9,
+              2,
+              5,
+              4,
+              6,
+              6,
+              3,
+              1
+            ]
           }
         },
         "offsets-fix": {
@@ -1917,6 +1951,14 @@
               "seconds": 5.8952,
               "receipt": "examples/365-jackson-async-token-offsets/records/final/finite/offsets-fix.json"
             }
+          },
+          "afterFactoryReturn": {
+            "status": "established",
+            "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-grid.stdout",
+            "stateSha256": "decc8fa2bed52d77e39cdef88772fcc51d78124bf5a24993c91c4c90aae69af4",
+            "traceLawReceipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-grid.stdout",
+            "schedules": 128,
+            "offsetLaw": "5"
           }
         },
         "tokens-parent": {
@@ -2070,6 +2112,14 @@
               "seconds": 3.6594,
               "receipt": "examples/365-jackson-async-token-offsets/records/final/finite/tokens-parent.json"
             }
+          },
+          "afterFactoryReturn": {
+            "status": "established",
+            "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-grid.stdout",
+            "stateSha256": "e1bd21278e264cb697c14bcc4572c8d901d915d7fc374e5535120a5b7b2afe89",
+            "traceLawReceipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-grid.stdout",
+            "schedules": 128,
+            "offsetLaw": "5 + padding"
           }
         },
         "tokens-fix": {
@@ -2223,6 +2273,14 @@
               "seconds": 3.4822,
               "receipt": "examples/365-jackson-async-token-offsets/records/final/finite/tokens-fix.json"
             }
+          },
+          "afterFactoryReturn": {
+            "status": "established",
+            "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-grid.stdout",
+            "stateSha256": "decc8fa2bed52d77e39cdef88772fcc51d78124bf5a24993c91c4c90aae69af4",
+            "traceLawReceipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-grid.stdout",
+            "schedules": 128,
+            "offsetLaw": "5"
           }
         }
       }
@@ -6235,6 +6293,165 @@
         "publicCalls": 32,
         "observedGets": 344
       }
+    },
+    "jacksonReadyParser": {
+      "job": "20261122-142310-check-every-jackson-feed-from-the-unused",
+      "source": "b5812de89d47ebb0491d24264f042569fb6b462d",
+      "state": "passed",
+      "result": "verification/results/20261122-142310-check-every-jackson-feed-from-the-unused/result.json",
+      "sides": {
+        "parent": {
+          "revision": "99f749d958a55013724571d825625e1032af9d4b",
+          "measurement": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/measurement.json",
+          "physical": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/physical.stdout",
+          "counts": {
+            "schedules": 128,
+            "matchingOffsets": 32,
+            "matchingTokensAndEof": 128
+          },
+          "baseline": {
+            "grid": {
+              "entry": "campaign.WindowSchedules#closing",
+              "guard": "code >= 0 && code < 128",
+              "assertion": "result == 5 + (code >> 5)",
+              "verdict": "unverifiable",
+              "firstBlocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
+              "stateSha256": "1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/baseline-grid.stdout",
+              "seconds": 1.05345,
+              "checkerSeconds": 1.027536234,
+              "peakRssBytes": 144105472
+            },
+            "padded": {
+              "entry": "campaign.ReadyTokens#offsets",
+              "guard": "code == 32",
+              "assertion": "result == 1",
+              "verdict": "unverifiable",
+              "firstBlocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
+              "stateSha256": "1363f25e0ce1f3dfcbff8391a37ca7a43463ca4774c960cf863fa6b6f0dc0760",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/baseline-padded.stdout",
+              "seconds": 1.014446,
+              "checkerSeconds": 1.002112732,
+              "peakRssBytes": 133951488
+            }
+          },
+          "followup": {
+            "grid": {
+              "entry": "campaign.WindowSchedules#closing",
+              "guard": "code >= 0 && code < 128",
+              "assertion": "result == 5 + (code >> 5)",
+              "verdict": "verified",
+              "firstBlocker": null,
+              "stateSha256": "e1bd21278e264cb697c14bcc4572c8d901d915d7fc374e5535120a5b7b2afe89",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-grid.stdout",
+              "seconds": 1.406243,
+              "checkerSeconds": 1.376068408,
+              "peakRssBytes": 132067328
+            },
+            "padded": {
+              "entry": "campaign.ReadyTokens#offsets",
+              "guard": "code == 32",
+              "assertion": "result == 1",
+              "verdict": "violation",
+              "firstBlocker": null,
+              "stateSha256": "8b5ec9992415913ee3c681c86a003f20749129f9a13c70e8288c51f416445395",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-padded.stdout",
+              "seconds": 19.728855,
+              "checkerSeconds": 19.543816056,
+              "peakRssBytes": 1637826560
+            }
+          },
+          "originalWitness": {
+            "status": "refuted",
+            "entry": "campaign.AsyncTokens#offsets(I)I",
+            "inputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 32
+              }
+            ],
+            "nativeReceipt": "examples/365-jackson-async-token-offsets/records/ready-parser/parent/followup-padded.stdout",
+            "ordinaryReplay": "examples/365-jackson-async-token-offsets/receipts/offsets-parent/executions/20261122T142730Z-88266c9c/replay.json",
+            "trace": [
+              3,
+              1,
+              1,
+              9,
+              2,
+              5,
+              4,
+              6,
+              6,
+              3,
+              1
+            ]
+          }
+        },
+        "fix": {
+          "revision": "596fd82955080ba7207b4adc54100781b5024a61",
+          "measurement": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/measurement.json",
+          "physical": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/physical.stdout",
+          "counts": {
+            "schedules": 128,
+            "matchingOffsets": 128,
+            "matchingTokensAndEof": 128
+          },
+          "baseline": {
+            "grid": {
+              "entry": "campaign.WindowSchedules#closing",
+              "guard": "code >= 0 && code < 128",
+              "assertion": "result == 5",
+              "verdict": "unverifiable",
+              "firstBlocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
+              "stateSha256": "cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/baseline-grid.stdout",
+              "seconds": 1.098778,
+              "checkerSeconds": 1.077107172,
+              "peakRssBytes": 145522688
+            },
+            "padded": {
+              "entry": "campaign.ReadyTokens#offsets",
+              "guard": "code == 32",
+              "assertion": "result == 1",
+              "verdict": "unverifiable",
+              "firstBlocker": "outside the fragment: the observed static field campaign.ReadyParser.INSTANCE holds an object of com.fasterxml.jackson.core.json.async.NonBlockingJsonParser. The snapshot supplies no referent to inspect (InvokeVirtual(13) in campaign.ReadyTokens.trace)",
+              "stateSha256": "cc083b24893675c23688b6aa71cf6e07bec202aa64caa0b2cecbc140966f97c9",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/baseline-padded.stdout",
+              "seconds": 1.068373,
+              "checkerSeconds": 1.055835176,
+              "peakRssBytes": 141799424
+            }
+          },
+          "followup": {
+            "grid": {
+              "entry": "campaign.WindowSchedules#closing",
+              "guard": "code >= 0 && code < 128",
+              "assertion": "result == 5",
+              "verdict": "verified",
+              "firstBlocker": null,
+              "stateSha256": "decc8fa2bed52d77e39cdef88772fcc51d78124bf5a24993c91c4c90aae69af4",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-grid.stdout",
+              "seconds": 1.342406,
+              "checkerSeconds": 1.311882245,
+              "peakRssBytes": 141299712
+            },
+            "padded": {
+              "entry": "campaign.ReadyTokens#offsets",
+              "guard": "code == 32",
+              "assertion": "result == 1",
+              "verdict": "verified",
+              "firstBlocker": null,
+              "stateSha256": "48c89c7ddc97891324823470f4d34f9090ef1a8138b69b090dd960bed381f90a",
+              "receipt": "examples/365-jackson-async-token-offsets/records/ready-parser/fix/followup-padded.stdout",
+              "seconds": 18.549696,
+              "checkerSeconds": 18.450627046,
+              "peakRssBytes": 1637011456
+            }
+          }
+        }
+      },
+      "checkerSha256": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1"
     }
   },
   "totals": {
@@ -6251,6 +6468,11 @@
     "finite": {
       "refuted": 5,
       "established": 15
+    },
+    "ordinaryIncludingFollowups": {
+      "refuted": 3,
+      "established": 6,
+      "unresolved": 11
     }
   }
 }
