@@ -1,0 +1,482 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-121129-measure-the-original-avro-fast-reader-op",
+  "title": "Measure the original Avro fast reader opening claims on bound JARs",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 2m29s, peak 1.1 GiB (estimated 5m00s, 4.0 GiB); 27 output file(s) changed",
+  "attention": [
+    "step 1 (Package unchanged Avro core and run both upstream parameters) was held back 8m29s by its 2-CPU quota in 2m17s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Check the frozen public obligations) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-121129-measure-the-original-avro-fast-reader-op.json",
+    "sha256": "95610016e8285bf2fa3547ed805f43131856cd384d2e269e6f258e81011a3482",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-121129-measure-the-original-avro-fast-reader-op",
+      "title": "Measure the original Avro fast reader opening claims on bound JARs",
+      "description": "The historical test already fails twice on the parent and passes twice on the fix. Skip the isolated Maven invoker's unrelated compatibility build, which tried to resolve a plugin outside the mirror. Package the original core and check fast binary decoding on both revisions.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-upstream-test"
+      ],
+      "links": {
+        "examples": [
+          "367"
+        ],
+        "jobs": [
+          "20261122-063655-qualify-367-original-artifacts-and-compl"
+        ]
+      },
+      "expected": "Both named regressions qualify, four finite results match their frozen outcomes, and every ordinary claim has an opening verifier receipt.",
+      "submitted": {
+        "at": "2026-11-22T12:11:29+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract",
+        "maven"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Package unchanged Avro core and run both upstream parameters",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/module-build",
+          "cwd": "."
+        },
+        {
+          "name": "Check the frozen public obligations",
+          "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening-bound --build module-build",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/367-avro-union-array-default/records/module-build",
+        "examples/367-avro-union-array-default/records/opening-bound"
+      ]
+    }
+  },
+  "sourceCommit": "513acfddbc9edc2d9eacf3798628db5a993da70a",
+  "startedAt": "2026-11-22T12:15:42+00:00",
+  "finishedAt": "2026-11-22T12:21:14+00:00",
+  "wallSeconds": 332.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 88963,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1131618304,
+    "wallSeconds": 149.8,
+    "cpuSeconds": 289.5,
+    "memoryOfEstimate": 0.26,
+    "durationOfEstimate": 0.5
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 172.04,
+      "cpuSeconds": 172.249,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2255863808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "920cff485a264d4c4d78062a50701050759ca90011d89a1ece217bba066d4b70",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-avro-fast-reader-op/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 51s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Package unchanged Avro core and run both upstream parameters",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/module-build",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 137.743,
+      "cpuSeconds": 269.64,
+      "cpuThrottledSeconds": 509.432,
+      "peakMemoryBytes": 1131618304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-package-unchanged-avro-core-an.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "3a1fc5a2f93bd2fb2f391fe02c5134a18aceba7ed344faa24788fff9d87642d0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "367 parent qualified",
+        "367 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the frozen public obligations",
+      "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening-bound --build module-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 12.03,
+      "cpuSeconds": 19.857,
+      "cpuThrottledSeconds": 1.332,
+      "peakMemoryBytes": 230842368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-frozen-public-obliga.log",
+        "lines": 10,
+        "bytes": 1038,
+        "sha256": "7e4895ba8a8bc1b39db489b9d82f359e9f6f0c7b5337b6d6b2cd85fd9d6a8960",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-avro-fast-reader-op/lib/benchmark/java-domain-proof/public_run.py\", line 121, in <module>",
+        "    run(args.example,args.stage,args.seconds,args.build)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-avro-fast-reader-op/lib/benchmark/java-domain-proof/public_run.py\", line 100, in run",
+        "    receipt[\"claims\"][task] = native(folder,task,argv,out, budget)",
+        "                              ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-avro-fast-reader-op/lib/benchmark/java-domain-proof/public_run.py\", line 48, in native",
+        "    raise ValueError(f\"{task}: expected exactly one fresh qualified workflow result, found {len(results)}\")",
+        "ValueError: union-parent: expected exactly one fresh qualified workflow result, found 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/367-avro-union-array-default/records/module-build/build-fix.json",
+      "change": "added",
+      "bytes": 13584,
+      "sha256": "aa84c288267bce6d7ae8294e3c7c2ee244447aeeda720eab3610c0ac615752d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/module-build/build-parent.json",
+      "change": "added",
+      "bytes": 13469,
+      "sha256": "d1249fbc5ae8fccbc31395c5cb3095c72778a08a050e2d7b1688e4f461717d27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/module-build/fix-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "change": "added",
+      "bytes": 2236,
+      "sha256": "67f8d933a3454904ea79a4cae0029c0a1c26ad7a74817aec4be57af2effc397b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/module-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 10781,
+      "sha256": "c0d367cac0f180c8467c9913449578aa21ab64f39a55184ecbf561043e757bbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/module-build/parent-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "change": "added",
+      "bytes": 2935,
+      "sha256": "621c253e26fdbfbe4e4692c78bc31b00745bf7b431901e3d32f162d317bdf18d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/module-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 13254,
+      "sha256": "d3e2b605d52f788a7f448dd6aaea9d0f77af110cc7021563c18a944a6854fe7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/finite/batch.json",
+      "change": "added",
+      "bytes": 2593,
+      "sha256": "24f42393c4fd1a7157fd75a5d6cf6dd6dbd48fea13323091c76310dc711ab19b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/finite/direct-fix.json",
+      "change": "added",
+      "bytes": 413,
+      "sha256": "268fc4dcbdfce23192789c75c42d958948ee31a5a0f3ff056f38949e0075e8dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/finite/direct-parent.json",
+      "change": "added",
+      "bytes": 425,
+      "sha256": "7dadc40b3fe6f24760eb119fa01984d8954d460f11eb5d760a9f9dc2859d5ea7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/finite/union-fix.json",
+      "change": "added",
+      "bytes": 412,
+      "sha256": "7696a2705e80a682a3c610d8ce4a9f4b887259fbd37dd0895da4f07003dc1f7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/finite/union-parent.json",
+      "change": "added",
+      "bytes": 420,
+      "sha256": "3e2470628e2f8c30a2efaa7c8d330b8c75cfdfdbe59770712f2190aab4f216dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/finite.log",
+      "change": "added",
+      "bytes": 406,
+      "sha256": "d58236faface89c38f7b5e167d186be53748e24b3bb0b0289b88e639207b4490",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "61e9376c5581310755dc53d1615c6137fb77ebf4d326516e5a9b9adaad35afee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/plan.json",
+      "change": "added",
+      "bytes": 8173,
+      "sha256": "2500cf0ec031cfe1733ae4c73bf4757e34a2fab86b3af0bc2a8a29382996756d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 1392,
+      "sha256": "02fde776bbe1e007dfd746df1d04c8741c784f63f31b8d45fc678fc2c52aa03a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 1528,
+      "sha256": "d93b14d9870fe7663e25dc00a785872fe40507b805a041a5b1eb1c04538bd67f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/controls.json",
+      "change": "added",
+      "bytes": 13006,
+      "sha256": "5921e23e70c8f50ab20c318b926276bbd134104be4003311bda19abedce9a0c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/execution.json",
+      "change": "added",
+      "bytes": 12304,
+      "sha256": "e6ce5d798343c93cd3c17c9d0168f3a70c9ecd300bcf78b1586aead79a9add74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/streams.json",
+      "change": "added",
+      "bytes": 1715,
+      "sha256": "21085ec374c3cdb8972e297c35c300f41252214bf09996a6547ea51ef9ad0d29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/summary.txt",
+      "change": "added",
+      "bytes": 647,
+      "sha256": "bd03b22d8e874670203d5216852feb6637b39cf32eaad17dd29eed6eefdadbeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/result.json",
+      "change": "added",
+      "bytes": 14555,
+      "sha256": "146e89a35de8d5cfd5034fd5110e1e88723f8ffdd329b0c5d96d173e5f9faf8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay/executions/20261122T122102Z-c6f2974b/attempt.json",
+      "change": "added",
+      "bytes": 17745,
+      "sha256": "5c0a9d087f1769e37ae02a1d7181cb77010761cc7403ddbda564ee5605b9c346",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/replay.log",
+      "change": "added",
+      "bytes": 249,
+      "sha256": "99d9ff844ff7111e8bbf7f4fb9994320f1186788bc8b8bffe55554affa55b81d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/run.json",
+      "change": "added",
+      "bytes": 955,
+      "sha256": "ceb4cd97606dd012e922e095025d61f0ff5575b8b05c2c329bb112a0e902d82c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/opening-bound/union-parent.log",
+      "change": "added",
+      "bytes": 307,
+      "sha256": "afb76d692776aa089919791b5f7ebbb9db18d3e6a3f2125a3d5d7f40a5eb86c1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T12:22:58+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/367-avro-union-array-default/records/module-build/build-fix.json",
+      "examples/367-avro-union-array-default/records/module-build/build-parent.json",
+      "examples/367-avro-union-array-default/records/module-build/fix-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "examples/367-avro-union-array-default/records/module-build/fix-upstream.json",
+      "examples/367-avro-union-array-default/records/module-build/parent-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "examples/367-avro-union-array-default/records/module-build/parent-upstream.json",
+      "examples/367-avro-union-array-default/records/opening-bound/finite/batch.json",
+      "examples/367-avro-union-array-default/records/opening-bound/finite/direct-fix.json",
+      "examples/367-avro-union-array-default/records/opening-bound/finite/direct-parent.json",
+      "examples/367-avro-union-array-default/records/opening-bound/finite/union-fix.json",
+      "examples/367-avro-union-array-default/records/opening-bound/finite/union-parent.json",
+      "examples/367-avro-union-array-default/records/opening-bound/finite.log",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/completion.json",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/plan.json",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-fix-jdk21.stderr",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-fix-jdk21.stdout",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-parent-jdk21.stderr",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/control-parent-jdk21.stdout",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/controls.json",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/execution.json",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/streams.json",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/records/summary.txt",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/20261122T122102Z-c6f2974b/result.json",
+      "examples/367-avro-union-array-default/records/opening-bound/replay/executions/20261122T122102Z-c6f2974b/attempt.json",
+      "examples/367-avro-union-array-default/records/opening-bound/replay.log",
+      "examples/367-avro-union-array-default/records/opening-bound/run.json",
+      "examples/367-avro-union-array-default/records/opening-bound/union-parent.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "9d1e2762d625d1e742068118a5ccfd929be10885",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9d1e2762d625d1e742068118a5ccfd929be10885/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T122114Z-614702b1c0ee8bf7",
+      "outputs": "20261122T122114Z-6388735059a60c29",
+      "diff": "20261122T122114Z-659084c0e6ec71fe",
+      "workdir": "20261122T122118Z-484317f96c8878de"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-121129-measure-the-original-avro-fast-reader-op"
+}
