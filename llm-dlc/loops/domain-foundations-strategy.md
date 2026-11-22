@@ -2,6 +2,8 @@
 
 **Feature strategy and first investigation · 21 November 2026 · pilifs/in-the-loop**
 
+The completed pilot includes the original-classpath proofs, receiver rescore and measured cost of reuse. [Pilot report](domain-foundations-strategy-results.md) · [Recountable scorecard](../../verification/domain-foundations/results.json)
+
 After the queued plumbing and `lib` architecture work, return to features with **Avro byte conversions**. Use #3878 to establish which facts about ordinary startup, object construction and buffer behavior the checker can prove once. Then give those facts to a different feature, Avro #729, and measure how much work its proof still requires. Use JavaParser to test whether the startup technique travels across domains. Treat receiver construction as a separate feature opportunity.
 
 For each subsequent domain, start with an actual change and name a second consumer. Trace backward from their public observations, find the shared construction or semantics, and prove just the part both need. Give the next agent a runnable entry, an independently checked fact and an example of when it stops applying.

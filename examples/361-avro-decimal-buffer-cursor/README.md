@@ -5,3 +5,5 @@ Avro #729 changes how a decimal conversion reads bytes from a caller’s buffer.
 The independent oracle decodes each window in Python. The driver reports the original Java results, including the exception from a second read on the parent. [Frozen input and result table](controls/table.json) · [Verification tasks](target.json)
 
 The original JVM reproduced both parent failures without early initialization. Under the registered two-class startup the native checker also establishes both fixed properties. [Native proofs and original witnesses](../../verification/results/20261122-001142-prove-avro-729-decimals-and-replay-its-o/result.json) · [Finite and ordinary-startup results](../../verification/results/20261122-001142-confirm-the-ordinary-avro-729-native-and/result.json)
+
+The pilot records setup, proof, validation time and the heap-buffer fact reused from the earlier Avro converter. [Domain foundations pilot](../../llm-dlc/loops/domain-foundations-strategy-results.md)

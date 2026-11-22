@@ -1,0 +1,740 @@
+{
+  "task": "nonempty-parent-node-startup",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e13c1ac9ae92b3221196a954311b8ac3f139ec2a/jvmcontract",
+      "prove",
+      "organic.TreeOrder#postorder(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/javaparser-core-3.26.2-SNAPSHOT.jar",
+      "--assume",
+      "code >= 1 && code < 2",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--observed-initializer",
+      "com.github.javaparser.ast.Node",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 2.519,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "b61cd17e7c11b6011389677ec9581091ae3f71b6d4521efca67682f66a967cb8",
+      "commit": "c5ddadb5389144713057cafbe97552157a34a6a0",
+      "libTree": "e13c1ac9ae92b3221196a954311b8ac3f139ec2a",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The nonempty package tree preserves the original postorder identity sequence. Its original receiver and direct outcome are indexed in controls/table.json.",
+        "method": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+        "revisions": {
+          "parent": {
+            "commit": "e0eb16b8870fc05c03ab794e502dd76f97422e26",
+            "loadedFrom": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+            "classSha256": "f32a7828ec7e1bdecbf5a0f8d5c18f2b14de26e6720d17940c97c569846f3b5b",
+            "origin": "built by maven from https://github.com/javaparser/javaparser at e0eb16b8870fc05c03ab794e502dd76f97422e26: javaparser-core/target/javaparser-core-3.26.2-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "nodeType",
+                "traversal"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "organic.TreeOrder#postorder(I)I",
+          "mapping": "The nonempty package tree preserves the original postorder identity sequence. Its original receiver and direct outcome are indexed in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f",
+            "role": "adapter"
+          },
+          {
+            "path": "built/javaparser-core-3.26.2-SNAPSHOT.jar",
+            "sha256": "cbe961009b6fafe13085b895a486660a470485ac34316043e20df41188f446a8",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "organic.TreeOrder#postorder(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "organic.TreeOrder#postorder(I)I",
+          "classSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+          "subjectClassSha256": "f32a7828ec7e1bdecbf5a0f8d5c18f2b14de26e6720d17940c97c569846f3b5b",
+          "initializerClasses": {
+            "com.github.javaparser.ast.Node": "f32a7828ec7e1bdecbf5a0f8d5c18f2b14de26e6720d17940c97c569846f3b5b"
+          }
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "com.github.javaparser.ast.Node#findAll(Ljava/lang/Class;Lcom/github/javaparser/ast/Node$TreeTraversal;)Ljava/util/List;",
+        "checkedEntry": "organic.TreeOrder#postorder(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 1 && code < 2"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "observedInitializers",
+            "flag": "--observed-initializer",
+            "value": "com.github.javaparser.ast.Node"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "96"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "64"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "requiredStatementEvidence": {
+            "jdk": "21.0.13"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "observedInitializerStates": {
+          "com.github.javaparser.ast.Node": "a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+        },
+        "correspondence": {
+          "entry": "organic.TreeOrder#postorder(I)I",
+          "mapping": "The nonempty package tree preserves the original postorder identity sequence. Its original receiver and direct outcome are indexed in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2
+        }
+      },
+      "commits": {
+        "parent": "e0eb16b8870fc05c03ab794e502dd76f97422e26"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e13c1ac9ae92b3221196a954311b8ac3f139ec2a/jvmcontract",
+            "gaps",
+            "--target",
+            "organic.TreeOrder#postorder(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/javaparser-core-3.26.2-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.064,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.ArrayIndexOutOfBoundsException.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ArrayIndexOutOfBoundsException.<init>(int)",
+              "sites": [
+                "java.util.Vector.get:750",
+                "java.util.Vector.removeElementAt:553"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.AssertionError.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.AssertionError.<init>(java.lang.Object)",
+              "sites": [
+                "com.github.javaparser.utils.Utils.assertNonEmpty:52",
+                "com.github.javaparser.utils.Utils.assertNotNull:45"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.ArrayList.<init>(int)",
+              "sites": [
+                "com.github.javaparser.ast.Node.<init>:168",
+                "com.github.javaparser.ast.Node.<init>:171",
+                "com.github.javaparser.ast.Node.<init>:180",
+                "com.github.javaparser.ast.NodeList.<init>:50"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.Collections$UnmodifiableList$1.<init>(Ljava/util/Collections$UnmodifiableList;I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.Collections$UnmodifiableList$1.<init>(java.util.Collections$UnmodifiableList, int)",
+              "sites": [
+                "java.util.Collections$UnmodifiableList.listIterator:1530"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>(Ljava/util/Collection;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>(java.util.Collection)",
+              "sites": [
+                "com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.<init>:130"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.LinkedList.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.LinkedList.<init>()",
+              "sites": [
+                "com.github.javaparser.ast.Node$BreadthFirstIterator.<init>:1031"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.Vector$Itr.<init>(Ljava/util/Vector;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.Vector$Itr.<init>(java.util.Vector)",
+              "sites": [
+                "java.util.Vector.iterator:1229"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.Vector$ListItr.<init>(Ljava/util/Vector;I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.Vector$ListItr.<init>(java.util.Vector, int)",
+              "sites": [
+                "java.util.Vector.listIterator:1218"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.ArrayList.forEach(Ljava/util/function/Consumer;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.ArrayList.forEach(java.util.function.Consumer)",
+              "sites": [
+                "com.github.javaparser.ast.Node.notifyPropertyChange:650",
+                "com.github.javaparser.ast.Node.setParentNode:441"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.ArrayList.trimToSize()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.ArrayList.trimToSize()",
+              "sites": [
+                "com.github.javaparser.ast.Node.setParentNode:450"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Collection.forEach(Ljava/util/function/Consumer;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Collection.forEach(java.util.function.Consumer)",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection.forEach:1117"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.List.forEach(Ljava/util/function/Consumer;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.List.forEach(java.util.function.Consumer)",
+              "sites": [
+                "com.github.javaparser.ast.NodeList.forEach:288",
+                "com.github.javaparser.ast.NodeList.notifyElementAdded:487"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.function.Consumer.accept(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.function.Consumer.accept(java.lang.Object)",
+              "sites": [
+                "com.github.javaparser.ast.Node.walk:893",
+                "java.util.Arrays$ArrayList.forEach:4305",
+                "java.util.Vector.forEach:1359"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Iterable.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Iterable.iterator()",
+              "sites": [
+                "com.github.javaparser.ast.Node.walk:892"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.String.replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.String.replace(java.lang.CharSequence, java.lang.CharSequence)",
+              "sites": [
+                "com.github.javaparser.utils.LineSeparator.<clinit>:52"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Collection.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Collection.iterator()",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection$1.<init>:1076"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "com.github.javaparser.ast.Node.walk:892",
+                "com.github.javaparser.ast.Node$DirectChildrenIterator.next:1068",
+                "com.github.javaparser.ast.NodeList.setAsParentNodeOf:549",
+                "java.util.Collections$UnmodifiableCollection$1.next:1079"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.getClass()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.getClass()",
+              "sites": [
+                "java.util.Collections.unmodifiableList:1474"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.iterator()",
+              "sites": [
+                "com.github.javaparser.ast.Node$DirectChildrenIterator.<init>:1058",
+                "com.github.javaparser.ast.NodeList.setAsParentNodeOf:549"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.listIterator()Ljava/util/ListIterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.listIterator()",
+              "sites": [
+                "com.github.javaparser.ast.NodeList$NodeListIterator.<init>:574"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.ListIterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.ListIterator.next()",
+              "sites": [
+                "com.github.javaparser.ast.NodeList$NodeListIterator.next:588"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Queue.remove()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Queue.remove()",
+              "sites": [
+                "com.github.javaparser.ast.Node$BreadthFirstIterator.next:1044"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Character.charValue()C@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Character.charValue()",
+              "sites": [
+                "com.github.javaparser.printer.configuration.Indentation.format:143"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.ArrayList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.ArrayList.add(java.lang.Object)",
+              "sites": [
+                "com.github.javaparser.ast.Node.setParentNode:455"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.ArrayList.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.ArrayList.size()",
+              "sites": [
+                "com.github.javaparser.ast.Node.setParentNode:445"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.isEmpty()",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection.isEmpty:1067"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.size()",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection.size:1066"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "com.github.javaparser.ast.Node.walk:892",
+                "com.github.javaparser.ast.Node$DirectChildrenIterator.hasNext:1063",
+                "com.github.javaparser.ast.NodeList.setAsParentNodeOf:549",
+                "java.util.Collections$UnmodifiableCollection$1.hasNext:1078"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "com.github.javaparser.ast.Node.lambda$findAll$13:931",
+                "com.github.javaparser.ast.NodeList.add:74"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.isEmpty()",
+              "sites": [
+                "com.github.javaparser.ast.Node$PostOrderIterator.fillStackToLeaf:1148",
+                "com.github.javaparser.ast.NodeList.isEmpty:165"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.size()",
+              "sites": [
+                "com.github.javaparser.ast.Node$PostOrderIterator.next:1166",
+                "com.github.javaparser.ast.Node$PreOrderIterator.next:1118",
+                "com.github.javaparser.ast.NodeList.add:72",
+                "com.github.javaparser.ast.NodeList.size:126",
+                "organic.TreeOrder.find:25"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.ListIterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.ListIterator.hasNext()",
+              "sites": [
+                "com.github.javaparser.ast.NodeList$NodeListIterator.hasNext:583"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Queue.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Queue.add(java.lang.Object)",
+              "sites": [
+                "com.github.javaparser.ast.Node$BreadthFirstIterator.<init>:1034"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Queue.addAll(Ljava/util/Collection;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Queue.addAll(java.util.Collection)",
+              "sites": [
+                "com.github.javaparser.ast.Node$BreadthFirstIterator.next:1045"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Queue.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Queue.isEmpty()",
+              "sites": [
+                "com.github.javaparser.ast.Node$BreadthFirstIterator.hasNext:1039"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.remove(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.remove(java.lang.Object)",
+              "sites": [
+                "com.github.javaparser.printer.configuration.DefaultPrinterConfiguration.removeOption:161"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+              "sites": [
+                "com.github.javaparser.printer.configuration.DefaultConfigurationOption.value:65"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 4.0897,
+        "peakRssBytes": 129597440,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "organic.TreeOrder#postorder(int)",
+        "domain": "code: int",
+        "assume": "code >= 1 && code < 2",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 2.5 s; loops unwound 96 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ organic.TreeOrder#postorder(int) satisfies `result == 1` on every input where code >= 1 && code < 2 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 2.5 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: postorder(code=1) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 2.493061115,
+          "properties": 1,
+          "unwind": 96,
+          "max_array_length": 64,
+          "stage": null,
+          "native": {
+            "paths": 3,
+            "merges": 0,
+            "solver_calls": 7,
+            "solving_seconds": 0.00011196,
+            "gates_evaluated": 183,
+            "evaluating_seconds": 8.897e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 245,
+            "clauses": 698,
+            "seconds": 0.023651688,
+            "loading_seconds": 0.004979962,
+            "decoding_seconds": 0.001263958,
+            "encoding_seconds": 0.000500686,
+            "witness_seconds": 0.0,
+            "assumed": [
+              "the class initializer of com.github.javaparser.ast.Node was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 f32a7828ec7e), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; it initialized com.github.javaparser.HasParentNode, com.github.javaparser.ast.nodeTypes.NodeWithRange, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration, com.github.javaparser.printer.configuration.DefaultConfigurationOption, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration$ConfigOption, com.github.javaparser.utils.LineSeparator, com.github.javaparser.printer.configuration.Indentation, com.github.javaparser.printer.configuration.Indentation$IndentType, com.github.javaparser.utils.Utils, com.github.javaparser.ast.DataKey, com.github.javaparser.ast.Node$1, com.github.javaparser.ast.Node$2, com.github.javaparser.ast.Node$3, com.github.javaparser.ast.Node$4 besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+            ]
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 57.533,
+              "seconds": 0.024,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.005,
+                "lowering": 0.001,
+                "symbolic": 0.017,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 245,
+                "clauses": 698
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 57.507,
+              "seconds": 0.006,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 279,
+                "clauses": 830
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 2.511,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.03,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 2.48
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 1 && code < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "the class initializer of com.github.javaparser.ast.Node was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 f32a7828ec7e), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; it initialized com.github.javaparser.HasParentNode, com.github.javaparser.ast.nodeTypes.NodeWithRange, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration, com.github.javaparser.printer.configuration.DefaultConfigurationOption, com.github.javaparser.printer.configuration.DefaultPrinterConfiguration$ConfigOption, com.github.javaparser.utils.LineSeparator, com.github.javaparser.printer.configuration.Indentation, com.github.javaparser.printer.configuration.Indentation$IndentType, com.github.javaparser.utils.Utils, com.github.javaparser.ast.DataKey, com.github.javaparser.ast.Node$1, com.github.javaparser.ast.Node$2, com.github.javaparser.ast.Node$3, com.github.javaparser.ast.Node$4 besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+              "basis": "engine",
+              "id": "observed-initializer:com.github.javaparser.ast.Node:f32a7828ec7e1bdecbf5a0f8d5c18f2b14de26e6720d17940c97c569846f3b5b:a585617aa976e2b6bab534a3cd15fe863918c98d6c24af12dd747b9b6f7f4a32"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 96,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found postorder(code=1).",
+            "witness": "postorder(code=1)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-003911-confirm-javaparser-ordinary-and-observed/.build-py/examples-h8jejtx8/targets/360/nonempty-parent-node-startup/20261122T004247Z-16dc2791",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-003911-confirm-javaparser-ordinary-and-observed/.build-py/examples-h8jejtx8/targets/360/nonempty-parent-node-startup/20261122T004247Z-16dc2791"
+  }
+}
