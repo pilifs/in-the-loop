@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "367",
+  "title": "A fast Avro reader materializes the array member of a union default",
+  "summary": "The fast binary reader returns a record with an empty array for its reader-only union field and retains each writer marker when present.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "deserialization",
+    "exceptions",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Avro",
+    "file": "lang/java/avro/src/main/java/org/apache/avro/io/FastReaderBuilder.java",
+    "symbol": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The fast binary reader returns a record with an empty array for its reader-only union field and retains each writer marker when present."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims, original build pending",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/avro",
+    "url": "https://github.com/apache/avro/pull/3730"
+  },
+  "notes": [
+    "Both properties start at ordinary application startup on Temurin 21. The original module is built separately on each revision. The public driver records the full observations for the independent finite oracle."
+  ]
+}

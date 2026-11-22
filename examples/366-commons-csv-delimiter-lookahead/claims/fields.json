@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "fields",
+  "statement": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows.",
+  "assume": "code >= 0 && code < 14",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 128,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.DelimitedFields#fields(I)I",
+    "mapping": "Each multicharacter fixture parses as exactly one record with the independent field vector, including empty and quoted fields. Iterator exhaustion follows. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 14
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {"fields": {"entry": "campaign.DelimitedFields#fields(I)I", "encoding": "matches"}, "prefixes": {"entry": "campaign.DelimitedFields#prefixes(I)I", "encoding": "matches"}},
+  "cases": [
+    {"id": 0, "input": {"delimiter": "||", "source": "a||b||c", "controlDelimiter": "||", "controlSource": "a|b"}, "expected": {"fields": [["a", "b", "c"]], "prefixes": [["a|b"]]}},
+    {"id": 1, "input": {"delimiter": "||", "source": "a||||b", "controlDelimiter": "|||", "controlSource": "a|b"}, "expected": {"fields": [["a", "", "b"]], "prefixes": [["a|b"]]}},
+    {"id": 2, "input": {"delimiter": "||", "source": "a||\"b||c\"||d", "controlDelimiter": "|||", "controlSource": "a||b"}, "expected": {"fields": [["a", "b||c", "d"]], "prefixes": [["a||b"]]}},
+    {"id": 3, "input": {"delimiter": "||", "source": "a||b||", "controlDelimiter": "|~|", "controlSource": "a|b"}, "expected": {"fields": [["a", "b", ""]], "prefixes": [["a|b"]]}},
+    {"id": 4, "input": {"delimiter": "|||", "source": "a|||b|||c", "controlDelimiter": "|~|", "controlSource": "a|~b"}, "expected": {"fields": [["a", "b", "c"]], "prefixes": [["a|~b"]]}},
+    {"id": 5, "input": {"delimiter": "|||", "source": "a||||||b", "controlDelimiter": ",", "controlSource": "a,b,"}, "expected": {"fields": [["a", "", "b"]], "prefixes": [["a", "b", ""]]}},
+    {"id": 6, "input": {"delimiter": "|||", "source": "a|||\"b|||c\"|||d", "controlDelimiter": ",", "controlSource": "a,\"b,c\""}, "expected": {"fields": [["a", "b|||c", "d"]], "prefixes": [["a", "b,c"]]}},
+    {"id": 7, "input": {"delimiter": "|||", "source": "a|||b|||", "controlDelimiter": "||", "controlSource": "a|b"}, "expected": {"fields": [["a", "b", ""]], "prefixes": [["a|b"]]}},
+    {"id": 8, "input": {"delimiter": "|~|", "source": "a|~|b|~|c", "controlDelimiter": "|||", "controlSource": "a|b"}, "expected": {"fields": [["a", "b", "c"]], "prefixes": [["a|b"]]}},
+    {"id": 9, "input": {"delimiter": "|~|", "source": "a|~||~|b", "controlDelimiter": "|||", "controlSource": "a||b"}, "expected": {"fields": [["a", "", "b"]], "prefixes": [["a||b"]]}},
+    {"id": 10, "input": {"delimiter": "|~|", "source": "a|~|\"b|~|c\"|~|d", "controlDelimiter": "|~|", "controlSource": "a|b"}, "expected": {"fields": [["a", "b|~|c", "d"]], "prefixes": [["a|b"]]}},
+    {"id": 11, "input": {"delimiter": "|~|", "source": "a|~|b|~|", "controlDelimiter": "|~|", "controlSource": "a|~b"}, "expected": {"fields": [["a", "b", ""]], "prefixes": [["a|~b"]]}},
+    {"id": 12, "input": {"delimiter": "||", "source": "a||b||c||d||||f", "controlDelimiter": ",", "controlSource": "a,b,"}, "expected": {"fields": [["a", "b", "c", "d", "", "f"]], "prefixes": [["a", "b", ""]]}},
+    {"id": 13, "input": {"delimiter": "||", "source": "a||\"b||c\"||d||||f", "controlDelimiter": ",", "controlSource": "a,\"b,c\""}, "expected": {"fields": [["a", "b||c", "d", "", "f"]], "prefixes": [["a", "b,c"]]}}
+  ]
+}

@@ -111,6 +111,8 @@ Work on independent examples while jobs run. When the remaining work depends on 
 
 ## Progress
 
+Examples 363–367 freeze all twenty ordinary public claims on the execution head. The independent grids cover 64 Parquet inputs, four enum schema/input pairs, 128 Jackson schedules, fourteen CSV fixtures and four evolved Avro records. Each preservation property runs on both original revisions. [Opening verifier fingerprint](../../lib/benchmark/java-domain-proof/opening.json) · [Original build pins](../../lib/benchmark/java-domain-proof/cases.json)
+
 - Status: working
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e

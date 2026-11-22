@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "fresh",
+  "statement": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there.",
+  "assume": "code >= 0 && code < 64",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 2048
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.NestedBinary#fresh(I)I",
+    "mapping": "After the last child view is consumed, a fresh lookup starts at the original position, contains exactly the last payload, and exhausts there. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 64
+  }
+}

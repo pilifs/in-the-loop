@@ -1,0 +1,160 @@
+{
+  "cases": {
+    "363": {
+      "folder": "363-parquet-nested-binary",
+      "repository": "https://github.com/apache/parquet-java",
+      "pullRequest": 3333,
+      "parent": "dfc025e17e21a326addaf0e43c493e085cbac8f4",
+      "fix": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+      "reactorPom": "pom.xml",
+      "module": "parquet-variant",
+      "testModule": "parquet-variant",
+      "productionClass": "org.apache.parquet.variant.VariantUtil",
+      "productionSource": "parquet-variant/src/main/java/org/apache/parquet/variant/VariantUtil.java",
+      "tests": {
+        "TestVariantObjectBuilder#testMixedBinaryBuilder": "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java"
+      },
+      "qualifyShadedClass": true,
+      "packageTestJars": true,
+      "testModuleOnly": true,
+      "mavenProperties": [
+        "-Dthrift.executable=/work/tools/thrift"
+      ],
+      "buildTool": {
+        "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
+        "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
+        "member": "usr/bin/thrift",
+        "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
+      }
+    },
+    "364": {
+      "folder": "364-avro-enum-namespace",
+      "repository": "https://github.com/apache/avro",
+      "pullRequest": 1381,
+      "parent": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+      "fix": "c35add7b29b5fab9229d79927a74f327bd56fa70",
+      "reactorPom": "pom.xml",
+      "module": "lang/java/avro",
+      "testModule": "lang/java/avro",
+      "productionClass": "org.apache.avro.Resolver",
+      "productionSource": "lang/java/avro/src/main/java/org/apache/avro/Resolver.java",
+      "tests": {
+        "TestResolvingGrammarGenerator#testDifferingEnumNamespaces": "lang/java/avro/src/test/java/org/apache/avro/io/parsing/TestResolvingGrammarGenerator.java"
+      },
+      "prerequisitePoms": [
+        "pom.xml",
+        "lang/java/pom.xml"
+      ],
+      "testPrerequisitePoms": [
+        "pom.xml",
+        "lang/java/pom.xml"
+      ],
+      "buildJdk": "11",
+      "testFixtures": [
+        "lang/java/avro/src/test/java/org/apache/avro/TestSchemas.java"
+      ],
+      "testParameters": {
+        "TestResolvingGrammarGenerator#testDifferingEnumNamespaces": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14
+        ]
+      }
+    },
+    "365": {
+      "folder": "365-jackson-async-token-offsets",
+      "repository": "https://github.com/FasterXML/jackson-core",
+      "pullRequest": 1415,
+      "parent": "99f749d958a55013724571d825625e1032af9d4b",
+      "fix": "596fd82955080ba7207b4adc54100781b5024a61",
+      "reactorPom": "pom.xml",
+      "module": ".",
+      "testModule": ".",
+      "productionClass": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase",
+      "productionSource": "src/main/java/com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.java",
+      "tests": {
+        "AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset": "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java",
+        "AsyncLocation1412Test#feedByteByByteFromNonZeroOffset": "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java",
+        "AsyncLocation1412Test#feedByteByByteFromOffsetZero": "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java"
+      },
+      "parentControls": [
+        "AsyncLocation1412Test#feedByteByByteFromOffsetZero"
+      ],
+      "qualifyShadedClass": true,
+      "buildParents": [
+        {
+          "repository": "https://github.com/FasterXML/jackson-parent",
+          "commit": "4c3047abc2c9701bee527cc13773c4f1313cb942",
+          "poms": [
+            "pom.xml"
+          ]
+        },
+        {
+          "repository": "https://github.com/FasterXML/jackson-bom",
+          "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
+          "poms": [
+            "pom.xml",
+            "base/pom.xml"
+          ]
+        }
+      ]
+    },
+    "366": {
+      "folder": "366-commons-csv-delimiter-lookahead",
+      "repository": "https://github.com/apache/commons-csv",
+      "pullRequest": 218,
+      "parent": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+      "fix": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+      "reactorPom": "pom.xml",
+      "module": ".",
+      "testModule": ".",
+      "productionClass": "org.apache.commons.csv.Lexer",
+      "productionSource": "src/main/java/org/apache/commons/csv/Lexer.java",
+      "tests": {
+        "JiraCsv288Test#testParseWithDoublePipeDelimiter": "src/test/java/org/apache/commons/csv/issues/JiraCsv288Test.java",
+        "JiraCsv288Test#testParseWithDoublePipeDelimiterQuoted": "src/test/java/org/apache/commons/csv/issues/JiraCsv288Test.java"
+      }
+    },
+    "367": {
+      "folder": "367-avro-union-array-default",
+      "repository": "https://github.com/apache/avro",
+      "pullRequest": 3730,
+      "parent": "974961d97a84d3601113d0f3cdc41db6580d1b6b",
+      "fix": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+      "reactorPom": "pom.xml",
+      "module": "lang/java/avro",
+      "testModule": "lang/java/avro",
+      "productionClass": "org.apache.avro.io.FastReaderBuilder",
+      "productionSource": "lang/java/avro/src/main/java/org/apache/avro/io/FastReaderBuilder.java",
+      "tests": {
+        "TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied": "lang/java/avro/src/test/java/org/apache/avro/TestReadingWritingDataInEvolvedSchemas.java"
+      },
+      "prerequisitePoms": [
+        "pom.xml",
+        "lang/java/pom.xml"
+      ],
+      "testPrerequisitePoms": [
+        "pom.xml",
+        "lang/java/pom.xml"
+      ],
+      "testParameters": {
+        "TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied": [
+          1,
+          2
+        ]
+      }
+    }
+  }
+}

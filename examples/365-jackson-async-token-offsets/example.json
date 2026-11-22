@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "365",
+  "title": "Logical token locations across nonblocking array feeds",
+  "summary": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "deserialization",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Jackson Core",
+    "file": "src/main/java/com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.java",
+    "symbol": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase#nextToken()Lcom/fasterxml/jackson/core/JsonToken;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public claims, original build pending",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-core",
+    "url": "https://github.com/FasterXML/jackson-core/pull/1415"
+  },
+  "notes": [
+    "Both properties start at ordinary application startup on Temurin 21. The original module is built separately on each revision. The public driver records the full observations for the independent finite oracle."
+  ]
+}

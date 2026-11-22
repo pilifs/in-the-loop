@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "offsets",
+  "statement": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference.",
+  "assume": "code >= 0 && code < 128",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 512,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.AsyncTokens#offsets(I)I",
+    "mapping": "All 128 padded feed schedules emit START_ARRAY at (1,1), VALUE_TRUE at (2,5), and END_ARRAY at (5,6), matching the unpadded reference. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 128
+  }
+}

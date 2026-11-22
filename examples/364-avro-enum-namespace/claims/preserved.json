@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "preserved",
+  "statement": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read.",
+  "assume": "code >= 0 && code < 4",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 512,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.EnumReader#preserved(I)I",
+    "mapping": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 4
+  }
+}

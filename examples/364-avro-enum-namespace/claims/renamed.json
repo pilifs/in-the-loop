@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "renamed",
+  "statement": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order.",
+  "assume": "code >= 0 && code < 4",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 512,
+    "maxArrayLength": 16384
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.EnumReader#renamed(I)I",
+    "mapping": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 4
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "extent",
+  "statement": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child.",
+  "assume": "code >= 0 && code < 64",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 96,
+    "maxArrayLength": 2048
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "campaign.NestedBinary#extent(I)I",
+    "mapping": "The selected child exposes exactly its own unsigned bytes and length and rejects the next relative read, including the first read of an empty child. Each selector corresponds to one explicit row of the finite oracle.",
+    "correspondence": "finite-oracle",
+    "cases": 64
+  }
+}
