@@ -1,0 +1,223 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53043f8a8a8de6b663ffc644651fa0fcebb0b71e/jvmcontract",
+    "prove",
+    "campaign.EnumReader#preserved(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/built/avro-1.12.0-SNAPSHOT.jar",
+    "--classpath",
+    "prepare/parent/lib/com/fasterxml/jackson/core/jackson-core/2.12.5/jackson-core-2.12.5.jar",
+    "--classpath",
+    "prepare/parent/lib/com/fasterxml/jackson/core/jackson-databind/2.12.5/jackson-databind-2.12.5.jar",
+    "--classpath",
+    "prepare/parent/lib/com/fasterxml/jackson/core/jackson-annotations/2.12.5/jackson-annotations-2.12.5.jar",
+    "--classpath",
+    "prepare/parent/lib/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar",
+    "--classpath",
+    "prepare/parent/lib/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar",
+    "--classpath",
+    "prepare/parent/lib/org/tukaani/xz/1.9/xz-1.9.jar",
+    "--classpath",
+    "prepare/parent/lib/com/github/luben/zstd-jni/1.5.1-1/zstd-jni-1.5.1-1.jar",
+    "--classpath",
+    "prepare/parent/lib/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+    "--assume",
+    "code >= 0 && code < 4",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "512",
+    "--max-array-length",
+    "16384",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.052,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "campaign.EnumReader#preserved(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "campaign.EnumReader#preserved(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "uri": null,
+          "line": 37
+        }
+      ],
+      "output": "✗ campaign.EnumReader#preserved(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.025123368,
+        "properties": 1,
+        "unwind": 512,
+        "max_array_length": 16384,
+        "stage": null,
+        "native": {
+          "paths": 3,
+          "merges": 0,
+          "solver_calls": 7,
+          "solving_seconds": 2.5828e-05,
+          "gates_evaluated": 87,
+          "evaluating_seconds": 3.637e-06,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 561,
+          "clauses": 1356,
+          "seconds": 0.017614942,
+          "loading_seconds": 0.003166877,
+          "decoding_seconds": 0.00111389,
+          "encoding_seconds": 0.002513868,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+            "sites": [
+              "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+            ],
+            "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.018,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.003,
+              "lowering": 0.001,
+              "symbolic": 0.011,
+              "encoding": 0.003,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 561,
+              "clauses": 1356
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.043,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.018,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.024
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 512,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6393,
+    "sha256": "8fadb8212a4d001dffbdf4338da4994b4ae667ce3a970591e92ee8100ef943af"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

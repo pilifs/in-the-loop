@@ -1,0 +1,507 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "aa4bc3307fcce3ce",
+    "format": 1,
+    "example": "364",
+    "statement": {
+      "approach": "target",
+      "task": "renamed-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "renamed-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+        "file": "claims/renamed.json",
+        "sha256": "83f5e1254faaa9bfc6dd12c36472a87798199085ede36e7c99311391f5dcb9e9",
+        "property": "renamed",
+        "claimKind": "property",
+        "statement": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order.",
+        "assume": "code >= 0 && code < 4",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 512,
+          "maxArrayLength": 16384
+        },
+        "explicitBounds": {
+          "unwind": 512,
+          "maxArrayLength": 16384
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/campaign/Cases.java",
+            "sha256": "18829f6b3faba26705c41393df7be1a0c6bffe0c3c66965e1fa944ea695a6744"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "ae0f1fdda95c1008bc8be516ed530bd603d4d456fdda0361a535a90a7764342d"
+          }
+        ],
+        "adapter": {
+          "entry": "campaign.EnumReader#renamed(I)I",
+          "mapping": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 4
+        },
+        "key": "afee422eb7114b77"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16384
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "renamed-fix",
+      "sidecar": "f06efb356c717d8cacd9a8bd0354181ef17b4f4114fcbebf9064febc39bdb926",
+      "revisions": {
+        "fix": "c35add7b29b5fab9229d79927a74f327bd56fa70"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "cd366f979d0aa9909ed896d4c9b65b890fdd29259c111aa8fc822dfd28dbe40b"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "e3983970e05ada3f2e7cc9438ab4fdca9eb649a3341e1333e38d3ea80655c1eb"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "12f9b2cc3f68c983f2f17c20d41888cc6d93da7d1bd7f03a43607773ec55ccc0"
+        },
+        {
+          "revision": "fix",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "0c9860b8fb6f24f59e083e0b92a17c515c45312951fc272d093e4709faed6356",
+          "coordinates": "com.fasterxml.jackson.core:jackson-core:2.12.5"
+        },
+        {
+          "revision": "fix",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "d49cdfd82443fa5869d75fe53680012cef2dd74621b69d37da69087c40f1575a",
+          "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.12.5"
+        },
+        {
+          "revision": "fix",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "517926d9fe04cadd55120790d0b5355e4f656ffe2969e4d480a0e7f95a983e9e",
+          "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.12.5"
+        },
+        {
+          "revision": "fix",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "6aecfd5459728a595601cfa07258d131972ffc39b492eb48bdd596577a2f244a",
+          "coordinates": "org.apache.commons:commons-compress:1.21"
+        },
+        {
+          "revision": "fix",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "24c4d1fc1e89e078331ab8f401a99cad68599bde4a2e4516042cb548c51b1c3e",
+          "coordinates": "org.xerial.snappy:snappy-java:1.1.8.4"
+        },
+        {
+          "revision": "fix",
+          "position": 8,
+          "role": "dependency",
+          "sha256": "211b306cfc44f8f96df3a0a3ddaf75ba8c5289eed77d60d72f889bb855f535e5",
+          "coordinates": "org.tukaani:xz:1.9"
+        },
+        {
+          "revision": "fix",
+          "position": 9,
+          "role": "dependency",
+          "sha256": "448b6b48c9891938237451bc2267eab3f8317e3a8ac7f885268101c0baf6b416",
+          "coordinates": "com.github.luben:zstd-jni:1.5.1-1"
+        },
+        {
+          "revision": "fix",
+          "position": 10,
+          "role": "dependency",
+          "sha256": "336811855ee97fcd8413343dc42f4d26362502860e8a9193e4db305e3e8ef80a",
+          "coordinates": "org.slf4j:slf4j-api:1.7.33"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/campaign/EnumReader.java": "40e55db266890c829f058fa94a30fa1113229e82d68ea7fe73b83b13de7e7c2a",
+        "claims/renamed.json": "83f5e1254faaa9bfc6dd12c36472a87798199085ede36e7c99311391f5dcb9e9",
+        "controls/table.json": "ae0f1fdda95c1008bc8be516ed530bd603d4d456fdda0361a535a90a7764342d",
+        "driver/campaign/Cases.java": "18829f6b3faba26705c41393df7be1a0c6bffe0c3c66965e1fa944ea695a6744"
+      },
+      "claimKey": "afee422eb7114b77"
+    }
+  },
+  "attempt": {
+    "id": "20261122T064424Z-13cacaa8",
+    "claim": "aa4bc3307fcce3ce",
+    "startedAt": "2026-11-22T06:44:24+00:00",
+    "seconds": 0.3,
+    "engine": "native",
+    "options": [
+      "prove",
+      "campaign.EnumReader#renamed(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/avro-1.12.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-core/2.12.5/jackson-core-2.12.5.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-databind/2.12.5/jackson-databind-2.12.5.jar",
+      "--classpath",
+      "prepare/fix/lib/com/fasterxml/jackson/core/jackson-annotations/2.12.5/jackson-annotations-2.12.5.jar",
+      "--classpath",
+      "prepare/fix/lib/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar",
+      "--classpath",
+      "prepare/fix/lib/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar",
+      "--classpath",
+      "prepare/fix/lib/org/tukaani/xz/1.9/xz-1.9.jar",
+      "--classpath",
+      "prepare/fix/lib/com/github/luben/zstd-jni/1.5.1-1/zstd-jni-1.5.1-1.jar",
+      "--classpath",
+      "prepare/fix/lib/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+      "--assume",
+      "code >= 0 && code < 4",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "512",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "d5ab24764fded44f19f48dc90838e70e8334517672583874635ec55732443c6c",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-063655-qualify-364-original-artifacts-and-compl",
+      "sourceCommit": "d3f87a34ce0d74e10da8fd51d318dbdbb3f5674a",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-364-original-artifacts-and-compl"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.215,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.052,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 512,
+      "maxArrayLength": 16384,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "aa4bc3307fcce3ce",
+    "attempt": "20261122T064424Z-13cacaa8",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 4",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.029,
+            "properties": 1,
+            "unwind": 512,
+            "maxArrayLength": 16384,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.022,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.003,
+                  "lowering": 0.001,
+                  "symbolic": 0.014,
+                  "encoding": 0.004,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 1003,
+                  "clauses": 2424
+                }
+              }
+            ],
+            "native": {
+              "paths": 4,
+              "merges": 0,
+              "solverCalls": 13,
+              "solvingSeconds": 2.8783e-05,
+              "gatesEvaluated": 88,
+              "evaluatingSeconds": 3.326e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 1003,
+              "clauses": 2424,
+              "seconds": 0.022332165,
+              "loadingSeconds": 0.002684242,
+              "decodingSeconds": 0.000945645,
+              "encodingSeconds": 0.004190917,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+                "sites": [
+                  "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 512,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13 (java.util.concurrent.LinkedBlockingQueue.<init>() at org.slf4j.helpers.SubstituteLoggerFactory.<init>:49). With --gaps assume it assumes instead that java.util.concurrent.LinkedBlockingQueue.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 4"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "8aa62a8a4bbc7d5c5bf4e719be7133882eb432cdb0f7c4f615c15540f88cebac",
+        "bytes": 113604
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "8f105d5012f079d584f79bcf6300d2b22ed0fd40b532691b1ccb01092b981cb9",
+        "bytes": 590
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "fcf3693de71dda085e95b8186e415504baa7ce597fcb9ba9c904fdc05e95545b",
+        "bytes": 1947
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "18df780a641be67a17f58ba28f67cf199be03726f049f9b206b33ed027948c84",
+        "bytes": 646
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+        "bytes": 210
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "e36d7b95c93afd1c41cc7470bbb48e87f7a51142b0bab14cd24d2dd1f7554fd5",
+        "bytes": 7213
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "d7987a8c84354b92c046b0559a8ce4781a0ee8992ccb7f9fd36906477d0e4299",
+        "bytes": 6391
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "cd6eb5761e0bf5eaa91c39529c6accaa1e4a6036b35cdf9fc2a05314cfce8c40",
+        "bytes": 102755
+      }
+    ]
+  }
+}

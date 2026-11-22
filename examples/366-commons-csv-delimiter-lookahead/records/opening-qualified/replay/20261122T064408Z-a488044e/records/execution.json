@@ -1,0 +1,991 @@
+{
+  "task": "replay",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "parent",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp",
+        "-cp",
+        "driver.jar:adapter-parent.jar:built/commons-csv-1.10.0-SNAPSHOT.jar",
+        "campaign.Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.114,
+      "stdout": "controls/control-parent-jdk21.stdout",
+      "stderr": "controls/control-parent-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "94711ebf25d79bd95df8a5e70885325660f94ddc",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "4eba05db969e5de7c2fe8a7810cf816394d5eec8969c7e29aeb71d11d29baeaa",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "f20665c4f013f4ca1411e161c6abcc8a58071260339b2131aaff0f17886b07ec",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-csv-1.10.0-SNAPSHOT.jar",
+            "sha256": "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "campaign.Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/table.json",
+          "oracleSha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC",
+          "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261122T064408Z-a488044e",
+        "startedAt": "2026-11-22T06:44:08.673920+00:00"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "delimiter": "||",
+            "source": "a||b||c",
+            "controlDelimiter": "||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|c"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 1,
+          "input": {
+            "delimiter": "||",
+            "source": "a||||b",
+            "controlDelimiter": "|||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "|b"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 2,
+          "input": {
+            "delimiter": "||",
+            "source": "a||\"b||c\"||d",
+            "controlDelimiter": "|||",
+            "controlSource": "a||b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b||c",
+                "d"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a||b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 3,
+          "input": {
+            "delimiter": "||",
+            "source": "a||b||",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 4,
+          "input": {
+            "delimiter": "|||",
+            "source": "a|||b|||c",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|~b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|c"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|~b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 5,
+          "input": {
+            "delimiter": "|||",
+            "source": "a||||||b",
+            "controlDelimiter": ",",
+            "controlSource": "a,b,"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "|b"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b",
+                ""
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 6,
+          "input": {
+            "delimiter": "|||",
+            "source": "a|||\"b|||c\"|||d",
+            "controlDelimiter": ",",
+            "controlSource": "a,\"b,c\""
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|||c",
+                "d"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b,c"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 7,
+          "input": {
+            "delimiter": "|||",
+            "source": "a|||b|||",
+            "controlDelimiter": "||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 8,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~|b|~|c",
+            "controlDelimiter": "|||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                "c"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 9,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~||~|b",
+            "controlDelimiter": "|||",
+            "controlSource": "a||b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "|b"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a||b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 10,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~|\"b|~|c\"|~|d",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|~|c",
+                "d"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 11,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~|b|~|",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|~b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|~b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 12,
+          "input": {
+            "delimiter": "||",
+            "source": "a||b||c||d||||f",
+            "controlDelimiter": ",",
+            "controlSource": "a,b,"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|c",
+                "d",
+                "|f"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b",
+                ""
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 13,
+          "input": {
+            "delimiter": "||",
+            "source": "a||\"b||c\"||d||||f",
+            "controlDelimiter": ",",
+            "controlSource": "a,\"b,c\""
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b||c",
+                "d",
+                "|f"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b,c"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 0,
+            "prefixes": 1
+          }
+        }
+      ],
+      "control": "driver",
+      "record": "controls/controls.json",
+      "reason": null,
+      "oracle": {
+        "problems": [
+          [
+            0,
+            "fields"
+          ],
+          [
+            1,
+            "fields"
+          ],
+          [
+            3,
+            "fields"
+          ],
+          [
+            4,
+            "fields"
+          ],
+          [
+            5,
+            "fields"
+          ],
+          [
+            7,
+            "fields"
+          ],
+          [
+            9,
+            "fields"
+          ],
+          [
+            11,
+            "fields"
+          ],
+          [
+            12,
+            "fields"
+          ],
+          [
+            13,
+            "fields"
+          ]
+        ]
+      }
+    },
+    {
+      "kind": "jvm-control",
+      "revision": "fix",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp",
+        "-cp",
+        "driver.jar:adapter-fix.jar:built/commons-csv-1.10.0-SNAPSHOT.jar",
+        "campaign.Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.114,
+      "stdout": "controls/control-fix-jdk21.stdout",
+      "stderr": "controls/control-fix-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "4eba05db969e5de7c2fe8a7810cf816394d5eec8969c7e29aeb71d11d29baeaa",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "f20665c4f013f4ca1411e161c6abcc8a58071260339b2131aaff0f17886b07ec",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-csv-1.10.0-SNAPSHOT.jar",
+            "sha256": "b71afe50e79e1df7e577206e92872c697e8c17a1101938739507251834132446",
+            "role": "original"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "campaign.Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/table.json",
+          "oracleSha256": "cbb60ae20d8f968712095b5f761af8b7770542da8ae7f90e3445428df5dd757c"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC",
+          "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/tmp"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261122T064408Z-a488044e",
+        "startedAt": "2026-11-22T06:44:08.673920+00:00"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "delimiter": "||",
+            "source": "a||b||c",
+            "controlDelimiter": "||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                "c"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 1,
+          "input": {
+            "delimiter": "||",
+            "source": "a||||b",
+            "controlDelimiter": "|||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "",
+                "b"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 2,
+          "input": {
+            "delimiter": "||",
+            "source": "a||\"b||c\"||d",
+            "controlDelimiter": "|||",
+            "controlSource": "a||b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b||c",
+                "d"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a||b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 3,
+          "input": {
+            "delimiter": "||",
+            "source": "a||b||",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                ""
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 4,
+          "input": {
+            "delimiter": "|||",
+            "source": "a|||b|||c",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|~b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                "c"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|~b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 5,
+          "input": {
+            "delimiter": "|||",
+            "source": "a||||||b",
+            "controlDelimiter": ",",
+            "controlSource": "a,b,"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "",
+                "b"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b",
+                ""
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 6,
+          "input": {
+            "delimiter": "|||",
+            "source": "a|||\"b|||c\"|||d",
+            "controlDelimiter": ",",
+            "controlSource": "a,\"b,c\""
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|||c",
+                "d"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b,c"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 7,
+          "input": {
+            "delimiter": "|||",
+            "source": "a|||b|||",
+            "controlDelimiter": "||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                ""
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 8,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~|b|~|c",
+            "controlDelimiter": "|||",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                "c"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 9,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~||~|b",
+            "controlDelimiter": "|||",
+            "controlSource": "a||b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "",
+                "b"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a||b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 10,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~|\"b|~|c\"|~|d",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b|~|c",
+                "d"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 11,
+          "input": {
+            "delimiter": "|~|",
+            "source": "a|~|b|~|",
+            "controlDelimiter": "|~|",
+            "controlSource": "a|~b"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                ""
+              ]
+            ],
+            "prefixes": [
+              [
+                "a|~b"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 12,
+          "input": {
+            "delimiter": "||",
+            "source": "a||b||c||d||||f",
+            "controlDelimiter": ",",
+            "controlSource": "a,b,"
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b",
+                "c",
+                "d",
+                "",
+                "f"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b",
+                ""
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        },
+        {
+          "id": 13,
+          "input": {
+            "delimiter": "||",
+            "source": "a||\"b||c\"||d||||f",
+            "controlDelimiter": ",",
+            "controlSource": "a,\"b,c\""
+          },
+          "direct": {
+            "fields": [
+              [
+                "a",
+                "b||c",
+                "d",
+                "",
+                "f"
+              ]
+            ],
+            "prefixes": [
+              [
+                "a",
+                "b,c"
+              ]
+            ]
+          },
+          "adapter": {
+            "fields": 1,
+            "prefixes": 1
+          }
+        }
+      ],
+      "control": "driver",
+      "record": "controls/controls.json",
+      "reason": null,
+      "oracle": {
+        "problems": []
+      }
+    }
+  ]
+}
