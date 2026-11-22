@@ -1,0 +1,286 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-063655-qualify-363-original-artifacts-and-compl",
+  "title": "Qualify 363 original artifacts and complete the opening grid",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 1m41s, peak 2.0 GiB (estimated 9m00s, 5.0 GiB); 7 output file(s) changed",
+  "attention": [
+    "step 1 (Build unchanged artifacts and run the original regression) was held back 3m01s by its 3-CPU quota in 1m39s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Measure four ordinary native claims and their finite JVM grid) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-063655-qualify-363-original-artifacts-and-compl.json",
+    "sha256": "b98a63bb901d90d68dfecc6c2fb0c67ada7ec8b88da3a93ea0ceffc04d97fbb8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-063655-qualify-363-original-artifacts-and-compl",
+      "title": "Qualify 363 original artifacts and complete the opening grid",
+      "description": "Use the historical project's own Spotless check skip property to avoid running a code-style plugin against the JDK 21 compiler ABI during the original reactor build. Capture all four public claims on the frozen opening fingerprint and verify raw JVM outcomes.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "363"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:36:55+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "9m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Build unchanged artifacts and run the original regression",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/parquet-java\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 363 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/363-parquet-nested-binary/records/qualified-build",
+          "cwd": "."
+        },
+        {
+          "name": "Measure four ordinary native claims and their finite JVM grid",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 363 --stage opening-qualified --build qualified-build",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/363-parquet-nested-binary/records/qualified-build",
+        "examples/363-parquet-nested-binary/records/opening-qualified"
+      ]
+    }
+  },
+  "sourceCommit": "d3f87a34ce0d74e10da8fd51d318dbdbb3f5674a",
+  "startedAt": "2026-11-22T06:41:00+00:00",
+  "finishedAt": "2026-11-22T06:45:49+00:00",
+  "wallSeconds": 289.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3071770,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2124103680,
+    "wallSeconds": 101.2,
+    "cpuSeconds": 237.3,
+    "memoryOfEstimate": 0.4,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/parquet-java\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 363 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/363-parquet-nested-binary/records/qualified-build",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 99.226,
+      "cpuSeconds": 234.282,
+      "cpuThrottledSeconds": 181.348,
+      "peakMemoryBytes": 2124103680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-unchanged-artifacts-and.log",
+        "lines": 2,
+        "bytes": 39,
+        "sha256": "f90914ea835e0db33a332af9abb24b19bb8c172910e01474bd9d3c1c67c82500",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "363 parent qualified",
+        "363 fix qualified"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 363 --stage opening-qualified --build qualified-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 2.004,
+      "cpuSeconds": 3.056,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 152313856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-four-ordinary-native-c.log",
+        "lines": 10,
+        "bytes": 1011,
+        "sha256": "2e75e76726a0ff42791d70f0a3410751b7fe532c62cf6156e3546957defa4be5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-363-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 117, in <module>",
+        "    run(args.example,args.stage,args.seconds,args.build)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-363-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 85, in run",
+        "    receipt[\"replay\"] = native(folder,\"replay\",argv,out)",
+        "                        ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-363-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 48, in native",
+        "    raise ValueError(f\"{task}: expected exactly one fresh qualified workflow result, found {len(results)}\")",
+        "ValueError: replay: expected exactly one fresh qualified workflow result, found 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/363-parquet-nested-binary/records/qualified-build/build-fix.json",
+      "change": "added",
+      "bytes": 8273,
+      "sha256": "8de48c6dd6c99b77772e7c8df04e1ad67365bce224a0489e987912103d707d5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/qualified-build/build-parent.json",
+      "change": "added",
+      "bytes": 8156,
+      "sha256": "c384652aba8c8a71ea413a32473a3f1ebb72934af782ef5801a5b940692455c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/qualified-build/fix-TEST-org.apache.parquet.variant.TestVariantObjectBuilder.xml.gz",
+      "change": "added",
+      "bytes": 2095,
+      "sha256": "444ec64735217bbe6d27721e9b820c699251bba6ad45843b390b298b10b07cb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/qualified-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 6068,
+      "sha256": "4e1c4cd57ff5985b93c069019d0004bcf2b1484cca91aabb8ac17dc5beca14cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/qualified-build/parent-TEST-org.apache.parquet.variant.TestVariantObjectBuilder.xml.gz",
+      "change": "added",
+      "bytes": 2370,
+      "sha256": "aba9cc6ad0eb3cdd9e8c8ba5510f512cc8d72a2ce38f0ade94d497cf39a7f43e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/qualified-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 7737,
+      "sha256": "6ca44984ac46ff962fa389bcc4ff61d0f9eb55ac72985ec3dd5c99309892a165",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/363-parquet-nested-binary/records/opening-qualified/replay.log",
+      "change": "added",
+      "bytes": 252,
+      "sha256": "322e0e3c687f262f0de71d43ac754224bf6770784bdd38cad08c8c766b40636b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T06:48:49+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/363-parquet-nested-binary/records/qualified-build/build-fix.json",
+      "examples/363-parquet-nested-binary/records/qualified-build/build-parent.json",
+      "examples/363-parquet-nested-binary/records/qualified-build/fix-TEST-org.apache.parquet.variant.TestVariantObjectBuilder.xml.gz",
+      "examples/363-parquet-nested-binary/records/qualified-build/fix-upstream.json",
+      "examples/363-parquet-nested-binary/records/qualified-build/parent-TEST-org.apache.parquet.variant.TestVariantObjectBuilder.xml.gz",
+      "examples/363-parquet-nested-binary/records/qualified-build/parent-upstream.json",
+      "examples/363-parquet-nested-binary/records/opening-qualified/replay.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "53043f8a8a8de6b663ffc644651fa0fcebb0b71e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53043f8a8a8de6b663ffc644651fa0fcebb0b71e/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T064549Z-5623762182d04e8b",
+      "outputs": "20261122T064549Z-58068213ce785be1",
+      "diff": "20261122T064549Z-595769fe7e0eaa13",
+      "workdir": "20261122T064553Z-33667735a79bd315"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-363-original-artifacts-and-compl"
+}

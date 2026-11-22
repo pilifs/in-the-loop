@@ -1,0 +1,304 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-063655-qualify-367-original-artifacts-and-compl",
+  "title": "Qualify 367 original artifacts and complete the opening grid",
+  "status": "failed",
+  "summary": "failed: 2 failed step(s) in 2m33s, peak 1.2 GiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [
+    "step 1 (Build unchanged artifacts and run the original regression) exited 1, expected 0",
+    "step 1 (Build unchanged artifacts and run the original regression) was held back 7m18s by its 2-CPU quota in 2m33s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Measure four ordinary native claims and their finite JVM grid) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-063655-qualify-367-original-artifacts-and-compl.json",
+    "sha256": "23adfa4af7e345b1855fd3cba172b7a309991b7a7f7305df0a2f42e166b3ba4d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-063655-qualify-367-original-artifacts-and-compl",
+      "title": "Qualify 367 original artifacts and complete the opening grid",
+      "description": "Expose the original Maven project's declared JDK 11, 17 and 21 toolchains inside its isolated build, then run its parameterized binary and JSON regressions. Capture all four public claims on the frozen opening fingerprint and verify raw JVM outcomes.",
+      "kind": "real-world",
+      "capabilities": [
+        "build:from-source",
+        "original-upstream-test",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "367"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:36:55+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Build unchanged artifacts and run the original regression",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/qualified-build",
+          "cwd": "."
+        },
+        {
+          "name": "Measure four ordinary native claims and their finite JVM grid",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening-qualified --build qualified-build",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/367-avro-union-array-default/records/qualified-build",
+        "examples/367-avro-union-array-default/records/opening-qualified"
+      ]
+    }
+  },
+  "sourceCommit": "d3f87a34ce0d74e10da8fd51d318dbdbb3f5674a",
+  "startedAt": "2026-11-22T06:41:00+00:00",
+  "finishedAt": "2026-11-22T06:46:41+00:00",
+  "wallSeconds": 341.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3071770,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1311748096,
+    "wallSeconds": 153.6,
+    "cpuSeconds": 267.3,
+    "memoryOfEstimate": 0.31,
+    "durationOfEstimate": 0.51
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 173.63,
+      "cpuSeconds": 173.656,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2286755840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "05d6ca01363f5763bb22faf5a1edcd4401c7d3d4921faed73dfa8e22c24f7cf8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-367-original-artifacts-and-compl/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 53s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Build unchanged artifacts and run the original regression",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/qualified-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 153.373,
+      "cpuSeconds": 267.199,
+      "cpuThrottledSeconds": 438.674,
+      "peakMemoryBytes": 1311748096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-unchanged-artifacts-and.log",
+        "lines": 2,
+        "bytes": 29,
+        "sha256": "95597cb528d2800d70de36673d7200e42867856a36427e80eb2bf006b9bb015c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "367 parent open",
+        "367 fix open"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure four ordinary native claims and their finite JVM grid",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening-qualified --build qualified-build",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.086,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 17055744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-four-ordinary-native-c.log",
+        "lines": 17,
+        "bytes": 1542,
+        "sha256": "19976e23e79e6a454c7e1cc09dd20687971faf3ca18a2ffe2773802d69a946a8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-367-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 117, in <module>",
+        "    run(args.example,args.stage,args.seconds,args.build)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-367-original-artifacts-and-compl/lib/benchmark/java-domain-proof/public_run.py\", line 71, in run",
+        "    upstream.bind(case,products)",
+        "    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-367-original-artifacts-and-compl/lib/benchmark/organic-java/upstream.py\", line 445, in bind",
+        "    record = json.loads(path.read_text())",
+        "                        ~~~~~~~~~~~~~~^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 788, in read_text",
+        "    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:",
+        "         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 772, in open",
+        "    return io.open(self, mode, buffering, encoding, errors, newline)",
+        "           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-367-original-artifacts-and-compl/examples/367-avro-union-array-default/records/qualified-build/build-parent.json'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/367-avro-union-array-default/records/qualified-build/fix-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "change": "added",
+      "bytes": 2229,
+      "sha256": "b43763d32279fce33813201cc4cfacd84c1d91b4c0c434bac1387758d409e532",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/qualified-build/fix-upstream.json",
+      "change": "added",
+      "bytes": 10042,
+      "sha256": "edbf81b9d6176c911640c1a439b3170c8d2a55f28692aea42b294f358965d134",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/qualified-build/parent-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "change": "added",
+      "bytes": 2928,
+      "sha256": "6708301bc27504b00b700733414e7e521adbfa30d4adfb2a0cdfc0c58750a48b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/367-avro-union-array-default/records/qualified-build/parent-upstream.json",
+      "change": "added",
+      "bytes": 12636,
+      "sha256": "306d56df7644323410429f09fb299b3c63e35c2bbc6476dc6fa024c6d0c61476",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T06:48:49+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/367-avro-union-array-default/records/qualified-build/fix-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "examples/367-avro-union-array-default/records/qualified-build/fix-upstream.json",
+      "examples/367-avro-union-array-default/records/qualified-build/parent-TEST-org.apache.avro.TestReadingWritingDataInEvolvedSchemas.xml.gz",
+      "examples/367-avro-union-array-default/records/qualified-build/parent-upstream.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "53043f8a8a8de6b663ffc644651fa0fcebb0b71e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/53043f8a8a8de6b663ffc644651fa0fcebb0b71e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T064641Z-9006265f5ba6af8a",
+      "outputs": "20261122T064641Z-921831eee40f363c",
+      "diff": "20261122T064641Z-939561473a7eddfa",
+      "workdir": "20261122T064645Z-435471bd7a12e79b"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-063655-qualify-367-original-artifacts-and-compl"
+}

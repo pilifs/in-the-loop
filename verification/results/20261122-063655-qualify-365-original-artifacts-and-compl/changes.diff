@@ -1,0 +1,1089 @@
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/qualified-build/build-fix.json
+@@ -0,0 +1,260 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/FasterXML/jackson-core",
++    "commit": "596fd82955080ba7207b4adc54100781b5024a61",
++    "class": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-DjacocoStrict=false",
++        "-f",
++        "pom.xml",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    },
++    "parent": "99f749d958a55013724571d825625e1032af9d4b"
++  },
++  "artifacts": [
++    {
++      "path": "built/jackson-core-2.19.0-SNAPSHOT.jar",
++      "sha256": "c192c74ad67290633866a01efec660f04875d8c011ee07557f265986e01c931b",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/FasterXML/jackson-core at 596fd82955080ba7207b4adc54100781b5024a61: target/jackson-core-2.19.0-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/ch/randelshofer/fastdoubleparser/1.0.90/fastdoubleparser-1.0.90.jar",
++      "sha256": "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f",
++      "role": "dependency",
++      "coordinates": "ch.randelshofer:fastdoubleparser:1.0.90",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "596fd82955080ba7207b4adc54100781b5024a61",
++      "tree": "ad1b2539d13128851ff1227508ab49c01b51aac8",
++      "parents": [
++        "99f749d958a55013724571d825625e1032af9d4b"
++      ],
++      "fetchedFrom": "https://github.com/FasterXML/jackson-core",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++          "sha256": "c192c74ad67290633866a01efec660f04875d8c011ee07557f265986e01c931b",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.class",
++      "selectedClassSha256": "23c4657233ceaa0658aa4dcfebdb0e9d9d0cae47bfce8b2eb02611b107d48971",
++      "sourceSha256": "7dfefb78dbfe71267a002cb90aa1bb40708cd343444381030d70778763786c0b"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      },
++      "declaredCompilers": {}
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-N",
++          "-f",
++          "/work/build-parents/0/pom.xml",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 8.02,
++        "logSha256": "617f5540127717fa6a74439e2eda459406943665f265d562b121905b99d2fa03",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- install:3.1.4:install (default-install) @ jackson-parent ---",
++          "[INFO] Installing /work/build-parents/0/pom.xml to /work/repository/com/fasterxml/jackson/jackson-parent/2.19-SNAPSHOT/jackson-parent-2.19-SNAPSHOT.pom",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  6.321 s",
++          "[INFO] Finished at: 2026-11-22T06:45:29Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ],
++        "repository": "https://github.com/FasterXML/jackson-parent",
++        "commit": "4c3047abc2c9701bee527cc13773c4f1313cb942",
++        "pom": "pom.xml",
++        "pomSha256": "c82da5f31d4f781e2b198a77ace674cdd5607ef7597f18cf1a25f7ab530c0010"
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-N",
++          "-f",
++          "/work/build-parents/1/pom.xml",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 5.81,
++        "logSha256": "400bf9d26bcc36d843ec47aac539e2d14ce7152355eca771ea712b70456f7675",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- install:3.1.4:install (default-install) @ jackson-bom ---",
++          "[INFO] Installing /work/build-parents/1/pom.xml to /work/repository/com/fasterxml/jackson/jackson-bom/2.19.0-SNAPSHOT/jackson-bom-2.19.0-SNAPSHOT.pom",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  4.076 s",
++          "[INFO] Finished at: 2026-11-22T06:45:35Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ],
++        "repository": "https://github.com/FasterXML/jackson-bom",
++        "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++        "pom": "pom.xml",
++        "pomSha256": "88af4c8d39738532135d3a592f7365b9373979f4113348178f72ffe0baf6e158"
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-N",
++          "-f",
++          "/work/build-parents/1/base/pom.xml",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 7.65,
++        "logSha256": "c417fa6f7e8fdd98fa7be55b8f30d90520b966f083a4f3e1c66a892e111d172f",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- install:3.1.4:install (default-install) @ jackson-base ---",
++          "[INFO] Installing /work/build-parents/1/base/pom.xml to /work/repository/com/fasterxml/jackson/jackson-base/2.19.0-SNAPSHOT/jackson-base-2.19.0-SNAPSHOT.pom",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  6.004 s",
++          "[INFO] Finished at: 2026-11-22T06:45:42Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ],
++        "repository": "https://github.com/FasterXML/jackson-bom",
++        "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++        "pom": "base/pom.xml",
++        "pomSha256": "d002e6a19b8d31d89253073823b240ebc589f95ae08e8fae8bd729c8154023ea"
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-DjacocoStrict=false",
++          "-f",
++          "pom.xml",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 16.2,
++        "logSha256": "11e5998f4a32ad29420077c65f6ecdba0c806a87c530ab9d834717bd7ee83973",
++        "errors": [],
++        "tail": [
++          "[INFO] Installing /project/dependency-reduced-pom.xml to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.pom",
++          "[INFO] Installing /project/target/jackson-core-2.19.0-SNAPSHOT.jar to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.jar",
++          "[INFO] Installing /project/target/publications/maven/module.json to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.module",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  14.509 s",
++          "[INFO] Finished at: 2026-11-22T06:45:59Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 6.35,
++        "logSha256": "3f3597962ff5ed2a901da363bec72fc5318072b83131a9debea1b285945df1c3",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ jackson-core ---",
++          "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  4.693 s",
++          "[INFO] Finished at: 2026-11-22T06:46:05Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/qualified-build/build-parent.json
+@@ -0,0 +1,257 @@
++{
++  "schema": "upstream-jar-build/v1",
++  "recipe": {
++    "repository": "https://github.com/FasterXML/jackson-core",
++    "commit": "99f749d958a55013724571d825625e1032af9d4b",
++    "class": "com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase",
++    "build": {
++      "tool": "maven",
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-DjacocoStrict=false",
++        "-f",
++        "pom.xml",
++        "-Dmaven.test.skip=true",
++        "install"
++      ],
++      "jdk": "21"
++    }
++  },
++  "artifacts": [
++    {
++      "path": "built/jackson-core-2.19.0-SNAPSHOT.jar",
++      "sha256": "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
++      "role": "original",
++      "coordinates": null,
++      "origin": "built by maven from https://github.com/FasterXML/jackson-core at 99f749d958a55013724571d825625e1032af9d4b: target/jackson-core-2.19.0-SNAPSHOT.jar"
++    },
++    {
++      "path": "lib/ch/randelshofer/fastdoubleparser/1.0.90/fastdoubleparser-1.0.90.jar",
++      "sha256": "e06f1063e1df20b187ef5d06c56c0a3feed079dfaf85a01a6948f3dcb602472f",
++      "role": "dependency",
++      "coordinates": "ch.randelshofer:fastdoubleparser:1.0.90",
++      "origin": "resolved by Maven from Maven Central (the build's one repository), checksums strict"
++    }
++  ],
++  "build": {
++    "checkout": {
++      "commit": "99f749d958a55013724571d825625e1032af9d4b",
++      "tree": "0e43f116cb12355e491f0e5ffc9282e623891a3f",
++      "parents": [],
++      "fetchedFrom": "https://github.com/FasterXML/jackson-core",
++      "changedByBuild": []
++    },
++    "outputs": {
++      "original": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++      "jars": [
++        {
++          "path": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++          "sha256": "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
++          "auxiliary": false
++        }
++      ],
++      "selectedClass": "com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.class",
++      "selectedClassSha256": "de63294fd5c43b5cf05bbe77da5ae15026accd47f59735dce88e56b32db17383",
++      "sourceSha256": "69acf84983e3b78636a6f93a7a9df166036126561b8a8d6fe51b65062d5c3c22"
++    },
++    "toolchain": {
++      "jdk": {
++        "feature": "21",
++        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "release": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        }
++      },
++      "declaredCompilers": {}
++    },
++    "steps": [
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-N",
++          "-f",
++          "/work/build-parents/0/pom.xml",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 12.44,
++        "logSha256": "94a21e1c7aacd14007f3bc2b707673069a5147fdc4091349e30f11e8c8fcc5af",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- install:3.1.4:install (default-install) @ jackson-parent ---",
++          "[INFO] Installing /work/build-parents/0/pom.xml to /work/repository/com/fasterxml/jackson/jackson-parent/2.19-SNAPSHOT/jackson-parent-2.19-SNAPSHOT.pom",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  10.707 s",
++          "[INFO] Finished at: 2026-11-22T06:44:20Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ],
++        "repository": "https://github.com/FasterXML/jackson-parent",
++        "commit": "4c3047abc2c9701bee527cc13773c4f1313cb942",
++        "pom": "pom.xml",
++        "pomSha256": "c82da5f31d4f781e2b198a77ace674cdd5607ef7597f18cf1a25f7ab530c0010"
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-N",
++          "-f",
++          "/work/build-parents/1/pom.xml",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 5.26,
++        "logSha256": "daf9b789025f6a8314d016d1414b08e1334c66d01b9e5609499fb5258c34e2e5",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- install:3.1.4:install (default-install) @ jackson-bom ---",
++          "[INFO] Installing /work/build-parents/1/pom.xml to /work/repository/com/fasterxml/jackson/jackson-bom/2.19.0-SNAPSHOT/jackson-bom-2.19.0-SNAPSHOT.pom",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  3.561 s",
++          "[INFO] Finished at: 2026-11-22T06:44:26Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ],
++        "repository": "https://github.com/FasterXML/jackson-bom",
++        "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++        "pom": "pom.xml",
++        "pomSha256": "88af4c8d39738532135d3a592f7365b9373979f4113348178f72ffe0baf6e158"
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-N",
++          "-f",
++          "/work/build-parents/1/base/pom.xml",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 11.5,
++        "logSha256": "a5c4f2b70d40f98cbb5048743c9b5ed1ee43079ad9c3a6032d0a925d8997de3c",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- install:3.1.4:install (default-install) @ jackson-base ---",
++          "[INFO] Installing /work/build-parents/1/base/pom.xml to /work/repository/com/fasterxml/jackson/jackson-base/2.19.0-SNAPSHOT/jackson-base-2.19.0-SNAPSHOT.pom",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  9.895 s",
++          "[INFO] Finished at: 2026-11-22T06:44:37Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ],
++        "repository": "https://github.com/FasterXML/jackson-bom",
++        "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++        "pom": "base/pom.xml",
++        "pomSha256": "d002e6a19b8d31d89253073823b240ebc589f95ae08e8fae8bd729c8154023ea"
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-DjacocoStrict=false",
++          "-f",
++          "pom.xml",
++          "-Dmaven.test.skip=true",
++          "install"
++        ],
++        "exit": 0,
++        "seconds": 17.25,
++        "logSha256": "9cbd36b1d9b2a733ebf2d2f8b82be378883a02247be79222b27fdc7a594b45ef",
++        "errors": [],
++        "tail": [
++          "[INFO] Installing /project/dependency-reduced-pom.xml to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.pom",
++          "[INFO] Installing /project/target/jackson-core-2.19.0-SNAPSHOT.jar to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.jar",
++          "[INFO] Installing /project/target/publications/maven/module.json to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.module",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  15.585 s",
++          "[INFO] Finished at: 2026-11-22T06:44:54Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      },
++      {
++        "argv": [
++          "mvn",
++          "--batch-mode",
++          "--no-transfer-progress",
++          "-Dmaven.javadoc.skip=true",
++          "-Drat.skip=true",
++          "-Dcheckstyle.skip=true",
++          "-Dspotless.skip=true",
++          "-Dspotbugs.skip=true",
++          "-Dgpg.skip=true",
++          "-f",
++          "pom.xml",
++          "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++          "-DincludeScope=runtime",
++          "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++        ],
++        "exit": 0,
++        "seconds": 6.65,
++        "logSha256": "5dc30bb1a73830150e9765b8b6033d958cbc67ae588bf68601dfb8a3e23a6364",
++        "errors": [],
++        "tail": [
++          "[INFO] ",
++          "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ jackson-core ---",
++          "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] BUILD SUCCESS",
++          "[INFO] ------------------------------------------------------------------------",
++          "[INFO] Total time:  5.073 s",
++          "[INFO] Finished at: 2026-11-22T06:45:01Z",
++          "[INFO] ------------------------------------------------------------------------"
++        ]
++      }
++    ]
++  }
++}
+Binary file examples/365-jackson-async-token-offsets/records/qualified-build/fix-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz changed
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/qualified-build/fix-upstream.json
+@@ -0,0 +1,265 @@
++{
++  "revision": "596fd82955080ba7207b4adc54100781b5024a61",
++  "side": "fix",
++  "prerequisites": [
++    {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-N",
++        "-f",
++        "/work/build-parents/0/pom.xml",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 8.02,
++      "logSha256": "617f5540127717fa6a74439e2eda459406943665f265d562b121905b99d2fa03",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- install:3.1.4:install (default-install) @ jackson-parent ---",
++        "[INFO] Installing /work/build-parents/0/pom.xml to /work/repository/com/fasterxml/jackson/jackson-parent/2.19-SNAPSHOT/jackson-parent-2.19-SNAPSHOT.pom",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  6.321 s",
++        "[INFO] Finished at: 2026-11-22T06:45:29Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ],
++      "repository": "https://github.com/FasterXML/jackson-parent",
++      "commit": "4c3047abc2c9701bee527cc13773c4f1313cb942",
++      "pom": "pom.xml",
++      "pomSha256": "c82da5f31d4f781e2b198a77ace674cdd5607ef7597f18cf1a25f7ab530c0010"
++    },
++    {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-N",
++        "-f",
++        "/work/build-parents/1/pom.xml",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 5.81,
++      "logSha256": "400bf9d26bcc36d843ec47aac539e2d14ce7152355eca771ea712b70456f7675",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- install:3.1.4:install (default-install) @ jackson-bom ---",
++        "[INFO] Installing /work/build-parents/1/pom.xml to /work/repository/com/fasterxml/jackson/jackson-bom/2.19.0-SNAPSHOT/jackson-bom-2.19.0-SNAPSHOT.pom",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  4.076 s",
++        "[INFO] Finished at: 2026-11-22T06:45:35Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ],
++      "repository": "https://github.com/FasterXML/jackson-bom",
++      "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++      "pom": "pom.xml",
++      "pomSha256": "88af4c8d39738532135d3a592f7365b9373979f4113348178f72ffe0baf6e158"
++    },
++    {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-N",
++        "-f",
++        "/work/build-parents/1/base/pom.xml",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 7.65,
++      "logSha256": "c417fa6f7e8fdd98fa7be55b8f30d90520b966f083a4f3e1c66a892e111d172f",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- install:3.1.4:install (default-install) @ jackson-base ---",
++        "[INFO] Installing /work/build-parents/1/base/pom.xml to /work/repository/com/fasterxml/jackson/jackson-base/2.19.0-SNAPSHOT/jackson-base-2.19.0-SNAPSHOT.pom",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  6.004 s",
++        "[INFO] Finished at: 2026-11-22T06:45:42Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ],
++      "repository": "https://github.com/FasterXML/jackson-bom",
++      "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++      "pom": "base/pom.xml",
++      "pomSha256": "d002e6a19b8d31d89253073823b240ebc589f95ae08e8fae8bd729c8154023ea"
++    }
++  ],
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-DjacocoStrict=false",
++      "-f",
++      "pom.xml",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 16.2,
++    "logSha256": "11e5998f4a32ad29420077c65f6ecdba0c806a87c530ab9d834717bd7ee83973",
++    "errors": [],
++    "tail": [
++      "[INFO] Installing /project/dependency-reduced-pom.xml to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.pom",
++      "[INFO] Installing /project/target/jackson-core-2.19.0-SNAPSHOT.jar to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.jar",
++      "[INFO] Installing /project/target/publications/maven/module.json to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.module",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  14.509 s",
++      "[INFO] Finished at: 2026-11-22T06:45:59Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 6.35,
++    "logSha256": "3f3597962ff5ed2a901da363bec72fc5318072b83131a9debea1b285945df1c3",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ jackson-core ---",
++      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  4.693 s",
++      "[INFO] Finished at: 2026-11-22T06:46:05Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++        "sha256": "c192c74ad67290633866a01efec660f04875d8c011ee07557f265986e01c931b",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.class",
++    "selectedClassSha256": "23c4657233ceaa0658aa4dcfebdb0e9d9d0cae47bfce8b2eb02611b107d48971",
++    "sourceSha256": "7dfefb78dbfe71267a002cb90aa1bb40708cd343444381030d70778763786c0b"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-DjacocoStrict=false",
++        "-f",
++        "pom.xml",
++        "-Dmaven.build.cache.enabled=false",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset,AsyncLocation1412Test#feedByteByByteFromNonZeroOffset,AsyncLocation1412Test#feedByteByByteFromOffsetZero",
++        "test"
++      ],
++      "exit": 0,
++      "seconds": 18.56,
++      "logSha256": "40022f957a86f72444bbbc16ec130fd964ee1599e3c349c57395db58b904029a",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0",
++        "[INFO] ",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  16.994 s",
++        "[INFO] Finished at: 2026-11-22T06:46:24Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ]
++    },
++    "packagedTestSupport": null,
++    "testPrerequisites": [],
++    "testSourceSha256": {
++      "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java": "f7ff96bbdf145c98be408cc0cd4089c91d4e941fd469a5e95cb82edc604eba16"
++    },
++    "transplant": [],
++    "named": {
++      "AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset": [
++        {
++          "status": "passed",
++          "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
++          "method": "feedWholeDocumentFromNonZeroOffset",
++          "xmlSha256": "87c5b61834ffc4ae5a013b4cd9eded9ceab0a81c4b4915d945f42e5c3d0dd41d"
++        }
++      ],
++      "AsyncLocation1412Test#feedByteByByteFromNonZeroOffset": [
++        {
++          "status": "passed",
++          "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
++          "method": "feedByteByByteFromNonZeroOffset",
++          "xmlSha256": "87c5b61834ffc4ae5a013b4cd9eded9ceab0a81c4b4915d945f42e5c3d0dd41d"
++        }
++      ],
++      "AsyncLocation1412Test#feedByteByByteFromOffsetZero": [
++        {
++          "status": "passed",
++          "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
++          "method": "feedByteByByteFromOffsetZero",
++          "xmlSha256": "87c5b61834ffc4ae5a013b4cd9eded9ceab0a81c4b4915d945f42e5c3d0dd41d"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1968
++  }
++}
+Binary file examples/365-jackson-async-token-offsets/records/qualified-build/parent-TEST-com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.xml.gz changed
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/qualified-build/parent-upstream.json
+@@ -0,0 +1,287 @@
++{
++  "revision": "99f749d958a55013724571d825625e1032af9d4b",
++  "side": "parent",
++  "prerequisites": [
++    {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-N",
++        "-f",
++        "/work/build-parents/0/pom.xml",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 12.44,
++      "logSha256": "94a21e1c7aacd14007f3bc2b707673069a5147fdc4091349e30f11e8c8fcc5af",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- install:3.1.4:install (default-install) @ jackson-parent ---",
++        "[INFO] Installing /work/build-parents/0/pom.xml to /work/repository/com/fasterxml/jackson/jackson-parent/2.19-SNAPSHOT/jackson-parent-2.19-SNAPSHOT.pom",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  10.707 s",
++        "[INFO] Finished at: 2026-11-22T06:44:20Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ],
++      "repository": "https://github.com/FasterXML/jackson-parent",
++      "commit": "4c3047abc2c9701bee527cc13773c4f1313cb942",
++      "pom": "pom.xml",
++      "pomSha256": "c82da5f31d4f781e2b198a77ace674cdd5607ef7597f18cf1a25f7ab530c0010"
++    },
++    {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-N",
++        "-f",
++        "/work/build-parents/1/pom.xml",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 5.26,
++      "logSha256": "daf9b789025f6a8314d016d1414b08e1334c66d01b9e5609499fb5258c34e2e5",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- install:3.1.4:install (default-install) @ jackson-bom ---",
++        "[INFO] Installing /work/build-parents/1/pom.xml to /work/repository/com/fasterxml/jackson/jackson-bom/2.19.0-SNAPSHOT/jackson-bom-2.19.0-SNAPSHOT.pom",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  3.561 s",
++        "[INFO] Finished at: 2026-11-22T06:44:26Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ],
++      "repository": "https://github.com/FasterXML/jackson-bom",
++      "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++      "pom": "pom.xml",
++      "pomSha256": "88af4c8d39738532135d3a592f7365b9373979f4113348178f72ffe0baf6e158"
++    },
++    {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-N",
++        "-f",
++        "/work/build-parents/1/base/pom.xml",
++        "install"
++      ],
++      "exit": 0,
++      "seconds": 11.5,
++      "logSha256": "a5c4f2b70d40f98cbb5048743c9b5ed1ee43079ad9c3a6032d0a925d8997de3c",
++      "errors": [],
++      "tail": [
++        "[INFO] ",
++        "[INFO] --- install:3.1.4:install (default-install) @ jackson-base ---",
++        "[INFO] Installing /work/build-parents/1/base/pom.xml to /work/repository/com/fasterxml/jackson/jackson-base/2.19.0-SNAPSHOT/jackson-base-2.19.0-SNAPSHOT.pom",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] BUILD SUCCESS",
++        "[INFO] ------------------------------------------------------------------------",
++        "[INFO] Total time:  9.895 s",
++        "[INFO] Finished at: 2026-11-22T06:44:37Z",
++        "[INFO] ------------------------------------------------------------------------"
++      ],
++      "repository": "https://github.com/FasterXML/jackson-bom",
++      "commit": "2e61db91b67ca108e9a24f3cb38ffe80f25845f3",
++      "pom": "base/pom.xml",
++      "pomSha256": "d002e6a19b8d31d89253073823b240ebc589f95ae08e8fae8bd729c8154023ea"
++    }
++  ],
++  "build": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-DjacocoStrict=false",
++      "-f",
++      "pom.xml",
++      "-Dmaven.test.skip=true",
++      "install"
++    ],
++    "exit": 0,
++    "seconds": 17.25,
++    "logSha256": "9cbd36b1d9b2a733ebf2d2f8b82be378883a02247be79222b27fdc7a594b45ef",
++    "errors": [],
++    "tail": [
++      "[INFO] Installing /project/dependency-reduced-pom.xml to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.pom",
++      "[INFO] Installing /project/target/jackson-core-2.19.0-SNAPSHOT.jar to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.jar",
++      "[INFO] Installing /project/target/publications/maven/module.json to /work/repository/com/fasterxml/jackson/core/jackson-core/2.19.0-SNAPSHOT/jackson-core-2.19.0-SNAPSHOT.module",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  15.585 s",
++      "[INFO] Finished at: 2026-11-22T06:44:54Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "classpath": {
++    "argv": [
++      "mvn",
++      "--batch-mode",
++      "--no-transfer-progress",
++      "-Dmaven.javadoc.skip=true",
++      "-Drat.skip=true",
++      "-Dcheckstyle.skip=true",
++      "-Dspotless.skip=true",
++      "-Dspotbugs.skip=true",
++      "-Dgpg.skip=true",
++      "-f",
++      "pom.xml",
++      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
++      "-DincludeScope=runtime",
++      "-Dmdep.outputFile=/project/target/organic-runtime.txt"
++    ],
++    "exit": 0,
++    "seconds": 6.65,
++    "logSha256": "5dc30bb1a73830150e9765b8b6033d958cbc67ae588bf68601dfb8a3e23a6364",
++    "errors": [],
++    "tail": [
++      "[INFO] ",
++      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ jackson-core ---",
++      "[INFO] Wrote classpath file '/project/target/organic-runtime.txt'.",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] BUILD SUCCESS",
++      "[INFO] ------------------------------------------------------------------------",
++      "[INFO] Total time:  5.073 s",
++      "[INFO] Finished at: 2026-11-22T06:45:01Z",
++      "[INFO] ------------------------------------------------------------------------"
++    ]
++  },
++  "artifact": {
++    "original": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++    "jars": [
++      {
++        "path": "target/jackson-core-2.19.0-SNAPSHOT.jar",
++        "sha256": "77b7eca8ee8dc5d5765eba888be829a20d7f18d8baa0165584c2bfe38b0d50ec",
++        "auxiliary": false
++      }
++    ],
++    "selectedClass": "com/fasterxml/jackson/core/json/async/NonBlockingUtf8JsonParserBase.class",
++    "selectedClassSha256": "de63294fd5c43b5cf05bbe77da5ae15026accd47f59735dce88e56b32db17383",
++    "sourceSha256": "69acf84983e3b78636a6f93a7a9df166036126561b8a8d6fe51b65062d5c3c22"
++  },
++  "upstreamTest": {
++    "execution": {
++      "argv": [
++        "mvn",
++        "--batch-mode",
++        "--no-transfer-progress",
++        "-Dmaven.javadoc.skip=true",
++        "-Drat.skip=true",
++        "-Dcheckstyle.skip=true",
++        "-Dspotless.skip=true",
++        "-Dspotbugs.skip=true",
++        "-Dgpg.skip=true",
++        "-DjacocoStrict=false",
++        "-f",
++        "pom.xml",
++        "-Dmaven.build.cache.enabled=false",
++        "-Dsurefire.failIfNoSpecifiedTests=false",
++        "-Dtest=AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset,AsyncLocation1412Test#feedByteByByteFromNonZeroOffset,AsyncLocation1412Test#feedByteByByteFromOffsetZero",
++        "test"
++      ],
++      "exit": 1,
++      "seconds": 19.18,
++      "logSha256": "7c7e203ba3d71b723abc3499b55ed03cdc4823228b34bd973a2d0b14214384be",
++      "errors": [
++        "[ERROR] Tests run: 3, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.306 s <<< FAILURE! -- in com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
++        "[ERROR] com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.feedWholeDocumentFromNonZeroOffset -- Time elapsed: 0.102 s <<< FAILURE!",
++        "[ERROR] com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test.feedByteByByteFromNonZeroOffset -- Time elapsed: 0.002 s <<< FAILURE!",
++        "[ERROR] Failures: ",
++        "[ERROR]   AsyncLocation1412Test.feedByteByByteFromNonZeroOffset:92 expected: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@1ef3efa8, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@502f1f4c, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@6f8f9349]> but was: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@75c9e76b, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@7446d8d5, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@5c3b6c6e]>",
++        "[ERROR]   AsyncLocation1412Test.feedWholeDocumentFromNonZeroOffset:108 expected: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@5d2a4eed, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@57459491, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@3f0846c6]> but was: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@77a98a6a, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@78fbff54, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@3e10dc6]>",
++        "[ERROR] Tests run: 3, Failures: 2, Errors: 0, Skipped: 0",
++        "[ERROR] BUILD FAILURE",
++        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.2:test (default-test) on project jackson-core: There are test failures.",
++        "[ERROR] ",
++        "[ERROR] See /project/target/surefire-reports for the individual test results.",
++        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream."
++      ],
++      "tail": [
++        "[ERROR] See /project/target/surefire-reports for the individual test results.",
++        "[ERROR] See dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.",
++        "[ERROR] -> [Help 1]",
++        "[ERROR] ",
++        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
++        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
++        "[ERROR] ",
++        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
++        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
++      ]
++    },
++    "packagedTestSupport": null,
++    "testPrerequisites": [],
++    "testSourceSha256": {
++      "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java": "f7ff96bbdf145c98be408cc0cd4089c91d4e941fd469a5e95cb82edc604eba16"
++    },
++    "transplant": [
++      "src/test/java/com/fasterxml/jackson/core/json/async/AsyncLocation1412Test.java",
++      "src/test/java/com/fasterxml/jackson/core/tofix/async/AsyncLocation1412Test.java"
++    ],
++    "named": {
++      "AsyncLocation1412Test#feedWholeDocumentFromNonZeroOffset": [
++        {
++          "status": "failure",
++          "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
++          "method": "feedWholeDocumentFromNonZeroOffset",
++          "xmlSha256": "20075314d1b332b4c39c40c2af34c2a0ce2762d940dabead7bb174e87ac2ef95",
++          "failureType": "org.opentest4j.AssertionFailedError",
++          "message": "expected: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@5d2a4eed, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@57459491, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@3f0846c6]> but was: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@77a98a6a, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@78fbff54, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@3e10dc6]>",
++          "atNamedTest": true
++        }
++      ],
++      "AsyncLocation1412Test#feedByteByByteFromNonZeroOffset": [
++        {
++          "status": "failure",
++          "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
++          "method": "feedByteByByteFromNonZeroOffset",
++          "xmlSha256": "20075314d1b332b4c39c40c2af34c2a0ce2762d940dabead7bb174e87ac2ef95",
++          "failureType": "org.opentest4j.AssertionFailedError",
++          "message": "expected: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@1ef3efa8, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@502f1f4c, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@6f8f9349]> but was: <[com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@75c9e76b, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@7446d8d5, com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test$TokenAndByteOffsets@5c3b6c6e]>",
++          "atNamedTest": true
++        }
++      ],
++      "AsyncLocation1412Test#feedByteByByteFromOffsetZero": [
++        {
++          "status": "passed",
++          "class": "com.fasterxml.jackson.core.tofix.async.AsyncLocation1412Test",
++          "method": "feedByteByByteFromOffsetZero",
++          "xmlSha256": "20075314d1b332b4c39c40c2af34c2a0ce2762d940dabead7bb174e87ac2ef95"
++        }
++      ]
++    }
++  },
++  "mirror": {
++    "cachedRequests": 1968
++  }
++}
+--- /dev/null
++++ b/examples/365-jackson-async-token-offsets/records/opening-qualified/replay.log
+@@ -0,0 +1,3 @@
++365-jackson-async-token-offsets: running task replay (target route)
++365-jackson-async-token-offsets: not-executed (task replay: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)
++Not executed: 365-jackson-async-token-offsets

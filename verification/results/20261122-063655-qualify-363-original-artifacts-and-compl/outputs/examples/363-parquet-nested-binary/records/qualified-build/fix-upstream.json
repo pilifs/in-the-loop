@@ -1,0 +1,158 @@
+{
+  "revision": "8e740f07c26783d6dec2c4ac2cffa9823fe18036",
+  "side": "fix",
+  "buildTool": {
+    "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
+    "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
+    "member": "usr/bin/thrift",
+    "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
+  },
+  "prerequisites": [],
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-Dthrift.executable=/work/tools/thrift",
+      "-Dspotless.check.skip=true",
+      "-f",
+      "pom.xml",
+      "-pl",
+      "parquet-variant",
+      "-am",
+      "-DskipTests",
+      "-Dinvoker.skip=true",
+      "install"
+    ],
+    "exit": 0,
+    "seconds": 34.88,
+    "logSha256": "deca86f2ad3996fb12e0dc252428b863ea4a12cc37a76fd4b83db462d7c59642",
+    "errors": [],
+    "tail": [
+      "[INFO] Apache Parquet Encodings ........................... SUCCESS [  4.194 s]",
+      "[INFO] Apache Parquet Column .............................. SUCCESS [  8.036 s]",
+      "[INFO] Apache Parquet Variant ............................. SUCCESS [  2.804 s]",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  33.516 s",
+      "[INFO] Finished at: 2026-11-22T06:45:39Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "classpath": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "parquet-variant/pom.xml",
+      "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath",
+      "-DincludeScope=runtime",
+      "-Dmdep.outputFile=/project/parquet-variant/target/organic-runtime.txt"
+    ],
+    "exit": 0,
+    "seconds": 3.08,
+    "logSha256": "b691181a0974ccce656677801f59ef40b6bd55585ed5ecb12424f5472827f919",
+    "errors": [],
+    "tail": [
+      "[INFO] ",
+      "[INFO] --- dependency:3.8.1:build-classpath (default-cli) @ parquet-variant ---",
+      "[INFO] Wrote classpath file '/project/parquet-variant/target/organic-runtime.txt'.",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] BUILD SUCCESS",
+      "[INFO] ------------------------------------------------------------------------",
+      "[INFO] Total time:  1.883 s",
+      "[INFO] Finished at: 2026-11-22T06:45:42Z",
+      "[INFO] ------------------------------------------------------------------------"
+    ]
+  },
+  "artifact": {
+    "original": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
+    "jars": [
+      {
+        "path": "parquet-variant/target/parquet-variant-1.17.0-SNAPSHOT.jar",
+        "sha256": "1a3b3a7bf9e55b522e4d8f62cfa774be91838e7418dba9d2b5185318941b0640",
+        "auxiliary": false
+      }
+    ],
+    "selectedClass": "org/apache/parquet/variant/VariantUtil.class",
+    "selectedClassSha256": "64ef928e0d389161ca7927899a669ee85bba7f2de6eba3bb62a269d0f8062644",
+    "sourceSha256": "0e4b1f45eb28f69c1353c1c9a8a47d201aadf83d6f90ad2850b0b676fd4e434a",
+    "buildTool": {
+      "url": "https://archive.ubuntu.com/ubuntu/pool/universe/t/thrift/thrift-compiler_0.22.0-3ubuntu1_amd64.deb",
+      "packageSha256": "538ddcaf0a3f873dd7769bc18b822abdf57b9e53dbca006a1f994f4259ef0991",
+      "member": "usr/bin/thrift",
+      "executableSha256": "7d8307edf4d890949b8d452c7b640e06c80540852fb68a3cec23f18ef85ae5e7"
+    }
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-Dthrift.executable=/work/tools/thrift",
+        "-Dspotless.check.skip=true",
+        "-f",
+        "parquet-variant/pom.xml",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=TestVariantObjectBuilder#testMixedBinaryBuilder",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 4.22,
+      "logSha256": "72f10c7b6d42a8024f3bbbd7f2ee24d8ce2146de5e6a215e00873327ab308836",
+      "errors": [],
+      "tail": [
+        "[INFO] ",
+        "[INFO] --- apache-rat:0.16.1:check (default) @ parquet-variant ---",
+        "[INFO] RAT will not execute since it is configured to be skipped via system property 'rat.skip'.",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  2.926 s",
+        "[INFO] Finished at: 2026-11-22T06:45:46Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testPrerequisites": [],
+    "testSourceSha256": {
+      "parquet-variant/src/test/java/org/apache/parquet/variant/TestVariantObjectBuilder.java": "2a51585b442dc471a7ac96a8a538420a776b2cc842d35c98198aee1e7b4cb675"
+    },
+    "transplant": [],
+    "named": {
+      "TestVariantObjectBuilder#testMixedBinaryBuilder": [
+        {
+          "status": "passed",
+          "class": "org.apache.parquet.variant.TestVariantObjectBuilder",
+          "method": "testMixedBinaryBuilder",
+          "xmlSha256": "cafb61cc658f3255b6929ad83f302b4cd3104b1bf14bec7b61527c148413a2ff"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1830
+  }
+}
