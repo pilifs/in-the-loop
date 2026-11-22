@@ -1,0 +1,196 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "foundation.SeparatorInputs#text",
+    "domain": "value: String of ≤ 3 code units, not null",
+    "assume": "value != null",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over value: String of ≤ 3 code units, not null in 0.1 s; loops unwound 96 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/tmp/separator-inputs-byfr5rfo/current-text/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter value has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ foundation.SeparatorInputs#text satisfies `result` on every input where value != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over value: String of ≤ 3 code units, not null in 0.1 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: text(value=\"\\u0014\\u0014\\u0014\") reaches the calls\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/separator-inputs-byfr5rfo/current-text",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.087098022,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 3,
+      "stage": null,
+      "native": {
+        "paths": 40,
+        "merges": 0,
+        "solver_calls": 132,
+        "solving_seconds": 0.043265666,
+        "gates_evaluated": 108720,
+        "evaluating_seconds": 0.002504064,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 7601,
+        "clauses": 25687,
+        "seconds": 0.083804647,
+        "loading_seconds": 0.000780996,
+        "decoding_seconds": 0.000114212,
+        "encoding_seconds": 0.019451098,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "system properties use the standard JVM Properties table and the running JVM permits this property access"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.084,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.02,
+            "encoding": 0.019,
+            "solving": 0.043,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 7601,
+            "clauses": 25687
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 599.913,
+          "seconds": 0.006,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 238,
+            "clauses": 546
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.741,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.09,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.648
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": false,
+            "max_length": 3
+          }
+        ],
+        "shared_arrays": false,
+        "text": "value: String of ≤ 3 code units, not null"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "value != null",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": true,
+        "max_value_length": 3
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13",
+        "values": [
+          {
+            "source": "jvmcontract String model 12: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+              "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found text(value=\"\\u0014\\u0014\\u0014\").",
+        "witness": "text(value=\"\\u0014\\u0014\\u0014\")"
+      }
+    }
+  }
+]

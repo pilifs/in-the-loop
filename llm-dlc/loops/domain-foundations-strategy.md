@@ -2,6 +2,8 @@
 
 **Feature strategy and first investigation · 21 November 2026 · pilifs/in-the-loop**
 
+The expansion covers ordinary Java startup, all 32 receiver pairs and Avro buffered encoding. [Expansion scorecard](../../verification/domain-foundations/expansion.json)
+
 The completed pilot includes the original-classpath proofs, receiver rescore and measured cost of reuse. [Pilot report](domain-foundations-strategy-results.md) · [Recountable scorecard](../../verification/domain-foundations/results.json)
 
 After the queued plumbing and `lib` architecture work, return to features with **Avro byte conversions**. Use #3878 to establish which facts about ordinary startup, object construction and buffer behavior the checker can prove once. Then give those facts to a different feature, Avro #729, and measure how much work its proof still requires. Use JavaParser to test whether the startup technique travels across domains. Treat receiver construction as a separate feature opportunity.

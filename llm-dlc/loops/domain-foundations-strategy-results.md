@@ -1,6 +1,62 @@
-# Domain foundations pilot
+# Domain foundations results
 
-## Follow-up on ordinary startup
+## Expansion beyond the pilot
+
+The final verifier proved ordinary Jackson factory construction on four original Avro classpaths, all eight JavaParser traversal contracts under a supplied separator, and two complete public upgrade callers. Avro #198 is the third consumer of the heap-buffer work. The frozen scores below keep their original guards, observations and bounds. [Recountable scorecard](../../verification/domain-foundations/expansion.json)
+
+| Population | Opening original-scope result | Final original-scope result | Additional checked behavior |
+| --- | ---: | ---: | --- |
+| Six primary PRs | 39/46 native | 39/46 native | 26 establishments, 13 JVM-replayed refutations and seven open Avro #3878 claims. The finite JVM result is 46/46. |
+| JavaParser #4538 | 2/8 native | 2/8 native | 8/8 with the separator supplied by the caller and no captured application initializer. |
+| Avro #729 | 2/4 native | 2/4 native | 4/4 with the registered two-class startup and 4/4 on the finite JVM grid. |
+| Run 6 receiver cases | 0/23 paired native verdicts | 0/23 paired native verdicts | Two complete registered callers verified natively on both original versions. |
+| Avro #198 | 0/4 whole-domain native decisions | 0/4 whole-domain native decisions | 4/4 finite JVM decisions. Both properties hold natively on 14/16 inputs on each revision. |
+
+### Ordinary startup and the remaining VF-054 obligations
+
+On both sides of Avro #3878 and #729, ordinary `new JsonFactory()` completed with a null codec at unwind 512. Success covers independent 64-bit readings of the wall clock and stable per-object identity hashes, including collisions. The checker runs the selected JDK’s atomic-reference constructors and accessors. A counterexample that depends on a chosen platform value still needs reachability. At the frozen unwind of 64, a later array copy still needs cells from Jackson’s character-table loop. [Final producer evidence](../../verification/domain-foundations/startup-final) · [Finding VF-054](../../verification/findings.md)
+
+At unwind 512, the actual #3878 schema initializer and the ordinary Hadoop configuration initializer both reach `LinkedBlockingQueue.<init>()` in SLF4J’s substitute logger factory. Running the subsequent Jackson ObjectMapper construction on its own reaches `Class.getMethod` on #3878 and `Class.getDeclaredConstructor` on #729. The diagnostics preserve the verifier’s single-class-loader premise. The public bytes-schema constructor on the older classpath reaches that same reflective constructor lookup. [Avro #3878](../../verification/results/20261122-050207-final-355-jackson-and-fresh-configuratio/result.json) · [Avro #729](../../verification/results/20261122-050207-final-361-jackson-and-fresh-configuratio/result.json)
+
+With only `JobConf` and `Credentials` supplied as startup roots, a fresh `JobConf(false)` returned **one reducer on two consecutive calls** on each revision. The counterclaim that the default differed from one was refuted. This proof retains the recorded two-processor process profile and the stated thread and loader premises. Supplying only `Configuration` stops at `JobConf.<clinit>`. Supplying only `JobConf` stops at `Credentials.<clinit>`. Fresh JVM controls distinguished an ignored default-site resource, an explicitly loaded value of seven, an isolated hexadecimal override of sixteen, and an invalid override that threw `NumberFormatException`. Both native overlay checks now reach `ConcurrentHashMap.put`. [Reducer caller](../../lib/benchmark/domain-foundations/FreshReducers.java) · [Reducer receipts](../../verification/domain-foundations/startup-final/355)
+
+JavaParser ran the original printer construction, including its copying HashSet, with the caller supplying every non-null separator through two UTF-16 units. Preorder, postorder, nonempty postorder and iterator exhaustion yielded four fixed establishments, two parent establishments and two parent refutations replayed on fresh JVMs. The separate text guarantee covers three units. Clearing the property produced the original initialization error and subsequent erroneous-class behavior. Ordinary entry still needs the initial property’s contents and identity. [Parent results](../../verification/results/20261122-050534-final-parent-javaparser-separator-profil/result.json) · [Fixed results](../../verification/results/20261122-050534-final-fixed-javaparser-separator-profile/result.json)
+
+### The 32 original receiver pairs
+
+The native verifier can now run the registered caller on its original classpath. On two fresh JVM trials per input, the debugger binds the actual receiver to its observed constructor descriptors, calling bytecode offsets, field and argument types, nulls and aliases. The trace describes the first qualified entry in each trial. All 64 caller classes match Run 6. Of the 64 ordered classpaths, 54 match Run 6 byte for byte, and all three rescoring runs match the pilot’s prepared inputs. [First run](../../verification/domain-foundations/receiver-callers) · [After literal decoding](../../verification/domain-foundations/receiver-final) · [Final run](../../verification/domain-foundations/receiver-verified)
+
+Of the 23 historical receiver blockers, **16 reached the original method on both JVMs for every registered input**. Fourteen preserved their public behavior and two changed it. Seven public comparisons remain open. Six Base64-input cases and one Boolean-input case advanced past their shared native intake operation on both revisions. Native checking proved all four Commons CSV parsing inputs and all four Commons Compress framed-LZ4 decompression inputs on each version. All four associated classpaths match the original Run 6 digests. In LZ4 the verifier executed the real stream construction and reads, then encoded the emitted bytes for comparison. The pilot had passed the original superclass refusal in 9/23 cases, with one reaching parameter construction. All 34 unrestricted paired overloads in the receiver cohort remain unresolved. The four-case threshold for expanding that broader claim remains open. [CSV evidence](../../verification/domain-foundations/receiver-verified/05/callers/commons-csv-8993be87.json) · [LZ4 evidence](../../verification/domain-foundations/receiver-verified/04/callers/commons-compress-822.json)
+
+Single-version properties can observe externally typed fields by reference and can pass a concrete application collaborator to a constructor’s interface parameter. The original spreadsheet getter proved that a cell built by its three-argument constructor has a null style on both classpaths. The false non-null property was refuted. The actual parser installed an `XSSFCellStyle` before the old registered call. The constructor proof used Temurin 21 and the registered parser used Temurin 8. The date-validator getter advanced through its field layout and String-result assertion to the constructor’s use of `System.out`. The per-case scorecard records the first outstanding native obligation on each side of every pair. [Receiver producer proofs](../../verification/domain-foundations/receiver-properties-final) · [All 32 comparisons](../../verification/domain-foundations/expansion.json)
+
+Two ASM callers now stop while `Transformer.<clinit>` constructs its weak cache. The JSON and YAML Commons Configuration callers both reach `InMemoryNodeModel.<clinit>` during node-model construction. The XZ decoder reaches the real `org.tukaani.xz.ArrayCache` system-property lookup, and the DeltaSpike activation example reaches `HashSet(int)` on its original JDK 8. Both versions report the same first obligation in each of these cases. [Final receiver receipts](../../verification/domain-foundations/receiver-verified)
+
+### Avro buffered encoding, PR 198
+
+The original upstream mapped-buffer test failed on the parent with position 17 and zero remaining, and passed on the fix. The module’s pre-shade JAR matched the compiler class. Re-emitting the compiler and packaged classes through the same ASM visitor yielded identical canonical bytes. Verification used the actual final Maven JAR and the JVM-confirmed classpath order. [Example 362](../../examples/362-avro-buffered-encoder-cursor/README.md) · [Upstream change](https://github.com/apache/avro/commit/c9f2c49241397fb3967bd281225f7cce353c32fc)
+
+The sixteen selectors cross writable and read-only heap views, starting positions zero and two, and widths zero, four, sixteen and seventeen. On selectors 11 and 15 the parent exhausted the caller’s read-only buffer and omitted the second 17-byte copy. The fixed JVM retained the cursor and emitted both copies. The native checker established both observations on the fourteen buffered or array-backed inputs on both revisions. Its remaining channel obligation is `SharedSecrets.getJavaLangAccess()` inside `AbstractInterruptibleChannel.blockedOn`. With the thread already interrupted, both original sinks received 17 bytes before throwing `ClosedByInterruptException`. The parent cursor had advanced and the fixed cursor retained its offset. [Whole-domain results](../../verification/results/20261122-050024-final-avro-198-caller-and-cursor-compari/result.json) · [Native partitions and interrupt controls](../../verification/domain-foundations/encoder-paths-final)
+
+The debugger identified the actual wrapped array and the view passed to each encoder. Eight selectors fit the earlier six-byte certificate. The other eight require capacity 20, which the earlier certificate correctly rejects. A new certificate through 20 and a separate read-only-view proof qualified all 16. [Call-site evidence](../../verification/domain-foundations/encoder-adoption-final/sites.json)
+
+| Same wrap guarantee through 20 bytes | Earlier executable | Final executable | Final peak RSS |
+| --- | ---: | ---: | ---: |
+| Avro #198 with reuse disabled | 5.71 s | 5.43 s | 109.0 MiB |
+| Build and qualify the foundation on #3878 | 19.72 s | 18.10 s | 154.7 MiB |
+| Avro #198 with verified reuse | 5.51 s | 5.55 s | 103.5 MiB |
+
+Reuse removed one solver invocation. It saved 0.20 s in the first measurement and cost 0.12 s in the final one. The final comparison has no finite measured break-even. There was one measurement per route. The separate read-only theorem took 0.45 s to compile and 9.27 s to prove. Agent effort was unmeasured. [Final costs and digests](../../verification/domain-foundations/encoder-adoption-final/measurement.json)
+
+### Reproduction and verification
+
+Run `python3 -B lib/benchmark/domain-foundations/expansion_results.py --check` to verify the recorded outputs and recount the results. The final comparisons use commit `20f7eebc6712`, library tree `01dded848b05609aade0293c1e5b03b17c82bd13` and release executable `fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f`. The same source tree built independently from an offline export. The managed jobs include their commands, input classpaths, bounds and startup assumptions. [Verification inventory and scorecard](../../verification/domain-foundations/expansion.json)
+
+All **54 jobs** were collected and all **1,465 declared output hashes** were checked. Thirty-five jobs passed. Five mixed batches retain the open ordinary claims. Five earlier attempts exposed the missing shaded-module prerequisite, packaged class normalization, implicit class-loader premises and the absent vacuity field on a refusal. Nine jobs stopped at compilation when a decoder call landed before its implementation. Their replacements ran on the independently built correction. The original statuses and evidence are retained.
+
+The final checker’s changed-test selection passed all 59 Rust test binaries and all 46 selected Python groups. All four examples validated with 35, 25, 9 and 5 planned tasks respectively. Example 362 also replayed the two packaged revisions on a fresh JVM. The final evidence and reporting selection also passed all 54 groups. The three cumulative scorecards each recount from their own evidence.
+
+## Earlier follow-up on ordinary startup
 
 The follow-up ran the original JavaParser and Avro callers and checked the startup code they share. The final common checker repeated the seven open Avro #3878 claims, six JavaParser claims and four ordinary Avro #729 claims at their frozen guards and bounds. The six primary PRs still have **39/46 original-scope native decisions**, JavaParser has **2/8**, and #729 has **2/4** from the parent counterexamples reproduced at ordinary entry. On that same checker, all four #729 claims qualified under the original two-class startup. [Recountable follow-up](../../verification/domain-foundations/followup.json) · [Final original-scope and decimal checks](../../verification/results/20261122-032303-repeat-frozen-claims-on-the-jackson-tabl/result.json)
 

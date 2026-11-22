@@ -1,0 +1,142 @@
+{
+  "id": "reflector-35",
+  "build": "current",
+  "operator": {
+    "model": "gpt-6.2-astra",
+    "effort": "high"
+  },
+  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator",
+  "observer": "Generate the original reflection adapter and inspect the resulting callable class.",
+  "revisions": {
+    "old": "a7421542ac2b34670c7c261539fc253d77526afc",
+    "new": "b8a65d35911580a469964aa722f4cd989c1a5382"
+  },
+  "result": "open",
+  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
+  "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+  "sides": {
+    "old": {
+      "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
+      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
+      "scope": "complete original Maven production module",
+      "module": "pom.xml",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "0a79648e8047a78b589e226fe1a3bb55113de63987ced9d6ca7e0ae1b5fae880",
+      "operandScope": "runtime",
+      "subjectJdk": "8.0.512.0+9-tem",
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "goals": [
+        "-Dmaven.test.skip=true",
+        "-DincludeScope=runtime",
+        "-Dmdep.outputFile=target/upgrade-runtime.cp",
+        "compile",
+        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
+      ],
+      "declaredReleaseRepositories": [],
+      "stage": "artifacts ready",
+      "compiledClasses": 65,
+      "resources": 0,
+      "seconds": 9.4,
+      "orderedSha256": [
+        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
+        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
+        "71c4f78e437b8fdcd9cc0dfd2abea8c089eb677005a6a5cff320206cc52b46cc",
+        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
+        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
+        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
+      ],
+      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
+      "descriptors": [
+        "(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;"
+      ]
+    },
+    "new": {
+      "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
+      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
+      "scope": "complete original Maven production module",
+      "module": "pom.xml",
+      "declaredDependencyScope": "compile",
+      "modulePomSha256": "a691fcb106d7da9532cec061f88a06a6eb085fc89fdd404323960f3c7e416833",
+      "operandScope": "runtime",
+      "subjectJdk": "8.0.512.0+9-tem",
+      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+      "goals": [
+        "-Dmaven.test.skip=true",
+        "-DincludeScope=runtime",
+        "-Dmdep.outputFile=target/upgrade-runtime.cp",
+        "compile",
+        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
+      ],
+      "declaredReleaseRepositories": [],
+      "stage": "artifacts ready",
+      "compiledClasses": 65,
+      "resources": 0,
+      "seconds": 9.6,
+      "orderedSha256": [
+        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
+        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
+        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
+        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
+        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
+        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
+        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
+        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
+        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
+        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
+      ],
+      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
+      "descriptors": [
+        "(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;"
+      ]
+    }
+  },
+  "declarations": {
+    "common": [
+      "(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;"
+    ],
+    "removed": [],
+    "added": []
+  },
+  "native": {
+    "target": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class)",
+    "exit": 1,
+    "seconds": 0.104,
+    "outputSha256": "41dac7cb59721c3f60f53f9d4c79c76d12aebd04c6bc4d745c5f735a2edaba8c",
+    "outcome": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class)",
+      "domain": null,
+      "counterexample": null,
+      "proof": null,
+      "problem": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet",
+      "statement": null,
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class) cannot be verified: newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet",
+          "uri": null,
+          "line": 30
+        }
+      ],
+      "output": "\u2717 ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class) cannot be verified: newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet\n",
+      "work": "$WORK/checker-t3k5yi0q/overload-0"
+    },
+    "firstBlocker": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet"
+  },
+  "firstBlocker": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet",
+  "elapsedSeconds": 0.207,
+  "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0"
+}

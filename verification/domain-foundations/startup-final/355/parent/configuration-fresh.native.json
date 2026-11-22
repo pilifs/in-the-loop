@@ -1,0 +1,161 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "foundation.FreshReducers#fresh",
+    "domain": "",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at foundation.FreshReducers.fresh:7). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+    "statement": "/home/filip/.cache/in-the-loop/tmp/startup-producers-k3v45dqx/configuration-fresh/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "foundation.FreshReducers#fresh cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at foundation.FreshReducers.fresh:7). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+        "uri": null,
+        "line": 7
+      }
+    ],
+    "output": "✗ foundation.FreshReducers#fresh cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V (org.apache.hadoop.mapred.JobConf.<clinit>() at foundation.FreshReducers.fresh:7). With --gaps assume it assumes instead that org.apache.hadoop.mapred.JobConf.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/startup-producers-k3v45dqx/configuration-fresh",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 1.59430878,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 128,
+      "stage": null,
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 0,
+        "solving_seconds": 0.0,
+        "gates_evaluated": 0,
+        "evaluating_seconds": 0.0,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1,
+        "clauses": 1,
+        "seconds": 0.012946966,
+        "loading_seconds": 0.00514442,
+        "decoding_seconds": 0.000029746,
+        "encoding_seconds": 0.0,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the class initializer of org.apache.hadoop.conf.Configuration was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 411a24505eea), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties slf4j.detectLoggerNameMismatch, not set; slf4j.provider, not set; slf4j.internal.report.stream, not set; slf4j.internal.verbosity, not set; com.ctc.wstx.returnNullForDefaultNamespace, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 33 other initialized application classes [com.ctc.wstx.api.CommonConfig, com.ctc.wstx.api.ReaderConfig, com.ctc.wstx.api.WstxInputProperties, com.ctc.wstx.api.WstxInputProperties$ParsingMode, com.ctc.wstx.stax.WstxInputFactory, com.ctc.wstx.util.DefaultXmlSymbolTable, com.ctc.wstx.util.SymbolTable, com.ctc.wstx.util.SymbolTable$Bucket, org.apache.commons.collections4.map.AbstractIterableMap, org.apache.commons.collections4.map.AbstractMapDecorator, org.apache.commons.collections4.map.UnmodifiableMap, org.apache.hadoop.conf.Configuration$DeprecatedKeyInfo, org.apache.hadoop.conf.Configuration$DeprecationContext, org.apache.hadoop.conf.Configuration$DeprecationDelta, org.apache.hadoop.util.Preconditions, org.codehaus.stax2.XMLInputFactory2, org.slf4j.Logger, org.slf4j.LoggerFactory, org.slf4j.helpers.BasicMDCAdapter, org.slf4j.helpers.BasicMDCAdapter$1, org.slf4j.helpers.BasicMarkerFactory, org.slf4j.helpers.NOPLogger, org.slf4j.helpers.NOPLoggerFactory, org.slf4j.helpers.NOPMDCAdapter, org.slf4j.helpers.NOP_FallbackServiceProvider, org.slf4j.helpers.NamedLoggerBase, org.slf4j.helpers.Reporter, org.slf4j.helpers.Reporter$Level, org.slf4j.helpers.Reporter$TargetChoice, org.slf4j.helpers.SubstituteLoggerFactory, org.slf4j.helpers.SubstituteServiceProvider, org.slf4j.helpers.ThreadLocalMapOfStacks, org.slf4j.helpers.Util], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call). Exact weak maps recorded with only null values retain that invariant while the collector may remove keys. The joint heap includes requested objects of classes [java.util.HashMap, java.util.concurrent.atomic.AtomicReference, org.apache.commons.collections4.map.UnmodifiableMap, org.apache.hadoop.conf.Configuration$DeprecationContext]."
+        ]
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "class-initializer:org.apache.hadoop.mapred.JobConf.<clinit>()V",
+          "kind": "class-initializer",
+          "call": "org.apache.hadoop.mapred.JobConf.<clinit>()",
+          "sites": [
+            "foundation.FreshReducers.fresh:7"
+          ],
+          "approximation": "has run already, and threw nothing",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 598.464,
+          "seconds": 0.013,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.005,
+            "lowering": 0.0,
+            "symbolic": 0.008,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 1.676,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.013,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 1.661
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.apache.hadoop.conf.Configuration was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 411a24505eea), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties slf4j.detectLoggerNameMismatch, not set; slf4j.provider, not set; slf4j.internal.report.stream, not set; slf4j.internal.verbosity, not set; com.ctc.wstx.returnNullForDefaultNamespace, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; before the checked entry, one JVM snapshot supplies this class and 33 other initialized application classes [com.ctc.wstx.api.CommonConfig, com.ctc.wstx.api.ReaderConfig, com.ctc.wstx.api.WstxInputProperties, com.ctc.wstx.api.WstxInputProperties$ParsingMode, com.ctc.wstx.stax.WstxInputFactory, com.ctc.wstx.util.DefaultXmlSymbolTable, com.ctc.wstx.util.SymbolTable, com.ctc.wstx.util.SymbolTable$Bucket, org.apache.commons.collections4.map.AbstractIterableMap, org.apache.commons.collections4.map.AbstractMapDecorator, org.apache.commons.collections4.map.UnmodifiableMap, org.apache.hadoop.conf.Configuration$DeprecatedKeyInfo, org.apache.hadoop.conf.Configuration$DeprecationContext, org.apache.hadoop.conf.Configuration$DeprecationDelta, org.apache.hadoop.util.Preconditions, org.codehaus.stax2.XMLInputFactory2, org.slf4j.Logger, org.slf4j.LoggerFactory, org.slf4j.helpers.BasicMDCAdapter, org.slf4j.helpers.BasicMDCAdapter$1, org.slf4j.helpers.BasicMarkerFactory, org.slf4j.helpers.NOPLogger, org.slf4j.helpers.NOPLoggerFactory, org.slf4j.helpers.NOPMDCAdapter, org.slf4j.helpers.NOP_FallbackServiceProvider, org.slf4j.helpers.NamedLoggerBase, org.slf4j.helpers.Reporter, org.slf4j.helpers.Reporter$Level, org.slf4j.helpers.Reporter$TargetChoice, org.slf4j.helpers.SubstituteLoggerFactory, org.slf4j.helpers.SubstituteServiceProvider, org.slf4j.helpers.ThreadLocalMapOfStacks, org.slf4j.helpers.Util], including their cross-class static writes and shared object identities; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and its noncanonical objects have no aliases outside that snapshot and unrecorded external effects do not affect the checked call). Exact weak maps recorded with only null values retain that invariant while the collector may remove keys. The joint heap includes requested objects of classes [java.util.HashMap, java.util.concurrent.atomic.AtomicReference, org.apache.commons.collections4.map.UnmodifiableMap, org.apache.hadoop.conf.Configuration$DeprecationContext].",
+          "basis": "engine",
+          "id": "observed-initializer:org.apache.hadoop.conf.Configuration:411a24505eeaa21d44d509d9c20f58a5c86d405ba91af02ef8b81d48dfc10b4f:42f805c2eafd1536fbc1c910759239ee0a68035bb67f81e9c9f84a457c72566d"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

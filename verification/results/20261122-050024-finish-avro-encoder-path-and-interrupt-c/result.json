@@ -1,0 +1,248 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-050024-finish-avro-encoder-path-and-interrupt-c",
+  "title": "Finish Avro encoder path and interrupt comparisons",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.2s, peak 108.0 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-050024-finish-avro-encoder-path-and-interrupt-c.json",
+    "sha256": "09e2fed6118cc32f20bd065d706f4d3811c6f6af595669009f3c22bf8c9d52d4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-050024-finish-avro-encoder-path-and-interrupt-c",
+      "title": "Finish Avro encoder path and interrupt comparisons",
+      "description": "Retain all sixteen JVM interrupt controls and both guarded native observations on each side. A diagnostic refusal may have no vacuity field; affirmative decisions must still demonstrate reachability.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "362"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T05:00:24+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check both paths and the interrupt controls",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_segments.py --output verification/domain-foundations/encoder-paths-final",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/encoder-paths-final"
+      ]
+    }
+  },
+  "sourceCommit": "20f7eebc6712eb78c36f8eea4db50431587d7eb4",
+  "startedAt": "2026-11-22T05:13:38+00:00",
+  "finishedAt": "2026-11-22T05:13:56+00:00",
+  "wallSeconds": 18.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2071396,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 113229824,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 6.8,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check both paths and the interrupt controls",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_segments.py --output verification/domain-foundations/encoder-paths-final",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 4.219,
+      "cpuSeconds": 6.788,
+      "cpuThrottledSeconds": 0.692,
+      "peakMemoryBytes": 113229824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-both-paths-and-the-inter.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/fix/buffered-cursor.native.json",
+      "change": "added",
+      "bytes": 5457,
+      "sha256": "33ac418813067a2e5a0bf7b2263dfd1a276cc6fdd10702c321631834fe5836eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/fix/buffered-repeated.native.json",
+      "change": "added",
+      "bytes": 5469,
+      "sha256": "22c42996089dbf5da95e9fc140b468573e282a7f5919f4a6c928984114b068c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/fix/channel-cursor.native.json",
+      "change": "added",
+      "bytes": 6472,
+      "sha256": "ab31fe9b98bdcca9605d2ca5705806dd08b9259506f5c6216b6488447b019b35",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/fix/channel-repeated.native.json",
+      "change": "added",
+      "bytes": 6483,
+      "sha256": "c5baee0edf60373f63cb34072a0c4ad46a076db1927c0fbd1c060565e8588a6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/fix/evidence.json",
+      "change": "added",
+      "bytes": 5795,
+      "sha256": "f626051582c1431c39a2fa0db085bd3caa692c8ec6f6fcce88ef880efde1ab67",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/parent/buffered-cursor.native.json",
+      "change": "added",
+      "bytes": 5457,
+      "sha256": "d9c6ea6f60253a0e4e8a61c976b9d7d5302f074ee1746669088bb788b7c4c09f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/parent/buffered-repeated.native.json",
+      "change": "added",
+      "bytes": 5470,
+      "sha256": "0346080f077339b4042c519a1f07518159d2bc4bf53c9d7f4104a2091e2c721a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/parent/channel-cursor.native.json",
+      "change": "added",
+      "bytes": 6473,
+      "sha256": "f1e9bc1aa9b57ca0480b926edc52f04b5d11abd0a29988a449eb1fa4bd05e713",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/parent/channel-repeated.native.json",
+      "change": "added",
+      "bytes": 6481,
+      "sha256": "b7b35b3e7c644e9cf2eee7c93aa35b0f234a71cf53642d8e107f63e1339612a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths-final/parent/evidence.json",
+      "change": "added",
+      "bytes": 5802,
+      "sha256": "7398e317e07dd3cb207c905a1da28fd09a7927e6a89af753ed14a54d36547e5e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T05:17:57+00:00",
+    "applied": [
+      "verification/domain-foundations/encoder-paths-final/fix/buffered-cursor.native.json",
+      "verification/domain-foundations/encoder-paths-final/fix/buffered-repeated.native.json",
+      "verification/domain-foundations/encoder-paths-final/fix/channel-cursor.native.json",
+      "verification/domain-foundations/encoder-paths-final/fix/channel-repeated.native.json",
+      "verification/domain-foundations/encoder-paths-final/fix/evidence.json",
+      "verification/domain-foundations/encoder-paths-final/parent/buffered-cursor.native.json",
+      "verification/domain-foundations/encoder-paths-final/parent/buffered-repeated.native.json",
+      "verification/domain-foundations/encoder-paths-final/parent/channel-cursor.native.json",
+      "verification/domain-foundations/encoder-paths-final/parent/channel-repeated.native.json",
+      "verification/domain-foundations/encoder-paths-final/parent/evidence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "01dded848b05609aade0293c1e5b03b17c82bd13",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/01dded848b05609aade0293c1e5b03b17c82bd13/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T051356Z-862830d4b4540c21",
+      "outputs": "20261122T051356Z-929173b3028e848d",
+      "diff": "20261122T051356Z-975455def1ac427b"
+    }
+  }
+}

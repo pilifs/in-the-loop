@@ -1,0 +1,156 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate",
+    "domain": "this: a DateValidator made by its constructor, DateValidator(), from any arguments it accepts",
+    "assume": null,
+    "assert": "result == null",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "outside the fragment: reads static field java.lang.System.out",
+    "statement": "/home/filip/.cache/in-the-loop/tmp/receiver-property-3ju1hd32/current/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: outside the fragment: reads static field java.lang.System.out",
+        "uri": null,
+        "line": 57
+      }
+    ],
+    "output": "✗ com.alibaba.citrus.service.form.impl.validation.DateValidator#getMinDate cannot be verified: outside the fragment: reads static field java.lang.System.out\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/receiver-property-3ju1hd32/current",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.023213488,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 0,
+        "solving_seconds": 0.0,
+        "gates_evaluated": 0,
+        "evaluating_seconds": 0.0,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1,
+        "clauses": 1,
+        "seconds": 0.011468991,
+        "loading_seconds": 0.003403848,
+        "decoding_seconds": 0.000350779,
+        "encoding_seconds": 0.000090098,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.011,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.003,
+            "lowering": 0.0,
+            "symbolic": 0.008,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.053,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.011,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.041
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "this",
+            "type": "com.alibaba.citrus.service.form.impl.validation.DateValidator",
+            "kind": "object",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "this: a DateValidator made by its constructor, DateValidator(), from any arguments it accepts",
+        "input_objects": [
+          1,
+          1
+        ]
+      },
+      "assumptions": [
+        {
+          "kind": "constructible",
+          "text": "the constructor DateValidator() accepts the arguments of this: an input it rejects is skipped, so the property is about the objects it makes",
+          "basis": "harness"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == null",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

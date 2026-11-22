@@ -1,0 +1,199 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "foundation.SeparatorInputs#preorder",
+    "domain": "code: int × first: char × second: char × length: int",
+    "assume": "code >= 0 && code < 2 && length >= 0 && length <= 2",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int × first: char × second: char × length: int in 22.1 s; loops unwound 96 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/tmp/separator-inputs-0anbw34w/current-preorder/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ foundation.SeparatorInputs#preorder satisfies `result == 1` on every input where code >= 0 && code < 2 && length >= 0 && length <= 2 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int × first: char × second: char × length: int in 22.1 s; loops unwound 96 times with unwinding assertions)\n  not vacuous: preorder(code=0, first='\\u0014', second='\\u0014', length=0) reaches the calls\n",
+    "work": "/home/filip/.cache/in-the-loop/tmp/separator-inputs-0anbw34w/current-preorder",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 22.105531231,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 64,
+      "stage": null,
+      "native": {
+        "paths": 1382,
+        "merges": 897,
+        "solver_calls": 5907,
+        "solving_seconds": 19.018471375,
+        "gates_evaluated": 2248404,
+        "evaluating_seconds": 0.039497262,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 158121,
+        "clauses": 508299,
+        "seconds": 22.091028794,
+        "loading_seconds": 0.005224589,
+        "decoding_seconds": 0.001361309,
+        "encoding_seconds": 0.302684752,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "system properties use the standard JVM Properties table and the running JVM permits this property access"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 22.091,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.005,
+            "lowering": 0.001,
+            "symbolic": 2.763,
+            "encoding": 0.303,
+            "solving": 19.018,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 158121,
+            "clauses": 508299
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 577.894,
+          "seconds": 0.004,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 448,
+            "clauses": 1206
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 22.124,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 22.095,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.027
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "first",
+            "type": "char",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "second",
+            "type": "char",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "length",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int × first: char × second: char × length: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 2 && length >= 0 && length <= 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found preorder(code=0, first='\\u0014', second='\\u0014', length=0).",
+        "witness": "preorder(code=0, first='\\u0014', second='\\u0014', length=0)"
+      }
+    }
+  }
+]

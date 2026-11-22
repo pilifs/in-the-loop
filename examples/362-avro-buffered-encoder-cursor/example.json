@@ -30,13 +30,14 @@
     "description": "The parent hands the caller’s view to the output channel on a bulk write. The fix passes a separate read-only view, preserving the caller’s position."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen for original upstream replay",
+  "verdictLabel": "Finite JVM 4/4, both native observations on 14/16 inputs per revision",
   "source": {
     "kind": "pull-request",
     "repository": "https://github.com/apache/avro",
     "url": "https://github.com/apache/avro/pull/198"
   },
   "notes": [
+    "The mapped-buffer upstream test failed on the parent and passed on the fix. Four finite JVM claims cover every selector. The parent advanced the caller’s read-only buffer at selectors 11 and 15, causing the repeated write to omit its second 17-byte copy. The native buffered path covers the other fourteen inputs on each revision. The channel path reaches the JDK's interrupt registration. A pre-interrupted JVM throws ClosedByInterruptException after consuming the channel view. Eight selectors fit the earlier six-byte proof, and a requalified twenty-byte heap-window proof covers the entire grid. See verification/domain-foundations/expansion.json.",
     "Sixteen inputs cross writable and read-only heap views, starting positions zero and two, and lengths zero, four, sixteen and seventeen. The encoder uses its public minimum buffer size of 32. The upstream regression uses a mapped buffer of length seventeen."
   ]
 }

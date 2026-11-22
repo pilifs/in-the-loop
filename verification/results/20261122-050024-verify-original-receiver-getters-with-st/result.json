@@ -1,0 +1,298 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-050024-verify-original-receiver-getters-with-st",
+  "title": "Verify original receiver getters with String result assertions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.4s, peak 392.4 MiB (estimated 2m00s, 2.0 GiB); 16 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-050024-verify-original-receiver-getters-with-st.json",
+    "sha256": "57b590a0d39ec583277277972e7554231f40a0641acb10d67c25a6036ab5427a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-050024-verify-original-receiver-getters-with-st",
+      "title": "Verify original receiver getters with String result assertions",
+      "description": "Recheck the fresh spreadsheet and date receivers and counterclaims on both original classpaths, now allowing null and content observations on String results.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T05:00:24+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Exercise both original receiver classes and counterclaims",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/receiver_properties.py --area \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-properties-final",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-properties-final"
+      ]
+    }
+  },
+  "sourceCommit": "20f7eebc6712eb78c36f8eea4db50431587d7eb4",
+  "startedAt": "2026-11-22T05:13:38+00:00",
+  "finishedAt": "2026-11-22T05:13:58+00:00",
+  "wallSeconds": 20.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2071396,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 411435008,
+    "wallSeconds": 5.4,
+    "cpuSeconds": 8.0,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise both original receiver classes and counterclaims",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/receiver_properties.py --area \"$TMPDIR/domain-foundations-receivers\" --output verification/domain-foundations/receiver-properties-final",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 5.424,
+      "cpuSeconds": 8.042,
+      "cpuThrottledSeconds": 0.552,
+      "peakMemoryBytes": 411435008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-both-original-receive.log",
+        "lines": 4,
+        "bytes": 258,
+        "sha256": "d95ae92ff8d7b66a8a5218f9662dfc9ccecef25284da3ee7b6097515252391eb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-70 old ['unverifiable', 'verified', 'violation']",
+        "compsuite-i-70 new ['unverifiable', 'verified', 'violation']",
+        "compsuite-i-94 old ['unverifiable', 'unverifiable', 'unverifiable']",
+        "compsuite-i-94 new ['unverifiable', 'unverifiable', 'unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/baseline.native.json",
+      "change": "added",
+      "bytes": 1915,
+      "sha256": "c1c9a7fb0edda872156fcb310a30cdcd60e26fdb57aefbf98389bd49cb3a79c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/current.native.json",
+      "change": "added",
+      "bytes": 5686,
+      "sha256": "d0e289e6df4a240f9e88b80cba0f5426c7a7e27eea5ed8fe730d25a43bb146f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/negative.native.json",
+      "change": "added",
+      "bytes": 8438,
+      "sha256": "175f938696c5f20209b0bfafd71f6e700c33cabec28ba296bd1cc451c28859d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/result.json",
+      "change": "added",
+      "bytes": 2941,
+      "sha256": "8c4a3afb7a6507139923853196821c32128342f633953dcead8dc00c640ca734",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/baseline.native.json",
+      "change": "added",
+      "bytes": 1915,
+      "sha256": "b15677cdcebac4232e06db1b11a79d818317bea78b29044b665152754fa0f0a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/current.native.json",
+      "change": "added",
+      "bytes": 5686,
+      "sha256": "2356e10d3d9b94a9d545575d12ffb3ca089bdd0e00ad9632b4ec79709808ef6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/negative.native.json",
+      "change": "added",
+      "bytes": 8438,
+      "sha256": "e1c81f8d905a7eb45cbecbf8e1394862667b319be635d534dc3df4a507055a34",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/result.json",
+      "change": "added",
+      "bytes": 2941,
+      "sha256": "17c04e5c0ee977db7dfa57b72e937c46533fcc3a19260920b253816fa1f71d91",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/baseline.native.json",
+      "change": "added",
+      "bytes": 2091,
+      "sha256": "493ffc008edbddb8d80b9173d467d94b48bfc9f9633e4315c59cfbabffd5b7c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/current.native.json",
+      "change": "added",
+      "bytes": 5057,
+      "sha256": "b78ef5a4dc67e30da258bd8911eacd10d039640dc3b0538d279d9252fd3aad23",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/negative.native.json",
+      "change": "added",
+      "bytes": 5056,
+      "sha256": "f60b65dc91e73504c6953d65ea41ba85b718ec50eac6e9848ef805eb91a4120e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/result.json",
+      "change": "added",
+      "bytes": 5515,
+      "sha256": "488bfaae06cce84c4deab0afea87f3c9ce2a24f54cff3740c1bd30f7e725be20",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/baseline.native.json",
+      "change": "added",
+      "bytes": 2091,
+      "sha256": "7aaf16fbaab4566a5301ebbf84abc2b4716b3919db586c7ded3f3c8ac2b9a817",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/current.native.json",
+      "change": "added",
+      "bytes": 5057,
+      "sha256": "9f51fd3937dfad9b8e7517b2e628fae3b1315aec37fec08d8dcdf815d6ba74b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/negative.native.json",
+      "change": "added",
+      "bytes": 5058,
+      "sha256": "24afee44917c3d8117ce66aff983f8a3d8f04125ad21ab424dba03d5da05ea9c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/result.json",
+      "change": "added",
+      "bytes": 5515,
+      "sha256": "beba1017058be8eb28d51e76995ee3d9c9ef1319e007b43dfeccad2c386574d7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T05:17:57+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/baseline.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/current.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/negative.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/new/result.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/baseline.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/current.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/negative.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-70/old/result.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/baseline.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/current.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/negative.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/new/result.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/baseline.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/current.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/negative.native.json",
+      "verification/domain-foundations/receiver-properties-final/compsuite-i-94/old/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "01dded848b05609aade0293c1e5b03b17c82bd13",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/01dded848b05609aade0293c1e5b03b17c82bd13/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T051358Z-093382f0812a05bd",
+      "outputs": "20261122T051358Z-15589646a6ab620c",
+      "diff": "20261122T051358Z-186921c36d2f46ea"
+    }
+  }
+}

@@ -1,0 +1,834 @@
+{
+  "entry": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+  "observer": "Read the classfile, fields and methods delivered by the original WhatJDK archive reader. The four inputs cover reference arrays, overloads, a long field and an empty class.",
+  "domainBasis": "The input bytes and classfile declarations were fixed independently of application execution. Each class is packaged as the only member of a ZIP and consumed through the original archive iterator.",
+  "cases": [
+    {
+      "args": [
+        "yv66vgAAADQAEAoAAwANBwAOBwAPAQAFdG90YWwBAAFKAQAFbmFtZXMBABNbTGphdmEvbGFuZy9TdHJpbmc7AQAGPGluaXQ+AQADKClWAQAEQ29kZQEABmNob29zZQEAKChbTGphdmEvbGFuZy9TdHJpbmc7SSlMamF2YS9sYW5nL09iamVjdDsMAAgACQEAJmV2YWx1YXRpb24vZml4dHVyZS9BcnJheXNBbmRSZWZlcmVuY2VzAQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAIABAAEAAUAAAABAAYABwAAAAIAAQAIAAkAAQAKAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEACwAMAAEACgAAABAAAgADAAAABCscMrAAAAAAAAA="
+      ],
+      "expected": {
+        "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQACgoAAwAHBwAIBwAJAQAGPGluaXQ+AQADKClWAQAEQ29kZQwABAAFAQAYZXZhbHVhdGlvbi9maXh0dXJlL0VtcHR5AQAQamF2YS9sYW5nL09iamVjdAAhAAIAAwAAAAAAAQABAAQABQABAAYAAAARAAEAAQAAAAUqtwABsQAAAAAAAA=="
+      ],
+      "expected": {
+        "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFKAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAcZXZhbHVhdGlvbi9maXh0dXJlL0xvbmdGaWVsZAEAEGphdmEvbGFuZy9PYmplY3QBAAVsYWJlbAAxAAQABQAAAAIAAgAGAAcAAAAZAAgACQABAAoAAAACAAsAAwABAAwADQABAA4AAAARAAEAAQAAAAUqtwABsQAAAAAAAQAPABAAAQAOAAAAEAACAAIAAAAEGwRgrAAAAAAAAQAPABEAAQAOAAAAEgAEAAMAAAAGHxQAAmGtAAAAAAAA"
+      ],
+      "expected": {
+        "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+      }
+    },
+    {
+      "args": [
+        "yv66vgAAADQAFgoABQASBQAAAAAAAAACBwATBwAUAQAFdmFsdWUBAAFJAQAFTEFCRUwBABJMamF2YS9sYW5nL1N0cmluZzsBAA1Db25zdGFudFZhbHVlCAAVAQAGPGluaXQ+AQADKClWAQAEQ29kZQEABHN0ZXABAAQoSSlJAQAEKEopSgwADAANAQAaZXZhbHVhdGlvbi9maXh0dXJlL051bWJlcnMBABBqYXZhL2xhbmcvT2JqZWN0AQAFbGFiZWwAMQAEAAUAAAACAAIABgAHAAAAGQAIAAkAAQAKAAAAAgALAAMAAQAMAA0AAQAOAAAAEQABAAEAAAAFKrcAAbEAAAAAAAEADwAQAAEADgAAABAAAgACAAAABBsEYKwAAAAAAAEADwARAAEADgAAABIABAADAAAABh8UAAJhrQAAAAAAAA=="
+      ],
+      "expected": {
+        "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+      }
+    }
+  ],
+  "operandScope": "runtime",
+  "probeSha256": "872f10271ddc3fb0b3bf843c4ee11297bd31e6c01fdfe9852a7a74d12680dc14",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
+  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
+  "jdk": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "sides": {
+    "old": {
+      "commit": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
+      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
+      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
+      "classpath": [
+        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
+        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
+        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
+        "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
+      ],
+      "dependency": "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 2,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.Context"
+      ]
+    },
+    "new": {
+      "commit": "e5574c3c06f9db307b96baa5937f9c19039df605",
+      "sourceSha256": "718826d606254eeadaabca13916c64071ea17973d3c37b3961a9edec49bc13a4",
+      "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
+      "classpath": [
+        "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
+        "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
+        "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
+        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
+      ],
+      "dependency": "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
+      "preparation": "original caller and javac-discovered source dependencies",
+      "compiledClasses": 2,
+      "resources": null,
+      "trials": [
+        {
+          "input": 0,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/ArraysAndReferences java/lang/Object \nF 4 total J\nF 1 names [Ljava/lang/String;\nM 1 <init> ()V\nM 1 choose ([Ljava/lang/String;I)Ljava/lang/Object;"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 1,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            },
+            {
+              "return": "C 52 33 evaluation/fixture/Empty java/lang/Object \nM 1 <init> ()V"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 2,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/LongField java/lang/Object \nF 2 value J\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        },
+        {
+          "input": 3,
+          "qualifiedMethodEntries": 2,
+          "observations": [
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            },
+            {
+              "return": "C 52 49 evaluation/fixture/Numbers java/lang/Object \nF 2 value I\nF 25 LABEL Ljava/lang/String;\nM 1 <init> ()V\nM 1 step (I)I\nM 1 step (J)J"
+            }
+          ],
+          "receiverAtEntry": [
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            },
+            {
+              "entry": {
+                "arguments": [],
+                "fields": {
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#delegate:Lcom/iodesystems/whatjdk/ClassEntryExtractor;": "null",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#fileName:Ljava/lang/String;": "Ljava/lang/String;@1",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#scanInnerJarFiles:Z": "Z",
+                  "com.iodesystems.whatjdk.ClassEntryExtractor#zipInputStream:Ljava/util/zip/ZipInputStream;": "Ljava/util/zip/ZipInputStream;@2"
+                },
+                "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+              },
+              "observedConstructorEntries": [
+                {
+                  "descriptor": "(Ljava/lang/String;Ljava/util/zip/ZipInputStream;)V",
+                  "calledBy": "com.iodesystems.whatjdk.UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+                  "codeIndex": 92,
+                  "frame": {
+                    "arguments": [
+                      "Ljava/lang/String;@1",
+                      "Ljava/util/zip/ZipInputStream;@2"
+                    ],
+                    "fields": {},
+                    "this": "Lcom/iodesystems/whatjdk/ClassEntryExtractor;@0"
+                  }
+                }
+              ]
+            }
+          ],
+          "entryInvocations": [
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            },
+            {
+              "observerCodeIndex": 97,
+              "dispatchedTo": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;"
+            }
+          ],
+          "loadedUpgradeOnEachReplay": true
+        }
+      ],
+      "loadedDependencyClasses": [
+        "org.objectweb.asm.Attribute",
+        "org.objectweb.asm.ClassReader",
+        "org.objectweb.asm.ClassVisitor",
+        "org.objectweb.asm.Context"
+      ]
+    }
+  },
+  "status": "preserved",
+  "originalFixtures": [],
+  "runtimeCompanions": [],
+  "observerInvocation": {
+    "declaration": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+    "codeIndices": [
+      97
+    ]
+  },
+  "workingDirectory": ".",
+  "originalInvocation": "com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+  "invocationVia": null,
+  "probeClasses": {
+    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
+    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+    "UpgradeTrace": "d5359fa3264eeb31b99378b21d4102bd39c3733b454baf875712a8b2f0e0283c",
+    "com/iodesystems/whatjdk/UpgradeProbe$1": "513889c08c5463fca230569f7cc3be52e30afbc41b72c9c97cd9586657753827",
+    "com/iodesystems/whatjdk/UpgradeProbe": "2eea25b749f3563b19628dc08a40c80e7ec322c603a9c5e137bacadfdadf5a68"
+  },
+  "nativeCaller": {
+    "domain": "registered finite caller inputs",
+    "target": "com.iodesystems.whatjdk.UpgradeCallerClaim#matches",
+    "assume": "selector >= 0 && selector < 4",
+    "checkerSha256": "fffbd7abf4ad3e3a94c5b9ef077d4373f102d91f997af0cdac0c0d8a4b9ed30f",
+    "adapterClassSha256": "8af60e9e1d16a93a1b44984ab43abe22a395e8c413f26c0a17908b03343c646f",
+    "maxArrayLength": 128,
+    "unwind": 64,
+    "timeoutSeconds": 60,
+    "sides": {
+      "old": {
+        "commit": "206adaf9371d37dd308122f5f17e0f7cdaf3568c",
+        "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
+        "orderedClasspathSha256": [
+          "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
+          "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
+          "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
+          "917bda888bc543187325d5fbc1034207eed152574ef78df1734ca0aee40b7fc8"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.zip.ZipOutputStream.<init>(Ljava/io/OutputStream;)V@jdk-21.0.13 (java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) at com.iodesystems.whatjdk.UpgradeProbe.observe:11). With --gaps assume it assumes instead that java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "old.native.json",
+        "rawSha256": "050e8d86d09c0a2fe94276e04a14050fd7da2e0f8795e63e7adeea074d961886",
+        "seconds": 0.033
+      },
+      "new": {
+        "commit": "e5574c3c06f9db307b96baa5937f9c19039df605",
+        "callerClassSha256": "5af01ba50399fccf7580c983594514a1d2c4d2a5c61b222cd2525354af167b93",
+        "orderedClasspathSha256": [
+          "a171e33ad59fd80502c8272e7b9f68ef61d61b9ac01435a4c7b5e125499b764c",
+          "23626eef4e3c49fa0cd8347f63c7adacdadefbceaf3b234993a531a76666bcf7",
+          "bcf4e18336a2aa103cd0a9d44052f29cd46b425e7d151d5a8f9d9ffa77da1fad",
+          "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085"
+        ],
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.zip.ZipOutputStream.<init>(Ljava/io/OutputStream;)V@jdk-21.0.13 (java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) at com.iodesystems.whatjdk.UpgradeProbe.observe:11). With --gaps assume it assumes instead that java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "vacuity": null,
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selector >= 0 && selector < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "counterexample": null,
+        "raw": "new.native.json",
+        "rawSha256": "4c72bd8c703a8b1669a6d984142fc1a53af8c3938bc4a170a46bfca52d438609",
+        "seconds": 0.032
+      }
+    }
+  },
+  "differences": [],
+  "oldOracleDisagreements": [],
+  "elapsedSeconds": 11.81,
+  "specSha256": "2a4b25018cdfde34a5d83d652d50a1b49cf3699f123c7a4cfd08b5c48c60f7f2"
+}

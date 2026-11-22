@@ -1,0 +1,230 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-050534-final-fixed-javaparser-separator-profile",
+  "title": "Final fixed JavaParser separator profile",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m00s, peak 325.5 MiB (estimated 6m00s, 3.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-050534-final-fixed-javaparser-separator-profile.json",
+    "sha256": "73a257ce8dbf162218a9b6a00244ed75e2e146471cb401c2988aed7bd5f5a2a9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-050534-final-fixed-javaparser-separator-profile",
+      "title": "Final fixed JavaParser separator profile",
+      "description": "Check all four registered traversal obligations on this original revision for every supplied separator of length zero through two UTF-16 units. Also check absent startup and the larger text domain. The underlying shared HashSet constructor and Node initialization run normally; counterexamples replay in a fresh JVM. Requalify on the final common verifier and retain the first measurement for comparison.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "360"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T05:05:34+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Check text and complete traversal set",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --all-traversals --side fix --output verification/domain-foundations/complete-separator-final",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/complete-separator-final/fix"
+      ]
+    }
+  },
+  "sourceCommit": "20f7eebc6712eb78c36f8eea4db50431587d7eb4",
+  "startedAt": "2026-11-22T05:13:50+00:00",
+  "finishedAt": "2026-11-22T05:16:06+00:00",
+  "wallSeconds": 136.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2071396,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 341311488,
+    "wallSeconds": 120.2,
+    "cpuSeconds": 121.3,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.33
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check text and complete traversal set",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --all-traversals --side fix --output verification/domain-foundations/complete-separator-final",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 120.2,
+      "cpuSeconds": 121.266,
+      "cpuThrottledSeconds": 0.31,
+      "peakMemoryBytes": 341311488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-text-and-complete-traver.log",
+        "lines": 6,
+        "bytes": 205,
+        "sha256": "91af4d2b498fa129159b936980891d5dc1c546240da53af944fee66f2062c5b7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fix current text verified None",
+        "fix current absent verified None",
+        "fix current postorder verified None",
+        "fix current nonempty verified None",
+        "fix current preorder verified None",
+        "fix current terminal verified None"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/complete-separator-final/fix/current-absent.native.json",
+      "change": "added",
+      "bytes": 4690,
+      "sha256": "78f520aefb27d56d5d42753f448a053499ada1566229af5b856d787d74e9512b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator-final/fix/current-nonempty.native.json",
+      "change": "added",
+      "bytes": 6619,
+      "sha256": "78ccc0097b0025879483e64c615794397edd8ae6b6d594a9354d8d3e4cbda901",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator-final/fix/current-postorder.native.json",
+      "change": "added",
+      "bytes": 6618,
+      "sha256": "678c96a6da7b1e80a73c7b0afeab362e3ce5e3f9929da8fbb1c490b380be6b04",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator-final/fix/current-preorder.native.json",
+      "change": "added",
+      "bytes": 6614,
+      "sha256": "7df9d0ae1824d2373936af8d03cf8fbe99a805c0f0d27eadb2f14e64895439e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator-final/fix/current-terminal.native.json",
+      "change": "added",
+      "bytes": 6611,
+      "sha256": "70d1e5679a593b8b4e0ccba4ba13c47e1bfc8c996a5d596cc72677b808342947",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator-final/fix/current-text.native.json",
+      "change": "added",
+      "bytes": 8072,
+      "sha256": "379a234ad65b4133103ce4bed469d24a37e2a681d9057ff96104ff156ddd2850",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/complete-separator-final/fix/evidence.json",
+      "change": "added",
+      "bytes": 5319,
+      "sha256": "a5a66488d82e1d8771cf5bb68e45cc9302509cc8712391aa45a38ab57532ded5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T05:17:57+00:00",
+    "applied": [
+      "verification/domain-foundations/complete-separator-final/fix/current-absent.native.json",
+      "verification/domain-foundations/complete-separator-final/fix/current-nonempty.native.json",
+      "verification/domain-foundations/complete-separator-final/fix/current-postorder.native.json",
+      "verification/domain-foundations/complete-separator-final/fix/current-preorder.native.json",
+      "verification/domain-foundations/complete-separator-final/fix/current-terminal.native.json",
+      "verification/domain-foundations/complete-separator-final/fix/current-text.native.json",
+      "verification/domain-foundations/complete-separator-final/fix/evidence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "01dded848b05609aade0293c1e5b03b17c82bd13",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/01dded848b05609aade0293c1e5b03b17c82bd13/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T051606Z-600096f78899b50d",
+      "outputs": "20261122T051606Z-621533f42a113a28",
+      "diff": "20261122T051606Z-6405250fa400092e"
+    }
+  }
+}

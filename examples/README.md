@@ -369,7 +369,7 @@ it was produced. Its `example.json` holds what the router needs, with its notes.
 | 359 | [Boolean list insertion at every boundary in a single word](359-eclipse-boolean-list-insertion/README.md) | real-world | Eclipse Collections | B11 | Strict native 8/8, finite JVM 8/8 |  | open-source-libraries, off-by-one, external-target, own-checker |
 | 360 | [Postorder traversal of the root and its original children](360-javaparser-postorder-root/README.md) | real-world | JavaParser | B11 | Native 2/8 at original scope, 8/8 with observed LineSeparator startup, finite JVM 8/8 |  | open-source-libraries, dropped-case, external-target, own-checker |
 | 361 | [Repeated Avro decimal conversion over a caller-owned buffer window](361-avro-decimal-buffer-cursor/README.md) | real-world | Apache Avro | B11 | Native 2/4 at original scope, 4/4 after recorded startup, finite JVM 4/4 |  | buffer-bounds, deserialization, external-target, own-checker |
-| 362 | [Avro buffered encoding preserves the caller’s byte window](362-avro-buffered-encoder-cursor/README.md) | real-world | Apache Avro | B11 | Frozen for original upstream replay |  | buffer-bounds, array-utilities, external-target, own-checker |
+| 362 | [Avro buffered encoding preserves the caller’s byte window](362-avro-buffered-encoder-cursor/README.md) | real-world | Apache Avro | B11 | Finite JVM 4/4, both native observations on 14/16 inputs per revision |  | buffer-bounds, array-utilities, external-target, own-checker |
 <!-- examples:end -->
 
 ## Examples by tag
