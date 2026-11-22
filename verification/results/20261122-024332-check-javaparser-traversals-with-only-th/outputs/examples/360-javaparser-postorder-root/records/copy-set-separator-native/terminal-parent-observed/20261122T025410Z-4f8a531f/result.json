@@ -1,0 +1,576 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "f857f900943f3a80",
+    "format": 1,
+    "example": "360",
+    "statement": {
+      "approach": "target",
+      "task": "terminal-parent-observed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "terminal-parent-observed",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "com.github.javaparser.ast.Node$PostOrderIterator#<init>(Lcom/github/javaparser/ast/Node;)V",
+        "file": "claims/terminal-observed.json",
+        "sha256": "5ce70873fc80720e34325809fc8cc13b797498eb4595a6242f6c4b39e26bd151",
+        "property": "terminal",
+        "claimKind": "property",
+        "statement": "The actual postorder iterator returns each original object and stays exhausted after the final root.",
+        "assume": "code >= 0 && code < 2",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 64
+        },
+        "explicitBounds": {
+          "unwind": 96,
+          "maxArrayLength": 64
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/organic/Cases.java",
+            "sha256": "17d60200e6a2fd682032fb6c6bcf24986f929eb9fbb9dc3b64ad79e5c84f1273"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+          }
+        ],
+        "adapter": {
+          "entry": "organic.TreeOrder#terminal(I)I",
+          "mapping": "The actual postorder iterator returns each original object and stays exhausted after the final root. Its original receiver and direct outcome are indexed in controls/table.json.",
+          "correspondence": "finite-oracle",
+          "cases": 2
+        },
+        "observedInitializers": {
+          "com.github.javaparser.utils.LineSeparator": "a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+        },
+        "key": "92e0ff4b40aefea3"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 64
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "terminal-parent-observed",
+      "sidecar": "afce0da858a38e2943dbc7adf0f227505e77cb00ec7809e47fe061f03f5e7387",
+      "revisions": {
+        "parent": "e0eb16b8870fc05c03ab794e502dd76f97422e26"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "87b9c6f47b572e0e9a3ba9d25e21e84cb5d6996bb7fc075ee33ba80473276c15"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "cbe961009b6fafe13085b895a486660a470485ac34316043e20df41188f446a8"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/organic/TreeOrder.java": "d7145bf220668f8b7cf53b5e3138d5222114b749e3f8e1c404fd60fea662a84d",
+        "claims/terminal-observed.json": "5ce70873fc80720e34325809fc8cc13b797498eb4595a6242f6c4b39e26bd151",
+        "controls/table.json": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a",
+        "driver/organic/Cases.java": "17d60200e6a2fd682032fb6c6bcf24986f929eb9fbb9dc3b64ad79e5c84f1273"
+      },
+      "claimKey": "92e0ff4b40aefea3"
+    }
+  },
+  "attempt": {
+    "id": "20261122T025410Z-4f8a531f",
+    "claim": "f857f900943f3a80",
+    "startedAt": "2026-11-22T02:54:10+00:00",
+    "seconds": 23.7,
+    "engine": "native",
+    "options": [
+      "prove",
+      "organic.TreeOrder#terminal(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/javaparser-core-3.26.2-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 2",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--observed-initializer",
+      "com.github.javaparser.utils.LineSeparator",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "b2b709370da90d207a914b40e4be4cd2f6726c8286345818a293cfb470eed057"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "998606cb1b16856d52bec9748f57b3ca4b6568e6035dd7ec3f8359ca2002e801",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-024332-check-javaparser-traversals-with-only-th",
+      "sourceCommit": "addc8c72ad3c023cf474587e6ca92ad1375061b2",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-024332-check-javaparser-traversals-with-only-th"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 23.567,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 96,
+      "maxArrayLength": 64,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "f857f900943f3a80",
+    "attempt": "20261122T025410Z-4f8a531f",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 2",
+          "verdict": "violation",
+          "domain": "code: int",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 23.4 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "terminal(code=0)",
+            "contract": "result == 1",
+            "actual": "0",
+            "shrinkRuns": 0,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 0
+                }
+              ],
+              "call": {
+                "class": "organic.TreeOrder",
+                "classFile": "organic/TreeOrder.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "terminal",
+                "descriptor": "(I)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "code",
+                    "type": "int",
+                    "value": 0,
+                    "from": "code"
+                  }
+                ],
+                "revision": "parent"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 23.416,
+            "properties": 1,
+            "unwind": 96,
+            "maxArrayLength": 64,
+            "stage": "[0:20]",
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 58.798,
+                "seconds": 22.199,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.004,
+                  "lowering": 0.001,
+                  "symbolic": 3.646,
+                  "encoding": 0.349,
+                  "solving": 18.194,
+                  "trace": 0.005,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 179221,
+                  "clauses": 572371
+                }
+              }
+            ],
+            "native": {
+              "paths": 1485,
+              "merges": 999,
+              "solverCalls": 6117,
+              "solvingSeconds": 18.193646351,
+              "gatesEvaluated": 2756527,
+              "evaluatingSeconds": 0.076090468,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 179221,
+              "clauses": 572371,
+              "seconds": 22.199150391,
+              "loadingSeconds": 0.003767556,
+              "decodingSeconds": 0.000851175,
+              "encodingSeconds": 0.349465347,
+              "witnessSeconds": 0.005397855
+            },
+            "modelsAssume": [
+              "the class initializer of com.github.javaparser.utils.LineSeparator was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 0413a3f8b470), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+            ],
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "jvm",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 2",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the class initializer of com.github.javaparser.utils.LineSeparator was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 0413a3f8b470), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                "basis": "engine",
+                "id": "observed-initializer:com.github.javaparser.utils.LineSeparator:0413a3f8b4707638860dc0dea988cdf0dae425da5eeae8cc803cae7724919e56:a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "terminal(code=0)",
+        "contract": "result == 1",
+        "actual": "0",
+        "shrinkRuns": 0,
+        "witness": {
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "call": {
+            "class": "organic.TreeOrder",
+            "classFile": "organic/TreeOrder.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "terminal",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 0,
+                "from": "code"
+              }
+            ],
+            "revision": "parent"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 23.4 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
+    "problem": null,
+    "domain": "code: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 2"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of com.github.javaparser.utils.LineSeparator was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 0413a3f8b470), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read the system properties line.separator = \"\\n\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine",
+          "id": "observed-initializer:com.github.javaparser.utils.LineSeparator:0413a3f8b4707638860dc0dea988cdf0dae425da5eeae8cc803cae7724919e56:a98b36947b21f4c222684408c1865d7161b910c0019c1ebf1bbdd6dc6bf38982"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "5c748567f597cb92c501c9745dd2eaf6e59f6238245c147a1d124d1409d2c8ec",
+        "bytes": 34588
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "64cc99ef91bfac17ac49742587eb79ae594069d2eb1325f61fcecbf6db0c63bc",
+        "bytes": 549
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "dba3a656acb15f68d55410803890276f3966debe7b57bd428c983e82d221daec",
+        "bytes": 1965
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "8ec8102379a81899afddc2ff0e9dfb9a5ec3ea9af47aeea2c1c00e12d5044242",
+        "bytes": 439
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "123d1962799016ef6ecdac6288c4a54ee045cec761f08f4ec8d94b3cee10175c",
+        "bytes": 4402
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "ee94030229a774889822013d3fb4ff12c052b199c122722897336c312ea5c412",
+        "bytes": 7404
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "880f9e451498c6d8c6550c5d9c80faafa5c7e76abe847a3aff0ed4a5426ab6be",
+        "bytes": 27162
+      }
+    ]
+  }
+}

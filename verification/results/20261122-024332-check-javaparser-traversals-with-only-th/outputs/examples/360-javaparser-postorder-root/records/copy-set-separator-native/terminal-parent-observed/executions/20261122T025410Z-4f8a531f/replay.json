@@ -1,0 +1,59 @@
+[
+  {
+    "claimKey": "92e0ff4b40aefea3",
+    "entry": "organic.TreeOrder#terminal(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
+        "classpath": [
+          "e5e0518ebdb3a60f6f92e49477fd8baa1247140de4f0775d0d46ea929134ec8f",
+          "cbe961009b6fafe13085b895a486660a470485ac34316043e20df41188f446a8"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 2)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = organic.TreeOrder.terminal(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": {
+        "package": ""
+      },
+      "field": "terminal",
+      "direct": {
+        "parent": {
+          "postorder": "java.util.EmptyStackException",
+          "preorder": [
+            "root"
+          ],
+          "terminal": "java.util.EmptyStackException"
+        }
+      },
+      "tableSha256": "242770e76443be836d369f6f2d1b36c6992e180e2b201ea1215598863a397f9a"
+    }
+  }
+]
