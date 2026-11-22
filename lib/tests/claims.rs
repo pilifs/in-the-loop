@@ -237,10 +237,13 @@ fn a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_
     let o = run(&options(classes, "claims.P#dotInside", 4, "P-dotInside"));
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.output.contains("jdk-primitive-method:java.lang.String.matches(Ljava/lang/String;)Z"), "{}", o.output);
-    proved(classes, "claims.P#letter", 3);
-    let o = run(&options(classes, "claims.P#letterOutsideAscii", 3, "P-letterOutsideAscii"));
-    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.output.contains("jdk-static-method:java.lang.Character.isLetter(C)Z"), "{}", o.output);
+    for (method, jdk) in [("letter", "isLetter"), ("letterOrDigit", "isLetterOrDigit")] {
+        proved(classes, &format!("claims.P#{method}"), 3);
+        let outside = format!("{method}OutsideAscii");
+        let o = run(&options(classes, &format!("claims.P#{outside}"), 3, &format!("P-{outside}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+        assert!(o.output.contains(&format!("jdk-static-method:java.lang.Character.{jdk}(C)Z")), "{}", o.output);
+    }
     let o = run(&options(classes, "claims.P#quiet", 3, "P-quiet"));
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let stated = o.stated.as_ref().expect("a statement");

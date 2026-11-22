@@ -135,7 +135,9 @@ The recertified Avro wrap fact qualified 26 of 64 Parquet value wraps and 32 of 
 
 The eight public Avro receipts with three startup roots captured all stop at the name-validation thread-local. Its field is `Schema.validateNames` in #1381 and `Schema.VALIDATE_NAMES` in #3730. The #1381 record-field helper separately stops at `FIELD_RESERVED`. Each recorded result is now paired with its own frozen public obligation in the scorecard.
 
-- Status: working
+The follow-up checks the default name-policy supplier and the instructions that consume its value on all four original Avro JARs. The same JVM controls exercise the public readers, eighteen named cases, all two-character ASCII names and an explicitly permissive policy. The native comparison runs the campaign verifier and its ASCII `Character.isLetterOrDigit(char)` extension on the same compiled companion. [Paired name-validation job](../../verification/jobs/20261122-133607-prove-the-name-validation-consumer-on-fo.json)
+
+- Status: waiting on jobs 20261122-133607-prove-the-name-validation-consumer-on-fo
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e
 [pilot]: https://github.com/pilifs/in-the-loop/blob/ae92d881c61581011ed494c0ce62fcdfd291343e/llm-dlc/loops/domain-foundations-strategy-results.md

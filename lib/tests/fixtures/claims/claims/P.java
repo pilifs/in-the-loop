@@ -108,6 +108,15 @@ public final class P {
         return Character.isLetter(c) || c != 'ª';
     }
 
+    public static boolean letterOrDigit(char c) {
+        return c >= 128 || Character.isLetterOrDigit(c) == (c >= 'a' && c <= 'z'
+                || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9');
+    }
+
+    public static boolean letterOrDigitOutsideAscii(char c) {
+        return Character.isLetterOrDigit(c) || c != '\u0663';
+    }
+
     /** Under the JDK's default logging configuration a logger logs nothing below INFO. */
     public static boolean quiet(int k) {
         Logger logger = Logger.getLogger("claims.P");
