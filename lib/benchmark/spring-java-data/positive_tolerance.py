@@ -7,28 +7,24 @@ from itertools import product
 import math
 import os
 from pathlib import Path
-import shutil
 import struct
-import subprocess
 import sys
 import tempfile
 
+from historical_companion import CLASSPATH, LOADED, bind, check_ordinary, prepare
 from measure import HERE, ROOT, SETUP, digest, read, write
-from targets import class_binding, runtime_jdk
 
 sys.path.insert(0, str(HERE.parent / "java-domain-proof"))
 from companions import invocation, proof
 
 FOLDER = ROOT / "examples/373-commons-lang-nan-search"
 SOURCES = FOLDER / "companions"
-LOADED = ROOT / "examples/tools/targets/java/LoadedClasses.java"
 ENTRY = "datawork.ToleranceSearch"
 SUBJECT = "org.apache.commons.lang3.ArrayUtils"
 METHOD = ENTRY + "#agrees"
 GUARD = "center >= -1 && center <= 1"
 BOUNDS = (256, 16384)
 STARTS = (-(2**31), -1, 0, 1, 2, 3, 2**31 - 1)
-CLASSPATH = ["classes", "original.jar"]
 # Big-endian Java DataOutput: public index, post-call raw words, native-adapter return.
 ROW = struct.Struct(">iQQB")
 
@@ -85,45 +81,19 @@ def check_grid(path):
 
 
 def check_native(raw_outcome):
-    """Validate the stated domain as well as the verdict of the symbolic query."""
-    stated = raw_outcome["stated"]
-    params = [(p["name"], p["type"]) for p in stated["domain"]["parameters"]]
-    ordinary = [{"kind": "precondition", "text": GUARD, "basis": "stated"},
-                {"kind": "initialization", "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
-                 "basis": "engine"}]
-    if (raw_outcome["target"] != METHOD or raw_outcome["assume"] != GUARD or raw_outcome["assert"] != "result == 1"
-            or stated["checker"]["engine"] != "native" or stated["gap_mode"] != "strict"
-            or params != [("first", "long"), ("second", "long"), ("start", "int"), ("center", "int")]
-            or stated["assumptions"] != ordinary or stated["observations"]["exceptions"] != "none may be thrown"
-            or stated["checker"]["fallback"] is not None
-            or raw_outcome["verdict"] != "verified" or raw_outcome["problem"]
-            or stated["vacuity"]["status"] != "non-vacuous"
-            or stated["bounds"] != {"complete": True, "unwind": BOUNDS[0], "max_array_length": None}
-            or raw_outcome["search"]["max_array_length"] != BOUNDS[1]):
-        raise ValueError("missing ordinary strict proof of the four-argument tolerance claim")
+    check_ordinary(raw_outcome, METHOD, [("first", "long"), ("second", "long"), ("start", "int"), ("center", "int")],
+                   GUARD, BOUNDS)
 
 
 def run(side, dest, physical_only):
     dest.mkdir(parents=True, exist_ok=True)
-    jdk = Path(runtime_jdk.home("21"))
-    env = dict(os.environ, JAVA_HOME=str(jdk), JVMCONTRACT_JAR_RELEASE="21", PATH=str(jdk / "bin") + os.pathsep + os.defpath)
-    build = read(FOLDER / f"records/setup/build-{side}.json")
-    artifact, = build["artifacts"]
-    prior = read(ROOT / "verification/spring-java-data/exact-classpaths/classes.json")["373"][side]
-    subject = prior["classes"][SUBJECT]
-    java = runtime_jdk.release(jdk)["JAVA_RUNTIME_VERSION"]
-    if (java != prior["jdk"]["JAVA_RUNTIME_VERSION"] or build["recipe"]["commit"] != prior["commit"]
-            or artifact["sha256"] != subject["jarSha256"]):
-        raise ValueError("the companion does not use the original JVM and historical module")
     with tempfile.TemporaryDirectory(prefix="positive-tolerance-") as tmp:
         work = Path(tmp)
-        classes, jar = [work / name for name in CLASSPATH]
-        classes.mkdir()
-        shutil.copyfile(SETUP / f"artifacts/commons-lang-1589-{side}.jar", jar)
-        if digest(jar) != artifact["sha256"]:
-            raise ValueError("historical JAR digest mismatch")
         sources = [SOURCES / "ToleranceSearch.java", SOURCES / "ToleranceReplay.java", LOADED]
-        subprocess.run([jdk / "bin/javac", "--release", "21", "-parameters", "-proc:none", "-cp", jar, "-d", classes, *sources], check=True)
+        jdk, env, classes, jar, prior = prepare(FOLDER, side, work, SETUP / f"artifacts/commons-lang-1589-{side}.jar", sources)
+        subject = prior["classes"][SUBJECT]
+        if subject["jarSha256"] != digest(jar):
+            raise ValueError("different historical ArrayUtils provider")
         observer = digest(classes / "datawork/ToleranceSearch.class")
         cp = os.pathsep.join(map(str, (classes, jar)))
         grid = dest / "observations.bin.gz"
@@ -134,21 +104,14 @@ def run(side, dest, physical_only):
         expected = [f"{name}\t{provider.name}\t{sha}" for name, _, _, provider, sha in bindings]
         if physical["exit"] or (dest / physical["stdout"]).read_text().splitlines() != expected:
             raise ValueError("the public JVM did not load the two expected classes")
-        report = {"commit": prior["commit"], "jdk": java, "classpath": CLASSPATH,
+        report = {"commit": prior["commit"], "jdk": prior["jdk"]["JAVA_RUNTIME_VERSION"], "classpath": CLASSPATH,
                   "jarSha256": digest(jar), "sources": {s.name: digest(s) for s in sources},
                   "classes": {name: sha for name, _, _, _, sha in bindings}, "jvm": physical,
                   "words": [f"{w:016x}" for w in words()], "starts": list(STARTS), "grid": check_grid(grid),
                   "observationsSha256": digest(grid)}
         if not physical_only:
             checker = Path(os.environ["JVMCONTRACT"]).resolve()
-            requests = [{"class": n, "method": m, "descriptor": d} for n, m, d, _, _ in bindings]
-            answer, release = class_binding.ask(checker, env, work, {side: {"classpath": [str(classes), str(jar)], "classes": requests}})
-            if release != 21:
-                raise ValueError("different bytecode release")
-            for bound, (name, _, _, provider, sha) in zip(answer[side]["bindings"], bindings, strict=True):
-                problem = class_binding.disagreement(name, bound, str(provider), sha)
-                if problem:
-                    raise ValueError(problem)
+            bind(checker, env, work, side, bindings)
             report.update(checkerSha256=digest(checker), source=os.environ.get("VERIFY_SOURCE_COMMIT"),
                           libTree=os.environ.get("JVMCONTRACT_LIB_TREE"), job=os.environ.get("VERIFY_JOB_ID"))
             report["native"] = proof(checker, classes, [jar], work, env, dest, METHOD, "ordinary", GUARD, bounds=BOUNDS)

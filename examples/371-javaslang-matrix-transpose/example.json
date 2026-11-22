@@ -34,7 +34,8 @@
   "notes": [
     "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
     "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence.",
-    "The parent matched the rectangular-or-reject contract on 102 of 400 matrices. Every one of the 298 differences was ragged. The fix matched all 400, including the singleton empty-row identity and the two-row, zero-column shape loss."
+    "The parent matched the rectangular-or-reject contract on 102 of 400 matrices. Every one of the 298 differences was ragged. The fix matched all 400, including the singleton empty-row identity and the two-row, zero-column shape loss.",
+    "On both historical JARs, ordinary native proofs checked each cell by reference for 2 × 3 and 3 × 2 matrices through one and two transposes, with null or any of seven distinct, value-equal objects at each position. A separate proof on each JAR checked outer identity on the empty, one-empty-row and one-cell fast paths, and height loss for two or three empty rows. Each JVM replayed all 877 null and alias patterns in both orientations and 40 boundary cases."
   ],
   "source": {
     "kind": "pull-request",

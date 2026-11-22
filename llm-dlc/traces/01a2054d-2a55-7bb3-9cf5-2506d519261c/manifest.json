@@ -1,0 +1,100 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "01a2054d-2a55-7bb3-9cf5-2506d519261c",
+  "status": "open",
+  "title": null,
+  "first_prompt": null,
+  "client": {
+    "tool": "codex",
+    "version": "0.170.0"
+  },
+  "models": [
+    "codex-auto-review"
+  ],
+  "started": "2026-11-22T22:07:52.924Z",
+  "ended": "2026-11-22T22:28:58.357Z",
+  "duration_seconds": 1265,
+  "stats": {
+    "turns": 0,
+    "api_calls": 4,
+    "tool_calls": 0,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 62982,
+    "usage": {
+      "input_tokens": 63483,
+      "output_tokens": 445,
+      "cache_read_input_tokens": 124160,
+      "cache_creation_input_tokens": 0
+    }
+  },
+  "tools": {},
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-22T22:07:52.924Z",
+      "ended": "2026-11-22T22:28:58.357Z",
+      "turns": 0,
+      "api_calls": 4,
+      "usage": {
+        "input_tokens": 63483,
+        "output_tokens": 445,
+        "cache_read_input_tokens": 124160,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 62982
+    }
+  ],
+  "log": {
+    "sha256": "d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38",
+    "bytes": 429848,
+    "lines": 70,
+    "gzip_bytes": 148332,
+    "path": "llm-dlc/traces/01a2054d-2a55-7bb3-9cf5-2506d519261c/logs/d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ymrympxxkuupyytuxpyxnwmyrwkxvnwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check transpose cell and outer identity (verification pending)",
+      "body": "Exercise the original Javaslang List.transpose in both orientations of a six-cell rectangle. An unrestricted int selects null or one of seven distinct, value-equal objects at each coordinate. Observe one transpose, two transposes and the original input by reference. Check the three identity fast paths and zero-column height loss separately. The JVM observer also executes a value-equal copying caller and an invertible row-major reshape.\n\nJob 20261122-221543-prove-reference-identity-through-both-hi checks both historical JARs and 877 null and alias partitions per orientation. A capped strict parent probe established the rectangular property. Both example validators, all eight oracle tables, the existing scorecards and the changed Rust and Python tests passed. Recompiling the tolerance companion on each revision reproduced its recorded observer and JAR.",
+      "log_sha256": "861a068adcf6dbd485300ef91fe7ec58ddae2e74323149a3fba1dc593f4b2a13"
+    },
+    {
+      "change_id": "yxymsvpqtyrsmvtzmktmmnvvukurpkvq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261122-221543-prove-reference-identity-through-both-hi: passed: 1 passed step(s) in 3.8s, peak 109.1 MiB (estimated 1m00s, 1.0 GiB); 16 output file(s) changed Applied 16 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
+      "log_sha256": "d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38"
+    },
+    {
+      "change_id": "llqkpztklnlzunyqtmtnpuqznzpqssku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record cell identity through both historical matrix transposes",
+      "body": "The parent and fixed Javaslang JARs both preserved the exact reference at each coordinate through one transpose and a round trip on 2 by 3 and 3 by 2 rectangles. Each of the six cells independently selects null or one of seven equal-valued objects. Four strict native proofs cover the 524,288 labeled rectangles and the separate fast-path identity and zero-column claims. The paired JVMs produced byte-identical observations for 1,754 rectangles and 40 boundary cases each.\n\nThe scorecard now qualifies the raw proofs and physical observations from job 20261122-221543-prove-reference-identity-through-both-hi. Value-equal copies changed references on 1,752 rectangles. An invertible row-major reshape misplaced cells on 1,724. Twenty damaged evidence controls were rejected. All eight oracle tables and both example validators passed. All 59 selected Rust test binaries and all 27 selected Python suites passed, with the Rust encoding-estimate timing test passing on retry. Both primary scorecards retained their original dispositions.",
+      "log_sha256": "d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38"
+    }
+  ],
+  "logs": {
+    "861a068adcf6dbd485300ef91fe7ec58ddae2e74323149a3fba1dc593f4b2a13": {
+      "bytes": 305316,
+      "lines": 32,
+      "gzip_bytes": 114872,
+      "url": null
+    },
+    "d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38": {
+      "bytes": 429848,
+      "lines": 70,
+      "gzip_bytes": 148332,
+      "url": null
+    }
+  },
+  "redaction_policy": 5,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}
