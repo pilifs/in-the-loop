@@ -220,6 +220,6 @@ The qualified jobs established both boxed-row properties on their primary and re
 
 The registrar job established the exact callback sequence on both historical artifacts under the two recorded initializers. The complete bean and error claims retain their ordinary-startup disposition. All 30 primary obligations, the 18 JVM classpaths, the two transfer experiments and the named deferrals are recorded. [Results brief](spring-and-java-data-workstream-results.md) · [Spring scorecard](../../verification/spring-java-data/spring.json) · [Data-processing scorecard](../../verification/spring-java-data/data.json)
 
-The B3 stretch uses tolerance 0.25 and search centers −0.5, 0 and 0.5. Its two cells come from independent 64-bit words and its start is a Java int. The JVM calibration matched an exact-rational oracle on 18,900 inputs per revision. Job `20261122-182432-prove-inclusive-positive-tolerance-on-bo` checks both historical artifacts from ordinary startup.
+The B3 positive-tolerance stretch passed from ordinary native startup on both historical artifacts. At tolerance 0.25 and centers −0.5, 0 and 0.5, the two cells come from independent 64-bit words and the start covers every Java int. The caller quiets signaling NaNs before the search. The physical JVMs matched an exact-rational oracle on 18,900 inputs per revision, including the doubles immediately inside and outside each boundary. [Paired proof and replay](../../verification/results/2026/11/22/20261122-182432-prove-inclusive-positive-tolerance-on-bo/result.json)
 
-- Status: waiting on jobs 20261122-182432-prove-inclusive-positive-tolerance-on-bo
+- Status: done

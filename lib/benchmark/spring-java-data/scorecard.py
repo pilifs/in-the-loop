@@ -299,11 +299,13 @@ def tolerance_search(cases):
         require(sha(raw) == query["stdoutSha256"] and query["verdict"] == outcome["verdict"] and not query["exit"]
                 and not query["observedRoots"] and not query["states"], "different positive-tolerance proof")
         report["sides"][side] = {"commit": data["commit"], "measurement": rel(measurement), "verdict": query["verdict"],
+                                 "subjectClassSha256": bindings[tolerance.SUBJECT], "observerClassSha256": observer,
                                  "proof": rel(raw), "checkerSha256": data["checkerSha256"], "nativeSeconds": query["seconds"],
-                                 "observations": rel(packed), "finiteGrid": grid}
+                                 "observations": rel(packed), "observationsSha256": data["observationsSha256"], "finiteGrid": grid}
     parent, landed = report["sides"].values()
-    require(parent["finiteGrid"] == landed["finiteGrid"] and parent["checkerSha256"] == landed["checkerSha256"],
-            "the positive-tolerance revisions have different physical outcomes or checkers")
+    require(parent["subjectClassSha256"] != landed["subjectClassSha256"]
+            and all(parent[key] == landed[key] for key in ("observerClassSha256", "checkerSha256", "observationsSha256", "finiteGrid")),
+            "expected two historical target classes with identical tolerance observations, observer and checker")
     return report
 
 
