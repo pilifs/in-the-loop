@@ -1,0 +1,184 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-001934-confirm-receiver-targets-06-using-the-se",
+  "title": "Confirm receiver targets 06 using the selected class bindings",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 28.3s, peak 222.9 MiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-001934-confirm-receiver-targets-06-using-the-se.json",
+    "sha256": "967db838c2485713bb64fe87ad0e45792ea63f17ef497be5c2f4f38caab8ecbc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-001934-confirm-receiver-targets-06-using-the-se",
+      "title": "Confirm receiver targets 06 using the selected class bindings",
+      "description": "Rescore the frozen original native overloads after repairing the post-architecture caller extraction. The running verifier selects each original class and JAR entry. Repeat the preselected physical caller controls once the input is prepared.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T00:19:34+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Recheck all original native overloads",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/06 --case commons-validator-86e32931 --case commons-vfs-55c96cfd",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-confirmation/06"
+      ]
+    }
+  },
+  "sourceCommit": "ec7c6fcddbc40030379bd2e9a5efaeda87b09f0d",
+  "startedAt": "2026-11-22T00:23:30+00:00",
+  "finishedAt": "2026-11-22T00:28:20+00:00",
+  "wallSeconds": 290.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2901987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 233693184,
+    "wallSeconds": 28.3,
+    "cpuSeconds": 20.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recheck all original native overloads",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/06 --case commons-validator-86e32931 --case commons-vfs-55c96cfd",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 28.252,
+      "cpuSeconds": 20.013,
+      "cpuThrottledSeconds": 9.619,
+      "peakMemoryBytes": 233693184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-all-original-native-ov.log",
+        "lines": 2,
+        "bytes": 870,
+        "sha256": "507bbe046ee67eaace502ead255f522f6021f0f26f22b5014e40b9d035b1fd4f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commons-vfs-55c96cfd current open doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.pro",
+        "commons-validator-86e32931 current open parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, boo"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/06/current/commons-validator-86e32931.json",
+      "change": "added",
+      "bytes": 7702,
+      "sha256": "58ed6bfbc8e2e339fe0d86ccded6feaf702f75fca6e689f21fafb961005e9c35",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/06/current/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 9008,
+      "sha256": "0cfdcb43fffa4e3699e8644c945024e6787c0f279f422e8ea0b87e9ba3f6cc9a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:32:11+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-confirmation/06/current/commons-validator-86e32931.json",
+      "verification/domain-foundations/receiver-confirmation/06/current/commons-vfs-55c96cfd.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "26e5c3c58faddaf3b5feff241744f0493101a18b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/26e5c3c58faddaf3b5feff241744f0493101a18b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T002820Z-639350dc09440dcf",
+      "outputs": "20261122T002820Z-6602764e705762df",
+      "diff": "20261122T002820Z-677143b54341e610"
+    }
+  }
+}

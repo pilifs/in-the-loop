@@ -1,0 +1,281 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-001934-confirm-receiver-targets-04-using-the-se",
+  "title": "Confirm receiver targets 04 using the selected class bindings",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 2m24s, peak 454.8 MiB (estimated 5m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-001934-confirm-receiver-targets-04-using-the-se.json",
+    "sha256": "3fd84574fae02875204f7af963bae1173f6a07849cec7e5a673f3e190679242d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-001934-confirm-receiver-targets-04-using-the-se",
+      "title": "Confirm receiver targets 04 using the selected class bindings",
+      "description": "Rescore the frozen original native overloads after repairing the post-architecture caller extraction. The running verifier selects each original class and JAR entry. Repeat the preselected physical caller controls once the input is prepared.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-22T00:19:34+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Recheck all original native overloads",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/04 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601 --case compsuite-i-85 --case cucumber-reporting-1220",
+          "cwd": "."
+        },
+        {
+          "name": "Check the preselected real caller paths",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/caller-confirmation/04 --case commons-compress-767 --case commons-configuration-565",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/domain-foundations/receiver-confirmation/04",
+        "verification/domain-foundations/caller-confirmation/04"
+      ]
+    }
+  },
+  "sourceCommit": "ec7c6fcddbc40030379bd2e9a5efaeda87b09f0d",
+  "startedAt": "2026-11-22T00:23:30+00:00",
+  "finishedAt": "2026-11-22T00:30:16+00:00",
+  "wallSeconds": 406.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2901987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 476876800,
+    "wallSeconds": 144.3,
+    "cpuSeconds": 134.2,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.48
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recheck all original native overloads",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/engineering.py --build current --checker \"$JVMCONTRACT\" --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --work \"$area/slices\" --complete \"$area/modules\" --maven8 \"$HOME/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn\" --output verification/domain-foundations/receiver-confirmation/04 --case commons-compress-767 --case commons-compress-822 --case commons-configuration-565 --case commons-configuration-601 --case compsuite-i-85 --case cucumber-reporting-1220",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 113.643,
+      "cpuSeconds": 95.382,
+      "cpuThrottledSeconds": 46.796,
+      "peakMemoryBytes": 476876800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-all-original-native-ov.log",
+        "lines": 6,
+        "bytes": 1230,
+        "sha256": "0ba8329693fbc7e397b5a704c10bb106d8609e46fa0c3fcd9536f16cd5f8cfc3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-85 current open parameter orderId has type pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId, which is outside the objects a regression check makes: pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId has 2 constructors; an object made by one of seve",
+        "commons-compress-767 current open review the recorded exact overloads",
+        "commons-compress-822 current open review the recorded exact overloads",
+        "commons-configuration-565 current open review the recorded exact overloads",
+        "commons-configuration-601 current open review the recorded exact overloads",
+        "cucumber-reporting-1220 current open generateReports is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of net.masterthought.cucumber.ReportBuilder made by its constructor, whose the argument jsonFiles of net.masterthought.cucumber."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the preselected real caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 lib/benchmark/external-upgrades/check_scenarios.py --repositories \"$area/sources/repos.json\" --maven-cache \"$cache\" --preparations \"$area/slices\" --complete \"$area/modules\" --output verification/domain-foundations/caller-confirmation/04 --case commons-compress-767 --case commons-configuration-565",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 30.666,
+      "cpuSeconds": 38.797,
+      "cpuThrottledSeconds": 8.642,
+      "peakMemoryBytes": 176279552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-preselected-real-cal.log",
+        "lines": 4,
+        "bytes": 238,
+        "sha256": "80e054687096f6d9318db2af8225d8a2fb82c60d84130f06e958900c98f00ed7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
+        "commons-compress-767 preserved",
+        "preserved org.apache.commons.configuration2.JSONConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-565 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/04/current/commons-compress-767.json",
+      "change": "added",
+      "bytes": 11862,
+      "sha256": "a3148a98afe3a266d4233870e5f6d1c1d5877bf8bc837066e1f56da4c19ec3bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/04/current/commons-compress-822.json",
+      "change": "added",
+      "bytes": 12174,
+      "sha256": "a97abbb9005bd90181a608eca8a37cfe97c4ca2ac1f41bf8b24835b852d9a9da",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/04/current/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 16425,
+      "sha256": "0ee3924b8f21a41eda0b4f3e6dfc6904d72a116e5439ad7f62380af838896ae6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/04/current/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 21713,
+      "sha256": "bf94be0092de28bd0c83397080ccfff5595d533b4945abb36efcd98da9528282",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/04/current/compsuite-i-85.json",
+      "change": "added",
+      "bytes": 15783,
+      "sha256": "b02cea32a4684fb2d60fa61fbeea9f6b6a43b2f239efb3fc11917ea67938746e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/receiver-confirmation/04/current/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 9634,
+      "sha256": "be21ec52026376211dc1d15087683d4dcfb8bd1b676ae0433484aa9f6434a940",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/caller-confirmation/04/commons-compress-767.json",
+      "change": "added",
+      "bytes": 13630,
+      "sha256": "5ccf9c587e76c0e4c8a9b43bb15dcf091f66c8e645f7d4b7e64329b0a270eec4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/caller-confirmation/04/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 60386,
+      "sha256": "f40cbede88cd2b4443ab2bb7e6edcc45f1429c196afc6df2ec8aeff57aebc44b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T00:32:11+00:00",
+    "applied": [
+      "verification/domain-foundations/receiver-confirmation/04/current/commons-compress-767.json",
+      "verification/domain-foundations/receiver-confirmation/04/current/commons-compress-822.json",
+      "verification/domain-foundations/receiver-confirmation/04/current/commons-configuration-565.json",
+      "verification/domain-foundations/receiver-confirmation/04/current/commons-configuration-601.json",
+      "verification/domain-foundations/receiver-confirmation/04/current/compsuite-i-85.json",
+      "verification/domain-foundations/receiver-confirmation/04/current/cucumber-reporting-1220.json",
+      "verification/domain-foundations/caller-confirmation/04/commons-compress-767.json",
+      "verification/domain-foundations/caller-confirmation/04/commons-configuration-565.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "26e5c3c58faddaf3b5feff241744f0493101a18b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/26e5c3c58faddaf3b5feff241744f0493101a18b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T003016Z-727301b56ede8ee6",
+      "outputs": "20261122T003016Z-7527901e19e4d95e",
+      "diff": "20261122T003016Z-77265251b9b38ff3"
+    }
+  }
+}
