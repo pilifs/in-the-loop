@@ -1,0 +1,240 @@
+{
+  "plan": {
+    "example": "361",
+    "task": "cursor-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "cursor-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "file": "claims/cursor.json",
+      "sha256": "e51ce47646b155506629314e409098cc38fcdd772a88adb3af610d125922e184",
+      "property": "cursor",
+      "claimKind": "property",
+      "statement": "After one public conversion the caller retains its initial position and limit.",
+      "assume": "code >= 0 && code < 12",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "494971034e593b96f907239e154b54e3c2db351c00a9df8e136698920ff33c4f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "1c67662b4c18c6770a738f6118d9c5bb661841f0fd7a1422ecd96c40cc3c7043"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.DecimalWindow#cursor(I)I",
+        "mapping": "After one public conversion the caller retains its initial position and limit. Each selector maps to its original observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 12
+      },
+      "key": "cc553815947450a5"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "ce9032a4123e262341a3e746e6eb2b8476eae1ae",
+        "parent": "afbda0798a4fe662bd5379cf535da79800c4e840",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "11"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-fix.json",
+          "sha256": "9cefb3c81c5a7a869a15579a16af485e3b02adb616450847fcffc628e0a93128"
+        },
+        "adapters": [
+          "adapter/organic/DecimalWindow.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/cursor-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-032303-repeat-frozen-claims-on-the-jackson-tabl/examples/361-avro-decimal-buffer-cursor",
+    "network": true
+  },
+  "inputs": {
+    "example": "361",
+    "task": "cursor-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "cursor-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.Conversions$DecimalConversion#fromBytes(Ljava/nio/ByteBuffer;Lorg/apache/avro/Schema;Lorg/apache/avro/LogicalType;)Ljava/math/BigDecimal;",
+      "file": "claims/cursor.json",
+      "sha256": "e51ce47646b155506629314e409098cc38fcdd772a88adb3af610d125922e184",
+      "property": "cursor",
+      "claimKind": "property",
+      "statement": "After one public conversion the caller retains its initial position and limit.",
+      "assume": "code >= 0 && code < 12",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "explicitBounds": {
+        "unwind": 64,
+        "maxArrayLength": 128
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/organic/Cases.java",
+          "sha256": "494971034e593b96f907239e154b54e3c2db351c00a9df8e136698920ff33c4f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "1c67662b4c18c6770a738f6118d9c5bb661841f0fd7a1422ecd96c40cc3c7043"
+        }
+      ],
+      "adapter": {
+        "entry": "organic.DecimalWindow#cursor(I)I",
+        "mapping": "After one public conversion the caller retains its initial position and limit. Each selector maps to its original observation in controls/table.json.",
+        "correspondence": "finite-oracle",
+        "cases": 12
+      },
+      "key": "cc553815947450a5"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "ce9032a4123e262341a3e746e6eb2b8476eae1ae",
+        "parent": "afbda0798a4fe662bd5379cf535da79800c4e840",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "11"
+        },
+        "capturedBuild": {
+          "path": "records/build-historical/build-fix.json",
+          "sha256": "9cefb3c81c5a7a869a15579a16af485e3b02adb616450847fcffc628e0a93128"
+        },
+        "adapters": [
+          "adapter/organic/DecimalWindow.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/organic/DecimalWindow.java",
+        "sha256": "f4f205f678d85cdc6ed30336021b2b7143db105febc3fa191e02d9beeb04e978"
+      }
+    ]
+  },
+  "key": "815c1e7679ae9da4dd9815833e4cc5c29d6a0feae4431070ee1f71012ecc5c52"
+}
