@@ -68,13 +68,13 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("intern" | "trim", "()Ljava/lang/String;") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("intern" | "trim", "()Ljava/lang/String;") | ("isBlank", "()Z") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
 /// Character operations on a symbolic unit or code point.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
-    owner == CHARACTER && matches!((name, descriptor), ("isLetter" | "isLetterOrDigit", "(C)Z") | ("toChars", "(I)[C"))
+    owner == CHARACTER && matches!((name, descriptor), ("isLetter" | "isLetterOrDigit" | "isWhitespace", "(C)Z") | ("toChars", "(I)[C"))
 }
 
 /// Whether the engine models `StringBuilder.name(descriptor)`, its two constructors included.
@@ -369,9 +369,26 @@ impl Engine<'_> {
     }
 
     /// Both char overloads have stable ASCII categories. Keep the original method's gap on every non-ASCII path.
+    fn ascii_whitespace(&mut self, unit: &Bits) -> Lit {
+        let mut interval = |low, high| {
+            let below = self.b.ult(unit, &self.b.constant(low, 16));
+            let above = self.b.ult(&self.b.constant(high, 16), unit);
+            self.b.and(-below, -above)
+        };
+        let controls = interval(9, 13);
+        let separators = interval(28, 32);
+        self.b.or(controls, separators)
+    }
+
     pub(super) fn ascii_character_class(&mut self, path: &mut Path, name: &str, args: &[Val]) -> Step {
         let [Val::I(c)] = args else { return unsupported(format!("Character.{name} with arguments {args:?}")) };
         let unit = self.b.trunc(c, 16);
+        if name == "isWhitespace" {
+            let matches = self.ascii_whitespace(&unit);
+            let ascii = self.b.ult(&unit, &self.b.constant(128, 16));
+            return self.branch_gap_or(path, -ascii, (GapKind::JdkStaticMethod, CHARACTER, name, "(C)Z"),
+                                      move |engine, path| engine.push_truth(path, matches));
+        }
         let lowered = self.lowered_ascii(&unit).1;
         let (a, z, limit) = (self.b.constant(i64::from(b'a'), 16), self.b.constant(i64::from(b'z'), 16), self.b.constant(128, 16));
         let below = self.b.ult(&lowered, &a);
@@ -506,6 +523,21 @@ impl Engine<'_> {
     /// The String methods of this module on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
         match (name, descriptor, args) {
+            ("isBlank", "()Z", []) => {
+                let mut non_ascii = FALSE;
+                let mut non_white = FALSE;
+                for (index, unit) in s.cells.iter().enumerate() {
+                    let live = self.b.ult(&self.b.constant(index as i64, 32), &s.length);
+                    let ascii = self.b.ult(unit, &self.b.constant(128, 16));
+                    let outside = self.b.and(live, -ascii);
+                    non_ascii = self.b.or(non_ascii, outside);
+                    let white = self.ascii_whitespace(unit);
+                    let not_white = self.b.and(live, -white);
+                    non_white = self.b.or(non_white, not_white);
+                }
+                self.branch_gap_or(path, non_ascii, (GapKind::JdkPrimitiveMethod, STRING, name, descriptor),
+                                   move |engine, path| engine.push_truth(path, -non_white))
+            }
             ("trim", "()Ljava/lang/String;", []) => {
                 let mut begin = s.length.clone();
                 let mut end = s.length.clone();

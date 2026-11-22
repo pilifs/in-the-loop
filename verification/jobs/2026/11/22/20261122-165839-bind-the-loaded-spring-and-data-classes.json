@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-165839-bind-the-loaded-spring-and-data-classes",
+  "title": "Bind the loaded Spring and data classes on every original graph",
+  "description": "Trace class loading in each unchanged public JVM driver, require agreement with its original observations, and bind each class to an entry in the ordered pinned JARs. Compare the two NumberUtils consumers by class digest.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "369"
+    ]
+  },
+  "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+  "submitted": {
+    "at": "2026-11-22T16:58:39+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "javac",
+    "java",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Bind the loaded Spring and data classes on every original graph",
+      "run": "python3 -B lib/benchmark/spring-java-data/providers.py --output verification/spring-java-data/public-providers",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/spring-java-data/public-providers"
+  ]
+}

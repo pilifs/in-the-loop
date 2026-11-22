@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-165838-qualified-check-rectangular-and-ragged-i",
+  "title": "Qualified Check rectangular and ragged inputs on the original Vavr transpose",
+  "description": "Use the ordinary native checker with strict gaps on identical input guards and the same public observer through the standard bytecode-qualified selector workflow. Keep original-entry counterexample replays and check coverage on each side.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "371"
+    ]
+  },
+  "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+  "submitted": {
+    "at": "2026-11-22T16:58:38+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "javac",
+    "java",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Qualified Check rectangular and ragged inputs on the original Vavr transpose",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 371 --first 9 --stage native-qualified --only contract-parent rectangle-parent",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/371-javaslang-matrix-transpose/records/native-qualified",
+    "examples/371-javaslang-matrix-transpose/records/native-selectors"
+  ]
+}

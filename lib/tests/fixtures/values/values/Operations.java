@@ -79,6 +79,10 @@ public final class Operations {
         return of(n, a, b, c).isEmpty();
     }
 
+    static boolean isBlank(int n, int a, int b, int c) {
+        return of(n, a, b, c).isBlank();
+    }
+
     static int charAt(int n, int a, int b, int c, int i) {
         return of(n, a, b, c).charAt(i);
     }

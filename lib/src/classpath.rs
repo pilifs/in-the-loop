@@ -1085,6 +1085,7 @@ impl ClassPath {
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
             ("java/util/Arrays", "fill", "([CC)V" | "([II)V" | "([IIII)V")
+            | ("java/util/Set", "of", "([Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/lang/Character", "isJavaIdentifierPart", "(C)Z" | "(I)Z")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
             | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
@@ -1298,12 +1299,18 @@ impl ClassPath {
     /// count and a sentinel node. Only construction and the empty-state observers
     /// execute here. Waiting, signaling and atomic updates retain their own boundaries.
     pub(crate) fn fresh_collection_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        // An explicitly modeled receiver has the model's fields throughout its lifetime.
+        if self.runs_model(receiver) { return None; }
         const QUEUE: &str = "java/util/concurrent/LinkedBlockingQueue";
         const COUNT: &str = "java/util/concurrent/atomic/AtomicInteger";
         const LOCK: &str = "java/util/concurrent/locks/ReentrantLock";
         const SYNC: &str = "java/util/concurrent/locks/ReentrantLock$NonfairSync";
         const CONDITION: &str = "java/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject";
         let supported = match receiver {
+            "java/util/ImmutableCollections$Set12" => matches!((owner, name, desc),
+                ("java/util/ImmutableCollections$Set12", "<init>", "(Ljava/lang/Object;)V" | "(Ljava/lang/Object;Ljava/lang/Object;)V")
+                | ("java/util/ImmutableCollections$AbstractImmutableSet" | "java/util/ImmutableCollections$AbstractImmutableCollection"
+                   | "java/util/AbstractCollection", "<init>", "()V")),
             "java/util/HashSet" => matches!((owner, name, desc),
                 ("java/util/HashSet" | "java/util/AbstractSet" | "java/util/AbstractCollection", "<init>", "()V")
                 | ("java/util/HashSet" | "java/util/Set" | "java/util/Collection", "isEmpty", "()Z")),
@@ -1427,6 +1434,11 @@ impl ClassPath {
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "clear", "()V")
             | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
+            | ("java/util/ArrayList", "listIterator", "(I)Ljava/util/ListIterator;")
+            | ("java/util/ArrayList", "rangeCheckForAdd", "(I)V")
+            | ("java/util/ArrayList$ListItr", "<init>", "(Ljava/util/ArrayList;I)V")
+            | ("java/util/ArrayList$ListItr", "hasPrevious", "()Z")
+            | ("java/util/ArrayList$ListItr", "previous", "()Ljava/lang/Object;")
             | ("java/util/ArrayList", "forEach", "(Ljava/util/function/Consumer;)V")
             | ("java/util/ArrayList", "subList", "(II)Ljava/util/List;")
             | ("java/util/AbstractList", "subListRangeCheck", "(III)V")

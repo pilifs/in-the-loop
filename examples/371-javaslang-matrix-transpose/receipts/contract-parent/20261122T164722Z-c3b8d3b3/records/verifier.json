@@ -1,0 +1,523 @@
+{
+  "task": "contract-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+      "prove",
+      "datawork.Matrices#contract(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/javaslang-2.1.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 400",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.63,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1",
+      "commit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+      "libTree": "51a83b86ac020bc5c2cef7175b2aa59ff391c294",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+        "method": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+        "revisions": {
+          "parent": {
+            "commit": "a8cace88bfb12a9a7e1977a5765753798962e942",
+            "loadedFrom": "built/javaslang-2.1.0-SNAPSHOT.jar",
+            "classSha256": "8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c",
+            "origin": "Original vavr-1829-parent module, prepared in spring-java-data setup",
+            "parameters": {
+              "names": [
+                "rows"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "datawork.Matrices#contract(I)I",
+          "mapping": "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+          "correspondence": "finite-oracle",
+          "cases": 400
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "bd6e24ab0ce8e3a617a878d4ecab12c2614aab66d99d3aa97ddc3f4bb5b4dc0f",
+            "role": "adapter"
+          },
+          {
+            "path": "built/javaslang-2.1.0-SNAPSHOT.jar",
+            "sha256": "514ffd18de1df82478bfb73d49735b81aede41333ffe9475af126fb0246bcb5b",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "datawork.Matrices#contract(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "datawork.Matrices#contract(I)I",
+          "classSha256": "954175cb1d4d2dda3cfabbd4973a6074178dfb80a64ce8dc967dd984bb3aec64",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+          "subjectClassSha256": "8394ac5807e3e14bd5a600bd2482c0d8132cf5cc295e5c192d8f9f38fedaef9c"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "javaslang.collection.List#transpose(Ljavaslang/collection/List;)Ljavaslang/collection/List;",
+        "checkedEntry": "datawork.Matrices#contract(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 400"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "256"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16384"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "datawork.Matrices#contract(I)I",
+          "mapping": "All heights 0 to 3 and row widths 0 to 2 over the alphabet 0 and 1, ordered first by height and then by row word.",
+          "correspondence": "finite-oracle",
+          "cases": 400
+        }
+      },
+      "commits": {
+        "parent": "a8cace88bfb12a9a7e1977a5765753798962e942"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+            "gaps",
+            "--target",
+            "datawork.Matrices#contract(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/javaslang-2.1.0-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-reference-method:java.lang.Iterable.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Iterable.iterator()",
+              "sites": [
+                "javaslang.collection.Iterator.ofAll:191",
+                "javaslang.collection.List.ofAll:214"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "datawork.Matrices.observe:37",
+                "datawork.Matrices.observe:40",
+                "javaslang.collection.Collections.transposeIterables:303",
+                "javaslang.collection.Collections.transposeIterables:305",
+                "javaslang.collection.Iterator$3.getNext:218",
+                "javaslang.collection.List.ofAll:209",
+                "javaslang.collection.List.ofAll:214",
+                "javaslang.collection.Traversable.foldLeft:394"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.listIterator(I)Ljava/util/ListIterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.listIterator(int)",
+              "sites": [
+                "javaslang.collection.List.ofAll:200"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.ListIterator.previous()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.ListIterator.previous()",
+              "sites": [
+                "javaslang.collection.List.ofAll:202"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.NavigableSet.descendingIterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.NavigableSet.descendingIterator()",
+              "sites": [
+                "javaslang.collection.List.ofAll:207"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.BiFunction.apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.BiFunction.apply(java.lang.Object, java.lang.Object)",
+              "sites": [
+                "javaslang.collection.Traversable.foldLeft:395"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.Function.apply(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.Function.apply(java.lang.Object)",
+              "sites": [
+                "javaslang.collection.Collections.transposeIterables:318",
+                "javaslang.collection.Iterator$35.getNext:1610"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:javaslang.collection.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "javaslang.collection.Iterator.next()",
+              "sites": [
+                "javaslang.collection.Iterator.head:1550",
+                "javaslang.collection.Iterator.tail:1879",
+                "javaslang.collection.Iterator$35.getNext:1610"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "datawork.Matrices.observe:37",
+                "datawork.Matrices.observe:40",
+                "javaslang.collection.Collections.transposeIterables:303",
+                "javaslang.collection.Collections.transposeIterables:305",
+                "javaslang.collection.Iterator$3.hasNext:213",
+                "javaslang.collection.List.ofAll:208",
+                "javaslang.collection.List.ofAll:214",
+                "javaslang.collection.Traversable.foldLeft:394"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "javaslang.collection.Collections.transposeIterables:309",
+                "javaslang.collection.Collections.transposeIterables:313"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.size()",
+              "sites": [
+                "javaslang.collection.Collections.transposeIterables:307",
+                "javaslang.collection.List.ofAll:200"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.ListIterator.hasPrevious()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.ListIterator.hasPrevious()",
+              "sites": [
+                "javaslang.collection.List.ofAll:201"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:javaslang.collection.AbstractIterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "javaslang.collection.AbstractIterator.hasNext()",
+              "sites": [
+                "javaslang.collection.AbstractIterator.next:31"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:javaslang.collection.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "javaslang.collection.Iterator.hasNext()",
+              "sites": [
+                "javaslang.collection.Iterator.head:1547",
+                "javaslang.collection.Iterator.isEmpty:1569",
+                "javaslang.collection.Iterator.map:1597",
+                "javaslang.collection.Iterator.tail:1876",
+                "javaslang.collection.Iterator$35.hasNext:1605"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.6253,
+        "peakRssBytes": 65236992,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "datawork.Matrices#contract(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 400",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at javaslang.collection.Collections.transposeIterables:318). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "datawork.Matrices#contract(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at javaslang.collection.Collections.transposeIterables:318). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 47
+          }
+        ],
+        "output": "✗ datawork.Matrices#contract(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13 (java.lang.Object.getClass() at javaslang.collection.Collections.transposeIterables:318). With --gaps assume it assumes instead that java.lang.Object.getClass() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.611279833,
+          "properties": 1,
+          "unwind": 256,
+          "max_array_length": 16384,
+          "stage": null,
+          "native": {
+            "paths": 402,
+            "merges": 0,
+            "solver_calls": 876,
+            "solving_seconds": 0.412643847,
+            "gates_evaluated": 72032,
+            "evaluating_seconds": 0.002139887,
+            "divisions": 12,
+            "divisions_built": 9,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 52791,
+            "clauses": 181840,
+            "seconds": 0.601655003,
+            "loading_seconds": 0.002203771,
+            "decoding_seconds": 0.000201558,
+            "encoding_seconds": 0.046936342,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-reference-method:java.lang.Object.getClass()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Object.getClass()",
+              "sites": [
+                "javaslang.collection.Collections.transposeIterables:318"
+              ],
+              "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.602,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.002,
+                "lowering": 0.0,
+                "symbolic": 0.14,
+                "encoding": 0.047,
+                "solving": 0.413,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 52791,
+                "clauses": 181840
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.62,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.602,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.016
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 400",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 256,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-vavr-matrix-coordinates-and-ragged-rejec/.build-py/examples-y_ar4t_r/targets/371/contract-parent/20261122T164722Z-c3b8d3b3",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-vavr-matrix-coordinates-and-ragged-rejec/.build-py/examples-y_ar4t_r/targets/371/contract-parent/20261122T164722Z-c3b8d3b3"
+  }
+}

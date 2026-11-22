@@ -1,0 +1,435 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "796fcd37438aad76",
+    "format": 1,
+    "example": "375",
+    "statement": {
+      "approach": "target",
+      "task": "preserved-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "preserved-parent",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+        "file": "claims/preserved.json",
+        "sha256": "45347f4b74a696ac15b0264c29ea94d5065bf777ffa7994c5c4f680cf92fb66f",
+        "property": "preserved",
+        "claimKind": "property",
+        "statement": "The short decimals return the expected Float bits, 17 returns Integer, and 1eE throws NumberFormatException.",
+        "assume": "code >= 0 && code < 3",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "explicitBounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/datawork/Cases.java",
+            "sha256": "eb49781fcb4a7f7e4068a4e0c34370c67b2d207138b85631f86d435c35f07aa0"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "c18650daed2188aba9dc5078cef8076e403cd4f89cf96e254defd3b361926ed8"
+          }
+        ],
+        "adapter": {
+          "entry": "datawork.Decimals#preserved(I)I",
+          "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+          "correspondence": "finite-oracle",
+          "cases": 3
+        },
+        "key": "b5f0874cc73601d9"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16384
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "preserved-parent",
+      "sidecar": "1c7d45fed0fd5a08fbf32e541e5b9a79a3304fa3f876b32b9dbce41c18c069f1",
+      "revisions": {
+        "parent": "1dd7cb14c233140a8e76ba5441b6360a239a98dc"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "f0441a263c3276bd56394e05c40efe51292543c408e9220bb4376936d94e56ac"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/datawork/Decimals.java": "051a6ef7c8b9a3df5f0b78ccf00562cec166b0e479f66240beb7c2a86162986a",
+        "claims/preserved.json": "45347f4b74a696ac15b0264c29ea94d5065bf777ffa7994c5c4f680cf92fb66f",
+        "controls/table.json": "c18650daed2188aba9dc5078cef8076e403cd4f89cf96e254defd3b361926ed8",
+        "driver/datawork/Cases.java": "eb49781fcb4a7f7e4068a4e0c34370c67b2d207138b85631f86d435c35f07aa0"
+      },
+      "claimKey": "b5f0874cc73601d9"
+    }
+  },
+  "attempt": {
+    "id": "20261122T164613Z-01dbcadf",
+    "claim": "796fcd37438aad76",
+    "startedAt": "2026-11-22T16:46:13+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "datawork.Decimals#preserved(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 3",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "f3a3186f551b5e93f9821fc60cfd97a8dc6907168f49e0db531c78605fcae12c",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-162530-decimal-result-class-coefficient-scale-a",
+      "sourceCommit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-decimal-result-class-coefficient-scale-a"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "verifier parent on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.021,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 256,
+      "maxArrayLength": 16384,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "796fcd37438aad76",
+    "attempt": "20261122T164613Z-01dbcadf",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 3",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13 (java.lang.Character.isWhitespace(char) at org.apache.commons.lang3.StringUtils.isBlank:3518). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.006,
+            "properties": 1,
+            "unwind": 256,
+            "maxArrayLength": 16384,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.005,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.003,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 186,
+                  "clauses": 491
+                }
+              }
+            ],
+            "native": {
+              "paths": 5,
+              "merges": 0,
+              "solverCalls": 4,
+              "solvingSeconds": 3.7912e-05,
+              "gatesEvaluated": 154,
+              "evaluatingSeconds": 4.909e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 186,
+              "clauses": 491,
+              "seconds": 0.004702892,
+              "loadingSeconds": 0.001234013,
+              "decodingSeconds": 0.000182465,
+              "encodingSeconds": 8.2973e-05,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.lang.Character.isWhitespace(char)",
+                "sites": [
+                  "org.apache.commons.lang3.StringUtils.isBlank:3518"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13 (java.lang.Character.isWhitespace(char) at org.apache.commons.lang3.StringUtils.isBlank:3518). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 3"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "622ead6e9ce233589504024243c9716c5063641065db53ab855dfe7e3b94964e",
+        "bytes": 25949
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "722335a38e169a48e74b6f759de61c2be3165a0a0f73d1119cd4bbb00ea75d90",
+        "bytes": 463
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "87329f5c62066d6eb78a036e9f9e5f311c37dc3a2f8e3f8b5fefc97c7b882a9f",
+        "bytes": 1965
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "3e890e8f9aa51209f2c7034b4dd9a2686b507bab3a9b84391505e4de57cd154d",
+        "bytes": 604
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "23881a781b1b45f1db3d582c7cfcd2b3a84d1c347315f6b40f6da98f97dc2240",
+        "bytes": 4965
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "ed4b0d078ae40ae9fc5407e7dd695b42932853eac067b20261dc6776dd32fe2a",
+        "bytes": 6024
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "398d6900e134819f69b992f313b10464147765bc0a809d9e17447c1c910e899e",
+        "bytes": 20680
+      }
+    ]
+  }
+}

@@ -1,0 +1,389 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-164436-check-nan-searches-with-the-historical-a",
+  "title": "Check NaN searches with the historical ArrayUtils entry",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m14s, peak 651.1 MiB (estimated 8m00s, 3.0 GiB); 27 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-164436-check-nan-searches-with-the-historical-a.json",
+    "sha256": "eb2149e7b79ad70abdddd81cceacf9122a01254dd3484b47860d27584fb0ec46",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-164436-check-nan-searches-with-the-historical-a",
+      "title": "Check NaN searches with the historical ArrayUtils entry",
+      "description": "Use the ordinary native checker with strict gaps on identical input guards and the same public observer through the standard bytecode-qualified selector workflow. Keep original-entry counterexample replays and check coverage on each side.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "373"
+        ]
+      },
+      "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+      "submitted": {
+        "at": "2026-11-22T16:44:36+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Check NaN searches with the historical ArrayUtils entry",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 373 --first 901",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/373-commons-lang-nan-search/records/native-final",
+        "examples/373-commons-lang-nan-search/records/native-selectors"
+      ]
+    }
+  },
+  "sourceCommit": "e6e2352c7ebb29b9288d354317c61a693e5251d0",
+  "startedAt": "2026-11-22T16:49:07+00:00",
+  "finishedAt": "2026-11-22T16:52:39+00:00",
+  "wallSeconds": 212.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3447250,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 682700800,
+    "wallSeconds": 74.3,
+    "cpuSeconds": 68.7,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check NaN searches with the historical ArrayUtils entry",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 373 --first 901",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 74.305,
+      "cpuSeconds": 68.673,
+      "cpuThrottledSeconds": 2.06,
+      "peakMemoryBytes": 682700800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-nan-searches-with-the-hi.log",
+        "lines": 1,
+        "bytes": 120,
+        "sha256": "266f6a117aece4b409fa2df2540521332f0333b32c2d70f62beb589e93e0a911",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'nans-parent': 'open', 'numbers-parent': 'established', 'nans-landed': 'established', 'numbers-landed': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-final/landed.log",
+      "change": "added",
+      "bytes": 107,
+      "sha256": "a11ef3fcb7695dd63a35fbefaeb47c1e8f9bd427464d8e414fbfbf3df2e0b6c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-final/parent.log",
+      "change": "added",
+      "bytes": 98,
+      "sha256": "2899ad2b210c8ebc1755051719cab0462cc7c0c41ceda27680c282f8b0105a92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-final/run.json",
+      "change": "added",
+      "bytes": 2005,
+      "sha256": "9bd4d8008249a1d32a1aa85e579931f91bcbf6a87c60b1fabf2b3d4478614d49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/4749068e23a923c3e2b8/Calls.java",
+      "change": "added",
+      "bytes": 77412,
+      "sha256": "d157f3331a84643b8e2efba6d13a6bb3f7da60e8bc523fa5f6dd5abf3b1a4baa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/4749068e23a923c3e2b8/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 45093,
+      "sha256": "67873eec1abede5c2c3e4759898a5cf25d75661b68f4a0e87c7512d57f168723",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/4749068e23a923c3e2b8/cases.tar.gz",
+      "change": "added",
+      "bytes": 82806,
+      "sha256": "cafdcec15cff9989c40d3f56b26d6068e288a544668cb3a3fa0c3604b4ea0634",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/8f31951e16509a9ce083/Calls.java",
+      "change": "added",
+      "bytes": 74706,
+      "sha256": "688c9661f2d2058f024f35ddf59699ae07e488df6a34ec1f41c21decd7ad6187",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/8f31951e16509a9ce083/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 45090,
+      "sha256": "d825c6cf855e23ec22b43ec628cadcbb13cbdad4cece1b10acff5aea3cc8d64f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/8f31951e16509a9ce083/cases.tar.gz",
+      "change": "added",
+      "bytes": 82080,
+      "sha256": "93103ce826cda3732c5c2b0c8666275fc5e492f898dfd39f0f1d9dcbdf465d17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/Admission.java",
+      "change": "added",
+      "bytes": 65580,
+      "sha256": "3447aab9b747ec331ae7a6562dbd08509f7bc5e410598766b1c1ece3968cd3f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 31612,
+      "sha256": "cdfcb553d9a50e349f4e6ce6390b68ff7b03f250cde76d368d56c91c82021f5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/result.json",
+      "change": "added",
+      "bytes": 720088,
+      "sha256": "02fa2f6e65853547d411e3bb3768fafc65c5aa82bb57446dec9f187132d29b7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/Admission.java",
+      "change": "added",
+      "bytes": 65580,
+      "sha256": "3447aab9b747ec331ae7a6562dbd08509f7bc5e410598766b1c1ece3968cd3f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 31612,
+      "sha256": "cdfcb553d9a50e349f4e6ce6390b68ff7b03f250cde76d368d56c91c82021f5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/result.json",
+      "change": "added",
+      "bytes": 720103,
+      "sha256": "6dee4f5adae1c694f0fc3bab4c09e73de467a381711d0f9711fde27bd3c7794c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/8ca07ae1e2d390555a9e/Calls.java",
+      "change": "added",
+      "bytes": 77412,
+      "sha256": "d157f3331a84643b8e2efba6d13a6bb3f7da60e8bc523fa5f6dd5abf3b1a4baa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/8ca07ae1e2d390555a9e/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 45093,
+      "sha256": "67873eec1abede5c2c3e4759898a5cf25d75661b68f4a0e87c7512d57f168723",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/8ca07ae1e2d390555a9e/cases.tar.gz",
+      "change": "added",
+      "bytes": 82752,
+      "sha256": "85e682ecb1c809ff7d116dede8345ff70c837a6e57b5c2e1de9b750126285314",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/f856a6a07edb4ded1d27/Calls.java",
+      "change": "added",
+      "bytes": 74706,
+      "sha256": "688c9661f2d2058f024f35ddf59699ae07e488df6a34ec1f41c21decd7ad6187",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/f856a6a07edb4ded1d27/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 45090,
+      "sha256": "d825c6cf855e23ec22b43ec628cadcbb13cbdad4cece1b10acff5aea3cc8d64f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/f856a6a07edb4ded1d27/cases.tar.gz",
+      "change": "added",
+      "bytes": 1597,
+      "sha256": "27ccd02ac3d520dc76db8f7889b8b9637dd06852718320ff01db2c4bd2ce72be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/Admission.java",
+      "change": "added",
+      "bytes": 65580,
+      "sha256": "3447aab9b747ec331ae7a6562dbd08509f7bc5e410598766b1c1ece3968cd3f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 31612,
+      "sha256": "cdfcb553d9a50e349f4e6ce6390b68ff7b03f250cde76d368d56c91c82021f5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/result.json",
+      "change": "added",
+      "bytes": 12527,
+      "sha256": "a9923870b83ccde913f1be0f8d6b44448f6abe6b6d91b93e8dfca37f1e0e6db7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/Admission.java",
+      "change": "added",
+      "bytes": 65580,
+      "sha256": "3447aab9b747ec331ae7a6562dbd08509f7bc5e410598766b1c1ece3968cd3f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 31612,
+      "sha256": "cdfcb553d9a50e349f4e6ce6390b68ff7b03f250cde76d368d56c91c82021f5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/result.json",
+      "change": "added",
+      "bytes": 720121,
+      "sha256": "86eccd293a471623a9faf72ce769b40231568526bae4a7dcb68465f447828d28",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T16:55:00+00:00",
+    "applied": [
+      "examples/373-commons-lang-nan-search/records/native-final/landed.log",
+      "examples/373-commons-lang-nan-search/records/native-final/parent.log",
+      "examples/373-commons-lang-nan-search/records/native-final/run.json",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/4749068e23a923c3e2b8/Calls.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/4749068e23a923c3e2b8/Calls.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/4749068e23a923c3e2b8/cases.tar.gz",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/8f31951e16509a9ce083/Calls.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/8f31951e16509a9ce083/Calls.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/calls/8f31951e16509a9ce083/cases.tar.gz",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/Admission.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/Admission.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/nans-landed/result.json",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/Admission.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/Admission.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/landed/20261122T165152Z-4f52358c/tasks/numbers-landed/result.json",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/8ca07ae1e2d390555a9e/Calls.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/8ca07ae1e2d390555a9e/Calls.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/8ca07ae1e2d390555a9e/cases.tar.gz",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/f856a6a07edb4ded1d27/Calls.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/f856a6a07edb4ded1d27/Calls.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/calls/f856a6a07edb4ded1d27/cases.tar.gz",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/Admission.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/Admission.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/nans-parent/result.json",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/Admission.java",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/Admission.jvm-bytecode",
+      "examples/373-commons-lang-nan-search/records/native-selectors/parent/20261122T165125Z-cf273446/tasks/numbers-parent/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "91130f0344e2f9e4703d5c27a0a7975921869b65",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/91130f0344e2f9e4703d5c27a0a7975921869b65/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T165239Z-8292850d78aa0af0",
+      "outputs": "20261122T165239Z-909028b6ecb8ec60",
+      "diff": "20261122T165239Z-939084478c1537da"
+    }
+  }
+}

@@ -206,3 +206,14 @@ All historical rows except the role builder use the landed commit’s first pare
 - **The Spring 5.2.0.RELEASE signature is unchecked:** its 2019 key isn't published with a user ID. Its checksums match Central's.
 - **Left for the domain work, on purpose:** all claims, examples and example ids (this brief's note on reserved ids still applies), sidecars, adapters, recipes and verifier runs. Also the grids still to freeze: B2's 400 matrices, A2's omitted-edge control and 64 combined histories, A1's six permutations and fresh-binder control, A4's preservation inputs, and B3's and B4's bounded families.
 - **Network access is unchanged.** These caches let the work start at once and keep builds reproducible. Nothing here requires working offline.
+
+
+## Execution progress
+
+Examples 368 through 375 freeze 16 Spring and 14 data-processing primary obligations. The independent JVM route decided all 30. The intermediate Security artifact, the release graph used for gated edits and the Commons Lang 3.17.0 client have separate controls. On the opening native verifier the fixed Vavr transpose, its rectangle preservation, the fixed NaN search and both numeric search preservation claims were established.
+
+The real role-gated application retained the field error in all 64 primary histories and matched eight varying decision histories. Revalidating the binder prefix evidence took 2.04 seconds. The complete routes took 0.186 seconds fresh and 2.229 seconds with reuse. The larger boxed-row JVM experiment checked all 33,729 combinations of row identity and contents. The original formatter JUnit method ran on both source slices and reproduced its historical failure. [Gated histories](../../verification/spring-java-data/gated-binding/measurement.json) · [Complete boxed-row grid](../../examples/369-boxed-ragged-rows/records/all-rows/measurement.json) · [Formatter JUnit](../../examples/374-spring-formatter-binding/records/upstream-junit/measurement.json)
+
+The qualified native jobs check the boxed caller after correcting the optional Integer cache identity guard, the legacy Vavr iterator, both historical Spring role and property paths, and the formatter and precision controls. The class-loading job traces each public JVM driver against the frozen classpath.
+
+- Status: waiting on jobs 20261122-165838-qualified-prove-boxed-row-values-and-mut 20261122-165838-qualified-check-literal-authority-subset 20261122-165838-qualified-check-rectangular-and-ragged-i 20261122-165839-qualified-check-record-metadata-at-the-p 20261122-165839-qualified-check-both-original-formatter 20261122-165839-qualified-check-exact-decimal-runtime-ty 20261122-165839-bind-the-loaded-spring-and-data-classes

@@ -210,7 +210,8 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         ("java/lang/System", "lineSeparator", "()Ljava/lang/String;") | (COLLECTIONS, "emptyList", "()Ljava/util/List;") | (COLLECTIONS, "emptySet", "()Ljava/util/Set;") |
-        (BOOLEAN, "valueOf", "(Z)Ljava/lang/Boolean;") | ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
+        (BOOLEAN, "valueOf", "(Z)Ljava/lang/Boolean;") | ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I")
+        | ("java/lang/reflect/Array", "newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
 
@@ -428,7 +429,7 @@ impl Engine<'_> {
             let above = self.b.slt(high, word);
             let cached = self.literal(path, Literal::CachedIntegral("java/lang/Integer", n), "java/lang/Integer");
             path.unbound_platform_value = Some("the JVM's Integer cache limit");
-            choice(&mut self.b, vec![(above, Some(fresh)), (!above, Some(cached))])
+            choose(&mut self.b, above, &Val::R(Some(fresh)), &Val::R(Some(cached))).expect("two boxed references")
         };
         self.push(path, boxed);
         self.advance(path);
@@ -538,6 +539,16 @@ impl Engine<'_> {
             let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || o_.initialized_big_number() || self.cp.state_image_class(&class).is_some());
             let final_image_class = !o_.assumed && self.cp.load(&class).ok().flatten()
                 .is_some_and(|loaded| loaded.origin == crate::classpath::Origin::Jdk && loaded.class.is_final());
+            // javac 8 emits dup/getClass/pop before capturing a bound method reference. The JVM
+            // has already checked this concrete receiver for null. No hidden class mirror escapes.
+            let caller = path.frames.last()?;
+            if o_.lambda.is_some() && caller.lambda_return == LambdaReturn::Pass
+                && matches!(caller.code.insns.get(caller.at), Some(Insn::InvokeVirtual(_)))
+                && matches!(caller.code.insns.get(caller.at + 1), Some(Insn::Pop)) {
+                self.advance(path);
+                self.advance(path);
+                return Some(Ok(None));
+            }
             if o_.lambda.is_some() || !(array || image_object || final_image_class || self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
@@ -874,6 +885,20 @@ impl Engine<'_> {
                 self.push(path, result);
                 self.advance(path);
                 Some(Ok(None))
+            }
+            ("java/lang/reflect/Array", "newInstance", [Val::R(component), Val::I(count)]) => {
+                let Some(component) = component else { return Some(self.raise(path, "java/lang/NullPointerException")); };
+                let name = self.class_named(path, *component)?;
+                let element = if name.starts_with('[') {
+                    if name.bytes().take_while(|c| *c == b'[').count() >= 255 {
+                        return Some(unsupported("reflective array allocation above 255 dimensions"));
+                    }
+                    Type::parse(&name).ok()?
+                } else {
+                    if !self.cp.loads(&name) { return None; }
+                    Type::object(&name)
+                };
+                Some(self.new_reference_array(path, element, count.clone()))
             }
             ("java/lang/reflect/Array", "getLength", [Val::R(object)]) => {
                 let Some(o) = *object else { return Some(self.raise(path, "java/lang/NullPointerException")) };

@@ -105,7 +105,7 @@ fn a_string_array_parameter_is_strings_of_their_own_or_null_and_a_witness_runs_o
 fn lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_for() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["lambda", "streams", "chars", "range", "mapped", "optional", "boxedCallbacks", "emptyCollections"] {
+    for method in ["lambda", "streams", "chars", "range", "mapped", "optional", "boxedCallbacks", "emptyCollections", "ignoredLambdaClass", "reflectiveRows", "whitespace", "reverseList"] {
         proved(classes, &format!("claims.L#{method}"), 3);
     }
     let image = Command::new("java").arg("-cp").arg(classes).args(["claims.L", "cache-image"]).output().unwrap();
@@ -539,7 +539,9 @@ fn an_array_deque_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defi
 
     let unasked = run(&options(classes, "claims.Deques#stacked", 3, "Deques-unasked"));
     assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
-    assert!(unasked.output.contains("java.util.ArrayDeque.<init>()V"), "{}", unasked.output);
+    // With the JDK image the fresh constructor runs and the first missing operation is size.
+    assert!(unasked.output.contains("java.util.Deque.size()I") || unasked.output.contains("java.util.ArrayDeque.<init>()V"),
+            "{}", unasked.output);
 
     let asking = |method: &str| {
         let mut o = options(classes, &format!("claims.Deques#{method}"), 3, &format!("Deques-{method}"));
@@ -601,7 +603,9 @@ fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definiti
 
     let unasked = run(&options(classes, "claims.Sets#added", 2, "Sets-unasked"));
     assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
-    assert!(unasked.output.contains("java.util.HashSet.<init>()V"), "{}", unasked.output);
+    // With the JDK image the fresh constructor runs and the first missing operation is size.
+    assert!(unasked.output.contains("java.util.Set.size()I") || unasked.output.contains("java.util.HashSet.<init>()V"),
+            "{}", unasked.output);
 
     let asking = |method: &str| {
         let mut o = options(classes, &format!("claims.Sets#{method}"), 2, &format!("Sets-{method}"));

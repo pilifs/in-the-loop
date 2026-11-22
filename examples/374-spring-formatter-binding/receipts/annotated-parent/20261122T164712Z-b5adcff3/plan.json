@@ -1,0 +1,285 @@
+{
+  "plan": {
+    "example": "374",
+    "task": "annotated-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.springframework.format.datetime.DateFormatterRegistrar#registerFormatters(Lorg/springframework/format/FormatterRegistry;)V",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "annotated-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.springframework.format.datetime.DateFormatterRegistrar#registerFormatters(Lorg/springframework/format/FormatterRegistry;)V",
+      "file": "claims/annotated.json",
+      "sha256": "f46b4645b13531e7d79e0c7544ed786b867af25e527f0081c995d426aea319da",
+      "property": "annotated",
+      "claimKind": "property",
+      "statement": "An annotated date stores the UTC instant, reports the full error count, first field and rejected text, and displays the expected value at each prefix.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "bbc8aca6d7ed52bec32c2d7f6b99bb0b33903bb16dc188e26e34b4d791ef3353"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "b4ea3488e08c5be476d8549cbb295fd33964ccb7e401ab05baad0a8df60f7977"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.DateEdits#annotated(I)I",
+        "mapping": "The first history binds the local input. The second binds malformed text and then the same valid local edit.",
+        "correspondence": "finite-oracle",
+        "cases": 2
+      },
+      "key": "45a0d3a9c8b2ba1f"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "local-git:spring-framework-23893-landed",
+        "commit": "43a86565cac09de05e50678721cbc83a61a43a6e",
+        "orderedClasses": [
+          "org.springframework.format.datetime.DateFormatterRegistrar$1",
+          "org.springframework.format.datetime.DateFormatterRegistrar$CalendarToDateConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$CalendarToLongConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$DateToCalendarConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$DateToLongConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$LongToCalendarConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$LongToDateConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar"
+        ],
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-context:5.2.0.RELEASE",
+            "sha256": "8cfa528363a4ef6aaecee09218e0c1d2d8bb3f04cd09ca3179d3e78cb3e4b253"
+          },
+          {
+            "coordinates": "org.springframework:spring-aop:5.2.0.RELEASE",
+            "sha256": "bb1d8d2fc3ced40ceed2a6c5fb0b86cca9be5e83453d14ee3e47af7286586a86"
+          },
+          {
+            "coordinates": "org.springframework:spring-beans:5.2.0.RELEASE",
+            "sha256": "7d8dab8ecc1b1575086603a204cf688ec8fd85ecaeeba00ba87cb1328c54c5ed"
+          },
+          {
+            "coordinates": "org.springframework:spring-core:5.2.0.RELEASE",
+            "sha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.2.0.RELEASE",
+            "sha256": "8ebb7c28d760a976fcb94fbafdb98c8c71785ba7fbfbf7deb31770326d66cfeb"
+          },
+          {
+            "coordinates": "org.springframework:spring-expression:5.2.0.RELEASE",
+            "sha256": "93d91bffd93ac0417ac24180979fcfefb01e9a39f25201049460bf1a61667559"
+          }
+        ],
+        "slice": {
+          "files": [
+            "spring-context/src/main/java/org/springframework/format/datetime/DateFormatterRegistrar.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-g"
+          ]
+        },
+        "adapters": [
+          "adapter/springwork/DateEdits.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/annotated-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-spring-formatter-precedence-and-repeated/examples/374-spring-formatter-binding",
+    "network": true
+  },
+  "inputs": {
+    "example": "374",
+    "task": "annotated-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.springframework.format.datetime.DateFormatterRegistrar#registerFormatters(Lorg/springframework/format/FormatterRegistry;)V",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "annotated-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.springframework.format.datetime.DateFormatterRegistrar#registerFormatters(Lorg/springframework/format/FormatterRegistry;)V",
+      "file": "claims/annotated.json",
+      "sha256": "f46b4645b13531e7d79e0c7544ed786b867af25e527f0081c995d426aea319da",
+      "property": "annotated",
+      "claimKind": "property",
+      "statement": "An annotated date stores the UTC instant, reports the full error count, first field and rejected text, and displays the expected value at each prefix.",
+      "assume": "code >= 0 && code < 2",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "bbc8aca6d7ed52bec32c2d7f6b99bb0b33903bb16dc188e26e34b4d791ef3353"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "b4ea3488e08c5be476d8549cbb295fd33964ccb7e401ab05baad0a8df60f7977"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.DateEdits#annotated(I)I",
+        "mapping": "The first history binds the local input. The second binds malformed text and then the same valid local edit.",
+        "correspondence": "finite-oracle",
+        "cases": 2
+      },
+      "key": "45a0d3a9c8b2ba1f"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "local-git:spring-framework-23893-landed",
+        "commit": "43a86565cac09de05e50678721cbc83a61a43a6e",
+        "orderedClasses": [
+          "org.springframework.format.datetime.DateFormatterRegistrar$1",
+          "org.springframework.format.datetime.DateFormatterRegistrar$CalendarToDateConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$CalendarToLongConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$DateToCalendarConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$DateToLongConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$LongToCalendarConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar$LongToDateConverter",
+          "org.springframework.format.datetime.DateFormatterRegistrar"
+        ],
+        "published": [
+          {
+            "coordinates": "org.springframework:spring-context:5.2.0.RELEASE",
+            "sha256": "8cfa528363a4ef6aaecee09218e0c1d2d8bb3f04cd09ca3179d3e78cb3e4b253"
+          },
+          {
+            "coordinates": "org.springframework:spring-aop:5.2.0.RELEASE",
+            "sha256": "bb1d8d2fc3ced40ceed2a6c5fb0b86cca9be5e83453d14ee3e47af7286586a86"
+          },
+          {
+            "coordinates": "org.springframework:spring-beans:5.2.0.RELEASE",
+            "sha256": "7d8dab8ecc1b1575086603a204cf688ec8fd85ecaeeba00ba87cb1328c54c5ed"
+          },
+          {
+            "coordinates": "org.springframework:spring-core:5.2.0.RELEASE",
+            "sha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede"
+          },
+          {
+            "coordinates": "org.springframework:spring-jcl:5.2.0.RELEASE",
+            "sha256": "8ebb7c28d760a976fcb94fbafdb98c8c71785ba7fbfbf7deb31770326d66cfeb"
+          },
+          {
+            "coordinates": "org.springframework:spring-expression:5.2.0.RELEASE",
+            "sha256": "93d91bffd93ac0417ac24180979fcfefb01e9a39f25201049460bf1a61667559"
+          }
+        ],
+        "slice": {
+          "files": [
+            "spring-context/src/main/java/org/springframework/format/datetime/DateFormatterRegistrar.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-g"
+          ]
+        },
+        "adapters": [
+          "adapter/springwork/DateEdits.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/springwork/DateEdits.java",
+        "sha256": "9a6224e0041c00aba7b9a5f843ecdbea6d7ceb08fa244eaba6d5dda64e6d8d87"
+      }
+    ]
+  },
+  "key": "076bff5f8f7ea718b79596ee70543c5438434ff697bc5da216a2f9404a4286a4"
+}

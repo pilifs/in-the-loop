@@ -6,7 +6,7 @@ import sys
 from measure import ROOT, SETUP, digest, read, run_cmd, seed, write
 from targets import native_selectors, route, sidecar
 
-def run(number, first, only):
+def run(number, first, only, stage):
     folder, = (ROOT / "examples").glob(number+"-*")
     spec=read(folder/"target.json")
     seed(folder)
@@ -14,7 +14,7 @@ def run(number, first, only):
         os.environ.setdefault("TARGETS_LOCAL_GIT_ROOT",str(SETUP/"src"))
     example=read(folder/"example.json")
     target=sidecar.load(folder, example)
-    out=folder/"records/native-final"
+    out=folder/"records"/stage
     out.mkdir(parents=True, exist_ok=True)
     report={"job":os.environ["VERIFY_JOB_ID"],"source":os.environ["VERIFY_SOURCE_COMMIT"],
             "checkerSha256":digest(Path(os.environ["JVMCONTRACT"])),"libTree":os.environ["JVMCONTRACT_LIB_TREE"],
@@ -42,5 +42,6 @@ if __name__=="__main__":
     cli.add_argument("number")
     cli.add_argument("--first",type=int,default=0)
     cli.add_argument("--only",nargs="+")
+    cli.add_argument("--stage",choices=["native-final","native-qualified"],default="native-final")
     args=cli.parse_args()
-    run(args.number,args.first,args.only)
+    run(args.number,args.first,args.only,args.stage)

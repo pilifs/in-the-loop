@@ -850,6 +850,17 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["isEmpty()Z"],
     },
     OperationEvidence {
+        operation: "java.lang.String.isBlank()Z",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a bounded String of ASCII units, including empty",
+        throws: &[NPE],
+        leaves_out: &["symbolic verification of a string containing non-ASCII code units"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["isBlank"],
+        calls: &["isBlank()Z"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.charAt(I)C",
         family: Family::String,
         source: STRING_SOURCE,
@@ -1341,7 +1352,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 31);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 32);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

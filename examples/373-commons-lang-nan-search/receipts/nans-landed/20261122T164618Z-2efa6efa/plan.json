@@ -1,0 +1,224 @@
+{
+  "plan": {
+    "example": "373",
+    "task": "nans-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "nans-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "file": "claims/nans.json",
+      "sha256": "55f7fbf48fa46782ae49940236f1a6f9054b3f846fe5d1a0628292985f0ac58d",
+      "property": "nans",
+      "claimKind": "property",
+      "statement": "Both quiet NaN needles find the first NaN, with every raw input bit preserved.",
+      "assume": "code >= 0 && code < 902",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "0640da0e8fbf431ca49c544b9df14b40396f2defcf3c2864003c5aa06e59a985"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "5b6528c187d60a3ca4df0100206b5e152e900a78c68652c129adbb8bf974393f"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.NanSearch#nans(I)I",
+        "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+        "correspondence": "finite-oracle",
+        "cases": 902
+      },
+      "key": "897e1a6f85cfe988"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c",
+        "parent": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-DskipTests",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-landed.json",
+          "sha256": "d0cb49de9cd962a5caec8e68a8bb90847b467a9d5c45ea2efd4402ce907475d9"
+        },
+        "adapters": [
+          "adapter/datawork/NanSearch.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/nans-landed"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-first-nan-and-preserved-numbers-at-zero/examples/373-commons-lang-nan-search",
+    "network": true
+  },
+  "inputs": {
+    "example": "373",
+    "task": "nans-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "nans-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "file": "claims/nans.json",
+      "sha256": "55f7fbf48fa46782ae49940236f1a6f9054b3f846fe5d1a0628292985f0ac58d",
+      "property": "nans",
+      "claimKind": "property",
+      "statement": "Both quiet NaN needles find the first NaN, with every raw input bit preserved.",
+      "assume": "code >= 0 && code < 902",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "0640da0e8fbf431ca49c544b9df14b40396f2defcf3c2864003c5aa06e59a985"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "5b6528c187d60a3ca4df0100206b5e152e900a78c68652c129adbb8bf974393f"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.NanSearch#nans(I)I",
+        "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+        "correspondence": "finite-oracle",
+        "cases": 902
+      },
+      "key": "897e1a6f85cfe988"
+    },
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c",
+        "parent": "9bca5d09c6d16a5524a3cd1d38305687ad7fdca4",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-DskipTests",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-landed.json",
+          "sha256": "d0cb49de9cd962a5caec8e68a8bb90847b467a9d5c45ea2efd4402ce907475d9"
+        },
+        "adapters": [
+          "adapter/datawork/NanSearch.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/datawork/NanSearch.java",
+        "sha256": "14f4a3bcaf4a2258a1893fba3acf5d186dc0eaf0731a2ceb0b890bb6fb50f017"
+      }
+    ]
+  },
+  "key": "6726feb07b57039960d9c7c354e221eace5439ccae63f546dfdf716ae739df98"
+}

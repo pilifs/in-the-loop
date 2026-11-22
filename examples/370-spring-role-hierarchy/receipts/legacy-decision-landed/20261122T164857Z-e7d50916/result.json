@@ -1,0 +1,527 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "2951de1d0285ec1e",
+    "format": 1,
+    "example": "370",
+    "statement": {
+      "approach": "target",
+      "task": "legacy-decision-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "springwork.RoleApplication#decide(IZZ)Z",
+      "revisions": [
+        "landed"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "legacy-decision-landed",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "springwork.RoleApplication#decide(IZZ)Z",
+        "file": "claims/legacyDecision.json",
+        "sha256": "4a2995e0ad67c71df249e5160adc7d4887d634ca58cc1b8a8fcc4b87b78c8718",
+        "property": "legacy-decision",
+        "claimKind": "property",
+        "statement": "The public manager grants exactly when the selected roles imply the complete D authority.",
+        "assume": "code >= 0 && code < 32",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "explicitBounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/springwork/Cases.java",
+            "sha256": "a4e306db84eeef11b290495fbe67a188b653ffa67cbe46dc04ad9199cbe1bef9"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "220c3ad236df3adcbd588e7169d1cd31623f854c074832734532529dd0eb1523"
+          }
+        ],
+        "adapter": {
+          "entry": "springwork.RoleChecks#legacyDecision(I)I",
+          "mapping": "All sixteen input authority subsets under ROLE_ and CUSTOM_PREFIX_.",
+          "correspondence": "finite-oracle",
+          "cases": 32
+        },
+        "key": "d4338c80d571b69c"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16384
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "f33464952a0f8283a6d70451749f01ba0c6d99326120d373148661721a86f6f5",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "legacy-decision-landed",
+      "sidecar": "a4d8aadcf77351ef163b1559a120b32e8e1b453b0769e2d20b3bd416c3c6326c",
+      "revisions": {
+        "landed": "cab6a8530dd12f4ebba51ed1ef951693100f423d"
+      },
+      "dependencies": [
+        {
+          "revision": "landed",
+          "position": 0,
+          "role": "driver",
+          "sha256": "b7ffcecadcb2a73a3b8689e5ca797814a45b2a3964eb3a2f57936a714d61df19"
+        },
+        {
+          "revision": "landed",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253"
+        },
+        {
+          "revision": "landed",
+          "position": 2,
+          "role": "original",
+          "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9"
+        },
+        {
+          "revision": "landed",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be"
+        },
+        {
+          "revision": "landed",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a",
+          "coordinates": "org.springframework.security:spring-security-crypto:6.2.0"
+        },
+        {
+          "revision": "landed",
+          "position": 5,
+          "role": "dependency",
+          "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1",
+          "coordinates": "org.springframework:spring-aop:6.1.1"
+        },
+        {
+          "revision": "landed",
+          "position": 6,
+          "role": "dependency",
+          "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86",
+          "coordinates": "org.springframework:spring-beans:6.1.1"
+        },
+        {
+          "revision": "landed",
+          "position": 7,
+          "role": "dependency",
+          "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f",
+          "coordinates": "org.springframework:spring-core:6.1.1"
+        },
+        {
+          "revision": "landed",
+          "position": 8,
+          "role": "dependency",
+          "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317",
+          "coordinates": "org.springframework:spring-jcl:6.1.1"
+        },
+        {
+          "revision": "landed",
+          "position": 9,
+          "role": "dependency",
+          "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f",
+          "coordinates": "org.springframework:spring-expression:6.1.1"
+        },
+        {
+          "revision": "landed",
+          "position": 10,
+          "role": "dependency",
+          "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085",
+          "coordinates": "io.micrometer:micrometer-observation:1.12.0"
+        },
+        {
+          "revision": "landed",
+          "position": 11,
+          "role": "dependency",
+          "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47",
+          "coordinates": "io.micrometer:micrometer-commons:1.12.0"
+        },
+        {
+          "revision": "landed",
+          "position": 12,
+          "role": "dependency",
+          "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad",
+          "coordinates": "org.springframework:spring-context:6.1.1"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/springwork/RoleChecks.java": "fb0a6f90fc5ea691a5a3b08435339a5bdaaa6ec29d581cefcf418f0ee1df751f",
+        "claims/legacyDecision.json": "4a2995e0ad67c71df249e5160adc7d4887d634ca58cc1b8a8fcc4b87b78c8718",
+        "controls/table.json": "220c3ad236df3adcbd588e7169d1cd31623f854c074832734532529dd0eb1523",
+        "driver/springwork/Cases.java": "a4e306db84eeef11b290495fbe67a188b653ffa67cbe46dc04ad9199cbe1bef9"
+      },
+      "claimKey": "d4338c80d571b69c"
+    }
+  },
+  "attempt": {
+    "id": "20261122T164857Z-e7d50916",
+    "claim": "2951de1d0285ec1e",
+    "startedAt": "2026-11-22T16:48:57+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "springwork.RoleChecks#legacyDecision(int)",
+      "--classes",
+      "prepare/landed/adapter-landed.jar",
+      "--classpath",
+      "prepare/landed/landed.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-security-14196-landed.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-security-crypto.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-aop.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-beans.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-core.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-jcl.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-expression.jar",
+      "--classpath",
+      "prepare/landed/libraries/micrometer-observation.jar",
+      "--classpath",
+      "prepare/landed/libraries/micrometer-commons.jar",
+      "--classpath",
+      "prepare/landed/libraries/spring-context.jar",
+      "--assume",
+      "code >= 0 && code < 32",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "93c0652e9cda33a3f2cdbebe8adf658022b15822b63f0208683eba18028466d5",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-164312-spring-security-reachable-roles-and-publ",
+      "sourceCommit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-164312-spring-security-reachable-roles-and-publ"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control landed on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.164,
+        "stdout": "records/control-landed-jdk21.stdout",
+        "stderr": "records/control-landed-jdk21.stderr"
+      },
+      {
+        "name": "verifier landed on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.032,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 256,
+      "maxArrayLength": 16384,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "2951de1d0285ec1e",
+    "attempt": "20261122T164857Z-e7d50916",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 32",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Set.of([Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13 (java.util.Set.of(java.lang.Object[]) at org.springframework.security.authorization.AuthorityAuthorizationManager.<init>:44). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.008,
+            "properties": 1,
+            "unwind": 256,
+            "maxArrayLength": 16384,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.004,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 190,
+                  "clauses": 525
+                }
+              }
+            ],
+            "native": {
+              "paths": 4,
+              "merges": 0,
+              "solverCalls": 3,
+              "solvingSeconds": 2.5889e-05,
+              "gatesEvaluated": 132,
+              "evaluatingSeconds": 4.048e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 190,
+              "clauses": 525,
+              "seconds": 0.004214142,
+              "loadingSeconds": 0.000257194,
+              "decodingSeconds": 4.5747e-05,
+              "encodingSeconds": 0.000109604,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.util.Set.of([Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.Set.of(java.lang.Object[])",
+                "sites": [
+                  "org.springframework.security.authorization.AuthorityAuthorizationManager.<init>:44"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 32",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 67,
+      "code": "\"landed\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Set.of([Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13 (java.util.Set.of(java.lang.Object[]) at org.springframework.security.authorization.AuthorityAuthorizationManager.<init>:44). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 32"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "599e6de05b39dbff86b5084f526f315f4fe8434233c753839dbe89888066a70f",
+        "bytes": 70008
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "7eb622f29b7b9c9033099871fff4152ccad37ab47216bf8475aec38f035a417d",
+        "bytes": 519
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "0bbb70d0eb559dc8ad6d6370a176de31f99d6f0bbfa653ee2c6fd3c8310abc25",
+        "bytes": 1971
+      },
+      {
+        "path": "records/control-landed-jdk21.stdout",
+        "sha256": "519caac4d9cbe4b495593d038ca7ddac90b7a32494be927081282733487ef030",
+        "bytes": 10206
+      },
+      {
+        "path": "records/control-landed-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "7f374005b8f8d6a083938c4fc556328de551faa9ad25499a560e37d9cbda84f5",
+        "bytes": 27617
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "c1a357dbf430aa02c4e96f5622778ce6de983b459a2d8c7a1c4b0998de846700",
+        "bytes": 6240
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "9805867f9d5032ac07d0ad8b1969e4fe2d1c265cf34c7bbd1d3e7f96e602c480",
+        "bytes": 41381
+      }
+    ]
+  }
+}

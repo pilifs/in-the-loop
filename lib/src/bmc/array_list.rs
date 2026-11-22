@@ -7,6 +7,8 @@ use super::*;
 
 const LIST: &str = "java/util/ArrayList";
 const SUBLIST: &str = "java/util/ArrayList$SubList";
+const ITERATOR: &str = "java/util/ArrayList$Itr";
+const LIST_ITERATOR: &str = "java/util/ArrayList$ListItr";
 const VIEW_ITERATOR: &str = "java/util/ArrayList$SubList$1";
 pub(super) const OBJECT_ARRAY: &str = "[Ljava/lang/Object;";
 
@@ -46,14 +48,17 @@ impl Engine<'_> {
                 }
             }
         }
-        let iterator = class == "java/util/ArrayList$Itr";
+        let iterator = matches!(class, ITERATOR | LIST_ITERATOR);
         let view = class == SUBLIST;
         if class != LIST && !iterator && !view && class != VIEW_ITERATOR { return None; }
         let (name, descriptor) = (member.name.as_str(), member.descriptor.as_str());
-        if special && member.owner != class { return None; }
-        let (cf, method) = self.cp.library_image_method(class, name, descriptor).or_else(|| {
+        let super_ctor = special && class == LIST_ITERATOR && member.owner == ITERATOR && name == "<init>";
+        if special && member.owner != class && !super_ctor { return None; }
+        let declaring = if special { member.owner.as_str() } else { class };
+        let (cf, method) = self.cp.library_image_method(declaring, name, descriptor).or_else(|| {
             let (cf, m) = self.cp.find_method(class, name, descriptor)?;
-            if !view || name == "<init>" || cf.name != "java/util/AbstractList" { return None; }
+            let inherited = (view && cf.name == "java/util/AbstractList") || (class == LIST_ITERATOR && cf.name == ITERATOR);
+            if !inherited || name == "<init>" { return None; }
             self.cp.library_image_method(&cf.name, &m.name, &m.descriptor)
         })?;
         if name == "<init>" {
@@ -99,17 +104,6 @@ impl Engine<'_> {
             (LIST | SUBLIST, "java/util/Objects", "checkIndex", "(II)I", [Val::I(i), Val::I(n)]) => {
                 let inside = self.b.ult(i, n); // n is the initialized list's nonnegative size
                 Some(self.branch_throw(path, -inside, "java/lang/IndexOutOfBoundsException", Val::I(i.clone())))
-            }
-            ("java/util/Arrays", "java/lang/reflect/Array", "newInstance", "(Ljava/lang/Class;I)Ljava/lang/Object;", [Val::R(Some(component)), Val::I(count)]) => {
-                let name = self.class_named(path, *component)?;
-                let element = if name.starts_with('[') {
-                    if name.bytes().take_while(|c| *c == b'[').count() >= 255 { return Some(unsupported("reflective array allocation above 255 dimensions")); }
-                    Type::parse(&name).ok()?
-                } else {
-                    if !self.cp.loads(&name) { return None; }
-                    Type::object(&name)
-                };
-                Some(self.new_reference_array(path, element, count.clone()))
             }
             (LIST | "java/util/Arrays$ArrayList" | "jdk/internal/util/ArraysSupport", _, _, _, _)
                 if m.owner != LIST && self.cp.library_image_method(&m.owner, &m.name, &m.descriptor).is_some() => {

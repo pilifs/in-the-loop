@@ -41,8 +41,10 @@ public final class L {
 
     public static boolean optionalIntegerCache() {
         Integer low = Integer.valueOf(407), high = Integer.valueOf(408), negative = Integer.valueOf(-129);
+        Integer another = Integer.valueOf(407), third = Integer.valueOf(407);
         return low.intValue() == 407 && high.intValue() == 408 && negative.intValue() == -129 && low != high
-                && negative != Integer.valueOf(-129) && (low == Integer.valueOf(407) || high != Integer.valueOf(408));
+                && (low == another) == (another == third) && negative != Integer.valueOf(-129)
+                && (low == another || high != Integer.valueOf(408));
     }
 
     public static boolean alwaysCached407() { return Integer.valueOf(407) == Integer.valueOf(407); }
@@ -58,6 +60,39 @@ public final class L {
         }
         if (!optionalIntegerCache()) throw new AssertionError("cache value or ordering");
         System.out.print(alwaysCached407() + "/" + (Integer.valueOf(408) == Integer.valueOf(408)));
+    }
+
+    public static boolean ignoredLambdaClass(boolean use) {
+        Runnable action = () -> {};
+        if (!use) action = null;
+        try { ((Object) action).getClass(); return use; }
+        catch (NullPointerException expected) { return !use; }
+    }
+
+    public static boolean reverseList(boolean invalidate) {
+        java.util.List<String> words = new java.util.ArrayList<>();
+        words.add("first");
+        words.add("last");
+        var iterator = words.listIterator(words.size());
+        if (!iterator.hasPrevious() || iterator.previous() != "last") return false;
+        if (invalidate) words.add("changed");
+        try { return iterator.previous() == "first" && !iterator.hasPrevious() && !invalidate; }
+        catch (java.util.ConcurrentModificationException expected) { return invalidate; }
+    }
+
+    public static boolean reflectiveRows(boolean negative) {
+        try {
+            Object value = java.lang.reflect.Array.newInstance(String[].class, negative ? -1 : 2);
+            return !negative && value instanceof String[][] && ((String[][]) value).length == 2
+                && ((String[][]) value)[0] == null;
+        } catch (NegativeArraySizeException expected) { return negative; }
+    }
+
+    public static boolean whitespace(int code) {
+        char ch = (char) (code & 127);
+        boolean white = (ch >= 9 && ch <= 13) || (ch >= 28 && ch <= 32);
+        return Character.isWhitespace(ch) == white && String.valueOf(ch).isBlank() == white
+            && "".isBlank() && !"ROLE_".isBlank();
     }
 
     public static boolean emptyCollections() {

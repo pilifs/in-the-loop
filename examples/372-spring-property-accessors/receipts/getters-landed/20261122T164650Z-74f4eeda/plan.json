@@ -1,0 +1,219 @@
+{
+  "plan": {
+    "example": "372",
+    "task": "getters-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "getters-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+      "file": "claims/getters.json",
+      "sha256": "3c779d43fc4c12bf8ee575e50e6d96e68f49baf94b50d58654e1ac4a6cd920cf",
+      "property": "getters",
+      "claimKind": "property",
+      "statement": "The plain component, bean getter and additional record getter resolve to name, name and widget respectively.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "7122122c2a89b78a8c29cbdfb506b4d38d57077c4e7df987356b9c70e697f658"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ba72b1e2de316a45df717506e9563db55ed9477e6dfb5a6ab56a180b776c3c9b"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.Accessors#getters(I)I",
+        "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
+        "correspondence": "finite-oracle",
+        "cases": 3
+      },
+      "key": "80f521239803aa64"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "upstream-build",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "commit": "f067d40f0a646a98d0e2735a34b6e31f0e3f2c97",
+        "parent": "fd95ab16baa2353416e96bddbd979169a9618260",
+        "build": {
+          "tool": "gradle-wrapper",
+          "argv": [
+            "./gradlew",
+            "--offline",
+            ":spring-core:jar"
+          ],
+          "jdk": "25"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-landed.json",
+          "sha256": "61ff42e7b5f182d0aae34b8baacdac3220f090902df9389592d19a2820de47dc"
+        },
+        "adapters": [
+          "adapter/springwork/Accessors.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/getters-landed"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-spring-accessor-names-on-paired-method-m/examples/372-spring-property-accessors",
+    "network": true
+  },
+  "inputs": {
+    "example": "372",
+    "task": "getters-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "getters-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.springframework.core.convert.Property#getName()Ljava/lang/String;",
+      "file": "claims/getters.json",
+      "sha256": "3c779d43fc4c12bf8ee575e50e6d96e68f49baf94b50d58654e1ac4a6cd920cf",
+      "property": "getters",
+      "claimKind": "property",
+      "statement": "The plain component, bean getter and additional record getter resolve to name, name and widget respectively.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/springwork/Cases.java",
+          "sha256": "7122122c2a89b78a8c29cbdfb506b4d38d57077c4e7df987356b9c70e697f658"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ba72b1e2de316a45df717506e9563db55ed9477e6dfb5a6ab56a180b776c3c9b"
+        }
+      ],
+      "adapter": {
+        "entry": "springwork.Accessors#getters(I)I",
+        "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
+        "correspondence": "finite-oracle",
+        "cases": 3
+      },
+      "key": "80f521239803aa64"
+    },
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "upstream-build",
+        "repository": "https://github.com/spring-projects/spring-framework",
+        "commit": "f067d40f0a646a98d0e2735a34b6e31f0e3f2c97",
+        "parent": "fd95ab16baa2353416e96bddbd979169a9618260",
+        "build": {
+          "tool": "gradle-wrapper",
+          "argv": [
+            "./gradlew",
+            "--offline",
+            ":spring-core:jar"
+          ],
+          "jdk": "25"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-landed.json",
+          "sha256": "61ff42e7b5f182d0aae34b8baacdac3220f090902df9389592d19a2820de47dc"
+        },
+        "adapters": [
+          "adapter/springwork/Accessors.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/springwork/Accessors.java",
+        "sha256": "ca2a2ed59639dcc54dd5e602e2e32deb887953a6c4262dee919cdfc312547b79"
+      }
+    ]
+  },
+  "key": "831b0780a61f0b75f5b03a7fb3e1083482372c1f54c26fbb8e1b57c143ac48b0"
+}

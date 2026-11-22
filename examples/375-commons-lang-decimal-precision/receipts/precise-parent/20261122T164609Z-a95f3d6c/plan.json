@@ -1,0 +1,222 @@
+{
+  "plan": {
+    "example": "375",
+    "task": "precise-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "precise-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "file": "claims/precise.json",
+      "sha256": "92d723a7a38cd5dad95b25aca6df89acb36a376cb15dda9c4c4cf45a010532be",
+      "property": "precise",
+      "claimKind": "property",
+      "statement": "The runtime class is BigDecimal, with the signed lexical coefficient and scale 18.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "eb49781fcb4a7f7e4068a4e0c34370c67b2d207138b85631f86d435c35f07aa0"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "c18650daed2188aba9dc5078cef8076e403cd4f89cf96e254defd3b361926ed8"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.Decimals#precise(I)I",
+        "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+        "correspondence": "finite-oracle",
+        "cases": 3
+      },
+      "key": "e306676095e52b78"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "1dd7cb14c233140a8e76ba5441b6360a239a98dc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-DskipTests",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-parent.json",
+          "sha256": "40c9a1c679e2c2b1a2e942c2d6f066dae189a61081c0a72cc2b610289a84b363"
+        },
+        "adapters": [
+          "adapter/datawork/Decimals.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/precise-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-decimal-result-class-coefficient-scale-a/examples/375-commons-lang-decimal-precision",
+    "network": true
+  },
+  "inputs": {
+    "example": "375",
+    "task": "precise-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "precise-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "file": "claims/precise.json",
+      "sha256": "92d723a7a38cd5dad95b25aca6df89acb36a376cb15dda9c4c4cf45a010532be",
+      "property": "precise",
+      "claimKind": "property",
+      "statement": "The runtime class is BigDecimal, with the signed lexical coefficient and scale 18.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "eb49781fcb4a7f7e4068a4e0c34370c67b2d207138b85631f86d435c35f07aa0"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "c18650daed2188aba9dc5078cef8076e403cd4f89cf96e254defd3b361926ed8"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.Decimals#precise(I)I",
+        "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+        "correspondence": "finite-oracle",
+        "cases": 3
+      },
+      "key": "e306676095e52b78"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "1dd7cb14c233140a8e76ba5441b6360a239a98dc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-DskipTests",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-parent.json",
+          "sha256": "40c9a1c679e2c2b1a2e942c2d6f066dae189a61081c0a72cc2b610289a84b363"
+        },
+        "adapters": [
+          "adapter/datawork/Decimals.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/datawork/Decimals.java",
+        "sha256": "051a6ef7c8b9a3df5f0b78ccf00562cec166b0e479f66240beb7c2a86162986a"
+      }
+    ]
+  },
+  "key": "e855fda9fcc17a830c8deec0e2d960a03ce125118baf9ad324d61edb4944be94"
+}

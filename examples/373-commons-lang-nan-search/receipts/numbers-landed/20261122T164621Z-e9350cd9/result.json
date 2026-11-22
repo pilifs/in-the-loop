@@ -1,0 +1,518 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "85a321f0698dfc15",
+    "format": 1,
+    "example": "373",
+    "statement": {
+      "approach": "target",
+      "task": "numbers-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+      "revisions": [
+        "landed"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "numbers-landed",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.lang3.ArrayUtils#indexOf([DDID)I",
+        "file": "claims/numbers.json",
+        "sha256": "4ad89021b299b36121122307a82863e1b3093a2182f96bd4a45efc0c7a9ba15a",
+        "property": "numbers",
+        "claimKind": "property",
+        "statement": "Both signs of zero and the finite sentinel retain their first-match indices and the input bits.",
+        "assume": "code >= 0 && code < 902",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "explicitBounds": {
+          "unwind": 256,
+          "maxArrayLength": 16384
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/datawork/Cases.java",
+            "sha256": "0640da0e8fbf431ca49c544b9df14b40396f2defcf3c2864003c5aa06e59a985"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "5b6528c187d60a3ca4df0100206b5e152e900a78c68652c129adbb8bf974393f"
+          }
+        ],
+        "adapter": {
+          "entry": "datawork.NanSearch#numbers(I)I",
+          "mapping": "Each bounded array word is paired with every start from -1 to length+1. The final selector is the five-element infinity and NaN regression.",
+          "correspondence": "finite-oracle",
+          "cases": 902
+        },
+        "key": "504fd1225213a97d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 16384
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "numbers-landed",
+      "sidecar": "03533e60aa700671bb5c5a8e783bf7926716463e2f3507fe7f7663dfe614009a",
+      "revisions": {
+        "landed": "52c06bea2f2b6c277c517dc9f5bb0d62d17e073c"
+      },
+      "dependencies": [
+        {
+          "revision": "landed",
+          "position": 0,
+          "role": "driver",
+          "sha256": "2f84dd68fe06a38d3661ff9ad45e74eed3313efe2b60bd73d853a5f303f3e540"
+        },
+        {
+          "revision": "landed",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "9d53c899979c8577cfe20012c591353c1e08a5c83f8388ba0c268d25ddf8b254"
+        },
+        {
+          "revision": "landed",
+          "position": 2,
+          "role": "original",
+          "sha256": "c28e470a728a9ccbfa03e474daf20ace98b8a86f38cc3df3fccafa3000abb775"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/datawork/NanSearch.java": "14f4a3bcaf4a2258a1893fba3acf5d186dc0eaf0731a2ceb0b890bb6fb50f017",
+        "claims/numbers.json": "4ad89021b299b36121122307a82863e1b3093a2182f96bd4a45efc0c7a9ba15a",
+        "controls/table.json": "5b6528c187d60a3ca4df0100206b5e152e900a78c68652c129adbb8bf974393f",
+        "driver/datawork/Cases.java": "0640da0e8fbf431ca49c544b9df14b40396f2defcf3c2864003c5aa06e59a985"
+      },
+      "claimKey": "504fd1225213a97d"
+    }
+  },
+  "attempt": {
+    "id": "20261122T164621Z-e9350cd9",
+    "claim": "85a321f0698dfc15",
+    "startedAt": "2026-11-22T16:46:21+00:00",
+    "seconds": 0.4,
+    "engine": "native",
+    "options": [
+      "prove",
+      "datawork.NanSearch#numbers(int)",
+      "--classes",
+      "prepare/landed/adapter-landed.jar",
+      "--classpath",
+      "prepare/landed/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 902",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "1f0f863ebab253e11d278de94d01a4afac8645ba253440a739c0915b5c66d5b1"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "648e468195db935b78ea72845789139d0c250158b734546d75450308a16f699b",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261122-162530-first-nan-and-preserved-numbers-at-zero",
+      "sourceCommit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-first-nan-and-preserved-numbers-at-zero"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control landed on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-landed-jdk21.stdout",
+        "stderr": "records/control-landed-jdk21.stderr"
+      },
+      {
+        "name": "verifier landed on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.266,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 256,
+      "maxArrayLength": 16384,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "85a321f0698dfc15",
+    "attempt": "20261122T164621Z-e9350cd9",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 902",
+          "verdict": "verified",
+          "domain": "code: int",
+          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.2 s; loops unwound 256 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.244,
+            "properties": 1,
+            "unwind": 256,
+            "maxArrayLength": 16384,
+            "stage": null,
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.238,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.022,
+                  "encoding": 0.042,
+                  "solving": 0.173,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 39605,
+                  "clauses": 135738
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 59.756,
+                "seconds": 0.005,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 184,
+                  "clauses": 515
+                }
+              }
+            ],
+            "native": {
+              "paths": 82,
+              "merges": 0,
+              "solverCalls": 1116,
+              "solvingSeconds": 0.173383524,
+              "gatesEvaluated": 69047,
+              "evaluatingSeconds": 0.001585085,
+              "divisions": 10,
+              "divisionsBuilt": 6,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 39605,
+              "clauses": 135738,
+              "seconds": 0.238024811,
+              "loadingSeconds": 0.000662866,
+              "decodingSeconds": 0.000142058,
+              "encodingSeconds": 0.042307614,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 902",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found numbers(code=20).",
+              "witness": "numbers(code=20)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"landed\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.2 s; loops unwound 256 times with unwinding assertions",
+    "problem": null,
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 902"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 902",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found numbers(code=20).",
+        "witness": "numbers(code=20)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "0f33604b069c6be4af70f848b745a2b63320635b4d5b7bcaac2153397ba333cb",
+        "bytes": 762306
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "a2e2494f2521571149cc89f91003767ad6fb01f86d19251b85bad6ae1d8a97d6",
+        "bytes": 289
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "8a418b21701b165a9bc9dd767b96cca387b9c1600c7b5c66c49a990367bbb829",
+        "bytes": 1974
+      },
+      {
+        "path": "records/control-landed-jdk21.stdout",
+        "sha256": "7dfbfe8bbfcc8bd81744419f6c14f2807ac265fb9c9f1c6221a2fba75a5a1fb6",
+        "bytes": 236545
+      },
+      {
+        "path": "records/control-landed-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "4ee70e4d5c5ac36e79a3370225438fcee44c3580bcfe17d5732365320b720df7",
+        "bytes": 524288
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "c7e4c48232554c7df324cf52268a9bbf48346836dc020da25896ef8fd623ea2b",
+        "bytes": 5282
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "7db0df406bd38c4c56da4d37bf509baaf1bd5707e731420c715768329425a1cd",
+        "bytes": 13706
+      }
+    ]
+  }
+}

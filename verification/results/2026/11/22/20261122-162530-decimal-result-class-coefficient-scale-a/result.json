@@ -1,0 +1,880 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-162530-decimal-result-class-coefficient-scale-a",
+  "title": "Decimal result class, coefficient, scale and controls (opening)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.4s, peak 151.4 MiB (estimated 4m00s, 3.0 GiB); 84 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-162530-decimal-result-class-coefficient-scale-a.json",
+    "sha256": "438f551e8c7bf15ef266e0f50d1bf2446c129b91420369585857a192cd6b8a65",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-162530-decimal-result-class-coefficient-scale-a",
+      "title": "Decimal result class, coefficient, scale and controls (opening)",
+      "description": "Run the frozen strict native tasks at ordinary startup and the independent real JVM implementation on each pinned graph. Decimal result class, coefficient, scale and controls. Each result names its checker, original artifacts, guard, receipt and cost.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "375"
+        ]
+      },
+      "expected": "A fresh measured disposition for each ordinary claim and an independent finite result with the admitted controls. A strict refusal leaves that native claim open.",
+      "submitted": {
+        "at": "2026-11-22T16:25:30+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Measure the ordinary and finite public entries",
+          "run": "python3 -B lib/benchmark/spring-java-data/measure.py 375 --stage opening",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/375-commons-lang-decimal-precision/records/opening",
+        "examples/375-commons-lang-decimal-precision/records/finite-proofs",
+        "examples/375-commons-lang-decimal-precision/receipts"
+      ]
+    }
+  },
+  "sourceCommit": "2e9c0b16e6b10e593049b3da56a84948706a0876",
+  "startedAt": "2026-11-22T16:42:55+00:00",
+  "finishedAt": "2026-11-22T16:46:16+00:00",
+  "wallSeconds": 201.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3414697,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 158744576,
+    "wallSeconds": 15.4,
+    "cpuSeconds": 26.4,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 175.415,
+      "cpuSeconds": 175.231,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2501877760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "dd414228e32a4eee885123433256fc38254ab27747d356307f31c6dbcf87c6fd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-162530-decimal-result-class-coefficient-scale-a/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 55s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Measure the ordinary and finite public entries",
+      "run": "python3 -B lib/benchmark/spring-java-data/measure.py 375 --stage opening",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 15.438,
+      "cpuSeconds": 26.373,
+      "cpuThrottledSeconds": 1.692,
+      "peakMemoryBytes": 158744576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-ordinary-and-finit.log",
+        "lines": 1,
+        "bytes": 133,
+        "sha256": "11b9ab1c9581a7044fb216554fd2e6aac04a188add91130265316818d26296d5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"precise-parent\": \"unresolved\", \"precise-landed\": \"unresolved\", \"preserved-parent\": \"unresolved\", \"preserved-landed\": \"unresolved\"}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/opening/finite.log",
+      "change": "added",
+      "bytes": 172,
+      "sha256": "9cefe2cb2c9ef7ff83b4bb51858b714e94f94f5d69fea62cceef04ad59dd9518",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/opening/precise-landed.log",
+      "change": "added",
+      "bytes": 261,
+      "sha256": "b041bc5f69828ea6c9de71043c699531b9d630837741fd0f7eca37d9d7744395",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/opening/precise-parent.log",
+      "change": "added",
+      "bytes": 257,
+      "sha256": "94650bec8a599c9fb0a7472149794bc0064b1351b3206b8a3f4dbafedb27a25d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/opening/preserved-landed.log",
+      "change": "added",
+      "bytes": 267,
+      "sha256": "8663aedfcb303b5806dc6dd3f14498732b7a094e1fd0d3efd50c24233cef65dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/opening/preserved-parent.log",
+      "change": "added",
+      "bytes": 267,
+      "sha256": "51c8b0d230ef8dbe0d39c09decafe3ce89bd2c13c7697f2cde442bbe9e06e536",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/opening/replay.log",
+      "change": "added",
+      "bytes": 213,
+      "sha256": "4153a8d4850269733f7faec585a715a3ce53f1c9fd10b1d3ba10f4f1c7b22d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/opening/run.json",
+      "change": "added",
+      "bytes": 2685,
+      "sha256": "48f4bb5aee97297bd6318a079bea46fd636df34dfd9bedf69767dce6112221f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/batch.json",
+      "change": "added",
+      "bytes": 2677,
+      "sha256": "18a8703ee12dd4df5ad14d5362221846a0842065dbf6cb0d5e6105a5f4b20e54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/precise-landed.json",
+      "change": "added",
+      "bytes": 4804,
+      "sha256": "0794b04eff3d98f7c72e0a06a21d42b392d4fd5a4cada7707ae7985f1d5bf368",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/precise-parent.json",
+      "change": "added",
+      "bytes": 6907,
+      "sha256": "66f240b6e323562bd3a189d9a28c4bf8ebfa2f23d9bb792bf57904c8f8fa25ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/preserved-landed.json",
+      "change": "added",
+      "bytes": 4814,
+      "sha256": "1213ac0330c4093550c379a385c161acd06d638eb60c47adc508fd3e1f679856",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/preserved-parent.json",
+      "change": "added",
+      "bytes": 4814,
+      "sha256": "f3f356fca82ae1433b4a14657790d09705ef618022d6254c1b1fd26f387f2756",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "814e916c901e1ebb6c201604f4fc3c056eda401d7c79a84736797787eb3c4590",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/plan.json",
+      "change": "added",
+      "bytes": 6712,
+      "sha256": "6ae2aac8fc9c525cabf5efc4066920c283b53c04c0e09e6ccc5a609a17cc2ab9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/control-landed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/control-landed-jdk21.stdout",
+      "change": "added",
+      "bytes": 658,
+      "sha256": "17a6e91bf60da9d57d8b0e2555624eb09d72fd0528d18bcf046c541f19228fb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/controls.json",
+      "change": "added",
+      "bytes": 5058,
+      "sha256": "4e73b543880b6d7ee710fc4e14d7d9be433e3beaf3f04d6e1ad855424cb5911f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/execution.json",
+      "change": "added",
+      "bytes": 27056,
+      "sha256": "e50e43255cdadae08b75cbcb68a8b1567a6df5b44eca31dce1e31f95f15cd9e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "45d3c6296fd07c87ca7e715caa96bc0c19ea9de12cf43f8206ea6876268bf379",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 461,
+      "sha256": "4c3bc8ab1b31576b707f492dd66426d7c33f5210f1ffa3af13202b30d192b83b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier.json",
+      "change": "added",
+      "bytes": 21636,
+      "sha256": "310c3eaf86d22b263191074a0237aa20e159346041d61691f5e987ab42a1a928",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6018,
+      "sha256": "d9c2d131b95abc9d9049a98c552ef45d2767ee2ee469567817d953a1b360fe6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/result.json",
+      "change": "added",
+      "bytes": 14591,
+      "sha256": "a22ab2367bcf904811eb9e935e6f78ea8c0d0aa3ba16893b7c9ac2db7b743fa8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261122T164611Z-536718a1/attempt.json",
+      "change": "added",
+      "bytes": 17698,
+      "sha256": "35697aef33967a6a3deb397809d91178506ef15ef84a4c75a39f971dbc85a14d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261122T164611Z-536718a1/checker.json",
+      "change": "added",
+      "bytes": 7344,
+      "sha256": "72cf64e321ad491c922d6d461fce4d4303ef9c098ded337fe3ec186b65eba674",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261122T164611Z-536718a1/correspondence.json",
+      "change": "added",
+      "bytes": 1151,
+      "sha256": "2a2660962f15e11fd49a2e7f2e6029ffdb7205dcf7770f8401815c6c4749c3eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7aa7dc08e2eed8e41f02d7e0d4ee5b6bd6a979a4e8e571cb332213c05b1e0b26",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/plan.json",
+      "change": "added",
+      "bytes": 6584,
+      "sha256": "36b4d8bc2c114a464af63db5638e20704e5c8134a082b9ccc8ddc316c7244112",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 604,
+      "sha256": "3e890e8f9aa51209f2c7034b4dd9a2686b507bab3a9b84391505e4de57cd154d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/controls.json",
+      "change": "added",
+      "bytes": 4959,
+      "sha256": "72d28f7288522bb66a0d8f8b1898fa1677d6d2419e2c72818db30a686aa4b6b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/execution.json",
+      "change": "added",
+      "bytes": 26955,
+      "sha256": "52b31f76ae759340c9cb24a3b4ce99458203846347958efedcc66f68abdc13b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "ea7515f053ef75805d7dec63f8c723d0aaf4a41b49de96e7e1446b9ade49af47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 461,
+      "sha256": "4c3bc8ab1b31576b707f492dd66426d7c33f5210f1ffa3af13202b30d192b83b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier.json",
+      "change": "added",
+      "bytes": 21634,
+      "sha256": "681c9e1b93227acd0b3fbb94abc9c07210d52abe67afa7a99180aab84d477b7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6017,
+      "sha256": "c27bd43536bb1386e35fa62c9625d3db4c13cc9c248301ba3a330980fc70da5d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/result.json",
+      "change": "added",
+      "bytes": 14586,
+      "sha256": "b32844aadab02ee749157e962de86ba969357c966a3959e5322fa057155240a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261122T164609Z-a95f3d6c/attempt.json",
+      "change": "added",
+      "bytes": 17697,
+      "sha256": "9afed3897bd74884c07aceb8d76e37d87549605074e2eec765167f52af9db677",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261122T164609Z-a95f3d6c/checker.json",
+      "change": "added",
+      "bytes": 7343,
+      "sha256": "92a7a3b7a443c475fb3a869c0bbb665bcdbe5a2cd24f3ddec8112d5ebfde479b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261122T164609Z-a95f3d6c/correspondence.json",
+      "change": "added",
+      "bytes": 1151,
+      "sha256": "76cfa4c72afffe2c61cf45260e18f60edd5a917b3e0c95a8568737707db49f4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d64bcc10ad423b8d1cf0223a60b7bd6247888a7fd1fcf924578cff2dbd387061",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/plan.json",
+      "change": "added",
+      "bytes": 6786,
+      "sha256": "30f597b9f21df07f37e0707884079e564071d1e68eefaa18cc20639fd4dd5a79",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/control-landed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/control-landed-jdk21.stdout",
+      "change": "added",
+      "bytes": 658,
+      "sha256": "17a6e91bf60da9d57d8b0e2555624eb09d72fd0528d18bcf046c541f19228fb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/controls.json",
+      "change": "added",
+      "bytes": 5064,
+      "sha256": "a1e231cfe260ef496dfc8963407a438a5ad5aae2ba8648b0c357c3ff543e90d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/execution.json",
+      "change": "added",
+      "bytes": 26049,
+      "sha256": "36aa3d9385bc351bdbf4cd8b648520d574672d279a390c9eef72db330805f50b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "bee76e86fa94874cacca8f218869d94242f20c2225b36f653bf2a3af82604310",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 463,
+      "sha256": "722335a38e169a48e74b6f759de61c2be3165a0a0f73d1119cd4bbb00ea75d90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier.json",
+      "change": "added",
+      "bytes": 20681,
+      "sha256": "78c915f8012c1c0029f4ddc908048f40a2e2d3d6253c0897f28362de628c56b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6025,
+      "sha256": "33e3a7d257c99d1d05766d2870daab85640a78654a5397d8831414dbc0285ec1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/result.json",
+      "change": "added",
+      "bytes": 14635,
+      "sha256": "80ee3eb3667d0dbc0c732d0c8e6bd0ab5a49f16f224a64af48765ea3d9b5e195",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261122T164614Z-a4b95cb5/attempt.json",
+      "change": "added",
+      "bytes": 16781,
+      "sha256": "231acd3afceabcac3aae55b3769569b3f959917c684e900fc349845fefa75dca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261122T164614Z-a4b95cb5/checker.json",
+      "change": "added",
+      "bytes": 7354,
+      "sha256": "3cb4e88d5450da240ee1f3aff0b502f82ad21f95673f2bcd31cc0cdb57cf2b90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261122T164614Z-a4b95cb5/correspondence.json",
+      "change": "added",
+      "bytes": 1153,
+      "sha256": "08225c2d98c6531cfcf75b86e7885a50322cc17e43e6f02e4811ac0d24edc5b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "80b000b09cd5f7a6fce0908a7b8904569bb72e87b9abe872dac1660f008a42fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/plan.json",
+      "change": "added",
+      "bytes": 6662,
+      "sha256": "b144d1efb84280cf7844cd8e5543acde49509931c1b889d2b29c7572e9c3f5f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 604,
+      "sha256": "3e890e8f9aa51209f2c7034b4dd9a2686b507bab3a9b84391505e4de57cd154d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/controls.json",
+      "change": "added",
+      "bytes": 4965,
+      "sha256": "23881a781b1b45f1db3d582c7cfcd2b3a84d1c347315f6b40f6da98f97dc2240",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/execution.json",
+      "change": "added",
+      "bytes": 25949,
+      "sha256": "622ead6e9ce233589504024243c9716c5063641065db53ab855dfe7e3b94964e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "87329f5c62066d6eb78a036e9f9e5f311c37dc3a2f8e3f8b5fefc97c7b882a9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 463,
+      "sha256": "722335a38e169a48e74b6f759de61c2be3165a0a0f73d1119cd4bbb00ea75d90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier.json",
+      "change": "added",
+      "bytes": 20680,
+      "sha256": "398d6900e134819f69b992f313b10464147765bc0a809d9e17447c1c910e899e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6024,
+      "sha256": "ed4b0d078ae40ae9fc5407e7dd695b42932853eac067b20261dc6776dd32fe2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/result.json",
+      "change": "added",
+      "bytes": 14634,
+      "sha256": "560f4798102ac502d70b9e6dcdd18d998e0dcc7c0b4a4fd2aaf1d1cddca00e2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261122T164613Z-01dbcadf/attempt.json",
+      "change": "added",
+      "bytes": 16782,
+      "sha256": "c94c9509dc0e81491161cdf2ac570b8d3929702077a5a28e59eba8cfd5a3bfc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261122T164613Z-01dbcadf/checker.json",
+      "change": "added",
+      "bytes": 7352,
+      "sha256": "e921dc037809a2a539a83ecfb34e39dd390bc7ac2648392b2e7dfb702eea32f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261122T164613Z-01dbcadf/correspondence.json",
+      "change": "added",
+      "bytes": 1153,
+      "sha256": "422e2466a03c4502339324054d6f61a349282e1d5069833b9989b97c163931de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "bbe6e76835ef770bc8225e457b2fd7eeb1a69f4a553b5b4a770e0e567fb01f2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/plan.json",
+      "change": "added",
+      "bytes": 6892,
+      "sha256": "8e2bdef92fdcdad36996f917aef24ec2f98fa5db4e3e7c581586d6bc042c69e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-landed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-landed-jdk21.stdout",
+      "change": "added",
+      "bytes": 658,
+      "sha256": "17a6e91bf60da9d57d8b0e2555624eb09d72fd0528d18bcf046c541f19228fb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 604,
+      "sha256": "3e890e8f9aa51209f2c7034b4dd9a2686b507bab3a9b84391505e4de57cd154d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/controls.json",
+      "change": "added",
+      "bytes": 9927,
+      "sha256": "62d0102a5bfff445db0617feb13b3c6beac25fb7b23acefcf11ef6824a85b32e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/execution.json",
+      "change": "added",
+      "bytes": 9547,
+      "sha256": "cc19564c229af66c47a45206711e116aa1e99d77dc89aeff2b59332fdb8b2dcd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/streams.json",
+      "change": "added",
+      "bytes": 1719,
+      "sha256": "6fa3864d5b573065e6e33d7ede5e52d8320cd88eef68b614a21052b153d58f88",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/summary.txt",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "30e8432846d3ca4036033faf76abd37878bba59b9db8bad659dce46d0162c0ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/result.json",
+      "change": "added",
+      "bytes": 8296,
+      "sha256": "84aa5bc6dd3590f081e00b49cc1d80769b9eb86dfa7bc696f7fdf8732960aa9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/375-commons-lang-decimal-precision/receipts/replay/executions/20261122T164601Z-2eba2e78/attempt.json",
+      "change": "added",
+      "bytes": 5187,
+      "sha256": "562b2ab6285724e7f43954ff7e1a4bfb45cf9a933ccc00290fcb073a163a6557",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T16:49:06+00:00",
+    "applied": [
+      "examples/375-commons-lang-decimal-precision/records/opening/finite.log",
+      "examples/375-commons-lang-decimal-precision/records/opening/precise-landed.log",
+      "examples/375-commons-lang-decimal-precision/records/opening/precise-parent.log",
+      "examples/375-commons-lang-decimal-precision/records/opening/preserved-landed.log",
+      "examples/375-commons-lang-decimal-precision/records/opening/preserved-parent.log",
+      "examples/375-commons-lang-decimal-precision/records/opening/replay.log",
+      "examples/375-commons-lang-decimal-precision/records/opening/run.json",
+      "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/batch.json",
+      "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/precise-landed.json",
+      "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/precise-parent.json",
+      "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/preserved-landed.json",
+      "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261122T164603Z-ef2c3b70/preserved-parent.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/completion.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/plan.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/control-landed-jdk21.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/control-landed-jdk21.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/controls.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/execution.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/streams.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier-output.txt",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/records/verifier.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261122T164611Z-536718a1/result.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261122T164611Z-536718a1/attempt.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261122T164611Z-536718a1/checker.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261122T164611Z-536718a1/correspondence.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/completion.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/plan.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/control-parent-jdk21.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/control-parent-jdk21.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/controls.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/execution.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/streams.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier-output.txt",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/records/verifier.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261122T164609Z-a95f3d6c/result.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261122T164609Z-a95f3d6c/attempt.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261122T164609Z-a95f3d6c/checker.json",
+      "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261122T164609Z-a95f3d6c/correspondence.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/completion.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/plan.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/control-landed-jdk21.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/control-landed-jdk21.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/controls.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/execution.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/streams.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier-output.txt",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/records/verifier.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261122T164614Z-a4b95cb5/result.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261122T164614Z-a4b95cb5/attempt.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261122T164614Z-a4b95cb5/checker.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261122T164614Z-a4b95cb5/correspondence.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/completion.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/plan.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/control-parent-jdk21.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/control-parent-jdk21.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/controls.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/execution.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/streams.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier-output.txt",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/records/verifier.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261122T164613Z-01dbcadf/result.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261122T164613Z-01dbcadf/attempt.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261122T164613Z-01dbcadf/checker.json",
+      "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261122T164613Z-01dbcadf/correspondence.json",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/completion.json",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/plan.json",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-landed-jdk21.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-landed-jdk21.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-parent-jdk21.stderr",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/control-parent-jdk21.stdout",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/controls.json",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/execution.json",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/streams.json",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/records/summary.txt",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/20261122T164601Z-2eba2e78/result.json",
+      "examples/375-commons-lang-decimal-precision/receipts/replay/executions/20261122T164601Z-2eba2e78/attempt.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "51a83b86ac020bc5c2cef7175b2aa59ff391c294",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/51a83b86ac020bc5c2cef7175b2aa59ff391c294/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 3,
+    "occurrences": {
+      "logs": "20261122T164616Z-5312570b388a6d68",
+      "outputs": "20261122T164616Z-5635170fba2036c1",
+      "diff": "20261122T164616Z-585864c44a8644a9"
+    }
+  }
+}
