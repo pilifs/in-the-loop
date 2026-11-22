@@ -1,0 +1,402 @@
+{
+  "baseline": {
+    "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+    "proofs": {
+      "names": {
+        "assertion": "result == 1",
+        "assumptions": [
+          {
+            "basis": "stated",
+            "kind": "precondition",
+            "text": "code >= 0 && code < 18"
+          },
+          {
+            "basis": "engine",
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+          }
+        ],
+        "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isLetterOrDigit(C)Z@jdk-21.0.13 (java.lang.Character.isLetterOrDigit(char) at org.apache.avro.NameValidator$2.validate:63). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "bounds": [
+          32,
+          64
+        ],
+        "exit": 1,
+        "guard": "code >= 0 && code < 18",
+        "log": "baseline-names.stdout",
+        "observedRoots": [],
+        "peakRssBytes": 54169600,
+        "seconds": 0.034882,
+        "states": {},
+        "stderr": "baseline-names.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "baseline-names.stdout",
+        "stdoutSha256": "4daf51bf9efdbe2f018d744c596c3397619b909ae9e9325f4dc7b61c02467f99",
+        "target": "campaign.NameChecks#names",
+        "verdict": "unverifiable"
+      },
+      "publicUtf": {
+        "assertion": "result == 1",
+        "assumptions": [
+          {
+            "basis": "stated",
+            "kind": "precondition",
+            "text": "code >= 0 && code < 18"
+          },
+          {
+            "basis": "engine",
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+          }
+        ],
+        "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isLetterOrDigit(C)Z@jdk-21.0.13 (java.lang.Character.isLetterOrDigit(char) at org.apache.avro.NameValidator$2.validate:63). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "bounds": [
+          32,
+          64
+        ],
+        "exit": 1,
+        "guard": "code >= 0 && code < 18",
+        "log": "baseline-publicUtf.stdout",
+        "observedRoots": [],
+        "peakRssBytes": 54132736,
+        "seconds": 0.032508,
+        "states": {},
+        "stderr": "baseline-publicUtf.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "baseline-publicUtf.stdout",
+        "stdoutSha256": "719e5b52b8ebd24dd48c4756be2f5cb94508574ce20ceeb9e1026ee5ab81a8ab",
+        "target": "campaign.UtfNameChecks#names",
+        "verdict": "unverifiable"
+      },
+      "twoAscii": {
+        "assertion": "result == 1",
+        "assumptions": [
+          {
+            "basis": "stated",
+            "kind": "precondition",
+            "text": "first >= 0 && first < 128 && second >= 0 && second < 128"
+          },
+          {
+            "basis": "engine",
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+          }
+        ],
+        "blocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Character.isLetterOrDigit(C)Z@jdk-21.0.13 (java.lang.Character.isLetterOrDigit(char) at org.apache.avro.NameValidator$2.validate:63). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "bounds": [
+          16,
+          32
+        ],
+        "exit": 1,
+        "guard": "first >= 0 && first < 128 && second >= 0 && second < 128",
+        "log": "baseline-twoAscii.stdout",
+        "observedRoots": [],
+        "peakRssBytes": 53952512,
+        "seconds": 0.040676,
+        "states": {},
+        "stderr": "baseline-twoAscii.stderr",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "baseline-twoAscii.stdout",
+        "stdoutSha256": "604d223e859a64e55572c47bb111b7f0afef858f509437db04575a9ff5aa4bc6",
+        "target": "campaign.NameChecks#twoAscii",
+        "verdict": "unverifiable"
+      }
+    },
+    "source": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39"
+  },
+  "binding": {
+    "build": "examples/367-avro-union-array-default/records/module-build/build-fix.json",
+    "buildSha256": "aa84c288267bce6d7ae8294e3c7c2ee244447aeeda720eab3610c0ac615752d9",
+    "orderedJars": [
+      "e23ef3027f1ec643459d9cb1733e3c3d58a78e65849444067d45dfcd823048c3",
+      "baf8b739e9d9b93bcdb33f25046bfdb8dbd74c97de2a8698539fbe0c7eeac0bb",
+      "f397563d8e67630c10cab8c2334ca0e55af832fa3ebde160a379c2c96d43bf25",
+      "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
+      "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
+      "5c3881e4f556855e9c532927ee0c9dfde94cc66760d5805c031a59887070af5f",
+      "df90bba0fe3cb586b7f164e78fe8f8f4da3f2dd5c27fa645f888100ccc25dd72",
+      "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
+      "50485d06037fea3d6e40c968386feeca6338cc9872e25549593ff3eb352cefcc",
+      "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+      "69c9ef4e2ec232fae8febfb3280bec567bdfb7406627174b1a3c163031e29367",
+      "7b751d952061954d5abfed7181c1f645d336091b679891591d63329c622eb832"
+    ],
+    "revision": "892d6997dcb65627560b04bd76c5a3dd97666cdf"
+  },
+  "callSites": [
+    {
+      "code": 0,
+      "entry": "union",
+      "names": [
+        "RecordA",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    },
+    {
+      "code": 1,
+      "entry": "union",
+      "names": [
+        "marker",
+        "RecordA",
+        "marker",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    },
+    {
+      "code": 2,
+      "entry": "union",
+      "names": [
+        "marker",
+        "RecordA",
+        "marker",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    },
+    {
+      "code": 3,
+      "entry": "union",
+      "names": [
+        "marker",
+        "RecordA",
+        "marker",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    },
+    {
+      "code": 0,
+      "entry": "direct",
+      "names": [
+        "RecordA",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    },
+    {
+      "code": 1,
+      "entry": "direct",
+      "names": [
+        "marker",
+        "RecordA",
+        "marker",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    },
+    {
+      "code": 2,
+      "entry": "direct",
+      "names": [
+        "marker",
+        "RecordA",
+        "marker",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    },
+    {
+      "code": 3,
+      "entry": "direct",
+      "names": [
+        "marker",
+        "RecordA",
+        "marker",
+        "value",
+        "Element",
+        "fieldA",
+        "RecordA"
+      ],
+      "value": 1
+    }
+  ],
+  "checker": "2b31cb1c7508723ff9ea48b4358baeaa4248796d2c62186d4dcf22efc612e726",
+  "checksClassSha256": "4693ec6ef978fa01f0dba78d55c994cda8f2ee9c309a037e11f72a01fa456421",
+  "checksSourceSha256": "f6d4969430b7b16e20e9577ebe70797ceb9167d8cc6b5cd08d1841d97008789e",
+  "defaultPolicyClass": "org.apache.avro.NameValidator$2",
+  "example": "367",
+  "extractorSha256": "83282d0d27c72798ebb5f7a376797060eaaab66e4bfa451a1208114e0f734407",
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "physical": {
+    "exit": 0,
+    "log": "original-jvm.stdout",
+    "peakRssBytes": 100712448,
+    "seconds": 0.36709,
+    "stderr": "original-jvm.stderr",
+    "stderrSha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+    "stdout": "original-jvm.stdout",
+    "stdoutSha256": "30ee430ce6a7970fc78283e6bdd33f54e72c476abdceb966b2e8b1cc21255675"
+  },
+  "proofs": {
+    "names": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "code >= 0 && code < 18"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": null,
+      "bounds": [
+        32,
+        64
+      ],
+      "exit": 0,
+      "guard": "code >= 0 && code < 18",
+      "log": "names.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 56193024,
+      "seconds": 0.042528,
+      "states": {},
+      "stderr": "names.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "names.stdout",
+      "stdoutSha256": "4d6d6de83880379191b4f25368b94246d5271952b3928d2f850aaa75f17195d9",
+      "target": "campaign.NameChecks#names",
+      "verdict": "verified"
+    },
+    "publicUtf": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "code >= 0 && code < 18"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": null,
+      "bounds": [
+        32,
+        64
+      ],
+      "exit": 0,
+      "guard": "code >= 0 && code < 18",
+      "log": "publicUtf.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 56041472,
+      "seconds": 0.041989,
+      "states": {},
+      "stderr": "publicUtf.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "publicUtf.stdout",
+      "stdoutSha256": "b7cf12cc3a38f55896310615d33ba28d090fdf7900bdcf9762ef503e00b9b31e",
+      "target": "campaign.UtfNameChecks#names",
+      "verdict": "verified"
+    },
+    "twoAscii": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "first >= 0 && first < 128 && second >= 0 && second < 128"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": null,
+      "bounds": [
+        16,
+        32
+      ],
+      "exit": 0,
+      "guard": "first >= 0 && first < 128 && second >= 0 && second < 128",
+      "log": "twoAscii.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 56254464,
+      "seconds": 0.054963,
+      "states": {},
+      "stderr": "twoAscii.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "twoAscii.stdout",
+      "stdoutSha256": "02aa2e18981d28215ee96e60f6cbe4ace44f7872ca750b4c30d2fbc9cab8879f",
+      "target": "campaign.NameChecks#twoAscii",
+      "verdict": "verified"
+    }
+  },
+  "publicUtfClassSha256": "6ba6c76d2625291b3e55a2767433376a95458c2459d5f1b93f2630a2b4cc725f",
+  "qualification": {
+    "afterGetBytes": 31,
+    "afterGetSha256": "bb751ca01ea3173f4b6eef6f9d451ad285b691c92443e872dcd7f199b1123f09",
+    "consumer": "validateName(Ljava/lang/String;)Ljava/lang/String;",
+    "field": "VALIDATE_NAMES",
+    "originalCodeSha256": "84130c131c7d82532988e023b88290ed3077fc05f5c87683bd3eedfcf16ce25a",
+    "originalPoolSha256": "128a0d90e24a5a0ebd40c3123f0b8faf6c7c809e0920e34f9e0afd15a34f7604",
+    "projectedClassSha256": "b59c9837036ff40a8026b5362dd66f2a8163412028f74831dca5d93c0fa07ce3",
+    "rejectedChanges": [
+      "field",
+      "instruction",
+      "pool"
+    ],
+    "schemaClassSha256": "2dc3a17602d41444c5385883880f8c61f06b8a4142069cc1ee9d0dad05d8988c",
+    "supplier": "lambda$static$0()Lorg/apache/avro/NameValidator;",
+    "supplierCodeSha256": "35a33fbe1b8057b5960f178f4f4665c8cf731167c264b9faaffba5bfd7c19a20"
+  },
+  "schemaProvider": {
+    "entry": "org/apache/avro/Schema.class",
+    "jar": "e23ef3027f1ec643459d9cb1733e3c3d58a78e65849444067d45dfcd823048c3"
+  },
+  "side": "fix",
+  "source": "78923c2e419cca1619a4261038065806cec2360f",
+  "threadLocalFactory": {
+    "classSha256": "12c4c73227658aac614f02bcfbf9e69ae0942a1aa3847a781a41b20590887fdc",
+    "codeSha256": "46244573c32d6a50702a0aaa354038b03d87d304cbedaa24bce7dba9dbb335f9",
+    "entry": "org/apache/avro/util/internal/ThreadLocalWithInitial.class",
+    "jar": "e23ef3027f1ec643459d9cb1733e3c3d58a78e65849444067d45dfcd823048c3",
+    "poolSha256": "09f8d3546451663bdda20bda5ea8419228db6cf0baff12532702978a263f3188",
+    "target": {
+      "descriptor": "(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;",
+      "name": "withInitial",
+      "opcode": "invokestatic",
+      "owner": "java.lang.ThreadLocal",
+      "referenceKind": "method"
+    }
+  },
+  "trace": {
+    "exit": 0,
+    "log": "policy-sites.stdout",
+    "peakRssBytes": 67559424,
+    "seconds": 3.631412,
+    "stderr": "policy-sites.stderr",
+    "stderrSha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+    "stdout": "policy-sites.stdout",
+    "stdoutSha256": "0b55b53725b53136ed48ed6f8afd03775d5e1299dc95313bd36e5429014f20da"
+  }
+}

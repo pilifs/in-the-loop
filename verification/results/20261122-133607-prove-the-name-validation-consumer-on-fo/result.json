@@ -1,0 +1,685 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-133607-prove-the-name-validation-consumer-on-fo",
+  "title": "Prove the name-validation consumer on four original Avro JARs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 21.4s, peak 108.8 MiB (estimated 3m00s, 3.0 GiB); 60 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261122-133607-prove-the-name-validation-consumer-on-fo.json",
+    "sha256": "40faeeffaed80f038f24e72cb11c18ad2c4bc84b8dbe9bcd3db76bdbedfb9be5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-133607-prove-the-name-validation-consumer-on-fo",
+      "title": "Prove the name-validation consumer on four original Avro JARs",
+      "description": "Both captured public Avro readers reach Schema.validateName. Compare the campaign and follow-up native verifiers on identical compiled inputs. Bind the original default supplier and every instruction after ThreadLocal.get on parent and fix. Check the eighteen name selectors, every two-character ASCII name, deliberate policy overrides on the original JVM, and the later public UTF validator. These are producer and conditional consumer claims.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "avro-schema-resolution"
+      ],
+      "links": {
+        "examples": [
+          "364",
+          "367"
+        ]
+      },
+      "expected": "Each of four original classpaths reproduces its independent controls and emits native receipts on both checker binaries. An unsupported producer stays open in the companion column.",
+      "submitted": {
+        "at": "2026-11-22T13:36:07+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Compare both historical name validators and their original JVM controls",
+          "run": "python3 -B lib/benchmark/java-domain-proof/name_validation.py --compare-campaign --output verification/java-domain-proof/name-validation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-domain-proof/name-validation"
+      ]
+    }
+  },
+  "sourceCommit": "78923c2e419cca1619a4261038065806cec2360f",
+  "startedAt": "2026-11-22T13:42:00+00:00",
+  "finishedAt": "2026-11-22T13:45:19+00:00",
+  "wallSeconds": 199.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1103258,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 114102272,
+    "wallSeconds": 21.4,
+    "cpuSeconds": 29.4,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 169.062,
+      "cpuSeconds": 169.327,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2265583616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b55e56152f5b17832c39d5e1f1894cec136eec36dd9a4ce4060eb510a7ca1da0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-133607-prove-the-name-validation-consumer-on-fo/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 48s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Compare both historical name validators and their original JVM controls",
+      "run": "python3 -B lib/benchmark/java-domain-proof/name_validation.py --compare-campaign --output verification/java-domain-proof/name-validation",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 21.446,
+      "cpuSeconds": 29.369,
+      "cpuThrottledSeconds": 1.97,
+      "peakMemoryBytes": 114102272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-both-historical-name-v.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/baseline-names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/baseline-names.stdout",
+      "change": "added",
+      "bytes": 6036,
+      "sha256": "85aae6b3a9ec6f3ed5c572c6742ebb668a01ce9258f5b88f6ac2d50e2a9f69a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/baseline-twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/baseline-twoAscii.stdout",
+      "change": "added",
+      "bytes": 6301,
+      "sha256": "655e17797671677f46c351111dd05724d2026426426ab87e7813253b8b367e70",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/measurement.json",
+      "change": "added",
+      "bytes": 11927,
+      "sha256": "bea07dc4892bb7921a93438bc94d7fb68b0c479fffc96b5e9e218f41d5f30526",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/names.stdout",
+      "change": "added",
+      "bytes": 5294,
+      "sha256": "f619742ee9ebe09ebeddbc05dd0793d165dd13d0558d584ca6cabcbc7b4664d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/original-jvm.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/original-jvm.stdout",
+      "change": "added",
+      "bytes": 112,
+      "sha256": "4bc4c4655dd5e5eaba08cc87a3c41c9fbd2eca66d3ae3138252a04b14fb000c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/policy-sites.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/policy-sites.stdout",
+      "change": "added",
+      "bytes": 4799,
+      "sha256": "dc2d3e2ad6b54966fa706f43301cafe0778819bcb765c5db60eb8d69250a800f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/fix/twoAscii.stdout",
+      "change": "added",
+      "bytes": 5714,
+      "sha256": "2c2dc57ffb2357353cd13b00988c174867c570c164181113267fb21a9f6d14aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/baseline-names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/baseline-names.stdout",
+      "change": "added",
+      "bytes": 6037,
+      "sha256": "966e4ed6d599c4dc9eb4f6316cfc2cc23b9c1dc17029eb53a72bf1ae7ecc256a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/baseline-twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/baseline-twoAscii.stdout",
+      "change": "added",
+      "bytes": 6299,
+      "sha256": "60bbc2124a2b1c6ac8e24255141213d06c99edb17ce6fc7ef7ac7cd65426b203",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/measurement.json",
+      "change": "added",
+      "bytes": 11932,
+      "sha256": "4cf72ce0e1d362a677b479b0e02e59a25fc661f0f3275ddc2f3411061df63709",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/names.stdout",
+      "change": "added",
+      "bytes": 5294,
+      "sha256": "c1f386d86b64a4ceb520457b122fe5fab52fe162634387c3e85a31be9da5a43c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/original-jvm.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/original-jvm.stdout",
+      "change": "added",
+      "bytes": 112,
+      "sha256": "4bc4c4655dd5e5eaba08cc87a3c41c9fbd2eca66d3ae3138252a04b14fb000c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/policy-sites.stderr",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "9ddf3781b5e43a87b1d67caac2bc4b251f9ce8d77c509c8369129f4b0359fd55",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/policy-sites.stdout",
+      "change": "added",
+      "bytes": 4799,
+      "sha256": "a4eae6a2313bfd302ff506b6aeaf443b7a7ebe8579d13ed4189be8f85e81011b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/364/parent/twoAscii.stdout",
+      "change": "added",
+      "bytes": 5714,
+      "sha256": "5a4b70c31d4959748931e3e4e40f7b0a25ac49639457320abb3b0a9475eac1c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/baseline-names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/baseline-names.stdout",
+      "change": "added",
+      "bytes": 6080,
+      "sha256": "4daf51bf9efdbe2f018d744c596c3397619b909ae9e9325f4dc7b61c02467f99",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/baseline-publicUtf.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/baseline-publicUtf.stdout",
+      "change": "added",
+      "bytes": 6092,
+      "sha256": "719e5b52b8ebd24dd48c4756be2f5cb94508574ce20ceeb9e1026ee5ab81a8ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/baseline-twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/baseline-twoAscii.stdout",
+      "change": "added",
+      "bytes": 6345,
+      "sha256": "604d223e859a64e55572c47bb111b7f0afef858f509437db04575a9ff5aa4bc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/measurement.json",
+      "change": "added",
+      "bytes": 13916,
+      "sha256": "67b4b327e4f2fc17a943b303946f79591d111ab8a2ca5c20a60a4d0cc6c4fc14",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/names.stdout",
+      "change": "added",
+      "bytes": 5294,
+      "sha256": "4d6d6de83880379191b4f25368b94246d5271952b3928d2f850aaa75f17195d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/original-jvm.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/original-jvm.stdout",
+      "change": "added",
+      "bytes": 127,
+      "sha256": "30ee430ce6a7970fc78283e6bdd33f54e72c476abdceb966b2e8b1cc21255675",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/policy-sites.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/policy-sites.stdout",
+      "change": "added",
+      "bytes": 2953,
+      "sha256": "0b55b53725b53136ed48ed6f8afd03775d5e1299dc95313bd36e5429014f20da",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/publicUtf.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/publicUtf.stdout",
+      "change": "added",
+      "bytes": 5306,
+      "sha256": "b7cf12cc3a38f55896310615d33ba28d090fdf7900bdcf9762ef503e00b9b31e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/fix/twoAscii.stdout",
+      "change": "added",
+      "bytes": 5714,
+      "sha256": "02aa2e18981d28215ee96e60f6cbe4ace44f7872ca750b4c30d2fbc9cab8879f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/baseline-names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/baseline-names.stdout",
+      "change": "added",
+      "bytes": 6078,
+      "sha256": "7533ea843bbe15a339eec9f5ffa8d2b185475efbf4220d748e542547995e7217",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/baseline-publicUtf.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/baseline-publicUtf.stdout",
+      "change": "added",
+      "bytes": 6093,
+      "sha256": "55f1ac06d652e70d817bcb0d90521f70846e12a19b3400eea0c772a51fc7cd2d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/baseline-twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/baseline-twoAscii.stdout",
+      "change": "added",
+      "bytes": 6345,
+      "sha256": "2e51c7e8b5f882fdb6450d3a2bce4f4ad8e339754236fb632ef6aeca7f954ccf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/measurement.json",
+      "change": "added",
+      "bytes": 13923,
+      "sha256": "69e1c1300c02737398368258eeddc7f5df8e49caf941e03c8e2bd1e7e0b4d71f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/names.stdout",
+      "change": "added",
+      "bytes": 5294,
+      "sha256": "c192b9b52c6dde7410243ab382e83a760e369fb346b0c5f7be400ee6121d24ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/original-jvm.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/original-jvm.stdout",
+      "change": "added",
+      "bytes": 127,
+      "sha256": "30ee430ce6a7970fc78283e6bdd33f54e72c476abdceb966b2e8b1cc21255675",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/policy-sites.stderr",
+      "change": "added",
+      "bytes": 186,
+      "sha256": "2c58b87a0350a39bb1c3b5f4891defeeb9a785e84aa11a466dc9ddb21253bf58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/policy-sites.stdout",
+      "change": "added",
+      "bytes": 2953,
+      "sha256": "e0ec4217b8778a54169fca53a02d5020d9fdea09ce5541ea93681145e8388ac6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/publicUtf.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/publicUtf.stdout",
+      "change": "added",
+      "bytes": 5306,
+      "sha256": "fcf860d293b340881a76dba6db3fe22be10ccd5b1d9dc730552622c73e76a939",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/twoAscii.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-domain-proof/name-validation/367/parent/twoAscii.stdout",
+      "change": "added",
+      "bytes": 5712,
+      "sha256": "1ee80f48e602891391b841ea9082c1443336365ff41b7fafcc280da7004283f1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T13:45:40+00:00",
+    "applied": [
+      "verification/java-domain-proof/name-validation/364/fix/baseline-names.stderr",
+      "verification/java-domain-proof/name-validation/364/fix/baseline-names.stdout",
+      "verification/java-domain-proof/name-validation/364/fix/baseline-twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/364/fix/baseline-twoAscii.stdout",
+      "verification/java-domain-proof/name-validation/364/fix/measurement.json",
+      "verification/java-domain-proof/name-validation/364/fix/names.stderr",
+      "verification/java-domain-proof/name-validation/364/fix/names.stdout",
+      "verification/java-domain-proof/name-validation/364/fix/original-jvm.stderr",
+      "verification/java-domain-proof/name-validation/364/fix/original-jvm.stdout",
+      "verification/java-domain-proof/name-validation/364/fix/policy-sites.stderr",
+      "verification/java-domain-proof/name-validation/364/fix/policy-sites.stdout",
+      "verification/java-domain-proof/name-validation/364/fix/twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/364/fix/twoAscii.stdout",
+      "verification/java-domain-proof/name-validation/364/parent/baseline-names.stderr",
+      "verification/java-domain-proof/name-validation/364/parent/baseline-names.stdout",
+      "verification/java-domain-proof/name-validation/364/parent/baseline-twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/364/parent/baseline-twoAscii.stdout",
+      "verification/java-domain-proof/name-validation/364/parent/measurement.json",
+      "verification/java-domain-proof/name-validation/364/parent/names.stderr",
+      "verification/java-domain-proof/name-validation/364/parent/names.stdout",
+      "verification/java-domain-proof/name-validation/364/parent/original-jvm.stderr",
+      "verification/java-domain-proof/name-validation/364/parent/original-jvm.stdout",
+      "verification/java-domain-proof/name-validation/364/parent/policy-sites.stderr",
+      "verification/java-domain-proof/name-validation/364/parent/policy-sites.stdout",
+      "verification/java-domain-proof/name-validation/364/parent/twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/364/parent/twoAscii.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/baseline-names.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/baseline-names.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/baseline-publicUtf.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/baseline-publicUtf.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/baseline-twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/baseline-twoAscii.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/measurement.json",
+      "verification/java-domain-proof/name-validation/367/fix/names.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/names.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/original-jvm.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/original-jvm.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/policy-sites.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/policy-sites.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/publicUtf.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/publicUtf.stdout",
+      "verification/java-domain-proof/name-validation/367/fix/twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/367/fix/twoAscii.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/baseline-names.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/baseline-names.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/baseline-publicUtf.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/baseline-publicUtf.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/baseline-twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/baseline-twoAscii.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/measurement.json",
+      "verification/java-domain-proof/name-validation/367/parent/names.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/names.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/original-jvm.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/original-jvm.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/policy-sites.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/policy-sites.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/publicUtf.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/publicUtf.stdout",
+      "verification/java-domain-proof/name-validation/367/parent/twoAscii.stderr",
+      "verification/java-domain-proof/name-validation/367/parent/twoAscii.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "eeb9a011768ea31309979492371409b8764aa127",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eeb9a011768ea31309979492371409b8764aa127/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T134519Z-823694f5f16c306b",
+      "outputs": "20261122T134519Z-84727790e88f6437",
+      "diff": "20261122T134519Z-8671779c85c8c3c2"
+    }
+  }
+}
