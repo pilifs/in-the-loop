@@ -27,8 +27,10 @@ each, 1.5 to 2.9 MB a receipt, because their jobs wrote two files a case. Those 
 outputs against it (`accept.py`, `claim_history.py`) need every row. The complete inventory of what a job wrote
 is in the private archive in any case (`python3 llm-dlc/tools/artifacts.py list --job ID`).
 
-`WRITE` says where a *new* job goes. It is "flat" until the readers that are not in this repository's tools have
-been checked against shards; `VERIFY_LAYOUT=shards` (or `flat`) overrides it for one command.
+`WRITE` says where a *new* job goes. It is "shards" since 2026-11-22, when the user switched it on: the two folders
+had passed GitHub's 1,000-entry listing, and every reader in this repository's tools goes through this module.
+Jobs written flat before then stay flat, and so does the result of each, beside it. `VERIFY_LAYOUT=flat` (or
+`shards`) overrides it for one command.
 
 Standard library only.
 """
@@ -41,7 +43,7 @@ from pathlib import Path
 
 JOBS = "verification/jobs"
 RESULTS = "verification/results"
-WRITE = "flat"
+WRITE = "shards"
 UNDATED = "undated"
 RECEIPT_BYTES = 256 << 10     # a result.json over this is reported: a job that writes many small files packs them
 RECEIPT_RULE_FROM = "20261122"  # the UTC day the rule starts with: earlier results stay as they were collected

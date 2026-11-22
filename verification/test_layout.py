@@ -81,8 +81,10 @@ class Tree(unittest.TestCase):
         self.assertEqual(list(layout.jobs(self.root)), sorted([OLD, NEW, ODD]))
 
     def test_a_new_job_goes_where_the_layout_says_and_nothing_that_exists_moves(self):
-        with mock.patch.dict(os.environ, {"VERIFY_LAYOUT": ""}):
-            self.assertEqual(layout.new_job(self.root, NEW), self.root / layout.job_rel(NEW))  # flat until the switch
+        with mock.patch.dict(os.environ, {"VERIFY_LAYOUT": ""}):      # with no override, layout.WRITE decides
+            self.assertEqual(layout.new_job(self.root, NEW), self.root / layout.job_rel(NEW, layout.WRITE))
+        with mock.patch.dict(os.environ, {"VERIFY_LAYOUT": "flat"}):
+            self.assertEqual(layout.new_job(self.root, NEW), self.root / layout.job_rel(NEW))
         with mock.patch.dict(os.environ, {"VERIFY_LAYOUT": "shards"}):
             self.assertEqual(layout.new_job(self.root, NEW), self.root / layout.job_rel(NEW, "shards"))
             old = self.job(OLD)                      # a job written flat stays flat, and its result goes beside it

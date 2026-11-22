@@ -61,7 +61,7 @@ result is collected here, in the runner's workspace, and reaches that branch whe
 
 ### Two layouts: flat, and by day
 
-Every job so far is kept flat, `jobs/ID.json` and `results/ID/`: about a thousand entries in each folder by
+Every job until 2026-11-22 is kept flat, `jobs/ID.json` and `results/ID/`: about a thousand entries in each folder by
 2026-11-21, a few hundred more a day, against the 3,000 a forge recommends as a folder's width. A job can instead be
 kept under the UTC day it was submitted, which its id begins with: `jobs/YYYY/MM/DD/ID.json` and
 `results/YYYY/MM/DD/ID/`, with one overflow folder, `undated/`, for an id that begins with no date.
@@ -85,9 +85,9 @@ kept under the UTC day it was submitted, which its id begins with: `jobs/YYYY/MM
   (`python3 llm-dlc/tools/artifacts.py list --job ID`).
 - **One id, two records.** Identical copies resolve to the flat one, always. Copies that differ are a problem
   `pipeline.py validate` names, and readers still get the flat one.
-- **Where new jobs go** is `WRITE` in `layout.py`: `"flat"` today. Switching it to `"shards"` is one line, for the
-  user to decide once a real batch has been promoted with the readers above (the brief's order: readers first, then
-  writers); `VERIFY_LAYOUT=shards` does it for one command. A sharded job's `$schema` and its result's are written
+- **Where new jobs go** is `WRITE` in `layout.py`: `"shards"` since 2026-11-22, when the user switched it on (the
+  folders had passed GitHub's 1,000-entry listing); jobs written before then stay flat. `VERIFY_LAYOUT=flat` gives
+  the old layout for one command. The pipeline's own tests hold in either layout. A sharded job's `$schema` and its result's are written
   relative to their own depth.
 - **Not through the resolver:** the scripts under `lib/benchmark/external-upgrades/` name particular results of
   November 2026 by their flat paths, which stay where they are.

@@ -109,7 +109,7 @@ class CaptureTest(unittest.TestCase):
         self.repo.commit("job")
         self.repo.pipeline("run", "--rev", "HEAD")
         (self.repo.dir / "o.txt").write_text("someone else's edit\n")
-        old = self.repo.dir / "verification/results" / job_id
+        old = self.repo.collected(job_id)
         old.mkdir(parents=True)
         (old / "result.json").write_text('{"earlier": "collect"}\n')
         self.repo.pipeline("collect")
@@ -199,7 +199,7 @@ def after_collect(*args, **kwargs):
         job_id = self.repo.submit("Killed", "--output", "o.txt", "--run", "echo after > o.txt")
         self.repo.commit("job")
         self.repo.pipeline("run", "--rev", "HEAD")
-        staged, kept = self.repo.dir / "verification/.state/results" / job_id, self.repo.dir / "verification/results" / job_id
+        staged, kept = self.repo.dir / "verification/.state/results" / job_id, self.repo.collected(job_id)  # beside its job, flat or by day
         earlier = b'{"earlier": "collect"}\n'
         kept.mkdir(parents=True)
         (kept / "result.json").write_bytes(earlier)

@@ -21,6 +21,7 @@ from unittest import mock
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import layout  # noqa: E402
 import pipeline  # noqa: E402
 sys.path.append(str(Path(__file__).resolve().parents[1] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
@@ -69,15 +70,36 @@ class Repo:
             raise AssertionError(f"pipeline {args} exited {proc.returncode}:\n{proc.stdout}\n{proc.stderr}")
         return proc
 
-    def submit(self, title, *args):
+    def submit(self, title, *args, env=None):
         out = self.pipeline("submit", "--title", title, "--description", "A stub job, for testing the pipeline itself.",
-                            "--capability", "test", *args).stdout
+                            "--capability", "test", *args, env=env).stdout
         # The job's id, wherever its file went: verification/jobs/ID.json, or under its day with layout.WRITE "shards".
         return out.split("verification/jobs/")[1].split(".json")[0].rsplit("/", 1)[-1]
 
     def result(self, job_id, collected=True):
-        base = self.dir / ("verification/results" if collected else "verification/.state/results")
-        return json.loads((base / job_id / "result.json").read_text())
+        # A collected result is flat or under its day, as its job is (layout.find_result); staged ones are always flat.
+        folder = layout.find_result(self.dir, job_id) if collected else self.dir / "verification/.state/results" / job_id
+        return json.loads(((folder or self.dir / "verification/results" / job_id) / "result.json").read_text())
+
+    def job_path(self, job_id):
+        """A job's file, flat or under its day (layout.find_job), or where a new one would go."""
+        return layout.find_job(self.dir, job_id) or layout.new_job(self.dir, job_id)
+
+    def job_rel(self, job_id):
+        return self.job_path(job_id).relative_to(self.dir).as_posix()
+
+    def indexed(self):
+        """The ids of every collected result in the results index: the flat ones and those of each day."""
+        base = self.dir / "verification/results"
+        index = json.loads((base / "index.json").read_text())
+        ids = [e["id"] for e in index["results"]]
+        for day in index.get("shards", []):
+            ids += [e["id"] for e in json.loads((base / day / "index.json").read_text())["results"]]
+        return ids
+
+    def collected(self, job_id):
+        """The folder a collected result is (or would be) in, whichever layout its job took."""
+        return layout.find_result(self.dir, job_id) or layout.new_result(self.dir, job_id)
 
     def close(self):
         shutil.rmtree(self.dir, ignore_errors=True)
@@ -92,7 +114,7 @@ class PipelineTest(unittest.TestCase):
 
     def test_submit_writes_a_valid_job_and_rejects_a_bad_size(self):
         job_id = self.repo.submit("Check the stub", "--run", "true", "--memory", "512M", "--duration", "30s")
-        job = json.loads((self.repo.dir / f"verification/jobs/{job_id}.json").read_text())
+        job = json.loads(self.repo.job_path(job_id).read_text())
         self.assertEqual(pipeline.validate(job, "job.schema.json"), [])
         self.assertEqual(job["resources"], {"memory": "512M", "duration": "30s"})
         bad = self.repo.pipeline("submit", "--title", "Bad size", "--description", "A stub job with a size that is not one.",
@@ -129,7 +151,7 @@ class PipelineTest(unittest.TestCase):
                 env["CODEX_THREAD_ID"] = thread
             with mock.patch.dict(os.environ, env, clear=True):
                 job_id = self.repo.submit(title, "--run", "true", *args)
-            return json.loads((self.repo.dir / f"verification/jobs/{job_id}.json").read_text())["submitted"]
+            return json.loads(self.repo.job_path(job_id).read_text())["submitted"]
 
         self.assertEqual(submitted("From a session", session="made-up-session").get("session"), "made-up-session")
         self.assertEqual(submitted("From a Codex worker", session="parent-session", thread="worker-thread")["session"], "worker-thread")
@@ -151,7 +173,7 @@ class PipelineTest(unittest.TestCase):
         self.repo.git("update-ref", "HEAD", before)
         self.repo.git("reset", "-q", "--hard", before)
         self.addCleanup(lambda: marks.unlink(missing_ok=True))
-        self.assertFalse((self.repo.dir / "verification/results" / job_id).exists())
+        self.assertIsNone(layout.find_result(self.repo.dir, job_id))
         out = self.repo.pipeline("run", "--rev", "HEAD").stdout
         self.assertEqual(marks.read_text(), "ran\n", "the job ran once: its result exists, on the other branch")
         self.assertIn(f"note  {job_id}: its result is recorded in commit", out)
@@ -161,7 +183,7 @@ class PipelineTest(unittest.TestCase):
 
     def test_a_flat_job_and_a_sharded_job_run_collect_and_report_side_by_side(self):
         shards = {"VERIFY_LAYOUT": "shards"}
-        flat = self.repo.submit("Kept flat", "--output", "a.txt", "--run", "echo a > a.txt")
+        flat = self.repo.submit("Kept flat", "--output", "a.txt", "--run", "echo a > a.txt", env={"VERIFY_LAYOUT": "flat"})
         out = self.repo.pipeline("submit", "--title", "Kept by its day", "--description", "A stub job, for testing the pipeline itself.",
                                  "--capability", "test", "--output", "b.txt", "--run", "echo b > b.txt", env=shards).stdout
         sharded = re.search(r"verification/jobs/\d{4}/\d{2}/\d{2}/([^/\s]+)\.json", out)[1]
@@ -203,7 +225,7 @@ class PipelineTest(unittest.TestCase):
         self.assertIn("recorded on another head: 2", self.repo.pipeline("status", "--rev", "HEAD").stdout)
         # A resubmitted job is a new job: it goes where new jobs go, and the one it supersedes stays where it is.
         again = self.repo.pipeline("resubmit", sharded).stdout.split("wrote ")[1].split(",")[0]
-        self.assertRegex(again, r"^verification/jobs/[^/]+\.json$")
+        self.assertEqual(again, layout.job_rel(again.rsplit("/", 1)[-1][:-len(".json")], layout.writes()))
         self.assertTrue(job_file.exists())
         # One id recorded twice and differently is a problem `validate` names.
         (self.repo.dir / f"verification/jobs/{sharded}.json").write_text(json.dumps({**job, "title": "Another job by the same id"}))
@@ -243,7 +265,7 @@ class PipelineTest(unittest.TestCase):
                 raw = (self.repo.dir / "verification/.state/results" / job_id / "changes.diff").stat().st_size
                 self.assertGreater(raw, pipeline.DIFF_MAX_BYTES)
                 self.repo.pipeline("collect")
-                dest = self.repo.dir / "verification/results" / job_id
+                dest = self.repo.collected(job_id)
                 r = self.repo.result(job_id)
                 self.assertEqual(r["status"], "passed", r["attention"])
                 self.assertFalse((dest / "changes.diff").exists())
@@ -284,9 +306,8 @@ class PipelineTest(unittest.TestCase):
         self.assertEqual((self.repo.dir / "out/new.txt").read_text(), "made\n")
         r = self.repo.result(job_id)
         self.assertEqual(sorted(r["collected"]["applied"]), ["out/new.txt", "out/result.txt"])
-        self.assertIn("+new", (self.repo.dir / f"verification/results/{job_id}/changes.diff").read_text())
-        index = json.loads((self.repo.dir / "verification/results/index.json").read_text())
-        self.assertEqual([e["id"] for e in index["results"]], [job_id])
+        self.assertIn("+new", (self.repo.collected(job_id) / "changes.diff").read_text())
+        self.assertEqual(self.repo.indexed(), [job_id])
         self.assertEqual(self.repo.pipeline("validate").returncode, 0)
         report = json.loads(self.repo.pipeline("report", "--format", "json").stdout)
         self.assertEqual(report["results"][0]["status"], "passed")
@@ -330,7 +351,7 @@ class PipelineTest(unittest.TestCase):
         self.assertTrue(any("exited 10, expected 0" in a for a in r["attention"]))
         self.repo.pipeline("collect")
         self.assertEqual((self.repo.dir / "o.txt").read_text(), "before\n")
-        self.assertEqual((self.repo.dir / f"verification/results/{job_id}/outputs/o.txt").read_text(), "after\n")
+        self.assertEqual((self.repo.collected(job_id) / "outputs/o.txt").read_text(), "after\n")
         report = self.repo.pipeline("report").stdout
         self.assertIn("## Needs attention", report)
         self.assertIn("VERIFICATION FAILED", report)
@@ -466,10 +487,10 @@ class PipelineTest(unittest.TestCase):
             [sys.executable, "verification/pipeline.py", "submit", "--title", "From the stream", "--description",
              "A stub job, for testing the pipeline itself.", "--capability", "test", "--run", "true"],
             cwd=other, env=dict(env, VERIFY_REPO=str(other)), check=True, capture_output=True, text=True).stdout
-        job_id = submitted.split("verification/jobs/")[1].split(".json")[0]
+        job_id = submitted.split("verification/jobs/")[1].split(".json")[0].rsplit("/", 1)[-1]
         jj(other, "commit", "-m", "job (verification pending)")
         source = jj(other, "log", "--no-graph", "-r", "@-", "-T", "commit_id").stdout
-        self.assertFalse((self.repo.dir / f"verification/jobs/{job_id}.json").exists(), "nothing was merged")
+        self.assertIsNone(layout.find_job(self.repo.dir, job_id), "nothing was merged")
         self.assertIn(job_id, self.repo.pipeline("status").stdout.split("running:")[0])
         self.assertNotIn(job_id, self.repo.pipeline("status", "--rev", "HEAD").stdout)
         self.repo.pipeline("run")
@@ -531,8 +552,8 @@ class PipelineTest(unittest.TestCase):
     def test_resubmit_keeps_the_job_and_changes_its_resources(self):
         job_id = self.repo.submit("Rerun me", "--run", "true", "--memory", "1G")
         again = self.repo.pipeline("resubmit", job_id, "--memory", "8G").stdout
-        new_id = again.split("verification/jobs/")[1].split(".json")[0]
-        job = json.loads((self.repo.dir / f"verification/jobs/{new_id}.json").read_text())
+        new_id = again.split("verification/jobs/")[1].split(".json")[0].rsplit("/", 1)[-1]
+        job = json.loads(self.repo.job_path(new_id).read_text())
         self.assertEqual(job["supersedes"], job_id)
         self.assertEqual(job["resources"]["memory"], "8G")
 
@@ -585,8 +606,9 @@ class PipelineTest(unittest.TestCase):
         job_id = self.repo.submit("Read me", "--run", "true")
         head = self.repo.commit("job")
         with mock.patch.object(pipeline, "ROOT", self.repo.dir):
-            found = pipeline.show_many(head, [f"verification/jobs/{job_id}.json", "verification/jobs/not-there.json", ".gitignore"])
-            self.assertEqual(json.loads(found[f"verification/jobs/{job_id}.json"])["id"], job_id)
+            rel = self.repo.job_rel(job_id)
+            found = pipeline.show_many(head, [rel, "verification/jobs/not-there.json", ".gitignore"])
+            self.assertEqual(json.loads(found[rel])["id"], job_id)
             self.assertIsNone(found["verification/jobs/not-there.json"])
             self.assertEqual(found[".gitignore"], b"verification/.state/\n", "the file after a missing one is still its own")
             jobs = pipeline.committed_jobs(head, lambda _: False)
@@ -639,7 +661,7 @@ class PipelineTest(unittest.TestCase):
                                   "--capability", "B9", "--example", "108", check=False)
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("build.py does not run it", proc.stderr)
-        self.assertEqual(list((self.repo.dir / "verification/jobs").glob("*.json")) if (self.repo.dir / "verification/jobs").exists() else [], [])
+        self.assertEqual(list((self.repo.dir / "verification/jobs").rglob("*.json")) if (self.repo.dir / "verification/jobs").exists() else [], [])
 
 
     def add_target_example(self, example_id):
@@ -677,7 +699,7 @@ class PipelineTest(unittest.TestCase):
         proc = submit("--task", "fixed-security")
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("unsupported: task-plan (example-targets-workflow)", proc.stderr)
-        self.assertFalse((self.repo.dir / "verification/jobs").exists() and list((self.repo.dir / "verification/jobs").glob("*.json")))
+        self.assertFalse((self.repo.dir / "verification/jobs").exists() and list((self.repo.dir / "verification/jobs").rglob("*.json")))
 
     def add_example(self, example_id, approach, subject, **approach_fields):
         """A constructed example in the stub repo, with build.py beside it to plan its run."""
@@ -700,7 +722,7 @@ class PipelineTest(unittest.TestCase):
 
     def submitted(self, example_id, approach):
         job_id = self.repo.submit(f"Example {example_id}", "--capability", approach, "--example", example_id)
-        return json.loads(next((self.repo.dir / "verification/jobs").glob(f"{job_id}.json")).read_text())
+        return json.loads(next((self.repo.dir / "verification/jobs").rglob(f"{job_id}.json")).read_text())
 
     def test_a_proof_by_the_tools_own_checker_does_not_require_jbmc(self):
         crosscut = "examples/apps/crosscut/src/main/java/a/B.java"
