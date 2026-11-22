@@ -1,0 +1,4091 @@
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/CappedFields.java
+@@ -0,0 +1,77 @@
++package campaign;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.io.StringReader;
++import java.util.Iterator;
++import org.apache.commons.csv.CSVFormat;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++
++public final class CappedFields {
++    static String delimiter(int code) {
++        return code < 4 || code >= 12 ? "||" : code < 8 ? "|||" : "|~|";
++    }
++    static String[] shape(int code, String d) {
++        if (code == 12) return new String[]{"a","b","c","d","","f"};
++        if (code == 13) return new String[]{"a","b||c","d","","f"};
++        return switch (code & 3) {
++            case 0 -> new String[]{"a","b","c"};
++            case 1 -> new String[]{"a","","b"};
++            case 2 -> new String[]{"a","b"+d+"c","d"};
++            default -> new String[]{"a","b",""};
++        };
++    }
++    static String source(int code, String d) {
++        if (code == 12) return "a||b||c||d||||f";
++        if (code == 13) return "a||\"b||c\"||d||||f";
++        return switch (code & 3) {
++            case 0 -> "a"+d+"b"+d+"c";
++            case 1 -> "a"+d+d+"b";
++            case 2 -> "a"+d+"\"b"+d+"c\""+d+"d";
++            default -> "a"+d+"b"+d;
++        };
++    }
++    static String controlDelimiter(int code) {
++        return switch (code % 7) {
++            case 0 -> "||"; case 1, 2 -> "|||"; case 3, 4 -> "|~|"; default -> ",";
++        };
++    }
++    static String controlSource(int code) {
++        return switch (code % 7) {
++            case 0, 1, 3 -> "a|b";
++            case 2 -> "a||b";
++            case 4 -> "a|~b";
++            case 5 -> "a,b,";
++            default -> "a,\"b,c\"";
++        };
++    }
++    static String[] controlFields(int code) {
++        return switch (code % 7) {
++            case 5 -> new String[]{"a","b",""};
++            case 6 -> new String[]{"a","b,c"};
++            default -> new String[]{controlSource(code)};
++        };
++    }
++    static CSVParser parse(Reader reader, String delimiter) throws IOException {
++        CSVFormat format = CSVFormat.Builder.create().setDelimiter(delimiter).setQuote('"').build();
++        return CSVParser.parse(reader, format);
++    }
++    static int matches(String source, String delimiter, String[] expected) throws IOException {
++        try (CSVParser parser = parse(new CappedReader(source, 1), delimiter)) {
++            Iterator<CSVRecord> rows = parser.iterator();
++            if (!rows.hasNext()) return 0;
++            CSVRecord first = rows.next();
++            if (first.size() != expected.length) return 0;
++            for (int i = 0; i < expected.length; i++) if (!expected[i].equals(first.get(i))) return 0;
++            return rows.hasNext() ? 0 : 1;
++        }
++    }
++    public static int fields(int code) throws IOException {
++        String d = delimiter(code);
++        return matches(source(code,d), d, shape(code,d));
++    }
++    public static int prefixes(int code) throws IOException {
++        return matches(controlSource(code), controlDelimiter(code), controlFields(code));
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/Cases.java
+@@ -0,0 +1,31 @@
++package campaign;
++import java.io.StringReader;
++import java.util.ArrayList;
++import java.util.List;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    static List<List<String>> rows(String text, String delimiter) throws Exception {
++        List<List<String>> rows = new ArrayList<>();
++        try (CSVParser parser = CappedFields.parse(new CappedReader(text, 1), delimiter)) {
++            for (CSVRecord record : parser) {
++                List<String> fields = new ArrayList<>();
++                for (int i = 0; i < record.size(); i++) fields.add(record.get(i));
++                rows.add(fields);
++            }
++        }
++        return rows;
++    }
++    public static void main(String[] args) throws Exception {
++        for (int code=0; code<14; code++) {
++            String d = CappedFields.delimiter(code), s = CappedFields.source(code,d);
++            String cd = CappedFields.controlDelimiter(code), cs = CappedFields.controlSource(code);
++            row(code, fields("delimiter", d, "source", s, "controlDelimiter", cd, "controlSource", cs),
++                fields("fields", rows(s,d),
++                       "prefixes", rows(cs,cd)),
++                fields("fields", CappedFields.fields(code), "prefixes", CappedFields.prefixes(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/controls.stdout
+@@ -0,0 +1,14 @@
++{"id":0,"input":{"delimiter":"||","source":"a||b||c","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b","c"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":1,"input":{"delimiter":"||","source":"a||||b","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","","b"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":2,"input":{"delimiter":"||","source":"a||\"b||c\"||d","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","b||c","d"]],"prefixes":[["a||b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":3,"input":{"delimiter":"||","source":"a||b||","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b",""]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":4,"input":{"delimiter":"|||","source":"a|||b|||c","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|||b|||c"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":5,"input":{"delimiter":"|||","source":"a||||||b","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a||||||b"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":6,"input":{"delimiter":"|||","source":"a|||\"b|||c\"|||d","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a|||\"b|||c\"|||d"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":7,"input":{"delimiter":"|||","source":"a|||b|||","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a|||b|||"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":8,"input":{"delimiter":"|~|","source":"a|~|b|~|c","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a|~|b|~|c"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":9,"input":{"delimiter":"|~|","source":"a|~||~|b","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a|~||~|b"]],"prefixes":[["a||b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":10,"input":{"delimiter":"|~|","source":"a|~|\"b|~|c\"|~|d","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a|~|\"b|~|c\"|~|d"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":11,"input":{"delimiter":"|~|","source":"a|~|b|~|","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|~|b|~|"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":12,"input":{"delimiter":"||","source":"a||b||c||d||||f","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","b","c","d","","f"]],"prefixes":[["a","b",""]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":13,"input":{"delimiter":"||","source":"a||\"b||c\"||d||||f","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b||c","d","","f"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":1,"prefixes":1}}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/experiment.json
+@@ -0,0 +1,147 @@
++{
++  "example": "366",
++  "side": "fix",
++  "cap": 1,
++  "binding": {
++    "revision": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
++    "build": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-fix.json",
++    "buildSha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424",
++    "orderedJars": [
++      "b71afe50e79e1df7e577206e92872c697e8c17a1101938739507251834132446"
++    ]
++  },
++  "rows": 14,
++  "ordinaryReceipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/replay/20261122T064408Z-a488044e/records/control-fix-jdk21.stdout",
++  "ordinarySha256": "e89471c5be06fac6844c1304c9aa639ec1ca3a4a85ab06f2425f75d0d4592d48",
++  "differencesFromOracle": {
++    "fields": [
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11
++    ],
++    "prefixes": []
++  },
++  "differencesFromOriginalCaller": {
++    "fields": [
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11
++    ],
++    "prefixes": []
++  },
++  "compiledSource": "81b256226a12d8f9bc1d87a5123965a93749321a82bf733943649bcf0f5859ef",
++  "support": "396258492dfe2b3462d0bd9ae098081bccdd2e58db4c2046e146a6e46ba926f0",
++  "proofs": {
++    "fields": {
++      "exit": 1,
++      "seconds": 0.125711,
++      "peakRssBytes": 38113280,
++      "log": "fields.stdout",
++      "stdout": "fields.stdout",
++      "stderr": "fields.stderr",
++      "stdoutSha256": "92725e0b8bf1ad149ac350ae1c537f32b565ea2fd57c159472e8cf83f7cded6b",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#fields",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "violation",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "prefixes": {
++      "exit": 0,
++      "seconds": 0.072584,
++      "peakRssBytes": 31039488,
++      "log": "prefixes.stdout",
++      "stdout": "prefixes.stdout",
++      "stderr": "prefixes.stderr",
++      "stdoutSha256": "fa28828e17f34ed133d036ee4311388a18688631d6550e0f4dd6604fac9c6970",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#prefixes",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "short-read-contract": {
++      "exit": 0,
++      "seconds": 0.058211,
++      "peakRssBytes": 33370112,
++      "log": "short-read-contract.stdout",
++      "stdout": "short-read-contract.stdout",
++      "stderr": "short-read-contract.stderr",
++      "stdoutSha256": "b4fe3ac1e1dc9717159bb67c9eaf6ae00cbcdb4e2b3860f1ad63401c225c939f",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedReader#contract",
++      "guard": "cap >= 1 && cap <= 3",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        16,
++        16
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "cap >= 1 && cap <= 3",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/fields.stdout
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "campaign.CappedFields#fields",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "fields(code=11)",
++      "outcome": "0",
++      "values": [
++        "11"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 11
++        }
++      ],
++      "call": {
++        "class": "campaign.CappedFields",
++        "class_file": "campaign/CappedFields.class",
++        "classes": "after",
++        "method": "fields",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 11,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/parser-windows-u8hgabg3/fields/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=11)\n    outcome: 0",
++        "uri": null,
++        "line": 71
++      }
++    ],
++    "output": "✗ Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=11)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/parser-windows-u8hgabg3/fields",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.042609909,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 5,
++        "merges": 0,
++        "solver_calls": 95,
++        "solving_seconds": 0.00021233,
++        "gates_evaluated": 381,
++        "evaluating_seconds": 0.000012393,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 500,
++        "clauses": 1548,
++        "seconds": 0.04069206,
++        "loading_seconds": 0.002785354,
++        "decoding_seconds": 0.000757855,
++        "encoding_seconds": 0.00235665,
++        "witness_seconds": 0.00002177
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.041,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.035,
++            "encoding": 0.002,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 500,
++            "clauses": 1548
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.122,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.041,
++        "replay": 0.007,
++        "jvm": 0.062,
++        "other": 0.011
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/prefixes.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedFields#prefixes",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 128 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-u8hgabg3/prefixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedFields#prefixes satisfies `result == 1` on every input where code >= 0 && code < 14 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 128 times with unwinding assertions)\n  not vacuous: prefixes(code=4) reaches the calls\n",
++    "work": "/tmp/parser-windows-u8hgabg3/prefixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.055956131,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solver_calls": 76,
++        "solving_seconds": 0.001758311,
++        "gates_evaluated": 611,
++        "evaluating_seconds": 0.00002603,
++        "divisions": 1,
++        "divisions_built": 1,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 5189,
++        "clauses": 17870,
++        "seconds": 0.054194094,
++        "loading_seconds": 0.003279173,
++        "decoding_seconds": 0.000798613,
++        "encoding_seconds": 0.007402881,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.054,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.041,
++            "encoding": 0.007,
++            "solving": 0.002,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 5189,
++            "clauses": 17870
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.944,
++          "seconds": 0.004,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 186,
++            "clauses": 521
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.068,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.058,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found prefixes(code=4).",
++        "witness": "prefixes(code=4)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/1/short-read-contract.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedReader#contract",
++    "domain": "cap: int",
++    "assume": "cap >= 1 && cap <= 3",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over cap: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-u8hgabg3/short-read-contract/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedReader#contract satisfies `result == 1` on every input where cap >= 1 && cap <= 3 (jvmcontract's own checker (CaDiCaL): 1 properties proved over cap: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: contract(cap=1) reaches the calls\n",
++    "work": "/tmp/parser-windows-u8hgabg3/short-read-contract",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.040977906,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 16,
++      "stage": null,
++      "native": {
++        "paths": 5,
++        "merges": 0,
++        "solver_calls": 120,
++        "solving_seconds": 0.023068593,
++        "gates_evaluated": 13301,
++        "evaluating_seconds": 0.000312024,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 16570,
++        "clauses": 55067,
++        "seconds": 0.038967061,
++        "loading_seconds": 0.000391753,
++        "decoding_seconds": 0.000105327,
++        "encoding_seconds": 0.01172231,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.039,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.012,
++            "solving": 0.023,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 16570,
++            "clauses": 55067
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.959,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 249,
++            "clauses": 739
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.054,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.044,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "cap",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "cap: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "cap >= 1 && cap <= 3",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found contract(cap=1).",
++        "witness": "contract(cap=1)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/CappedFields.java
+@@ -0,0 +1,77 @@
++package campaign;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.io.StringReader;
++import java.util.Iterator;
++import org.apache.commons.csv.CSVFormat;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++
++public final class CappedFields {
++    static String delimiter(int code) {
++        return code < 4 || code >= 12 ? "||" : code < 8 ? "|||" : "|~|";
++    }
++    static String[] shape(int code, String d) {
++        if (code == 12) return new String[]{"a","b","c","d","","f"};
++        if (code == 13) return new String[]{"a","b||c","d","","f"};
++        return switch (code & 3) {
++            case 0 -> new String[]{"a","b","c"};
++            case 1 -> new String[]{"a","","b"};
++            case 2 -> new String[]{"a","b"+d+"c","d"};
++            default -> new String[]{"a","b",""};
++        };
++    }
++    static String source(int code, String d) {
++        if (code == 12) return "a||b||c||d||||f";
++        if (code == 13) return "a||\"b||c\"||d||||f";
++        return switch (code & 3) {
++            case 0 -> "a"+d+"b"+d+"c";
++            case 1 -> "a"+d+d+"b";
++            case 2 -> "a"+d+"\"b"+d+"c\""+d+"d";
++            default -> "a"+d+"b"+d;
++        };
++    }
++    static String controlDelimiter(int code) {
++        return switch (code % 7) {
++            case 0 -> "||"; case 1, 2 -> "|||"; case 3, 4 -> "|~|"; default -> ",";
++        };
++    }
++    static String controlSource(int code) {
++        return switch (code % 7) {
++            case 0, 1, 3 -> "a|b";
++            case 2 -> "a||b";
++            case 4 -> "a|~b";
++            case 5 -> "a,b,";
++            default -> "a,\"b,c\"";
++        };
++    }
++    static String[] controlFields(int code) {
++        return switch (code % 7) {
++            case 5 -> new String[]{"a","b",""};
++            case 6 -> new String[]{"a","b,c"};
++            default -> new String[]{controlSource(code)};
++        };
++    }
++    static CSVParser parse(Reader reader, String delimiter) throws IOException {
++        CSVFormat format = CSVFormat.Builder.create().setDelimiter(delimiter).setQuote('"').build();
++        return CSVParser.parse(reader, format);
++    }
++    static int matches(String source, String delimiter, String[] expected) throws IOException {
++        try (CSVParser parser = parse(new CappedReader(source, 2), delimiter)) {
++            Iterator<CSVRecord> rows = parser.iterator();
++            if (!rows.hasNext()) return 0;
++            CSVRecord first = rows.next();
++            if (first.size() != expected.length) return 0;
++            for (int i = 0; i < expected.length; i++) if (!expected[i].equals(first.get(i))) return 0;
++            return rows.hasNext() ? 0 : 1;
++        }
++    }
++    public static int fields(int code) throws IOException {
++        String d = delimiter(code);
++        return matches(source(code,d), d, shape(code,d));
++    }
++    public static int prefixes(int code) throws IOException {
++        return matches(controlSource(code), controlDelimiter(code), controlFields(code));
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/Cases.java
+@@ -0,0 +1,31 @@
++package campaign;
++import java.io.StringReader;
++import java.util.ArrayList;
++import java.util.List;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    static List<List<String>> rows(String text, String delimiter) throws Exception {
++        List<List<String>> rows = new ArrayList<>();
++        try (CSVParser parser = CappedFields.parse(new CappedReader(text, 2), delimiter)) {
++            for (CSVRecord record : parser) {
++                List<String> fields = new ArrayList<>();
++                for (int i = 0; i < record.size(); i++) fields.add(record.get(i));
++                rows.add(fields);
++            }
++        }
++        return rows;
++    }
++    public static void main(String[] args) throws Exception {
++        for (int code=0; code<14; code++) {
++            String d = CappedFields.delimiter(code), s = CappedFields.source(code,d);
++            String cd = CappedFields.controlDelimiter(code), cs = CappedFields.controlSource(code);
++            row(code, fields("delimiter", d, "source", s, "controlDelimiter", cd, "controlSource", cs),
++                fields("fields", rows(s,d),
++                       "prefixes", rows(cs,cd)),
++                fields("fields", CappedFields.fields(code), "prefixes", CappedFields.prefixes(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/controls.stdout
+@@ -0,0 +1,14 @@
++{"id":0,"input":{"delimiter":"||","source":"a||b||c","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b","c"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":1,"input":{"delimiter":"||","source":"a||||b","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","","b"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":2,"input":{"delimiter":"||","source":"a||\"b||c\"||d","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","b||c","d"]],"prefixes":[["a||b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":3,"input":{"delimiter":"||","source":"a||b||","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b",""]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":4,"input":{"delimiter":"|||","source":"a|||b|||c","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a","b","c"]],"prefixes":[["a|~b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":5,"input":{"delimiter":"|||","source":"a||||||b","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","","|b"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":6,"input":{"delimiter":"|||","source":"a|||\"b|||c\"|||d","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b|||c","d"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":7,"input":{"delimiter":"|||","source":"a|||b|||","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b",""]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":8,"input":{"delimiter":"|~|","source":"a|~|b|~|c","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","b","c"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":9,"input":{"delimiter":"|~|","source":"a|~||~|b","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","","|b"]],"prefixes":[["a||b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":10,"input":{"delimiter":"|~|","source":"a|~|\"b|~|c\"|~|d","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b|~|c","d"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":11,"input":{"delimiter":"|~|","source":"a|~|b|~|","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a","b",""]],"prefixes":[["a|~b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":12,"input":{"delimiter":"||","source":"a||b||c||d||||f","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","b","c","d","","f"]],"prefixes":[["a","b",""]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":13,"input":{"delimiter":"||","source":"a||\"b||c\"||d||||f","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b||c","d","","f"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":1,"prefixes":1}}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/experiment.json
+@@ -0,0 +1,102 @@
++{
++  "example": "366",
++  "side": "fix",
++  "cap": 2,
++  "binding": {
++    "revision": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
++    "build": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-fix.json",
++    "buildSha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424",
++    "orderedJars": [
++      "b71afe50e79e1df7e577206e92872c697e8c17a1101938739507251834132446"
++    ]
++  },
++  "rows": 14,
++  "ordinaryReceipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/replay/20261122T064408Z-a488044e/records/control-fix-jdk21.stdout",
++  "ordinarySha256": "e89471c5be06fac6844c1304c9aa639ec1ca3a4a85ab06f2425f75d0d4592d48",
++  "differencesFromOracle": {
++    "fields": [
++      5,
++      9
++    ],
++    "prefixes": []
++  },
++  "differencesFromOriginalCaller": {
++    "fields": [
++      5,
++      9
++    ],
++    "prefixes": []
++  },
++  "compiledSource": "4085e450717909965543f01d795bc0a45af57b24d15fca7618b7efe30f79daaf",
++  "support": "396258492dfe2b3462d0bd9ae098081bccdd2e58db4c2046e146a6e46ba926f0",
++  "proofs": {
++    "fields": {
++      "exit": 1,
++      "seconds": 0.134301,
++      "peakRssBytes": 38162432,
++      "log": "fields.stdout",
++      "stdout": "fields.stdout",
++      "stderr": "fields.stderr",
++      "stdoutSha256": "4b09a32fe7b2ec5da31e16fad26ec7658402e2051808607a6c116f28c4f47d9b",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#fields",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "violation",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "prefixes": {
++      "exit": 0,
++      "seconds": 0.058849,
++      "peakRssBytes": 31223808,
++      "log": "prefixes.stdout",
++      "stdout": "prefixes.stdout",
++      "stderr": "prefixes.stderr",
++      "stdoutSha256": "335afa31473a870647fc37553083a713d186393539e2b548a108ab6d1a75bad6",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#prefixes",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/fields.stdout
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "campaign.CappedFields#fields",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "fields(code=9)",
++      "outcome": "0",
++      "values": [
++        "9"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 9
++        }
++      ],
++      "call": {
++        "class": "campaign.CappedFields",
++        "class_file": "campaign/CappedFields.class",
++        "classes": "after",
++        "method": "fields",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 9,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/parser-windows-2zludt_4/fields/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=9)\n    outcome: 0",
++        "uri": null,
++        "line": 71
++      }
++    ],
++    "output": "✗ Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=9)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/parser-windows-2zludt_4/fields",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.050189997,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 7,
++        "merges": 0,
++        "solver_calls": 81,
++        "solving_seconds": 0.000219843,
++        "gates_evaluated": 381,
++        "evaluating_seconds": 0.000010908,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 500,
++        "clauses": 1548,
++        "seconds": 0.048424463,
++        "loading_seconds": 0.002713177,
++        "decoding_seconds": 0.00091352,
++        "encoding_seconds": 0.002938109,
++        "witness_seconds": 0.000020148
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.048,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.042,
++            "encoding": 0.003,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 500,
++            "clauses": 1548
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.13,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.048,
++        "replay": 0.006,
++        "jvm": 0.062,
++        "other": 0.013
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/2/prefixes.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedFields#prefixes",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 128 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-2zludt_4/prefixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedFields#prefixes satisfies `result == 1` on every input where code >= 0 && code < 14 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 128 times with unwinding assertions)\n  not vacuous: prefixes(code=4) reaches the calls\n",
++    "work": "/tmp/parser-windows-2zludt_4/prefixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.04349482,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solver_calls": 52,
++        "solving_seconds": 0.001229659,
++        "gates_evaluated": 611,
++        "evaluating_seconds": 0.000023201,
++        "divisions": 1,
++        "divisions_built": 1,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 5189,
++        "clauses": 17870,
++        "seconds": 0.041856265,
++        "loading_seconds": 0.002902931,
++        "decoding_seconds": 0.000732922,
++        "encoding_seconds": 0.004470682,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.042,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.033,
++            "encoding": 0.004,
++            "solving": 0.001,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 5189,
++            "clauses": 17870
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.956,
++          "seconds": 0.003,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.003,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 186,
++            "clauses": 521
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.055,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.045,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found prefixes(code=4).",
++        "witness": "prefixes(code=4)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/CappedFields.java
+@@ -0,0 +1,77 @@
++package campaign;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.io.StringReader;
++import java.util.Iterator;
++import org.apache.commons.csv.CSVFormat;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++
++public final class CappedFields {
++    static String delimiter(int code) {
++        return code < 4 || code >= 12 ? "||" : code < 8 ? "|||" : "|~|";
++    }
++    static String[] shape(int code, String d) {
++        if (code == 12) return new String[]{"a","b","c","d","","f"};
++        if (code == 13) return new String[]{"a","b||c","d","","f"};
++        return switch (code & 3) {
++            case 0 -> new String[]{"a","b","c"};
++            case 1 -> new String[]{"a","","b"};
++            case 2 -> new String[]{"a","b"+d+"c","d"};
++            default -> new String[]{"a","b",""};
++        };
++    }
++    static String source(int code, String d) {
++        if (code == 12) return "a||b||c||d||||f";
++        if (code == 13) return "a||\"b||c\"||d||||f";
++        return switch (code & 3) {
++            case 0 -> "a"+d+"b"+d+"c";
++            case 1 -> "a"+d+d+"b";
++            case 2 -> "a"+d+"\"b"+d+"c\""+d+"d";
++            default -> "a"+d+"b"+d;
++        };
++    }
++    static String controlDelimiter(int code) {
++        return switch (code % 7) {
++            case 0 -> "||"; case 1, 2 -> "|||"; case 3, 4 -> "|~|"; default -> ",";
++        };
++    }
++    static String controlSource(int code) {
++        return switch (code % 7) {
++            case 0, 1, 3 -> "a|b";
++            case 2 -> "a||b";
++            case 4 -> "a|~b";
++            case 5 -> "a,b,";
++            default -> "a,\"b,c\"";
++        };
++    }
++    static String[] controlFields(int code) {
++        return switch (code % 7) {
++            case 5 -> new String[]{"a","b",""};
++            case 6 -> new String[]{"a","b,c"};
++            default -> new String[]{controlSource(code)};
++        };
++    }
++    static CSVParser parse(Reader reader, String delimiter) throws IOException {
++        CSVFormat format = CSVFormat.Builder.create().setDelimiter(delimiter).setQuote('"').build();
++        return CSVParser.parse(reader, format);
++    }
++    static int matches(String source, String delimiter, String[] expected) throws IOException {
++        try (CSVParser parser = parse(new CappedReader(source, 3), delimiter)) {
++            Iterator<CSVRecord> rows = parser.iterator();
++            if (!rows.hasNext()) return 0;
++            CSVRecord first = rows.next();
++            if (first.size() != expected.length) return 0;
++            for (int i = 0; i < expected.length; i++) if (!expected[i].equals(first.get(i))) return 0;
++            return rows.hasNext() ? 0 : 1;
++        }
++    }
++    public static int fields(int code) throws IOException {
++        String d = delimiter(code);
++        return matches(source(code,d), d, shape(code,d));
++    }
++    public static int prefixes(int code) throws IOException {
++        return matches(controlSource(code), controlDelimiter(code), controlFields(code));
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/Cases.java
+@@ -0,0 +1,31 @@
++package campaign;
++import java.io.StringReader;
++import java.util.ArrayList;
++import java.util.List;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    static List<List<String>> rows(String text, String delimiter) throws Exception {
++        List<List<String>> rows = new ArrayList<>();
++        try (CSVParser parser = CappedFields.parse(new CappedReader(text, 3), delimiter)) {
++            for (CSVRecord record : parser) {
++                List<String> fields = new ArrayList<>();
++                for (int i = 0; i < record.size(); i++) fields.add(record.get(i));
++                rows.add(fields);
++            }
++        }
++        return rows;
++    }
++    public static void main(String[] args) throws Exception {
++        for (int code=0; code<14; code++) {
++            String d = CappedFields.delimiter(code), s = CappedFields.source(code,d);
++            String cd = CappedFields.controlDelimiter(code), cs = CappedFields.controlSource(code);
++            row(code, fields("delimiter", d, "source", s, "controlDelimiter", cd, "controlSource", cs),
++                fields("fields", rows(s,d),
++                       "prefixes", rows(cs,cd)),
++                fields("fields", CappedFields.fields(code), "prefixes", CappedFields.prefixes(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/controls.stdout
+@@ -0,0 +1,14 @@
++{"id":0,"input":{"delimiter":"||","source":"a||b||c","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b","c"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":1,"input":{"delimiter":"||","source":"a||||b","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","","b"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":2,"input":{"delimiter":"||","source":"a||\"b||c\"||d","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","b||c","d"]],"prefixes":[["a||b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":3,"input":{"delimiter":"||","source":"a||b||","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b",""]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":4,"input":{"delimiter":"|||","source":"a|||b|||c","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|||b","c"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":5,"input":{"delimiter":"|||","source":"a||||||b","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a|","||b"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":6,"input":{"delimiter":"|||","source":"a|||\"b|||c\"|||d","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a|||\"b","c\"","d"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":7,"input":{"delimiter":"|||","source":"a|||b|||","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a|||b",""]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":8,"input":{"delimiter":"|~|","source":"a|~|b|~|c","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a|~|b","c"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":9,"input":{"delimiter":"|~|","source":"a|~||~|b","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a|~||~|b"]],"prefixes":[["a||b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":10,"input":{"delimiter":"|~|","source":"a|~|\"b|~|c\"|~|d","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a|~|\"b","c\"","d"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":11,"input":{"delimiter":"|~|","source":"a|~|b|~|","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|~|b",""]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":12,"input":{"delimiter":"||","source":"a||b||c||d||||f","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","b","c","d","","f"]],"prefixes":[["a","b",""]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":13,"input":{"delimiter":"||","source":"a||\"b||c\"||d||||f","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b||c","d","","f"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":1,"prefixes":1}}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/experiment.json
+@@ -0,0 +1,114 @@
++{
++  "example": "366",
++  "side": "fix",
++  "cap": 3,
++  "binding": {
++    "revision": "c15a06eee95e227fbe5c61849dd12b7bf126016a",
++    "build": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-fix.json",
++    "buildSha256": "911d9590e5297a4f16fff1585b2f084afc875fce9d070680944fb1c5d2202424",
++    "orderedJars": [
++      "b71afe50e79e1df7e577206e92872c697e8c17a1101938739507251834132446"
++    ]
++  },
++  "rows": 14,
++  "ordinaryReceipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/replay/20261122T064408Z-a488044e/records/control-fix-jdk21.stdout",
++  "ordinarySha256": "e89471c5be06fac6844c1304c9aa639ec1ca3a4a85ab06f2425f75d0d4592d48",
++  "differencesFromOracle": {
++    "fields": [
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11
++    ],
++    "prefixes": []
++  },
++  "differencesFromOriginalCaller": {
++    "fields": [
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11
++    ],
++    "prefixes": []
++  },
++  "compiledSource": "694870922b00a8a575e5ef49c385b9fb70d9c92adf14b9edd5fe85121605cef7",
++  "support": "396258492dfe2b3462d0bd9ae098081bccdd2e58db4c2046e146a6e46ba926f0",
++  "proofs": {
++    "fields": {
++      "exit": 1,
++      "seconds": 0.122305,
++      "peakRssBytes": 38109184,
++      "log": "fields.stdout",
++      "stdout": "fields.stdout",
++      "stderr": "fields.stderr",
++      "stdoutSha256": "4b00be7341c35024a86ab66f43df6473d02008001ee91d96b39ba02ea0c26daa",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#fields",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "violation",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "prefixes": {
++      "exit": 0,
++      "seconds": 0.059826,
++      "peakRssBytes": 31064064,
++      "log": "prefixes.stdout",
++      "stdout": "prefixes.stdout",
++      "stderr": "prefixes.stderr",
++      "stdoutSha256": "2134f38f27839c33276c96169e0f8cf79172d10333e52b8434f0c52d250212fb",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#prefixes",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/fields.stdout
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "campaign.CappedFields#fields",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "fields(code=11)",
++      "outcome": "0",
++      "values": [
++        "11"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 11
++        }
++      ],
++      "call": {
++        "class": "campaign.CappedFields",
++        "class_file": "campaign/CappedFields.class",
++        "classes": "after",
++        "method": "fields",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 11,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/parser-windows-2agkvzxj/fields/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=11)\n    outcome: 0",
++        "uri": null,
++        "line": 71
++      }
++    ],
++    "output": "✗ Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=11)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/parser-windows-2agkvzxj/fields",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.03790601,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 5,
++        "merges": 0,
++        "solver_calls": 45,
++        "solving_seconds": 0.000176902,
++        "gates_evaluated": 381,
++        "evaluating_seconds": 0.000013836,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 500,
++        "clauses": 1548,
++        "seconds": 0.036431913,
++        "loading_seconds": 0.003093502,
++        "decoding_seconds": 0.000842776,
++        "encoding_seconds": 0.002197102,
++        "witness_seconds": 0.00001624
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.036,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.03,
++            "encoding": 0.002,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 500,
++            "clauses": 1548
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.118,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.036,
++        "replay": 0.006,
++        "jvm": 0.062,
++        "other": 0.014
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/fix/3/prefixes.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedFields#prefixes",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 128 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-2agkvzxj/prefixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedFields#prefixes satisfies `result == 1` on every input where code >= 0 && code < 14 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 128 times with unwinding assertions)\n  not vacuous: prefixes(code=4) reaches the calls\n",
++    "work": "/tmp/parser-windows-2agkvzxj/prefixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.044074518,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solver_calls": 44,
++        "solving_seconds": 0.00148162,
++        "gates_evaluated": 611,
++        "evaluating_seconds": 0.000029907,
++        "divisions": 1,
++        "divisions_built": 1,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 5189,
++        "clauses": 17870,
++        "seconds": 0.041824454,
++        "loading_seconds": 0.002974059,
++        "decoding_seconds": 0.000727158,
++        "encoding_seconds": 0.00445799,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.042,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.032,
++            "encoding": 0.004,
++            "solving": 0.001,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 5189,
++            "clauses": 17870
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.956,
++          "seconds": 0.004,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.003,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 186,
++            "clauses": 521
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.056,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.046,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found prefixes(code=4).",
++        "witness": "prefixes(code=4)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/CappedFields.java
+@@ -0,0 +1,77 @@
++package campaign;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.io.StringReader;
++import java.util.Iterator;
++import org.apache.commons.csv.CSVFormat;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++
++public final class CappedFields {
++    static String delimiter(int code) {
++        return code < 4 || code >= 12 ? "||" : code < 8 ? "|||" : "|~|";
++    }
++    static String[] shape(int code, String d) {
++        if (code == 12) return new String[]{"a","b","c","d","","f"};
++        if (code == 13) return new String[]{"a","b||c","d","","f"};
++        return switch (code & 3) {
++            case 0 -> new String[]{"a","b","c"};
++            case 1 -> new String[]{"a","","b"};
++            case 2 -> new String[]{"a","b"+d+"c","d"};
++            default -> new String[]{"a","b",""};
++        };
++    }
++    static String source(int code, String d) {
++        if (code == 12) return "a||b||c||d||||f";
++        if (code == 13) return "a||\"b||c\"||d||||f";
++        return switch (code & 3) {
++            case 0 -> "a"+d+"b"+d+"c";
++            case 1 -> "a"+d+d+"b";
++            case 2 -> "a"+d+"\"b"+d+"c\""+d+"d";
++            default -> "a"+d+"b"+d;
++        };
++    }
++    static String controlDelimiter(int code) {
++        return switch (code % 7) {
++            case 0 -> "||"; case 1, 2 -> "|||"; case 3, 4 -> "|~|"; default -> ",";
++        };
++    }
++    static String controlSource(int code) {
++        return switch (code % 7) {
++            case 0, 1, 3 -> "a|b";
++            case 2 -> "a||b";
++            case 4 -> "a|~b";
++            case 5 -> "a,b,";
++            default -> "a,\"b,c\"";
++        };
++    }
++    static String[] controlFields(int code) {
++        return switch (code % 7) {
++            case 5 -> new String[]{"a","b",""};
++            case 6 -> new String[]{"a","b,c"};
++            default -> new String[]{controlSource(code)};
++        };
++    }
++    static CSVParser parse(Reader reader, String delimiter) throws IOException {
++        CSVFormat format = CSVFormat.Builder.create().setDelimiter(delimiter).setQuote('"').build();
++        return CSVParser.parse(reader, format);
++    }
++    static int matches(String source, String delimiter, String[] expected) throws IOException {
++        try (CSVParser parser = parse(new CappedReader(source, 1), delimiter)) {
++            Iterator<CSVRecord> rows = parser.iterator();
++            if (!rows.hasNext()) return 0;
++            CSVRecord first = rows.next();
++            if (first.size() != expected.length) return 0;
++            for (int i = 0; i < expected.length; i++) if (!expected[i].equals(first.get(i))) return 0;
++            return rows.hasNext() ? 0 : 1;
++        }
++    }
++    public static int fields(int code) throws IOException {
++        String d = delimiter(code);
++        return matches(source(code,d), d, shape(code,d));
++    }
++    public static int prefixes(int code) throws IOException {
++        return matches(controlSource(code), controlDelimiter(code), controlFields(code));
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/Cases.java
+@@ -0,0 +1,31 @@
++package campaign;
++import java.io.StringReader;
++import java.util.ArrayList;
++import java.util.List;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    static List<List<String>> rows(String text, String delimiter) throws Exception {
++        List<List<String>> rows = new ArrayList<>();
++        try (CSVParser parser = CappedFields.parse(new CappedReader(text, 1), delimiter)) {
++            for (CSVRecord record : parser) {
++                List<String> fields = new ArrayList<>();
++                for (int i = 0; i < record.size(); i++) fields.add(record.get(i));
++                rows.add(fields);
++            }
++        }
++        return rows;
++    }
++    public static void main(String[] args) throws Exception {
++        for (int code=0; code<14; code++) {
++            String d = CappedFields.delimiter(code), s = CappedFields.source(code,d);
++            String cd = CappedFields.controlDelimiter(code), cs = CappedFields.controlSource(code);
++            row(code, fields("delimiter", d, "source", s, "controlDelimiter", cd, "controlSource", cs),
++                fields("fields", rows(s,d),
++                       "prefixes", rows(cs,cd)),
++                fields("fields", CappedFields.fields(code), "prefixes", CappedFields.prefixes(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/controls.stdout
+@@ -0,0 +1,14 @@
++{"id":0,"input":{"delimiter":"||","source":"a||b||c","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b|c"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":1,"input":{"delimiter":"||","source":"a||||b","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","|b"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":2,"input":{"delimiter":"||","source":"a||\"b||c\"||d","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","b||c","d"]],"prefixes":[["a||b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":3,"input":{"delimiter":"||","source":"a||b||","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b|"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":4,"input":{"delimiter":"|||","source":"a|||b|||c","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|||b|||c"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":5,"input":{"delimiter":"|||","source":"a||||||b","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a||||||b"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":6,"input":{"delimiter":"|||","source":"a|||\"b|||c\"|||d","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a|||\"b|||c\"|||d"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":7,"input":{"delimiter":"|||","source":"a|||b|||","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a|||b|||"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":8,"input":{"delimiter":"|~|","source":"a|~|b|~|c","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a|~|b|~|c"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":9,"input":{"delimiter":"|~|","source":"a|~||~|b","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a|~||~|b"]],"prefixes":[["a||b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":10,"input":{"delimiter":"|~|","source":"a|~|\"b|~|c\"|~|d","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a|~|\"b|~|c\"|~|d"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":11,"input":{"delimiter":"|~|","source":"a|~|b|~|","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|~|b|~|"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":12,"input":{"delimiter":"||","source":"a||b||c||d||||f","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","b|c","d","|f"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":13,"input":{"delimiter":"||","source":"a||\"b||c\"||d||||f","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b||c","d","|f"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":0,"prefixes":1}}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/experiment.json
+@@ -0,0 +1,152 @@
++{
++  "example": "366",
++  "side": "parent",
++  "cap": 1,
++  "binding": {
++    "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
++    "build": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-parent.json",
++    "buildSha256": "a35228d6735ca45a21ee4c6383d9777631635f48ce9caaee6396700768ac4bf2",
++    "orderedJars": [
++      "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508"
++    ]
++  },
++  "rows": 14,
++  "ordinaryReceipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/replay/20261122T064408Z-a488044e/records/control-parent-jdk21.stdout",
++  "ordinarySha256": "f070beb4f5481a84eba0ebbd3f19bb60a1e8cfda8d020766e4697500f1d22ebc",
++  "differencesFromOracle": {
++    "fields": [
++      0,
++      1,
++      3,
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11,
++      12,
++      13
++    ],
++    "prefixes": []
++  },
++  "differencesFromOriginalCaller": {
++    "fields": [
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11
++    ],
++    "prefixes": []
++  },
++  "compiledSource": "81b256226a12d8f9bc1d87a5123965a93749321a82bf733943649bcf0f5859ef",
++  "support": "396258492dfe2b3462d0bd9ae098081bccdd2e58db4c2046e146a6e46ba926f0",
++  "proofs": {
++    "fields": {
++      "exit": 1,
++      "seconds": 0.09933,
++      "peakRssBytes": 38113280,
++      "log": "fields.stdout",
++      "stdout": "fields.stdout",
++      "stderr": "fields.stderr",
++      "stdoutSha256": "4838bc5bce34ef680518562b9d4b55e469e062f75b8d1757ca22a2febc9dd2e5",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#fields",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "violation",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "prefixes": {
++      "exit": 0,
++      "seconds": 0.068861,
++      "peakRssBytes": 30957568,
++      "log": "prefixes.stdout",
++      "stdout": "prefixes.stdout",
++      "stderr": "prefixes.stderr",
++      "stdoutSha256": "202fdab3a3b475d2dbb0d02d380464ed756e420cc228fc972f9d8bebbd23106b",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#prefixes",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "short-read-contract": {
++      "exit": 0,
++      "seconds": 0.064821,
++      "peakRssBytes": 33419264,
++      "log": "short-read-contract.stdout",
++      "stdout": "short-read-contract.stdout",
++      "stderr": "short-read-contract.stderr",
++      "stdoutSha256": "d52a419896099873aaaf193698f043d64b70fced15ba3aad0701912e84d72add",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedReader#contract",
++      "guard": "cap >= 1 && cap <= 3",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        16,
++        16
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "cap >= 1 && cap <= 3",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/fields.stdout
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "campaign.CappedFields#fields",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "fields(code=3)",
++      "outcome": "0",
++      "values": [
++        "3"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 3
++        }
++      ],
++      "call": {
++        "class": "campaign.CappedFields",
++        "class_file": "campaign/CappedFields.class",
++        "classes": "after",
++        "method": "fields",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 3,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/parser-windows-bz8g_gz_/fields/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=3)\n    outcome: 0",
++        "uri": null,
++        "line": 71
++      }
++    ],
++    "output": "✗ Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=3)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/parser-windows-bz8g_gz_/fields",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.017494759,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 22,
++        "solving_seconds": 0.000109674,
++        "gates_evaluated": 207,
++        "evaluating_seconds": 5.741e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 333,
++        "clauses": 991,
++        "seconds": 0.016097766,
++        "loading_seconds": 0.002923278,
++        "decoding_seconds": 0.000727654,
++        "encoding_seconds": 0.000492543,
++        "witness_seconds": 0.000015197
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.016,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.012,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 333,
++            "clauses": 991
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.096,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.016,
++        "replay": 0.006,
++        "jvm": 0.062,
++        "other": 0.011
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/prefixes.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedFields#prefixes",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 128 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-bz8g_gz_/prefixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedFields#prefixes satisfies `result == 1` on every input where code >= 0 && code < 14 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 128 times with unwinding assertions)\n  not vacuous: prefixes(code=4) reaches the calls\n",
++    "work": "/tmp/parser-windows-bz8g_gz_/prefixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.050990621,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solver_calls": 76,
++        "solving_seconds": 0.001823153,
++        "gates_evaluated": 611,
++        "evaluating_seconds": 0.000030147,
++        "divisions": 1,
++        "divisions_built": 1,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 5189,
++        "clauses": 17870,
++        "seconds": 0.048428002,
++        "loading_seconds": 0.003001207,
++        "decoding_seconds": 0.000846773,
++        "encoding_seconds": 0.004813047,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.048,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.038,
++            "encoding": 0.005,
++            "solving": 0.002,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 5189,
++            "clauses": 17870
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.949,
++          "seconds": 0.004,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 186,
++            "clauses": 521
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.065,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.052,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.012
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found prefixes(code=4).",
++        "witness": "prefixes(code=4)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/1/short-read-contract.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedReader#contract",
++    "domain": "cap: int",
++    "assume": "cap >= 1 && cap <= 3",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over cap: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-bz8g_gz_/short-read-contract/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedReader#contract satisfies `result == 1` on every input where cap >= 1 && cap <= 3 (jvmcontract's own checker (CaDiCaL): 1 properties proved over cap: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: contract(cap=1) reaches the calls\n",
++    "work": "/tmp/parser-windows-bz8g_gz_/short-read-contract",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.047838455,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 16,
++      "stage": null,
++      "native": {
++        "paths": 5,
++        "merges": 0,
++        "solver_calls": 120,
++        "solving_seconds": 0.026509451,
++        "gates_evaluated": 13301,
++        "evaluating_seconds": 0.000328388,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 16570,
++        "clauses": 55067,
++        "seconds": 0.045616033,
++        "loading_seconds": 0.000403998,
++        "decoding_seconds": 0.000119625,
++        "encoding_seconds": 0.013083177,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.046,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.013,
++            "solving": 0.027,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 16570,
++            "clauses": 55067
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.952,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 249,
++            "clauses": 739
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.061,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.051,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "cap",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "cap: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "cap >= 1 && cap <= 3",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found contract(cap=1).",
++        "witness": "contract(cap=1)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/CappedFields.java
+@@ -0,0 +1,77 @@
++package campaign;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.io.StringReader;
++import java.util.Iterator;
++import org.apache.commons.csv.CSVFormat;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++
++public final class CappedFields {
++    static String delimiter(int code) {
++        return code < 4 || code >= 12 ? "||" : code < 8 ? "|||" : "|~|";
++    }
++    static String[] shape(int code, String d) {
++        if (code == 12) return new String[]{"a","b","c","d","","f"};
++        if (code == 13) return new String[]{"a","b||c","d","","f"};
++        return switch (code & 3) {
++            case 0 -> new String[]{"a","b","c"};
++            case 1 -> new String[]{"a","","b"};
++            case 2 -> new String[]{"a","b"+d+"c","d"};
++            default -> new String[]{"a","b",""};
++        };
++    }
++    static String source(int code, String d) {
++        if (code == 12) return "a||b||c||d||||f";
++        if (code == 13) return "a||\"b||c\"||d||||f";
++        return switch (code & 3) {
++            case 0 -> "a"+d+"b"+d+"c";
++            case 1 -> "a"+d+d+"b";
++            case 2 -> "a"+d+"\"b"+d+"c\""+d+"d";
++            default -> "a"+d+"b"+d;
++        };
++    }
++    static String controlDelimiter(int code) {
++        return switch (code % 7) {
++            case 0 -> "||"; case 1, 2 -> "|||"; case 3, 4 -> "|~|"; default -> ",";
++        };
++    }
++    static String controlSource(int code) {
++        return switch (code % 7) {
++            case 0, 1, 3 -> "a|b";
++            case 2 -> "a||b";
++            case 4 -> "a|~b";
++            case 5 -> "a,b,";
++            default -> "a,\"b,c\"";
++        };
++    }
++    static String[] controlFields(int code) {
++        return switch (code % 7) {
++            case 5 -> new String[]{"a","b",""};
++            case 6 -> new String[]{"a","b,c"};
++            default -> new String[]{controlSource(code)};
++        };
++    }
++    static CSVParser parse(Reader reader, String delimiter) throws IOException {
++        CSVFormat format = CSVFormat.Builder.create().setDelimiter(delimiter).setQuote('"').build();
++        return CSVParser.parse(reader, format);
++    }
++    static int matches(String source, String delimiter, String[] expected) throws IOException {
++        try (CSVParser parser = parse(new CappedReader(source, 2), delimiter)) {
++            Iterator<CSVRecord> rows = parser.iterator();
++            if (!rows.hasNext()) return 0;
++            CSVRecord first = rows.next();
++            if (first.size() != expected.length) return 0;
++            for (int i = 0; i < expected.length; i++) if (!expected[i].equals(first.get(i))) return 0;
++            return rows.hasNext() ? 0 : 1;
++        }
++    }
++    public static int fields(int code) throws IOException {
++        String d = delimiter(code);
++        return matches(source(code,d), d, shape(code,d));
++    }
++    public static int prefixes(int code) throws IOException {
++        return matches(controlSource(code), controlDelimiter(code), controlFields(code));
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/Cases.java
+@@ -0,0 +1,31 @@
++package campaign;
++import java.io.StringReader;
++import java.util.ArrayList;
++import java.util.List;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    static List<List<String>> rows(String text, String delimiter) throws Exception {
++        List<List<String>> rows = new ArrayList<>();
++        try (CSVParser parser = CappedFields.parse(new CappedReader(text, 2), delimiter)) {
++            for (CSVRecord record : parser) {
++                List<String> fields = new ArrayList<>();
++                for (int i = 0; i < record.size(); i++) fields.add(record.get(i));
++                rows.add(fields);
++            }
++        }
++        return rows;
++    }
++    public static void main(String[] args) throws Exception {
++        for (int code=0; code<14; code++) {
++            String d = CappedFields.delimiter(code), s = CappedFields.source(code,d);
++            String cd = CappedFields.controlDelimiter(code), cs = CappedFields.controlSource(code);
++            row(code, fields("delimiter", d, "source", s, "controlDelimiter", cd, "controlSource", cs),
++                fields("fields", rows(s,d),
++                       "prefixes", rows(cs,cd)),
++                fields("fields", CappedFields.fields(code), "prefixes", CappedFields.prefixes(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/controls.stdout
+@@ -0,0 +1,14 @@
++{"id":0,"input":{"delimiter":"||","source":"a||b||c","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b|c"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":1,"input":{"delimiter":"||","source":"a||||b","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","|b"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":2,"input":{"delimiter":"||","source":"a||\"b||c\"||d","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","b||c","d"]],"prefixes":[["a||b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":3,"input":{"delimiter":"||","source":"a||b||","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b|"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":4,"input":{"delimiter":"|||","source":"a|||b|||c","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a","b","c"]],"prefixes":[["a|~b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":5,"input":{"delimiter":"|||","source":"a||||||b","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","||b"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":6,"input":{"delimiter":"|||","source":"a|||\"b|||c\"|||d","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b|||c","d"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":7,"input":{"delimiter":"|||","source":"a|||b|||","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":8,"input":{"delimiter":"|~|","source":"a|~|b|~|c","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","b","c"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":9,"input":{"delimiter":"|~|","source":"a|~||~|b","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","||b"]],"prefixes":[["a||b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":10,"input":{"delimiter":"|~|","source":"a|~|\"b|~|c\"|~|d","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b|~|c","d"]],"prefixes":[["a|b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":11,"input":{"delimiter":"|~|","source":"a|~|b|~|","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a","b"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":12,"input":{"delimiter":"||","source":"a||b||c||d||||f","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","b|c","d","|f"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":13,"input":{"delimiter":"||","source":"a||\"b||c\"||d||||f","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b||c","d","|f"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":0,"prefixes":1}}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/experiment.json
+@@ -0,0 +1,111 @@
++{
++  "example": "366",
++  "side": "parent",
++  "cap": 2,
++  "binding": {
++    "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
++    "build": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-parent.json",
++    "buildSha256": "a35228d6735ca45a21ee4c6383d9777631635f48ce9caaee6396700768ac4bf2",
++    "orderedJars": [
++      "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508"
++    ]
++  },
++  "rows": 14,
++  "ordinaryReceipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/replay/20261122T064408Z-a488044e/records/control-parent-jdk21.stdout",
++  "ordinarySha256": "f070beb4f5481a84eba0ebbd3f19bb60a1e8cfda8d020766e4697500f1d22ebc",
++  "differencesFromOracle": {
++    "fields": [
++      0,
++      1,
++      3,
++      5,
++      7,
++      9,
++      11,
++      12,
++      13
++    ],
++    "prefixes": []
++  },
++  "differencesFromOriginalCaller": {
++    "fields": [
++      4,
++      5,
++      7,
++      9
++    ],
++    "prefixes": []
++  },
++  "compiledSource": "4085e450717909965543f01d795bc0a45af57b24d15fca7618b7efe30f79daaf",
++  "support": "396258492dfe2b3462d0bd9ae098081bccdd2e58db4c2046e146a6e46ba926f0",
++  "proofs": {
++    "fields": {
++      "exit": 1,
++      "seconds": 0.080102,
++      "peakRssBytes": 38408192,
++      "log": "fields.stdout",
++      "stdout": "fields.stdout",
++      "stderr": "fields.stderr",
++      "stdoutSha256": "94d1677d4760d71663e055badd0729aa1c6a80a393ffb9e7b3c19ed40650e7c6",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#fields",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "violation",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "prefixes": {
++      "exit": 0,
++      "seconds": 0.072527,
++      "peakRssBytes": 31129600,
++      "log": "prefixes.stdout",
++      "stdout": "prefixes.stdout",
++      "stderr": "prefixes.stderr",
++      "stdoutSha256": "76700c62cd699f8c102dd0577f99e4f4f1ef273057a75ae5ecbd57cd6f14d820",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#prefixes",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/fields.stdout
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "campaign.CappedFields#fields",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "fields(code=3)",
++      "outcome": "0",
++      "values": [
++        "3"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 3
++        }
++      ],
++      "call": {
++        "class": "campaign.CappedFields",
++        "class_file": "campaign/CappedFields.class",
++        "classes": "after",
++        "method": "fields",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 3,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/parser-windows-xd5xdrrz/fields/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=3)\n    outcome: 0",
++        "uri": null,
++        "line": 71
++      }
++    ],
++    "output": "✗ Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=3)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/parser-windows-xd5xdrrz/fields",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.017258395,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 16,
++        "solving_seconds": 0.000098197,
++        "gates_evaluated": 207,
++        "evaluating_seconds": 5.921e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 333,
++        "clauses": 991,
++        "seconds": 0.015760122,
++        "loading_seconds": 0.003288241,
++        "decoding_seconds": 0.00072046,
++        "encoding_seconds": 0.000509846,
++        "witness_seconds": 0.000017172
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.016,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.011,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 333,
++            "clauses": 991
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.076,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.016,
++        "replay": 0.006,
++        "jvm": 0.042,
++        "other": 0.011
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/2/prefixes.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedFields#prefixes",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 128 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-xd5xdrrz/prefixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedFields#prefixes satisfies `result == 1` on every input where code >= 0 && code < 14 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 128 times with unwinding assertions)\n  not vacuous: prefixes(code=4) reaches the calls\n",
++    "work": "/tmp/parser-windows-xd5xdrrz/prefixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.054433724,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solver_calls": 52,
++        "solving_seconds": 0.002479384,
++        "gates_evaluated": 611,
++        "evaluating_seconds": 0.000034914,
++        "divisions": 1,
++        "divisions_built": 1,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 5189,
++        "clauses": 17870,
++        "seconds": 0.052197387,
++        "loading_seconds": 0.004025376,
++        "decoding_seconds": 0.001092672,
++        "encoding_seconds": 0.006332802,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.052,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.038,
++            "encoding": 0.006,
++            "solving": 0.002,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 5189,
++            "clauses": 17870
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.946,
++          "seconds": 0.006,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 186,
++            "clauses": 521
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.068,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.058,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.009
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found prefixes(code=4).",
++        "witness": "prefixes(code=4)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/CappedFields.java
+@@ -0,0 +1,77 @@
++package campaign;
++
++import java.io.IOException;
++import java.io.Reader;
++import java.io.StringReader;
++import java.util.Iterator;
++import org.apache.commons.csv.CSVFormat;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++
++public final class CappedFields {
++    static String delimiter(int code) {
++        return code < 4 || code >= 12 ? "||" : code < 8 ? "|||" : "|~|";
++    }
++    static String[] shape(int code, String d) {
++        if (code == 12) return new String[]{"a","b","c","d","","f"};
++        if (code == 13) return new String[]{"a","b||c","d","","f"};
++        return switch (code & 3) {
++            case 0 -> new String[]{"a","b","c"};
++            case 1 -> new String[]{"a","","b"};
++            case 2 -> new String[]{"a","b"+d+"c","d"};
++            default -> new String[]{"a","b",""};
++        };
++    }
++    static String source(int code, String d) {
++        if (code == 12) return "a||b||c||d||||f";
++        if (code == 13) return "a||\"b||c\"||d||||f";
++        return switch (code & 3) {
++            case 0 -> "a"+d+"b"+d+"c";
++            case 1 -> "a"+d+d+"b";
++            case 2 -> "a"+d+"\"b"+d+"c\""+d+"d";
++            default -> "a"+d+"b"+d;
++        };
++    }
++    static String controlDelimiter(int code) {
++        return switch (code % 7) {
++            case 0 -> "||"; case 1, 2 -> "|||"; case 3, 4 -> "|~|"; default -> ",";
++        };
++    }
++    static String controlSource(int code) {
++        return switch (code % 7) {
++            case 0, 1, 3 -> "a|b";
++            case 2 -> "a||b";
++            case 4 -> "a|~b";
++            case 5 -> "a,b,";
++            default -> "a,\"b,c\"";
++        };
++    }
++    static String[] controlFields(int code) {
++        return switch (code % 7) {
++            case 5 -> new String[]{"a","b",""};
++            case 6 -> new String[]{"a","b,c"};
++            default -> new String[]{controlSource(code)};
++        };
++    }
++    static CSVParser parse(Reader reader, String delimiter) throws IOException {
++        CSVFormat format = CSVFormat.Builder.create().setDelimiter(delimiter).setQuote('"').build();
++        return CSVParser.parse(reader, format);
++    }
++    static int matches(String source, String delimiter, String[] expected) throws IOException {
++        try (CSVParser parser = parse(new CappedReader(source, 3), delimiter)) {
++            Iterator<CSVRecord> rows = parser.iterator();
++            if (!rows.hasNext()) return 0;
++            CSVRecord first = rows.next();
++            if (first.size() != expected.length) return 0;
++            for (int i = 0; i < expected.length; i++) if (!expected[i].equals(first.get(i))) return 0;
++            return rows.hasNext() ? 0 : 1;
++        }
++    }
++    public static int fields(int code) throws IOException {
++        String d = delimiter(code);
++        return matches(source(code,d), d, shape(code,d));
++    }
++    public static int prefixes(int code) throws IOException {
++        return matches(controlSource(code), controlDelimiter(code), controlFields(code));
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/Cases.java
+@@ -0,0 +1,31 @@
++package campaign;
++import java.io.StringReader;
++import java.util.ArrayList;
++import java.util.List;
++import org.apache.commons.csv.CSVParser;
++import org.apache.commons.csv.CSVRecord;
++import static org.intheloop.controls.Grid.*;
++
++public final class Cases {
++    static List<List<String>> rows(String text, String delimiter) throws Exception {
++        List<List<String>> rows = new ArrayList<>();
++        try (CSVParser parser = CappedFields.parse(new CappedReader(text, 3), delimiter)) {
++            for (CSVRecord record : parser) {
++                List<String> fields = new ArrayList<>();
++                for (int i = 0; i < record.size(); i++) fields.add(record.get(i));
++                rows.add(fields);
++            }
++        }
++        return rows;
++    }
++    public static void main(String[] args) throws Exception {
++        for (int code=0; code<14; code++) {
++            String d = CappedFields.delimiter(code), s = CappedFields.source(code,d);
++            String cd = CappedFields.controlDelimiter(code), cs = CappedFields.controlSource(code);
++            row(code, fields("delimiter", d, "source", s, "controlDelimiter", cd, "controlSource", cs),
++                fields("fields", rows(s,d),
++                       "prefixes", rows(cs,cd)),
++                fields("fields", CappedFields.fields(code), "prefixes", CappedFields.prefixes(code)));
++        }
++    }
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/controls.stdout
+@@ -0,0 +1,14 @@
++{"id":0,"input":{"delimiter":"||","source":"a||b||c","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a","b|c"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":1,"input":{"delimiter":"||","source":"a||||b","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a","|b"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":2,"input":{"delimiter":"||","source":"a||\"b||c\"||d","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a","b||c","d"]],"prefixes":[["a||b"]]},"adapter":{"fields":1,"prefixes":1}}
++{"id":3,"input":{"delimiter":"||","source":"a||b||","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a","b|"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":4,"input":{"delimiter":"|||","source":"a|||b|||c","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|||b","c"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":5,"input":{"delimiter":"|||","source":"a||||||b","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a|","||b"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":6,"input":{"delimiter":"|||","source":"a|||\"b|||c\"|||d","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a|||\"b","c\"","d"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":7,"input":{"delimiter":"|||","source":"a|||b|||","controlDelimiter":"||","controlSource":"a|b"},"direct":{"fields":[["a|||b"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":8,"input":{"delimiter":"|~|","source":"a|~|b|~|c","controlDelimiter":"|||","controlSource":"a|b"},"direct":{"fields":[["a|~|b","c"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":9,"input":{"delimiter":"|~|","source":"a|~||~|b","controlDelimiter":"|||","controlSource":"a||b"},"direct":{"fields":[["a|~||~|b"]],"prefixes":[["a||b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":10,"input":{"delimiter":"|~|","source":"a|~|\"b|~|c\"|~|d","controlDelimiter":"|~|","controlSource":"a|b"},"direct":{"fields":[["a|~|\"b","c\"","d"]],"prefixes":[["a|b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":11,"input":{"delimiter":"|~|","source":"a|~|b|~|","controlDelimiter":"|~|","controlSource":"a|~b"},"direct":{"fields":[["a|~|b"]],"prefixes":[["a|~b"]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":12,"input":{"delimiter":"||","source":"a||b||c||d||||f","controlDelimiter":",","controlSource":"a,b,"},"direct":{"fields":[["a","b|c","d","|f"]],"prefixes":[["a","b",""]]},"adapter":{"fields":0,"prefixes":1}}
++{"id":13,"input":{"delimiter":"||","source":"a||\"b||c\"||d||||f","controlDelimiter":",","controlSource":"a,\"b,c\""},"direct":{"fields":[["a","b||c","d","|f"]],"prefixes":[["a","b,c"]]},"adapter":{"fields":0,"prefixes":1}}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/experiment.json
+@@ -0,0 +1,119 @@
++{
++  "example": "366",
++  "side": "parent",
++  "cap": 3,
++  "binding": {
++    "revision": "94711ebf25d79bd95df8a5e70885325660f94ddc",
++    "build": "examples/366-commons-csv-delimiter-lookahead/records/original-build/build-parent.json",
++    "buildSha256": "a35228d6735ca45a21ee4c6383d9777631635f48ce9caaee6396700768ac4bf2",
++    "orderedJars": [
++      "0c7bb36fb90647a396ca780759bf881ee214ccaf4df8ea039add8275b4566508"
++    ]
++  },
++  "rows": 14,
++  "ordinaryReceipt": "examples/366-commons-csv-delimiter-lookahead/records/opening-qualified/replay/20261122T064408Z-a488044e/records/control-parent-jdk21.stdout",
++  "ordinarySha256": "f070beb4f5481a84eba0ebbd3f19bb60a1e8cfda8d020766e4697500f1d22ebc",
++  "differencesFromOracle": {
++    "fields": [
++      0,
++      1,
++      3,
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11,
++      12,
++      13
++    ],
++    "prefixes": []
++  },
++  "differencesFromOriginalCaller": {
++    "fields": [
++      4,
++      5,
++      6,
++      7,
++      8,
++      9,
++      10,
++      11
++    ],
++    "prefixes": []
++  },
++  "compiledSource": "694870922b00a8a575e5ef49c385b9fb70d9c92adf14b9edd5fe85121605cef7",
++  "support": "396258492dfe2b3462d0bd9ae098081bccdd2e58db4c2046e146a6e46ba926f0",
++  "proofs": {
++    "fields": {
++      "exit": 1,
++      "seconds": 0.099742,
++      "peakRssBytes": 37855232,
++      "log": "fields.stdout",
++      "stdout": "fields.stdout",
++      "stderr": "fields.stderr",
++      "stdoutSha256": "ff7067459ec7522918d20e627ef94d0924143330a37101ea0bcb21112b7cbd7b",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#fields",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "violation",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    },
++    "prefixes": {
++      "exit": 0,
++      "seconds": 0.103254,
++      "peakRssBytes": 31031296,
++      "log": "prefixes.stdout",
++      "stdout": "prefixes.stdout",
++      "stderr": "prefixes.stderr",
++      "stdoutSha256": "8371fb5db77c44e4cab083aa5cd503df54120aa0320452ecd4ef55598bda378a",
++      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "target": "campaign.CappedFields#prefixes",
++      "guard": "code >= 0 && code < 14",
++      "assertion": "result == 1",
++      "observedRoots": [],
++      "bounds": [
++        128,
++        16384
++      ],
++      "verdict": "verified",
++      "blocker": null,
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "states": {}
++    }
++  },
++  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
++  "source": "f040551d5639e5dec7cfa4f66e5c1cd360372592"
++}
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/fields.stdout
+@@ -0,0 +1,186 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "campaign.CappedFields#fields",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "fields(code=3)",
++      "outcome": "0",
++      "values": [
++        "3"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "code",
++          "type": "int",
++          "value": 3
++        }
++      ],
++      "call": {
++        "class": "campaign.CappedFields",
++        "class_file": "campaign/CappedFields.class",
++        "classes": "after",
++        "method": "fields",
++        "descriptor": "(I)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "code",
++            "type": "int",
++            "value": 3,
++            "from": "code"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++    "problem": null,
++    "statement": "/tmp/parser-windows-p6gyocyh/fields/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=3)\n    outcome: 0",
++        "uri": null,
++        "line": 71
++      }
++    ],
++    "output": "✗ Property of campaign.CappedFields#fields violated: `result == 1` where code >= 0 && code < 14:\n  fields(code=3)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/parser-windows-p6gyocyh/fields",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.016921983,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 14,
++        "solving_seconds": 0.000085039,
++        "gates_evaluated": 207,
++        "evaluating_seconds": 5.591e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 333,
++        "clauses": 991,
++        "seconds": 0.015390018,
++        "loading_seconds": 0.002722727,
++        "decoding_seconds": 0.000757143,
++        "encoding_seconds": 0.000449375,
++        "witness_seconds": 0.000014577
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.015,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.011,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 333,
++            "clauses": 991
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.096,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.015,
++        "replay": 0.006,
++        "jvm": 0.062,
++        "other": 0.012
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/366-commons-csv-delimiter-lookahead/records/input-segmentation/parent/3/prefixes.stdout
+@@ -0,0 +1,173 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "campaign.CappedFields#prefixes",
++    "domain": "code: int",
++    "assume": "code >= 0 && code < 14",
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 128 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/parser-windows-p6gyocyh/prefixes/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ campaign.CappedFields#prefixes satisfies `result == 1` on every input where code >= 0 && code < 14 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.0 s; loops unwound 128 times with unwinding assertions)\n  not vacuous: prefixes(code=4) reaches the calls\n",
++    "work": "/tmp/parser-windows-p6gyocyh/prefixes",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.047218601,
++      "properties": 1,
++      "unwind": 128,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solver_calls": 44,
++        "solving_seconds": 0.002013548,
++        "gates_evaluated": 611,
++        "evaluating_seconds": 0.000032061,
++        "divisions": 1,
++        "divisions_built": 1,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 5189,
++        "clauses": 17870,
++        "seconds": 0.044641393,
++        "loading_seconds": 0.003140434,
++        "decoding_seconds": 0.000756381,
++        "encoding_seconds": 0.004563474,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.045,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.034,
++            "encoding": 0.005,
++            "solving": 0.002,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 5189,
++            "clauses": 17870
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 59.953,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 186,
++            "clauses": 521
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.062,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.05,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.011
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "code",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "code: int"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "code >= 0 && code < 14",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 128,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found prefixes(code=4).",
++        "witness": "prefixes(code=4)"
++      }
++    }
++  }
++]

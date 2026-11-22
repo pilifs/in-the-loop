@@ -1,0 +1,173 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "campaign.CappedReader#contract",
+    "domain": "cap: int",
+    "assume": "cap >= 1 && cap <= 3",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over cap: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+    "problem": null,
+    "statement": "/tmp/parser-windows-u8hgabg3/short-read-contract/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ campaign.CappedReader#contract satisfies `result == 1` on every input where cap >= 1 && cap <= 3 (jvmcontract's own checker (CaDiCaL): 1 properties proved over cap: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: contract(cap=1) reaches the calls\n",
+    "work": "/tmp/parser-windows-u8hgabg3/short-read-contract",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.040977906,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 16,
+      "stage": null,
+      "native": {
+        "paths": 5,
+        "merges": 0,
+        "solver_calls": 120,
+        "solving_seconds": 0.023068593,
+        "gates_evaluated": 13301,
+        "evaluating_seconds": 0.000312024,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 16570,
+        "clauses": 55067,
+        "seconds": 0.038967061,
+        "loading_seconds": 0.000391753,
+        "decoding_seconds": 0.000105327,
+        "encoding_seconds": 0.01172231,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.039,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.012,
+            "solving": 0.023,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 16570,
+            "clauses": 55067
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.959,
+          "seconds": 0.005,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 249,
+            "clauses": 739
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.054,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.044,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.009
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "cap",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "cap: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "cap >= 1 && cap <= 3",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found contract(cap=1).",
+        "witness": "contract(cap=1)"
+      }
+    }
+  }
+]
