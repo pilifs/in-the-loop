@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-044516-exercise-javaparser-fix-traversals-with",
+  "title": "Exercise JavaParser fix traversals with supplied separator",
+  "description": "Check all four registered traversal obligations on this original revision for every supplied separator of length zero through two UTF-16 units. Also check absent startup and the larger text domain. The underlying shared HashSet constructor and Node initialization run normally; counterexamples replay in a fresh JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "360"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T04:45:16+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "6m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Check text and complete traversal set",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/separator_inputs.py --all-traversals --side fix --output verification/domain-foundations/complete-separator",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/domain-foundations/complete-separator/fix"
+  ],
+  "supersedes": "20261122-042450-exercise-javaparser-fix-traversals-with",
+  "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b"
+}

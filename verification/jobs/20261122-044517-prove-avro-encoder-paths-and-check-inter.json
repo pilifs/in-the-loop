@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-044517-prove-avro-encoder-paths-and-check-inter",
+  "title": "Prove Avro encoder paths and check interrupted writes",
+  "description": "Partition the same sixteen original inputs by the real bulk-write test. Prove both buffered observations across fourteen inputs on the parent and fix and record the two channel inputs separately. Challenge the IO boundary in fresh JVMs with and without a preexisting thread interrupt, recording cursor, bytes and exception.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "362"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-22T04:45:17+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check both paths and the interrupt controls",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_segments.py --output verification/domain-foundations/encoder-paths",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/encoder-paths"
+  ]
+}

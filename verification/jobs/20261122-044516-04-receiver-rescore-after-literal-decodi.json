@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-044516-04-receiver-rescore-after-literal-decodi",
+  "title": "04 receiver rescore after literal decoding",
+  "description": "Repeat all frozen overloads and the original caller on both revisions after the recurring Base64 and Boolean intake fixes. Compare the same registered inputs, subject runtime, constructor path, observed outputs and full original classpaths with the first receiver run.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "jvmcontract:prove",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-22T04:45:16+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "revision": "86716cadfd3780697fcfaa0fc8f66fb1d518b22b",
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Check the bound overloads and original caller paths",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; area=\"$TMPDIR/domain-foundations-receivers\"; cache=\"${DOMAIN_FOUNDATIONS_MAVEN_REPO:-$HOME/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-shared-maven/repository}\"; python3 -B lib/benchmark/domain-foundations/receiver_campaign.py --area \"$area\" --maven-cache \"$cache\" --output verification/domain-foundations/receiver-final --group 04",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/domain-foundations/receiver-final/04"
+  ]
+}
