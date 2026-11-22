@@ -1,0 +1,2175 @@
+{
+  "task": "preserved-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d0076816bcae8681f74d3349ba50ca57c350f3cd/jvmcontract",
+      "prove",
+      "campaign.EnumReader#preserved(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/avro-1.12.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/parent/lib/com/fasterxml/jackson/core/jackson-core/2.12.5/jackson-core-2.12.5.jar",
+      "--classpath",
+      "prepare/parent/lib/com/fasterxml/jackson/core/jackson-databind/2.12.5/jackson-databind-2.12.5.jar",
+      "--classpath",
+      "prepare/parent/lib/com/fasterxml/jackson/core/jackson-annotations/2.12.5/jackson-annotations-2.12.5.jar",
+      "--classpath",
+      "prepare/parent/lib/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar",
+      "--classpath",
+      "prepare/parent/lib/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar",
+      "--classpath",
+      "prepare/parent/lib/org/tukaani/xz/1.9/xz-1.9.jar",
+      "--classpath",
+      "prepare/parent/lib/com/github/luben/zstd-jni/1.5.1-1/zstd-jni-1.5.1-1.jar",
+      "--classpath",
+      "prepare/parent/lib/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+      "--assume",
+      "code >= 0 && code < 4",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "512",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.052,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+      "commit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+      "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read. Each selector corresponds to one explicit row of the finite oracle.",
+        "method": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+        "revisions": {
+          "parent": {
+            "commit": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+            "loadedFrom": "built/avro-1.12.0-SNAPSHOT.jar",
+            "classSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f",
+            "origin": "built by maven from https://github.com/apache/avro at 0cbfb17d49186348a85cc2afc19c6b940da4aad1: lang/java/avro/target/avro-1.12.0-SNAPSHOT.jar",
+            "parameters": {
+              "names": [
+                "reuse",
+                "in"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "campaign.EnumReader#preserved(I)I",
+          "mapping": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 4
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "e3983970e05ada3f2e7cc9438ab4fdca9eb649a3341e1333e38d3ea80655c1eb",
+            "role": "adapter"
+          },
+          {
+            "path": "built/avro-1.12.0-SNAPSHOT.jar",
+            "sha256": "f51b98903f067da1a1086e0a7fd428787f6f40f7a2eae91032b001e7593758a0",
+            "role": "original"
+          },
+          {
+            "path": "lib/com/fasterxml/jackson/core/jackson-core/2.12.5/jackson-core-2.12.5.jar",
+            "sha256": "0c9860b8fb6f24f59e083e0b92a17c515c45312951fc272d093e4709faed6356",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/fasterxml/jackson/core/jackson-databind/2.12.5/jackson-databind-2.12.5.jar",
+            "sha256": "d49cdfd82443fa5869d75fe53680012cef2dd74621b69d37da69087c40f1575a",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/fasterxml/jackson/core/jackson-annotations/2.12.5/jackson-annotations-2.12.5.jar",
+            "sha256": "517926d9fe04cadd55120790d0b5355e4f656ffe2969e4d480a0e7f95a983e9e",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar",
+            "sha256": "6aecfd5459728a595601cfa07258d131972ffc39b492eb48bdd596577a2f244a",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar",
+            "sha256": "24c4d1fc1e89e078331ab8f401a99cad68599bde4a2e4516042cb548c51b1c3e",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/tukaani/xz/1.9/xz-1.9.jar",
+            "sha256": "211b306cfc44f8f96df3a0a3ddaf75ba8c5289eed77d60d72f889bb855f535e5",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com/github/luben/zstd-jni/1.5.1-1/zstd-jni-1.5.1-1.jar",
+            "sha256": "448b6b48c9891938237451bc2267eab3f8317e3a8ac7f885268101c0baf6b416",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+            "sha256": "336811855ee97fcd8413343dc42f4d26362502860e8a9193e4db305e3e8ef80a",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "campaign.EnumReader#preserved(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "campaign.EnumReader#preserved(I)I",
+          "classSha256": "2536c7c2473cbd74270a6aa69c88287061692586253c0a8879207beecb9d3f63",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "subjectClassSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+        "checkedEntry": "campaign.EnumReader#preserved(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 4"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "512"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16384"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "campaign.EnumReader#preserved(I)I",
+          "mapping": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read. Each selector corresponds to one explicit row of the finite oracle.",
+          "correspondence": "finite-oracle",
+          "cases": 4
+        }
+      },
+      "commits": {
+        "parent": "0cbfb17d49186348a85cc2afc19c6b940da4aad1"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d0076816bcae8681f74d3349ba50ca57c350f3cd/jvmcontract",
+            "gaps",
+            "--target",
+            "campaign.EnumReader#preserved(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/avro-1.12.0-SNAPSHOT.jar",
+            "--classpath",
+            "prepare/parent/lib/com/fasterxml/jackson/core/jackson-core/2.12.5/jackson-core-2.12.5.jar",
+            "--classpath",
+            "prepare/parent/lib/com/fasterxml/jackson/core/jackson-databind/2.12.5/jackson-databind-2.12.5.jar",
+            "--classpath",
+            "prepare/parent/lib/com/fasterxml/jackson/core/jackson-annotations/2.12.5/jackson-annotations-2.12.5.jar",
+            "--classpath",
+            "prepare/parent/lib/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar",
+            "--classpath",
+            "prepare/parent/lib/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar",
+            "--classpath",
+            "prepare/parent/lib/org/tukaani/xz/1.9/xz-1.9.jar",
+            "--classpath",
+            "prepare/parent/lib/com/github/luben/zstd-jni/1.5.1-1/zstd-jni-1.5.1-1.jar",
+            "--classpath",
+            "prepare/parent/lib/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.716,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.StringWriter.<init>()",
+              "sites": [
+                "org.apache.avro.Schema.toString:429"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.RuntimeException.<init>(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.RuntimeException.<init>(java.lang.Throwable)",
+              "sites": [
+                "org.apache.avro.AvroRuntimeException.<init>:24"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.SecurityManager.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.SecurityManager.<init>()",
+              "sites": [
+                "org.slf4j.helpers.Util$ClassContextSecurityManager.<init>:65"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.String.<init>([BII)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.String.<init>(byte[], int, int)",
+              "sites": [
+                "java.io.ByteArrayOutputStream.toString:227"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.String.<init>([BIILjava/nio/charset/Charset;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset)",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonLocation._appendSourceDesc:209",
+                "org.apache.avro.io.FastReaderBuilder.getStringFromByteBuffer:395",
+                "org.apache.avro.util.Utf8.toString:162"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.String.<init>([BLjava/nio/charset/Charset;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.String.<init>(byte[], java.nio.charset.Charset)",
+              "sites": [
+                "org.apache.avro.io.ResolvingDecoder.readString:216"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ThreadLocal.<init>()",
+              "sites": [
+                "com.fasterxml.jackson.core.util.BufferRecyclers.<clinit>:57"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ref.ReferenceQueue.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ref.ReferenceQueue.<init>()",
+              "sites": [
+                "com.fasterxml.jackson.core.util.ThreadLocalBufferManager.<init>:45",
+                "org.apache.avro.util.WeakIdentityHashMap.<init>:43"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ref.SoftReference.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ref.SoftReference.<init>(java.lang.Object)",
+              "sites": [
+                "com.fasterxml.jackson.core.util.BufferRecyclers.getBufferRecycler:75"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ref.SoftReference.<init>(Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ref.SoftReference.<init>(java.lang.Object, java.lang.ref.ReferenceQueue)",
+              "sites": [
+                "com.fasterxml.jackson.core.util.ThreadLocalBufferManager.wrapAndTrack:82"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.lang.ref.WeakReference.<init>(Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.ref.WeakReference.<init>(java.lang.Object, java.lang.ref.ReferenceQueue)",
+              "sites": [
+                "org.apache.avro.util.WeakIdentityHashMap$IdentityWeakReference.<init>:175"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.HeapByteBuffer.<init>(IILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.HeapByteBuffer.<init>(int, int, java.lang.foreign.MemorySegment)",
+              "sites": [
+                "java.nio.ByteBuffer.allocate:391"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.HeapByteBuffer.<init>([BIILjava/lang/foreign/MemorySegment;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.HeapByteBuffer.<init>(byte[], int, int, java.lang.foreign.MemorySegment)",
+              "sites": [
+                "java.nio.ByteBuffer.wrap:436"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.charset.IllegalCharsetNameException.<init>(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.charset.IllegalCharsetNameException.<init>(java.lang.String)",
+              "sites": [
+                "java.nio.charset.Charset.lookup:103"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.nio.charset.UnsupportedCharsetException.<init>(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.nio.charset.UnsupportedCharsetException.<init>(java.lang.String)",
+              "sites": [
+                "java.nio.charset.Charset.forName:84"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.ArrayList.<init>(int)",
+              "sites": [
+                "org.apache.avro.AvroMissingFieldException.<init>:28",
+                "org.apache.avro.Schema$LockableArrayList.<init>:1992",
+                "org.slf4j.LoggerFactory.replayEvents:209"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.ArrayList.<init>(Ljava/util/Collection;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.ArrayList.<init>(java.util.Collection)",
+              "sites": [
+                "org.apache.avro.Schema$LockableArrayList.<init>:1996",
+                "org.slf4j.helpers.SubstituteLoggerFactory.getLoggers:65"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>()",
+              "sites": [
+                "org.apache.avro.util.WeakIdentityHashMap.entrySet:70"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>(int)",
+              "sites": [
+                "com.fasterxml.jackson.core.json.DupDetector.isDup:105"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.IdentityHashMap.<init>(int)",
+              "sites": [
+                "org.apache.avro.Schema.applyAliases:1852",
+                "org.apache.avro.generic.GenericData.toString:635"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.LinkedHashSet.<init>()",
+              "sites": [
+                "org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:301"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.concurrent.ConcurrentLinkedQueue.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.concurrent.ConcurrentLinkedQueue.<init>()",
+              "sites": [
+                "org.apache.avro.JsonProperties$2.<init>:153"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.concurrent.LinkedBlockingQueue.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.concurrent.LinkedBlockingQueue.<init>()",
+              "sites": [
+                "org.slf4j.helpers.SubstituteLoggerFactory.<init>:49"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.concurrent.atomic.AtomicReferenceArray.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.concurrent.atomic.AtomicReferenceArray.<init>(int)",
+              "sites": [
+                "com.fasterxml.jackson.core.util.BufferRecycler.<init>:109",
+                "com.fasterxml.jackson.core.util.BufferRecycler.<init>:110"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.PrintStream.println(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.PrintStream.println(java.lang.String)",
+              "sites": [
+                "org.slf4j.helpers.Util.report:122",
+                "org.slf4j.helpers.Util.report:123",
+                "org.slf4j.helpers.Util.report:128"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.Writer.flush()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.Writer.flush()",
+              "sites": [
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator.flush:971"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.Writer.write(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.Writer.write(java.lang.String)",
+              "sites": [
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1852",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1934"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.Writer.write([CII)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.Writer.write(char[], int, int)",
+              "sites": [
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._flushBuffer:2029",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1790",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1827",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1831",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1877",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1913",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._prependOrWriteCharacterEscape:1917",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._writeSegment:1172",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._writeSegmentASCII:1321",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._writeSegmentCustom:1479",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._writeString2:1097",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._writeStringASCII:1283",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator._writeStringCustom:1434",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator.writeRaw:609"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.ThreadLocal.set(Ljava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.ThreadLocal.set(java.lang.Object)",
+              "sites": [
+                "com.fasterxml.jackson.core.util.BufferRecyclers.getBufferRecycler:77"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.Throwable.printStackTrace()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.printStackTrace()",
+              "sites": [
+                "org.slf4j.helpers.Util.report:124"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.reflect.Constructor.setAccessible(Z)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.reflect.Constructor.setAccessible(boolean)",
+              "sites": [
+                "org.apache.avro.generic.GenericDatumReader.newInstanceFromString:520"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.ArrayList.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.ArrayList.clear()",
+              "sites": [
+                "org.apache.avro.Schema$LockableArrayList.clear:2060"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Collection.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Collection.clear()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.newArray:1404"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.List.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.List.clear()",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.lambda$createArrayReader$33:477",
+                "org.slf4j.LoggerFactory.replayEvents:219"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Map.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Map.clear()",
+              "sites": [
+                "org.apache.avro.Schema.applyAliases:1860",
+                "org.apache.avro.Schema$RecordSchema.computeHash:981",
+                "org.apache.avro.generic.GenericData.newMap:1416",
+                "org.apache.avro.util.WeakIdentityHashMap.clear:51",
+                "org.slf4j.helpers.SubstituteLoggerFactory.clear:77"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Set.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Set.clear()",
+              "sites": [
+                "org.apache.avro.Schema$RecordSchema.equals:966"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.concurrent.LinkedBlockingQueue.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.concurrent.LinkedBlockingQueue.clear()",
+              "sites": [
+                "org.slf4j.helpers.SubstituteLoggerFactory.clear:78"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.apache.avro.generic.GenericArray.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.apache.avro.generic.GenericArray.clear()",
+              "sites": [
+                "org.apache.avro.generic.GenericArray.reset:34",
+                "org.apache.avro.io.FastReaderBuilder.lambda$createArrayReader$33:464"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.apache.avro.io.BinaryEncoder.flush()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.apache.avro.io.BinaryEncoder.flush()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.getDefaultValue:1221"
+              ]
+            },
+            {
+              "id": "jdk-void-method:org.apache.avro.io.Encoder.flush()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "org.apache.avro.io.Encoder.flush()",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.getEncodedValue:232",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.getBinary:241"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:com.fasterxml.jackson.core.JacksonException.getMessage()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "com.fasterxml.jackson.core.JacksonException.getMessage()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonProcessingException.getMessage:120"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.io.FileOutputStream.getChannel()Ljava/nio/channels/FileChannel;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.io.FileOutputStream.getChannel()",
+              "sites": [
+                "java.nio.channels.Channels.newChannel:356"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.io.StringWriter.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.io.StringWriter.toString()",
+              "sites": [
+                "org.apache.avro.Schema.toString:435"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.CharSequence.subSequence(II)Ljava/lang/CharSequence;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.CharSequence.subSequence(int, int)",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonLocation._appendSourceDesc:201"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.CharSequence.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.CharSequence.toString()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonLocation._appendSourceDesc:201"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.asSubclass(Ljava/lang/Class;)Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.asSubclass(java.lang.Class)",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.load:81"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getDeclaredConstructor(java.lang.Class[])",
+              "sites": [
+                "org.apache.avro.generic.GenericDatumReader.newInstanceFromString:519",
+                "org.apache.avro.reflect.ReflectionUtil.load:81"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getDeclaredField(java.lang.String)",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil$AccessorTestClass.accessor:131"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getMethod(java.lang.String, java.lang.Class[])",
+              "sites": [
+                "org.slf4j.helpers.SubstituteLogger.isDelegateEventAware:363"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getSimpleName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getSimpleName()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonLocation._appendSourceDesc:187",
+                "org.apache.avro.Conversions.convertToLogicalType:204"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ClassLoader.getResources(Ljava/lang/String;)Ljava/util/Enumeration;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ClassLoader.getResources(java.lang.String)",
+              "sites": [
+                "org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:308"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ClassLoader.loadClass(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ClassLoader.loadClass(java.lang.String)",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.findClass:450",
+                "org.apache.avro.reflect.ReflectionUtil.load:81"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.NoClassDefFoundError.getMessage()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.NoClassDefFoundError.getMessage()",
+              "sites": [
+                "org.slf4j.LoggerFactory.bind:154"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.NoSuchMethodError.getMessage()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.NoSuchMethodError.getMessage()",
+              "sites": [
+                "org.slf4j.LoggerFactory.bind:165"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Object.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Object.toString()",
+              "sites": [
+                "campaign.EnumReader.read:26",
+                "org.apache.avro.generic.GenericData.compare:1160",
+                "org.apache.avro.generic.GenericData.compare:1184",
+                "org.apache.avro.generic.GenericData.compare:1185",
+                "org.apache.avro.generic.GenericData.hashCode:1115",
+                "org.apache.avro.generic.GenericData.hashCode:1119",
+                "org.apache.avro.generic.GenericData.toString:700",
+                "org.apache.avro.generic.GenericData$EnumSymbol.equals:537",
+                "org.apache.avro.io.FastReaderBuilder.lambda$getNonConvertedReader$12:293",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.generate:86",
+                "org.slf4j.LoggerFactory.versionSanityCheck:278"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.String.subSequence(II)Ljava/lang/CharSequence;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.String.subSequence(int, int)",
+              "sites": [
+                "org.apache.avro.util.Utf8.subSequence:215"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.String.toUpperCase()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.String.toUpperCase()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.writeEscapedString:767"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.insert(ILjava/lang/String;)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.insert(int, java.lang.String)",
+              "sites": [
+                "org.apache.avro.AvroMissingFieldException.toString:43"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Thread.getName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Thread.getName()",
+              "sites": [
+                "org.slf4j.event.EventRecodingLogger.recordEvent:316"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ThreadLocal.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ThreadLocal.get()",
+              "sites": [
+                "com.fasterxml.jackson.core.util.BufferRecyclers.getBufferRecycler:67",
+                "org.apache.avro.Schema.validateDefault:1591",
+                "org.apache.avro.Schema.validateName:1570",
+                "org.apache.avro.Schema$RecordSchema.computeHash:972",
+                "org.apache.avro.Schema$RecordSchema.equals:956",
+                "org.apache.avro.generic.GenericDatumReader.getResolver:124",
+                "org.apache.avro.generic.GenericDatumReader.getResolver:127"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.invoke.CallSite.getTarget()Ljava/lang/invoke/MethodHandle;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.invoke.CallSite.getTarget()",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:198"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.invoke.MethodHandle.invokeExact()Ljava/util/function/Function;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.invoke.MethodHandle.invokeExact()",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:198"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.invoke.MethodHandle.type()Ljava/lang/invoke/MethodType;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.invoke.MethodHandle.type()",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:196"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.invoke.MethodHandles$Lookup.findConstructor(Ljava/lang/Class;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.invoke.MethodHandles$Lookup.findConstructor(java.lang.Class, java.lang.invoke.MethodType)",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:193"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.invoke.MethodType.generic()Ljava/lang/invoke/MethodType;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.invoke.MethodType.generic()",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:196"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ref.ReferenceQueue.poll()Ljava/lang/ref/Reference;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ref.ReferenceQueue.poll()",
+              "sites": [
+                "com.fasterxml.jackson.core.util.ThreadLocalBufferManager.removeSoftRefsClearedByGc:103",
+                "org.apache.avro.util.WeakIdentityHashMap.reap:161",
+                "org.apache.avro.util.WeakIdentityHashMap.reap:166"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.ref.SoftReference.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.ref.SoftReference.get()",
+              "sites": [
+                "com.fasterxml.jackson.core.util.BufferRecyclers.getBufferRecycler:68"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.Constructor.newInstance([Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.Constructor.newInstance(java.lang.Object[])",
+              "sites": [
+                "org.apache.avro.generic.GenericDatumReader.newInstanceFromString:523",
+                "org.apache.avro.reflect.ReflectionUtil.load:82"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.reflect.Method.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])",
+              "sites": [
+                "org.slf4j.helpers.SubstituteLogger.log:374"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.math.BigDecimal.toPlainString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.math.BigDecimal.toPlainString()",
+              "sites": [
+                "com.fasterxml.jackson.core.base.GeneratorBase._asString:476"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.math.BigDecimal.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.math.BigDecimal.toString()",
+              "sites": [
+                "com.fasterxml.jackson.core.base.GeneratorBase._asString:478"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.math.BigInteger.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.math.BigInteger.toString()",
+              "sites": [
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator.writeNumber:791",
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator.writeNumber:793"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.Buffer.clear()Ljava/nio/Buffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.Buffer.clear()",
+              "sites": [
+                "org.apache.avro.io.BinaryDecoder.readBytes:345"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.Buffer.limit(I)Ljava/nio/Buffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.Buffer.limit(int)",
+              "sites": [
+                "org.apache.avro.io.BinaryDecoder.readBytes:350"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.ByteBuffer.duplicate()Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.ByteBuffer.duplicate()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.toString:704"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.Charset.decode(Ljava/nio/ByteBuffer;)Ljava/nio/CharBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.Charset.decode(java.nio.ByteBuffer)",
+              "sites": [
+                "org.apache.avro.generic.GenericData.toString:705"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Collection.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Collection.iterator()",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection$1.<init>:1076",
+                "org.apache.avro.generic.GenericData.compare:1164",
+                "org.apache.avro.generic.GenericData.compare:1165",
+                "org.apache.avro.generic.GenericData.hashCode:1109",
+                "org.apache.avro.generic.GenericData.toString:671",
+                "org.apache.avro.io.parsing.Symbol.flatten:216"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Collection.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Collection.toString()",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection.toString:1072"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Enumeration.nextElement()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Enumeration.nextElement()",
+              "sites": [
+                "org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:311"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.IdentityHashMap.remove(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.IdentityHashMap.remove(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.generic.GenericData.toString:660",
+                "org.apache.avro.generic.GenericData.toString:677",
+                "org.apache.avro.generic.GenericData.toString:697",
+                "org.apache.avro.generic.GenericData.toString:718"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.iterator()",
+              "sites": [
+                "org.apache.avro.AvroMissingFieldException.toString:42",
+                "org.apache.avro.Resolver$ErrorAction.toString:236",
+                "org.apache.avro.Resolver$ReaderUnion.firstMatchingBranch:645",
+                "org.apache.avro.Resolver$ReaderUnion.firstMatchingBranch:676",
+                "org.apache.avro.Resolver$RecordAdjust.resolve:517",
+                "org.apache.avro.Resolver$RecordAdjust.resolve:531",
+                "org.apache.avro.Resolver$RecordAdjust.resolve:540",
+                "org.apache.avro.Schema.applyAliases:1878",
+                "org.apache.avro.Schema.applyAliases:1903",
+                "org.apache.avro.Schema.getAliases:1933",
+                "org.apache.avro.Schema.getAliases:1952",
+                "org.apache.avro.Schema.isValidDefault:1637",
+                "org.apache.avro.Schema$EnumSchema.toJson:1105",
+                "org.apache.avro.Schema$RecordSchema.fieldsToJson:1011",
+                "org.apache.avro.Schema$RecordSchema.setFields:927",
+                "org.apache.avro.Schema$UnionSchema.computeHash:1240",
+                "org.apache.avro.Schema$UnionSchema.toJson:1253",
+                "org.apache.avro.generic.GenericData.compare:1149",
+                "org.apache.avro.generic.GenericData.hashCode:1100",
+                "org.apache.avro.generic.GenericData.toString:652",
+                "org.apache.avro.generic.GenericDatumReader.skip:568",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.encode:257",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.simpleGen:196",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.simpleGen:211",
+                "org.apache.avro.io.parsing.Symbol$Sequence.flatten:354",
+                "org.slf4j.LoggerFactory.fixSubstituteLoggers:191",
+                "org.slf4j.LoggerFactory.replayEvents:214"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.computeIfAbsent(java.lang.Object, java.util.function.Function)",
+              "sites": [
+                "org.apache.avro.Schema.getAliases:1936",
+                "org.apache.avro.io.FastReaderBuilder.getRecordReaderFromCache:246"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.entrySet()Ljava/util/Set;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.entrySet()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.toString:688",
+                "org.apache.avro.util.WeakIdentityHashMap.entrySet:71"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.get(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.get(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.Resolver.unionEquiv:802",
+                "org.apache.avro.Resolver$RecordAdjust.resolve:502",
+                "org.apache.avro.Schema.applyAliases:1872",
+                "org.apache.avro.Schema.applyAliases:1874",
+                "org.apache.avro.Schema.applyAliases:1889",
+                "org.apache.avro.Schema.applyAliases:1909",
+                "org.apache.avro.Schema.getAliases:1943",
+                "org.apache.avro.Schema.getFieldAlias:1959",
+                "org.apache.avro.Schema.getFieldAlias:1962",
+                "org.apache.avro.Schema$EnumSchema.getEnumOrdinal:1072",
+                "org.apache.avro.Schema$RecordSchema.getField:904",
+                "org.apache.avro.Schema$UnionSchema.getIndexNamed:1224",
+                "org.apache.avro.generic.GenericData.getConversionFor:191",
+                "org.apache.avro.generic.GenericData.getDefaultValue:1212",
+                "org.apache.avro.generic.GenericData.getSchemaName:906",
+                "org.apache.avro.generic.GenericData.resolveUnion:877",
+                "org.apache.avro.generic.GenericData.resolveUnion:883",
+                "org.apache.avro.generic.GenericDatumReader.getResolver:124",
+                "org.apache.avro.generic.GenericDatumReader.getResolver:129",
+                "org.apache.avro.generic.GenericDatumReader.getStringClass:504",
+                "org.apache.avro.generic.GenericDatumReader.newInstanceFromString:517",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.generate:131",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.simpleGen:204",
+                "org.apache.avro.io.parsing.Symbol.flatten:212",
+                "org.apache.avro.io.parsing.Symbol$Sequence.flatten:346",
+                "org.apache.avro.util.WeakIdentityHashMap.get:116",
+                "org.slf4j.helpers.SubstituteLoggerFactory.getLogger:52"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.remove(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.remove(java.lang.Object)",
+              "sites": [
+                "com.fasterxml.jackson.core.util.ThreadLocalBufferManager.removeSoftRefsClearedByGc:105",
+                "org.apache.avro.io.parsing.Symbol$Sequence.flatten:357",
+                "org.apache.avro.util.WeakIdentityHashMap.reap:165",
+                "org.apache.avro.util.WeakIdentityHashMap.remove:145"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map.values()Ljava/util/Collection;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map.values()",
+              "sites": [
+                "org.apache.avro.io.parsing.Symbol.flatten:216",
+                "org.apache.avro.util.WeakIdentityHashMap.values:157",
+                "org.slf4j.helpers.SubstituteLoggerFactory.getLoggers:65"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getKey()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getKey()",
+              "sites": [
+                "org.apache.avro.JsonProperties.putAll:267",
+                "org.apache.avro.JsonProperties.writeProps:312",
+                "org.apache.avro.generic.GenericData.toString:690",
+                "org.apache.avro.util.WeakIdentityHashMap.entrySet:72"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Map$Entry.getValue()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Map$Entry.getValue()",
+              "sites": [
+                "org.apache.avro.JsonProperties.putAll:267",
+                "org.apache.avro.JsonProperties.writeProps:312",
+                "org.apache.avro.generic.GenericData.toString:692",
+                "org.apache.avro.util.WeakIdentityHashMap.entrySet:73"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Queue.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Queue.iterator()",
+              "sites": [
+                "org.apache.avro.JsonProperties$2$1$1.<init>:175"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Set.getClass()Ljava/lang/Class;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Set.getClass()",
+              "sites": [
+                "java.util.Collections.unmodifiableSet:1238"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Set.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Set.iterator()",
+              "sites": [
+                "org.apache.avro.JsonProperties.putAll:266",
+                "org.apache.avro.JsonProperties.writeProps:311",
+                "org.apache.avro.Schema.getAliases:1924",
+                "org.apache.avro.Schema.getAliases:1935",
+                "org.apache.avro.Schema.getAliases:1942",
+                "org.apache.avro.Schema$NamedSchema.aliasesToJson:843",
+                "org.apache.avro.Schema$RecordSchema.fieldsToJson:1027",
+                "org.apache.avro.generic.GenericData.toString:688",
+                "org.apache.avro.util.WeakIdentityHashMap.entrySet:71",
+                "org.slf4j.LoggerFactory.reportMultipleBindingAmbiguity:332"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.concurrent.ConcurrentHashMap.putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.concurrent.ConcurrentHashMap.putIfAbsent(java.lang.Object, java.lang.Object)",
+              "sites": [
+                "org.apache.avro.JsonProperties$2.putIfAbsent:157"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.concurrent.ConcurrentMap.entrySet()Ljava/util/Set;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.concurrent.ConcurrentMap.entrySet()",
+              "sites": [
+                "org.apache.avro.JsonProperties.putAll:266",
+                "org.apache.avro.JsonProperties.writeProps:311"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.concurrent.ConcurrentMap.get(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.concurrent.ConcurrentMap.get(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.JsonProperties.getJsonProp:233"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.concurrent.ConcurrentMap.putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.concurrent.ConcurrentMap.putIfAbsent(java.lang.Object, java.lang.Object)",
+              "sites": [
+                "org.apache.avro.JsonProperties.addProp:286"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.concurrent.atomic.AtomicReferenceArray.getAndSet(ILjava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.concurrent.atomic.AtomicReferenceArray.getAndSet(int, java.lang.Object)",
+              "sites": [
+                "com.fasterxml.jackson.core.util.BufferRecycler.allocCharBuffer:159"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.Function.apply(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.Function.apply(java.lang.Object)",
+              "sites": [
+                "java.util.Optional.map:260",
+                "org.apache.avro.io.FastReaderBuilder.lambda$getTransformingStringReader$32:441"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.function.IntFunction.apply(I)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.function.IntFunction.apply(int)",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.initializeRecordReader:162"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:org.apache.avro.Schema$LockableArrayList.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "org.apache.avro.Schema$LockableArrayList.iterator()",
+              "sites": [
+                "org.apache.avro.Schema$EnumSchema.<init>:1049",
+                "org.apache.avro.Schema$UnionSchema.<init>:1203"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:org.apache.avro.util.WeakIdentityHashMap$IdentityWeakReference.get()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "org.apache.avro.util.WeakIdentityHashMap$IdentityWeakReference.get()",
+              "sites": [
+                "org.apache.avro.util.WeakIdentityHashMap.entrySet:72",
+                "org.apache.avro.util.WeakIdentityHashMap$IdentityWeakReference.equals:193"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:org.slf4j.impl.StaticLoggerBinder.getLoggerFactory()Lorg/slf4j/ILoggerFactory;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "org.slf4j.impl.StaticLoggerBinder.getLoggerFactory()",
+              "sites": [
+                "org.slf4j.LoggerFactory.getILoggerFactory:423"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:org.slf4j.impl.StaticLoggerBinder.getLoggerFactoryClassStr()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "org.slf4j.impl.StaticLoggerBinder.getLoggerFactoryClassStr()",
+              "sites": [
+                "org.slf4j.LoggerFactory.reportActualBinding:349"
+              ]
+            },
+            {
+              "id": "class-initializer:com.fasterxml.jackson.core.io.CharTypes.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "com.fasterxml.jackson.core.io.CharTypes.<clinit>()",
+              "sites": [
+                "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator.<init>:113"
+              ]
+            },
+            {
+              "id": "class-initializer:com.fasterxml.jackson.core.io.SerializedString.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "com.fasterxml.jackson.core.io.SerializedString.<clinit>()",
+              "sites": [
+                "com.fasterxml.jackson.core.util.DefaultPrettyPrinter.<clinit>:28"
+              ]
+            },
+            {
+              "id": "class-initializer:com.fasterxml.jackson.core.json.JsonGeneratorImpl.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "com.fasterxml.jackson.core.json.JsonGeneratorImpl.<clinit>()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonFactory._createGenerator:1784"
+              ]
+            },
+            {
+              "id": "class-initializer:com.fasterxml.jackson.core.json.WriterBasedJsonGenerator.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "com.fasterxml.jackson.core.json.WriterBasedJsonGenerator.<clinit>()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonFactory._createGenerator:1784"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.avro.Schema.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.avro.Schema.<clinit>()",
+              "sites": [
+                "campaign.EnumReader.record:13"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.avro.generic.GenericData.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.avro.generic.GenericData.<clinit>()",
+              "sites": [
+                "org.apache.avro.generic.GenericDatumReader.<init>:64"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.avro.util.Utf8.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.avro.util.Utf8.<clinit>()",
+              "sites": [
+                "org.apache.avro.io.BinaryDecoder.<init>:318"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.CharSequence.charAt(I)C@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.CharSequence.charAt(int)",
+              "sites": [
+                "org.apache.avro.generic.GenericData.writeEscapedString:736"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.CharSequence.length()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.CharSequence.length()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonLocation._appendSourceDesc:200",
+                "org.apache.avro.generic.GenericData.writeEscapedString:735"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "org.apache.avro.io.ResolvingDecoder.<clinit>:46",
+                "org.apache.avro.io.parsing.SkipParser.<clinit>:26"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Class.isEnum()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.isEnum()",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.isObjectImmutable:214"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Comparable.compareTo(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.generic.GenericData.compare:1188"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Double.isInfinite()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Double.isInfinite()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.isNanOrInfinity:730"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Double.isNaN()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Double.isNaN()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.isNanOrInfinity:730"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Float.isInfinite()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Float.isInfinite()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.isNanOrInfinity:729"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Float.isNaN()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Float.isNaN()",
+              "sites": [
+                "org.apache.avro.generic.GenericData.isNanOrInfinity:729"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Number.byteValue()B@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Number.byteValue()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonGenerator._writeSimpleObject:2717"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Number.longValue()J@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Number.longValue()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonGenerator._writeSimpleObject:2705"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Number.shortValue()S@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Number.shortValue()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonGenerator._writeSimpleObject:2714"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "java.util.Arrays$ArrayList.indexOf:4285",
+                "java.util.HashMap.find:80",
+                "java.util.Objects.equals:64",
+                "org.apache.avro.JsonProperties.propsEqual:320",
+                "org.apache.avro.generic.GenericData.compare:1175",
+                "org.apache.avro.io.DecoderFactory.binaryDecoder:215",
+                "org.apache.avro.io.EncoderFactory.binaryEncoder:173",
+                "org.apache.avro.reflect.ReflectionUtil$AccessorTestClass.validField:124",
+                "org.apache.avro.reflect.ReflectionUtil$AccessorTestClass.validField:126"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.hashCode()",
+              "sites": [
+                "java.util.HashMap.find:77",
+                "java.util.HashMap.put:65",
+                "java.util.Objects.hashCode:103",
+                "org.apache.avro.JsonProperties.propsHashCode:316",
+                "org.apache.avro.generic.GenericData.hashCode:1119",
+                "org.apache.avro.generic.GenericData.hashCode:1121"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.String.contains(Ljava/lang/CharSequence;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.String.contains(java.lang.CharSequence)",
+              "sites": [
+                "org.slf4j.LoggerFactory.bind:166",
+                "org.slf4j.LoggerFactory.isAndroid:343",
+                "org.slf4j.LoggerFactory.messageContainsOrgSlf4jImplStaticLoggerBinder:133",
+                "org.slf4j.LoggerFactory.messageContainsOrgSlf4jImplStaticLoggerBinder:135"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.String.equalsIgnoreCase(Ljava/lang/String;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.String.equalsIgnoreCase(java.lang.String)",
+              "sites": [
+                "org.slf4j.helpers.Util.safeGetBooleanSystemProperty:57"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.math.BigDecimal.scale()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.math.BigDecimal.scale()",
+              "sites": [
+                "com.fasterxml.jackson.core.base.GeneratorBase._asString:470"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.capacity()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.capacity()",
+              "sites": [
+                "org.apache.avro.io.BinaryDecoder.readBytes:343"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.position()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.position()",
+              "sites": [
+                "org.apache.avro.io.BinaryDecoder.readBytes:349",
+                "org.apache.avro.io.FastReaderBuilder.getStringFromByteBuffer:395"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.remaining()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.remaining()",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.getStringFromByteBuffer:395"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.ArrayList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.ArrayList.add(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.Schema$LockableArrayList.add:2018"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.add(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.generic.GenericDatumReader.addToArray:333"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.contains(java.lang.Object)",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection.contains:1068"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.equals(java.lang.Object)",
+              "sites": [
+                "java.util.Collections$UnmodifiableSet.equals:1253"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.hashCode()",
+              "sites": [
+                "java.util.Collections$UnmodifiableSet.hashCode:1254"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.isEmpty()",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection.isEmpty:1067"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Collection.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Collection.size()",
+              "sites": [
+                "java.util.Collections$UnmodifiableCollection.size:1066",
+                "org.apache.avro.generic.GenericData.toString:669"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Enumeration.hasMoreElements()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Enumeration.hasMoreElements()",
+              "sites": [
+                "org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:310"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.HashSet.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.HashSet.add(java.lang.Object)",
+              "sites": [
+                "com.fasterxml.jackson.core.json.DupDetector.isDup:106",
+                "com.fasterxml.jackson.core.json.DupDetector.isDup:107",
+                "com.fasterxml.jackson.core.json.DupDetector.isDup:109"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.AvroMissingFieldException.<init>:32",
+                "org.apache.avro.Schema.applyAliases:1883",
+                "org.apache.avro.Schema.applyAliases:1904",
+                "org.apache.avro.io.FastReaderBuilder.lambda$createArrayReader$33:480",
+                "org.apache.avro.io.parsing.Symbol.copyFixups:233",
+                "org.apache.avro.io.parsing.Symbol.flatten:220"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.equals(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.Resolver.unionEquiv:766",
+                "org.apache.avro.Schema$EnumSchema.equals:1082",
+                "org.apache.avro.Schema$UnionSchema.equals:1234"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.hashCode()",
+              "sites": [
+                "org.apache.avro.Schema$EnumSchema.computeHash:1092",
+                "org.apache.avro.Schema$RecordSchema.computeHash:978"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.indexOf(Ljava/lang/Object;)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.indexOf(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.Resolver$EnumAdjust.resolve:396",
+                "org.apache.avro.Resolver$EnumAdjust.resolve:401"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.isEmpty()",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.getDefaultingStep:199"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.size()",
+              "sites": [
+                "org.apache.avro.Resolver.unionEquiv:772",
+                "org.apache.avro.Resolver.unionEquiv:775",
+                "org.apache.avro.Resolver.unionEquiv:789",
+                "org.apache.avro.Resolver.unionEquiv:792",
+                "org.apache.avro.Resolver$EnumAdjust.<init>:375",
+                "org.apache.avro.Resolver$EnumAdjust.resolve:397",
+                "org.apache.avro.Resolver$EnumAdjust.resolve:398",
+                "org.apache.avro.Resolver$RecordAdjust.resolve:523",
+                "org.apache.avro.Resolver$RecordAdjust.resolve:524",
+                "org.apache.avro.Resolver$WriterUnion.resolve:585",
+                "org.apache.avro.Schema$RecordSchema.setFields:925",
+                "org.apache.avro.Schema$RecordSchema.setFields:926",
+                "org.apache.avro.generic.GenericData.resolveUnion:880",
+                "org.apache.avro.generic.GenericData.toString:656",
+                "org.apache.avro.generic.GenericData$Record.<init>:229",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.generate:128",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.simpleGen:182",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.simpleGen:193",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.simpleGen:194",
+                "org.apache.avro.io.parsing.ResolvingGrammarGenerator.simpleGen:206",
+                "org.apache.avro.io.parsing.Symbol.copyFixups:230"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Map.containsKey(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Map.containsKey(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.Resolver.unionEquiv:785",
+                "org.apache.avro.Schema.applyAliases:1871",
+                "org.apache.avro.Schema.applyAliases:1873",
+                "org.apache.avro.Schema.applyAliases:1888",
+                "org.apache.avro.Schema.applyAliases:1908",
+                "org.apache.avro.Schema.getAliases:1929",
+                "org.apache.avro.Schema.getAliases:1941",
+                "org.apache.avro.Schema$NamedSchema.<init>:767",
+                "org.apache.avro.Schema$RecordSchema.computeHash:973",
+                "org.apache.avro.util.WeakIdentityHashMap.containsKey:58"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Map.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Map.equals(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.util.WeakIdentityHashMap.equals:110"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Map.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Map.hashCode()",
+              "sites": [
+                "org.apache.avro.util.WeakIdentityHashMap.hashCode:128"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Map.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Map.isEmpty()",
+              "sites": [
+                "org.apache.avro.Schema$RecordSchema.computeHash:975",
+                "org.apache.avro.io.FastReaderBuilder.getDefaultingStep:201",
+                "org.apache.avro.util.WeakIdentityHashMap.isEmpty:134"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Map.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Map.size()",
+              "sites": [
+                "org.apache.avro.Schema.applyAliases:1857",
+                "org.apache.avro.generic.GenericData.toString:693",
+                "org.apache.avro.util.WeakIdentityHashMap.size:151"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Queue.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Queue.add(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.JsonProperties$2.putIfAbsent:159",
+                "org.slf4j.event.EventRecodingLogger.recordEvent:321"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Queue.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Queue.size()",
+              "sites": [
+                "org.apache.avro.JsonProperties$2$1.size:191"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.add(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.Schema$RecordSchema.equals:962",
+                "org.apache.avro.util.WeakIdentityHashMap.entrySet:90",
+                "org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:312"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.contains(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.JsonProperties.addProp:280",
+                "org.apache.avro.Schema$RecordSchema.equals:958"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.isEmpty()",
+              "sites": [
+                "org.apache.avro.Schema$NamedSchema.aliasesToJson:839",
+                "org.apache.avro.Schema$RecordSchema.equals:960"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.size()",
+              "sites": [
+                "org.apache.avro.Schema$RecordSchema.fieldsToJson:1024",
+                "org.slf4j.LoggerFactory.isAmbiguousStaticLoggerBinderPathSet:321"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.ConcurrentMap.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.ConcurrentMap.isEmpty()",
+              "sites": [
+                "org.apache.avro.JsonProperties.hasProps:324"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.LinkedBlockingQueue.drainTo(Ljava/util/Collection;I)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.LinkedBlockingQueue.drainTo(java.util.Collection, int)",
+              "sites": [
+                "org.slf4j.LoggerFactory.replayEvents:211"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.LinkedBlockingQueue.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.LinkedBlockingQueue.size()",
+              "sites": [
+                "org.slf4j.LoggerFactory.replayEvents:206"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.atomic.AtomicBoolean.get()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.atomic.AtomicBoolean.get()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonGenerator._writeSimpleObject:2741"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.atomic.AtomicInteger.get()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.atomic.AtomicInteger.get()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonGenerator._writeSimpleObject:2728"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.concurrent.atomic.AtomicLong.get()J@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.concurrent.atomic.AtomicLong.get()",
+              "sites": [
+                "com.fasterxml.jackson.core.JsonGenerator._writeSimpleObject:2731"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:org.apache.avro.Schema$LockableArrayList.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "org.apache.avro.Schema$LockableArrayList.contains(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.Schema$EnumSchema.<init>:1054"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:org.apache.avro.Schema$LockableArrayList.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "org.apache.avro.Schema$LockableArrayList.size()",
+              "sites": [
+                "org.apache.avro.Schema$EnumSchema.<init>:1046",
+                "org.apache.avro.Schema$UnionSchema.<init>:1200"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:org.apache.avro.generic.GenericArray.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "org.apache.avro.generic.GenericArray.add(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.lambda$createArrayReader$33:468"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isLetterOrDigit(C)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isLetterOrDigit(char)",
+              "sites": [
+                "org.apache.avro.Schema.validateName:1582"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.ClassLoader.getSystemResources(Ljava/lang/String;)Ljava/util/Enumeration;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.ClassLoader.getSystemResources(java.lang.String)",
+              "sites": [
+                "org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:306"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Enum.valueOf(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Enum.valueOf(java.lang.Class, java.lang.String)",
+              "sites": [
+                "org.apache.avro.generic.GenericData$StringType.valueOf:84"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Integer.parseUnsignedInt(Ljava/lang/String;)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Integer.parseUnsignedInt(java.lang.String)",
+              "sites": [
+                "org.apache.avro.io.BinaryDecoder.<init>:106"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Integer.toHexString(I)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Integer.toHexString(int)",
+              "sites": [
+                "org.apache.avro.generic.GenericData.writeEscapedString:763"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+              "sites": [
+                "com.fasterxml.jackson.core.base.GeneratorBase._asString:472",
+                "com.fasterxml.jackson.core.json.JsonGeneratorImpl._reportCantWriteValueExpectName:248",
+                "com.fasterxml.jackson.core.util.JacksonFeatureSet.fromDefaults:41",
+                "org.apache.avro.Schema$RecordSchema.setFields:935",
+                "org.apache.avro.generic.GenericData.getSchemaName:933",
+                "org.slf4j.LoggerFactory.getLogger:392"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.valueOf(I)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.valueOf(int)",
+              "sites": [
+                "com.fasterxml.jackson.core.io.NumberOutput.<clinit>:12"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.valueOf(J)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.valueOf(long)",
+              "sites": [
+                "com.fasterxml.jackson.core.io.NumberOutput.<clinit>:13"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.valueOf(java.lang.Object)",
+              "sites": [
+                "org.apache.avro.generic.GenericData.toString:690"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.ThreadLocal.withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.ThreadLocal.withInitial(java.util.function.Supplier)",
+              "sites": [
+                "org.apache.avro.util.internal.ThreadLocalWithInitial.of:30"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.invoke.LambdaMetafactory.metafactory(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodType;Ljava/lang/invoke/MethodHandle;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.invoke.LambdaMetafactory.metafactory(java.lang.invoke.MethodHandles$Lookup, java.lang.String, java.lang.invoke.MethodType, java.lang.invoke.MethodType, java.lang.invoke.MethodHandle, java.lang.invoke.MethodType)",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:195"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.invoke.MethodHandles.lookup()Ljava/lang/invoke/MethodHandles$Lookup;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.invoke.MethodHandles.lookup()",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:192"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.invoke.MethodType.methodType(Ljava/lang/Class;)Ljava/lang/invoke/MethodType;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.invoke.MethodType.methodType(java.lang.Class)",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:195"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.invoke.MethodType.methodType(Ljava/lang/Class;Ljava/lang/Class;)Ljava/lang/invoke/MethodType;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.invoke.MethodType.methodType(java.lang.Class, java.lang.Class)",
+              "sites": [
+                "org.apache.avro.reflect.ReflectionUtil.getConstructorAsFunction:193"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.ByteBuffer.createCapacityException(I)Ljava/lang/IllegalArgumentException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.ByteBuffer.createCapacityException(int)",
+              "sites": [
+                "java.nio.ByteBuffer.allocate:390"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.deepToString([Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.deepToString(java.lang.Object[])",
+              "sites": [
+                "org.apache.avro.Conversions.convertToLogicalType:171"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.fill([Ljava/lang/Object;IILjava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.fill(java.lang.Object[], int, int, java.lang.Object)",
+              "sites": [
+                "org.apache.avro.generic.GenericData$Array.clear:345",
+                "org.apache.avro.generic.GenericData$Array.prune:357"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.hashCode([B)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.hashCode(byte[])",
+              "sites": [
+                "org.apache.avro.generic.GenericData$Fixed.hashCode:496"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.toString([B)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.toString(byte[])",
+              "sites": [
+                "org.apache.avro.generic.GenericData$Fixed.toString:501"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.eq(Ljava/lang/Object;Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.eq(java.lang.Object, java.lang.Object)",
+              "sites": [
+                "java.util.Collections$SingletonList.contains:5176"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.synchronizedMap(Ljava/util/Map;)Ljava/util/Map;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.synchronizedMap(java.util.Map)",
+              "sites": [
+                "org.apache.avro.io.FastReaderBuilder.<init>:69"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+              ]
+            },
+            {
+              "id": "jdk-static-method:org.slf4j.impl.StaticLoggerBinder.getSingleton()Lorg/slf4j/impl/StaticLoggerBinder;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "org.slf4j.impl.StaticLoggerBinder.getSingleton()",
+              "sites": [
+                "org.slf4j.LoggerFactory.bind:150",
+                "org.slf4j.LoggerFactory.getILoggerFactory:423",
+                "org.slf4j.LoggerFactory.reportActualBinding:349"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0508,
+        "peakRssBytes": 70483968,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "campaign.EnumReader#preserved(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 4",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "campaign.EnumReader#preserved(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 37
+          }
+        ],
+        "output": "✗ campaign.EnumReader#preserved(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.027678684,
+          "properties": 1,
+          "unwind": 512,
+          "max_array_length": 16384,
+          "stage": null,
+          "native": {
+            "paths": 3,
+            "merges": 0,
+            "solver_calls": 7,
+            "solving_seconds": 2.4615e-05,
+            "gates_evaluated": 87,
+            "evaluating_seconds": 3.076e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 561,
+            "clauses": 1356,
+            "seconds": 0.019350783,
+            "loading_seconds": 0.003594961,
+            "decoding_seconds": 0.001035154,
+            "encoding_seconds": 0.00238122,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.System.getProperty(java.lang.String)",
+              "sites": [
+                "org.slf4j.helpers.Util.safeGetSystemProperty:45"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.019,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.004,
+                "lowering": 0.001,
+                "symbolic": 0.012,
+                "encoding": 0.002,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 561,
+                "clauses": 1356
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.047,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.019,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.026
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 512,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-364-avro-enum-namespac/.build-py/examples-cch4f1oc/targets/364/preserved-parent/20261122T124623Z-8d791be6",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-364-avro-enum-namespac/.build-py/examples-cch4f1oc/targets/364/preserved-parent/20261122T124623Z-8d791be6"
+  }
+}

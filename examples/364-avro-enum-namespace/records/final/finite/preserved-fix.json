@@ -1,0 +1,185 @@
+{
+  "status": "established",
+  "entry": "campaign.EnumReader#preserved(I)I",
+  "inputs": 4,
+  "differences": 0,
+  "sides": {
+    "fix": {
+      "commit": "c35add7b29b5fab9229d79927a74f327bd56fa70",
+      "entry": {
+        "entry": "campaign.EnumReader#preserved(I)I",
+        "classSha256": "2536c7c2473cbd74270a6aa69c88287061692586253c0a8879207beecb9d3f63",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+        "subjectClassSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f"
+      },
+      "classpath": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "e3983970e05ada3f2e7cc9438ab4fdca9eb649a3341e1333e38d3ea80655c1eb",
+          "role": "adapter"
+        },
+        {
+          "path": "built/avro-1.12.0-SNAPSHOT.jar",
+          "sha256": "12f9b2cc3f68c983f2f17c20d41888cc6d93da7d1bd7f03a43607773ec55ccc0",
+          "role": "original"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-core/2.12.5/jackson-core-2.12.5.jar",
+          "sha256": "0c9860b8fb6f24f59e083e0b92a17c515c45312951fc272d093e4709faed6356",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-databind/2.12.5/jackson-databind-2.12.5.jar",
+          "sha256": "d49cdfd82443fa5869d75fe53680012cef2dd74621b69d37da69087c40f1575a",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/com/fasterxml/jackson/core/jackson-annotations/2.12.5/jackson-annotations-2.12.5.jar",
+          "sha256": "517926d9fe04cadd55120790d0b5355e4f656ffe2969e4d480a0e7f95a983e9e",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar",
+          "sha256": "6aecfd5459728a595601cfa07258d131972ffc39b492eb48bdd596577a2f244a",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/xerial/snappy/snappy-java/1.1.8.4/snappy-java-1.1.8.4.jar",
+          "sha256": "24c4d1fc1e89e078331ab8f401a99cad68599bde4a2e4516042cb548c51b1c3e",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/tukaani/xz/1.9/xz-1.9.jar",
+          "sha256": "211b306cfc44f8f96df3a0a3ddaf75ba8c5289eed77d60d72f889bb855f535e5",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/com/github/luben/zstd-jni/1.5.1-1/zstd-jni-1.5.1-1.jar",
+          "sha256": "448b6b48c9891938237451bc2267eab3f8317e3a8ac7f885268101c0baf6b416",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+          "sha256": "336811855ee97fcd8413343dc42f4d26362502860e8a9193e4db305e3e8ef80a",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = campaign.EnumReader.preserved(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "222a68488c536544749d893919ee818bb94951b49a48b2ccb78de411cbad33ec",
+      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        3
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.958,
+      "cpuSeconds": 1.119,
+      "peakRssBytes": 92012544,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "fix",
+      "entry": "campaign.EnumReader#preserved(I)I",
+      "adapterSha256": "e3983970e05ada3f2e7cc9438ab4fdca9eb649a3341e1333e38d3ea80655c1eb",
+      "adapterClassSha256": "2536c7c2473cbd74270a6aa69c88287061692586253c0a8879207beecb9d3f63",
+      "subject": {
+        "class": "org.apache.avro.generic.GenericDatumReader",
+        "method": "read",
+        "descriptor": "(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+        "loadedFrom": "built/avro-1.12.0-SNAPSHOT.jar",
+        "classSha256": "6de06c0efb4bb7838e92878582078e8e91a75eff53b56e96fb6a9c385d81338f",
+        "adapterCalls": [
+          "org.apache.avro.Schema#createEnum(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema#createRecord(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/util/List;)Lorg/apache/avro/Schema;",
+          "org.apache.avro.Schema$Field#<init>(Ljava/lang/String;Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.generic.GenericDatumReader#<init>(Lorg/apache/avro/Schema;Lorg/apache/avro/Schema;)V",
+          "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+          "org.apache.avro.generic.GenericRecord#get(Ljava/lang/String;)Ljava/lang/Object;",
+          "org.apache.avro.io.DecoderFactory#binaryDecoder([BLorg/apache/avro/io/BinaryDecoder;)Lorg/apache/avro/io/BinaryDecoder;",
+          "org.apache.avro.io.DecoderFactory#get()Lorg/apache/avro/io/DecoderFactory;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read. Each selector corresponds to one explicit row of the finite oracle.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 4,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0121,
+  "controlSeconds": 0.0111,
+  "wallSeconds": 1.96,
+  "task": "preserved-fix",
+  "sourceClaim": "9aa52570ae971662",
+  "inputsKey": "bcde570903117ae3b2346ae5d9965d4d8e6d6498f423936cfc439b1bdad5948a",
+  "revisions": [
+    "fix"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "fix": "c603655a2d2f35d340fd4b65402a7ce0c13621193e0907ad20b293ec69290e52"
+  }
+}

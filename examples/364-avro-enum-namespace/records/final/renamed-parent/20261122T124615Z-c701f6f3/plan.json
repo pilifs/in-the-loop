@@ -1,0 +1,238 @@
+{
+  "plan": {
+    "example": "364",
+    "task": "renamed-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "renamed-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+      "file": "claims/renamed.json",
+      "sha256": "83f5e1254faaa9bfc6dd12c36472a87798199085ede36e7c99311391f5dcb9e9",
+      "property": "renamed",
+      "claimKind": "property",
+      "statement": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "18829f6b3faba26705c41393df7be1a0c6bffe0c3c66965e1fa944ea695a6744"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ae0f1fdda95c1008bc8be516ed530bd603d4d456fdda0361a535a90a7764342d"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.EnumReader#renamed(I)I",
+        "mapping": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "afee422eb7114b77"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "11"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-parent.json",
+          "sha256": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b"
+        },
+        "adapters": [
+          "adapter/campaign/EnumReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/renamed-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-364-avro-enum-namespac/examples/364-avro-enum-namespace",
+    "network": true
+  },
+  "inputs": {
+    "example": "364",
+    "task": "renamed-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "renamed-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+      "file": "claims/renamed.json",
+      "sha256": "83f5e1254faaa9bfc6dd12c36472a87798199085ede36e7c99311391f5dcb9e9",
+      "property": "renamed",
+      "claimKind": "property",
+      "statement": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "18829f6b3faba26705c41393df7be1a0c6bffe0c3c66965e1fa944ea695a6744"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ae0f1fdda95c1008bc8be516ed530bd603d4d456fdda0361a535a90a7764342d"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.EnumReader#renamed(I)I",
+        "mapping": "Reading wire byte 0 or 2 through the original record reader returns the writer symbol A or B when reader.E replaces writer.E, including reversed reader symbol order. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "afee422eb7114b77"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "11"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-parent.json",
+          "sha256": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b"
+        },
+        "adapters": [
+          "adapter/campaign/EnumReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/EnumReader.java",
+        "sha256": "40e55db266890c829f058fa94a30fa1113229e82d68ea7fe73b83b13de7e7c2a"
+      }
+    ]
+  },
+  "key": "8fa716d0686d619d93875eba9b8d949d9633aa8a1802bf7cf227921a7f4e4abd"
+}

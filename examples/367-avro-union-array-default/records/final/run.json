@@ -1,0 +1,208 @@
+{
+  "schema": "java-domain-public-run/v1",
+  "stage": "final",
+  "example": "367",
+  "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+  "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+  "checkerSha256": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+  "inventory": 2,
+  "fingerprint": "ce3fa6557c891982e69528dc54afbb737db0fae6e12b0a1261efff80cc49f1c6",
+  "subjectJdk": [
+    "21"
+  ],
+  "claims": {
+    "union-parent": {
+      "exit": 1,
+      "seconds": 8.040559,
+      "peakRssBytes": 123142144,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "367",
+        "--task",
+        "union-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "union-parent.log",
+      "status": "unresolved",
+      "receipt": "union-parent/20261122T124617Z-b379bf97/result.json"
+    },
+    "union-fix": {
+      "exit": 1,
+      "seconds": 8.68321,
+      "peakRssBytes": 124084224,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "367",
+        "--task",
+        "union-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "union-fix.log",
+      "status": "unresolved",
+      "receipt": "union-fix/20261122T124625Z-ad561170/result.json"
+    },
+    "direct-parent": {
+      "exit": 1,
+      "seconds": 8.982999,
+      "peakRssBytes": 119480320,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "367",
+        "--task",
+        "direct-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "direct-parent.log",
+      "status": "unresolved",
+      "receipt": "direct-parent/20261122T124634Z-662df3d1/result.json"
+    },
+    "direct-fix": {
+      "exit": 1,
+      "seconds": 9.336683,
+      "peakRssBytes": 123830272,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "367",
+        "--task",
+        "direct-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "direct-fix.log",
+      "status": "unresolved",
+      "receipt": "direct-fix/20261122T124643Z-6674c5b8/result.json"
+    }
+  },
+  "artifacts": {
+    "parent": "d1249fbc5ae8fccbc31395c5cb3095c72778a08a050e2d7b1688e4f461717d27",
+    "fix": "aa84c288267bce6d7ae8294e3c7c2ee244447aeeda720eab3610c0ac615752d9"
+  },
+  "replay": {
+    "exit": 0,
+    "seconds": 6.855234,
+    "peakRssBytes": 129273856,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "367",
+      "--task",
+      "replay"
+    ],
+    "log": "replay.log",
+    "status": null,
+    "receipt": "replay/20261122T124555Z-4023eb19/result.json"
+  },
+  "finite": {
+    "exit": 0,
+    "seconds": 15.560494,
+    "peakRssBytes": 130424832,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "367",
+      "--finite-domain",
+      "--tasks",
+      "union-parent,union-fix,direct-parent,direct-fix",
+      "--checker-seconds",
+      "60"
+    ],
+    "log": "finite.log"
+  },
+  "selectors": {
+    "union-parent": {
+      "status": "open",
+      "receipt": "selectors/parent/20261122T124652Z-c9492450/tasks/union-parent/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.486992,
+        "peakRssBytes": 126353408,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "367",
+          "--native-selectors",
+          "union-parent,direct-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "direct-parent": {
+      "status": "open",
+      "receipt": "selectors/parent/20261122T124652Z-c9492450/tasks/direct-parent/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.486992,
+        "peakRssBytes": 126353408,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "367",
+          "--native-selectors",
+          "union-parent,direct-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "union-fix": {
+      "status": "open",
+      "receipt": "selectors/fix/20261122T124658Z-435cdba5/tasks/union-fix/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.941245,
+        "peakRssBytes": 119529472,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "367",
+          "--native-selectors",
+          "union-fix,direct-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-fix.log"
+      }
+    },
+    "direct-fix": {
+      "status": "open",
+      "receipt": "selectors/fix/20261122T124658Z-435cdba5/tasks/direct-fix/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.slf4j.helpers.ThreadLocalMapOfStacks.<init>:21). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.941245,
+        "peakRssBytes": 119529472,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "367",
+          "--native-selectors",
+          "union-fix,direct-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-fix.log"
+      }
+    }
+  }
+}
