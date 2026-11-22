@@ -1,0 +1,238 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-044517-prove-avro-encoder-paths-and-check-inter",
+  "title": "Prove Avro encoder paths and check interrupted writes",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.8s, peak 77.1 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (Check both paths and the interrupt controls) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261122-044517-prove-avro-encoder-paths-and-check-inter.json",
+    "sha256": "c6af4266a6fb29d6131c3fd935a59bf7e8c1ee7b796febf8e3aa33b600adb89d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-044517-prove-avro-encoder-paths-and-check-inter",
+      "title": "Prove Avro encoder paths and check interrupted writes",
+      "description": "Partition the same sixteen original inputs by the real bulk-write test. Prove both buffered observations across fourteen inputs on the parent and fix and record the two channel inputs separately. Challenge the IO boundary in fresh JVMs with and without a preexisting thread interrupt, recording cursor, bytes and exception.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "362"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T04:45:17+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check both paths and the interrupt controls",
+          "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_segments.py --output verification/domain-foundations/encoder-paths",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/domain-foundations/encoder-paths"
+      ]
+    }
+  },
+  "sourceCommit": "db31d24f57dd74dff97d16726559b0e38a9522c8",
+  "startedAt": "2026-11-22T04:51:27+00:00",
+  "finishedAt": "2026-11-22T04:55:22+00:00",
+  "wallSeconds": 235.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1597061,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 80809984,
+    "wallSeconds": 1.8,
+    "cpuSeconds": 2.8,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 219.01,
+      "cpuSeconds": 219.375,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2213732352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "94f725b488500e648325458f12a0626c8268c26e30f9798a8822498ee618b43e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-044517-prove-avro-encoder-paths-and-check-inter/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 38s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check both paths and the interrupt controls",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; python3 -B lib/benchmark/domain-foundations/encoder_segments.py --output verification/domain-foundations/encoder-paths",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 1.805,
+      "cpuSeconds": 2.801,
+      "cpuThrottledSeconds": 0.184,
+      "peakMemoryBytes": 80809984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-both-paths-and-the-inter.log",
+        "lines": 8,
+        "bytes": 806,
+        "sha256": "4168f5155d398e99986172b56916c0c053a5b1cb2cb7b5093cb22be1fcf08db1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044517-prove-avro-encoder-paths-and-check-inter/lib/benchmark/domain-foundations/encoder_segments.py\", line 53, in <module>",
+        "    p=argparse.ArgumentParser(description=__doc__);p.add_argument(\"--output\",type=Path,required=True);run(p.parse_args().output)",
+        "                                                                                                      ~~~^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261122-044517-prove-avro-encoder-paths-and-check-inter/lib/benchmark/domain-foundations/encoder_segments.py\", line 48, in run",
+        "    \"vacuity\":row[\"stated\"][\"vacuity\"],\"raw\":p.name,\"sha256\":SHA(p)}",
+        "              ~~~~~~~~~~~~~^^^^^^^^^^^",
+        "KeyError: 'vacuity'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/domain-foundations/encoder-paths/parent/buffered-cursor.native.json",
+      "change": "added",
+      "bytes": 5454,
+      "sha256": "191aa2e37b6ab9c7d71b2ae12c73630a2af99aff7fee625339a8e951b8b8ca63",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths/parent/buffered-repeated.native.json",
+      "change": "added",
+      "bytes": 5471,
+      "sha256": "953470c4718ff272c575fad3ea40e9b622f3be7ec54adb2ca08377eaa608aa9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/domain-foundations/encoder-paths/parent/channel-cursor.native.json",
+      "change": "added",
+      "bytes": 6467,
+      "sha256": "3fe3b735f246ce48ec2499659f004a5b0d73275364928c97cacf9543ba0de234",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T04:55:48+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/domain-foundations/encoder-paths/parent/buffered-cursor.native.json",
+      "verification/domain-foundations/encoder-paths/parent/buffered-repeated.native.json",
+      "verification/domain-foundations/encoder-paths/parent/channel-cursor.native.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "05b51d6aa9305ddfad4dcf9740f861fc7ed44f62",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/05b51d6aa9305ddfad4dcf9740f861fc7ed44f62/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T045522Z-789269e913d20f22",
+      "outputs": "20261122T045522Z-81556937c9573ce4",
+      "diff": "20261122T045522Z-8322103975fe74ff",
+      "workdir": "20261122T045526Z-194432b6ad44b4bb"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261122-044517-prove-avro-encoder-paths-and-check-inter"
+}
