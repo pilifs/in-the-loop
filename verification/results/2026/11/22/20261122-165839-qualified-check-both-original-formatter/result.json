@@ -1,0 +1,389 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-165839-qualified-check-both-original-formatter",
+  "title": "Qualified Check both original formatter slices at ordinary startup",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11.2s, peak 260.4 MiB (estimated 4m00s, 3.0 GiB); 27 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-165839-qualified-check-both-original-formatter.json",
+    "sha256": "35d0cc5de32328c0d3b85b95bf84f4117169178841c1d712221c95f6567887f5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-165839-qualified-check-both-original-formatter",
+      "title": "Qualified Check both original formatter slices at ordinary startup",
+      "description": "Use the ordinary native checker with strict gaps on identical input guards and the same public observer through the standard bytecode-qualified selector workflow. Keep original-entry counterexample replays and check coverage on each side.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "374"
+        ]
+      },
+      "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+      "submitted": {
+        "at": "2026-11-22T16:58:39+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Qualified Check both original formatter slices at ordinary startup",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 374 --first 0 --stage native-qualified",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/374-spring-formatter-binding/records/native-qualified",
+        "examples/374-spring-formatter-binding/records/native-selectors"
+      ]
+    }
+  },
+  "sourceCommit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
+  "startedAt": "2026-11-22T17:28:41+00:00",
+  "finishedAt": "2026-11-22T17:29:01+00:00",
+  "wallSeconds": 20.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3828558,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 273080320,
+    "wallSeconds": 11.2,
+    "cpuSeconds": 18.1,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualified Check both original formatter slices at ordinary startup",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 374 --first 0 --stage native-qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 11.222,
+      "cpuSeconds": 18.111,
+      "cpuThrottledSeconds": 1.156,
+      "peakMemoryBytes": 273080320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualified-check-both-original.log",
+        "lines": 1,
+        "bytes": 119,
+        "sha256": "f82437a3326611539d999e8ef0199701a9cdcf4431bb71dc72d28225b467c9a9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'annotated-parent': 'open', 'preservation-parent': 'open', 'annotated-landed': 'open', 'preservation-landed': 'open'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-qualified/landed.log",
+      "change": "added",
+      "bytes": 95,
+      "sha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-qualified/parent.log",
+      "change": "added",
+      "bytes": 95,
+      "sha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-qualified/run.json",
+      "change": "added",
+      "bytes": 3843,
+      "sha256": "39b7eebf75ef47f5c5fa22ef0c50fdb57189626e756d761dca82244a2080bdb8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/5ec6013f83882f514411/Calls.java",
+      "change": "added",
+      "bytes": 238,
+      "sha256": "53cccb687436a52fc99192a01d69e1eb20cb45615165ecafb3efea781db8637b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/5ec6013f83882f514411/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 336,
+      "sha256": "368f6c54f7fdcf0aa0b61c8e262847e7b869426c4be2e069382de6f2ab6179c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/5ec6013f83882f514411/cases.tar.gz",
+      "change": "added",
+      "bytes": 1844,
+      "sha256": "5568aba7d29001223e6e34d9258bae2d62f652133093d43d3378536fea5cf5f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/ae9aaa03c31f6bc1a349/Calls.java",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "6579df10c29132d8b6fd16d9dc9673d608885398f27ac6c9f64d95ea5535dda0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/ae9aaa03c31f6bc1a349/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "a26a5835837b7a0c057e2138967def74aecd89814b54be503f2c6a1f53d69ffe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/ae9aaa03c31f6bc1a349/cases.tar.gz",
+      "change": "added",
+      "bytes": 1838,
+      "sha256": "9ff8276bbf2b4810516f963086f86ce71b9a7c2f1339fd4c9c43add686b6ab10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/result.json",
+      "change": "added",
+      "bytes": 12921,
+      "sha256": "65f14bd7213572864277a262a341e81928cc4d7e44b8652f6dff13a78988d507",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/result.json",
+      "change": "added",
+      "bytes": 12913,
+      "sha256": "78eb7c934c7ba0390eebe81e3ec5bc7b3a82770b46703bb35753c413215efbfc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/55188d068c7516cdfcc8/Calls.java",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "6579df10c29132d8b6fd16d9dc9673d608885398f27ac6c9f64d95ea5535dda0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/55188d068c7516cdfcc8/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "a26a5835837b7a0c057e2138967def74aecd89814b54be503f2c6a1f53d69ffe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/55188d068c7516cdfcc8/cases.tar.gz",
+      "change": "added",
+      "bytes": 1840,
+      "sha256": "9c1143920a973c56c1142c466a85f1585523639d91c612daa2b921aa3abfd18c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/ef4b2eee6d8501d51d25/Calls.java",
+      "change": "added",
+      "bytes": 238,
+      "sha256": "53cccb687436a52fc99192a01d69e1eb20cb45615165ecafb3efea781db8637b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/ef4b2eee6d8501d51d25/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 336,
+      "sha256": "368f6c54f7fdcf0aa0b61c8e262847e7b869426c4be2e069382de6f2ab6179c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/ef4b2eee6d8501d51d25/cases.tar.gz",
+      "change": "added",
+      "bytes": 1840,
+      "sha256": "d610c209c3b82a1c93f805dff9649bc7a2801c91d808464102927151cdcc63e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/result.json",
+      "change": "added",
+      "bytes": 12918,
+      "sha256": "5d2b05527eb1e9608d8d59253cb807f9500a490987ed09cd00775b899b2a8d36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/result.json",
+      "change": "added",
+      "bytes": 12915,
+      "sha256": "b1619e88747cb40e6326f7d4c7fc6c39a54d40e3073dbb479dd923a8e3aaf03b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T17:30:03+00:00",
+    "applied": [
+      "examples/374-spring-formatter-binding/records/native-qualified/landed.log",
+      "examples/374-spring-formatter-binding/records/native-qualified/parent.log",
+      "examples/374-spring-formatter-binding/records/native-qualified/run.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/5ec6013f83882f514411/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/5ec6013f83882f514411/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/5ec6013f83882f514411/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/ae9aaa03c31f6bc1a349/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/ae9aaa03c31f6bc1a349/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/calls/ae9aaa03c31f6bc1a349/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/result.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/result.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/55188d068c7516cdfcc8/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/55188d068c7516cdfcc8/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/55188d068c7516cdfcc8/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/ef4b2eee6d8501d51d25/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/ef4b2eee6d8501d51d25/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/calls/ef4b2eee6d8501d51d25/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/result.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T172901Z-210713611fd29a90",
+      "outputs": "20261122T172901Z-2339174cc242d0a9",
+      "diff": "20261122T172901Z-2532071860c5cc82"
+    }
+  }
+}

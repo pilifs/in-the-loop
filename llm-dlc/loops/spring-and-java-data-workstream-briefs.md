@@ -216,4 +216,6 @@ The real role-gated application retained the field error in all 64 primary histo
 
 The qualified native jobs check the boxed caller after correcting the optional Integer cache identity guard, the legacy Vavr iterator, both historical Spring role and property paths, and the formatter and precision controls. The class-loading job traces each public JVM driver against the frozen classpath.
 
-- Status: waiting on jobs 20261122-165838-qualified-prove-boxed-row-values-and-mut 20261122-165838-qualified-check-literal-authority-subset 20261122-165838-qualified-check-rectangular-and-ragged-i 20261122-165839-qualified-check-record-metadata-at-the-p 20261122-165839-qualified-check-both-original-formatter 20261122-165839-qualified-check-exact-decimal-runtime-ty 20261122-165839-bind-the-loaded-spring-and-data-classes
+The qualified jobs established both boxed-row properties on their primary and release graphs. The original Vavr parent counterexample replayed at selector 9, and the rectangular property held on all 400 parent inputs. Across the two workstreams the ordinary native score is 0/16 for Spring and 9/14 for data processing. All 18 public JVM graphs now have class-loading evidence. A narrower registrar claim measures the ordering of all six date converters and the global, calendar and annotation callbacks on each historical artifact. The first capped parent check established the ordering with the two formatter initializers recorded.
+
+- Status: waiting on jobs 20261122-172803-check-the-original-spring-formatter-regi

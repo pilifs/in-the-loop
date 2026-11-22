@@ -1,0 +1,285 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-165838-qualified-check-rectangular-and-ragged-i",
+  "title": "Qualified Check rectangular and ragged inputs on the original Vavr transpose",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.0s, peak 205.1 MiB (estimated 4m00s, 3.0 GiB); 14 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-165838-qualified-check-rectangular-and-ragged-i.json",
+    "sha256": "589c19f647703790aa80bffc4f145f1ebb0edcbfe1620eb2eb5de479e09cf9ec",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-165838-qualified-check-rectangular-and-ragged-i",
+      "title": "Qualified Check rectangular and ragged inputs on the original Vavr transpose",
+      "description": "Use the ordinary native checker with strict gaps on identical input guards and the same public observer through the standard bytecode-qualified selector workflow. Keep original-entry counterexample replays and check coverage on each side.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "371"
+        ]
+      },
+      "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+      "submitted": {
+        "at": "2026-11-22T16:58:38+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Qualified Check rectangular and ragged inputs on the original Vavr transpose",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 371 --first 9 --stage native-qualified --only contract-parent rectangle-parent",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/371-javaslang-matrix-transpose/records/native-qualified",
+        "examples/371-javaslang-matrix-transpose/records/native-selectors"
+      ]
+    }
+  },
+  "sourceCommit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
+  "startedAt": "2026-11-22T17:24:43+00:00",
+  "finishedAt": "2026-11-22T17:28:00+00:00",
+  "wallSeconds": 197.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3828558,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 215040000,
+    "wallSeconds": 15.0,
+    "cpuSeconds": 16.2,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualified Check rectangular and ragged inputs on the original Vavr transpose",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 371 --first 9 --stage native-qualified --only contract-parent rectangle-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 15.036,
+      "cpuSeconds": 16.18,
+      "cpuThrottledSeconds": 0.93,
+      "peakMemoryBytes": 215040000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualified-check-rectangular-an.log",
+        "lines": 1,
+        "bytes": 66,
+        "sha256": "ecdc9b5d61b7a2087f558cceca0d6394a64c8925c98f1119863d1d118d5e3db0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'contract-parent': 'refuted', 'rectangle-parent': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-qualified/parent.log",
+      "change": "added",
+      "bytes": 107,
+      "sha256": "0cd7dda443f423e8c105de5655a970894cb5502055db8c66a14cb0d1ebb66f5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-qualified/run.json",
+      "change": "added",
+      "bytes": 1176,
+      "sha256": "efe271290bf2869380a9c31af5a80e92bf5e55b3b1d9a84035ce61df7c18cd4b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/6d7678e08dbe093efee6/Calls.java",
+      "change": "added",
+      "bytes": 34640,
+      "sha256": "2c24b8c2c3a6ed389ddb2082dd0b9f15adf3cc909f6cdfdb8e680c4ba2798e94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/6d7678e08dbe093efee6/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 19994,
+      "sha256": "8433c68c6fb99a331cf2cf9d5a890399362d1482b54153d913b2e85579f0e1e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/6d7678e08dbe093efee6/cases.tar.gz",
+      "change": "added",
+      "bytes": 39033,
+      "sha256": "8f453a8332ca675770e403d6073a56883b35cec51e31fe41cebbfc3bce89433a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/ffb86a6c5510113ec648/Calls.java",
+      "change": "added",
+      "bytes": 34240,
+      "sha256": "b193faeb01d5399615d2ae2b91ba982b54729ef7b8d59286b2a4a57ec507dab5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/ffb86a6c5510113ec648/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 19993,
+      "sha256": "cf52796679013aab77cdf95aad9d44cd7a8a958044dd5e291a7d3973e032402f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/ffb86a6c5510113ec648/cases.tar.gz",
+      "change": "added",
+      "bytes": 1918,
+      "sha256": "4990f8cb41b568bc12e6e8f005c9f0f75b549d0a505627c4ccd85f33e223ab9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/Admission.java",
+      "change": "added",
+      "bytes": 28934,
+      "sha256": "f99f1e492f3c7b965216df1987b8577013a78cd6e2c2f717a426a455b71aef80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 14042,
+      "sha256": "89d74f8191a90cc4037d14c2b701b28cc3acfd9d2a7abb6aad7c06fe4a880946",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/result.json",
+      "change": "added",
+      "bytes": 9819,
+      "sha256": "5635923bef97614379c807771426e32c8fa71687fc6b2111af58429443a811e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/Admission.java",
+      "change": "added",
+      "bytes": 28934,
+      "sha256": "f99f1e492f3c7b965216df1987b8577013a78cd6e2c2f717a426a455b71aef80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 14042,
+      "sha256": "89d74f8191a90cc4037d14c2b701b28cc3acfd9d2a7abb6aad7c06fe4a880946",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/result.json",
+      "change": "added",
+      "bytes": 321502,
+      "sha256": "0506828d222a48f54dbb54d89e100dca7cb7ccb7376bf2cbd3547105351fad24",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T17:30:02+00:00",
+    "applied": [
+      "examples/371-javaslang-matrix-transpose/records/native-qualified/parent.log",
+      "examples/371-javaslang-matrix-transpose/records/native-qualified/run.json",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/6d7678e08dbe093efee6/Calls.java",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/6d7678e08dbe093efee6/Calls.jvm-bytecode",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/6d7678e08dbe093efee6/cases.tar.gz",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/ffb86a6c5510113ec648/Calls.java",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/ffb86a6c5510113ec648/Calls.jvm-bytecode",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/calls/ffb86a6c5510113ec648/cases.tar.gz",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/Admission.java",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/Admission.jvm-bytecode",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/contract-parent/result.json",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/Admission.java",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/Admission.jvm-bytecode",
+      "examples/371-javaslang-matrix-transpose/records/native-selectors/parent/20261122T172745Z-e136d912/tasks/rectangle-parent/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T172800Z-5634478532913c5b",
+      "outputs": "20261122T172800Z-593677b5b8c72136",
+      "diff": "20261122T172800Z-614440467658dbc2"
+    }
+  }
+}

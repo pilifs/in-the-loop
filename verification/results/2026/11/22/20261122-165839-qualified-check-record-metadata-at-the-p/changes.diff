@@ -1,0 +1,730 @@
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-qualified/landed.log
+@@ -0,0 +1,2 @@
++components-landed open, 1/3 admitted selectors
++getters-landed open, 1/3 admitted selectors
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-qualified/parent.log
+@@ -0,0 +1,2 @@
++components-parent open, 1/3 admitted selectors
++getters-parent open, 1/3 admitted selectors
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-qualified/run.json
+@@ -0,0 +1,49 @@
++{
++  "job": "20261122-165839-qualified-check-record-metadata-at-the-p",
++  "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++  "checkerSha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77",
++  "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++  "targetSha256": "7f8fd7874720ec020bf71e7db6f3b47de5bdab7db9a1f217e2b64bd55232096b",
++  "tasks": {
++    "components-parent": {
++      "status": "open",
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "receipt": "records/native-selectors/parent/20261122T172912Z-13192d71/tasks/components-parent/result.json",
++      "sha256": "f6f734ee8d71cfc24a2e6c48f1233bd7ab2b279fee4b65a6526858510b7a2d22"
++    },
++    "getters-parent": {
++      "status": "open",
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "receipt": "records/native-selectors/parent/20261122T172912Z-13192d71/tasks/getters-parent/result.json",
++      "sha256": "e2ef249f5ed3b2ce63f13af30193f13ec10172f29f3c710415d0b325d0f76776"
++    },
++    "components-landed": {
++      "status": "open",
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "receipt": "records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/components-landed/result.json",
++      "sha256": "3934c23c0d63118628ac924175a2e9c8adc6dbf6bbfed514b24233ebc3a78bf0"
++    },
++    "getters-landed": {
++      "status": "open",
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "receipt": "records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/getters-landed/result.json",
++      "sha256": "66dcb7d4cb9125bf457f2ff9fdbef5350a02170b1c0a45b86ca83c0578d2cd5e"
++    }
++  },
++  "batches": {
++    "parent": {
++      "exit": 1,
++      "seconds": 3.0724,
++      "peakRssBytes": 110702592,
++      "log": "parent.log",
++      "logSha256": "bac7c86823f284daaaca853156d8076c8d8a47a48969624bc4e0c9432dbc43ea"
++    },
++    "landed": {
++      "exit": 1,
++      "seconds": 2.9209,
++      "peakRssBytes": 110452736,
++      "log": "landed.log",
++      "logSha256": "7ee935f6d9646594202495f944b62b1ddeaa0b69d716cb5e3f868902b8ae9291"
++    }
++  }
++}
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/calls/04c512e938e48dae182c/Calls.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.Accessors.getters(0); }
++public static int p1() throws Throwable { return springwork.Accessors.getters(1); }
++public static int p2() throws Throwable { return springwork.Accessors.getters(2); }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/calls/04c512e938e48dae182c/Calls.jvm-bytecode changed
+Binary file examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/calls/04c512e938e48dae182c/cases.tar.gz changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/calls/9ab120c90f4c458d5baf/Calls.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.Accessors.components(0); }
++public static int p1() throws Throwable { return springwork.Accessors.components(1); }
++public static int p2() throws Throwable { return springwork.Accessors.components(2); }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/calls/9ab120c90f4c458d5baf/Calls.jvm-bytecode changed
+Binary file examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/calls/9ab120c90f4c458d5baf/cases.tar.gz changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/components-landed/Admission.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 3) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 3) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 3) ? 1 : 0; }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/components-landed/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/components-landed/result.json
+@@ -0,0 +1,143 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "324d82d56393dfa3",
++    "inputsKey": "d389356743e14e3c4920f5136b2227aeed55b1f2449e53d4d4dc042553e3718c",
++    "revisions": [
++      "landed"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "landed": "59722673661eeddcecb1b91236110d14562f117110a40364636f41b744937cde"
++    }
++  },
++  "task": "components-landed",
++  "revision": "landed",
++  "entry": "springwork.Accessors#components(I)I",
++  "guard": "code >= 0 && code < 3",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    2
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "role": "adapter"
++    },
++    {
++      "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
++      "sha256": "913fceb73ae5b156552587cf93f49be053c90aac38abb18cf6410f54524a3c8c",
++      "role": "original"
++    },
++    {
++      "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
++      "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
++      "role": "dependency"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "landed",
++      "entry": "springwork.Accessors#components(I)I",
++      "adapterSha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "adapterClassSha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "subject": {
++        "class": "org.springframework.core.convert.Property",
++        "method": "getName",
++        "descriptor": "()Ljava/lang/String;",
++        "loadedFrom": "built/spring-core-7.1.0-SNAPSHOT.jar",
++        "classSha256": "fe3c7e0776deccc7802d96b971f14e89984d44efa43a66646f705ba8a2edb7ad",
++        "adapterCalls": [
++          "org.springframework.core.convert.Property#<init>(Ljava/lang/Class;Ljava/lang/reflect/Method;Ljava/lang/reflect/Method;)V",
++          "org.springframework.core.convert.Property#getName()Ljava/lang/String;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 3,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/components-landed/Admission.jvm-bytecode",
++  "admissionSha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
++  "callsClass": "calls/9ab120c90f4c458d5baf/Calls.jvm-bytecode",
++  "callsSha256": "a1cc3cbcd52be58bcdd5af3c9daa98d08bc460ed60d19912909b7326beb63949",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.022,
++      "usage": {
++        "cpuSeconds": 0.0179,
++        "peakRssBytes": 69591040,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "fa7e192d141e5a421c1adb6305bfff977af571ad06817d796151a2dea028ebf3",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "raw": "calls/9ab120c90f4c458d5baf/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++  "wallSeconds": 0.02236,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 2.05581,
++    "checkerWallSeconds": 0.022,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 2.07817,
++    "peakNativeRssBytes": 69591040
++  }
++}
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/getters-landed/Admission.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 3) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 3) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 3) ? 1 : 0; }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/getters-landed/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/getters-landed/result.json
+@@ -0,0 +1,143 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "80f521239803aa64",
++    "inputsKey": "831b0780a61f0b75f5b03a7fb3e1083482372c1f54c26fbb8e1b57c143ac48b0",
++    "revisions": [
++      "landed"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "landed": "59722673661eeddcecb1b91236110d14562f117110a40364636f41b744937cde"
++    }
++  },
++  "task": "getters-landed",
++  "revision": "landed",
++  "entry": "springwork.Accessors#getters(I)I",
++  "guard": "code >= 0 && code < 3",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    2
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "role": "adapter"
++    },
++    {
++      "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
++      "sha256": "913fceb73ae5b156552587cf93f49be053c90aac38abb18cf6410f54524a3c8c",
++      "role": "original"
++    },
++    {
++      "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
++      "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
++      "role": "dependency"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "landed",
++      "entry": "springwork.Accessors#getters(I)I",
++      "adapterSha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "adapterClassSha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "subject": {
++        "class": "org.springframework.core.convert.Property",
++        "method": "getName",
++        "descriptor": "()Ljava/lang/String;",
++        "loadedFrom": "built/spring-core-7.1.0-SNAPSHOT.jar",
++        "classSha256": "fe3c7e0776deccc7802d96b971f14e89984d44efa43a66646f705ba8a2edb7ad",
++        "adapterCalls": [
++          "org.springframework.core.convert.Property#<init>(Ljava/lang/Class;Ljava/lang/reflect/Method;Ljava/lang/reflect/Method;)V",
++          "org.springframework.core.convert.Property#getName()Ljava/lang/String;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 3,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/getters-landed/Admission.jvm-bytecode",
++  "admissionSha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
++  "callsClass": "calls/04c512e938e48dae182c/Calls.jvm-bytecode",
++  "callsSha256": "f18faec1cd3ed70b61b88204f82c10b3fdfda7b798adeea24aa399f712b5015a",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.021,
++      "usage": {
++        "cpuSeconds": 0.0173,
++        "peakRssBytes": 69591040,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "3f7005c212df40a469990eb5a3169f04f63b4b77b1464a77e9c19fd5f852c4e6",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "raw": "calls/04c512e938e48dae182c/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++  "wallSeconds": 0.02121,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 0.65645,
++    "checkerWallSeconds": 0.021,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 0.67766,
++    "peakNativeRssBytes": 69591040
++  }
++}
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/calls/0f64b66158a5da2f0b7e/Calls.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.Accessors.getters(0); }
++public static int p1() throws Throwable { return springwork.Accessors.getters(1); }
++public static int p2() throws Throwable { return springwork.Accessors.getters(2); }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/calls/0f64b66158a5da2f0b7e/Calls.jvm-bytecode changed
+Binary file examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/calls/0f64b66158a5da2f0b7e/cases.tar.gz changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/calls/24a6335d08cc03d70cbd/Calls.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Calls {
++public static int p0() throws Throwable { return springwork.Accessors.components(0); }
++public static int p1() throws Throwable { return springwork.Accessors.components(1); }
++public static int p2() throws Throwable { return springwork.Accessors.components(2); }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/calls/24a6335d08cc03d70cbd/Calls.jvm-bytecode changed
+Binary file examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/calls/24a6335d08cc03d70cbd/cases.tar.gz changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/components-parent/Admission.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 3) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 3) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 3) ? 1 : 0; }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/components-parent/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/components-parent/result.json
+@@ -0,0 +1,143 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "324d82d56393dfa3",
++    "inputsKey": "c45c5bdce4a7699ef9b13e376b2c413de28d4d73ccaf105c4777d5d568ac7d6b",
++    "revisions": [
++      "parent"
++    ],
++    "expected": "refuted",
++    "sourceLocks": {
++      "parent": "da60cc46d1f65b1469f16ae508d3af609d037df71cb97aa3406398f0405cdff6"
++    }
++  },
++  "task": "components-parent",
++  "revision": "parent",
++  "entry": "springwork.Accessors#components(I)I",
++  "guard": "code >= 0 && code < 3",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    2
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-parent.jar",
++      "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "role": "adapter"
++    },
++    {
++      "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
++      "sha256": "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d",
++      "role": "original"
++    },
++    {
++      "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
++      "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
++      "role": "dependency"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "springwork.Accessors#components(I)I",
++      "adapterSha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "adapterClassSha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "subject": {
++        "class": "org.springframework.core.convert.Property",
++        "method": "getName",
++        "descriptor": "()Ljava/lang/String;",
++        "loadedFrom": "built/spring-core-7.1.0-SNAPSHOT.jar",
++        "classSha256": "345122e8b4337cce5a871cf1ef90e82366360ff048203f84df89fdf0bd62fa8f",
++        "adapterCalls": [
++          "org.springframework.core.convert.Property#<init>(Ljava/lang/Class;Ljava/lang/reflect/Method;Ljava/lang/reflect/Method;)V",
++          "org.springframework.core.convert.Property#getName()Ljava/lang/String;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 3,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/components-parent/Admission.jvm-bytecode",
++  "admissionSha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
++  "callsClass": "calls/24a6335d08cc03d70cbd/Calls.jvm-bytecode",
++  "callsSha256": "a1cc3cbcd52be58bcdd5af3c9daa98d08bc460ed60d19912909b7326beb63949",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.032,
++      "usage": {
++        "cpuSeconds": 0.0209,
++        "peakRssBytes": 81059840,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "205321659fbd63be05cf5fa0639d673460a43943a01b8d537406d0975515607c",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "raw": "calls/24a6335d08cc03d70cbd/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++  "wallSeconds": 0.03253,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 2.04832,
++    "checkerWallSeconds": 0.032,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 2.08086,
++    "peakNativeRssBytes": 81059840
++  }
++}
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/getters-parent/Admission.java
+@@ -0,0 +1,6 @@
++package verificationselectors;
++public final class Admission {
++public static int p0() { return ((0) >= 0 && (0) < 3) ? 1 : 0; }
++public static int p1() { return ((1) >= 0 && (1) < 3) ? 1 : 0; }
++public static int p2() { return ((2) >= 0 && (2) < 3) ? 1 : 0; }
++}
+Binary file examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/getters-parent/Admission.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/getters-parent/result.json
+@@ -0,0 +1,143 @@
++{
++  "schema": "native-selector-proof/v1",
++  "identity": {
++    "sourceClaim": "80f521239803aa64",
++    "inputsKey": "f54b0b7584ecbdde8e211fa2fcf35846b02a48a066fd521c102b4aaa7674058e",
++    "revisions": [
++      "parent"
++    ],
++    "expected": "established",
++    "sourceLocks": {
++      "parent": "da60cc46d1f65b1469f16ae508d3af609d037df71cb97aa3406398f0405cdff6"
++    }
++  },
++  "task": "getters-parent",
++  "revision": "parent",
++  "entry": "springwork.Accessors#getters(I)I",
++  "guard": "code >= 0 && code < 3",
++  "parameter": "code",
++  "assertion": "result == 1",
++  "bounds": {
++    "unwind": 256,
++    "maxArrayLength": 16384
++  },
++  "envelope": [
++    0,
++    2
++  ],
++  "maxCases": 4096,
++  "admitted": [
++    0,
++    1,
++    2
++  ],
++  "JDK": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "checker": {
++    "commit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
++    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
++    "sha256": "77e35ac1469d2123f9de279d0a372e8e7c0666ddeb4ae94ed71a89442ed24a77"
++  },
++  "classpath": [
++    {
++      "path": "adapter-parent.jar",
++      "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "role": "adapter"
++    },
++    {
++      "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
++      "sha256": "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d",
++      "role": "original"
++    },
++    {
++      "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
++      "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
++      "role": "dependency"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++      "role": "dependency"
++    }
++  ],
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "springwork.Accessors#getters(I)I",
++      "adapterSha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
++      "adapterClassSha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "subject": {
++        "class": "org.springframework.core.convert.Property",
++        "method": "getName",
++        "descriptor": "()Ljava/lang/String;",
++        "loadedFrom": "built/spring-core-7.1.0-SNAPSHOT.jar",
++        "classSha256": "345122e8b4337cce5a871cf1ef90e82366360ff048203f84df89fdf0bd62fa8f",
++        "adapterCalls": [
++          "org.springframework.core.convert.Property#<init>(Ljava/lang/Class;Ljava/lang/reflect/Method;Ljava/lang/reflect/Method;)V",
++          "org.springframework.core.convert.Property#getName()Ljava/lang/String;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 3,
++      "disagreements": 0
++    }
++  ],
++  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++  "ruleFiles": {
++    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
++    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
++  },
++  "admissionClass": "tasks/getters-parent/Admission.jvm-bytecode",
++  "admissionSha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
++  "callsClass": "calls/0f64b66158a5da2f0b7e/Calls.jvm-bytecode",
++  "callsSha256": "f18faec1cd3ed70b61b88204f82c10b3fdfda7b798adeea24aa399f712b5015a",
++  "checked": [
++    {
++      "selector": 0,
++      "status": "open",
++      "target": "verificationselectors.Calls#p0()",
++      "exit": 1,
++      "wallSeconds": 0.021,
++      "usage": {
++        "cpuSeconds": 0.0174,
++        "peakRssBytes": 81059840,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "rawSha256": "2c4b1daa5eb5ff5eb53f652e668ebe1a57a31349e0566206e9f7bda5e3e20f72",
++      "wireVersion": 1,
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++      "raw": "calls/0f64b66158a5da2f0b7e/cases/p0/native.json",
++      "reusedInBatch": false
++    }
++  ],
++  "status": "open",
++  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++  "wallSeconds": 0.02202,
++  "cost": {
++    "preparationAndCorrespondenceSeconds": 0.70283,
++    "checkerWallSeconds": 0.021,
++    "originalWitnessReplaySeconds": 0.0,
++    "endToEndSeconds": 0.72487,
++    "peakNativeRssBytes": 81059840
++  }
++}

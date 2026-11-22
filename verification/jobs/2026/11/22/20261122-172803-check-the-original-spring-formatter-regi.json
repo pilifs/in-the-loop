@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-172803-check-the-original-spring-formatter-regi",
+  "title": "Check the original Spring formatter registration order",
+  "description": "Run both source-slice registrars through a recording public FormatterRegistry. Check the six concrete converters and the identity, type and order of every subsequent registration with and without the global ISO formatter. Repeat the native query with the original DateFormatter and annotation factory statics observed. Keep these proofs separate from the public bean and error claims.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "374"
+    ]
+  },
+  "expected": "A fresh JVM trace and strict native receipt for both configurations on each side. The public binder claims keep their independent scope.",
+  "submitted": {
+    "at": "2026-11-22T17:28:03+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Check both historical callback sequences",
+      "run": "python3 -B examples/374-spring-formatter-binding/companions/registration.py --output examples/374-spring-formatter-binding/records/registrar-callbacks",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/374-spring-formatter-binding/records/registrar-callbacks"
+  ]
+}

@@ -357,10 +357,8 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
             with self.subTest(str(directory.relative_to(EXAMPLES)), kind=kind):
                 self.assertEqual(doc["attempt"]["execution"]["status"], "completed")
                 if c["status"] == "unresolved":
-                    # A refusal is never a verdict and never as expected: only a proof task whose observed gap packet
-                    # recorded this very refusal may leave one (VF-027's reruns, workflow_refusal.py's check). Once
-                    # the gap is closed the packet blocks nothing and predicts nothing, and still says what was
-                    # refused, with the receipt that decided the claim since (285's, 2026-11-15).
+                    # A strict refusal must correspond to the task's observed prediction, its closed
+                    # packet or an immutable historical measurement on that exact checker and claim.
                     self.assertNotEqual(kind, "replay")
                     self.assertEqual(c["expectation"], "no")
                     journal = directory.parent / "executions" / doc["attempt"]["id"]
@@ -378,12 +376,17 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
                     predicted = workflow_refusal.predictions(folder, target, task)
                     if predicted:
                         [p] = predicted
-                    else:
-                        packet = json.loads((folder / "records/refusals" / f"{task}.json").read_text())
+                    elif (archived := folder / "records/refusals" / f"{task}.json").is_file():
+                        packet = json.loads(archived.read_text())
                         decided = json.loads((folder / packet["closed"]["receipt"]).read_text())["conclusion"]
                         self.assertIn(decided["status"], ("established", "refuted"))
                         self.assertEqual(decided["expectation"], "yes")
                         p = packet["refusal"]
+                    else:
+                        p = workflow_refusal.measured_refusal(folder, task, directory, doc)
+                        self.assertIsNotNone(p, "no prediction, closure or hash-bound historical measurement")
+                        altered = {**doc, "evidence": {**e, "problem": "a different refusal"}}
+                        self.assertIsNone(workflow_refusal.measured_refusal(folder, task, directory, altered))
                     self.assertEqual(p["stage"], "verifier")
                     self.assertIn(p["text"], e["problem"])
                     self.assertEqual(doc["attempt"]["engine"], "native")

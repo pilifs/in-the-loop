@@ -78,6 +78,72 @@ def predictions(folder, target, task_id):
     return out
 
 
+def measured_refusal(folder, task_id, directory, doc):
+    """Recover a strict refusal from an immutable managed before/after measurement.
+
+    An opening measurement describes what its named checker did. It makes no
+    prediction for a later checker. Verify the job, experiment, execution journal
+    and original checker output together before treating it as historical evidence.
+    """
+    import accept
+
+    pipeline = doc["attempt"].get("pipeline") or {}
+    job_id = pipeline.get("jobId")
+    if not job_id:
+        return None
+    root = folder.parents[1]
+    stored = accept.layout.find_result(root, job_id)
+    result = accept.load(stored / "result.json") if stored else None
+    job_path = accept.layout.find_job(root, job_id)
+    job = accept.load(job_path) if job_path else None
+    if (not result or result.get("id") != job_id or result.get("status") != "passed"
+            or result.get("sourceCommit") != pipeline.get("sourceCommit")
+            or not job or folder.name[:3] not in job.get("links", {}).get("examples", [])):
+        return None
+    outputs = {root / item["path"]: item for item in result["outputs"]}
+
+    def bound(path):
+        item = outputs.get(path)
+        return bool(item and path.is_file() and path.stat().st_size == item["bytes"]
+                    and workflow.file_sha256(path) == item["sha256"])
+
+    attempt = doc["attempt"]["id"]
+    receipt = directory / "result.json"
+    execution = folder / RECEIPTS / task_id / "executions" / attempt
+    journal, checker = execution / "attempt.json", execution / "checker.json"
+    if (directory != folder / RECEIPTS / task_id / attempt
+            or not all(bound(path) for path in (receipt, journal, checker)) or accept.load(receipt) != doc):
+        return None
+    run = accept.load(journal)
+    raw = (accept.load(checker) or {}).get("outcomes", [])
+    if not run or len(raw) != 1:
+        return None
+    native = run.get("checker") or {}
+    claim = doc["claim"]["statement"]["claim"]
+    problem = raw[0].get("problem")
+    if (not problem or raw[0].get("verdict") != "unverifiable" or raw[0].get("stated", {}).get("gap_mode") != "strict"
+            or raw[0]["stated"].get("checker", {}).get("engine") != "native" or native.get("engine") != "native"
+            or native.get("gaps") != "strict" or native.get("commit") != result["sourceCommit"]
+            or native.get("libTree") != (result.get("jvmcontract") or {}).get("libTree")
+            or run.get("task") != task_id or claim.get("task") != task_id
+            or raw[0].get("assume") != claim.get("assume") or raw[0].get("assert") != claim.get("assert")
+            or native.get("checkedEntry") != (claim.get("adapter") or {}).get("entry", claim["target"])
+            or run.get("claimKey") != claim["key"] or run.get("preparedClaim") != doc["claim"]["id"]
+            or problem != doc["evidence"].get("problem") or doc["conclusion"]["status"] != "unresolved"):
+        return None
+    for index in outputs:
+        if index.parent.parent != folder / "records" or index.name != "run.json" or not bound(index):
+            continue
+        experiment = accept.load(index) or {}
+        row = experiment.get("tasks", {}).get(task_id, {})
+        if (experiment.get("job") == job_id and experiment.get("source") == result["sourceCommit"]
+                and experiment.get("checkerSha256") == native.get("jvmcontract")
+                and row.get("status") == "unresolved" and row.get("receipt") == receipt.relative_to(folder).as_posix()
+                and row.get("sha256") == outputs[receipt]["sha256"]):
+            return {"stage": "verifier", "text": problem, "job": job_id, "claimKey": claim["key"]}
+    return None
+
+
 def receipt_dirs(folder, task_id):
     """The task's receipt directories (those with a result.json), by name."""
     root = Path(folder) / RECEIPTS / task_id

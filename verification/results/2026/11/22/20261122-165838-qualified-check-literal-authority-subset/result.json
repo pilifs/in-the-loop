@@ -1,0 +1,519 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-165838-qualified-check-literal-authority-subset",
+  "title": "Qualified Check literal authority subsets at the historical role manager",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 14.4s, peak 174.2 MiB (estimated 4m00s, 3.0 GiB); 39 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-165838-qualified-check-literal-authority-subset.json",
+    "sha256": "57e598ae0e881a13b69a7b45e0b91693a770bdead24cb86c794817945b6c3971",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-165838-qualified-check-literal-authority-subset",
+      "title": "Qualified Check literal authority subsets at the historical role manager",
+      "description": "Use the ordinary native checker with strict gaps on identical input guards and the same public observer through the standard bytecode-qualified selector workflow. Keep original-entry counterexample replays and check coverage on each side.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "370"
+        ]
+      },
+      "expected": "The measurement records every checked input or its first strict refusal, with source and artifact identities.",
+      "submitted": {
+        "at": "2026-11-22T16:58:38+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "javac",
+        "java",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Qualified Check literal authority subsets at the historical role manager",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 370 --first 0 --stage native-qualified",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/370-spring-role-hierarchy/records/native-qualified",
+        "examples/370-spring-role-hierarchy/records/native-selectors"
+      ]
+    }
+  },
+  "sourceCommit": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
+  "startedAt": "2026-11-22T17:24:43+00:00",
+  "finishedAt": "2026-11-22T17:27:59+00:00",
+  "wallSeconds": 196.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3828558,
+    "workers": 2,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 182628352,
+    "wallSeconds": 14.4,
+    "cpuSeconds": 25.2,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 171.059,
+      "cpuSeconds": 171.352,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2246168576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "7583968bf2e83bc27b500f6855a29a78d58d749631cc03e53d2aada58b95cebe",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-165838-qualified-check-literal-authority-subset/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 50s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Qualified Check literal authority subsets at the historical role manager",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 370 --first 0 --stage native-qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 14.434,
+      "cpuSeconds": 25.173,
+      "cpuThrottledSeconds": 2.066,
+      "peakMemoryBytes": 182628352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualified-check-literal-author.log",
+        "lines": 1,
+        "bytes": 196,
+        "sha256": "3479f9334711e8411d5e260d9cfba989406c2d6b24bbb95c65dddbe69daac05c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'legacy-names-before': 'open', 'legacy-decision-before': 'open', 'legacy-names-landed': 'open', 'legacy-decision-landed': 'open', 'fluent-names-landed': 'open', 'fluent-decision-landed': 'open'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-qualified/before.log",
+      "change": "added",
+      "bytes": 103,
+      "sha256": "689bdadd06e160ba5c23105369a8c05791d1fb133e7d46c26dc1a8ec3f14d689",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-qualified/landed.log",
+      "change": "added",
+      "bytes": 206,
+      "sha256": "945f3f5ad6494264b2d5f93ba450700f1697b5f67eae78ec585492fbc707bb1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-qualified/run.json",
+      "change": "added",
+      "bytes": 3910,
+      "sha256": "d0086ec49bf908d72cd18f3e07cfe6eac00d12821cab23f556aa60535e9f800f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/Calls.java",
+      "change": "added",
+      "bytes": 3048,
+      "sha256": "f05fa016f5679ccf1fc212d1d9a4943329a38758f948a779443cee21f8819eb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1767,
+      "sha256": "be0326f4bf5112877b9ab4b14942c0fd6c245bd52ab539dac84031d2158602eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/cases.tar.gz",
+      "change": "added",
+      "bytes": 1924,
+      "sha256": "cd1495a2be6af3dba912d43b128d26ad695ed0776cda195084ef22164d95051d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/Calls.java",
+      "change": "added",
+      "bytes": 2952,
+      "sha256": "7720a8b72a2e866a8361da3ff5ba72401fdb08928145dc606a4341517c1d1a82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1764,
+      "sha256": "9addceed4c6dfad0aebd0cb75bacae22084d7295a63fd809f0883e50b42f850e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/cases.tar.gz",
+      "change": "added",
+      "bytes": 1917,
+      "sha256": "240c4e26faf2281961c76f83f7a4082da3c93b75d0babf85bd753a4b28d6e170",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/result.json",
+      "change": "added",
+      "bytes": 7385,
+      "sha256": "9a4cda5a5ddd976a9c5a25b60a1e4e1cfbc1fffc89fd60ecce6ee9704ee8243f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/result.json",
+      "change": "added",
+      "bytes": 7396,
+      "sha256": "fef4cf2a3c1e05e81ef14e7b645da8269d83fef8005fa817c7ecf84af7a29caa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/Calls.java",
+      "change": "added",
+      "bytes": 2952,
+      "sha256": "7720a8b72a2e866a8361da3ff5ba72401fdb08928145dc606a4341517c1d1a82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1764,
+      "sha256": "9addceed4c6dfad0aebd0cb75bacae22084d7295a63fd809f0883e50b42f850e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/cases.tar.gz",
+      "change": "added",
+      "bytes": 1917,
+      "sha256": "c26ec01d646c7db40a4686d82ce8a52f4e9ecf96608bbd7e31b7d43b26b4601c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/Calls.java",
+      "change": "added",
+      "bytes": 3048,
+      "sha256": "1278bc4e0313a0ec9f75fc0acac6f6c2e51884a0f892c7682547b6235bcf2993",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1767,
+      "sha256": "d02f3da26901ab43074d0f78ae54a0b8dd8ffb6e6ea6b92874f3f990ff31257d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/cases.tar.gz",
+      "change": "added",
+      "bytes": 2010,
+      "sha256": "5dcdc22e1e6d11be67dd872e275f09732d2619e28e6ce28789f1566bed6b7845",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/Calls.java",
+      "change": "added",
+      "bytes": 3048,
+      "sha256": "f05fa016f5679ccf1fc212d1d9a4943329a38758f948a779443cee21f8819eb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1767,
+      "sha256": "be0326f4bf5112877b9ab4b14942c0fd6c245bd52ab539dac84031d2158602eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/cases.tar.gz",
+      "change": "added",
+      "bytes": 1919,
+      "sha256": "3972f2be307037ef4a54985b90888b954c2aab3b8acaa08216a03a14e451fe49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/Calls.java",
+      "change": "added",
+      "bytes": 2952,
+      "sha256": "f07589b4e9c01ecec4222764fd48c78655099784f3e5f717179c2fe5786a0aa2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1764,
+      "sha256": "fb7b0f65a4d2d4796d0db96fb71469c847a19b66d018a55735c23f0928988701",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/cases.tar.gz",
+      "change": "added",
+      "bytes": 2009,
+      "sha256": "40edf806d301893a6742ba390c9ba09b7db064f978ed9f9e2355b4c97b48601d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/result.json",
+      "change": "added",
+      "bytes": 7815,
+      "sha256": "c1db9a21622681d2f030832492cd643ea8d2d9fd8718ee36aef27be89b67d2ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/result.json",
+      "change": "added",
+      "bytes": 7827,
+      "sha256": "973766c01fd84bb4f818fed2f0157e582c7b77d81633dc64bd1b238c7249688b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/result.json",
+      "change": "added",
+      "bytes": 7385,
+      "sha256": "a201bec1e549d8adb9f72115ef07cc047c0170cf95c637a2602bf7194928b473",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/result.json",
+      "change": "added",
+      "bytes": 7395,
+      "sha256": "6e98b20a6884a89d0b94257513e44393675f1c2ba0509a86068af4541e047966",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T17:30:02+00:00",
+    "applied": [
+      "examples/370-spring-role-hierarchy/records/native-qualified/before.log",
+      "examples/370-spring-role-hierarchy/records/native-qualified/landed.log",
+      "examples/370-spring-role-hierarchy/records/native-qualified/run.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/96b8d0c2f1f1abb33d24/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/calls/d530b980c6a66ab50e2d/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/03a39a90df0047e403bc/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/9d06cfdbb5d35cafffb8/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/a458fcf304df5916b043/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/calls/fe7bf83a1621d4fa2e75/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6dfaa4baa27c753a6cae16b7083db4e4d3a9b14f/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T172800Z-00575589e633f2bb",
+      "outputs": "20261122T172800Z-030290d897bed9dd",
+      "diff": "20261122T172800Z-0481640eb7fadb4b"
+    }
+  }
+}
