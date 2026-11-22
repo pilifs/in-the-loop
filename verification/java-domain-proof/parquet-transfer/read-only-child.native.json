@@ -1,0 +1,192 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "campaign.ReadOnlyChild#child",
+    "domain": "bytes: byte[] of length ≤ 47, not null × start: int × length: int × index: int",
+    "assume": "start >= 5 && start < bytes.length && length >= 0 && length <= bytes.length - 1 - start && index >= 0 && ((length == 0 && index == 0) || index < length)",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over bytes: byte[] of length ≤ 47, not null × start: int × length: int × index: int in 0.0 s; loops unwound 64 times with unwinding assertions",
+    "problem": null,
+    "statement": "/tmp/parquet-transfer-4_wnxww9/jvmcontract-property-418358-1795351711483101756-0/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ campaign.ReadOnlyChild#child satisfies `result == 1` on every input where start >= 5 && start < bytes.length && length >= 0 && length <= bytes.length - 1 - start && index >= 0 && ((length == 0 && index == 0) || index < length) (jvmcontract's own checker (CaDiCaL): 1 properties proved over bytes: byte[] of length ≤ 47, not null × start: int × length: int × index: int in 0.0 s; loops unwound 64 times with unwinding assertions)\n  not vacuous: child(bytes=[20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], start=20, length=0, index=0) reaches the calls\n",
+    "work": "/tmp/parquet-transfer-4_wnxww9/jvmcontract-property-418358-1795351711483101756-0",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.026701176,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 47,
+      "stage": null,
+      "native": {
+        "paths": 11,
+        "merges": 0,
+        "solver_calls": 99,
+        "solving_seconds": 0.011614612,
+        "gates_evaluated": 7976,
+        "evaluating_seconds": 0.000151023,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 8845,
+        "clauses": 26386,
+        "seconds": 0.025439534,
+        "loading_seconds": 0.000726988,
+        "decoding_seconds": 0.000168586,
+        "encoding_seconds": 0.006191098,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.025,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.007,
+            "encoding": 0.006,
+            "solving": 0.012,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 8845,
+            "clauses": 26386
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.973,
+          "seconds": 0.007,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.002,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 4626,
+            "clauses": 14190
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.045,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.032,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.012
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "bytes",
+            "type": "byte[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 47
+          },
+          {
+            "name": "start",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "length",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "index",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "bytes: byte[] of length ≤ 47, not null × start: int × length: int × index: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "start >= 5 && start < bytes.length && length >= 0 && length <= bytes.length - 1 - start && index >= 0 && ((length == 0 && index == 0) || index < length)",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": 47,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found child(bytes=[20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], start=20, length=0, index=0).",
+        "witness": "child(bytes=[20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20], start=20, length=0, index=0)"
+      }
+    }
+  }
+]

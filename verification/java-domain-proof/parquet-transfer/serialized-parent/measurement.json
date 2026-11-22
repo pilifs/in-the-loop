@@ -1,0 +1,87 @@
+{
+  "binding": {
+    "build": "examples/363-parquet-nested-binary/records/qualified-build/build-parent.json",
+    "buildSha256": "c384652aba8c8a71ea413a32473a3f1ebb72934af782ef5801a5b940692455c3",
+    "orderedJars": [
+      "3ef6cb525dfbc9546c958e595ae47e68be7d685d27d2747811375f9e1dae4f03",
+      "5f6a25492d3f4e624d198cd7a616d9937650706ed96ec55d8c740b701871e609",
+      "2dbc14d38d0a9c447f0340cf23bdd960881b2ac1765052b1730e15f36964bced",
+      "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
+      "c080ebd102bd4c569d2acdbf47dfa1c43c40c6034a00bc4cb13e3ef28d7f1212",
+      "38aa8df0835db985a41ca806cbeab196bbcbf105edb56addb54d5821b600f3cd",
+      "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf"
+    ],
+    "revision": "dfc025e17e21a326addaf0e43c493e085cbac8f4"
+  },
+  "checker": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+  "entry": "public Variant from independently constructed serialized bytes",
+  "proofs": {
+    "extent": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "code >= 0 && code < 64"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": null,
+      "bounds": [
+        96,
+        2048
+      ],
+      "exit": 1,
+      "guard": "code >= 0 && code < 64",
+      "log": "extent.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 1505726464,
+      "seconds": 60.652519,
+      "states": {},
+      "stderr": "extent.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "extent.stdout",
+      "stdoutSha256": "71af8137005dc67b5b3bf5ecaf2edd5a1242b5289269c662d4305541d430c427",
+      "target": "campaign.SerializedBinary#extent",
+      "verdict": "violation"
+    },
+    "fresh": {
+      "assertion": "result == 1",
+      "assumptions": [
+        {
+          "basis": "stated",
+          "kind": "precondition",
+          "text": "code >= 0 && code < 64"
+        },
+        {
+          "basis": "engine",
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing"
+        }
+      ],
+      "blocker": "the engine did not finish within the time limit",
+      "bounds": [
+        96,
+        2048
+      ],
+      "exit": 1,
+      "guard": "code >= 0 && code < 64",
+      "log": "fresh.stdout",
+      "observedRoots": [],
+      "peakRssBytes": 984031232,
+      "seconds": 60.428048,
+      "states": {},
+      "stderr": "fresh.stderr",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "fresh.stdout",
+      "stdoutSha256": "efbeed08231ec1e26b4c40eb1a2533e439f5d9b99b6624d151664229692d2d86",
+      "target": "campaign.SerializedBinary#fresh",
+      "verdict": "unverifiable"
+    }
+  },
+  "startup": "ordinary"
+}
