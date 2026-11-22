@@ -30,6 +30,7 @@ PROVIDERS = "20261122-165839-bind-the-loaded-spring-and-data-classes"
 JUNIT = "20261122-162530-run-spring-s-original-formatter-preceden"
 ALL_ROWS = "20261122-164436-check-every-realizable-bounded-boxed-row"
 TRANSFER = "20261122-164436-price-binder-prefix-reuse-in-the-public"
+GATED_HISTORIES = "20261122-190127-check-every-role-gated-spring-edit-histo"
 TOLERANCE = "20261122-182432-prove-inclusive-positive-tolerance-on-bo"
 
 def require(ok,what):
@@ -309,6 +310,51 @@ def tolerance_search(cases):
     return report
 
 
+def gated_histories(job):
+    import gated_histories as histories
+
+    base = histories.DEST
+    measurement = job.output(base / "measurement.json")
+    data = read(measurement)
+    graph = histories.release_graph()
+    evidence = histories.producers(graph)
+    observer = data["observerClassSha256"]
+    require(job.record["status"] == "passed" and data["job"] == GATED_HISTORIES and data["source"] == job.record["sourceCommit"]
+            and data["sources"] == histories.source_hashes() and data["graph"] == graph and len(observer) == 64
+            and data["producers"] == evidence[2] and list(data["trials"]) == list(histories.TRIALS),
+            "different gated caller, release graph, producers or trial order")
+    counts = data["counts"]
+    expected_patterns = {s: 24 * 14 ** s.count("G") * 2 ** s.count("D")
+                         for s in ("DDD", "DDG", "DGD", "DGG", "GDD", "GDG", "GGD", "GGG")}
+    require(counts == {"histories": 98304, "attempts": 294912, "submittedEdits": 258048, "declines": 36864,
+                       "emptyAppliedPrefixes": 14016, "nonemptyAppliedPrefixes": 280896, "declinesWithEarlierError": 10752,
+                       "historiesWithFinalError": 86016, "observedStates": 16, "decisionPatterns": expected_patterns},
+            "the gated grid does not have the predicted decision and state coverage")
+    digests = set()
+    trials = {}
+    for name, info in data["trials"].items():
+        archive = job.output(base / (name + ".bin.gz"))
+        stdout = job.output(base / (name + ".stdout"))
+        reused = name.startswith("reuse")
+        jvm = info["jvm"]
+        require(sha(archive) == info["observationsSha256"] and sha(stdout) == jvm["logSha256"]
+                and jvm["log"] == stdout.name and not jvm["exit"] and jvm["seconds"] > 0
+                and info["wholeSeconds"] >= data["commonSetupSeconds"] + info["producerCheckSeconds"] + info["checkSeconds"]
+                and (info["producerCheckSeconds"] > 0 if reused else info["producerCheckSeconds"] == 0)
+                and counts == histories.check_grid(archive, stdout, graph, observer, evidence if reused else None),
+                f"incomplete gated transfer trial {name}")
+        digests.add((sha(archive), sha(stdout)))
+        trials[name] = {"observations": rel(archive), "dictionaryAndProviders": rel(stdout), "wholeSeconds": info["wholeSeconds"],
+                        "producerCheckSeconds": info["producerCheckSeconds"], "jvmSeconds": jvm["seconds"]}
+    controls = [histories.check_control(job.output(base / f"control-{i}.json"), i) for i in histories.CASES]
+    require(len(digests) == 1 and data["controls"] == controls
+            and [(c["differentFinalBean"], c["differentFinalLedger"]) for c in controls] == [(True, False), (False, True)],
+            "the repeated public histories or the two distinct wrong-caller witnesses differ")
+    return {**job_info(job), "measurement": rel(measurement), "scope": "Finite JVM, three independently gated edits",
+            "counts": counts, "producers": evidence[2], "commonSetupSeconds": data["commonSetupSeconds"],
+            "trials": trials, "controls": controls}
+
+
 def recount(complete):
     out={}
     for track,numbers in [("spring",(368,370,372,374)),("data",(369,371,373,375))]:
@@ -323,6 +369,11 @@ def recount(complete):
                     else {"allRows":supplement("allRows",ALL_ROWS,"examples/369-boxed-ragged-rows/records/all-rows")})
         if track == "spring":
             companions["registrarCallbacks"]=registrar_callbacks(cases)
+            histories_job = managed(GATED_HISTORIES)
+            if histories_job:
+                companions["gatedHistories"] = gated_histories(histories_job)
+            elif complete:
+                raise ValueError("awaiting the exhaustive gated histories")
         else:
             companions["positiveTolerance"]=tolerance_search(cases)
         bound=managed(PROVIDERS)

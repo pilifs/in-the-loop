@@ -18,9 +18,7 @@ BINDER = ROOT / "examples/368-spring-binding-history"
 ROLES = ROOT / "examples/370-spring-role-hierarchy"
 PRODUCER = "20261122-161543-spring-binder-edits-and-the-persistent-f"
 
-def load_producer(jars, actual_classes):
-    started = time.perf_counter()
-    job = Job(PRODUCER)
+def binder_receipts(job, identities):
     base = BINDER.relative_to(ROOT)
     run = read(job.output(base / "records/opening/run.json"))
     packet = {}
@@ -32,25 +30,48 @@ def load_producer(jars, actual_classes):
         record = read(p)
         finite_check.validate_record(plan,record)
         if (record["status"] != "established" or record["inputs"] != 12
-                or [c["sha256"] for c in record["sides"]["combined"]["classpath"]][2:] != list(jars)):
+                or record["jdkRelease"]["JAVA_RUNTIME_VERSION"] != identities["jdkRelease"]["JAVA_RUNTIME_VERSION"]
+                or record["sides"]["combined"]["classpath"] != [c for c in identities["classpath"] if c["role"] != "driver"]):
             raise ValueError("different binder dependency graph, scope or result")
         packet[task] = {"sha256":digest(p),"claimKey":record["sourceClaim"],"inputs":12,"originalFiniteSeconds":record["wallSeconds"]}
-    # Several replay receipts may be archived. Select the one created by this producer job.
+    return packet
+
+
+def producer_replay(job, folder, task, side, jars):
+    # A job can archive earlier attempts. Bind the producing attempt and original classpath.
     candidates = []
     for p in job.files:
-        if p.match("receipts/replay/*/result.json"):
+        if p.match(f"receipts/{task}/*/result.json"):
             r = read(job.output(p))
-            if (r["attempt"].get("pipeline") or {}).get("jobId") == PRODUCER:
+            pipeline = r["attempt"].get("pipeline") or {}
+            if (pipeline.get("jobId") == job.record["id"]
+                    and pipeline.get("sourceCommit") == job.record["sourceCommit"]
+                    and r["conclusion"]["expectation"] == "yes"
+                    and folder.relative_to(ROOT) in p.parents):
                 candidates.append(p.parent)
     replay, = candidates
     controls = read(job.output(replay/"records/controls.json"))["records"]
-    observed, = [c for c in controls if c["revision"] == "combined"]
+    observed, = [c for c in controls if c["revision"] == side]
     cp = observed["identities"]["classpath"]
-    if [c["sha256"] for c in cp if c["role"] == "dependency"] != list(jars):
-        raise ValueError("different recorded receiver graph")
-    original, = [c for c in cp if c["role"] == "original"]
+    if job.record["status"] != "passed" or observed["exitCode"] or [c["sha256"] for c in cp if c["role"] == "dependency"] != list(jars):
+        raise ValueError("different producer result or ordered dependency graph")
+    log = job.output(replay / "records" / Path(observed["stdout"]).name)
+    rows = [json.loads(line) for line in log.read_text().splitlines()]
+    if rows != observed["observations"]:
+        raise ValueError("producer rows differ from its replay receipt")
+    return rows, observed["identities"], log
+
+
+def load_producer(jars, actual_classes):
+    started = time.perf_counter()
+    job = Job(PRODUCER)
+    rows, identities, log = producer_replay(job, BINDER, "replay", "combined", jars)
+    original, = [c for c in identities["classpath"] if c["role"] == "original"]
+    packet = binder_receipts(job, identities)
     # Recreate the producer fixture JAR under the standard recipe. Compare its bytecode and all inner classes.
     from targets import runtime
+    example = read(BINDER / "example.json")
+    spec = sidecar.load(BINDER, example)
     with tempfile.TemporaryDirectory(prefix="rebind-binder-") as tmp:
         p = runtime.prepare(route.resolve(BINDER,example,spec,"beans-combined"),"combined",Path(tmp)/"prepare")
         if p.stage != "artifacts-ready": raise ValueError(p.diagnostic)
@@ -60,10 +81,8 @@ def load_producer(jars, actual_classes):
             import hashlib
             captured = {n:hashlib.sha256(archive.read(n)).hexdigest() for n in archive.namelist() if n.endswith(".class")}
         if captured != actual_classes: raise ValueError("different application bytecode at the consuming call")
-    log=job.output(replay/"records/control-combined-jdk21.stdout")
     prefix = {}
-    for line in log.read_text().splitlines():
-        r=json.loads(line)
+    for r in rows:
         if r["input"]["order"] == [0,1,2]:
             val=r["direct"]
             prefix[r["input"]["shared"]] = list(zip(val["beans"],val["ledger"],strict=True))

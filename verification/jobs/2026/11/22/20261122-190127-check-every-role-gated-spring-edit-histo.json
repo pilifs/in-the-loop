@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-190127-check-every-role-gated-spring-edit-histo",
+  "title": "Check every role-gated Spring edit history on the release JVM",
+  "description": "Run a fresh DataBinder and three real AuthorityAuthorizationManager decisions per history on Security 6.3.0 and Framework 6.1.7. Enumerate both bean layouts, both prefixes, six edit orders, and all 16 starting authority subsets independently at each step. Check every observed prefix first against the graph and bean model and separately against the A1 and A2 release receipts. Repeat in reverse order to measure equivalent workflows and retain two distinguishing wrong-caller witnesses.",
+  "kind": "real-world",
+  "capabilities": [
+    "original-jvm-replay",
+    "finite-oracle"
+  ],
+  "links": {
+    "examples": [
+      "368",
+      "370"
+    ]
+  },
+  "expected": "Each of four independent JVMs emits the same complete 98,304 histories, 294,912 prefix observations, and original loaded providers. All decisions, edit counts, bean values, alias identities, and field errors match each corresponding oracle. A wrong first submission changes only the final bean in one named witness and only the final ledger in the other.",
+  "submitted": {
+    "at": "2026-11-22T19:01:27+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "768M",
+    "duration": "2m",
+    "timeout": "10m",
+    "notes": "Four fresh 256 MiB-heap JVMs run sequentially. The raw prefixes share a dictionary for compression. Each route also recompares all 98,304 input identities and all public observations."
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/spring-java-data/gated_histories.py",
+      "run": "python3 -B lib/benchmark/spring-java-data/gated_histories.py --output verification/spring-java-data/gated-histories",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/spring-java-data/gated-histories"
+  ]
+}

@@ -7,23 +7,29 @@ ROOT = Path(__file__).resolve().parents[3]
 TOKENS = ("-2", "bad", None, "2147483648", "+7")
 
 
+def binding_steps(shared, edits):
+    """Read both children and the ledger after each edit. None leaves the session untouched."""
+    primary = ["initial", 1]
+    backup = primary if shared else list(primary)
+    errors = []
+    for edit in edits:
+        if edit == 0:
+            primary[0] = "Kim"
+        elif edit == 1:
+            errors.append(("backup.count", "oops"))
+        elif edit == 2:
+            primary[1] = 7
+        elif edit is not None:
+            raise ValueError(f"unknown binding edit {edit}")
+        yield ([*primary, *backup, primary is backup, True],
+               [len(errors), *(errors[0] if errors else (None, None)), primary[1], backup[1]])
+
+
 def binding():
     for shared in (False, True):
         for order in permutations(range(3)):
-            primary = ["initial", 1]
-            backup = primary if shared else list(primary)
-            beans, ledger = [], []
-            errors = []
-            for edit in order:
-                if edit == 0:
-                    primary[0] = "Kim"
-                elif edit == 1:
-                    errors.append(("backup.count", "oops"))
-                else:
-                    primary[1] = 7
-                beans.append([*primary, *backup, shared, True])
-                ledger.append([len(errors), *(errors[0] if errors else (None, None)), primary[1], backup[1]])
-            yield {"shared": shared, "order": list(order)}, {"beans": beans, "ledger": ledger}
+            beans, ledger = zip(*binding_steps(shared, order))
+            yield {"shared": shared, "order": list(order)}, {"beans": list(beans), "ledger": list(ledger)}
 
 
 def decimal(text):

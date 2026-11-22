@@ -12,32 +12,32 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-22T18:35:39.772Z",
-  "duration_seconds": 23513,
+  "ended": "2026-11-22T19:04:40.051Z",
+  "duration_seconds": 25253,
   "stats": {
-    "turns": 6,
-    "api_calls": 1113,
-    "tool_calls": 2659,
-    "tool_errors": 66,
-    "compactions": 4,
+    "turns": 7,
+    "api_calls": 1153,
+    "tool_calls": 2777,
+    "tool_errors": 68,
+    "compactions": 5,
     "peak_context_tokens": 525653,
     "usage": {
-      "input_tokens": 1516821,
-      "output_tokens": 507294,
-      "cache_read_input_tokens": 290137344,
+      "input_tokens": 1635128,
+      "output_tokens": 537517,
+      "cache_read_input_tokens": 294378624,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1534,
-    "exec": 1028,
-    "apply_patch": 59,
+    "Bash": 1605,
+    "exec": 1065,
+    "apply_patch": 68,
     "wait": 9,
     "send_message": 8,
     "sleep": 8,
+    "list_agents": 4,
     "spawn_agent": 4,
     "followup_task": 3,
-    "list_agents": 3,
     "request_user_input_async": 1,
     "send_message_to_user_async": 1,
     "wait_agent": 1
@@ -45,6 +45,8 @@
   "files_touched": [
     "examples/365-jackson-async-token-offsets/README.md",
     "examples/367-avro-union-array-default/driver/campaign/Cases.java",
+    "examples/370-spring-role-hierarchy/README.md",
+    "examples/370-spring-role-hierarchy/companions/GatedHistories.java",
     "examples/373-commons-lang-nan-search/README.md",
     "examples/373-commons-lang-nan-search/companions/ToleranceReplay.java",
     "examples/373-commons-lang-nan-search/companions/ToleranceSearch.java",
@@ -63,6 +65,9 @@
     "lib/benchmark/java-domain-proof/ready_parser.py",
     "lib/benchmark/java-domain-proof/scorecard.py",
     "lib/benchmark/java-domain-proof/transfer.py",
+    "lib/benchmark/spring-java-data/domains.py",
+    "lib/benchmark/spring-java-data/gated_histories.py",
+    "lib/benchmark/spring-java-data/gated_transfer.py",
     "lib/benchmark/spring-java-data/positive_tolerance.py",
     "lib/benchmark/spring-java-data/scorecard.py",
     "lib/src/bmc/mod.rs",
@@ -141,24 +146,38 @@
     {
       "index": 4,
       "started": "2026-11-22T18:18:42.758Z",
-      "ended": "2026-11-22T18:35:39.772Z",
+      "ended": "2026-11-22T18:52:29.305Z",
       "turns": 1,
-      "api_calls": 64,
+      "api_calls": 69,
       "usage": {
-        "input_tokens": 146180,
-        "output_tokens": 31018,
-        "cache_read_input_tokens": 7707136,
+        "input_tokens": 149383,
+        "output_tokens": 35207,
+        "cache_read_input_tokens": 8488960,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 155423
+      "peak_context_tokens": 158142
+    },
+    {
+      "index": 5,
+      "started": "2026-11-22T18:52:29.312Z",
+      "ended": "2026-11-22T19:04:40.051Z",
+      "turns": 1,
+      "api_calls": 35,
+      "usage": {
+        "input_tokens": 115104,
+        "output_tokens": 26034,
+        "cache_read_input_tokens": 3459456,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 126455
     }
   ],
   "log": {
-    "sha256": "22c589baf69c059a2599559f5d34a03259e9fb7294c42e72bb9dcdddd2cd5fe4",
-    "bytes": 24424221,
-    "lines": 8593,
-    "gzip_bytes": 9576671,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/22c589baf69c059a2599559f5d34a03259e9fb7294c42e72bb9dcdddd2cd5fe4.jsonl.gz"
+    "sha256": "948edfd8418e8bcd56c729ad12c08bd0739a0025a48609f4c2a70547ef291fa9",
+    "bytes": 26061887,
+    "lines": 8952,
+    "gzip_bytes": 10210203,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/948edfd8418e8bcd56c729ad12c08bd0739a0025a48609f4c2a70547ef291fa9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -665,6 +684,14 @@
       "summary": "Record both positive-tolerance proofs and their boundary controls",
       "body": "Both original Commons Lang JARs verified first match and raw input preservation for two independently chosen binary64 cells, every Java int start, three exact centers and tolerance 0.25. The caller quiets signaling NaNs before the search. Each JVM independently matched 18,900 exact-rational cases. A lower-exclusive or upper-exclusive rule changes 564 results each, and a last-match rule changes 582.\n\nThe scorecard rechecks the raw verdicts and physical observations from job 20261122-182432-prove-inclusive-positive-tolerance-on-bo, the two distinct production classes and the common observer and checker. The original primary populations and previous companion records compare equal. All eight oracle grids and the example validator passed. The selected suite passed 28 of 28 groups, with the JBMC resource-limit stand-in passing on automatic retry.",
       "log_sha256": "22c589baf69c059a2599559f5d34a03259e9fb7294c42e72bb9dcdddd2cd5fe4"
+    },
+    {
+      "change_id": "kunvmmqlolyuqsoltwrtsootxopvnpmr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Exercise all three gated Spring edits (verification pending)",
+      "body": "Compare 98,304 real Spring Security and DataBinder histories with an independent graph and two-object model, and with the previously checked release decisions and all ordered binder prefixes. Four fresh JVMs alternate the order of the two routes. The submitted job 20261122-190127-check-every-role-gated-spring-edit-histo records every observation and the cost of requalifying and consuming the earlier receipts.\n\nBoth single-history wrong-caller controls reproduced on Temurin 21.0.13. One kept the final error while changing a child name, and the other kept both child values while introducing an error. Both example validators, all eight oracle tables, the existing scorecards and the changed tests passed. The JBMC stand-in process test passed on automatic retry.",
+      "log_sha256": "948edfd8418e8bcd56c729ad12c08bd0739a0025a48609f4c2a70547ef291fa9"
     }
   ],
   "logs": {
@@ -774,6 +801,12 @@
       "bytes": 4256215,
       "lines": 1463,
       "gzip_bytes": 1532142,
+      "url": null
+    },
+    "948edfd8418e8bcd56c729ad12c08bd0739a0025a48609f4c2a70547ef291fa9": {
+      "bytes": 26061887,
+      "lines": 8952,
+      "gzip_bytes": 10210203,
       "url": null
     },
     "9fbd18c9e6b20236234ab16a6c5d842027f8c7d16e7e5447df882f1554aebaea": {
