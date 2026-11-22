@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-221543-prove-reference-identity-through-both-hi",
+  "title": "Prove reference identity through both historical matrix transposes",
+  "description": "Run the original Javaslang List.transpose twice on two-by-three and three-by-two rectangles with independently chosen null or value-equal cell objects. Check the reference at every coordinate and the unchanged input under ordinary strict native startup. Check outer identity and zero-column shape loss separately. On each original JVM replay every null and alias partition, and distinguish equal replacement objects and an invertible row-major reshape.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "native:array-alias",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "371"
+    ]
+  },
+  "expected": "Four complete, non-vacuous strict native proofs, two per original release. Each JVM agrees with the independent reference oracle on 1,754 rectangular histories spanning all 877 null and alias partitions in both orientations, plus 40 edge cases. Both wrong callers produce their predicted observations.",
+  "submitted": {
+    "at": "2026-11-22T22:15:43+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Check coordinates, fast paths and wrong callers on both original JARs",
+      "run": "python3 -B lib/benchmark/spring-java-data/matrix_references.py --output examples/371-javaslang-matrix-transpose/records/references",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/371-javaslang-matrix-transpose/records/references"
+  ]
+}
