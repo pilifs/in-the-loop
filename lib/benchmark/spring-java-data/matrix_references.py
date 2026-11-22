@@ -67,12 +67,18 @@ def boundary(shape, choice):
 def check_grid(path, single=None):
     counts = {"partitions": 0, "rectangles": 0, "representedLabeledRectangles": 0, "boundaries": 0,
               "equalCopiesWithWrongReferences": 0, "invertibleReshapesWithWrongCoordinates": 0}
+    seen = set()
     with gzip.open(path, "rt", encoding="utf-8") as stream:
         def match(expected):
             if stream.readline().rstrip("\n").split("\t") != expected:
                 raise ValueError(f"wrong matrix observations at {' '.join(expected[:3])}")
 
         for labels in partitions() if single is None else [single]:
+            if single is None:
+                first_occurrences = list(dict.fromkeys((0, *labels)))
+                if labels in seen or first_occurrences != list(range(len(first_occurrences))):
+                    raise ValueError("repeated or noncanonical null and alias partition")
+                seen.add(labels)
             counts["partitions"] += 1
             # Each injection of the non-null labels into the seven physical objects is realizable.
             labelings = math.perm(7, len(set(labels) - {0}))

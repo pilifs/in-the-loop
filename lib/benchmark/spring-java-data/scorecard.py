@@ -32,6 +32,7 @@ ALL_ROWS = "20261122-164436-check-every-realizable-bounded-boxed-row"
 TRANSFER = "20261122-164436-price-binder-prefix-reuse-in-the-public"
 GATED_HISTORIES = "20261122-190127-check-every-role-gated-spring-edit-histo"
 TOLERANCE = "20261122-182432-prove-inclusive-positive-tolerance-on-bo"
+MATRIX_REFERENCES = "20261122-221543-prove-reference-identity-through-both-hi"
 
 def require(ok,what):
     if not ok: raise ValueError(what)
@@ -310,6 +311,60 @@ def tolerance_search(cases):
     return report
 
 
+def matrix_references(job, cases):
+    import matrix_references as matrix
+
+    originals = read(DEST / "exact-classpaths/classes.json")["371"]
+    report = {**job_info(job), "shapes": [[2, 3], [3, 2]],
+              "cellDomain": "Each of six cells independently selects null or one of seven distinct, value-equal objects.",
+              "edges": ["empty outer", "one empty row", "one cell", "two empty rows", "three empty rows"],
+              "sides": {}}
+    for side, original in originals.items():
+        base = matrix.FOLDER.relative_to(ROOT) / "records/references" / side
+        measurement = job.output(base / "measurement.json")
+        data = read(measurement)
+        opening = cases["371"]["claims"]["rectangle-" + side]["opening"]
+        hashes = data["classes"]
+        providers = {n: matrix.CLASSPATH[0] for n in matrix.LOCAL}
+        providers.update({n: matrix.CLASSPATH[1] for n in matrix.CLASSES[371]})
+        require(data["job"] == job.record["id"] and data["source"] == job.record["sourceCommit"]
+                and data["libTree"] == job.record["jvmcontract"]["libTree"] and len(data["checkerSha256"]) == 64
+                and data["commit"] == original["commit"] and data["jdk"] == opening["jdk"] == original["jdk"]["JAVA_RUNTIME_VERSION"]
+                and data["jarSha256"] == opening["classpath"][-1] and data["classpath"] == matrix.CLASSPATH
+                and set(hashes) == set(providers) and hashes[matrix.SUBJECT] == opening["binding"]["subjectClassSha256"]
+                and all((data["jarSha256"], hashes[n]) == (entry["jarSha256"], entry["classSha256"])
+                        for n, entry in original["classes"].items())
+                and data["sources"] == {s.name: sha(s) for s in matrix.SOURCES}, "different matrix caller or original library")
+        expected = [{"class": n, "provider": providers[n], "entry": n.replace(".", "/") + ".class",
+                     "sha256": hashes[n], "method": m, "descriptor": d} for n, m, d in matrix.requests()]
+        jvm = data["jvm"]
+        stdout = job.output(base / jvm["stdout"])
+        require(data["checkerBindings"] == expected and jvm["exit"] == 0 and sha(stdout) == jvm["stdoutSha256"]
+                and stdout.read_text().splitlines() == [f"{n}\t{p}\t{hashes[n]}" for n, p in providers.items()],
+                "different JVM or native matrix class bindings")
+        grid = job.output(base / "observations.tsv.gz")
+        counts = matrix.check_grid(grid)
+        require(counts == data["grid"] and sha(grid) == data["observationsSha256"], "different reference observations")
+        queries = {}
+        require(set(data["proofs"]) == set(matrix.METHODS), "missing matrix proof")
+        for label, query in data["proofs"].items():
+            raw = job.output(base / query["stdout"])
+            outcome, = read(raw)
+            matrix.check_native(label, outcome)
+            require(query["exit"] == 0 and query["verdict"] == outcome["verdict"] and sha(raw) == query["stdoutSha256"]
+                    and not query["observedRoots"] and not query["states"], "different matrix proof receipt")
+            queries[label] = {"verdict": outcome["verdict"], "receipt": rel(raw), "seconds": query["seconds"]}
+        report["sides"][side] = {"measurement": rel(measurement), "commit": data["commit"], "proofs": queries,
+                                 "checkerSha256": data["checkerSha256"], "classes": hashes, "observations": rel(grid),
+                                 "observationsSha256": sha(grid), "finiteGrid": counts}
+    parent, landed = (report["sides"][side] for side in ("parent", "landed"))
+    require(all(parent[k] == landed[k] for k in ("checkerSha256", "observationsSha256", "finiteGrid"))
+            and all(parent["classes"][k] == landed["classes"][k] for k in matrix.LOCAL)
+            and parent["classes"][matrix.SUBJECT] != landed["classes"][matrix.SUBJECT],
+            "expected identical reference results from two distinct historical List implementations")
+    return report
+
+
 def gated_histories(job):
     import gated_histories as histories
 
@@ -376,6 +431,11 @@ def recount(complete):
                 raise ValueError("awaiting the exhaustive gated histories")
         else:
             companions["positiveTolerance"]=tolerance_search(cases)
+            matrix_job = managed(MATRIX_REFERENCES)
+            if matrix_job:
+                companions["matrixReferences"] = matrix_references(matrix_job, cases)
+            elif complete:
+                raise ValueError("awaiting the matrix reference proofs")
         bound=managed(PROVIDERS)
         if bound:
             source=bound.output(Path("verification/spring-java-data/public-providers/classes.json"))

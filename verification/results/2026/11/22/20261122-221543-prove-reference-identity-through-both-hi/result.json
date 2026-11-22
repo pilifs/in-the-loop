@@ -1,0 +1,339 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261122-221543-prove-reference-identity-through-both-hi",
+  "title": "Prove reference identity through both historical matrix transposes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 109.1 MiB (estimated 1m00s, 1.0 GiB); 16 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/22/20261122-221543-prove-reference-identity-through-both-hi.json",
+    "sha256": "966069c4c26fd60c442779bb30347f536e83175869d72164e9ae8512d584d4e9",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261122-221543-prove-reference-identity-through-both-hi",
+      "title": "Prove reference identity through both historical matrix transposes",
+      "description": "Run the original Javaslang List.transpose twice on two-by-three and three-by-two rectangles with independently chosen null or value-equal cell objects. Check the reference at every coordinate and the unchanged input under ordinary strict native startup. Check outer identity and zero-column shape loss separately. On each original JVM replay every null and alias partition, and distinguish equal replacement objects and an invertible row-major reshape.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "native:array-alias",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "371"
+        ]
+      },
+      "expected": "Four complete, non-vacuous strict native proofs, two per original release. Each JVM agrees with the independent reference oracle on 1,754 rectangular histories spanning all 877 null and alias partitions in both orientations, plus 40 edge cases. Both wrong callers produce their predicted observations.",
+      "submitted": {
+        "at": "2026-11-22T22:15:43+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Check coordinates, fast paths and wrong callers on both original JARs",
+          "run": "python3 -B lib/benchmark/spring-java-data/matrix_references.py --output examples/371-javaslang-matrix-transpose/records/references",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/371-javaslang-matrix-transpose/records/references"
+      ]
+    }
+  },
+  "sourceCommit": "4bffd5f17521f77bd73e5bd3acccb20402329c5a",
+  "startedAt": "2026-11-22T22:19:31+00:00",
+  "finishedAt": "2026-11-22T22:22:33+00:00",
+  "wallSeconds": 182.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1223202,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 114438144,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 5.0,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 168.833,
+      "cpuSeconds": 169.029,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2263216128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "7488c82d00d7791ae6b863d8d90191fac6ed8597e40d3ec0cb0364b8d4bc8f07",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261122-221543-prove-reference-identity-through-both-hi/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 48s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check coordinates, fast paths and wrong callers on both original JARs",
+      "run": "python3 -B lib/benchmark/spring-java-data/matrix_references.py --output examples/371-javaslang-matrix-transpose/records/references",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 3.808,
+      "cpuSeconds": 4.967,
+      "cpuThrottledSeconds": 0.244,
+      "peakMemoryBytes": 114438144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-coordinates-fast-paths-a.log",
+        "lines": 6,
+        "bytes": 512,
+        "sha256": "7b13dde00029d6640bfb270eb7b49b0329052e3b2d26520d0da728de02d9c91b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent roundTrip verified None",
+        "parent boundaries verified None",
+        "parent {'partitions': 877, 'rectangles': 1754, 'representedLabeledRectangles': 524288, 'boundaries': 40, 'equalCopiesWithWrongReferences': 1752, 'invertibleReshapesWithWrongCoordinates': 1724}",
+        "landed roundTrip verified None",
+        "landed boundaries verified None",
+        "landed {'partitions': 877, 'rectangles': 1754, 'representedLabeledRectangles': 524288, 'boundaries': 40, 'equalCopiesWithWrongReferences': 1752, 'invertibleReshapesWithWrongCoordinates': 1724}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/boundaries.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/boundaries.stdout",
+      "change": "added",
+      "bytes": 5589,
+      "sha256": "5a7e20bc8cf0894f2d548102cc84310754777e9c4db615825d38a1e64a85a037",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/jvm.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/jvm.stdout",
+      "change": "added",
+      "bytes": 699,
+      "sha256": "82fd3400cc5606828da4e4cbbd38afe47e475943e23d4857d0fc59540aab553b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/measurement.json",
+      "change": "added",
+      "bytes": 6344,
+      "sha256": "aeb51746071b1c8de2e1b97c2977ac55602d9addc9cfdf1cec7490933442e9c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/observations.tsv.gz",
+      "change": "added",
+      "bytes": 32021,
+      "sha256": "dc262dabf4311ad0cc124e77c910278cab8783080095c5521468428f3feddbd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/roundTrip.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/landed/roundTrip.stdout",
+      "change": "added",
+      "bytes": 4725,
+      "sha256": "141aaeed47e435214449c0360e5dcfc4b3edc527e150fc70e0dd73ad2b8fcd4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/boundaries.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/boundaries.stdout",
+      "change": "added",
+      "bytes": 5586,
+      "sha256": "0358d18576c02744b90cf43d1a79c604357f46452f34ed69f684b9976209d178",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/jvm.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/jvm.stdout",
+      "change": "added",
+      "bytes": 699,
+      "sha256": "a01e94b81560d2483072ea8a57e8c0eca76702e4461c5f4d34e1b19d8028f627",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/measurement.json",
+      "change": "added",
+      "bytes": 6344,
+      "sha256": "5786999dd2a8a124e9bf79bb1af193be72bbff06993b9457238e6c199b809d7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/observations.tsv.gz",
+      "change": "added",
+      "bytes": 32021,
+      "sha256": "dc262dabf4311ad0cc124e77c910278cab8783080095c5521468428f3feddbd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/roundTrip.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/371-javaslang-matrix-transpose/records/references/parent/roundTrip.stdout",
+      "change": "added",
+      "bytes": 4747,
+      "sha256": "54a615772cb35987ef78cf3035e07fdfe6e2b2288fa7a1914dd0de9eb1edc1ba",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-22T22:22:46+00:00",
+    "applied": [
+      "examples/371-javaslang-matrix-transpose/records/references/landed/boundaries.stderr",
+      "examples/371-javaslang-matrix-transpose/records/references/landed/boundaries.stdout",
+      "examples/371-javaslang-matrix-transpose/records/references/landed/jvm.stderr",
+      "examples/371-javaslang-matrix-transpose/records/references/landed/jvm.stdout",
+      "examples/371-javaslang-matrix-transpose/records/references/landed/measurement.json",
+      "examples/371-javaslang-matrix-transpose/records/references/landed/observations.tsv.gz",
+      "examples/371-javaslang-matrix-transpose/records/references/landed/roundTrip.stderr",
+      "examples/371-javaslang-matrix-transpose/records/references/landed/roundTrip.stdout",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/boundaries.stderr",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/boundaries.stdout",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/jvm.stderr",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/jvm.stdout",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/measurement.json",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/observations.tsv.gz",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/roundTrip.stderr",
+      "examples/371-javaslang-matrix-transpose/records/references/parent/roundTrip.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ea8c0d4f292f6601a964931c15afebfd0f5502d9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ea8c0d4f292f6601a964931c15afebfd0f5502d9/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261122T222233Z-453629c760e63b5e",
+      "outputs": "20261122T222233Z-475913b2bd20ee7f",
+      "diff": "20261122T222233Z-4957288c4e4d9621"
+    }
+  }
+}

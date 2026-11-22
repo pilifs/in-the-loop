@@ -52,16 +52,18 @@ def bind(checker, env, work, side, bindings):
 
 def check_ordinary(outcome, method, parameters, guard, bounds):
     stated = outcome["stated"]
-    params = [(p["name"], p["type"]) for p in stated["domain"]["parameters"]]
+    params = [{"name": name, "type": kind, "kind": "primitive", "null": False} for name, kind in parameters]
     assumptions = [{"kind": "precondition", "text": guard, "basis": "stated"}] if guard else []
     assumptions.append({"kind": "initialization", "basis": "engine", "text":
                         "every JDK class is initialized already, its static initializer having run and thrown nothing"})
     if (outcome["target"] != method or outcome["assume"] != guard or outcome["assert"] != "result == 1"
-            or params != parameters or stated["assumptions"] != assumptions or outcome["throws"]
+            or stated["domain"]["parameters"] != params or stated["domain"]["shared_arrays"]
+            or stated["assumptions"] != assumptions or outcome["throws"]
             or stated["observations"]["exceptions"] != "none may be thrown"
             or stated["checker"]["engine"] != "native" or stated["checker"]["fallback"] is not None
             or stated["gap_mode"] != "strict" or stated["vacuity"]["status"] != "non-vacuous"
             or outcome["verdict"] != "verified" or outcome["problem"] or outcome["counterexample"]
             or stated["bounds"] != {"complete": True, "unwind": bounds[0], "max_array_length": None}
-            or outcome["search"]["max_array_length"] != bounds[1]):
+            or outcome["search"]["max_array_length"] != bounds[1] or outcome["search"]["unwind"] != bounds[0]
+            or outcome["search"]["engine"] != "native" or outcome["search"]["gap_mode"] != "strict"):
         raise ValueError(f"missing complete ordinary strict proof of {method} over its declared scalar domain")
