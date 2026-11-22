@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-22T04:03:23.356Z",
-  "duration_seconds": 195953,
+  "ended": "2026-11-22T04:10:38.590Z",
+  "duration_seconds": 196389,
   "stats": {
     "turns": 28,
-    "api_calls": 8116,
-    "tool_calls": 20406,
-    "tool_errors": 613,
+    "api_calls": 8147,
+    "tool_calls": 20471,
+    "tool_errors": 616,
     "compactions": 27,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 13956884,
-      "output_tokens": 4345286,
-      "cache_read_input_tokens": 2485393792,
+      "input_tokens": 13989727,
+      "output_tokens": 4361707,
+      "cache_read_input_tokens": 2493574656,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 11720,
-    "exec": 7562,
-    "apply_patch": 759,
+    "Bash": 11750,
+    "exec": 7593,
+    "apply_patch": 763,
     "send_message": 148,
     "sleep": 87,
     "wait": 85,
@@ -144,6 +144,7 @@
     "examples/tools/targets/test_workflow_refusal.py",
     "examples/tools/targets/upgrade_claims.py",
     "examples/tools/targets/upgrade_linkage.py",
+    "examples/tools/targets/upgrade_receiver.py",
     "examples/tools/targets/upgrade_replay.py",
     "examples/tools/targets/upstream_artifact.py",
     "examples/tools/targets/workflow.py",
@@ -771,24 +772,24 @@
     {
       "index": 27,
       "started": "2026-11-22T03:48:42.541Z",
-      "ended": "2026-11-22T04:03:23.356Z",
+      "ended": "2026-11-22T04:10:38.590Z",
       "turns": 1,
-      "api_calls": 75,
+      "api_calls": 106,
       "usage": {
-        "input_tokens": 241451,
-        "output_tokens": 29564,
-        "cache_read_input_tokens": 13146624,
+        "input_tokens": 274294,
+        "output_tokens": 45985,
+        "cache_read_input_tokens": 21327488,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 249299
+      "peak_context_tokens": 279948
     }
   ],
   "log": {
-    "sha256": "bf9c46ac9e4ff812317bb2d32a4a6641f236cb83f47ca7a9ad12d22b21785133",
-    "bytes": 187879464,
-    "lines": 64136,
-    "gzip_bytes": 74706291,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/bf9c46ac9e4ff812317bb2d32a4a6641f236cb83f47ca7a9ad12d22b21785133.jsonl.gz"
+    "sha256": "e51eb91266c62f512e603fe71a1724e037e76cc033756b73389eff6cea857326",
+    "bytes": 188490334,
+    "lines": 64358,
+    "gzip_bytes": 74927109,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/e51eb91266c62f512e603fe71a1724e037e76cc033756b73389eff6cea857326.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3481,20 +3482,28 @@
       "log_sha256": "6ebf09be4fd8321c08b1b77ce980ed1157a0e01410b540f7a8d8e132f9cf60e5"
     },
     {
-      "change_id": "nozzpuloxpzmuxyznwnllqnrwstqkumv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "bf9c46ac9e4ff812317bb2d32a4a6641f236cb83f47ca7a9ad12d22b21785133"
-    },
-    {
       "change_id": "nwtkymssktnstkqnkkkxtzxlsyyvuozl",
       "commit_id": null,
       "immutable": false,
       "summary": "Build Avro’s original shaded dependency (verification pending)",
       "body": "The first build of Avro #198 identified a reactor-local Guava snapshot on both revisions. Bind its original module as a prerequisite and preserve both failed build diagnostics. Verified both collected files against the runner’s digests and passed four runner tests. Job 20261122-040311-build-the-original-avro-encoder-with-its repeats the two builds and the upstream mapped-buffer regression.",
       "log_sha256": "bf9c46ac9e4ff812317bb2d32a4a6641f236cb83f47ca7a9ad12d22b21785133"
+    },
+    {
+      "change_id": "pkskzsrnzzlyovqkmwvprxvxrxpvplyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "e51eb91266c62f512e603fe71a1724e037e76cc033756b73389eff6cea857326"
+    },
+    {
+      "change_id": "lmmrzpxzmoqozmpwuxqqxpwyvtmrrpny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Trace and check actual upgrade receivers (verification pending)",
+      "body": "Run the registered caller itself in the native verifier on each original classpath. At the first qualified JVM entry, record constructor descriptors and their real call sites, declared and dynamic field types, nulls and aliases. Constructors are matched to the actual receiver. Retain ordinary overload and separately scoped finite caller results, including failures before entry. All eight upgrade review tests and six engineering tests passed. Temurin 8 and 21 independently checked UTF-16, null and exception observations. Seven jobs cover all 32 frozen pairs: 20261122-040728-trace-and-check-original-upgrade-receive and 20261122-040740-group-02 through group-07-original-upgrade-receivers-and.",
+      "log_sha256": "e51eb91266c62f512e603fe71a1724e037e76cc033756b73389eff6cea857326"
     }
   ],
   "logs": {
@@ -4517,6 +4526,12 @@
       "lines": 2778,
       "gzip_bytes": 3506430,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/e4f0401fa2103736a82c561c6bbd0720b8455bf1e5db6bda99b47fd4bcebd4df.jsonl.gz"
+    },
+    "e51eb91266c62f512e603fe71a1724e037e76cc033756b73389eff6cea857326": {
+      "bytes": 188490334,
+      "lines": 64358,
+      "gzip_bytes": 74927109,
+      "url": null
     },
     "e9e92647f95076a7264946aefa6101ba0946ab807b140d765bef31fabc9a6ba7": {
       "bytes": 122874644,
