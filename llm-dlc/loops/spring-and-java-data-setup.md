@@ -175,3 +175,97 @@ The jar has no dependencies at run time. **The brief's table, replayed** on JDK 
 all four rows match, `[[1,2],[3]]` and `[[],[1]]` giving `[[1,3],[2]]` and `[[1]]` on the parent and
 `IllegalArgumentException` on the landed jar, `[[],[]]` giving `List()` on both. The 400-matrix grid was not
 enumerated here: that is the domain agent's to freeze.
+
+## Brief A · Spring
+
+### Released artifacts (A1, A2's release controls, A3's and A4's slice dependencies)
+
+Each graph was resolved from Maven Central by a throwaway POM in `~/.cache/in-the-loop/spring-java-data/resolve/NAME/`
+(a Spring Framework BOM import where a Framework version is forced), with `mvn --strict-checksums`, so every file's
+SHA-1 was checked against Central's. Each `releases/NAME/` folder holds `lib/` (the jars), `sources/` (their sources
+jars), `classpath.txt` (the ordered classpath, absolute paths into `m2/`, ready for `java -cp $(cat classpath.txt)`)
+and `tree.txt` (`mvn dependency:tree`). To redo one: `cd resolve/NAME && mvn -B -s ../../maven-settings.xml
+--strict-checksums dependency:copy-dependencies -DoutputDirectory=../../releases/NAME/lib`; add `-o` once cached.
+
+| Graph (`releases/…`) | For | Jars (sha256) |
+|---|---|---|
+| `spring-framework-6.2.3` | A1 | spring-context `53feea6d8c61a25089d8c474c4f92ebd24f0ef7eb52ecdaf46f11e9a253fdb4e`, spring-beans `4e289d6c0aa3ea74633005dae06d7cc827510e5b840d68bfcebdcf0bdd363f44`, spring-core `49531684df2304f0e611f775faba79273c77504eb7d856592d830e2389e9eb14`, spring-aop `5e6fc3da…`, spring-expression `e901e26b…`, spring-jcl `8c65ec5e…`, micrometer-observation 1.14.4 `28dd4b00…`, micrometer-commons 1.14.4 `6bb0f56f…` |
+| `spring-security-6.3.0-framework-6.1.7` | A2 combined grid, A1 requalification | spring-security-core 6.3.0 `038a52f99d98f2843be8a382f5b18a2583be8dcb78bf4f7b4ab177fb7b36bd91`, spring-security-crypto 6.3.0 `dcce78f1…`, spring-context 6.1.7 `43cef529…`, spring-beans 6.1.7 `c65ed71b…`, spring-core 6.1.7 `9391d131…`, spring-aop, spring-expression, spring-jcl 6.1.7, micrometer 1.12.6 |
+| `spring-security-6.2.0-framework-6.1.1` | A2 source-slice support | spring-security-core 6.2.0 `f4a810cd1f1142379f6236c5be63b1d9c477be91972381aac45c066ffd0795b0`, spring-security-crypto 6.2.0 `31d6e76a…`, spring-context 6.1.1 `b46807c3…`, spring-core 6.1.1 `a2ef6992…`, spring-beans 6.1.1 `2bca4b8c…`, spring-aop, spring-expression, spring-jcl 6.1.1, micrometer 1.12.0 |
+| `spring-core-7.0.4-jspecify-1.0.0` | A3 source slice | spring-core 7.0.4 `e347ee91a4814f7925e53749c081b3186c1e902833b7a58818383440d2963577`, jspecify 1.0.0 `1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab`, commons-logging 1.3.5 `6d7a744e…` (Spring 7 dropped spring-jcl) |
+| `spring-framework-5.2.0.RELEASE` | A4 preflight | spring-context `8cfa528363a4ef6aaecee09218e0c1d2d8bb3f04cd09ca3179d3e78cb3e4b253`, spring-core `3573bfb8…`, spring-beans `7d8dab8e…`, spring-aop `bb1d8d2f…`, spring-expression `93d91bff…`, spring-jcl `8ebb7c28…` |
+
+Full digests: `cd releases/NAME/lib && sha256sum *.jar`.
+
+**Signatures.** The `.asc` of spring-context, spring-beans and spring-core 6.2.3, spring-security-core 6.3.0 and
+6.2.0, and spring-core 7.0.4 are good signatures by "Spring Builds (JAR Signing)", key id `928FBF39003C0425`, fetched
+from `https://keys.openpgp.org/vks/v1/by-keyid/928FBF39003C0425` on 2026-11-22 (no trust path). **Not checked:**
+spring-context 5.2.0.RELEASE is signed by key `9A2C7A98E457C53D`; keys.openpgp.org serves it with no user ID (gpg
+skips it), and keyserver.ubuntu.com returned only a revocation certificate for it. Its SHA-1s match Central's.
+
+**JVM replays on JDK 21.0.13** (throwaway programs in `probes/a/`, `java -cp $(cat releases/NAME/classpath.txt) X.java`):
+
+- A1 on 6.2.3, the brief's order (name, invalid count, valid count), both heap shapes: every row of the brief's table
+  matches, including `getPrimary() == getBackup()` false/true after every call, one field error `backup.count`
+  rejected `oops` after the second call, and the same single error after the third. The six permutations and the
+  fresh-binder control were not run (the domain agent freezes those).
+- A2 on Security 6.3.0 + Framework 6.1.7, fluent builder `A → B`, `B → C, D`, `hasAuthority(prefix + "D")` with
+  `setRoleHierarchy`: 14 of 16 subsets granted for each of `ROLE_` and `CUSTOM_PREFIX_`, as the brief says. Legacy
+  text configuration and the 64-history combined grid were not run.
+
+### Gradle and JDKs for the historical Spring builds
+
+| Worktrees | Version | Gradle (wrapper) | Runs on | Compiles with |
+|---|---|---|---|---|
+| `spring-security-14196-{before,feature,landed}` | 6.3.0-SNAPSHOT | 8.5 | JDK 17.0.21 | toolchain 17 (the same JDK) |
+| `spring-framework-36911-{parent,landed}` | 7.1.0-SNAPSHOT | 9.7.0 | JDK 25.0.5 | toolchain 25 (`JavaConventions`: language 25, release 17) |
+| `spring-framework-23893-{parent,landed}` | 5.2.1.BUILD-SNAPSHOT | 5.6.3 | JDK 8 (1.8.0_512) | the same JDK, source 1.8 |
+
+The three distributions are unpacked in `gradle-home/wrapper/dists/` (fetched by each wrapper's `./gradlew
+--version`). Checked against gradle.org's published checksums (read 2026-11-22): 5.6.3's zip sha256
+`60a6d8f687e3e7a4bc901cc6bc3db190efae0f02f0cc697e323e0f9336f224a3` matches; 8.5's is pinned in Spring Security's
+`gradle-wrapper.properties` (`9d926787…41026`, equal to gradle.org's) and the wrapper checked it; 9.7.0 pins none and
+the wrapper deleted its zip, so the zip was downloaded once more, matched gradle.org's
+`84fbba45c7f4c64abc77460e1c00f541e9f960e3c7ed2538f1ede19eacd873ae`, and its contents are identical to the unpacked
+tree (`diff -r`). All seven checkouts' `gradle-wrapper.jar` match gradle.org's `gradle-VERSION-wrapper.jar.sha256`.
+
+Repositories the builds name: Spring Security uses the plugin portal, Central and `repo.spring.io/milestone` (200
+anonymously); Framework 7.1 uses Central and the plugin portal only; Framework 5.2 uses Central,
+`repo.spring.io/libs-spring-framework-build` (200 anonymously) and, for plugins after the portal,
+`repo.spring.io/plugins-release`, which answered **401** anonymously on 2026-11-22. If a 5.2 build plugin is found
+only there, the A4 build stops; the job below will say.
+
+### Builds and upstream tests: queued as jobs
+
+The Spring builds take minutes and several GB, so they are verification jobs, committed with this record (see the
+commit). Each job builds the module jar at every revision with that checkout's own wrapper and dependencies (the first
+run fills `gradle-home`), runs the named upstream tests, copies the jar to `artifacts/WORKTREE.jar` and prints its
+sha256, writes `logs/WORKTREE.MODULE.runtimeClasspath.txt`, reruns the landed tests with `--offline`, and finally
+removes the build trees (`git clean -fdxq` in each worktree). A transplanted test file is removed again after its run.
+
+| Job | Subject | What it runs |
+|---|---|---|
+| `20261122-151858-setup-build-spring-security-core-at-the` | A2 | `:spring-security-core` at before, feature, landed; each side's own `RoleHierarchyImplTests` and `AuthorityAuthorizationManagerTests`; the builder tests (`testBuilderWithDefaultRolePrefix`, `testBuilderWithRolePrefix` and five argument checks) exist from the feature commit on |
+| `20261122-151858-setup-build-spring-framework-spring-core` | A3 | `:spring-core` at landed and parent; `PropertyTests` is new in the change, so on the parent the landed file is transplanted and `resolveNameForRecordAccessorEmbeddingGetPrefix` must fail |
+| `20261122-151858-setup-build-spring-framework-spring-cont` | A4 | `:spring-context` at landed and parent; each side's own `DateFormattingTests`, then the landed file on the parent, where `testBindDateAnnotatedPatternWithGlobalFormat` must fail |
+
+The commands, for a rerun by hand (each over a minute, so as a job):
+
+```bash
+B=~/.cache/in-the-loop/spring-java-data; export GRADLE_USER_HOME=$B/gradle-home TMPDIR=$B/tmp
+# A2 (JDK 17)
+cd $B/src/spring-security-14196-landed && JAVA_HOME=~/.sdkman/candidates/java/17.0.21.0+9-tem ./gradlew --no-daemon \
+  -Porg.gradle.java.installations.auto-download=false :spring-security-core:test \
+  --tests 'org.springframework.security.access.hierarchicalroles.RoleHierarchyImplTests'
+# A3 (Gradle on JDK 25, toolchain 25)
+cd $B/src/spring-framework-36911-landed && JAVA_HOME=~/.sdkman/candidates/java/25.0.5.0+8-tem ./gradlew --no-daemon \
+  -Porg.gradle.java.installations.auto-download=false \
+  -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem \
+  :spring-core:test --tests 'org.springframework.core.convert.PropertyTests'
+# A4 (JDK 8)
+cd $B/src/spring-framework-23893-landed && JAVA_HOME=~/.sdkman/candidates/java/8.0.512.0+9-tem ./gradlew --no-daemon \
+  :spring-context:test --tests 'org.springframework.format.datetime.DateFormattingTests'
+```
+
+Add `--offline` once the job has filled the cache. The job steps themselves are in `verification/jobs/ID.json`; the
+script that wrote them is `~/.cache/in-the-loop/spring-java-data/scripts/submit_jobs.py`.
