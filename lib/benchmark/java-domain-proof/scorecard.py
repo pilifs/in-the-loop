@@ -193,8 +193,12 @@ def reader_evidence(number, primary):
         base = found[0].parent
         path = job.output(found[0])
         data = read(path)
-        require(data["checker"] == primary["checkerSha256"] and data["binding"]["revision"] == PINS[number][side],
-                "reader producer changed verifier or revision")
+        binding = data["binding"]
+        build = ROOT / binding["build"]
+        require(data["checker"] == primary["checkerSha256"] and binding["revision"] == PINS[number][side]
+                and sha(build) == binding["buildSha256"] == primary["builds"][side]
+                and binding["orderedJars"] == [a["sha256"] for a in read(build)["artifacts"]],
+                "reader producer changed verifier, revision or ordered build artifacts")
         proofs = {}
         for name, p in data["proofs"].items():
             body = job.output(base / p["stdout"])
@@ -203,7 +207,10 @@ def reader_evidence(number, primary):
             require(sha(stderr) == p["stderrSha256"], "different producer diagnostic")
             if p["verdict"] != "unavailable":
                 raw, = read(body)
-                require(raw["verdict"] == p["verdict"] and raw["target"] == p["target"], "different reader proof")
+                require(raw["verdict"] == p["verdict"] and raw["target"] == p["target"]
+                        and raw["problem"] == p["blocker"] and raw["assume"] == p["guard"]
+                        and raw["assert"] == p["assertion"] and raw["stated"]["gap_mode"] == "strict"
+                        and raw["stated"]["checker"]["engine"] == "native", "different reader proof")
                 if raw["verdict"] == "verified":
                     require(raw["stated"]["vacuity"]["status"] == "non-vacuous" and raw["stated"]["bounds"]["complete"]
                             and set(p["states"]) == set(p["observedRoots"]), "unqualified producer")
@@ -462,6 +469,19 @@ def compile_scorecard():
     require(all(sum(c.values()) == result["planned"] for c in counts.values()), "wrong campaign denominator")
     result["cases"]["367"]["jvmControls"] = default_controls()
     result["foundations"] = foundation_results(result)
+    for number, reader in result["foundations"]["readers"].items():
+        for name, row in result["cases"][number]["obligations"].items():
+            method, side = name.rsplit("-", 1)
+            proof = reader["sides"][side]["proofs"].get(method + "-recorded")
+            if proof is None:
+                continue
+            roots = ["org.apache.avro.Schema", "org.apache.avro.generic.GenericData", "org.apache.avro.generic.GenericDatumReader"]
+            spec = read(ROOT / "examples" / PINS[number]["folder"] / "claims" / (method + ".json"))
+            require(proof["target"] + "(I)I" == row["entry"] and proof["guard"] == row["guard"]
+                    and proof["assertion"] == spec["assert"] and proof["observedRoots"] == roots
+                    and proof["bounds"] == [row["bounds"]["unwind"], row["bounds"]["maxArrayLength"]],
+                    f"{number}/{name}: recorded-startup companion differs from the frozen public entry")
+            row["recordedStartup"] = {k: proof[k] for k in ("verdict", "blocker", "observedRoots", "states", "receipt")}
     result["totals"] = counts
     return result
 
@@ -480,7 +500,8 @@ if __name__ == "__main__":
         require(extra["parquet"]["experimentStatus"] == "passed" and extra["selectorTransfer"]["state"] == "measured"
                 and extra["enumActions"]["state"] == "passed" and set(extra["readers"]) == {"364","367"}
                 and set(extra["inputSegmentation"]) == {"365","366"}
-                and all(leg["callSiteRows"] for reader in extra["readers"].values() for leg in reader["sides"].values()),
+                and all(leg["callSiteRows"] for reader in extra["readers"].values() for leg in reader["sides"].values())
+                and all("recordedStartup" in row for n in READER_JOBS for row in data["cases"][n]["obligations"].values()),
                 "companion measures are still outstanding")
     rendered = json.dumps(data, indent=2) + "\n"
     if args.check:

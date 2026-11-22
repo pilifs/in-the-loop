@@ -133,7 +133,9 @@ All paired builds, named regressions and final jobs have returned. The final sco
 
 The recertified Avro wrap fact qualified 26 of 64 Parquet value wraps and 32 of 64 metadata wraps at bound 20. Both routes still needed bound 47 and established all 64 fixed public extents. The paired downstream times were **13.33 s fresh and 13.57 s with checked reuse**, with a separate **4.46 s** to replay and recertify the earlier producer. Across the two Avro features the harness transferred, while both traced methods and their constant pools changed. The capstone established its own one-byte decoder and EOF check. [Results and named deferrals](java-domain-proof-campaign-results.md) · [Recountable scorecard](../../verification/java-domain-proof/scorecard.json)
 
-- Status: done
+The eight public Avro receipts with three startup roots captured all stop at the name-validation thread-local. Its field is `Schema.validateNames` in #1381 and `Schema.VALIDATE_NAMES` in #3730. The #1381 record-field helper separately stops at `FIELD_RESERVED`. Each recorded result is now paired with its own frozen public obligation in the scorecard.
+
+- Status: working
 
 [develop]: https://github.com/pilifs/in-the-loop/tree/ae92d881c61581011ed494c0ce62fcdfd291343e
 [pilot]: https://github.com/pilifs/in-the-loop/blob/ae92d881c61581011ed494c0ce62fcdfd291343e/llm-dlc/loops/domain-foundations-strategy-results.md
