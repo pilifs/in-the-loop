@@ -1,0 +1,208 @@
+{
+  "schema": "java-domain-public-run/v1",
+  "stage": "final",
+  "example": "363",
+  "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+  "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+  "checkerSha256": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+  "inventory": 2,
+  "fingerprint": "ce3fa6557c891982e69528dc54afbb737db0fae6e12b0a1261efff80cc49f1c6",
+  "subjectJdk": [
+    "21"
+  ],
+  "claims": {
+    "extent-parent": {
+      "exit": 1,
+      "seconds": 64.134642,
+      "peakRssBytes": 409321472,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "363",
+        "--task",
+        "extent-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "extent-parent.log",
+      "status": "unresolved",
+      "receipt": "extent-parent/20261122T124617Z-04e274ef/result.json"
+    },
+    "extent-fix": {
+      "exit": 1,
+      "seconds": 63.744901,
+      "peakRssBytes": 368386048,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "363",
+        "--task",
+        "extent-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "extent-fix.log",
+      "status": "unresolved",
+      "receipt": "extent-fix/20261122T124721Z-23738394/result.json"
+    },
+    "fresh-parent": {
+      "exit": 1,
+      "seconds": 62.934911,
+      "peakRssBytes": 235393024,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "363",
+        "--task",
+        "fresh-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "fresh-parent.log",
+      "status": "unresolved",
+      "receipt": "fresh-parent/20261122T124824Z-cb6f4064/result.json"
+    },
+    "fresh-fix": {
+      "exit": 1,
+      "seconds": 63.012106,
+      "peakRssBytes": 234852352,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "363",
+        "--task",
+        "fresh-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "fresh-fix.log",
+      "status": "unresolved",
+      "receipt": "fresh-fix/20261122T124927Z-b5a276ac/result.json"
+    }
+  },
+  "artifacts": {
+    "parent": "c384652aba8c8a71ea413a32473a3f1ebb72934af782ef5801a5b940692455c3",
+    "fix": "8de48c6dd6c99b77772e7c8df04e1ad67365bce224a0489e987912103d707d5c"
+  },
+  "replay": {
+    "exit": 0,
+    "seconds": 7.904263,
+    "peakRssBytes": 121327616,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "363",
+      "--task",
+      "replay"
+    ],
+    "log": "replay.log",
+    "status": null,
+    "receipt": "replay/20261122T124555Z-423ff149/result.json"
+  },
+  "finite": {
+    "exit": 0,
+    "seconds": 13.827935,
+    "peakRssBytes": 113254400,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "363",
+      "--finite-domain",
+      "--tasks",
+      "extent-parent,extent-fix,fresh-parent,fresh-fix",
+      "--checker-seconds",
+      "60"
+    ],
+    "log": "finite.log"
+  },
+  "selectors": {
+    "extent-parent": {
+      "status": "refuted",
+      "receipt": "selectors/parent/20261122T125030Z-ce3eca7b/tasks/extent-parent/result.json",
+      "firstBlocker": null,
+      "batch": {
+        "exit": 0,
+        "seconds": 8.771357,
+        "peakRssBytes": 135065600,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "363",
+          "--native-selectors",
+          "extent-parent,fresh-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "36"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "fresh-parent": {
+      "status": "established",
+      "receipt": "selectors/parent/20261122T125030Z-ce3eca7b/tasks/fresh-parent/result.json",
+      "firstBlocker": null,
+      "batch": {
+        "exit": 0,
+        "seconds": 8.771357,
+        "peakRssBytes": 135065600,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "363",
+          "--native-selectors",
+          "extent-parent,fresh-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "36"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "extent-fix": {
+      "status": "established",
+      "receipt": "selectors/fix/20261122T125039Z-9a216567/tasks/extent-fix/result.json",
+      "firstBlocker": null,
+      "batch": {
+        "exit": 0,
+        "seconds": 11.375126,
+        "peakRssBytes": 118501376,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "363",
+          "--native-selectors",
+          "extent-fix,fresh-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "36"
+        ],
+        "log": "selectors-fix.log"
+      }
+    },
+    "fresh-fix": {
+      "status": "established",
+      "receipt": "selectors/fix/20261122T125039Z-9a216567/tasks/fresh-fix/result.json",
+      "firstBlocker": null,
+      "batch": {
+        "exit": 0,
+        "seconds": 11.375126,
+        "peakRssBytes": 118501376,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "363",
+          "--native-selectors",
+          "extent-fix,fresh-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "36"
+        ],
+        "log": "selectors-fix.log"
+      }
+    }
+  }
+}

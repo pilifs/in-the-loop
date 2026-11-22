@@ -1,0 +1,208 @@
+{
+  "schema": "java-domain-public-run/v1",
+  "stage": "final",
+  "example": "364",
+  "sourceCommit": "cc04c56c3c89a8ede24bdff8aaebb6250a6a2e39",
+  "libTree": "d0076816bcae8681f74d3349ba50ca57c350f3cd",
+  "checkerSha256": "4884acc1723508af16c871b38df177bf65ada3421fec4af82f753ec74fecc900",
+  "inventory": 2,
+  "fingerprint": "ce3fa6557c891982e69528dc54afbb737db0fae6e12b0a1261efff80cc49f1c6",
+  "subjectJdk": [
+    "21"
+  ],
+  "claims": {
+    "renamed-parent": {
+      "exit": 1,
+      "seconds": 4.180152,
+      "peakRssBytes": 118104064,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "364",
+        "--task",
+        "renamed-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "renamed-parent.log",
+      "status": "unresolved",
+      "receipt": "renamed-parent/20261122T124615Z-c701f6f3/result.json"
+    },
+    "renamed-fix": {
+      "exit": 1,
+      "seconds": 3.632718,
+      "peakRssBytes": 109580288,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "364",
+        "--task",
+        "renamed-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "renamed-fix.log",
+      "status": "unresolved",
+      "receipt": "renamed-fix/20261122T124619Z-effe4db0/result.json"
+    },
+    "preserved-parent": {
+      "exit": 1,
+      "seconds": 3.505806,
+      "peakRssBytes": 110632960,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "364",
+        "--task",
+        "preserved-parent",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "preserved-parent.log",
+      "status": "unresolved",
+      "receipt": "preserved-parent/20261122T124623Z-8d791be6/result.json"
+    },
+    "preserved-fix": {
+      "exit": 1,
+      "seconds": 3.747842,
+      "peakRssBytes": 111128576,
+      "command": [
+        "/usr/bin/python3",
+        "examples/tools/build.py",
+        "364",
+        "--task",
+        "preserved-fix",
+        "--checker-seconds",
+        "60"
+      ],
+      "log": "preserved-fix.log",
+      "status": "unresolved",
+      "receipt": "preserved-fix/20261122T124627Z-242c49a1/result.json"
+    }
+  },
+  "artifacts": {
+    "parent": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b",
+    "fix": "52bfec76fb9dc246626c28701a450fa6f4f562e9cba72906d46718f60749826f"
+  },
+  "replay": {
+    "exit": 0,
+    "seconds": 6.194298,
+    "peakRssBytes": 115359744,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "364",
+      "--task",
+      "replay"
+    ],
+    "log": "replay.log",
+    "status": null,
+    "receipt": "replay/20261122T124555Z-4b4081b8/result.json"
+  },
+  "finite": {
+    "exit": 0,
+    "seconds": 14.309397,
+    "peakRssBytes": 122544128,
+    "command": [
+      "/usr/bin/python3",
+      "examples/tools/build.py",
+      "364",
+      "--finite-domain",
+      "--tasks",
+      "renamed-parent,renamed-fix,preserved-parent,preserved-fix",
+      "--checker-seconds",
+      "60"
+    ],
+    "log": "finite.log"
+  },
+  "selectors": {
+    "renamed-parent": {
+      "status": "open",
+      "receipt": "selectors/parent/20261122T124630Z-f1ee8966/tasks/renamed-parent/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.80481,
+        "peakRssBytes": 111931392,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "364",
+          "--native-selectors",
+          "renamed-parent,preserved-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "preserved-parent": {
+      "status": "open",
+      "receipt": "selectors/parent/20261122T124630Z-f1ee8966/tasks/preserved-parent/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.80481,
+        "peakRssBytes": 111931392,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "364",
+          "--native-selectors",
+          "renamed-parent,preserved-parent",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-parent.log"
+      }
+    },
+    "renamed-fix": {
+      "status": "open",
+      "receipt": "selectors/fix/20261122T124636Z-bf4b9ad2/tasks/renamed-fix/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.59397,
+        "peakRssBytes": 109686784,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "364",
+          "--native-selectors",
+          "renamed-fix,preserved-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-fix.log"
+      }
+    },
+    "preserved-fix": {
+      "status": "open",
+      "receipt": "selectors/fix/20261122T124636Z-bf4b9ad2/tasks/preserved-fix/result.json",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.slf4j.helpers.Util.safeGetSystemProperty:45). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "batch": {
+        "exit": 1,
+        "seconds": 5.59397,
+        "peakRssBytes": 109686784,
+        "command": [
+          "/usr/bin/python3",
+          "examples/tools/build.py",
+          "364",
+          "--native-selectors",
+          "renamed-fix,preserved-fix",
+          "--checker-seconds",
+          "60",
+          "--first",
+          "0"
+        ],
+        "log": "selectors-fix.log"
+      }
+    }
+  }
+}

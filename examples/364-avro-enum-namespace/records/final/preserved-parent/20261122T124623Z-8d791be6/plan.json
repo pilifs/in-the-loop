@@ -1,0 +1,238 @@
+{
+  "plan": {
+    "example": "364",
+    "task": "preserved-parent",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "preserved-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+      "file": "claims/preserved.json",
+      "sha256": "8ed30c4000f69b27fdbc4bdca99abe63960b2f2f4fde270f99fb05fc6d772ab9",
+      "property": "preserved",
+      "claimKind": "property",
+      "statement": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "18829f6b3faba26705c41393df7be1a0c6bffe0c3c66965e1fa944ea695a6744"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ae0f1fdda95c1008bc8be516ed530bd603d4d456fdda0361a535a90a7764342d"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.EnumReader#preserved(I)I",
+        "mapping": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "9aa52570ae971662"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "11"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-parent.json",
+          "sha256": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b"
+        },
+        "adapters": [
+          "adapter/campaign/EnumReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/preserved-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261122-123421-final-java-domain-364-avro-enum-namespac/examples/364-avro-enum-namespace",
+    "network": true
+  },
+  "inputs": {
+    "example": "364",
+    "task": "preserved-parent",
+    "kind": "prove",
+    "relation": "preservation",
+    "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "preserved-parent",
+      "kind": "prove",
+      "relation": "preservation",
+      "target": "org.apache.avro.generic.GenericDatumReader#read(Ljava/lang/Object;Lorg/apache/avro/io/Decoder;)Ljava/lang/Object;",
+      "file": "claims/preserved.json",
+      "sha256": "8ed30c4000f69b27fdbc4bdca99abe63960b2f2f4fde270f99fb05fc6d772ab9",
+      "property": "preserved",
+      "claimKind": "property",
+      "statement": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read.",
+      "assume": "code >= 0 && code < 4",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 512,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/campaign/Cases.java",
+          "sha256": "18829f6b3faba26705c41393df7be1a0c6bffe0c3c66965e1fa944ea695a6744"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "ae0f1fdda95c1008bc8be516ed530bd603d4d456fdda0361a535a90a7764342d"
+        }
+      ],
+      "adapter": {
+        "entry": "campaign.EnumReader#preserved(I)I",
+        "mapping": "Matching enum names and namespaces decode each symbol and a different short name without an alias raises AvroTypeException in the original read. Each selector corresponds to one explicit row of the finite oracle.",
+        "correspondence": "finite-oracle",
+        "cases": 4
+      },
+      "key": "9aa52570ae971662"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/avro",
+        "commit": "0cbfb17d49186348a85cc2afc19c6b940da4aad1",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotless.skip=true",
+            "-Dspotbugs.skip=true",
+            "-Dgpg.skip=true",
+            "-f",
+            "lang/java/avro/pom.xml",
+            "-Dmaven.test.skip=true",
+            "install"
+          ],
+          "jdk": "11"
+        },
+        "capturedBuild": {
+          "path": "records/original-build/build-parent.json",
+          "sha256": "3488c11dd7f517c3e54fd03a3c83da0376d62b66cb6eaa2ca0639f634300992b"
+        },
+        "adapters": [
+          "adapter/campaign/EnumReader.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/campaign/EnumReader.java",
+        "sha256": "40e55db266890c829f058fa94a30fa1113229e82d68ea7fe73b83b13de7e7c2a"
+      }
+    ]
+  },
+  "key": "3a8d06fc610f4ceb468aa23b185dd57a085ce9cd78d2473a84c20eef0107b75b"
+}
