@@ -222,4 +222,6 @@ The registrar job established the exact callback sequence on both historical art
 
 The B3 positive-tolerance stretch passed from ordinary native startup on both historical artifacts. At tolerance 0.25 and centers −0.5, 0 and 0.5, the two cells come from independent 64-bit words and the start covers every Java int. The caller quiets signaling NaNs before the search. The physical JVMs matched an exact-rational oracle on 18,900 inputs per revision, including the doubles immediately inside and outside each boundary. [Paired proof and replay](../../verification/results/2026/11/22/20261122-182432-prove-inclusive-positive-tolerance-on-bo/result.json)
 
+The A1 → A2 transfer now covers all 98,304 histories with a separate authority subset at every edit, all six edit orders and both prefixes and bean layouts. Four JVMs agreed on all 294,912 decisions and subsequent binder states, including 10,752 declines after an earlier field error. The receipt-based oracle reused all 30 nonempty binder prefixes and all 32 release manager decisions. The two complete timing comparisons favored different routes. [Experiment and replays](../../examples/370-spring-role-hierarchy/README.md#gating-every-edit) · [Measurement](../../verification/spring-java-data/gated-histories/measurement.json)
+
 - Status: done

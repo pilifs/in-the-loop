@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-22T19:08:44.996Z",
-  "duration_seconds": 25498,
+  "ended": "2026-11-22T19:14:28.467Z",
+  "duration_seconds": 25841,
   "stats": {
     "turns": 7,
-    "api_calls": 1170,
-    "tool_calls": 2810,
+    "api_calls": 1197,
+    "tool_calls": 2860,
     "tool_errors": 68,
     "compactions": 5,
     "peak_context_tokens": 525653,
     "usage": {
-      "input_tokens": 1647441,
-      "output_tokens": 544389,
-      "cache_read_input_tokens": 296617728,
+      "input_tokens": 1664239,
+      "output_tokens": 552551,
+      "cache_read_input_tokens": 300546816,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1621,
-    "exec": 1077,
-    "apply_patch": 70,
+    "Bash": 1644,
+    "exec": 1100,
+    "apply_patch": 72,
+    "wait": 11,
     "send_message": 9,
-    "wait": 9,
     "sleep": 8,
     "spawn_agent": 5,
     "list_agents": 4,
@@ -46,8 +46,10 @@
     "examples/365-jackson-async-token-offsets/README.md",
     "examples/367-avro-union-array-default/driver/campaign/Cases.java",
     "examples/368-spring-binding-history/README.md",
+    "examples/368-spring-binding-history/example.json",
     "examples/370-spring-role-hierarchy/README.md",
     "examples/370-spring-role-hierarchy/companions/GatedHistories.java",
+    "examples/370-spring-role-hierarchy/example.json",
     "examples/373-commons-lang-nan-search/README.md",
     "examples/373-commons-lang-nan-search/companions/ToleranceReplay.java",
     "examples/373-commons-lang-nan-search/companions/ToleranceSearch.java",
@@ -161,24 +163,24 @@
     {
       "index": 5,
       "started": "2026-11-22T18:52:29.312Z",
-      "ended": "2026-11-22T19:08:44.996Z",
+      "ended": "2026-11-22T19:14:28.467Z",
       "turns": 1,
-      "api_calls": 52,
+      "api_calls": 79,
       "usage": {
-        "input_tokens": 127417,
-        "output_tokens": 32906,
-        "cache_read_input_tokens": 5698560,
+        "input_tokens": 144215,
+        "output_tokens": 41068,
+        "cache_read_input_tokens": 9627648,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 137603
+      "peak_context_tokens": 152474
     }
   ],
   "log": {
-    "sha256": "38ac17f90b785c131324f25e559a4c87e7d3a02409276264654cfe086a0ffeec",
-    "bytes": 26308240,
-    "lines": 9082,
-    "gzip_bytes": 10322115,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/38ac17f90b785c131324f25e559a4c87e7d3a02409276264654cfe086a0ffeec.jsonl.gz"
+    "sha256": "be4a932bf340b827029b1a0d68e76ca0f8127f70da1b9e77ad297defab7c5b22",
+    "bytes": 26621768,
+    "lines": 9264,
+    "gzip_bytes": 10458446,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/be4a932bf340b827029b1a0d68e76ca0f8127f70da1b9e77ad297defab7c5b22.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -695,20 +697,20 @@
       "log_sha256": "948edfd8418e8bcd56c729ad12c08bd0739a0025a48609f4c2a70547ef291fa9"
     },
     {
-      "change_id": "mkxnytoxzvpnupxtynkwonposznmusxy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "38ac17f90b785c131324f25e559a4c87e7d3a02409276264654cfe086a0ffeec"
-    },
-    {
       "change_id": "wvmztoktovskxyypxwrssttyuulykspy",
       "commit_id": null,
       "immutable": false,
       "summary": "Collect the release JVM results for role-gated Spring edits",
       "body": "Job 20261122-190127-check-every-role-gated-spring-edit-histo passed at source a28ecb6f168c on vm-1. Four independent JVMs returned identical records for 98,304 histories and 294,912 edit decisions each. Both deliberately wrong callers changed the expected final observation. The run took 10.8 seconds and peaked at 130.3 MiB against estimates of two minutes and 768 MiB.\n\nCollection applied all 11 outputs for one of one jobs with zero conflicts. The recorded file hashes and the four compressed observation streams were checked, index regeneration succeeded, and all five tests selected for the changed files passed.",
       "log_sha256": "38ac17f90b785c131324f25e559a4c87e7d3a02409276264654cfe086a0ffeec"
+    },
+    {
+      "change_id": "qslyosmmrozolkszuuvqnsymyvsrtqmz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record every role-gated Spring history and its reuse costs",
+      "body": "Four release JVMs each matched both the measured domain and its expected outcomes across 98,304 real three-edit histories. Of 36,864 declines, 10,752 followed a rejected edit and retained the field error. The two combined-graph binder receipts and 32 release decisions supplied 280,896 nonempty prefix expectations. Fresh baselines covered the other 14,016. The complete workflow timings favored different routes in the two pairs.\n\nThe two runnable wrong-caller witnesses isolate a changed final bean with the same ledger and a changed final ledger with the same bean. The scorecard recomputed all four physical streams, all eight oracle tables matched, nine damaged evidence controls were rejected, both example validators passed, and all 27 selected suites passed. The original primary dispositions are preserved.",
+      "log_sha256": "be4a932bf340b827029b1a0d68e76ca0f8127f70da1b9e77ad297defab7c5b22"
     }
   ],
   "logs": {
@@ -848,6 +850,12 @@
       "bytes": 17244220,
       "lines": 5853,
       "gzip_bytes": 6386436,
+      "url": null
+    },
+    "be4a932bf340b827029b1a0d68e76ca0f8127f70da1b9e77ad297defab7c5b22": {
+      "bytes": 26621768,
+      "lines": 9264,
+      "gzip_bytes": 10458446,
       "url": null
     },
     "d84e774cc5be9e73aa8bfc8dfe16955668ccd9951649fbc1bd014a7db2a2a2f5": {
