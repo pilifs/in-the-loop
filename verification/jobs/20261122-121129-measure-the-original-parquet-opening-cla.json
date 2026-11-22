@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-121129-measure-the-original-parquet-opening-cla",
+  "title": "Measure the original Parquet opening claims on bound JARs",
+  "description": "The original test now qualifies on both packaged modules. Resolve the shaded package metadata in Maven classpath order, verify the opening executable and measure the 64 builder inputs at the public child accessors.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-upstream-test"
+  ],
+  "links": {
+    "examples": [
+      "363"
+    ],
+    "jobs": [
+      "20261122-063655-qualify-363-original-artifacts-and-compl"
+    ]
+  },
+  "expected": "Both named regressions qualify, four finite results match their frozen outcomes, and every ordinary claim has an opening verifier receipt.",
+  "submitted": {
+    "at": "2026-11-22T12:11:29+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "javac",
+    "java",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen public obligations",
+      "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 363 --stage opening-bound --build qualified-build",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/363-parquet-nested-binary/records/opening-bound"
+  ]
+}

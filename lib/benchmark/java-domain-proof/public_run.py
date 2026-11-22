@@ -73,11 +73,15 @@ def run(number, stage, seconds, build):
     checker = Path(os.environ["JVMCONTRACT"])
     pin = read(HERE/"opening.json")
     fingerprint = organic.baseline_inputs(pin["inputs"], ROOT)
-    if stage.startswith("opening") and fingerprint != (pin["engineAndWorkflowFiles"], pin["engineAndWorkflowSha256"]):
-        raise ValueError("the opening workflow or engine inputs differ from the frozen inventory")
+    checker_sha = digest(checker)
+    if stage.startswith("opening"):
+        if fingerprint != (pin["engineAndWorkflowFiles"], pin["engineAndWorkflowSha256"]):
+            raise ValueError("the opening workflow or engine inputs differ from the frozen inventory")
+        if checker_sha != pin["priorProduct"]["executableSha256"]:
+            raise ValueError("the opening executable differs from the measured campaign baseline")
     receipt = {"schema":"java-domain-public-run/v1","stage":stage,"example":number,
                "sourceCommit":os.environ["VERIFY_SOURCE_COMMIT"],"libTree":os.environ["JVMCONTRACT_LIB_TREE"],
-               "checkerSha256":digest(checker),"inventory":pin["inputs"],"fingerprint":fingerprint[1],
+               "checkerSha256":checker_sha,"inventory":pin["inputs"],"fingerprint":fingerprint[1],
                "subjectJdk":spec["preparation"]["jdks"],"claims":{}}
     receipt["artifacts"] = {side:digest(folder/path) for side,path in spec["preparation"]["capturedBuilds"].items()}
     argv = [sys.executable,"examples/tools/build.py",number]
@@ -110,8 +114,8 @@ def run(number, stage, seconds, build):
 if __name__=="__main__":
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("example",choices=read(HERE/"cases.json")["cases"])
-    p.add_argument("--stage",choices=("opening","opening-qualified","final"),required=True)
-    p.add_argument("--build",choices=("original-build","qualified-build"),default="original-build")
+    p.add_argument("--stage",choices=("opening","opening-qualified","opening-bound","final"),required=True)
+    p.add_argument("--build",choices=("original-build","qualified-build","module-build"),default="original-build")
     p.add_argument("--seconds",type=int,default=60)
     args=p.parse_args()
     run(args.example,args.stage,args.seconds,args.build)

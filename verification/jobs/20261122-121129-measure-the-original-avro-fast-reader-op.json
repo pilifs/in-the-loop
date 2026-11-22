@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261122-121129-measure-the-original-avro-fast-reader-op",
+  "title": "Measure the original Avro fast reader opening claims on bound JARs",
+  "description": "The historical test already fails twice on the parent and passes twice on the fix. Skip the isolated Maven invoker's unrelated compatibility build, which tried to resolve a plugin outside the mirror. Package the original core and check fast binary decoding on both revisions.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-upstream-test"
+  ],
+  "links": {
+    "examples": [
+      "367"
+    ],
+    "jobs": [
+      "20261122-063655-qualify-367-original-artifacts-and-compl"
+    ]
+  },
+  "expected": "Both named regressions qualify, four finite results match their frozen outcomes, and every ordinary claim has an opening verifier receipt.",
+  "submitted": {
+    "at": "2026-11-22T12:11:29+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "javac",
+    "java",
+    "jvmcontract",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Package unchanged Avro core and run both upstream parameters",
+      "run": "export TMPDIR=\"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/tmp\"; repos=(); if test -d \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof/avro\"; then repos=(--repos \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/ci-sources/java-domain-proof\"); fi; python3 -B lib/benchmark/organic-java/upstream.py 367 --cases lib/benchmark/java-domain-proof/cases.json \"${repos[@]}\" --maven-cache \"${XDG_CACHE_HOME:-$HOME/.cache}/in-the-loop/external-upgrades/maven\" --output examples/367-avro-union-array-default/records/module-build",
+      "cwd": "."
+    },
+    {
+      "name": "Check the frozen public obligations",
+      "run": "python3 -B lib/benchmark/java-domain-proof/public_run.py 367 --stage opening-bound --build module-build",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/367-avro-union-array-default/records/module-build",
+    "examples/367-avro-union-array-default/records/opening-bound"
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "revision": "892d6997dcb65627560b04bd76c5a3dd97666cdf",
+  "side": "fix",
+  "prerequisites": [
+    {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-N",
+        "-f",
+        "pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 7.43,
+      "logSha256": "6b6026c13973b7d3e99106378f5f5817b44d3208db52c3f100646469b3c5cc16",
+      "errors": [],
+      "tail": [
+        "[INFO] --- install:3.1.4:install (default-install) @ avro-toplevel ---",
+        "[INFO] Installing /project/pom.xml to /work/repository/org/apache/avro/avro-toplevel/1.13.0-SNAPSHOT/avro-toplevel-1.13.0-SNAPSHOT.pom",
+        "[INFO] Saved Build to local file: /work/build-cache/v1/org.apache.avro/avro-toplevel/8d8bbc49a04f779f/local/buildinfo.xml",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  3.891 s",
+        "[INFO] Finished at: 2026-11-22T06:45:43Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-N",
+        "-f",
+        "lang/java/pom.xml",
+        "-Dmaven.test.skip=true",
+        "install"
+      ],
+      "exit": 0,
+      "seconds": 9.6,
+      "logSha256": "62d7e17a2370bd8775b3a7747c62b08de4061c8f191f7d8b4879fa11e0c1fb72",
+      "errors": [],
+      "tail": [
+        "[INFO] Installing /project/lang/java/target/bom.xml to /work/repository/org/apache/avro/avro-parent/1.13.0-SNAPSHOT/avro-parent-1.13.0-SNAPSHOT-cyclonedx.xml",
+        "[INFO] Installing /project/lang/java/target/bom.json to /work/repository/org/apache/avro/avro-parent/1.13.0-SNAPSHOT/avro-parent-1.13.0-SNAPSHOT-cyclonedx.json",
+        "[INFO] Saved Build to local file: /work/build-cache/v1/org.apache.avro/avro-parent/b41a471e1b6f503f/local/buildinfo.xml",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  7.002 s",
+        "[INFO] Finished at: 2026-11-22T06:45:52Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    }
+  ],
+  "build": {
+    "argv": [
+      "mvn",
+      "--batch-mode",
+      "--no-transfer-progress",
+      "-Dmaven.javadoc.skip=true",
+      "-Drat.skip=true",
+      "-Dcheckstyle.skip=true",
+      "-Dspotless.skip=true",
+      "-Dspotbugs.skip=true",
+      "-Dgpg.skip=true",
+      "-f",
+      "lang/java/avro/pom.xml",
+      "-Dmaven.test.skip=true",
+      "install"
+    ],
+    "exit": 1,
+    "seconds": 21.0,
+    "logSha256": "7858e922029a25f94b754f51480e12b2b86515cab23e3a62b1b8941ee67d802c",
+    "errors": [
+      "[ERROR] -------------------------------------------------",
+      "[ERROR] ",
+      "[ERROR] BUILD FAILURE",
+      "[ERROR] Plugin org.apache.maven.plugins:maven-clean-plugin:3.5.0 or one of its dependencies could not be resolved:",
+      "[ERROR] \tThe following artifacts could not be resolved: org.apache.maven.plugins:maven-clean-plugin:pom:3.5.0 (absent): Could not transfer artifact org.apache.maven.plugins:maven-clean-plugin:pom:3.5.0 from/to central (https://repo.maven.apache.org/maven2): repo.maven.apache.org",
+      "[ERROR] -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
+    ],
+    "tail": [
+      "[INFO] Finished at: 2026-11-22T06:46:13Z",
+      "[INFO] ------------------------------------------------------------------------",
+      "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-invoker-plugin:3.9.1:run (Run all tests under Java 11) on project avro: 1 build failed. See console output above for details. -> [Help 1]",
+      "[ERROR] ",
+      "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+      "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+      "[ERROR] ",
+      "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+      "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+    ]
+  },
+  "upstreamTest": {
+    "execution": {
+      "argv": [
+        "mvn",
+        "--batch-mode",
+        "--no-transfer-progress",
+        "-Dmaven.javadoc.skip=true",
+        "-Drat.skip=true",
+        "-Dcheckstyle.skip=true",
+        "-Dspotless.skip=true",
+        "-Dspotbugs.skip=true",
+        "-Dgpg.skip=true",
+        "-f",
+        "lang/java/avro/pom.xml",
+        "-Dmaven.build.cache.enabled=false",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "-Dtest=TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied*",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 20.4,
+      "logSha256": "679bacbfdcd23ba13fe771c13f7f609492b692f9175cdf0423b32fe40b5b3fae",
+      "errors": [],
+      "tail": [
+        "[INFO] ",
+        "[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] ",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  18.202 s",
+        "[INFO] Finished at: 2026-11-22T06:46:41Z",
+        "[INFO] ------------------------------------------------------------------------"
+      ]
+    },
+    "packagedTestSupport": null,
+    "testPrerequisites": [
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-N",
+          "-f",
+          "pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 3.04,
+        "logSha256": "61d45e2dea3b45f229737ab016a9fdffe5ddc519e9ae56abf9eab1e723df575e",
+        "errors": [],
+        "tail": [
+          "[INFO] Skipping plugin execution (cached): remote-resources:process",
+          "[INFO] Skipping plugin execution (cached): apache-rat:check",
+          "[INFO] Skipping plugin execution (cached): install:install",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  0.601 s",
+          "[INFO] Finished at: 2026-11-22T06:46:17Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      },
+      {
+        "argv": [
+          "mvn",
+          "--batch-mode",
+          "--no-transfer-progress",
+          "-Dmaven.javadoc.skip=true",
+          "-Drat.skip=true",
+          "-Dcheckstyle.skip=true",
+          "-Dspotless.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dgpg.skip=true",
+          "-N",
+          "-f",
+          "lang/java/pom.xml",
+          "-Dmaven.test.skip=true",
+          "install"
+        ],
+        "exit": 0,
+        "seconds": 3.8,
+        "logSha256": "210654368922368e9a16bacd2bacd9b286dbda0be10dd9b978e84699ed1e9771",
+        "errors": [],
+        "tail": [
+          "[INFO] Skipping plugin execution (cached): checkstyle:check",
+          "[INFO] Skipping plugin execution (cached): cyclonedx:makeBom",
+          "[INFO] Skipping plugin execution (cached): install:install",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] BUILD SUCCESS",
+          "[INFO] ------------------------------------------------------------------------",
+          "[INFO] Total time:  1.497 s",
+          "[INFO] Finished at: 2026-11-22T06:46:20Z",
+          "[INFO] ------------------------------------------------------------------------"
+        ]
+      }
+    ],
+    "testSourceSha256": {
+      "lang/java/avro/src/test/java/org/apache/avro/TestReadingWritingDataInEvolvedSchemas.java": "17234c8a4dc92f6287ad1990fa923509f56facbff51912400a995bd2e6c70da2"
+    },
+    "transplant": [],
+    "named": {
+      "TestReadingWritingDataInEvolvedSchemas#readerWithEmptyListAsDefaultValueForUnionFieldIsApplied": [
+        {
+          "status": "passed",
+          "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+          "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[1]",
+          "xmlSha256": "57616a9e2369548c598a9ed575cf16db1c50a461d774ea91221fd9b2a960f02f"
+        },
+        {
+          "status": "passed",
+          "class": "org.apache.avro.TestReadingWritingDataInEvolvedSchemas",
+          "method": "readerWithEmptyListAsDefaultValueForUnionFieldIsApplied(EncoderType)[2]",
+          "xmlSha256": "57616a9e2369548c598a9ed575cf16db1c50a461d774ea91221fd9b2a960f02f"
+        }
+      ]
+    }
+  },
+  "mirror": {
+    "cachedRequests": 1786
+  }
+}

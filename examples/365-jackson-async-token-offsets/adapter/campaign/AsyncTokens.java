@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.async.ByteArrayFeeder;
+import com.fasterxml.jackson.core.json.async.NonBlockingUtf8JsonParserBase;
 
 public final class AsyncTokens {
     // Three triples, the total number of tokens, and the terminal state (1 for final EOF).
@@ -25,7 +26,7 @@ public final class AsyncTokens {
                 feeder.feedInput(bytes, padding, padding + width);
                 if (last) feeder.endOfInput();
                 while (true) {
-                    JsonToken token = parser.nextToken();
+                    JsonToken token = ((NonBlockingUtf8JsonParserBase) parser).nextToken();
                     if (token == null) {
                         result[10] = last ? 1 : -1;
                         return result;
