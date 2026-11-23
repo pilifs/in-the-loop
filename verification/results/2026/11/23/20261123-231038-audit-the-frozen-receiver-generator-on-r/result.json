@@ -1,0 +1,211 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-231038-audit-the-frozen-receiver-generator-on-r",
+  "title": "Audit the frozen receiver generator on released JGraphT",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.1s, peak 96.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-231038-audit-the-frozen-receiver-generator-on-r.json",
+    "sha256": "c2f5f5905d9f125eb28f66ce0f3f6620a8059e5d9a3c58651f06e544aa9fb0e2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-231038-audit-the-frozen-receiver-generator-on-r",
+      "title": "Audit the frozen receiver generator on released JGraphT",
+      "description": "Discover public makers and registration actions without the held-out evaluator. Replay every automatically generated canonical transition on a fresh graph, independently check transitive closure and all identities after rejection, and measure strict native checking of the separate public identity control.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "399"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T23:10:38+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Discover, then independently audit public graph histories",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/holdout.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/transfer/jgrapht"
+      ]
+    }
+  },
+  "sourceCommit": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "startedAt": "2026-11-23T23:45:46+00:00",
+  "finishedAt": "2026-11-23T23:50:10+00:00",
+  "wallSeconds": 264.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 101036032,
+    "wallSeconds": 4.1,
+    "cpuSeconds": 6.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 237.725,
+      "cpuSeconds": 238.035,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2314256384,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "8882f536ad88353470199aa7b25f4d43a925c2bd3e31cee2b2e035570d08aae1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-231038-audit-the-frozen-receiver-generator-on-r/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Discover, then independently audit public graph histories",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/holdout.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 4.093,
+      "cpuSeconds": 6.196,
+      "cpuThrottledSeconds": 0.562,
+      "peakMemoryBytes": 101036032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-discover-then-independently-au.log",
+        "lines": 1,
+        "bytes": 52,
+        "sha256": "a9090cce79528b5c8b4083617b7848eb2754b3adb61fae609b6b79d3ae085da1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "25 150 {'insert': 48, 'duplicate': 48, 'cycle': 54}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/transfer/jgrapht/measurement.json",
+      "change": "added",
+      "bytes": 106623,
+      "sha256": "c0d5b8be43e556800597f9ce07ec9d2209c37ed7eb74c3be010a9980b04cbef3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:50:35+00:00",
+    "applied": [
+      "verification/receiver-discovery/transfer/jgrapht/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3f924408a679b585beec4e937902e68399d2c87",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3f924408a679b585beec4e937902e68399d2c87/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T235010Z-330161c903396c71",
+      "outputs": "20261123T235010Z-3586733206636f35",
+      "diff": "20261123T235010Z-382225c85fe4fbe4"
+    }
+  }
+}

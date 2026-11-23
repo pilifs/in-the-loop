@@ -1,0 +1,64 @@
+--- /dev/null
++++ b/verification/receiver-discovery/transfer/cohort/06/measurement.json
+@@ -0,0 +1,60 @@
++{
++  "job": "20261123-231039-recheck-receiver-cohort-group-06-at-orig",
++  "source": "14d4fb339743c5e65652595ef574ead73c0aea2b",
++  "checkerSha256": "1ef8756230ff459470819d822859a2c6e48cd7f60345ed3583ec182914111748",
++  "cases": {
++    "commons-vfs-55c96cfd": {
++      "overloads": {
++        "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()": {
++          "verdict": "unverifiable",
++          "firstOutstanding": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++        }
++      },
++      "status": "preserved",
++      "inputs": 3,
++      "sides": {
++        "old": {
++          "jvmInputsReached": 3,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at org.apache.commons.vfs2.provider.ftp.UpgradeProbe.observe:17). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 3",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "1612fa078854c8dd606b5744e1153b4841161db483ef7cbed2679d14d1a2e0b5"
++        },
++        "new": {
++          "jvmInputsReached": 3,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at org.apache.commons.vfs2.provider.ftp.UpgradeProbe.observe:17). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 3",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "66812a6cfe27340e66a916419138e70b861b5ef635f17828372ef8fa72ae87ef"
++        }
++      }
++    }
++  },
++  "receiptPackSha256": "5baf6f24d837972c6a7a1500358a9a1d80baea08ddd6c7f490a8ef7820bc825c"
++}
+Binary file verification/receiver-discovery/transfer/cohort/06/receipts.tar.gz changed
