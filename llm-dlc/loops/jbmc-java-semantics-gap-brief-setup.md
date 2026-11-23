@@ -8,8 +8,8 @@ allocated no example ids, ran no project verifier and changed nothing in `lib/` 
 downloaded or built is outside the checkout, under `~/.cache/in-the-loop/`.
 
 `$B` below is `~/.cache/in-the-loop/jbmc-java-semantics-gap`. The status of each brief section is in the
-[summary](#summary). The stock-JBMC rerun and the Guava build ran as [verification jobs](#jobs); the Guava build is
-on its third attempt.
+[summary](#summary). The stock-JBMC rerun and the Guava build ran as [verification jobs](#jobs); both passed (the
+Guava build on its third attempt). Setup is complete.
 
 ## Layout
 
@@ -174,9 +174,17 @@ between each release and the commits (`Platform.java` at the parent equals neith
 | `commons-lang-3e50a7f9.jar` (3.21.0-SNAPSHOT) | `5489541c16fe228f13443d8c7bb951722da80b25c56b73412707cab4011b032c` | here, Maven, JDK 21.0.13, commons-parent 102 | `Conversion.class` `7080056a627f12f1` |
 | `gson-719-parent.jar` (2.5-SNAPSHOT) | `aa5c6883a29f7138e0452f8a9cd5c19efd9adba228f0d67024cd305cdfb3eb89` | here, Maven, JDK 8u512, source/target 1.5 | `internal/bind/TypeAdapters.class` `996c8d93736c6166` |
 | `gson-719-fix.jar` (2.5-SNAPSHOT) | `f0c093dc10b6830cc7eef6d94bf8a40c2bfa46322d714b716807d9ed6a481477` | the same | `internal/bind/TypeAdapters.class` `ff3098521e48f63c` |
-| `guava-7955-{parent,fix}.jar` | pending (third attempt; the second built the fix's jar, `Strings.class` `a52306c3c5cd7fca`, and stopped before the parent) | [Guava job](#jobs) | |
+| `guava-7955-parent.jar` (999.0.0-HEAD-jre-SNAPSHOT) | `3e0c1d182ff80b9dca3b3c4aa427285c1eae944418218a0ae28186156e41b945` | [Guava job](#jobs) `082702`, Maven wrapper 3.9.9, JDK 24 toolchain; `Strings.class` is major 52 (Java 8) | `base/Strings.class` `d24f83be16502bed` (full: `d24f83be16502bed4f5b145aea08cf112b9cf06e04b4e850c86eb5b1dc2fe038`) |
+| `guava-7955-fix.jar` (999.0.0-HEAD-jre-SNAPSHOT) | `1ca60c0343aaf457839388c04069d2e6c725d9ad6fd034b3a6deedf0c7db518d` | the same | `base/Strings.class` `a52306c3c5cd7fca` (full: `a52306c3c5cd7fca60c8cd7b503f521cae9e7198c023abc4c337c179d0d03a04`) |
 
-Jar digests include build timestamps. The two Gson jars differ only in `TypeAdapters` and its nested classes (the fix
+The Guava jars' runtime classpath, the same on both sides and in this order (`$B/logs/guava-7955-{parent,fix}.guava.classpath.txt`,
+each path under `$B/m2`): `failureaccess-1.0.3`, `listenablefuture-9999.0-empty-to-avoid-conflict-with-guava`,
+`jspecify-1.0.0`, `error_prone_annotations-2.36.0`, `j2objc-annotations-3.0.0`. Guava's pom sets
+`project.build.outputTimestamp`, so its jars are reproducible: the fix jar the second job built and the one the third
+built have the same sha256. Each jar also carries `META-INF/versions/9/module-info.class`.
+
+The Commons Lang and Gson jar digests include build timestamps. The two Gson jars differ only in `TypeAdapters` and
+its nested classes (the fix
 adds `TypeAdapters$31$1`). Gson has no runtime dependencies. The Commons Lang `3e50a7f9` worktree keeps its
 `target/` (about 30 MB) so a caller can compile against `target/classes` at once.
 
@@ -254,6 +262,22 @@ Guava's pom pins `maven-dependency-plugin` 3.1.1, which the build itself never f
 `error_prone_annotations-2.36.0`, `j2objc-annotations-3.0.0`, all from `$B/m2`
 (`$B/logs/guava-7955-fix.guava.classpath.txt`).
 
+The third job (`20261123-082702`) **passed**, all five steps in 3 min 11 s, with a peak of 2.0 GiB:
+
+- Fix (`148cea07`): build succeeded in 42 s; `StringsTest` 21 tests, 0 failures, 0 errors.
+- Parent (`47b7e9e5`): build succeeded in 57 s; `StringsTest` (its own) 21 tests, 0 failures, 0 errors.
+- **The regression, transplanted:** the fix's `StringsTest.java` on the parent's code: 21 run, 0 failures, 1 error,
+  `testLenientFormat` with `java.lang.ArrayStoreException: java.lang.String` (Maven exit 1, as expected).
+  Log: `$B/logs/guava-7955-parent.fix-test-on-parent.log`.
+- The fix's `StringsTest` rerun offline: 21 tests, 0 failures, 0 errors, so the build needs no network once `$B/m2`
+  is filled.
+- Cleanup: both worktrees are back to their commits (0 untracked or changed files); `$B/src` 249 MB, `$B/m2` 441 MB.
+
+The jars and their digests are in [Built artifacts](#built-artifacts). The per-side junit summaries and Maven logs are
+in `$B/logs/guava-7955-*`; the job's own logs are in
+`verification/results/2026/11/23/20261123-082702-setup-build-guava-at-the-7955-parent-and/` on the results head
+`7ab232b4515a`.
+
 ### Released Commons, Spring and Guava artifacts
 
 Nothing to build: use `java -cp $(cat $B/releases/NAME/classpath.txt)`. To redo a resolution:
@@ -282,7 +306,7 @@ All on Temurin 21.0.13, inline, each under a few seconds, with the throwaway pro
 | §4 `virtual5` | the fixture's class, a driver | `test(null)` and `test(new parent())` return; `test(new child())` throws `AssertionError` | yes |
 | §5 kernel | `store/Covariant.java` | Through an `Object[]` view of a `String[]`: a `String` or `null` is stored; an `Integer` throws `ArrayStoreException`, and the old reference stays. Index 1 or −1 throws `ArrayIndexOutOfBoundsException`, and a null array throws `NullPointerException`. | yes |
 | §5 iterator | `collections/IteratorGrid.java`, Collections 4.5.0 | 6 `IllegalStateException` (before `next()`), 5 writes, 1 `ArrayStoreException` (`Integer[]` with a `Double`); all 7 failures keep the original cell. `javap`: `set` stores with `aastore` at offset 27. | yes |
-| §5 Guava #7955 | `guava/Lenient.java`. Two routes: (1) each side's unmodified `Strings.java`, compiled (`javac --release 8`) against the 33.4.8-jre classpath and put ahead of it (`probes/guava/slice-{parent,fix}/`); (2) the released 33.4.8-jre and 33.5.0-jre | Parent (both routes): `Integer[]{5,6,11}` throws `ArrayStoreException` with the original references kept; `Object[]{5,6,11}` gives `"5 + 6 = 11"` and its elements become `String`s. Fix (both routes): `"5 + 6 = 11"` for both arrays, references kept. | yes |
+| §5 Guava #7955 | `guava/Lenient.java`. Three routes: (1) each side's unmodified `Strings.java`, compiled (`javac --release 8`) against the 33.4.8-jre classpath and put ahead of it (`probes/guava/slice-{parent,fix}/`); (2) the released 33.4.8-jre and 33.5.0-jre; (3) the built `guava-7955-{parent,fix}.jar` with their own classpath (also on Temurin 25.0.5, the same answers) | Parent (all routes): `Integer[]{5,6,11}` throws `ArrayStoreException` with the original references kept; `Object[]{5,6,11}` gives `"5 + 6 = 11"` and its elements become `String`s. Fix (all routes): `"5 + 6 = 11"` for both arrays, references kept. Upstream `StringsTest` on the built pair: see [Guava #7955](#guava-7955-as-a-job). | yes |
 | #6 default methods | the `ExtraOpeners` seed; upstream `default-methods` fixture | The seed's replay passes. The fixture's `Test.testme` passes its seven assertions on the JVM and fails at line 18 (`assert false`), as its `test.desc` expects. | yes |
 | #7 byte reversal | the `ExtraOpeners` seed, IO 2.19.0 | `endian(1)` holds; `halfSwap(1)` is rejected | yes (the 65,536-input grid was not run) |
 | #8 surrogates | `text/Surrogate.java`, Text 1.12.0 + Lang 3.14.0, a custom two-unit `CharSequence` and a recording writer | Lone high or low surrogate at offset 0: 1. A valid pair: 0 at offset 0, 1 at offset 1. `DBFF DFFF`: 0 and 1. On all 1,048,576 valid pairs, offset 0 gives 0 and offset 1 gives 1, and forward and backward decoding equal the scalar formula. The writer received 0 units in every call. | yes (the 589,824-pair boundary grid was not run: the brief does not define it) |
@@ -310,7 +334,7 @@ revisions through its own target route (`records/setup/build-{parent,landed}.jso
 |---|---|---|
 | `20261123-075049-setup-build-guava-at-the-7955-parent-and` | Guava #7955: both sides' `StringsTest`, both jars, the fix's test on the parent, offline rerun, cleanup (4 CPU, 5 GB, ~30 min est.) | **failed** at step 1 after 36 s: Maven's `test` phase cannot resolve module `com.google.common` for `guava-testlib` ([why](#guava-7955-as-a-job)); steps 2–5 skipped. Superseded. |
 | `20261123-081114-setup-build-guava-at-the-7955-parent-and` | The same five steps, with `verify` in place of `test` (script sha256 `f8c7111b…48b6be`) (6 CPU, 5 GB, ~20 min est.) | **failed** at step 1 after 50 s (peak 1.9 GiB), after the fix side's build succeeded: `StringsTest` 21 tests, 0 failures; jar `1ca60c03…7db518d`, `Strings.class` `a52306c3…0d03a04`. The offline classpath print then could not resolve `maven-dependency-plugin` 3.1.1 ([why](#guava-7955-as-a-job)); steps 2–5 skipped. Superseded. |
-| `20261123-082702-setup-build-guava-at-the-7955-parent-and` | The same five steps, with the classpath print online (script sha256 `414466e7…f65ea2c4`) (6 CPU, 4 GB, ~10 min est.) | pending |
+| `20261123-082702-setup-build-guava-at-the-7955-parent-and` | The same five steps, with the classpath print online (script sha256 `414466e7…f65ea2c4`) (6 CPU, 4 GB, ~10 min est.) | **passed** in 3 min 11 s (peak 2.0 GiB): both sides' `StringsTest` 21/21, both jars, the fix's test on the parent errors in `testLenientFormat` with `ArrayStoreException`, offline rerun 21/21, trees clean; results [above](#guava-7955-as-a-job) |
 | `20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11` | Stock JBMC: the 14 seed entries and the 7 regression folders' 13 `test.desc` files, in three pairings (22.04 binary + 22.04 models = the preflight; installed binary + installed models; installed binary + 22.04 models). Per-entry exit, time, peak memory and property results go to `$B/jbmc-runs/PAIRING/` (`summary.txt` there). (1 CPU, 4 GB, ~60 min est.) | **passed** in 11.6 s; results [above](#the-stock-jbmc-rerun) |
 
 ## Scripts and probes
@@ -327,8 +351,8 @@ the brief); the rest with `sha256sum $B/probes/*/*.java`.
 
 Mirrors 98 MB (Spring's 53 MB and Commons Lang's were already there). Worktrees 249 MB (Spring 90 MB, the Guava pair
 84 MB). Releases 35 MB, artifacts 2 MB. JDK 24 and the extracted classes 298 MB. `m2` 391 MB, of which 334 MB are
-hard links shared with the Spring setup. `mvn-home` 20 MB. About 1 GB in all, before the Guava job adds its
-dependencies.
+hard links shared with the Spring setup. `mvn-home` 20 MB. After the Guava job, `m2` is 441 MB, artifacts 7.6 MB and
+the whole folder about 1.1 GB.
 
 ## Summary
 
@@ -338,7 +362,7 @@ dependencies.
 | §2 numeric callers | Lang `5904c573` | built jar | yes: seed oracle; floor-only 4,194,304 failures; narrowing witness at `0x41e0…` |
 | §3 prefix | Lang `5904c573`, `StartsWith` fixture | | yes: seed oracle over offsets −1..6 |
 | §4 reference arrays, Gson #719 | null-cell fixtures, `virtual5`, Gson pair | Gson jars built (JDK 8) | yes: own tests pass on both sides; the fix's test fails on the parent (`ClassCastException`); 18 observations; `virtual5` |
-| §5 covariant stores | Collections 4.5.0, Guava pair | Collections and Guava 33.4.8/33.5.0 released and signed; Guava build **pending (job, third attempt)** | yes: kernel; 12-case grid; Guava parent/fix by slice and by release |
+| §5 covariant stores | Collections 4.5.0, Guava pair | Collections and Guava 33.4.8/33.5.0 released and signed; Guava parent and fix jars **built (job)** | yes: kernel; 12-case grid; Guava parent/fix by slice, by release and by the built jars; Guava's own `StringsTest` passes on both sides and the fix's test fails on the parent (`ArrayStoreException`) |
 | #6–#15 | as listed | as listed | yes, each as the table above says |
 | Comparator | CBMC 6.11.0 regressions | both JBMC packages; the brief's preflight binary and models found | rerun **passed (job)**: the preflight pairing gives all 14 seed results and all 11 `CORE` regressions; the installed models flip `dispatch` and `firstDeclared` |
 
@@ -356,9 +380,9 @@ schedules); no investigation of why the models jar changes #6's two answers.
 - Commons Lang `5904c573` (§2, §3: `commons-lang-5904c573.jar`) and `3e50a7f9` (#12, `target/` kept). Released Lang
   3.14.0, IO 2.19.0, Text 1.12.0, Collections 4.5.0, Spring Core 6.2.0, and Guava 33.4.8-jre and 33.5.0-jre, all
   signature-checked.
-- Gson #719 parent and fix jars (JDK 8). The Guava #7955 build is a pending job (its first attempt failed on module
-  order and its second on an offline plugin lookup after the fix side had built and passed; both
-  [fixed](#guava-7955-as-a-job)); until it lands, 33.4.8-jre and
+- Gson #719 parent and fix jars (JDK 8). Guava #7955 parent and fix jars, `$B/artifacts/guava-7955-{parent,fix}.jar`,
+  built from the original commits by a job, with their runtime classpath in
+  `$B/logs/guava-7955-{parent,fix}.guava.classpath.txt` (the same five jars on both sides). Also: 33.4.8-jre and
   33.5.0-jre carry exactly the parent's and the fix's `Strings.java`, and `probes/guava/slice-{parent,fix}/` holds
   each side's own `Strings.class` built against 33.4.8.
 - JBMC 6.11.0 in two forms. `/usr/bin/jbmc` with `/usr/lib/core-models.jar` is the 24.04 package, what the runner
@@ -372,8 +396,10 @@ schedules); no investigation of why the models jar changes #6's two answers.
 Every observation the brief reports that a JVM can make, on Temurin 21.0.13, matched; the [table](#what-was-replayed-on-a-jvm)
 lists them. This covers both seeds' oracles, the §2 counts and witnesses, Gson's 18 observations and its regression
 (the fix's test fails on the parent with `ClassCastException`), the §5 kernel, iterator grid and Guava parent/fix,
-and #6–#15. Only Gson's upstream test was run as a parent/fix pair here; Guava's is the pending job (so far the fix side's
-`StringsTest` passed, 21 tests, in the second attempt).
+and #6–#15. Two upstream tests were run as parent/fix pairs. Gson's `DefaultTypeAdaptersTest` passes on each side, and
+the fix's version fails on the parent with `ClassCastException`. Guava's `StringsTest` passes on each side (21 tests),
+and the fix's version errors on the parent in `testLenientFormat` with `ArrayStoreException: java.lang.String`. The
+`Lenient` probe gives the brief's §5 answers on the two built Guava jars as well as on the slices and the releases.
 
 On the comparator side (not a JVM check, but the brief's other preflight): the brief's JBMC binary and models
 reproduce all 14 seed results, and all 11 `CORE` upstream regression files pass under each pairing.
@@ -389,7 +415,13 @@ reproduce all 14 seed results, and all 11 `CORE` upstream regression files pass 
   class bytes may differ from the brief's preflight, so the #9 hashes recorded here are Temurin's.
 - **Gson** needs JDK 8 and Surefire 2.18.1 on the command line (the default Surefire refuses JUnit 3.8.2).
   **Guava** needs the JDK 24 toolchain and the `user.home` redirect given [above](#guava-7955-as-a-job), or its
-  plugin downloads a JDK into `~/.m2`.
+  plugin downloads a JDK into `~/.m2`. Its build and test now run offline from `$B/m2` (checked by the job). The two
+  Guava jars are both version `999.0.0-HEAD-jre-SNAPSHOT`: keep them apart by file name and never `install` either.
+  Their `Strings.class` is Java 8 bytecode (major 52); the jars are multi-release, with `module-info` under
+  `META-INF/versions/9`.
+- **The four setup jobs' results are on another head**, `965e5e2efb74` (the Guava job's own commit is `7ab232b4515a`),
+  which this line has not merged; `pipeline.py status` lists them as "recorded on another head". Read them with
+  `jj file show -r 7ab232b4515a PATH`, or merge that head first.
 - **Commons Lang `3e50a7f9` and `5904c573` are 3.21.0-SNAPSHOT builds** whose jar digests include timestamps:
   compare class digests, not jar digests.
 - The CBMC `test.desc` classpaths name `jbmc/lib/java-models-library/target/…`, which the 6.11.0 tree does not
