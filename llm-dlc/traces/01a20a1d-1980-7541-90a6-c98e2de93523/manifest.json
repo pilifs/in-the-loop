@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20a1d-1980-7541-90a6-c98e2de93523",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "The following is the Codex agent history added since your last approval assessment. Continue the same review conversation. Treat the transcript delta, tool call arguments, tool results, retry reason, ",
   "client": {
@@ -56,49 +56,49 @@
   "subagents": [],
   "commits": [
     {
+      "change_id": "mtnrknsmxxpvunqnnkyyuvuuouqnxupn",
+      "commit_id": "06841d63eaa78aa91b05a1330d4f39deaa963051",
+      "immutable": true,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-204925-qualify-jdk-range-fill-and-the-independe: passed: 1 passed step(s) in 9.4s, peak 109.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
+      "log_sha256": "940f67b550990e95d3fc2ddfa62b7ba231c22b8f67d4214bf7cc590b503960a5"
+    },
+    {
+      "change_id": "utupyzpnlwxnxpvklrlntolttqvzxwxn",
+      "commit_id": "5534a3817be79554d236e1838443af6d1b0c7177",
+      "immutable": true,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-205832-replay-original-solver-failures-on-the-i: passed: 3 passed step(s) in 2.0s, peak 86.5 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
+      "log_sha256": "960ba61569ebecc5cf3653c077f62bfff7d47e20553d0252c902f5dfe74f4243"
+    },
+    {
       "change_id": "lsvktnvxtnkzvomtnmsyqzkoxtrzrpvy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4963d8ae7cdc02fb129b2ecd43b8d80cf1a1bf35",
+      "immutable": true,
       "summary": "Seal the measured Guava checker before the write-frame transfer",
       "body": "Preserve the seven sources of the checker that accepted both Guava public calls and first refused all three range-fill requests. Replay builds the two measured checker generations from separately verified source archives, so the comparison survives future checker changes.\n\nRebuilt the Guava executable bit for bit, verified the 88-case ledger against the source archive and passed all five selected test groups, including 59 Rust test binaries.",
       "log_sha256": "2e707404d5fd9491ada7f0e1aba27e6b7c939eee06bc1c4c693c3552904ee880"
     },
     {
       "change_id": "ntnokzsozulkknryyrpwlqkzwtkpurtr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "2d657ab9cb6024243ce6111e07c8fd501d7ddbe7",
+      "immutable": true,
       "summary": "Check JDK range fill and its caller frame (verification pending)",
       "body": "Starting from the sealed Guava checker, prove the valid-range guards, growing written prefix, unchanged outside heap and signed termination for the released Arrays.fill. Bind the caller and callee separately and prove the observed value for shared and independently sized roots. Rebound controls distinguish missing writes, the wrong cell value, invalid empty-range handling and observing the wrong root.\n\nBuilt the opt-in Rust kernel with warnings denied. Capped probes accepted the original JDK fill and 337 caller, refuted the original extra-write caller on a shared singleton and checked a bounds exception with distinct lengths. The changed suite passed all five groups, including 59 Rust test binaries. Job 20261123-204925-qualify-jdk-range-fill-and-the-independe rebuilds the bundles, rechecks 14 range cases and the 18 previous Guava controls, compares real JVM behavior and measures clean check costs.",
       "log_sha256": "0db70f70ec95b039d8a8e05e0a22dfe0156a63085231619f97fda4be61949b6b"
     },
     {
-      "change_id": "mtnrknsmxxpvunqnnkyyuvuuouqnxupn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261123-204925-qualify-jdk-range-fill-and-the-independe: passed: 1 passed step(s) in 9.4s, peak 109.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
-      "log_sha256": "940f67b550990e95d3fc2ddfa62b7ba231c22b8f67d4214bf7cc590b503960a5"
-    },
-    {
       "change_id": "mokloprplpnponwtolypvvtotmwzvzpk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "11cacf70a5ba492df3aed5898747724c9c5000f6",
+      "immutable": true,
       "summary": "Replay original frame failures on JVM inputs (verification pending)",
       "body": "Land the passing range qualification and retain its 14 Rust outcomes, five new JVM controls, 18 Guava regressions and median costs. The JDK fill and its caller check in 1.24 and 1.28 ms. The case ledger now records 107 outcomes. Update the decision and correct the abbreviated Ints.class hash in the setup notes.\n\nAdd a witness replay for the genuine historical Guava frame and JDK caller-read conditions. It binds the unaltered formula and failing query scope by digest and adds only concrete input equalities. Job 20261123-205832-replay-original-solver-failures-on-the-i also rechecks the saved range bundles in a separate checkout. Verified the 337 scope extraction byte for byte, checked every local decision link and passed all five selected test groups.",
       "log_sha256": "940f67b550990e95d3fc2ddfa62b7ba231c22b8f67d4214bf7cc590b503960a5"
     },
     {
-      "change_id": "utupyzpnlwxnxpvklrlntolttqvzxwxn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261123-205832-replay-original-solver-failures-on-the-i: passed: 3 passed step(s) in 2.0s, peak 86.5 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
-      "log_sha256": "960ba61569ebecc5cf3653c077f62bfff7d47e20553d0252c902f5dfe74f4243"
-    },
-    {
       "change_id": "kpkqomumtxxtlolrnqvmlqoxpmutlywt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a414a68b88bb70535153eb8b2dc53ee492c2313c",
+      "immutable": true,
       "summary": "Record the independently witnessed historical frame failures",
       "body": "The historical Guava input-heap and JDK caller-read obligations remained SAT at the same concrete inputs that the independent bytecode checker and JVM refuted. Both original, digest-bound query scopes became UNSAT on their benign controls. Historical dispositions remain unresolved, and the behavior of a deliberately faulted historical producer remains unmeasured.\n\nThe separate clean job reproduced all 14 range outcomes and both fixed-input solver comparisons. The evidence table checks 111 keyed outcomes and 142 pinned files across all 11 passing jobs. Checked the table under two hash seeds, verified all local decision links, validated the pipeline and passed all five selected test groups including 59 Rust test binaries.",
       "log_sha256": "960ba61569ebecc5cf3653c077f62bfff7d47e20553d0252c902f5dfe74f4243"
