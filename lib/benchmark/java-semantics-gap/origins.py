@@ -1,5 +1,6 @@
-"""Check which original classes each JVM actually loaded; replay standalone default and heap traces."""
+"""Bind the original JVM classes and repeat the native witnesses and standalone default/heap traces."""
 import argparse
+from dataclasses import replace
 import gzip
 import json
 import os
@@ -10,7 +11,8 @@ import sys
 import tempfile
 from urllib.parse import unquote, urlparse
 
-from campaign import CACHE, CLAIMS, GRAPHS, JDK, ROOT, compile_java, digest, java_source, javaenv, jvm_controls, write
+from campaign import CACHE, CLAIMS, GRAPHS, JDK, ROOT, compile_java, digest, java_source, javaenv, jvm_controls, replay_witness, write
+from direct_arrays import HISTORIES, PHASE
 from scorecard import BASE, collected, read, require
 
 sys.path.insert(0,str(ROOT/"examples/tools"))
@@ -37,6 +39,23 @@ def checker(report):
     exe=Path(os.environ.get("SEMANTICS_BINDING_CHECKER",receipt["jvmcontract"]["path"]))
     require(digest(exe)==report["checkerSha256"],job+" binding requires the measured checker bytes")
     return exe
+
+
+def repeat_refutations(subject, report, work, cp, env):
+    claims={c.method:c for c in subject.claims}
+    replays={}
+    for row in report["runs"]:
+        if row["engine"]!="native" or row["verdict"]!="violation":
+            continue
+        name=row["method"]
+        case=work/name
+        case.mkdir(parents=True)
+        original=row["jvmReplay"]
+        again=replay_witness(subject, claims[name], {"counterexample":{"inputs":original["inputs"]}}, case, cp, env)
+        require(again==original and again["exit"]==0 and again["outcome"]=="refuted",
+                f"{subject.owner}#{name}: saved native witness did not repeat on the original classes")
+        replays[name]=again["sourceSha256"]
+    return replays
 
 
 def origins(key,phase,work,helper):
@@ -81,8 +100,25 @@ def origins(key,phase,work,helper):
         require(expected==names[name] and not class_binding.disagreement(name,selected,str(expected),sha),
                 f"{key}: class provider or bytes disagree for {name}")
         bound[name]={"provider":cp.index(expected),"entry":selected["entry"],"sha256":sha}
-    return {"source":record["source"],"checkerSha256":record["checkerSha256"],"jdkSha256":record["modulesSha256"],
+    result={"source":record["source"],"checkerSha256":record["checkerSha256"],"jdkSha256":record["modulesSha256"],
             "classpath":record["classpath"],"jvmChecks":measured["checks"],"classes":bound}
+    if phase==PHASE:
+        result["nativeRefutations"]=repeat_refutations(subject,record,work/"witnesses",cp,env)
+        if key in ("arrays","gson-parent","gson-fix"):
+            if key=="arrays":
+                extra, file = HISTORIES, BASE/phase/"histories/measurement.json"
+            else:
+                syntax=next(c for c in subject.claims if c.method=="syntax")
+                extra=replace(subject,owner="GsonExceptionKind",claims=(replace(syntax,method="casts"),))
+                file=BASE/phase/key/"exception-control/measurement.json"
+            receipt=read(file)
+            collected(file,receipt["job"],record["source"])
+            made=work/"companion"
+            compile_java([source.parents[2]/"controls"/(extra.owner+".java")],made,cp,env)
+            rebuilt={**record["classes"],**{p.name:digest(p) for p in made.glob("*.class")}}
+            require(rebuilt==receipt["classes"],key+" different companion class bytes")
+            result["companionRefutations"]=repeat_refutations(extra,receipt,work/"companion-witnesses",[made,*cp],env)
+    return result
 
 
 def array_witnesses(work):
@@ -157,10 +193,12 @@ def default_witnesses(work):
 
 if __name__=="__main__":
     cli=argparse.ArgumentParser(description=__doc__)
-    cli.add_argument("--phase",choices=("opening","final","qualified"),default="qualified")
-    cli.add_argument("--output",type=Path,default=BASE/"origins.json")
+    cli.add_argument("--phase",choices=("opening","final","qualified","heap-and-gson"),default="heap-and-gson")
+    cli.add_argument("--output",type=Path)
     cli.add_argument("--check",action="store_true")
     a=cli.parse_args()
+    if a.output is None:
+        a.output=(BASE/a.phase if a.phase=="heap-and-gson" else BASE)/"origins.json"
     with tempfile.TemporaryDirectory(prefix="semantics-origins-") as tmp:
         work=Path(tmp);helper=work/"observer";helper.mkdir()
         subprocess.run([JDK/"bin/javac","-d",helper,ROOT/"examples/tools/targets/java/LoadedClasses.java"],check=True)

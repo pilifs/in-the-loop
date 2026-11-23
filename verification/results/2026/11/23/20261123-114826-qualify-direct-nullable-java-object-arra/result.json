@@ -1,0 +1,246 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-114826-qualify-direct-nullable-java-object-arra",
+  "title": "Qualify direct nullable Java object arrays and identity witnesses",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.0s, peak 65.5 MiB (estimated 2m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "declared output verification/java-semantics-gap/direct-arrays/histories was not produced",
+    "step 1 (Measure the frozen inputs and direct alias histories) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-114826-qualify-direct-nullable-java-object-arra.json",
+    "sha256": "9cda42134e2607dc328aa493b975e7b5b92c62a783414547ea30eec96e86ef81",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-114826-qualify-direct-nullable-java-object-arra",
+      "title": "Qualify direct nullable Java object arrays and identity witnesses",
+      "description": "Recheck all five frozen ReferenceCells properties on the original Temurin classfiles with both explicit strict engines. Independently check mutation through two direct cells across all signed field values and reconstruct the equal-distinct and shared Integer.MAX_VALUE counterexamples on fresh original JVMs.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "379"
+        ]
+      },
+      "expected": "All five frozen native rows and three direct mutation controls have the expected complete proof or an exactly replayed JVM refutation. The two mutation witnesses have the required different identity graphs.",
+      "submitted": {
+        "at": "2026-11-23T11:48:26+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Measure the frozen inputs and direct alias histories",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/direct-arrays/arrays",
+        "verification/java-semantics-gap/direct-arrays/histories"
+      ]
+    }
+  },
+  "sourceCommit": "906c4f56bdd3f881a842830469ebae00f49d8bd9",
+  "startedAt": "2026-11-23T11:58:58+00:00",
+  "finishedAt": "2026-11-23T12:02:09+00:00",
+  "wallSeconds": 191.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 634156,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 68665344,
+    "wallSeconds": 3.0,
+    "cpuSeconds": 4.5,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 178.671,
+      "cpuSeconds": 178.764,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2255777792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "6a075d4117743abf9ade9a47ba92e26df17518fc2f6d7a19be878c56b627e8fd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-114826-qualify-direct-nullable-java-object-arra/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 58s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Measure the frozen inputs and direct alias histories",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 3.027,
+      "cpuSeconds": 4.509,
+      "cpuThrottledSeconds": 0.119,
+      "peakMemoryBytes": 68665344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-frozen-inputs-and.log",
+        "lines": 20,
+        "bytes": 1212,
+        "sha256": "4d3e2476a82703e2aecb3ef0a586ebafbf39ed192da6eb0f4f8de5c32a9433d8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "arrays categories-native correct 0.013",
+        "arrays categories-jbmc unsupported 0.002",
+        "arrays noNullCell-native correct 0.069",
+        "arrays noNullCell-jbmc unsupported 0.003",
+        "arrays noItemCell-native correct 0.068",
+        "arrays noItemCell-jbmc unsupported 0.003",
+        "arrays followsAlias-native correct 0.017",
+        "arrays followsAlias-jbmc correct 0.249",
+        "arrays alwaysShares-native correct 0.021",
+        "arrays alwaysShares-jbmc correct 0.145",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261123-114826-qualify-direct-nullable-java-object-arra/lib/benchmark/java-semantics-gap/direct_arrays.py\", line 111, in <module>",
+        "    main()",
+        "    ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261123-114826-qualify-direct-nullable-java-object-arra/lib/benchmark/java-semantics-gap/direct_arrays.py\", line 71, in main",
+        "    unchanged_inputs(\"arrays\", frozen)",
+        "    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261123-114826-qualify-direct-nullable-java-object-arra/lib/benchmark/java-semantics-gap/direct_arrays.py\", line 53, in unchanged_inputs",
+        "    raise ValueError(f\"{key}: frozen {field} changed\")",
+        "ValueError: arrays: frozen scope changed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/direct-arrays/arrays/measurement.json",
+      "change": "added",
+      "bytes": 25254,
+      "sha256": "bb06eead7e5f277d4309100e00debadbee5d493fbead20c807b35656c6a1f0ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/direct-arrays/arrays/raw.tar.gz",
+      "change": "added",
+      "bytes": 6058,
+      "sha256": "f33186056e67cb018e0a9a95fe2b1d3806cf569801e70ed785cc4fcf4c6e6e5d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T12:02:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/java-semantics-gap/direct-arrays/arrays/measurement.json",
+      "verification/java-semantics-gap/direct-arrays/arrays/raw.tar.gz"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "36562f06cf70dd51b374a083d588b146296b6fca",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/36562f06cf70dd51b374a083d588b146296b6fca/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T120209Z-89062866a037d557",
+      "outputs": "20261123T120209Z-916599299e50032b",
+      "diff": "20261123T120209Z-940593085db55bb0",
+      "workdir": "20261123T120218Z-776726f7f735aa57"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261123-114826-qualify-direct-nullable-java-object-arra"
+}

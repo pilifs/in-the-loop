@@ -1,0 +1,139 @@
+{
+  "job": "20261123-121039-qualify-gson-parent-and-fix-and-all-rema",
+  "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+  "checkerSha256": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
+  "jvmSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "modulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "classpath": [
+    "adapter",
+    {
+      "path": "artifacts/gson-719-parent.jar",
+      "sha256": "aa5c6883a29f7138e0452f8a9cd5c19efd9adba228f0d67024cd305cdfb3eb89"
+    }
+  ],
+  "scope": {
+    "example": 379,
+    "owner": "GsonExceptionKind",
+    "graph": "gson-parent",
+    "claims": [
+      {
+        "method": "casts",
+        "parameters": "int selection",
+        "guard": "selection >= 0 && selection < 4",
+        "holds": [
+          [
+            "0"
+          ],
+          [
+            "1"
+          ],
+          [
+            "2"
+          ],
+          [
+            "3"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      }
+    ],
+    "bound": 8,
+    "unwind": 16
+  },
+  "sourceSha256": "cff41bf30ccec54fa2ad9cef74370772cfe45a7c2a88beeab4a8da53f0c897a1",
+  "classes": {
+    "GsonExceptionKind.class": "4237f80d49e7c5f196e3ed647ea70dbad9cef2937da65d45552cc391cdcfc663",
+    "GsonRequestedClass.class": "ebe3b08c2bb01b4de9f9c5cc1e4a6212a854f61f82f3d1a173f07ef3626186b5"
+  },
+  "originalJvm": {
+    "checks": 4,
+    "sourceSha256": "5e25232e0cd83d55439cb26792f2821e4f0104f734d9590b525a02e930fb1dd1",
+    "stdout": "4 original checks passed"
+  },
+  "runs": [
+    {
+      "method": "casts",
+      "engine": "native",
+      "exit": 0,
+      "seconds": 7.495,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "selection",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "selection: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "selection >= 0 && selection < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          },
+          {
+            "kind": "library",
+            "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found casts(selection=0).",
+          "witness": "casts(selection=0)"
+        }
+      }
+    }
+  ],
+  "rawSha256": "ad4ff58805254b94db4935266d17decafdbdec1a6031bbfc143b5efcd7417937"
+}

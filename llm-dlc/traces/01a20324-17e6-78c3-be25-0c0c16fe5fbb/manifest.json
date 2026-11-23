@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T12:33:38.435Z",
-  "duration_seconds": 88191,
+  "ended": "2026-11-23T12:55:59.161Z",
+  "duration_seconds": 89532,
   "stats": {
     "turns": 18,
-    "api_calls": 3434,
-    "tool_calls": 8007,
+    "api_calls": 3503,
+    "tool_calls": 8148,
     "tool_errors": 209,
     "compactions": 14,
     "peak_context_tokens": 550118,
     "usage": {
-      "input_tokens": 5062818,
-      "output_tokens": 1565841,
-      "cache_read_input_tokens": 894227712,
+      "input_tokens": 5123341,
+      "output_tokens": 1599171,
+      "cache_read_input_tokens": 920468992,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 4342,
-    "exec": 3121,
-    "apply_patch": 336,
+    "Bash": 4403,
+    "exec": 3189,
+    "apply_patch": 348,
     "wait": 116,
     "sleep": 31,
     "send_message": 23,
@@ -401,24 +401,24 @@
     {
       "index": 14,
       "started": "2026-11-23T11:33:22.089Z",
-      "ended": "2026-11-23T12:33:38.435Z",
+      "ended": "2026-11-23T12:55:59.161Z",
       "turns": 1,
-      "api_calls": 233,
+      "api_calls": 302,
       "usage": {
-        "input_tokens": 560158,
-        "output_tokens": 94282,
-        "cache_read_input_tokens": 56806144,
+        "input_tokens": 620681,
+        "output_tokens": 127612,
+        "cache_read_input_tokens": 83047424,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 358065
+      "peak_context_tokens": 413986
     }
   ],
   "log": {
-    "sha256": "e7acf5b22cbfa03b155fedc7af2be318272f0387bbc0e6a80a18b92f86a4170d",
-    "bytes": 51631902,
-    "lines": 25953,
-    "gzip_bytes": 9771382,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/e7acf5b22cbfa03b155fedc7af2be318272f0387bbc0e6a80a18b92f86a4170d.jsonl.gz"
+    "sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69",
+    "bytes": 52254607,
+    "lines": 26472,
+    "gzip_bytes": 9861885,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1525,6 +1525,70 @@
       "summary": "Enumerate original Java monitor schedules (verification pending)",
       "body": "A separate two-thread checker follows the frozen caller and worker bytecodes and all completed sequentially consistent instruction interleavings, including the declaring-class monitor of a static synchronized method. It models successful platform-thread construction, start and uninterrupted join. A differential run changes only the treatment of the synchronized modifier. This experiment has its own scope alongside the ordinary verifier's three thread-construction refusals.\n\nThe original JVM debugger now also holds the mixed-lock worker before its first instruction until the caller saves its read. All four physical schedules replayed, including both the protected and exposed mixed-lock results. The changed suites passed both groups, the example 391 validator passed with replay, and a capped probe of the mixed case found 239 reachable states and both answers. Job 20261123-122845-enumerate-the-original-two-thread-class collects complete state and schedule counts, instruction-level witnesses, disassembly digests and original JVM observations.",
       "log_sha256": "e7acf5b22cbfa03b155fedc7af2be318272f0387bbc0e6a80a18b92f86a4170d"
+    },
+    {
+      "change_id": "kyxrwttytkkqspllqlkzzumqqurtpmox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record VF-055: the native checker took the declaration-order interface default",
+      "body": "The jbmc-java-semantics-gap run found that the native checker selected the first-declared interface default rather than the maximally specific one: example 382's dispatch was falsely refuted and firstDeclared falsely proved, both contradicted by the JVM (counterexample x=0). Fixed in stypsqmy; the brief's 98 statements and the conformance tests were rechecked and unchanged. VF-055 records it and leaves open an audit of earlier native verdicts that dispatch through library defaults. Also the watcher's decision single-jbmc-java-semantics-gap-D001 (continue: 13/13 historical JBMC-only claims, campaign 12/60 to 50/60). Documentation and decision record only.",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
+    },
+    {
+      "change_id": "rnxpqzpmpkrsxrysyqlpwrwrxyyqktts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261123-114826-qualify-direct-nullable-java-object-arra: failed: 1 failed step(s) in 3.0s, peak 65.5 MiB (estimated 2m00s, 3.0 GiB); 2 output file(s) changed 20261123-115145-recheck-the-other-55-frozen-native-java: failed: 1 failed step(s) in 1.4s, peak 68.1 MiB (estimated 3m00s, 3.0 GiB); 2 output file(s) changed Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
+    },
+    {
+      "change_id": "ynyqqlyxoyyomokrlzvqpoyxswukrylw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-115155-recheck-the-38-historical-java-statement: passed: 4 passed step(s) in 9m49s, peak 5.8 GiB (estimated 8m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
+    },
+    {
+      "change_id": "zwswywqxnkwlzoopmoulylnutvmzvnzy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-121039-qualify-all-direct-array-heaps-on-the-co: passed: 1 passed step(s) in 4.6s, peak 66.9 MiB (estimated 2m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
+    },
+    {
+      "change_id": "vvymmmxkpzmxkzkoxoquworywpxykwmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261123-121039-qualify-gson-parent-and-fix-and-all-rema: passed: 1 passed step(s) in 2m51s, peak 640.5 MiB (estimated 4m00s, 3.0 GiB); 44 output file(s) changed Applied 44 output(s). 20261123-122845-enumerate-the-original-two-thread-class: passed: 1 passed step(s) in 6.0s, peak 91.4 MiB (estimated 1m00s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
+    },
+    {
+      "change_id": "mozruysvqwupqskmmvouvuzzmswvmwoz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-121039-qualify-38-historical-statements-on-the: passed: 4 passed step(s) in 9m46s, peak 5.8 GiB (estimated 8m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
+    },
+    {
+      "change_id": "otkpumnsrmrrwsqmwprtmwwztxnqukwt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
+    },
+    {
+      "change_id": "kqkzmrxksvuuwyrnzwsnznwwpkovpqku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay the final native Java witnesses (verification pending)",
+      "body": "Recompile the original callers, compare 283 class and provider digests across 21 JVM classpaths, and reconstruct every qualified native refutation from its saved inputs on a fresh JVM. All 24 registered witnesses and three extra heap or Gson witnesses reproduced with the same replay-source digests. The original 258 physical controls, two stock array traces and eight default-method comparator traces were also checked. Running origins.py again with --check reproduced the full audit.\n\nThe matched historical differential, 60 native results and exhaustive schedule receipts have landed. Nine public entries already have final integrated JBMC receipts. Job 20261123-124700-match-the-other-51-integrated-jbmc-rows repeats the other 51 explicitly against the identical checker source fb3c6c2c9735, original JDK, input classes and budgets. All 16 example validators passed. The measured native results and their independent replay audit are distinct from the pending comparator repeat.",
+      "log_sha256": "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69"
     }
   ],
   "logs": {
@@ -1635,6 +1699,12 @@
       "lines": 7976,
       "gzip_bytes": 8683852,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/4601f0b5b20c1c5046bfd735bde0a7605b2171294f481aa92951f0496cb86fdb.jsonl.gz"
+    },
+    "4749126b05791777594e4c0e526a2f8be259726be7a543e1753a9d4f6a838f69": {
+      "bytes": 52254607,
+      "lines": 26472,
+      "gzip_bytes": 9861885,
+      "url": null
     },
     "479f943d49e6a63ba66acb7cd1e8decf0b987a2a174283cfb717b4bfdf91be73": {
       "bytes": 18020163,

@@ -1,0 +1,191 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-122845-enumerate-the-original-two-thread-class",
+  "title": "Enumerate the original two-thread class and instance monitor schedules",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.0s, peak 91.4 MiB (estimated 1m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (Explore original bytecode and replay both monitor orders) was held back 4.4s by its 1-CPU quota in 6.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-122845-enumerate-the-original-two-thread-class.json",
+    "sha256": "541f7d9881a847c29a8493b8ff461d9f0e4b7ea0ec44074725ec88aefae3f32b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-122845-enumerate-the-original-two-thread-class",
+      "title": "Enumerate the original two-thread class and instance monitor schedules",
+      "description": "Explore all sequentially consistent application-bytecode interleavings of the three frozen MonitorIdentity callers, one successful platform-thread start and uninterrupted join. Record both observable orders for mixed locks and the protected reads for class-matched locks. Reconstruct all four outcomes on the original JVM, and vary only the treatment of the static synchronized modifier as a comparator control.",
+      "kind": "model",
+      "capabilities": [
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "391"
+        ]
+      },
+      "expected": "Every reachable state can progress to termination, class-matched callers return true, mixed callers return both answers, and the original JVM replays each outcome. Ignoring static synchronization must admit the additional false outcome.",
+      "submitted": {
+        "at": "2026-11-23T12:28:45+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Explore original bytecode and replay both monitor orders",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/monitor_schedules.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/monitor-schedules"
+      ]
+    }
+  },
+  "sourceCommit": "500257aef0266422a6803cb88827233cf946fb43",
+  "startedAt": "2026-11-23T12:34:17+00:00",
+  "finishedAt": "2026-11-23T12:34:31+00:00",
+  "wallSeconds": 14.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 894710,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 95805440,
+    "wallSeconds": 6.0,
+    "cpuSeconds": 5.8,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Explore original bytecode and replay both monitor orders",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/monitor_schedules.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.013,
+      "cpuSeconds": 5.829,
+      "cpuThrottledSeconds": 4.359,
+      "peakMemoryBytes": 95805440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-explore-original-bytecode-and.log",
+        "lines": 1,
+        "bytes": 122,
+        "sha256": "59a9d48acb5abbf2a0dbcd4911b879b95966fda3c8c32e34a98a3463f409b8d2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'matched': [(5, True, 127127)], 'mixed': [(5, True, 1143065), (6, False, 715)], 'synchronizedMethod': [(5, True, 5071)]}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/monitor-schedules/MonitorIdentity$Worker.javap",
+      "change": "added",
+      "bytes": 1287,
+      "sha256": "4ca80361d3a791ee62bdee31af1c90d8b32a386505695d46d68e4a03e626918b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/monitor-schedules/MonitorIdentity.javap",
+      "change": "added",
+      "bytes": 4101,
+      "sha256": "c126f1b7f7ebf3dd229e923f6bd19d58fe15e5362f198a938ceb992ae551fc98",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/monitor-schedules/measurement.json",
+      "change": "added",
+      "bytes": 15069,
+      "sha256": "f9f9b44886b495a780870a8c48542a088a99f7712662a3a7849c89df43c43dd8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T12:35:48+00:00",
+    "applied": [
+      "verification/java-semantics-gap/monitor-schedules/MonitorIdentity$Worker.javap",
+      "verification/java-semantics-gap/monitor-schedules/MonitorIdentity.javap",
+      "verification/java-semantics-gap/monitor-schedules/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T123431Z-902282dfddecf989",
+      "outputs": "20261123T123431Z-96705943af78d993",
+      "diff": "20261123T123432Z-0183768cc3013f1a"
+    }
+  }
+}

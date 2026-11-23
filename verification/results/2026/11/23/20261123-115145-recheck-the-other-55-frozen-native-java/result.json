@@ -1,0 +1,236 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-115145-recheck-the-other-55-frozen-native-java",
+  "title": "Recheck the other 55 frozen native Java statements after array binding",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.4s, peak 68.1 MiB (estimated 3m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "declared output verification/java-semantics-gap/direct-arrays/numbers was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/prefix was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/receiver was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/stores was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/store-iterator was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/dispatch was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/endian was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/surrogates was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/deque was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/construction was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/radix was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/nibble was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/enum was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/locals was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/monitors was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/gson-parent was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/guava-parent was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/gson-fix was not produced",
+    "declared output verification/java-semantics-gap/direct-arrays/guava-fix was not produced",
+    "step 1 (Repeat the other native classpaths) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-115145-recheck-the-other-55-frozen-native-java.json",
+    "sha256": "9f7c1712b4b1cd64c32afc89c8e3de8bf0ee72fb709c6c845d812153236c8d37",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-115145-recheck-the-other-55-frozen-native-java",
+      "title": "Recheck the other 55 frozen native Java statements after array binding",
+      "description": "Run all 20 other original caller classpaths at their frozen 120-second budgets on the same checker. Compare claim, class and JDK digests, keep open results, and reject loss of a previous proof or original-JVM-confirmed violation.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "Every frozen input matches its earlier measurement and all earlier native decisions qualify again.",
+      "submitted": {
+        "at": "2026-11-23T11:51:45+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the other native classpaths",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py --controls",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/direct-arrays/lists",
+        "verification/java-semantics-gap/direct-arrays/numbers",
+        "verification/java-semantics-gap/direct-arrays/prefix",
+        "verification/java-semantics-gap/direct-arrays/receiver",
+        "verification/java-semantics-gap/direct-arrays/stores",
+        "verification/java-semantics-gap/direct-arrays/store-iterator",
+        "verification/java-semantics-gap/direct-arrays/dispatch",
+        "verification/java-semantics-gap/direct-arrays/endian",
+        "verification/java-semantics-gap/direct-arrays/surrogates",
+        "verification/java-semantics-gap/direct-arrays/deque",
+        "verification/java-semantics-gap/direct-arrays/construction",
+        "verification/java-semantics-gap/direct-arrays/radix",
+        "verification/java-semantics-gap/direct-arrays/nibble",
+        "verification/java-semantics-gap/direct-arrays/enum",
+        "verification/java-semantics-gap/direct-arrays/locals",
+        "verification/java-semantics-gap/direct-arrays/monitors",
+        "verification/java-semantics-gap/direct-arrays/gson-parent",
+        "verification/java-semantics-gap/direct-arrays/guava-parent",
+        "verification/java-semantics-gap/direct-arrays/gson-fix",
+        "verification/java-semantics-gap/direct-arrays/guava-fix"
+      ]
+    }
+  },
+  "sourceCommit": "906c4f56bdd3f881a842830469ebae00f49d8bd9",
+  "startedAt": "2026-11-23T11:58:58+00:00",
+  "finishedAt": "2026-11-23T12:02:08+00:00",
+  "wallSeconds": 190.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 634156,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 71409664,
+    "wallSeconds": 1.4,
+    "cpuSeconds": 2.3,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the other native classpaths",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py --controls",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 1.404,
+      "cpuSeconds": 2.261,
+      "cpuThrottledSeconds": 0.107,
+      "peakMemoryBytes": 71409664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-other-native-classp.log",
+        "lines": 12,
+        "bytes": 904,
+        "sha256": "f1f7a18a0999cfd6734147de3e41de9fbbd4b0ef339507f9f6a6522b9f83ec09",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "lists fromArray-native correct 0.02",
+        "lists fromCollection-native correct 0.015",
+        "lists followsSlot-native correct 0.027",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261123-115145-recheck-the-other-55-frozen-native-java/lib/benchmark/java-semantics-gap/direct_arrays.py\", line 109, in <module>",
+        "    controls()",
+        "    ~~~~~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261123-115145-recheck-the-other-55-frozen-native-java/lib/benchmark/java-semantics-gap/direct_arrays.py\", line 62, in controls",
+        "    previous = unchanged_inputs(key, report)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261123-115145-recheck-the-other-55-frozen-native-java/lib/benchmark/java-semantics-gap/direct_arrays.py\", line 53, in unchanged_inputs",
+        "    raise ValueError(f\"{key}: frozen {field} changed\")",
+        "ValueError: lists: frozen scope changed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/direct-arrays/lists/measurement.json",
+      "change": "added",
+      "bytes": 11898,
+      "sha256": "d2ede5ca4a8d6ffe3f3387fd455805ba6a1ac53a292036631d3e6a86177baa4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/direct-arrays/lists/raw.tar.gz",
+      "change": "added",
+      "bytes": 2792,
+      "sha256": "e7e5136ec56a33cd8cae4789aeed25c0a88ba94b9084e9894d6a1aaf553ef464",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T12:02:43+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/java-semantics-gap/direct-arrays/lists/measurement.json",
+      "verification/java-semantics-gap/direct-arrays/lists/raw.tar.gz"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "36562f06cf70dd51b374a083d588b146296b6fca",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/36562f06cf70dd51b374a083d588b146296b6fca/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T120208Z-2955235ad5c223c8",
+      "outputs": "20261123T120208Z-31870788ab27f158",
+      "diff": "20261123T120208Z-3391369a0e049dc8",
+      "workdir": "20261123T120216Z-9789559acdfae140"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261123-115145-recheck-the-other-55-frozen-native-java"
+}

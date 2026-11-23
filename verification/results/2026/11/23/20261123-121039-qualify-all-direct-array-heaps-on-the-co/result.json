@@ -1,0 +1,215 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-121039-qualify-all-direct-array-heaps-on-the-co",
+  "title": "Qualify all direct array heaps on the collection and Gson source",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.6s, peak 66.9 MiB (estimated 2m00s, 3.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-121039-qualify-all-direct-array-heaps-on-the-co.json",
+    "sha256": "66d1b32661c57eb1773bbdbcbbcadb10a552a785f073a6cfcaeb6c97bf205550",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-121039-qualify-all-direct-array-heaps-on-the-co",
+      "title": "Qualify all direct array heaps on the collection and Gson source",
+      "description": "Recheck five original strict claims with both engines and three direct mutation histories on the same class bytes. The preserved JSON scope is compared to the in-memory scope in its serialized form. Rebuild each native counterexample, including arbitrary fields and shared cells, on the original Temurin JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "379"
+        ]
+      },
+      "expected": "All five frozen native rows and three direct mutation controls have the expected complete proof or an exactly replayed JVM refutation. The two mutation witnesses have the required different identity graphs.",
+      "submitted": {
+        "at": "2026-11-23T12:10:39+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Measure the frozen inputs and direct alias histories",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/heap-and-gson/arrays",
+        "verification/java-semantics-gap/heap-and-gson/histories"
+      ],
+      "supersedes": "20261123-114826-qualify-direct-nullable-java-object-arra"
+    }
+  },
+  "sourceCommit": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+  "startedAt": "2026-11-23T12:26:26+00:00",
+  "finishedAt": "2026-11-23T12:29:49+00:00",
+  "wallSeconds": 203.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 894710,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 70144000,
+    "wallSeconds": 4.6,
+    "cpuSeconds": 7.0,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure the frozen inputs and direct alias histories",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 4.608,
+      "cpuSeconds": 7.019,
+      "cpuThrottledSeconds": 0.282,
+      "peakMemoryBytes": 70144000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-frozen-inputs-and.log",
+        "lines": 11,
+        "bytes": 476,
+        "sha256": "4718d93dda4ef6f1550517233bf1e83981cac3614109848d7f2b9c2a2ee3a5e7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "arrays categories-native correct 0.013",
+        "arrays categories-jbmc unsupported 0.002",
+        "arrays noNullCell-native correct 0.061",
+        "arrays noNullCell-jbmc unsupported 0.003",
+        "arrays noItemCell-native correct 0.066",
+        "arrays noItemCell-jbmc unsupported 0.003",
+        "arrays followsAlias-native correct 0.018",
+        "arrays followsAlias-jbmc correct 0.248",
+        "arrays alwaysShares-native correct 0.024",
+        "arrays alwaysShares-jbmc correct 0.149",
+        "Five frozen native decisions and three direct mutation histories qualified."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
+      "change": "added",
+      "bytes": 25254,
+      "sha256": "05d05b15a6ee5cec7e454d530d41daa2dbde58e1758e8cb03c1eef9ca19cb498",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/arrays/raw.tar.gz",
+      "change": "added",
+      "bytes": 6054,
+      "sha256": "2037be8d4ead56674d30e014899e25634880ab79cd6cf9feef25b3ea8a82aca0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/histories/measurement.json",
+      "change": "added",
+      "bytes": 11527,
+      "sha256": "a95ea0eb67618b6891a2f682a883acd35e11a40246fc0ed4a1c53afeed452f8c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/histories/raw.tar.gz",
+      "change": "added",
+      "bytes": 3118,
+      "sha256": "152572018b42d45bd296b4dc239c30c8e243a078dfd29a9d1f76666fe83b2d9f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T12:30:03+00:00",
+    "applied": [
+      "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/arrays/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/histories/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/histories/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6e1f007edda58a1a7cc398377abc87e546e3825c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6e1f007edda58a1a7cc398377abc87e546e3825c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T122949Z-30564915df303de7",
+      "outputs": "20261123T122949Z-32652478b586b689",
+      "diff": "20261123T122949Z-3444620396f110c3"
+    }
+  }
+}

@@ -1,0 +1,575 @@
+{
+  "source": "500257aef0266422a6803cb88827233cf946fb43",
+  "job": "20261123-122845-enumerate-the-original-two-thread-class",
+  "classes": {
+    "MonitorIdentity.class": "6bfcc992c1d5bd773a7eebe861460b0c871cf62a6b78974c59b0a3e4d9534096",
+    "MonitorIdentity$1.class": "10d18593a4cc6e0703f2841bec8838a662b0921329908e035589aa655bafcdd5",
+    "MonitorIdentity$Worker.class": "50c56bcda12eeeb85a8e6982f14e28caddbb2a79be0c663314624c33f571186e"
+  },
+  "adapterSha256": "df041fba436a8ffeb7df59a0961ba53ba383b8b3af47c049cb872a2067a89076",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "modelSha256": "926bbe8c532e56e1d389bbb3744bbef35ad48b5a0a5178c74fc4f7cd6e1eb105",
+  "monitorRulesSha256": "805b606f1ca9840d247646cea421fbf61e4e6991faa9e54b92e2fce9343e8c46",
+  "disassemblerSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
+  "listings": {
+    "MonitorIdentity": {
+      "file": "MonitorIdentity.javap",
+      "sha256": "c126f1b7f7ebf3dd229e923f6bd19d58fe15e5362f198a938ceb992ae551fc98"
+    },
+    "MonitorIdentity$Worker": {
+      "file": "MonitorIdentity$Worker.javap",
+      "sha256": "4ca80361d3a791ee62bdee31af1c90d8b32a386505695d46d68e4a03e626918b"
+    }
+  },
+  "scope": "All completed sequentially consistent instruction interleavings of the original caller and one worker. Construction, start and uninterrupted join succeed. A lifecycle call is one model transition. Counts omit idle steps, allocation failures and asynchronous exceptions.",
+  "runs": {
+    "matched": {
+      "states": 131,
+      "transitions": 204,
+      "outcomes": [
+        {
+          "read": 5,
+          "joinedValue": 6,
+          "returned": true,
+          "instructionSchedules": 127127,
+          "witness": [
+            [
+              "caller",
+              "MonitorIdentity$Worker.<init>",
+              1,
+              "successful platform-thread construction"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              26,
+              "monitorenter Worker.class"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              28,
+              "putstatic shared=5"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              32,
+              "start worker"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              35,
+              "getstatic shared=5"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              50,
+              "monitorexit Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              17,
+              "monitorenter Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              20,
+              "putstatic shared=6"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              24,
+              "monitorexit Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              33,
+              "worker finished"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              63,
+              "join finished worker"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              70,
+              "getstatic shared=6"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.matched",
+              5,
+              "return 1"
+            ]
+          ]
+        }
+      ]
+    },
+    "mixed": {
+      "states": 239,
+      "transitions": 399,
+      "outcomes": [
+        {
+          "read": 5,
+          "joinedValue": 6,
+          "returned": true,
+          "instructionSchedules": 1143065,
+          "witness": [
+            [
+              "caller",
+              "MonitorIdentity$Worker.<init>",
+              1,
+              "successful platform-thread construction"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              26,
+              "monitorenter worker instance"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              28,
+              "putstatic shared=5"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              32,
+              "start worker"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              35,
+              "getstatic shared=5"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              50,
+              "monitorexit worker instance"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              17,
+              "monitorenter Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              20,
+              "putstatic shared=6"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              24,
+              "monitorexit Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              33,
+              "worker finished"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              63,
+              "join finished worker"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              70,
+              "getstatic shared=6"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.mixed",
+              5,
+              "return 1"
+            ]
+          ]
+        },
+        {
+          "read": 6,
+          "joinedValue": 6,
+          "returned": false,
+          "instructionSchedules": 715,
+          "witness": [
+            [
+              "caller",
+              "MonitorIdentity$Worker.<init>",
+              1,
+              "successful platform-thread construction"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              26,
+              "monitorenter worker instance"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              28,
+              "putstatic shared=5"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              32,
+              "start worker"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              17,
+              "monitorenter Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              20,
+              "putstatic shared=6"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              35,
+              "getstatic shared=6"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              50,
+              "monitorexit worker instance"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              24,
+              "monitorexit Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              33,
+              "worker finished"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              63,
+              "join finished worker"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.mixed",
+              5,
+              "return 0"
+            ]
+          ]
+        }
+      ]
+    },
+    "synchronizedMethod": {
+      "states": 95,
+      "transitions": 136,
+      "outcomes": [
+        {
+          "read": 5,
+          "joinedValue": 6,
+          "returned": true,
+          "instructionSchedules": 5071,
+          "witness": [
+            [
+              "caller",
+              "MonitorIdentity$Worker.<init>",
+              1,
+              "successful platform-thread construction"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              26,
+              "monitorenter Worker.class"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              28,
+              "putstatic shared=5"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              32,
+              "start worker"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              35,
+              "getstatic shared=5"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              50,
+              "monitorexit Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              7,
+              "enter static synchronized method on Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.write",
+              2,
+              "putstatic shared=6"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.write",
+              5,
+              "release implicit Worker.class"
+            ],
+            [
+              "worker",
+              "MonitorIdentity$Worker.run",
+              33,
+              "worker finished"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              63,
+              "join finished worker"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.observe",
+              70,
+              "getstatic shared=6"
+            ],
+            [
+              "caller",
+              "MonitorIdentity.synchronizedMethod",
+              5,
+              "return 1"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "ignoringStaticSynchronized": {
+    "states": 185,
+    "transitions": 297,
+    "outcomes": [
+      {
+        "read": 5,
+        "joinedValue": 6,
+        "returned": true,
+        "instructionSchedules": 92092,
+        "witness": [
+          [
+            "caller",
+            "MonitorIdentity$Worker.<init>",
+            1,
+            "successful platform-thread construction"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            26,
+            "monitorenter Worker.class"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            28,
+            "putstatic shared=5"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            32,
+            "start worker"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            35,
+            "getstatic shared=5"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            50,
+            "monitorexit Worker.class"
+          ],
+          [
+            "worker",
+            "MonitorIdentity$Worker.write",
+            2,
+            "putstatic shared=6"
+          ],
+          [
+            "worker",
+            "MonitorIdentity$Worker.run",
+            33,
+            "worker finished"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            63,
+            "join finished worker"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            70,
+            "getstatic shared=6"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.synchronizedMethod",
+            5,
+            "return 1"
+          ]
+        ]
+      },
+      {
+        "read": 6,
+        "joinedValue": 6,
+        "returned": false,
+        "instructionSchedules": 220,
+        "witness": [
+          [
+            "caller",
+            "MonitorIdentity$Worker.<init>",
+            1,
+            "successful platform-thread construction"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            26,
+            "monitorenter Worker.class"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            28,
+            "putstatic shared=5"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            32,
+            "start worker"
+          ],
+          [
+            "worker",
+            "MonitorIdentity$Worker.write",
+            2,
+            "putstatic shared=6"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            35,
+            "getstatic shared=6"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            50,
+            "monitorexit Worker.class"
+          ],
+          [
+            "worker",
+            "MonitorIdentity$Worker.run",
+            33,
+            "worker finished"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.observe",
+            63,
+            "join finished worker"
+          ],
+          [
+            "caller",
+            "MonitorIdentity.synchronizedMethod",
+            5,
+            "return 0"
+          ]
+        ]
+      }
+    ]
+  },
+  "originalJvm": {
+    "classes": {
+      "MonitorLaunch.class": "5f56d8538a62df473a7a3d4614070d38b6cc4a3b5b68a411fc6268431e598464",
+      "MonitorIdentity.class": "6bfcc992c1d5bd773a7eebe861460b0c871cf62a6b78974c59b0a3e4d9534096",
+      "MonitorIdentity$1.class": "10d18593a4cc6e0703f2841bec8838a662b0921329908e035589aa655bafcdd5",
+      "MonitorIdentity$Worker.class": "50c56bcda12eeeb85a8e6982f14e28caddbb2a79be0c663314624c33f571186e"
+    },
+    "observerSha256": "7522c3473979c7b829097108aff92c6c5152d4221108d68d19c4ee3d352649ff",
+    "breakpoint": {
+      "class": "MonitorIdentity",
+      "method": "observe",
+      "line": 18
+    },
+    "runs": {
+      "matched": {
+        "observations": [
+          "matched before the original read=5 workerBlockedOnClass=true",
+          "original result=protected"
+        ],
+        "seconds": 0.326
+      },
+      "mixed": {
+        "observations": [
+          "mixed before the original read=6 workerBlockedOnClass=false",
+          "original result=exposed"
+        ],
+        "seconds": 0.4
+      },
+      "synchronizedMethod": {
+        "observations": [
+          "synchronizedMethod before the original read=5 workerBlockedOnClass=true",
+          "original result=protected"
+        ],
+        "seconds": 0.383
+      },
+      "mixed-reader-first": {
+        "observations": [
+          "mixed after the original read=5 saved=true",
+          "original result=protected"
+        ],
+        "seconds": 0.321
+      }
+    }
+  }
+}
