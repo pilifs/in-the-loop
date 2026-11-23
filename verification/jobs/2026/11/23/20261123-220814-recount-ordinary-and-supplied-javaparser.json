@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-220814-recount-ordinary-and-supplied-javaparser",
+  "title": "Recount ordinary and supplied JavaParser startup decisions",
+  "description": "Repeat all eight ordinary JavaParser PR 4538 traversals and the eight supplied LineSeparator companions. Retain their original assertions, bounds, JVM entry and separate outcomes.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:08:14+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "Measure 360",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening 360",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/opening/360"
+  ]
+}
