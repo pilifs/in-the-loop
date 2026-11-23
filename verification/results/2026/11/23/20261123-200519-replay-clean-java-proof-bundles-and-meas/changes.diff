@@ -1,0 +1,505 @@
+--- /dev/null
++++ b/lib/benchmark/trusted-kernel/evidence/clean-replay.json
+@@ -0,0 +1,9 @@
++{
++  "frozenBundlesAndSubstitutions": 15,
++  "finalBundlesAndSubstitutions": 18,
++  "scalarRoutes": 4,
++  "frozenBinary": "8732c7a527559fa4a85408575ce914aedfa56d78fc5aec0ecfb66d5cf72112bc",
++  "finalBinary": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b",
++  "snapshotSha256": "1a24fe181ae72c0b0718334c4cc4877d7175597c03e93296b9f172eb2641da53",
++  "sourceCommit": "74e9e6bdb92d873219e19c5b3f55cc2fb91b7629"
++}
+--- /dev/null
++++ b/lib/benchmark/trusted-kernel/evidence/costs.json
+@@ -0,0 +1,490 @@
++{
++  "schema": "trusted-kernel-cost/v1",
++  "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
++  "machine": "x86_64",
++  "kernel": "7.0.0-43-generic",
++  "unit": "KiB peak RSS from wait4, seconds monotonic from exec to exit, three fresh processes",
++  "meterSha256": "06bfd47c2c9c062869619450e400749622664f85d7d098b847c5258b436dcfeb",
++  "build": {
++    "exit": 0,
++    "stdout": "",
++    "wallSeconds": 0.858571646,
++    "peakKiB": 178408,
++    "binarySha256": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b"
++  },
++  "cases": [
++    {
++      "case": "add",
++      "route": "Rust",
++      "classSha256": "61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112",
++      "requestSha256": "b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99",
++      "certificateSha256": "a442daee9095c5b6bb632c8d779819450dc36f80e80eb0d916221ca85df51bdb",
++      "artifactBytes": 256,
++      "requestBytes": 203,
++      "certificateBytes": 173,
++      "generation": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.213678553,
++            "peakKiB": 56448
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.237162479,
++            "peakKiB": 57296
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.219638508,
++            "peakKiB": 56992
++          }
++        ],
++        "medianPeakKiB": 56992,
++        "medianSeconds": 0.219638508
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "accepted scalar-equality-v1 fixtures/Scalar#multiply(I)I companion add(I)I environment initialized-verified-jvm-v1 class 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112 request b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99 obligations 2",
++            "wallSeconds": 0.001653909,
++            "peakKiB": 1836
++          },
++          {
++            "exit": 0,
++            "stdout": "accepted scalar-equality-v1 fixtures/Scalar#multiply(I)I companion add(I)I environment initialized-verified-jvm-v1 class 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112 request b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99 obligations 2",
++            "wallSeconds": 0.001255793,
++            "peakKiB": 1836
++          },
++          {
++            "exit": 0,
++            "stdout": "accepted scalar-equality-v1 fixtures/Scalar#multiply(I)I companion add(I)I environment initialized-verified-jvm-v1 class 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112 request b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99 obligations 2",
++            "wallSeconds": 0.001034098,
++            "peakKiB": 1836
++          }
++        ],
++        "medianPeakKiB": 1836,
++        "medianSeconds": 0.001255793
++      }
++    },
++    {
++      "case": "add",
++      "route": "Lean",
++      "classSha256": "61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112",
++      "requestSha256": "b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99",
++      "certificateSha256": "a442daee9095c5b6bb632c8d779819450dc36f80e80eb0d916221ca85df51bdb",
++      "artifactBytes": 256,
++      "requestBytes": 203,
++      "certificateBytes": 173,
++      "generation": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.213678553,
++            "peakKiB": 56448
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.237162479,
++            "peakKiB": 57296
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.219638508,
++            "peakKiB": 56992
++          }
++        ],
++        "medianPeakKiB": 56992,
++        "medianSeconds": 0.219638508
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\naccepted scalar-equality-v1 originalBytesEqual",
++            "wallSeconds": 1.251055659,
++            "peakKiB": 1668048
++          },
++          {
++            "exit": 0,
++            "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\naccepted scalar-equality-v1 originalBytesEqual",
++            "wallSeconds": 1.270454561,
++            "peakKiB": 1681628
++          },
++          {
++            "exit": 0,
++            "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\naccepted scalar-equality-v1 originalBytesEqual",
++            "wallSeconds": 1.267531995,
++            "peakKiB": 1659796
++          }
++        ],
++        "medianPeakKiB": 1668048,
++        "medianSeconds": 1.267531995
++      }
++    },
++    {
++      "case": "Ints",
++      "route": "Rust",
++      "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
++      "requestSha256": "7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740",
++      "certificateSha256": "6e9d8964e61f6f40ca58840fc6b936bd39dd08045b964a8fcf31f3b277b02104",
++      "artifactBytes": 9631,
++      "requestBytes": 358,
++      "certificateBytes": 1064,
++      "generation": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.311048749,
++            "peakKiB": 63196
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.290773885,
++            "peakKiB": 64764
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.268057357,
++            "peakKiB": 65472
++          }
++        ],
++        "medianPeakKiB": 64764,
++        "medianSeconds": 0.290773885
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Ints#indexOf([II)I companion indexOf([IIII)I environment initialized-verified-jvm-v1 class ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb request 7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740 obligations 34",
++            "wallSeconds": 0.001934083,
++            "peakKiB": 1836
++          },
++          {
++            "exit": 0,
++            "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Ints#indexOf([II)I companion indexOf([IIII)I environment initialized-verified-jvm-v1 class ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb request 7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740 obligations 34",
++            "wallSeconds": 0.001347184,
++            "peakKiB": 1836
++          },
++          {
++            "exit": 0,
++            "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Ints#indexOf([II)I companion indexOf([IIII)I environment initialized-verified-jvm-v1 class ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb request 7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740 obligations 34",
++            "wallSeconds": 0.00109962,
++            "peakKiB": 1836
++          }
++        ],
++        "medianPeakKiB": 1836,
++        "medianSeconds": 0.001347184
++      }
++    },
++    {
++      "case": "Longs",
++      "route": "Rust",
++      "classSha256": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9",
++      "requestSha256": "19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984",
++      "certificateSha256": "22417f3f425c15e82321277f229aa17cef3131f7af2e7617f6ae0410b4e030f8",
++      "artifactBytes": 9547,
++      "requestBytes": 239,
++      "certificateBytes": 1111,
++      "generation": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.32495443,
++            "peakKiB": 62808
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.284388352,
++            "peakKiB": 66000
++          },
++          {
++            "exit": 0,
++            "stdout": "",
++            "wallSeconds": 0.265620101,
++            "peakKiB": 58448
++          }
++        ],
++        "medianPeakKiB": 62808,
++        "medianSeconds": 0.284388352
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Longs#indexOf([JJ)I companion indexOf([JJII)I environment initialized-verified-jvm-v1 class b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9 request 19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984 obligations 35",
++            "wallSeconds": 0.001719231,
++            "peakKiB": 1832
++          },
++          {
++            "exit": 0,
++            "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Longs#indexOf([JJ)I companion indexOf([JJII)I environment initialized-verified-jvm-v1 class b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9 request 19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984 obligations 35",
++            "wallSeconds": 0.001036322,
++            "peakKiB": 1836
++          },
++          {
++            "exit": 0,
++            "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Longs#indexOf([JJ)I companion indexOf([JJII)I environment initialized-verified-jvm-v1 class b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9 request 19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984 obligations 35",
++            "wallSeconds": 0.001107786,
++            "peakKiB": 1836
++          }
++        ],
++        "medianPeakKiB": 1836,
++        "medianSeconds": 0.001107786
++      }
++    },
++    {
++      "case": "guava",
++      "route": "SAT/LRAT",
++      "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
++      "requestSha256": "f557c1fbabd3a2c84fd4bbacd7e930e6cc83352de1bfc71057a0822a14581d34",
++      "certificateSha256": "2c5f298ebb80795a59815fad93dd2e549a41b8f5b96f2975331b28cf0de02d66",
++      "requestBytes": 48803,
++      "certificateBytes": 15934,
++      "generation": {
++        "samples": [
++          {
++            "exit": 20,
++            "stdout": "s UNSATISFIABLE",
++            "wallSeconds": 0.002256287,
++            "peakKiB": 5532
++          },
++          {
++            "exit": 20,
++            "stdout": "s UNSATISFIABLE",
++            "wallSeconds": 0.002397352,
++            "peakKiB": 5608
++          },
++          {
++            "exit": 20,
++            "stdout": "s UNSATISFIABLE",
++            "wallSeconds": 0.002189301,
++            "peakKiB": 5576
++          }
++        ],
++        "medianPeakKiB": 5576,
++        "medianSeconds": 0.002256287
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "s VERIFIED UNSAT",
++            "wallSeconds": 0.003221545,
++            "peakKiB": 13304
++          },
++          {
++            "exit": 0,
++            "stdout": "s VERIFIED UNSAT",
++            "wallSeconds": 0.002557341,
++            "peakKiB": 13324
++          },
++          {
++            "exit": 0,
++            "stdout": "s VERIFIED UNSAT",
++            "wallSeconds": 0.002530831,
++            "peakKiB": 13324
++          }
++        ],
++        "medianPeakKiB": 13324,
++        "medianSeconds": 0.002557341
++      }
++    },
++    {
++      "case": "prefix-sums",
++      "route": "SAT/LRAT",
++      "classSha256": {
++        "v1": "bdeca0120d8d804073c2719f4ccbd418c901c2797851872b6673ba227c128c6a",
++        "v2": "fd8b0aa5760f4bf6726ddf05c4e5840b8d972c7adfe27c02cb933c229536aae6"
++      },
++      "requestSha256": "deafa7cc6d335cc511e05867b0b5e111f02e7144f4be6a371d6ebd69c2555ca0",
++      "certificateSha256": "01c5cc5fb4de061856c15eaf1940c66163ee290e911c8ef87188182f335c38ab",
++      "requestBytes": 75291,
++      "certificateBytes": 15921,
++      "generation": {
++        "samples": [
++          {
++            "exit": 20,
++            "stdout": "s UNSATISFIABLE",
++            "wallSeconds": 0.002232241,
++            "peakKiB": 5924
++          },
++          {
++            "exit": 20,
++            "stdout": "s UNSATISFIABLE",
++            "wallSeconds": 0.002117307,
++            "peakKiB": 6044
++          },
++          {
++            "exit": 20,
++            "stdout": "s UNSATISFIABLE",
++            "wallSeconds": 0.002772083,
++            "peakKiB": 5672
++          }
++        ],
++        "medianPeakKiB": 5924,
++        "medianSeconds": 0.002232241
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "s VERIFIED UNSAT",
++            "wallSeconds": 0.003388509,
++            "peakKiB": 15368
++          },
++          {
++            "exit": 0,
++            "stdout": "s VERIFIED UNSAT",
++            "wallSeconds": 0.0031439,
++            "peakKiB": 15352
++          },
++          {
++            "exit": 0,
++            "stdout": "s VERIFIED UNSAT",
++            "wallSeconds": 0.002942943,
++            "peakKiB": 15564
++          }
++        ],
++        "medianPeakKiB": 15368,
++        "medianSeconds": 0.0031439
++      }
++    },
++    {
++      "case": "Ints",
++      "route": "Historical Python/Z3",
++      "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
++      "requestSha256": "7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740",
++      "requestBytes": 358,
++      "certificateSha256": "090a95bf986ac98a4815dd8138558aaa837e811df9fc27d1d831a5e1d74627b0",
++      "certificateBytes": 4094,
++      "producerBundleBytes": {
++        "class.javap": 22934,
++        "obligations.smt2": 4094,
++        "result.json": 5487
++      },
++      "generation": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp6oisi10s/336-0/first-any-length/4396f8e89adf63fa0f2a",
++            "wallSeconds": 1.126343728,
++            "peakKiB": 105204
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp6oisi10s/336-1/first-any-length/4396f8e89adf63fa0f2a",
++            "wallSeconds": 1.194368688,
++            "peakKiB": 106640
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp6oisi10s/336-2/first-any-length/4396f8e89adf63fa0f2a",
++            "wallSeconds": 1.175848562,
++            "peakKiB": 105876
++          }
++        ],
++        "medianPeakKiB": 105876,
++        "medianSeconds": 1.175848562
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp9zcohban/first-any-length/4396f8e89adf63fa0f2a\nfirst-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/first-any-length/58996c50200b0046ffaa: the same result\nfirst-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
++            "wallSeconds": 1.2518684,
++            "peakKiB": 107248
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpaxqojvus/first-any-length/4396f8e89adf63fa0f2a\nfirst-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/first-any-length/58996c50200b0046ffaa: the same result\nfirst-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
++            "wallSeconds": 1.18638411,
++            "peakKiB": 107104
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp_03b1uxx/first-any-length/4396f8e89adf63fa0f2a\nfirst-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/first-any-length/58996c50200b0046ffaa: the same result\nfirst-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
++            "wallSeconds": 1.140156585,
++            "peakKiB": 104852
++          }
++        ],
++        "medianPeakKiB": 107104,
++        "medianSeconds": 1.18638411
++      }
++    },
++    {
++      "case": "Longs",
++      "route": "Historical Python/Z3",
++      "classSha256": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9",
++      "requestSha256": "19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984",
++      "requestBytes": 239,
++      "certificateSha256": "a722d68c157693a66e58d63678c0b6ae443c1ada5fc9ca7b9644129bc924b16d",
++      "certificateBytes": 4705,
++      "producerBundleBytes": {
++        "class.javap": 26852,
++        "obligations.smt2": 4705,
++        "result.json": 5496
++      },
++      "generation": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 11 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp6oisi10s/346-0/first-any-length/bd44ba74c9da6a37ad4b",
++            "wallSeconds": 1.144008591,
++            "peakKiB": 103968
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 11 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp6oisi10s/346-1/first-any-length/bd44ba74c9da6a37ad4b",
++            "wallSeconds": 1.194725014,
++            "peakKiB": 106532
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 11 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp6oisi10s/346-2/first-any-length/bd44ba74c9da6a37ad4b",
++            "wallSeconds": 1.07787813,
++            "peakKiB": 103228
++          }
++        ],
++        "medianPeakKiB": 103968,
++        "medianSeconds": 1.144008591
++      },
++      "checking": {
++        "samples": [
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 11 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpaiy07jm_/first-any-length/bd44ba74c9da6a37ad4b\nfirst-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/0e84bb986daf03cbffef: the same result\nfirst-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/30437c63909c329614e6: the same result\nfirst-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
++            "wallSeconds": 1.164656593,
++            "peakKiB": 107284
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 11 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpu75o4r3h/first-any-length/bd44ba74c9da6a37ad4b\nfirst-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/0e84bb986daf03cbffef: the same result\nfirst-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/30437c63909c329614e6: the same result\nfirst-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
++            "wallSeconds": 1.198066144,
++            "peakKiB": 104204
++          },
++          {
++            "exit": 0,
++            "stdout": "first-any-length: established, 11 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpd59ze79c/first-any-length/bd44ba74c9da6a37ad4b\nfirst-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/0e84bb986daf03cbffef: the same result\nfirst-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/30437c63909c329614e6: the same result\nfirst-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
++            "wallSeconds": 1.191663108,
++            "peakKiB": 107088
++          }
++        ],
++        "medianPeakKiB": 107088,
++        "medianSeconds": 1.191663108
++      }
++    }
++  ]
++}
