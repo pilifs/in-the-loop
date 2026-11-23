@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-173547-qualify-bounded-utf-16-ordering-and-iden",
+  "title": "Qualify bounded UTF-16 ordering and identity on both release libraries",
+  "description": "Measure all seven string callbacks, full unsigned UTF-16 differences, equal-valued distinct ties and the same-reference diagonal. Repeat the 5329-pair JVM grid.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:35:47+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "3m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "strings paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor strings paired",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/successor/strings/paired"
+  ]
+}

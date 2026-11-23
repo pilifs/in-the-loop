@@ -3769,13 +3769,30 @@ impl<'a> Engine<'a> {
         }
     }
 
-    /// Collect failing conditions from complete execution paths. Fix only scalar harness
-    /// inputs from this SAT model. If their complement is unsatisfiable, every platform
-    /// assignment fails somewhere, even when different assertion settings take different
-    /// bytecode paths. A partial failure cover can never establish a property.
+    /// Hold the initial input graph fixed, including row lengths, contents and aliases.
+    /// Only input-derived literals appear here. Class assertion settings and other
+    /// platform choices stay free in the query for a non-failing execution.
     fn qualify_platform_failure(&mut self, cond: &mut Vec<Lit>, covered: &mut Lit) -> Result<bool, Stop> {
-        let mut fixed: Vec<Lit> = self.params.iter().flat_map(|(_, _, word)| word).copied()
-            .filter(|bit| bit.abs() > TRUE).map(|bit| if self.b.value(bit) { bit } else { -bit }).collect();
+        let mut fixed = Vec::new();
+        for (_, _, word) in &self.params { fixed.extend_from_slice(word); }
+        for (_, _, length, cells) in &self.arrays {
+            fixed.extend_from_slice(length);
+            fixed.extend(cells.iter().flatten().copied());
+        }
+        for (_, length, strings) in &self.string_arrays {
+            fixed.extend_from_slice(length);
+            for (null, units, cells) in strings {
+                fixed.push(*null);
+                fixed.extend_from_slice(units);
+                fixed.extend(cells.iter().flatten().copied());
+            }
+        }
+        for (_, roots) in &self.choices { fixed.extend(roots.iter().map(|(guard, _)| *guard)); }
+        for array in &self.object_arrays { array.input_literals(&mut fixed); }
+        fixed.retain(|bit| bit.abs() > TRUE);
+        for literal in &mut fixed {
+            if !self.b.value(*literal) { *literal = -*literal; }
+        }
         let here = self.b.all(cond);
         *covered = self.b.or(*covered, here);
         fixed.push(-*covered);

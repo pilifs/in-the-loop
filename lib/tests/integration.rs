@@ -572,6 +572,11 @@ fn direct_object_array_replays_field_values_and_aliases_in_a_named_package() {
                 a[1][0] = -1L;
                 return a[0][0] != -1L;
             }
+            public static boolean conditional(long[][] a) {
+                boolean enabled = false;
+                assert enabled = true;
+                return !enabled || longRows(a);
+            }
             public static boolean subtype(Parent[] a) { return true; }
             public static boolean edge(Edge[] a) { return true; }
             public static boolean constructor(Initialized[] a) { return true; }
@@ -600,6 +605,11 @@ fn direct_object_array_replays_field_values_and_aliases_in_a_named_package() {
     let cache = serde_json::to_string(&typed).unwrap();
     let restored = jvmcontract::proof_cache::witness_arguments(std::slice::from_ref(&ty), &cache).unwrap();
     assert_eq!(jvmcontract::witness::exact_argument(&restored[0], &ty), typed[0].value.clone().unwrap());
+
+    options.target = "arrayinput.Heaps#conditional".into();
+    let conditional = property::run(&options).unwrap();
+    assert_eq!(conditional.verdict, Verdict::Unverifiable, "{}", conditional.output);
+    assert!(conditional.problem.unwrap().contains("assertion setting"));
 
     for (method, reason) in [("subtype", "final direct subclass"), ("edge", "writable"), ("constructor", "only calls Object()"), ("roots", "sharing between their heaps")] {
         options.target = format!("arrayinput.Heaps#{method}");

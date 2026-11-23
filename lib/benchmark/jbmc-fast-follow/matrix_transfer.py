@@ -1,4 +1,5 @@
 """Check the released long[][] method itself, then the exact metadata of its mismatch."""
+import argparse
 import os
 from pathlib import Path
 import tempfile
@@ -17,15 +18,14 @@ DIRECT = [
 ]
 
 
-def main():
+def main(destination):
     folder, = (ROOT / "examples").glob("394-*")
     jars = library_paths(folder, "rows")
     jar, = [p for p in jars if p.name.startswith("commons-math3-")]
     env = javaenv()
     checker = Path(env["JVMCONTRACT"]).resolve()
-    destination = EVIDENCE / "matrix"
     report = {"source": env.get("VERIFY_SOURCE_COMMIT"), "job": env.get("VERIFY_JOB_ID"), "checker": digest(checker),
-              "jar": jar.name, "jarSha256": digest(jar), "entry": ENTRY, "direct": {}, "metadata": {}}
+              "jbmcMemoryMiB": int(env.get("JVMCONTRACT_JBMC_MEMORY_MB", "4096")), "jar": jar.name, "jarSha256": digest(jar), "entry": ENTRY, "direct": {}, "metadata": {}}
     with tempfile.TemporaryDirectory(prefix="matrix-transfer-") as name:
         work = Path(name)
         for key, guard, throws in DIRECT:
@@ -77,4 +77,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, default=EVIDENCE / "matrix")
+    main(parser.parse_args().output)

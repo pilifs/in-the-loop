@@ -232,7 +232,7 @@ def measure(args):
                   "driverClasses": {p.relative_to(driver).as_posix(): digest(p) for p in sorted(driver.rglob("*.class"))},
                   "originalJvm": physical, "rows": []}
         descriptors = {}
-        if args.phase == "final":
+        if args.phase in ("final", "successor"):
             report["classBindings"] = bindings(checker, family, cp, work, env)
         for item in register:
             task = tasks[item["task"]]
@@ -247,7 +247,7 @@ def measure(args):
                           nullable=next(iter(spec.get("nullable", [])), ""))
             subject = Subject(FAMILIES[family], owner, family, (claim,), spec["bounds"]["maxArrayLength"], spec["bounds"]["unwind"])
             row = dict(item, target=task["target"], expected=task["expected"], specSha256=digest(folder / task["claim"]), bounds=spec["bounds"])
-            if args.phase == "final":
+            if args.phase in ("final", "successor"):
                 if owner not in descriptors:
                     entries, dis = methods(JDK / "bin/javap", cp[0] / (owner + ".class"))
                     descriptors[owner] = entries

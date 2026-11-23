@@ -17,9 +17,9 @@ def load(path):
     return json.loads(path.read_bytes())
 
 
-def callers():
+def callers(dest):
     for key in CLAIMS:
-        now = measure_caller(key, "callers", ["native", "jbmc"], DEST)
+        now = measure_caller(key, "callers", ["native", "jbmc"], dest)
         previous = load(PRIOR / "callers" / key / "measurement.json")
         for field in ("classes", "classpath", "claimsSha256", "adapterSha256", "jvmSha256", "modulesSha256", "originalJvm"):
             if now[field] != previous[field]:
@@ -35,10 +35,10 @@ def callers():
                 raise ValueError(f"{key}/{r['method']}: native proof contradicted by the JVM")
 
 
-def history():
+def history(dest):
     for group in GROUPS:
-        measure_history("historical", group, output_root=DEST)
-        current = load(DEST / "historical" / (group + ".json"))
+        measure_history("historical", group, output_root=dest)
+        current = load(dest / "historical" / (group + ".json"))
         old = load(PRIOR / "historical" / (group + ".json"))
         if current["cases"] != old["cases"] or current["frozenResultSha256"] != old["frozenResultSha256"]:
             raise ValueError(f"{group}: historical statements changed")
@@ -52,7 +52,8 @@ def history():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("scope", choices=("callers", "historical", "decimal"))
-    scope = parser.parse_args().scope
-    if scope == "callers": callers()
-    elif scope == "historical": history()
-    else: measure_decimal(dest=DEST / "decimal")
+    parser.add_argument("--output", type=Path, default=DEST)
+    args = parser.parse_args()
+    if args.scope == "callers": callers(args.output)
+    elif args.scope == "historical": history(args.output)
+    else: measure_decimal(dest=args.output / "decimal")

@@ -66,6 +66,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 
 /// Whether the engine models `String.name(descriptor)` here.
 pub fn models(name: &str, descriptor: &str) -> bool {
+    if name == "compareTo" && matches!(descriptor, "(Ljava/lang/String;)I" | "(Ljava/lang/Object;)I") { return true; }
     if (name, descriptor) == ("startsWith", "(Ljava/lang/String;I)Z") { return true; }
     matches!(
         (name, descriptor),
@@ -555,6 +556,32 @@ impl Engine<'_> {
     /// The String methods of this module on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_method_on_content(&mut self, path: &mut Path, o: usize, s: &Array, name: &str, descriptor: &str, args: &[Val]) -> Step {
         match (name, descriptor, args) {
+            ("compareTo", "(Ljava/lang/String;)I" | "(Ljava/lang/Object;)I", [Val::R(other)]) => {
+                if let Some(id) = other {
+                    if path.objects[*id].class != STRING {
+                        if path.objects[*id].assumed { return self.of_unknown_class(path, *id, "a String comparison bridge cast"); }
+                        return self.raise(path, "java/lang/ClassCastException");
+                    }
+                }
+                let rhs = match self.string_argument(path, *other, (STRING, name, descriptor)) {
+                    Ok(content) => content, Err(step) => return step,
+                };
+                // An earlier unequal live pair takes precedence over later pairs and the length difference.
+                let mut result = self.b.sub(&s.length, &rhs.length);
+                for (i, (left, right)) in s.cells.iter().zip(&rhs.cells).enumerate().rev() {
+                    let index = self.b.constant(i as i64, 32);
+                    let in_left = self.b.ult(&index, &s.length);
+                    let in_right = self.b.ult(&index, &rhs.length);
+                    let live = self.b.and(in_left, in_right);
+                    let different = -self.b.eq(left, right);
+                    let first = self.b.and(live, different);
+                    let difference = self.b.sub(&self.b.zext(left, 32), &self.b.zext(right, 32));
+                    result = self.b.ite_bits(first, &difference, &result);
+                }
+                self.push(path, Val::I(result));
+                self.advance(path);
+                Ok(None)
+            }
             ("isBlank", "()Z", []) => {
                 let mut non_ascii = FALSE;
                 let mut non_white = FALSE;

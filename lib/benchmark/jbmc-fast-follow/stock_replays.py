@@ -42,6 +42,40 @@ def trace_rows(trace, name, element, bound, driver):
     return rows
 
 
+def string_units(trace, name, entry):
+    """Read the char backing emitted by JBMC's string-refinement input factory."""
+    fields = {}
+    buffers = []
+    allocated = False
+    root = next(step["values"][0]["data"] for step in trace if step.get("stepType") == "input"
+                and step.get("inputID") == name and step.get("sourceLocation", {}).get("function", "").startswith(entry))
+    if root == "null": raise ValueError("outside the non-null string profile")
+    for step in trace:
+        if step.get("stepType") == "input" and step.get("inputID") == name and step.get("sourceLocation", {}).get("function", "").startswith(entry):
+            break
+        if step.get("stepType") != "assignment": continue
+        lhs, val = step["lhs"], step["value"]
+        fields[lhs] = val
+        if lhs == root and not allocated:
+            allocated = True
+        if allocated and lhs.startswith("nondet_infinite_array_pointer") and val.get("type", "").startswith("char (*)") and val.get("data"):
+            buffers.append(val["data"])
+    length = int(fields[root + ".length"]["data"])
+    if not 0 <= length <= 2: raise ValueError("stock string exceeds frozen bound")
+    if not length: return root, []
+    backing = fields[root + ".data"].get("data")
+    if not backing:
+        if len(set(buffers)) != 1: raise ValueError("ambiguous stock char backing")
+        backing = buffers[-1]
+    materialized = {int(item["index"]): item["value"] for item in fields[backing].get("elements", [])}
+    units = []
+    for i in range(length):
+        val = materialized[i] if i in materialized else fields[f"{backing}[{i}L]"]
+        if val.get("width") != 16 or len(val["binary"]) != 16: raise ValueError("invalid stock UTF-16 code unit")
+        units.append(int(val["binary"], 2))
+    return root, units
+
+
 def checked_replays(archive, record, lane, scope, work, cp, env):
     key, expected = record["task"], record[lane]["target"]["target"]["property"]
     with archive.extractfile(f"raw/{key}/{lane}/target.json") as raw:
@@ -51,10 +85,17 @@ def checked_replays(archive, record, lane, scope, work, cp, env):
     entry = "java::" + record[lane]["target"]["entry"] + ":"
     cells = record[lane]["target"]["inputs"]
     inputs = []
+    string_roots = {}
     owner, method = record["target"].split("#")
     for param in record["parameters"].split(",") if record["parameters"] else ():
         typ, name = param.strip().split()
-        if typ.endswith("[][]"):
+        if typ == "String":
+            pointer, units = string_units(trace, name, entry)
+            if pointer in string_roots:
+                raise ValueError("the independent stock input generator reused a String root")
+            string_roots[pointer] = name
+            value = {"kind": "string", "units": units}
+        elif typ.endswith("[][]"):
             value = trace_rows(trace, name, typ[:-4], scope["maxArrayLength"], entry)
             if lane == "alias" and stock_scalar("boolean", cells["tie"]) and value is not None and len(value) == 2:
                 value[1] = None if value[0] is None else {"sameCell": 0}
@@ -77,7 +118,7 @@ def audit(evidence):
             work = Path(tmp)
             env = javaenv()
             cp, _, _ = original(folder, family, work, library_paths(folder, family), work, env)
-            for lane in ("packaged", "comparator", "alias"):
+            for lane in ("packaged", "comparator", "alias", "packaged-22", "arrays"):
                 file = evidence / "opening" / family / lane / "measurement.json"
                 if not file.exists(): continue
                 receipt = load(file)

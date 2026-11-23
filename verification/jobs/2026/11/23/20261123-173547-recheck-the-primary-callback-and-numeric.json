@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-173547-recheck-the-primary-callback-and-numeric",
+  "title": "Recheck the primary callback and numeric entries on the successor",
+  "description": "Match all 21 native and integrated public calls, including full-width Jackson classification, after input-heap qualification and the reserve transfers.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:35:47+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "3m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "callbacks paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor callbacks paired",
+      "cwd": "."
+    },
+    {
+      "name": "numeric paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor numeric paired",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/successor/callbacks/paired",
+    "verification/jbmc-fast-follow/successor/numeric/paired"
+  ]
+}

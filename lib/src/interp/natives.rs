@@ -1165,7 +1165,10 @@ fn string_method(m: &mut Machine, s: &JStr, name: &str, descriptor: &str, args: 
             _ => Value::bool(false),
         },
         ("hashCode", _) => Value::Int(s.hash_code()),
-        ("compareTo", _) => {
+        ("compareTo", "(Ljava/lang/String;)I" | "(Ljava/lang/Object;)I") => {
+            if let Value::Ref(r) = args[0] {
+                if m.heap.string(r).is_none() { return Err(m.throw("java/lang/ClassCastException", None)); }
+            }
             let other = string_arg(m, args[0])?;
             let o = other.units();
             let mut result = 0;

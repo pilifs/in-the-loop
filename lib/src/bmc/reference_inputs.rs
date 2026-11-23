@@ -83,6 +83,20 @@ pub(super) struct InputArray {
 }
 
 impl InputArray {
+    pub(super) fn input_literals(&self, into: &mut Vec<Lit>) {
+        into.extend_from_slice(&self.length);
+        for options in &self.choices { into.extend(options.iter().map(|(guard, _)| *guard)); }
+        for node in &self.nodes {
+            match node {
+                InitialNode::Object(fields) => into.extend(fields.values().flatten().copied()),
+                InitialNode::Row { length, cells, .. } => {
+                    into.extend_from_slice(length);
+                    into.extend(cells.iter().flatten().copied());
+                }
+            }
+        }
+    }
+
     pub(super) fn stage_words(&self, values: &mut Vec<(Type, Bits)>) {
         for node in &self.nodes {
             match node {
