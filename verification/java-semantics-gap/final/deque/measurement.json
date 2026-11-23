@@ -1,0 +1,324 @@
+{
+  "subject": "deque",
+  "phase": "final",
+  "source": "20db45cd35517bfd9c10ee5ec95b46ba1101e490",
+  "job": "20261123-101335-recheck-other-original-semantic-families",
+  "adapterSha256": "07b05a168a9df9b9358d6f758a850a7a840bb9666920845c745c3dea05eee77f",
+  "classes": {
+    "DequeRemoval.class": "5556b973d6a5af92b028898b1151aa65febe22c274de78bbe0ac2668109a25f5"
+  },
+  "classpath": [
+    "adapter",
+    {
+      "path": "m2/org/apache/commons/commons-collections4/4.5.0/commons-collections4-4.5.0.jar",
+      "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+    }
+  ],
+  "jdk": [
+    "IMPLEMENTOR=\"Eclipse Adoptium\"",
+    "IMPLEMENTOR_VERSION=\"Temurin-21.0.13+9\"",
+    "JAVA_RUNTIME_VERSION=\"21.0.13+9-LTS\"",
+    "JAVA_VERSION=\"21.0.13\"",
+    "JAVA_VERSION_DATE=\"2026-10-20\"",
+    "LIBC=\"gnu\"",
+    "MODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom\"",
+    "OS_ARCH=\"x86_64\"",
+    "OS_NAME=\"Linux\"",
+    "SOURCE=\".:git:2ab10ca20c19\"",
+    "BUILD_SOURCE=\"git:1cf43d7a3e77886bfea7d550a902e151a87d724d\"",
+    "BUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"",
+    "SOURCE_REPO=\"https://github.com/adoptium/jdk21u.git\"",
+    "FULL_VERSION=\"21.0.13+9-LTS\"",
+    "SEMANTIC_VERSION=\"21.0.13+9\"",
+    "BUILD_INFO=\"OS: Linux Version: 6.8.0-1070-azure\"",
+    "JVM_VARIANT=\"Hotspot\"",
+    "JVM_VERSION=\"21.0.13+9-LTS\"",
+    "IMAGE_TYPE=\"JDK\""
+  ],
+  "jvmSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "modulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "scope": {
+    "example": 385,
+    "owner": "DequeRemoval",
+    "graph": "collections",
+    "claims": [
+      {
+        "method": "history",
+        "parameters": "boolean ownerRemoves",
+        "guard": "",
+        "holds": [
+          [
+            "false"
+          ],
+          [
+            "true"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "stillReturns",
+        "parameters": "",
+        "guard": "",
+        "holds": [],
+        "fails": [
+          []
+        ],
+        "nullable": ""
+      },
+      {
+        "method": "singleton",
+        "parameters": "boolean removable",
+        "guard": "",
+        "holds": [
+          [
+            "false"
+          ],
+          [
+            "true"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "filtered",
+        "parameters": "boolean prefetch",
+        "guard": "",
+        "holds": [
+          [
+            "false"
+          ],
+          [
+            "true"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      }
+    ],
+    "bound": 8,
+    "unwind": 16
+  },
+  "claimsSha256": {
+    "history": "4b1ad5a5821cab9431400ae38367238a36ac8a814ce1d898c136b0bad3d785bf",
+    "stillReturns": "de88ff452426cf5ad20fb6279c9ac5d6d4c7eb020713403487de2c81a72099cc",
+    "singleton": "28817bdc1b638c85a0f2ca06a349a1dfdb9639225a5d8088567eb32b70f4ef92",
+    "filtered": "a196b25ba6c7dd5ec11936f813a1cc8d814c10fde88a954811bc6b119273be6f"
+  },
+  "originalJvm": {
+    "checks": 7,
+    "sourceSha256": "f48f93b23319f5054a6f0b488b9a9bd002a853da868f697931a5024d75912465",
+    "stdout": "7 original checks passed"
+  },
+  "runs": [
+    {
+      "method": "history",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.03,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.ArrayDeque.add(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.ArrayDeque.add(java.lang.Object) at DequeRemoval.deque:11). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    },
+    {
+      "method": "history",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.324,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample history(ownerRemoves=false) is no reproduction in the interpreter, which cannot run the method on it (unsupported: new java.util.ArrayDeque); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13, jdk-void-method:java.util.Iterator.remove()V@jdk-21.0.13, jdk-reference-method:java.util.ArrayDeque.iterator()Ljava/util/Iterator;@jdk-21.0.13, jdk-primitive-method:java.util.ArrayDeque.add(Ljava/lang/Object;)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "stillReturns",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.018,
+      "expected": "violation",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.ArrayDeque.add(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.ArrayDeque.add(java.lang.Object) at DequeRemoval.deque:11). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    },
+    {
+      "method": "stillReturns",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.317,
+      "expected": "violation",
+      "verdict": "violation",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [],
+          "shared_arrays": false,
+          "text": ""
+        },
+        "assumptions": [
+          {
+            "kind": "library",
+            "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "jbmc",
+          "name": "JBMC 6.11.0",
+          "solver": "cadical",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "3.0.0",
+            "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+            "configuration": [
+              "--trace",
+              "--throw-runtime-exceptions",
+              "--unwinding-assertions",
+              "--json-ui",
+              "--timestamp",
+              "monotonic",
+              "--no-refine-strings",
+              "--sat-solver",
+              "cadical"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      },
+      "jvmReplay": {
+        "outcome": "refuted",
+        "inputs": [],
+        "sourceSha256": "8b2bb8a64cdb22175c9c82e19ade71e47ab7fd06c69773bf72611e46700f8766",
+        "exit": 0,
+        "diagnostic": ""
+      }
+    },
+    {
+      "method": "singleton",
+      "engine": "native",
+      "exit": 0,
+      "seconds": 0.021,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "removable",
+              "type": "boolean",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "removable: boolean"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "harness",
+          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+        }
+      }
+    },
+    {
+      "method": "singleton",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.181,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:evaluate()Lorg/apache/commons/collections4/Predicate;; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
+    },
+    {
+      "method": "filtered",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.025,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.ArrayDeque.add(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.ArrayDeque.add(java.lang.Object) at DequeRemoval.deque:11). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    },
+    {
+      "method": "filtered",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.331,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample filtered(prefetch=false) is no reproduction in the interpreter, which cannot run the method on it (unsupported: new java.util.ArrayDeque); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13, jdk-reference-method:java.util.ArrayDeque.iterator()Ljava/util/Iterator;@jdk-21.0.13, jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13, jdk-primitive-method:java.util.ArrayDeque.add(Ljava/lang/Object;)Z@jdk-21.0.13, jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13, invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:evaluate()Lorg/apache/commons/collections4/Predicate;): a stub returns any value of its type, which may be one the JDK's call never returns"
+    }
+  ],
+  "checkerSha256": "55186e854eb37c622a561d05aa4c1c7bc5effbd8165f485cecb58b69c96771f4",
+  "libTree": "39141c056e1095b6dfe9ca96a24b667d7ac28561",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "packagedModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "rawSha256": "c24cc4ef106644a7d6a2b4365c708140dc0af75a9f0265869af3a48b2d95073f"
+}

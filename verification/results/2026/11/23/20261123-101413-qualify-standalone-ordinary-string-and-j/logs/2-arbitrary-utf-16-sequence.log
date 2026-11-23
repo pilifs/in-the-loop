@@ -1,0 +1,24 @@
+surrogates packaged translate SUCCESS FAILURE
+/tmp/semantics-jbmc-2n26lw0t/removeEvery/OriginalWitness.java:2: error: variable a is already defined in method main(String[])
+char a = (char)56319;
+     ^
+1 error
+Traceback (most recent call last):
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261123-101413-qualify-standalone-ordinary-string-and-j/lib/benchmark/java-semantics-gap/standalone.py", line 183, in <module>
+    for s in a.subjects: measure(s,a.profile,a.pairing,a.output.resolve(),a.only)
+                         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261123-101413-qualify-standalone-ordinary-string-and-j/lib/benchmark/java-semantics-gap/standalone.py", line 169, in measure
+    result["jvmReplay"]=replay_witness(subject,claim,{"counterexample":{"inputs":args}},scratch,real_cp,env)
+                        ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261123-101413-qualify-standalone-ordinary-string-and-j/lib/benchmark/java-semantics-gap/campaign.py", line 109, in replay_witness
+    compile_java([source], dest, cp, env)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261123-101413-qualify-standalone-ordinary-string-and-j/lib/benchmark/java-semantics-gap/campaign.py", line 39, in compile_java
+    subprocess.run([JDK/"bin/javac", "-source", "8", "-target", "8", "-Xlint:-options", "-parameters", "-g",
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    "-proc:none", "-classpath", os.pathsep.join(map(str, cp)), "-d", output, *sources], env=env, check=True)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '[PosixPath('/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/javac'), '-source', '8', '-target', '8', '-Xlint:-options', '-parameters', '-g', '-proc:none', '-classpath', '/tmp/semantics-jbmc-2n26lw0t/classes:/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/m2/org/apache/commons/commons-text/1.12.0/commons-text-1.12.0.jar:/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/m2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar', '-d', PosixPath('/tmp/semantics-jbmc-2n26lw0t/removeEvery/witness'), PosixPath('/tmp/semantics-jbmc-2n26lw0t/removeEvery/OriginalWitness.java')]' returned non-zero exit status 1.
