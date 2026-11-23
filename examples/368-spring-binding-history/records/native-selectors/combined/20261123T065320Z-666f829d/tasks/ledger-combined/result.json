@@ -1,0 +1,212 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "3dc16102418e1734",
+    "inputsKey": "78045ccaae80349a96e45430fa60fb042e5e3a8d109f70d2dd285272b58c3a94",
+    "revisions": [
+      "combined"
+    ],
+    "expected": "established",
+    "sourceLocks": {
+      "combined": "75ed65e7c61a0a054744c2d472db5e69bcc9b6c60ffcae52b9b886ac6097b99f"
+    }
+  },
+  "task": "ledger-combined",
+  "revision": "combined",
+  "entry": "springwork.BindingChecks#ledger(I)I",
+  "guard": "code >= 0 && code < 12",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "envelope": [
+    0,
+    11
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "fc877f16797d586558a37c0a6242bac8c4ddb916",
+    "libTree": "6fe377ac7f6592641fa7fb1f4d350184ade82317",
+    "sha256": "dda801d8638d8a6f095fd7db0059bb882be3cb8837f4603971eaf220c6188c6d"
+  },
+  "classpath": [
+    {
+      "path": "adapter-combined.jar",
+      "sha256": "6a31c7a4e62f1c2da158ffef435c0e7992e24c53d819e8eca691f0a8f1f06dd9",
+      "role": "adapter"
+    },
+    {
+      "path": "combined.jar",
+      "sha256": "cf9bca4d8d6ce7270e95e51b313d564401df467fb6a75f616ccab03a8c79c37b",
+      "role": "original"
+    },
+    {
+      "path": "libraries/combined-spring-security-core.jar",
+      "sha256": "038a52f99d98f2843be8a382f5b18a2583be8dcb78bf4f7b4ab177fb7b36bd91",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-spring-security-crypto.jar",
+      "sha256": "dcce78f18b8cc2bf1cd5dc019b57d3ea43d05aa30e3d01c6be1625853f2e7f66",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-spring-aop.jar",
+      "sha256": "726bea14ab37a1898f2aaeeb1e4f4ddc058e13df0b7ee5b29c24403b128180d6",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-spring-beans.jar",
+      "sha256": "c65ed71bfbb708a8498c21ac247db22ca8b423639f62f831603e1128a447c8c4",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-spring-core.jar",
+      "sha256": "9391d13158b83106ea8d26f03619940ec8cc097254084c98fb0e3061c0eefaa6",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-spring-jcl.jar",
+      "sha256": "cd05cf5b2293b5fda10df5b82329af9126fcc45ecea0c1a9d7a0c425e29f67ef",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-spring-expression.jar",
+      "sha256": "cca4a10eed0b05348826093b33b9b8794ea73998b26f8e23648e3fbcfd09c275",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-micrometer-observation.jar",
+      "sha256": "bbf73132b0fa6e49a36a2c1429422204809f50946caf5806c5446cebff19f7b2",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-micrometer-commons.jar",
+      "sha256": "1cefa7dbb651f35ae886158c9d4cf4dd3cc0997fa71e89c119102e2272bfa44c",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/combined-spring-context.jar",
+      "sha256": "43cef52930f112dbb8787f7a64eb777c7881408b4c090a03a22cce2b852a3bec",
+      "role": "dependency"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "combined",
+      "entry": "springwork.BindingChecks#ledger(I)I",
+      "adapterSha256": "6a31c7a4e62f1c2da158ffef435c0e7992e24c53d819e8eca691f0a8f1f06dd9",
+      "adapterClassSha256": "47be43c208f25a36afb121d2f95b1894a5b63b340d76d4ebeb682650fc64028e",
+      "subject": {
+        "class": "springwork.BindingHistory",
+        "method": "trace",
+        "descriptor": "(IZ)[Lspringwork/BindingHistory$Snapshot;",
+        "loadedFrom": "combined.jar",
+        "classSha256": "86cd9cbf31676b16aae92668a780b5811e0b010b7e02b82da820cf85c6490b97",
+        "adapterCalls": [
+          "springwork.BindingHistory#matches([Lspringwork/BindingHistory$Snapshot;IZ)Z",
+          "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Each invocation starts a fresh bean and binder. The same binder executes every edit in its selected permutation.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 12,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+  "ruleFiles": {
+    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
+  },
+  "admissionClass": "tasks/ledger-combined/Admission.jvm-bytecode",
+  "admissionSha256": "a1bf6f318a9640c09ed684da4ceffa82831cbdec1c6cadbb5e0179c9e0085b6c",
+  "callsClass": "calls/37c31fa9548e0655995d/Calls.jvm-bytecode",
+  "callsSha256": "75ba1c488bfeab463c64e7e858021cdcb521d01653e0936c962abfa71fcbfd01",
+  "checked": [
+    {
+      "selector": 0,
+      "status": "open",
+      "target": "verificationselectors.Calls#p0()",
+      "exit": 1,
+      "wallSeconds": 0.305,
+      "usage": {
+        "cpuSeconds": 0.3005,
+        "peakRssBytes": 69668864,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "82b58d4157e6f6717d8691d682f88a25c46e1f271479fc0ad8c271df7e12c817",
+      "wireVersion": 1,
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the ordinary Unix application loader resolves this JAR entry at the same canonical URL path as the checker (UTF-8 SHA-256 e880a869bf3b626e7e3779173d5c761e5d84a61a6f8bd2ec5e3b89517ef3efe2)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [6:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
+          "basis": "engine"
+        }
+      ],
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess()Ljdk/internal/access/JavaUtilCollectionAccess;@jdk-21.0.13 (jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess() at java.util.stream.ReferencePipeline.toList:627). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "raw": "calls/37c31fa9548e0655995d/cases/p0/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "open",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess()Ljdk/internal/access/JavaUtilCollectionAccess;@jdk-21.0.13 (jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess() at java.util.stream.ReferencePipeline.toList:627). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "wallSeconds": 0.30592,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 0.79087,
+    "checkerWallSeconds": 0.305,
+    "originalWitnessReplaySeconds": 0.0,
+    "endToEndSeconds": 1.0968,
+    "peakNativeRssBytes": 69668864
+  }
+}

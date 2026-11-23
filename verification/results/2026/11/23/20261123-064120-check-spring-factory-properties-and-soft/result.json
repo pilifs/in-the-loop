@@ -1,0 +1,582 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-064120-check-spring-factory-properties-and-soft",
+  "title": "Check Spring factory properties and soft cache delivery on both graphs",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 2m22s, peak 768.0 MiB (estimated 4m00s, 3.0 GiB); 40 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-064120-check-spring-factory-properties-and-soft.json",
+    "sha256": "80207c405de226b74b30ff0adb83e7433250ace825eb45e6ea948f0fc5110101",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-064120-check-spring-factory-properties-and-soft",
+      "title": "Check Spring factory properties and soft cache delivery on both graphs",
+      "description": "Run the actual Spring properties loader and compare all one-, two- and three-read partitions of the 161-byte factory entry with an independent key/value expectation. On both original formatter graphs run the real Spring soft cache under all modeled GC deliveries, and the original scalar registry through the first two factories. Replay explicit retention, release, and the ten-registration prefix on both JVMs. Retain the raw sixty-second result for the two-factory proof if it remains open.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "ordinary-startup",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "368",
+          "374"
+        ]
+      },
+      "expected": "The four properties and purge proofs establish the expected public observations. Both two-factory checks report a strict proof or a measured timeout, and all physical controls agree.",
+      "submitted": {
+        "at": "2026-11-23T06:41:20+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Factory properties across refill boundaries",
+          "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py properties",
+          "cwd": "."
+        },
+        {
+          "name": "A retained or collected Spring cache entry",
+          "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py purge",
+          "cwd": "."
+        },
+        {
+          "name": "Two converter factories and ten JVM registrations",
+          "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py scalars",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/368-spring-binding-history/records/properties",
+        "examples/374-spring-formatter-binding/records/purge",
+        "examples/374-spring-formatter-binding/records/scalars"
+      ]
+    }
+  },
+  "sourceCommit": "fc877f16797d586558a37c0a6242bac8c4ddb916",
+  "startedAt": "2026-11-23T06:50:01+00:00",
+  "finishedAt": "2026-11-23T06:55:38+00:00",
+  "wallSeconds": 337.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2157545,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 805322752,
+    "wallSeconds": 143.0,
+    "cpuSeconds": 158.5,
+    "memoryOfEstimate": 0.25,
+    "durationOfEstimate": 0.6
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Factory properties across refill boundaries",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py properties",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 6.019,
+      "cpuSeconds": 10.613,
+      "cpuThrottledSeconds": 0.787,
+      "peakMemoryBytes": 125009920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-factory-properties-across-refi.log",
+        "lines": 2,
+        "bytes": 193,
+        "sha256": "58f419fcaa813a746b7856c634ba83cdd3eeaa3c927b1333a1f506dfdb9c6586",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "properties release 1 161 12881 c1589635c2b2bf1143131f2c127ad78418717260b7fa5e28bdd74cc8151b2d2a",
+        "properties combined 1 161 12881 d5016670b26972f2f10b07c12b580c0f2d6af0ea4d19cadc219d1b7d1ba178f4"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "A retained or collected Spring cache entry",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py purge",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 8.216,
+      "cpuSeconds": 13.508,
+      "cpuThrottledSeconds": 0.915,
+      "peakMemoryBytes": 213258240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-a-retained-or-collected-spring.log",
+        "lines": 2,
+        "bytes": 74,
+        "sha256": "cbc46742c717eea023dce15e812e8dec842ab08ca871d8e61e9e489ce464e9b1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "purge parent 1 retained=1 released=0",
+        "purge landed 1 retained=1 released=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Two converter factories and ten JVM registrations",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py scalars",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 128.736,
+      "cpuSeconds": 134.332,
+      "cpuThrottledSeconds": 0.821,
+      "peakMemoryBytes": 805322752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-two-converter-factories-and-te.log",
+        "lines": 2,
+        "bytes": 38,
+        "sha256": "7d7c369bb42195e3e91e740f35e1001d72586f9470a55b4aa08788957efa5672",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "scalars parent 1 1",
+        "scalars landed 1 1"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/368-spring-binding-history/records/properties/combined/FactoryProperties$1.jvm-bytecode",
+      "change": "added",
+      "bytes": 689,
+      "sha256": "28e19ef8318c594685744c209d64ab55115e0bab037d9b74e08eb481fb8bfd56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/combined/FactoryProperties.jvm-bytecode",
+      "change": "added",
+      "bytes": 3585,
+      "sha256": "7eb518879584770bce333adf15dd6383055d83b3d6703b3dfdda7e7ed1d1772f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/combined/jvm.stdout",
+      "change": "added",
+      "bytes": 77,
+      "sha256": "518090abb24c3b112a84c28616af373a150f42663e63ac9730fa445176599b65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/combined/measurement.json",
+      "change": "added",
+      "bytes": 7720,
+      "sha256": "906639d2da65f98c3140a7fb886dd5d6ab6f0145032afaab31389800fad80f8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/combined/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/combined/native.stdout",
+      "change": "added",
+      "bytes": 6151,
+      "sha256": "df0473caae562629dba4155ac6e2adbb8875cc988c1c631f521e559fb63d5669",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/release/FactoryProperties$1.jvm-bytecode",
+      "change": "added",
+      "bytes": 689,
+      "sha256": "28e19ef8318c594685744c209d64ab55115e0bab037d9b74e08eb481fb8bfd56",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/release/FactoryProperties.jvm-bytecode",
+      "change": "added",
+      "bytes": 3585,
+      "sha256": "7eb518879584770bce333adf15dd6383055d83b3d6703b3dfdda7e7ed1d1772f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/release/jvm.stdout",
+      "change": "added",
+      "bytes": 77,
+      "sha256": "deb13b67a44668843f23b5b40b2c143c615e598532140a74ab33e398d49267ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/release/measurement.json",
+      "change": "added",
+      "bytes": 7302,
+      "sha256": "c10592a25590d2436f213aeb562b5c136a8ab7705c5574ff3c758270a5cdfc09",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/release/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/properties/release/native.stdout",
+      "change": "added",
+      "bytes": 6152,
+      "sha256": "5b49ea1e541c1c42c5950c6999728eb049c6e7ab253fa146ae7bd1daf0c04310",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/landed/SoftCache$Observed$1.jvm-bytecode",
+      "change": "added",
+      "bytes": 1686,
+      "sha256": "6f6bb8942985cc59e5a1ecc521d07e1a566ae833e474a9380ffefb1ff9c36f53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/landed/SoftCache$Observed.jvm-bytecode",
+      "change": "added",
+      "bytes": 2246,
+      "sha256": "2cab32a93e808875a24ebfb0c4d587864acb52211345a22589886123935fd979",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/landed/SoftCache.jvm-bytecode",
+      "change": "added",
+      "bytes": 1395,
+      "sha256": "ee2fb3734b8320c2f235761b94a1081816f707e4ef4dd5e6019bc83314e063f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/landed/jvm.stdout",
+      "change": "added",
+      "bytes": 24,
+      "sha256": "7f33064e804cdee581e04e77cc970a5d538b3b2a42d18dea9cea35b6e9417c55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/landed/measurement.json",
+      "change": "added",
+      "bytes": 5937,
+      "sha256": "97772ae3ff54ae715a1377a3bfa56f8528c9aa4cd22108642b0a5cf267347afa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/landed/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/landed/native.stdout",
+      "change": "added",
+      "bytes": 4313,
+      "sha256": "f8fcd9197efc67ae56bc95301f092f7338bf00da9e37e1c1f00b6d6b15864a7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/parent/SoftCache$Observed$1.jvm-bytecode",
+      "change": "added",
+      "bytes": 1686,
+      "sha256": "6f6bb8942985cc59e5a1ecc521d07e1a566ae833e474a9380ffefb1ff9c36f53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/parent/SoftCache$Observed.jvm-bytecode",
+      "change": "added",
+      "bytes": 2246,
+      "sha256": "2cab32a93e808875a24ebfb0c4d587864acb52211345a22589886123935fd979",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/parent/SoftCache.jvm-bytecode",
+      "change": "added",
+      "bytes": 1395,
+      "sha256": "ee2fb3734b8320c2f235761b94a1081816f707e4ef4dd5e6019bc83314e063f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/parent/jvm.stdout",
+      "change": "added",
+      "bytes": 24,
+      "sha256": "7f33064e804cdee581e04e77cc970a5d538b3b2a42d18dea9cea35b6e9417c55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/parent/measurement.json",
+      "change": "added",
+      "bytes": 5937,
+      "sha256": "39baa5d5efacd403ac2edea36d2a36f4ce0e1c28b4c98cec13cd427767103c83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/parent/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/purge/parent/native.stdout",
+      "change": "added",
+      "bytes": 4316,
+      "sha256": "fb333ae7d9734f3420f3f023dab408abf4d56ecb5119ca3a01d715855798b396",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/landed/ScalarPrefix$PrefixComplete.jvm-bytecode",
+      "change": "added",
+      "bytes": 259,
+      "sha256": "b27a4f743b0e0aa63ad5d6287c6f70749f209142897f14930094e5c30f291034",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/landed/ScalarPrefix$Registry.jvm-bytecode",
+      "change": "added",
+      "bytes": 1657,
+      "sha256": "e6bdfaa41c83e7ac20f8c1561059e8c50df7652632403fa572e8c9d70cc85a97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/landed/ScalarPrefix.jvm-bytecode",
+      "change": "added",
+      "bytes": 1342,
+      "sha256": "bbb5f01638bad8eeba2abf324d1fe5ad9d3e52105ff52a19a41f547344b54cf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/landed/jvm.stdout",
+      "change": "added",
+      "bytes": 4,
+      "sha256": "3f11ad6bbc7ecca0b2416b713dee77f1a635c00aaeaa946e14cde1c2bfae56d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/landed/measurement.json",
+      "change": "added",
+      "bytes": 6717,
+      "sha256": "b631ad7f8b0b4113be9538580a8ec21b5f2caebdf20dfa979545b0c6f4c0b3d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/landed/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/landed/native.stdout",
+      "change": "added",
+      "bytes": 4773,
+      "sha256": "adc98c932edc9804294825453c9f415515c2c9d6478967a15c81682d35aa8656",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/parent/ScalarPrefix$PrefixComplete.jvm-bytecode",
+      "change": "added",
+      "bytes": 259,
+      "sha256": "b27a4f743b0e0aa63ad5d6287c6f70749f209142897f14930094e5c30f291034",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/parent/ScalarPrefix$Registry.jvm-bytecode",
+      "change": "added",
+      "bytes": 1657,
+      "sha256": "e6bdfaa41c83e7ac20f8c1561059e8c50df7652632403fa572e8c9d70cc85a97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/parent/ScalarPrefix.jvm-bytecode",
+      "change": "added",
+      "bytes": 1342,
+      "sha256": "bbb5f01638bad8eeba2abf324d1fe5ad9d3e52105ff52a19a41f547344b54cf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/parent/jvm.stdout",
+      "change": "added",
+      "bytes": 4,
+      "sha256": "3f11ad6bbc7ecca0b2416b713dee77f1a635c00aaeaa946e14cde1c2bfae56d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/parent/measurement.json",
+      "change": "added",
+      "bytes": 6717,
+      "sha256": "593541931c30ad76578e48e45ae7f8451408cb1126ce93d2cd97df32117143f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/parent/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/scalars/parent/native.stdout",
+      "change": "added",
+      "bytes": 4772,
+      "sha256": "a4618d03567badbd060f0db6ceabc4ba0ef8937dbb8b6a23f6428b8afb4d11e9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T06:59:15+00:00",
+    "applied": [
+      "examples/368-spring-binding-history/records/properties/combined/FactoryProperties$1.jvm-bytecode",
+      "examples/368-spring-binding-history/records/properties/combined/FactoryProperties.jvm-bytecode",
+      "examples/368-spring-binding-history/records/properties/combined/jvm.stdout",
+      "examples/368-spring-binding-history/records/properties/combined/measurement.json",
+      "examples/368-spring-binding-history/records/properties/combined/native.stderr",
+      "examples/368-spring-binding-history/records/properties/combined/native.stdout",
+      "examples/368-spring-binding-history/records/properties/release/FactoryProperties$1.jvm-bytecode",
+      "examples/368-spring-binding-history/records/properties/release/FactoryProperties.jvm-bytecode",
+      "examples/368-spring-binding-history/records/properties/release/jvm.stdout",
+      "examples/368-spring-binding-history/records/properties/release/measurement.json",
+      "examples/368-spring-binding-history/records/properties/release/native.stderr",
+      "examples/368-spring-binding-history/records/properties/release/native.stdout",
+      "examples/374-spring-formatter-binding/records/purge/landed/SoftCache$Observed$1.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/purge/landed/SoftCache$Observed.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/purge/landed/SoftCache.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/purge/landed/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/purge/landed/measurement.json",
+      "examples/374-spring-formatter-binding/records/purge/landed/native.stderr",
+      "examples/374-spring-formatter-binding/records/purge/landed/native.stdout",
+      "examples/374-spring-formatter-binding/records/purge/parent/SoftCache$Observed$1.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/purge/parent/SoftCache$Observed.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/purge/parent/SoftCache.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/purge/parent/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/purge/parent/measurement.json",
+      "examples/374-spring-formatter-binding/records/purge/parent/native.stderr",
+      "examples/374-spring-formatter-binding/records/purge/parent/native.stdout",
+      "examples/374-spring-formatter-binding/records/scalars/landed/ScalarPrefix$PrefixComplete.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/scalars/landed/ScalarPrefix$Registry.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/scalars/landed/ScalarPrefix.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/scalars/landed/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/scalars/landed/measurement.json",
+      "examples/374-spring-formatter-binding/records/scalars/landed/native.stderr",
+      "examples/374-spring-formatter-binding/records/scalars/landed/native.stdout",
+      "examples/374-spring-formatter-binding/records/scalars/parent/ScalarPrefix$PrefixComplete.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/scalars/parent/ScalarPrefix$Registry.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/scalars/parent/ScalarPrefix.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/scalars/parent/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/scalars/parent/measurement.json",
+      "examples/374-spring-formatter-binding/records/scalars/parent/native.stderr",
+      "examples/374-spring-formatter-binding/records/scalars/parent/native.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6fe377ac7f6592641fa7fb1f4d350184ade82317",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6fe377ac7f6592641fa7fb1f4d350184ade82317/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T065538Z-378576c2edbb1351",
+      "outputs": "20261123T065538Z-417436274bccf99d",
+      "diff": "20261123T065538Z-445413b5690e2f6e"
+    }
+  }
+}

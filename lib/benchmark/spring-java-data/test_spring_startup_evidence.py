@@ -1,4 +1,6 @@
-"""Counterexamples to consuming a fluent proof on the wrong branch or with a wider int result."""
+"""Check the scope of ordinary Spring proofs and measured refusals."""
+import copy
+import json
 import unittest
 
 import fluent_launch as launch
@@ -46,6 +48,46 @@ class FluentLaunchEvidence(unittest.TestCase):
             for offset, opcode in [(0, 3), (8, 3), (23, 0xa1), (46, 2), (50, 0xe3), (59, 0xac)]:
                 with self.subTest(method=method, offset=offset), self.assertRaises(ValueError):
                     witness.qualify_replay(replace_instruction(replay, "main", "([Ljava/lang/String;)V", offset, opcode), method)
+
+
+class FactoryEvidence(unittest.TestCase):
+    def test_timeout_cannot_establish_a_factory_or_change_its_statement(self):
+        import factory_startup as factories
+        from measure import read
+
+        folder, simple, _, _ = factories.subject("filename")
+        raw = folder / "records/factory-startup/release/native.stdout"
+        row, = read(raw)
+        target = "springwork." + simple + "#check()"
+        assumptions = row["stated"]["assumptions"]
+        self.assertEqual(factories.native(raw.read_bytes(), target, assumptions), "established")
+
+        # Build a genuine refusal shape around the same statement. It can be
+        # recorded only as an open diagnostic on a caller that allows a timeout.
+        expired = copy.deepcopy(row)
+        expired["verdict"] = "unverifiable"
+        expired["problem"] = "the engine did not finish within the time limit"
+        expired["stated"]["bounds"]["complete"] = False
+        expired["search"]["runs"][-1]["ending"] = "timeout"
+
+        def qualify(answer, allowed):
+            return factories.native(json.dumps([answer]).encode(), target, assumptions, exit_code=1, timed_prefix=allowed)
+
+        self.assertEqual(qualify(expired, True), "open")
+        with self.assertRaises(ValueError):
+            qualify(expired, False)
+        for path, value in [
+            (("assert",), "result == 0"), (("target",), "another#check()"), (("assume",), "false"),
+            (("verdict",), "violation"), (("search", "deadline_seconds"), 120),
+            (("stated", "checker", "fallback"), "jbmc"), (("stated", "gap_mode"), "assume"),
+        ]:
+            changed = copy.deepcopy(expired)
+            parent = changed
+            for key in path[:-1]:
+                parent = parent[key]
+            parent[path[-1]] = value
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                qualify(changed, True)
 
 
 if __name__ == "__main__":

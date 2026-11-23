@@ -41,6 +41,9 @@ DEPLOYMENT_CONTROLS = "20261123-042108-bind-four-spring-startup-controls-to-the"
 CLASS_TABLE_CONFORMANCE = "20261123-040530-check-class-table-and-jar-resource-seman"
 CLASS_TABLE_COST = "20261123-042542-compare-ordinary-and-recorded-spring-met"
 FACTORY_STARTUP = "20261123-052111-recheck-spring-factory-filenames-and-con"
+REFILLS_PRIMARY = "20261123-064120-recheck-ordinary-spring-entries-after-fa"
+REFILLS_CONTROLS = "20261123-064120-check-spring-factory-properties-and-soft"
+REFILLS_CONFORMANCE = "20261123-064120-check-cache-stream-and-map-changes-again"
 FACTORY_CONTROLS = "20261123-052111-check-the-spring-factory-registrations-a"
 FACTORY_CONFORMANCE = "20261123-052111-check-spring-generic-reflection-and-boxe"
 FLUENT_BINDING_ATTEMPT = "20261123-050140-certify-the-startup-counterexample-to-bo"
@@ -177,7 +180,7 @@ def hierarchy_edge(job, case):
     return result
 
 
-def selector_result(folder, plan, row, task, run, job, startup=False):
+def selector_result(folder, plan, row, task, run, job, startup=False, capture_stop=False):
     name = task["id"]
     claim = plan.claim
     item = run["tasks"][name]
@@ -215,6 +218,11 @@ def selector_result(folder, plan, row, task, run, job, startup=False):
                 require(status == "open" and reason == case["firstBlocker"] == checked["firstBlocker"],
                         "first Spring blocker differs from the raw native outcome")
                 answer["blockedSelector"] = case["selector"]
+                if capture_stop:
+                    search = actual["search"]
+                    answer["stop"] = {"gaps": search.get("gaps", []), "seconds": search["seconds"],
+                                      "deadlineSeconds": search["deadline_seconds"],
+                                      "runs": [run["ending"] for run in search["runs"]]}
         answer["assumptions"] = assumptions
     if checked["status"] == "refuted":
         replay = proof["originalJVMReplay"]
@@ -224,7 +232,7 @@ def selector_result(folder, plan, row, task, run, job, startup=False):
     return answer
 
 
-def case(n, startup_job=None, cache_job=None, tables_job=None, factory_job=None):
+def case(n, startup_job=None, cache_job=None, tables_job=None, factory_job=None, refills_job=None):
     folder,=(ROOT/"examples").glob(f"{n}-*")
     from domains import GRIDS, table
     entry, grid=GRIDS[n]
@@ -242,12 +250,15 @@ def case(n, startup_job=None, cache_job=None, tables_job=None, factory_job=None)
             tables_job = managed(CLASS_TABLES)
         if factory_job is None:
             factory_job = managed(FACTORY_STARTUP)
+        if refills_job is None:
+            refills_job = managed(REFILLS_PRIMARY)
     runs = [("nativeSelectors", end, final)]
     spring_tasks = {t["id"] for t in spec["tasks"] if t["kind"] == "prove"}
     for key, stage, summary, job in (("springStartup", "spring-startup", "startupSelectors", startup_job),
                                      ("cacheWriters", "spring-cache-writers", "cacheSelectors", cache_job),
                                      ("classTables", "spring-class-tables", "tableSelectors", tables_job),
-                                     ("factoryStartup", "spring-factory-signatures", "factorySelectors", factory_job)):
+                                     ("factoryStartup", "spring-factory-signatures", "factorySelectors", factory_job),
+                                     ("refillsAndPurge", "spring-refills-and-purge", "refillSelectors", refills_job)):
         if job:
             run = run_report(job, folder, stage)
             require(job.record["status"] == "passed" and set(run["tasks"]) == spring_tasks,
@@ -267,13 +278,13 @@ def case(n, startup_job=None, cache_job=None, tables_job=None, factory_job=None)
         for key, run, job in runs:
             if name not in run.get("tasks", {}):
                 continue
-            answer = selector_result(folder, plan, row, task, run, job, startup=key in ("startupSelectors", "cacheSelectors", "tableSelectors", "factorySelectors"))
+            answer = selector_result(folder, plan, row, task, run, job, startup=key != "nativeSelectors", capture_stop=key == "refillSelectors")
             row[key] = answer
-            if key in ("cacheSelectors", "tableSelectors", "factorySelectors") and row["ordinary"]["status"] in ("refuted", "established"):
+            if key in ("cacheSelectors", "tableSelectors", "factorySelectors", "refillSelectors") and row["ordinary"]["status"] in ("refuted", "established"):
                 require(answer["status"] == row["ordinary"]["status"], "previously decided Spring claim has regressed")
             if row.get("ordinary", {}).get("status") not in ("refuted", "established"):
                 row["ordinary"] = {k: answer[k] for k in ("status", "record", "admitted", "checked", "firstBlocker", "receipt")}
-                if key in ("tableSelectors", "factorySelectors") and "witness" in answer:
+                if key in ("tableSelectors", "factorySelectors", "refillSelectors") and "witness" in answer:
                     row["ordinary"]["witness"] = answer["witness"]
                 if "blockedSelector" in answer:
                     row["ordinary"]["blockedSelector"] = answer["blockedSelector"]
@@ -571,7 +582,8 @@ def recount(complete):
         cache_job = managed(CACHE_WRITERS) if track == "spring" else None
         tables_job = managed(CLASS_TABLES) if track == "spring" else None
         factory_job = managed(FACTORY_STARTUP) if track == "spring" else None
-        cases={str(n):case(n, startup_job, cache_job, tables_job, factory_job) for n in numbers}
+        refills_job = managed(REFILLS_PRIMARY) if track == "spring" else None
+        cases={str(n):case(n, startup_job, cache_job, tables_job, factory_job, refills_job) for n in numbers}
         totals={}
         rows=[r for c in cases.values() for r in c["claims"].values() if r["primary"]]
         for field in ("opening","ordinary","finite"):
@@ -632,6 +644,16 @@ def recount(complete):
             factory_corpus = managed(FACTORY_CONFORMANCE)
             if factory_corpus and factory_job:
                 companions["factoryConformance"] = spring_conformance(factory_corpus, factory_job)
+            refills_controls = managed(REFILLS_CONTROLS)
+            if refills_controls and refills_job:
+                from factory_results import refill_measurements
+                require(refills_controls.record["sourceCommit"] == refills_job.record["sourceCommit"],
+                        "cache controls and original tasks used different revisions")
+                companions["refillsAndPurge"] = {**job_info(refills_controls), **refill_measurements(
+                    refills_controls, cases, companions["classTableControls"])}
+            refills_corpus = managed(REFILLS_CONFORMANCE)
+            if refills_corpus and refills_job:
+                companions["refillsConformance"] = spring_conformance(refills_corpus, refills_job)
             histories_job = managed(GATED_HISTORIES)
             if histories_job:
                 companions["gatedHistories"] = gated_histories(histories_job)
@@ -684,8 +706,8 @@ def recount(complete):
             require((a["jarSha256"],a["classSha256"])==(b["jarSha256"],b["classSha256"]),"B1/B4 parser artifacts differ")
         if complete:
             if track == "spring":
-                require({"classTableControls", "metadataStartupCost", "classTableConformance", "factoryStartup", "factoryConformance"} <= set(companions), "missing Spring launch or equal-scope lookup controls")
-                require(all("startupSelectors" in row and "cacheSelectors" in row and "tableSelectors" in row and "factorySelectors" in row for row in rows), "missing ordinary Spring startup comparison")
+                require({"classTableControls", "metadataStartupCost", "classTableConformance", "factoryStartup", "factoryConformance", "refillsAndPurge", "refillsConformance"} <= set(companions), "missing Spring launch or equal-scope lookup controls")
+                require(all("startupSelectors" in row and "cacheSelectors" in row and "tableSelectors" in row and "factorySelectors" in row and "refillSelectors" in row for row in rows), "missing ordinary Spring startup comparison")
             require(bound and bound.record["status"]=="passed" and all("nativeFinal" in c["stages"] for c in cases.values()),"outstanding native or loaded-class jobs")
             for n in numbers:
                 require(cases[str(n)]["stages"]["nativeFinal"]["status"]=="passed"

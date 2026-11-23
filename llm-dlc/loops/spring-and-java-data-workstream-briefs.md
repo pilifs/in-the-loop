@@ -246,4 +246,8 @@ The two unrestricted fluent claims now have strict native failure proofs and ind
 
 Both proof-tier conformance tests passed on the source of the factory and hierarchy rechecks. [JBMC and automatic confirmation](../../verification/results/2026/11/23/20261123-052111-check-spring-generic-reflection-and-boxe/result.json)
 
+Both binder graphs now establish the complete Spring factory property and reach the JDK collection-access lookup for the distinct implementation list. Both formatter graphs prove a Spring soft-cache entry can survive purge or disappear permanently. The original formatter JVMs completed ten scalar registrations. The full native caller reaches the nested `Enum<?>` argument of `EnumToStringConverter`. The all-schedules proof of two completed factories exhausted 60 seconds per side. The 18 original tasks retained **8/16** direct decisions and **10/16** including the two launch counterexamples. [Ordinary recheck](../../verification/results/2026/11/23/20261123-064120-recheck-ordinary-spring-entries-after-fa/result.json) · [Properties, soft cache and scalar prefixes](../../verification/results/2026/11/23/20261123-064120-check-spring-factory-properties-and-soft/result.json)
+
+Both JBMC and automatic-confirmation corpus tests passed on the source of the factory-properties and soft-cache results. [Conformance receipt](../../verification/results/2026/11/23/20261123-064120-check-cache-stream-and-map-changes-again/result.json)
+
 - Status: done

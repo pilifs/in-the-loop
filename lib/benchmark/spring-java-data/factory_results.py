@@ -147,3 +147,99 @@ def measurements(job, cases, controls):
     result["fluent"] = fluent_evidence(job, graphs, cases["370"]["claims"], previous["fluentLaunches"],
                                        controls["startupControls"]["fluentLineSeparators"])
     return result
+
+
+# Independently read from the checksummed framework JARs on both graphs.
+CORE_CLASSES = {
+    "properties": ("088f67674011e84609024dd189023e22a8fef3204f644a446ec2a5826ca31d72",),
+    "purge": ("451dab5285706eefdf115e8941fe70d8c48d05287307e111002dd05ecbbde299",),
+}
+NESTED_OBSERVERS = {"properties": ["$1"], "purge": ["$Observed", "$Observed$1"], "scalars": ["$PrefixComplete", "$Registry"]}
+
+
+def cache_control(job, folder, kind, side, graph, primary, prior):
+    simple, observation, originals = factories.OBSERVERS[kind]
+    base = folder.relative_to(ROOT) / "records" / kind / side
+    record = job.output(base / "measurement.json")
+    data = read(record)
+    same_run(job, data, graph, primary["checkerSha256"])
+    generated = [simple, *(simple + suffix for suffix in NESTED_OBSERVERS[kind])]
+    require(data["sourceSha256"] == digest(folder / "companions" / (simple + ".java"))
+            and set(data["callerClasses"]) == set(generated), "different refill or purge observer")
+    for cls in generated:
+        raw = job.output(base / (cls + ".jvm-bytecode"))
+        require(digest(raw) == data["callerClasses"][cls] and runtime_jar.this_class(raw.read_bytes()) == "springwork/" + cls,
+                "different compiled observer")
+    caller = "springwork." + simple
+    expected = [binding(caller, "classes", data["callerClasses"][simple], "check", "()I")]
+    for binary, info in graph["classes"].items():
+        jar, = [j for j in data["classpath"] if j["sha256"] == info["jarSha256"]]
+        expected.append(binding(binary, Path(jar["path"]).name, info["classSha256"]))
+    core, = [p for j in data["classpath"]
+             if (p := Path(j["path"]).name).removeprefix("combined-").startswith("spring-core")]
+    if kind == "scalars":
+        defs = read(factories.converters.DEST / side / "measurement.json")["definitions"]
+        hashes = [defs[b]["classSha256"] for b in originals]
+    else:
+        hashes = CORE_CLASSES[kind]
+    expected.extend(binding(b, core, h) for b, h in zip(originals, hashes, strict=True))
+    require(data["bindings"] == expected, "different core implementation or native entry")
+    stdout = job.output(base / "jvm.stdout")
+    require(digest(stdout) == data["jvmSha256"], "changed original JVM result")
+    proof = data["result"]
+    target = caller + "#check()"
+    raw = job.output(base / "native.stdout")
+    require(proof["stdout"] == "native.stdout" and proof["stderr"] == "native.stderr"
+            and digest(job.output(base / "native.stderr")) == proof["stderrSha256"]
+            and proof["target"] == target and proof["assertion"] == "result == 1" and proof["guard"] is None
+            and proof["bounds"] == [256, 16384] and not proof["observedRoots"] and not proof["states"]
+            and digest(raw) == proof["stdoutSha256"], "changed native assertion, inputs or result")
+    assumptions = proof["assumptions"]
+    status = factories.native(raw.read_bytes(), target, assumptions, exit_code=proof["exit"], timed_prefix=kind == "scalars")
+    row, = read(raw)
+    require(row["problem"] == proof["blocker"] and row["verdict"] == proof["verdict"], "different native disposition")
+    summary = {"status": status, "record": rel(record), "receipt": rel(raw), "originalJVM": rel(stdout)}
+    previous = read(folder / "records/factory-startup" / side / "measurement.json")["result"]["assumptions"]
+    allowed = list(previous)
+    if kind == "properties":
+        data_hash = data["canonicalURLPathSha256"]
+        require(isinstance(data_hash, str) and len(bytes.fromhex(data_hash)) == 32, "invalid resource URL digest")
+        expected_stdout = observation.rstrip() + b" " + data_hash.encode() + b"\n"
+        url = f"the ordinary Unix application loader resolves this JAR entry at the same canonical URL path as the checker (UTF-8 SHA-256 {data_hash})"
+        expected_path = {"basis": "engine", "kind": "library", "text": url}
+        resource = prior["factoryStreams"][side]
+        index, = [i for i, jar in enumerate(data["classpath"]) if jar["sha256"] == resource["providerSha256"]]
+        resource_scope = [a for a in assumptions if "stock JAR handler" in a["text"]]
+        require(expected_path in assumptions and len(resource_scope) == 1
+                and resource_scope[0]["text"].endswith(f"resources (classpath index and entry SHA-256) are [{index + 2}:{resource['entrySha256']}]"),
+                "different native resource or canonical JAR path")
+        allowed = [a for a in previous if "canonical URL path" not in a["text"]]
+        allowed.append(expected_path)
+        summary.update(resourceBytes=161, oneToThreeReadPartitions=12881, factoryKeys=1, beanInfoFactories=0)
+    else:
+        require(data["canonicalURLPathSha256"] is None, "unexpected resource path on a formatter proof")
+        expected_stdout = observation
+        if kind == "purge":
+            allowed = [a for a in previous if a["kind"] == "initialization"]
+            summary.update(retainedSize=1, releasedSize=0)
+        else:
+            summary.update(nativeTargetCompletedFactories=2, jvmCompletedBeforeEnumConverter=10)
+            if status == "open":
+                summary.update(firstBlocker=row["problem"], recordedGaps=row["search"].get("gaps", []),
+                               exploredPaths=row["search"]["native"]["paths"], deadlineSeconds=row["search"]["deadline_seconds"])
+    require(stdout.read_bytes() == expected_stdout and sorted(allowed, key=lambda a: a["text"]) == assumptions,
+            "unexpected original JVM result or additional assumption")
+    return summary
+
+
+def refill_measurements(job, cases, prior):
+    """Bind the properties and cache observations to their original classes and ordinary native receipts."""
+    graphs = read(ROOT / "verification/spring-java-data/exact-classpaths/classes.json")
+    summaries = {}
+    for kind in factories.OBSERVERS:
+        folder, _, name, sides = factories.subject(kind)
+        number = folder.name.split("-", 1)[0]
+        claims = cases[number]["claims"]
+        summaries[kind] = {side: cache_control(job, folder, kind, side, graphs[number][side],
+                                               claims[name + side]["refillSelectors"], prior) for side in sides}
+    return summaries
