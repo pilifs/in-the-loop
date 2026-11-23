@@ -1,0 +1,188 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "324d82d56393dfa3",
+    "inputsKey": "c45c5bdce4a7699ef9b13e376b2c413de28d4d73ccaf105c4777d5d568ac7d6b",
+    "revisions": [
+      "parent"
+    ],
+    "expected": "refuted",
+    "sourceLocks": {
+      "parent": "da60cc46d1f65b1469f16ae508d3af609d037df71cb97aa3406398f0405cdff6"
+    }
+  },
+  "task": "components-parent",
+  "revision": "parent",
+  "entry": "springwork.Accessors#components(I)I",
+  "guard": "code >= 0 && code < 3",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "envelope": [
+    0,
+    2
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    0,
+    1,
+    2
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "2ea9d9d7578ab20775e8c32178391266d6f9a2e2",
+    "libTree": "025327f818118265070bd873a04fd2159eee85b1",
+    "sha256": "1dde0828f2c4d95908c52ae7483abb3d86965ebb13cac2a51daffe34507afde5"
+  },
+  "classpath": [
+    {
+      "path": "adapter-parent.jar",
+      "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
+      "role": "adapter"
+    },
+    {
+      "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
+      "sha256": "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d",
+      "role": "original"
+    },
+    {
+      "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
+      "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+      "role": "dependency"
+    },
+    {
+      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+      "role": "dependency"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "springwork.Accessors#components(I)I",
+      "adapterSha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
+      "adapterClassSha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
+      "subject": {
+        "class": "org.springframework.core.convert.Property",
+        "method": "getName",
+        "descriptor": "()Ljava/lang/String;",
+        "loadedFrom": "built/spring-core-7.1.0-SNAPSHOT.jar",
+        "classSha256": "345122e8b4337cce5a871cf1ef90e82366360ff048203f84df89fdf0bd62fa8f",
+        "adapterCalls": [
+          "org.springframework.core.convert.Property#<init>(Ljava/lang/Class;Ljava/lang/reflect/Method;Ljava/lang/reflect/Method;)V",
+          "org.springframework.core.convert.Property#getName()Ljava/lang/String;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Pair one of three altered component names with one preserved record or bean accessor.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 3,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+  "ruleFiles": {
+    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
+  },
+  "admissionClass": "tasks/components-parent/Admission.jvm-bytecode",
+  "admissionSha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
+  "callsClass": "calls/24a6335d08cc03d70cbd/Calls.jvm-bytecode",
+  "callsSha256": "a1cc3cbcd52be58bcdd5af3c9daa98d08bc460ed60d19912909b7326beb63949",
+  "checked": [
+    {
+      "selector": 0,
+      "status": "refuted",
+      "target": "verificationselectors.Calls#p0()",
+      "exit": 1,
+      "wallSeconds": 0.163,
+      "usage": {
+        "cpuSeconds": 0.1602,
+        "peakRssBytes": 69664768,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "5009eb58cb1e749e26f8fa1a8e700cc70ad68efcd42561561a9ce01e37aadc1d",
+      "wireVersion": 1,
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/24a6335d08cc03d70cbd/cases/p0/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "refuted",
+  "originalJVMReplay": {
+    "claimKey": "324d82d56393dfa3",
+    "entry": "springwork.Accessors#components(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
+        "classpath": [
+          "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038",
+          "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d",
+          "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4",
+          "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 3)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = springwork.Accessors.components(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "wallSeconds": 0.61725,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 2.21907,
+    "checkerWallSeconds": 0.163,
+    "originalWitnessReplaySeconds": 0.45349,
+    "endToEndSeconds": 2.83634,
+    "peakNativeRssBytes": 69664768
+  }
+}

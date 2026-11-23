@@ -1,0 +1,1301 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-040519-check-ordinary-spring-class-tables-and-r",
+  "title": "Check ordinary Spring class tables and resource startup",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 48.1s, peak 236.3 MiB (estimated 5m00s, 3.0 GiB); 120 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-040519-check-ordinary-spring-class-tables-and-r.json",
+    "sha256": "b63e44531faa1270a50d75f844f8051f3f1e98db0dd33f45bbb68017f4a4133e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-040519-check-ordinary-spring-class-tables-and-r",
+      "title": "Check ordinary Spring class tables and resource startup",
+      "description": "Recheck all 18 original public tasks and both historical role implementations on their frozen classpaths. Check that unordered class registration derives the original component and getter names from ordinary startup, with physical replay of the parent violation. Follow each binder through the local factory JAR and both formatter slices through ordered converter registration. Preserve earlier evidence.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "ordinary-startup",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "368",
+          "370",
+          "372",
+          "374"
+        ]
+      },
+      "expected": "Each of the 18 tasks has its hash-bound original graph, selector result, and either a complete proof, an original-JVM witness, or the first strict blocker.",
+      "submitted": {
+        "at": "2026-11-23T04:05:19+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Spring binder histories",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 368 --stage spring-class-tables",
+          "cwd": "."
+        },
+        {
+          "name": "Reachable authorities and public decisions",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 370 --stage spring-class-tables --first 1",
+          "cwd": "."
+        },
+        {
+          "name": "Reflected property names",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 372 --stage spring-class-tables",
+          "cwd": "."
+        },
+        {
+          "name": "Formatter bean and error histories",
+          "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 374 --stage spring-class-tables",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/368-spring-binding-history/records/spring-class-tables",
+        "examples/368-spring-binding-history/records/native-selectors",
+        "examples/370-spring-role-hierarchy/records/spring-class-tables",
+        "examples/370-spring-role-hierarchy/records/native-selectors",
+        "examples/372-spring-property-accessors/records/spring-class-tables",
+        "examples/372-spring-property-accessors/records/native-selectors",
+        "examples/374-spring-formatter-binding/records/spring-class-tables",
+        "examples/374-spring-formatter-binding/records/native-selectors"
+      ]
+    }
+  },
+  "sourceCommit": "2ea9d9d7578ab20775e8c32178391266d6f9a2e2",
+  "startedAt": "2026-11-23T04:17:53+00:00",
+  "finishedAt": "2026-11-23T04:22:42+00:00",
+  "wallSeconds": 289.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 544608,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 247783424,
+    "wallSeconds": 48.1,
+    "cpuSeconds": 77.0,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 230.171,
+      "cpuSeconds": 230.401,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2269655040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "4e841a8609eb6d6f28fa3d5e9b2f5b6aa6bdb88d0a9940207380eda6e91273ef",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-040519-check-ordinary-spring-class-tables-and-r/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 49s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Spring binder histories",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 368 --stage spring-class-tables",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 9.22,
+      "cpuSeconds": 15.511,
+      "cpuThrottledSeconds": 0.898,
+      "peakMemoryBytes": 166354944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-spring-binder-histories.log",
+        "lines": 1,
+        "bytes": 105,
+        "sha256": "8ff6c33a26e746a40a607f6d2b2406843d22f9b91f683088f5883c4491ee3dff",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'beans-release': 'open', 'ledger-release': 'open', 'beans-combined': 'open', 'ledger-combined': 'open'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Reachable authorities and public decisions",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 370 --stage spring-class-tables --first 1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 20.042,
+      "cpuSeconds": 30.217,
+      "cpuThrottledSeconds": 2.022,
+      "peakMemoryBytes": 174489600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-reachable-authorities-and-publ.log",
+        "lines": 1,
+        "bytes": 224,
+        "sha256": "119d894d337d35e1bfe88bf39cb87d1d3e8fad4baae0e536d1d6033ea33c2c6f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'legacy-names-before': 'established', 'legacy-decision-before': 'established', 'legacy-names-landed': 'established', 'legacy-decision-landed': 'established', 'fluent-names-landed': 'open', 'fluent-decision-landed': 'open'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Reflected property names",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 372 --stage spring-class-tables",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 7.816,
+      "cpuSeconds": 12.85,
+      "cpuThrottledSeconds": 0.654,
+      "peakMemoryBytes": 145584128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-reflected-property-names.log",
+        "lines": 1,
+        "bytes": 135,
+        "sha256": "263d3fc0056e3a5dac55cc2b12e15a7533fc050b483ae180e88815bcd709398e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'components-parent': 'refuted', 'getters-parent': 'established', 'components-landed': 'established', 'getters-landed': 'established'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Formatter bean and error histories",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 374 --stage spring-class-tables",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 11.021,
+      "cpuSeconds": 18.394,
+      "cpuThrottledSeconds": 1.019,
+      "peakMemoryBytes": 247783424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-formatter-bean-and-error-histo.log",
+        "lines": 1,
+        "bytes": 119,
+        "sha256": "f82437a3326611539d999e8ef0199701a9cdcf4431bb71dc72d28225b467c9a9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'annotated-parent': 'open', 'preservation-parent': 'open', 'annotated-landed': 'open', 'preservation-landed': 'open'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/368-spring-binding-history/records/spring-class-tables/combined.log",
+      "change": "added",
+      "bytes": 91,
+      "sha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/spring-class-tables/release.log",
+      "change": "added",
+      "bytes": 89,
+      "sha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/spring-class-tables/run.json",
+      "change": "added",
+      "bytes": 2288,
+      "sha256": "c15a8629863388b41011dd9d9394a499851f33b4c6a362a5b5ba4dfa1b62dfbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/37c31fa9548e0655995d/Calls.java",
+      "change": "added",
+      "bytes": 1108,
+      "sha256": "8c426d4cf58d6ee3b7ebe5c31751912cadcbc6a88aaca8c161f2462cd893c7ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/37c31fa9548e0655995d/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 802,
+      "sha256": "75ba1c488bfeab463c64e7e858021cdcb521d01653e0936c962abfa71fcbfd01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/37c31fa9548e0655995d/cases.tar.gz",
+      "change": "added",
+      "bytes": 1990,
+      "sha256": "cc5a46093d13340cd76ab9c10ee6b2feb78f5b6b73fab02e83bb1ba72f72464a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/d642cd6394498b23942c/Calls.java",
+      "change": "added",
+      "bytes": 1096,
+      "sha256": "9868e900a1190eb03a81b09a369c81528f10dc8c2ab8cb55415c5dbe84648300",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/d642cd6394498b23942c/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 801,
+      "sha256": "a80af2f8544a485ac951c66a79c657a8e2db6bf7c823dee6499b1edbc580b750",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/d642cd6394498b23942c/cases.tar.gz",
+      "change": "added",
+      "bytes": 1990,
+      "sha256": "5c467e1283a7b79b42c9c9d05cd82f0dfa9cc8eed2f5c5230b4ef3dceca52e49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/Admission.java",
+      "change": "added",
+      "bytes": 862,
+      "sha256": "bdc54806b6da82d6e7a24c2cc07a2692b7e2236500989d532c620d650c5406e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "a1bf6f318a9640c09ed684da4ceffa82831cbdec1c6cadbb5e0179c9e0085b6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/result.json",
+      "change": "added",
+      "bytes": 7440,
+      "sha256": "9646c2982e894ebc81ff5422ef0e314db709af1400a9fbd95c614fe1cca7912b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/Admission.java",
+      "change": "added",
+      "bytes": 862,
+      "sha256": "bdc54806b6da82d6e7a24c2cc07a2692b7e2236500989d532c620d650c5406e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "a1bf6f318a9640c09ed684da4ceffa82831cbdec1c6cadbb5e0179c9e0085b6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/result.json",
+      "change": "added",
+      "bytes": 7473,
+      "sha256": "bc9ca8afbdb3c909dfed15b3bcc0edf1353a42dee03668a3724339044b5cc879",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/b18937554a35352d296e/Calls.java",
+      "change": "added",
+      "bytes": 1108,
+      "sha256": "8c426d4cf58d6ee3b7ebe5c31751912cadcbc6a88aaca8c161f2462cd893c7ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/b18937554a35352d296e/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 802,
+      "sha256": "75ba1c488bfeab463c64e7e858021cdcb521d01653e0936c962abfa71fcbfd01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/b18937554a35352d296e/cases.tar.gz",
+      "change": "added",
+      "bytes": 1994,
+      "sha256": "6f453f7057941bfc5bfd7bc993a200de1394633b6e7833e75f46c7c3b5b3270d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/fb7438bbc08ef3bda2c2/Calls.java",
+      "change": "added",
+      "bytes": 1096,
+      "sha256": "9868e900a1190eb03a81b09a369c81528f10dc8c2ab8cb55415c5dbe84648300",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/fb7438bbc08ef3bda2c2/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 801,
+      "sha256": "a80af2f8544a485ac951c66a79c657a8e2db6bf7c823dee6499b1edbc580b750",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/fb7438bbc08ef3bda2c2/cases.tar.gz",
+      "change": "added",
+      "bytes": 1989,
+      "sha256": "2317f111d473c1a06a34ebc8c06090d4defd423c6e5d66778cf93269d11060aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/Admission.java",
+      "change": "added",
+      "bytes": 862,
+      "sha256": "bdc54806b6da82d6e7a24c2cc07a2692b7e2236500989d532c620d650c5406e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "a1bf6f318a9640c09ed684da4ceffa82831cbdec1c6cadbb5e0179c9e0085b6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/result.json",
+      "change": "added",
+      "bytes": 6985,
+      "sha256": "ae5c0e661cac7004f32c170f67dd7564bf0b65b01c1b58190abd14a2e13f4f91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/Admission.java",
+      "change": "added",
+      "bytes": 862,
+      "sha256": "bdc54806b6da82d6e7a24c2cc07a2692b7e2236500989d532c620d650c5406e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 550,
+      "sha256": "a1bf6f318a9640c09ed684da4ceffa82831cbdec1c6cadbb5e0179c9e0085b6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/result.json",
+      "change": "added",
+      "bytes": 7021,
+      "sha256": "5d5859704993cbd2bc12092dddaa038f83dd318925f907080f7a3c99ab974dde",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/spring-class-tables/before.log",
+      "change": "added",
+      "bytes": 119,
+      "sha256": "080d36fbfcead30b005c88afcaf485709022e5fd11b2d7ee680c8a78bba940c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/spring-class-tables/landed.log",
+      "change": "added",
+      "bytes": 222,
+      "sha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/spring-class-tables/run.json",
+      "change": "added",
+      "bytes": 2807,
+      "sha256": "54af9eb79678e09fa02df8562e2f60fde3ab672a0cf8438a83028d806e39ce39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/96b8d0c2f1f1abb33d24/Calls.java",
+      "change": "added",
+      "bytes": 3048,
+      "sha256": "f05fa016f5679ccf1fc212d1d9a4943329a38758f948a779443cee21f8819eb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/96b8d0c2f1f1abb33d24/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1767,
+      "sha256": "be0326f4bf5112877b9ab4b14942c0fd6c245bd52ab539dac84031d2158602eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/96b8d0c2f1f1abb33d24/cases.tar.gz",
+      "change": "added",
+      "bytes": 5897,
+      "sha256": "174503ee7da75f56bb44d3fe52083a36239599522ed1e8da68dbc5869d42823f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/d530b980c6a66ab50e2d/Calls.java",
+      "change": "added",
+      "bytes": 2952,
+      "sha256": "7720a8b72a2e866a8361da3ff5ba72401fdb08928145dc606a4341517c1d1a82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/d530b980c6a66ab50e2d/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1764,
+      "sha256": "9addceed4c6dfad0aebd0cb75bacae22084d7295a63fd809f0883e50b42f850e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/d530b980c6a66ab50e2d/cases.tar.gz",
+      "change": "added",
+      "bytes": 5621,
+      "sha256": "07e0ee7a79594150acc3ecc0f7c7da539e90f402174e35619173c65e8ab8e764",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-decision-before/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-decision-before/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-decision-before/result.json",
+      "change": "added",
+      "bytes": 54893,
+      "sha256": "fa68ee0c402c80f0d11e2765140834196150068bdad57a3dd5bef8580913a906",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-names-before/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-names-before/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-names-before/result.json",
+      "change": "added",
+      "bytes": 54905,
+      "sha256": "af0db3373b751335be6869bdcf12223905203fd3cc860fd4329a4f70d97e5e1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/03a39a90df0047e403bc/Calls.java",
+      "change": "added",
+      "bytes": 2952,
+      "sha256": "7720a8b72a2e866a8361da3ff5ba72401fdb08928145dc606a4341517c1d1a82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/03a39a90df0047e403bc/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1764,
+      "sha256": "9addceed4c6dfad0aebd0cb75bacae22084d7295a63fd809f0883e50b42f850e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/03a39a90df0047e403bc/cases.tar.gz",
+      "change": "added",
+      "bytes": 5579,
+      "sha256": "3ed81629256caa142c27c4e63ad885188d74c636ae23e2a6ee44ea1051ed548c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/9d06cfdbb5d35cafffb8/Calls.java",
+      "change": "added",
+      "bytes": 3048,
+      "sha256": "1278bc4e0313a0ec9f75fc0acac6f6c2e51884a0f892c7682547b6235bcf2993",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/9d06cfdbb5d35cafffb8/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1767,
+      "sha256": "d02f3da26901ab43074d0f78ae54a0b8dd8ffb6e6ea6b92874f3f990ff31257d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/9d06cfdbb5d35cafffb8/cases.tar.gz",
+      "change": "added",
+      "bytes": 1707,
+      "sha256": "1c13e859a1205c523d3077471313e5898e9add8b3704d1ac8aa0a76e415c9d3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/a458fcf304df5916b043/Calls.java",
+      "change": "added",
+      "bytes": 3048,
+      "sha256": "f05fa016f5679ccf1fc212d1d9a4943329a38758f948a779443cee21f8819eb4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/a458fcf304df5916b043/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1767,
+      "sha256": "be0326f4bf5112877b9ab4b14942c0fd6c245bd52ab539dac84031d2158602eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/a458fcf304df5916b043/cases.tar.gz",
+      "change": "added",
+      "bytes": 5902,
+      "sha256": "284dd875b1e64b57a6930b6315e968f2e71e5a03e1733615666fef6042ae23be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/fe7bf83a1621d4fa2e75/Calls.java",
+      "change": "added",
+      "bytes": 2952,
+      "sha256": "f07589b4e9c01ecec4222764fd48c78655099784f3e5f717179c2fe5786a0aa2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/fe7bf83a1621d4fa2e75/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 1764,
+      "sha256": "fb7b0f65a4d2d4796d0db96fb71469c847a19b66d018a55735c23f0928988701",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/fe7bf83a1621d4fa2e75/cases.tar.gz",
+      "change": "added",
+      "bytes": 1706,
+      "sha256": "be95de5be7ee10143dad459aa1bb290f70778b8da012af56b1d8ced158e57562",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/result.json",
+      "change": "added",
+      "bytes": 7008,
+      "sha256": "31ab0874cf6dfb61bee49df268d030c382fc84e40cca6c159343f51f8b971b44",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/result.json",
+      "change": "added",
+      "bytes": 7019,
+      "sha256": "50181fa5384691f0e24edb72faed7a2eac88b2c87dc9cbfd65f4d6a2adbe53f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-decision-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-decision-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-decision-landed/result.json",
+      "change": "added",
+      "bytes": 54895,
+      "sha256": "e782d356cecc57c4cb20c21397df8ac465d3008ccf214f11445f0e14ffd19567",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-names-landed/Admission.java",
+      "change": "added",
+      "bytes": 2242,
+      "sha256": "94e1abab94e22d6c42e4f2cc34cc0aacdc82ddd2b51e842d5621e9589867b1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-names-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 1230,
+      "sha256": "c00b23f4787be8ba7d094a622e8e3d0a08afb14e4b58fa742bb3494edbe5a826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-names-landed/result.json",
+      "change": "added",
+      "bytes": 54906,
+      "sha256": "98183bc68d64a9ffd60e453ff022ac6bb2cbf47a83d04f34522ee5e801cd5b6d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/spring-class-tables/landed.log",
+      "change": "added",
+      "bytes": 105,
+      "sha256": "fa0934bdf09f0590364795f73eb0d90ca0ea7255d831cb0a3284a8388afb1948",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/spring-class-tables/parent.log",
+      "change": "added",
+      "bytes": 101,
+      "sha256": "f837744544e49d53127a3b12e48d738a909db39befe9a5a6e029db330e9fd8bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/spring-class-tables/run.json",
+      "change": "added",
+      "bytes": 1960,
+      "sha256": "f8fc91a0f67ddc8f0b10363faf812f8a2bdd842dfa0af66af8aae30aec6c1f2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/04c512e938e48dae182c/Calls.java",
+      "change": "added",
+      "bytes": 312,
+      "sha256": "8408bf8196d12c8d5c947ce74f47843309eba482247d92354a598607ce5d5c05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/04c512e938e48dae182c/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 377,
+      "sha256": "f18faec1cd3ed70b61b88204f82c10b3fdfda7b798adeea24aa399f712b5015a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/04c512e938e48dae182c/cases.tar.gz",
+      "change": "added",
+      "bytes": 2009,
+      "sha256": "a4963eec44afee095c8c1f07d2a5edf01aac2c28af59ae9861e4162ee2722b16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/9ab120c90f4c458d5baf/Calls.java",
+      "change": "added",
+      "bytes": 321,
+      "sha256": "7cc5a242868fdfdcd02e40b52b02fc435b2b3da146b746c14d94cac6b2a71de1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/9ab120c90f4c458d5baf/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 380,
+      "sha256": "a1cc3cbcd52be58bcdd5af3c9daa98d08bc460ed60d19912909b7326beb63949",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/9ab120c90f4c458d5baf/cases.tar.gz",
+      "change": "added",
+      "bytes": 1992,
+      "sha256": "e1cd8412b985933915600477b9e5a6af3e0cd436ab742ccb7b8328de34bb5500",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/components-landed/Admission.java",
+      "change": "added",
+      "bytes": 259,
+      "sha256": "d30b1b2295f4ca46b77c915b29ea853bab1a14a678be541e9d9912612effc0e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/components-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 251,
+      "sha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/components-landed/result.json",
+      "change": "added",
+      "bytes": 7413,
+      "sha256": "dcb23e9f8d0536faebb82cfaebc575e28369df7e1bddd3ffb55ba91c82b7f729",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/getters-landed/Admission.java",
+      "change": "added",
+      "bytes": 259,
+      "sha256": "d30b1b2295f4ca46b77c915b29ea853bab1a14a678be541e9d9912612effc0e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/getters-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 251,
+      "sha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/getters-landed/result.json",
+      "change": "added",
+      "bytes": 7401,
+      "sha256": "bf79f114727ed70118259466230d403b1c1adb1a71e43f8de3303fc45939b0b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/0f64b66158a5da2f0b7e/Calls.java",
+      "change": "added",
+      "bytes": 312,
+      "sha256": "8408bf8196d12c8d5c947ce74f47843309eba482247d92354a598607ce5d5c05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/0f64b66158a5da2f0b7e/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 377,
+      "sha256": "f18faec1cd3ed70b61b88204f82c10b3fdfda7b798adeea24aa399f712b5015a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/0f64b66158a5da2f0b7e/cases.tar.gz",
+      "change": "added",
+      "bytes": 1956,
+      "sha256": "a9d5f3272d448c1b8cdba5199185857dd3f352df7cb42634f52df6bd9af05f59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/24a6335d08cc03d70cbd/Calls.java",
+      "change": "added",
+      "bytes": 321,
+      "sha256": "7cc5a242868fdfdcd02e40b52b02fc435b2b3da146b746c14d94cac6b2a71de1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/24a6335d08cc03d70cbd/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 380,
+      "sha256": "a1cc3cbcd52be58bcdd5af3c9daa98d08bc460ed60d19912909b7326beb63949",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/24a6335d08cc03d70cbd/cases.tar.gz",
+      "change": "added",
+      "bytes": 1999,
+      "sha256": "3083cac4f09a8643dc74497850f03592e9da4eafc6801d02a270b4fc6e913076",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/components-parent/Admission.java",
+      "change": "added",
+      "bytes": 259,
+      "sha256": "d30b1b2295f4ca46b77c915b29ea853bab1a14a678be541e9d9912612effc0e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/components-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 251,
+      "sha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/components-parent/result.json",
+      "change": "added",
+      "bytes": 6946,
+      "sha256": "7568317cf7b44e0a493818e62e1d88fb6f9674f4320895c38434ae9fe7debdbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/getters-parent/Admission.java",
+      "change": "added",
+      "bytes": 259,
+      "sha256": "d30b1b2295f4ca46b77c915b29ea853bab1a14a678be541e9d9912612effc0e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/getters-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 251,
+      "sha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/getters-parent/result.json",
+      "change": "added",
+      "bytes": 7400,
+      "sha256": "dfa4c0c3c4d5a79f9b3a40096e0634c7b29f52ce06b4c02cb76c0ce3e432a43f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/spring-class-tables/landed.log",
+      "change": "added",
+      "bytes": 95,
+      "sha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/spring-class-tables/parent.log",
+      "change": "added",
+      "bytes": 95,
+      "sha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/spring-class-tables/run.json",
+      "change": "added",
+      "bytes": 2331,
+      "sha256": "4dcc68a5306ee1677fd5bf2486b99f89d1a990d032e06a9b4d0bc179af74bd29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/5ec6013f83882f514411/Calls.java",
+      "change": "added",
+      "bytes": 238,
+      "sha256": "53cccb687436a52fc99192a01d69e1eb20cb45615165ecafb3efea781db8637b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/5ec6013f83882f514411/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 336,
+      "sha256": "368f6c54f7fdcf0aa0b61c8e262847e7b869426c4be2e069382de6f2ab6179c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/5ec6013f83882f514411/cases.tar.gz",
+      "change": "added",
+      "bytes": 1690,
+      "sha256": "19e532301cba7b1c289c6a541200e156cadfd5473153daab8ce0a953f93cb640",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/ae9aaa03c31f6bc1a349/Calls.java",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "6579df10c29132d8b6fd16d9dc9673d608885398f27ac6c9f64d95ea5535dda0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/ae9aaa03c31f6bc1a349/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "a26a5835837b7a0c057e2138967def74aecd89814b54be503f2c6a1f53d69ffe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/ae9aaa03c31f6bc1a349/cases.tar.gz",
+      "change": "added",
+      "bytes": 1690,
+      "sha256": "81f25a3decfeec40bc9f546bcf90ce33dd5225b889f73a3de248289d87571bd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/result.json",
+      "change": "added",
+      "bytes": 12537,
+      "sha256": "4f6ce112e1028115d90e7bb05e8b4678d83a4bdab402b62726d651b2859927a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/result.json",
+      "change": "added",
+      "bytes": 12530,
+      "sha256": "3eccd68b9364578cd9e3db772ef4bf90911eb06e89b000e597919ef3e52c1ab4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/55188d068c7516cdfcc8/Calls.java",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "6579df10c29132d8b6fd16d9dc9673d608885398f27ac6c9f64d95ea5535dda0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/55188d068c7516cdfcc8/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 333,
+      "sha256": "a26a5835837b7a0c057e2138967def74aecd89814b54be503f2c6a1f53d69ffe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/55188d068c7516cdfcc8/cases.tar.gz",
+      "change": "added",
+      "bytes": 1691,
+      "sha256": "b75f01c27bf4823f0762212d3c7595f02a687cf25d2616f1fdc09bb9b4277d50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/ef4b2eee6d8501d51d25/Calls.java",
+      "change": "added",
+      "bytes": 238,
+      "sha256": "53cccb687436a52fc99192a01d69e1eb20cb45615165ecafb3efea781db8637b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/ef4b2eee6d8501d51d25/Calls.jvm-bytecode",
+      "change": "added",
+      "bytes": 336,
+      "sha256": "368f6c54f7fdcf0aa0b61c8e262847e7b869426c4be2e069382de6f2ab6179c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/ef4b2eee6d8501d51d25/cases.tar.gz",
+      "change": "added",
+      "bytes": 1690,
+      "sha256": "fcb41ae706a993c7fbc4301b7df3ac3d29845683fa9d1c159aa418576c8074e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/result.json",
+      "change": "added",
+      "bytes": 12531,
+      "sha256": "456137a66170f85a46dd96f1b0358ce053932ce3c262c8a5dc6843906a550a44",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/Admission.java",
+      "change": "added",
+      "bytes": 194,
+      "sha256": "23a1fd4fd820e93876d7afb7777bc236116b48d7a9c029bdbb0bb90a101fd73b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/Admission.jvm-bytecode",
+      "change": "added",
+      "bytes": 218,
+      "sha256": "3015262d431a3463f52b427bd8a265ff567c2fe380623fa784bb57021d35323d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/result.json",
+      "change": "added",
+      "bytes": 12530,
+      "sha256": "79b12793d0989659208212fcbd32785f93bafd1405aa07c8f99ae2f30baef5c8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T04:22:56+00:00",
+    "applied": [
+      "examples/368-spring-binding-history/records/spring-class-tables/combined.log",
+      "examples/368-spring-binding-history/records/spring-class-tables/release.log",
+      "examples/368-spring-binding-history/records/spring-class-tables/run.json",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/37c31fa9548e0655995d/Calls.java",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/37c31fa9548e0655995d/Calls.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/37c31fa9548e0655995d/cases.tar.gz",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/d642cd6394498b23942c/Calls.java",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/d642cd6394498b23942c/Calls.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/calls/d642cd6394498b23942c/cases.tar.gz",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/Admission.java",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/Admission.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/result.json",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/Admission.java",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/Admission.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/result.json",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/b18937554a35352d296e/Calls.java",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/b18937554a35352d296e/Calls.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/b18937554a35352d296e/cases.tar.gz",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/fb7438bbc08ef3bda2c2/Calls.java",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/fb7438bbc08ef3bda2c2/Calls.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/calls/fb7438bbc08ef3bda2c2/cases.tar.gz",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/Admission.java",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/Admission.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/result.json",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/Admission.java",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/Admission.jvm-bytecode",
+      "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/result.json",
+      "examples/370-spring-role-hierarchy/records/spring-class-tables/before.log",
+      "examples/370-spring-role-hierarchy/records/spring-class-tables/landed.log",
+      "examples/370-spring-role-hierarchy/records/spring-class-tables/run.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/96b8d0c2f1f1abb33d24/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/96b8d0c2f1f1abb33d24/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/96b8d0c2f1f1abb33d24/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/d530b980c6a66ab50e2d/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/d530b980c6a66ab50e2d/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/calls/d530b980c6a66ab50e2d/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-decision-before/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-decision-before/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-decision-before/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-names-before/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-names-before/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T042202Z-db2550e2/tasks/legacy-names-before/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/03a39a90df0047e403bc/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/03a39a90df0047e403bc/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/03a39a90df0047e403bc/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/9d06cfdbb5d35cafffb8/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/9d06cfdbb5d35cafffb8/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/9d06cfdbb5d35cafffb8/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/a458fcf304df5916b043/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/a458fcf304df5916b043/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/a458fcf304df5916b043/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/fe7bf83a1621d4fa2e75/Calls.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/fe7bf83a1621d4fa2e75/Calls.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/calls/fe7bf83a1621d4fa2e75/cases.tar.gz",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-decision-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-decision-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-decision-landed/result.json",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-names-landed/Admission.java",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-names-landed/Admission.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/legacy-names-landed/result.json",
+      "examples/372-spring-property-accessors/records/spring-class-tables/landed.log",
+      "examples/372-spring-property-accessors/records/spring-class-tables/parent.log",
+      "examples/372-spring-property-accessors/records/spring-class-tables/run.json",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/04c512e938e48dae182c/Calls.java",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/04c512e938e48dae182c/Calls.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/04c512e938e48dae182c/cases.tar.gz",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/9ab120c90f4c458d5baf/Calls.java",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/9ab120c90f4c458d5baf/Calls.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/calls/9ab120c90f4c458d5baf/cases.tar.gz",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/components-landed/Admission.java",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/components-landed/Admission.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/components-landed/result.json",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/getters-landed/Admission.java",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/getters-landed/Admission.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/getters-landed/result.json",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/0f64b66158a5da2f0b7e/Calls.java",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/0f64b66158a5da2f0b7e/Calls.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/0f64b66158a5da2f0b7e/cases.tar.gz",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/24a6335d08cc03d70cbd/Calls.java",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/24a6335d08cc03d70cbd/Calls.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/calls/24a6335d08cc03d70cbd/cases.tar.gz",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/components-parent/Admission.java",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/components-parent/Admission.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/components-parent/result.json",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/getters-parent/Admission.java",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/getters-parent/Admission.jvm-bytecode",
+      "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/getters-parent/result.json",
+      "examples/374-spring-formatter-binding/records/spring-class-tables/landed.log",
+      "examples/374-spring-formatter-binding/records/spring-class-tables/parent.log",
+      "examples/374-spring-formatter-binding/records/spring-class-tables/run.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/5ec6013f83882f514411/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/5ec6013f83882f514411/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/5ec6013f83882f514411/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/ae9aaa03c31f6bc1a349/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/ae9aaa03c31f6bc1a349/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/calls/ae9aaa03c31f6bc1a349/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/result.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/result.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/55188d068c7516cdfcc8/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/55188d068c7516cdfcc8/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/55188d068c7516cdfcc8/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/ef4b2eee6d8501d51d25/Calls.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/ef4b2eee6d8501d51d25/Calls.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/calls/ef4b2eee6d8501d51d25/cases.tar.gz",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/result.json",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/Admission.java",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/Admission.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "025327f818118265070bd873a04fd2159eee85b1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/025327f818118265070bd873a04fd2159eee85b1/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T042242Z-3735635c506f449d",
+      "outputs": "20261123T042242Z-4091724b16a3f717",
+      "diff": "20261123T042242Z-431927ee2f6d8e87"
+    }
+  }
+}
