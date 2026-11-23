@@ -18,6 +18,27 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-057: the trusted-kernel investment decision still lacks its corrupted-producer control
+
+- **Status**: open. Left when trusted-kernel was handed over to the next queued brief after cycle 2.
+- **Raised**: 2026-11-23 by the watcher, at the end of the trusted-kernel run (Astra, 2 cycles; decision single-trusted-kernel-D001; the run's second cycle ended on a stale working copy after its turn had finished, with its work committed and landed as `kpkqomum`).
+- **Found**:
+  - **What the run established, all checked from original class bytes by the independent Rust checker in a fresh process:**
+    - Guava `Ints.indexOf` and `Longs.indexOf`, for every legal length and signed target: each terminates, returns the first match or -1, and preserves the heap. Certificates are about 1.1 KB, with a median check of about 1.2 ms. The `Longs` transfer took 49 net lines on the frozen int checker.
+    - Temurin 21 `Arrays.fill` writes exactly the requested interval for every valid `int[]` range (37 obligations, 1,197 bytes, 1.24 ms).
+    - Example 337's caller is correct under aliasing (51 obligations).
+  - **What else held:**
+    - The extra-write caller is refuted (shared `[11]`, empty range: it returns 7), and the JVM confirms it.
+    - All six behavioural mutants gave checked counterexamples.
+    - Lean proved the scalar identity.
+    - LRAT certified all 18 observed UNSAT calls.
+    - Both genuine historical solver failures reproduced at their witnessed inputs.
+  - **The gap.** The brief makes "advance the semantic checker" conditional on, among other things, "the team can identify a producer error that has lost the ability to cause acceptance". Fault injection was run only on the experimental issuer. How the historical producer and its replay respond to a deliberately corrupted producer was never measured, and the run's own report names it as the one open experiment.
+  - **The run's recommendation:** advance the semantic checker, measuring reuse next on the JDK `long[]` overload of `Arrays.fill`. Because of the gap, that recommendation rests on the issuer's fault injection, not on the historical producer.
+- **Needs**: the corrupted-producer control. Inject a fault into the historical producer, for example a wrong loop invariant, a dropped obligation or a flipped bound, and show that the independent checker refuses the resulting certificate where the producer's own replay would accept it. Record this in `lib/benchmark/trusted-kernel/evidence/cases.json`. Only then is the investment decision complete as the brief defines it.
+- **Tracked in**: this finding. Evidence: `lib/benchmark/trusted-kernel/README.md` (decision, assumptions, replay commands), `lib/benchmark/trusted-kernel/evidence/cases.json` (111-case table), `llm-dlc/loops/in-the-loop-trusted-kernel-experiment-brief.md`.
+- **Closes when**: the control has run, and the decision record says whether a producer error has lost the ability to cause acceptance.
+
 ### VF-056: three ordinary monitor claims stop at the platform `Thread` constructor, left by jbmc-java-semantics-gap
 
 - **Status**: open. Deferred by the user to pick up later; nothing in the queue waits on it.
