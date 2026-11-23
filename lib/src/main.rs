@@ -16,6 +16,30 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Command {
+    /// List candidate physical checks on the selected original method, including its byte offsets and class digest.
+    Sites {
+        target: String,
+        #[command(flatten)]
+        classes: ClassesArgs,
+    },
+    /// Discover public constructors and static factories, and emit one executable history per compatible producer.
+    Construct {
+        receiver: String,
+        #[arg(long)]
+        observer: String,
+        #[arg(long)]
+        output: PathBuf,
+        #[arg(long, default_value_t = 64)]
+        max_producers: usize,
+        /// Admit a fixed null for each reference argument to a producer.
+        #[arg(long)]
+        null_collaborators: bool,
+        /// Give the observer independent primitive arguments following the producer's inputs.
+        #[arg(long)]
+        fresh_observer_inputs: bool,
+        #[command(flatten)]
+        classes: ClassesArgs,
+    },
     /// Check that the code still behaves exactly as the contracts in a directory say (exit 1 on any drift).
     Verify(ContractArgs),
     /// Rewrite the contracts in a directory from the code; --add creates new ones.
@@ -940,6 +964,16 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 }
             }
             Ok(if derivation.problem.is_some() { 1 } else { 0 })
+        }
+        Command::Sites { target, classes } => {
+            let inventory = jvmcontract::discovery::sites(&load_classpath(&classes)?, &target)?;
+            println!("{}", serde_json::to_string_pretty(&inventory).expect("site inventory"));
+            Ok(0)
+        }
+        Command::Construct { receiver, observer, output, max_producers, null_collaborators, fresh_observer_inputs, classes } => {
+            let plans = jvmcontract::discovery::construct(&load_classpath(&classes)?, &receiver, &observer, &output, max_producers, null_collaborators, fresh_observer_inputs)?;
+            println!("{}", serde_json::to_string_pretty(&plans).expect("producer inventory"));
+            Ok(0)
         }
         Command::Equivalence(args) => {
             let mut options = equivalence::Options::new(&args.before, &args.after, &args.target);

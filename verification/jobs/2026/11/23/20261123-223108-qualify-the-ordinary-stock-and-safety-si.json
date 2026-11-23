@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-223108-qualify-the-ordinary-stock-and-safety-si",
+  "title": "Qualify the ordinary stock and safety-site example tasks",
+  "description": "Check all six registered strict properties through build.py on the actual fixtures and retain the fresh ordinary receipts.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:31:08+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Run registered example 397",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B examples/tools/build.py 397 --tasks nonnegative,taken,aliaslaw,unchanged --checker-seconds 60",
+      "cwd": "."
+    },
+    {
+      "name": "Run registered example 398",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B examples/tools/build.py 398 --tasks caught,sum --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/397-stock-factory-histories/receipts",
+    "examples/398-physical-safety-sites/receipts"
+  ]
+}

@@ -54,6 +54,7 @@ pub mod contract;
 pub mod deadline;
 pub mod details;
 pub mod digest;
+pub mod discovery;
 pub mod domain;
 pub mod effects;
 /// The environment stream's module of `llm-dlc/loops/application-core.md`.

@@ -757,9 +757,9 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
         Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) =>
             cf.pool.member(*i).is_ok_and(|m| cp.is_application(&m.owner)
                 || cp.checked_image_class(&m.owner).is_some()
+                || (matches!(insn, Insn::InvokeStatic(_)) && super::runtime::models_static(&m.owner, &m.name, &m.descriptor))
                 || matches!((m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()),
                     ("java/lang/Class", "getClassLoader", "()Ljava/lang/ClassLoader;")
-                    | ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;")
                     | ("java/util/TimeZone", "getTimeZone", "(Ljava/lang/String;)Ljava/util/TimeZone;")
                     | ("java/util/HashSet", "<init>", "(I)V")
                     | ("java/util/Set", "add", "(Ljava/lang/Object;)Z")

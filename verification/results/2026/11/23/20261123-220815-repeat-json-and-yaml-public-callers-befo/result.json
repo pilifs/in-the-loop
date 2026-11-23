@@ -1,0 +1,244 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-220815-repeat-json-and-yaml-public-callers-befo",
+  "title": "Repeat JSON and YAML public callers before receiver changes",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 39.5s, peak 185.6 MiB (estimated 3m00s, 3.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-220815-repeat-json-and-yaml-public-callers-befo.json",
+    "sha256": "28e31fc795c94daefc4f99439590d9e6bcaf43fa9c5e341fdae73072abb0d7a9",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-220815-repeat-json-and-yaml-public-callers-befo",
+      "title": "Repeat JSON and YAML public callers before receiver changes",
+      "description": "Run the original registered four-input Configuration callers on both old and new Jackson and SnakeYAML graphs. Check exact original classpaths, caller identities and physical entry on every trial, and preserve strict native stops.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:08:15+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "Measure commons-configuration-565",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening commons-configuration-565",
+          "cwd": "."
+        },
+        {
+          "name": "Measure commons-configuration-601",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening commons-configuration-601",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/opening/commons-configuration-565",
+        "verification/receiver-discovery/opening/commons-configuration-601"
+      ]
+    }
+  },
+  "sourceCommit": "52b851bb76067dfe9f730298390b870c578dc7d0",
+  "startedAt": "2026-11-23T22:17:35+00:00",
+  "finishedAt": "2026-11-23T22:21:20+00:00",
+  "wallSeconds": 225.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3192283,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 194625536,
+    "wallSeconds": 39.5,
+    "cpuSeconds": 55.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure commons-configuration-565",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening commons-configuration-565",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 20.046,
+      "cpuSeconds": 28.033,
+      "cpuThrottledSeconds": 6.439,
+      "peakMemoryBytes": 194625536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-commons-configuration.log",
+        "lines": 3,
+        "bytes": 1589,
+        "sha256": "b71846d705e6131c3cf868f8a6be6c5822a4f268f9c34dc5bbfb57a1fdaf68ee",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.configuration2.JSONConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-565 preserved",
+        "{\"old\": {\"verdict\": \"unverifiable\", \"firstOutstanding\": \"the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.tree.InMemoryNodeModel.<clinit>()V (org.apache.commons.configuration2.tree"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure commons-configuration-601",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening commons-configuration-601",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 19.433,
+      "cpuSeconds": 27.233,
+      "cpuThrottledSeconds": 6.775,
+      "peakMemoryBytes": 172838912,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-commons-configuration.log",
+        "lines": 3,
+        "bytes": 1589,
+        "sha256": "a4b409e6351a29c0a492f003c8590083a4030c7687f41b32550f55830fdb4342",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.configuration2.YAMLConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-601 preserved",
+        "{\"old\": {\"verdict\": \"unverifiable\", \"firstOutstanding\": \"the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.tree.InMemoryNodeModel.<clinit>()V (org.apache.commons.configuration2.tree"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/opening/commons-configuration-565/measurement.json",
+      "change": "added",
+      "bytes": 1930,
+      "sha256": "969505feb461684b1fdec8c7fcd57f7eee929a6f57aa6a271bd556eaf09c3d3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/opening/commons-configuration-565/receipts.tar.gz",
+      "change": "added",
+      "bytes": 14607,
+      "sha256": "c29a10ea5cbaa351f7a9cb9b4f347e8996a03829aeec159e95d5224ecfb1dd12",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/opening/commons-configuration-601/measurement.json",
+      "change": "added",
+      "bytes": 1930,
+      "sha256": "c70ae11473b226aa167409e06b6e5681ca96472fb8cacea37ac64eaa00cd9303",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/opening/commons-configuration-601/receipts.tar.gz",
+      "change": "added",
+      "bytes": 11333,
+      "sha256": "7e687447e83708fdcc15239ce2f9eca5e872780db61d0a76a545359bebab7bc5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:26:05+00:00",
+    "applied": [
+      "verification/receiver-discovery/opening/commons-configuration-565/measurement.json",
+      "verification/receiver-discovery/opening/commons-configuration-565/receipts.tar.gz",
+      "verification/receiver-discovery/opening/commons-configuration-601/measurement.json",
+      "verification/receiver-discovery/opening/commons-configuration-601/receipts.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "559abf5ae9b419691eabad507b55a542062ae943",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/559abf5ae9b419691eabad507b55a542062ae943/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T222120Z-744861e10add6946",
+      "outputs": "20261123T222120Z-766821c9155d1de3",
+      "diff": "20261123T222120Z-7887836179b9a13d"
+    }
+  }
+}

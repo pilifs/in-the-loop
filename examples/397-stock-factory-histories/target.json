@@ -1,0 +1,111 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "stock-factory-histories",
+    "family": "stock-factory-histories",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "revision": "original",
+      "target": "FactoryClaims#nonnegative",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "nonnegative",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FactoryClaims#nonnegative",
+      "relation": "calibration",
+      "claim": "claims/nonnegative.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "taken",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FactoryClaims#taken",
+      "relation": "calibration",
+      "claim": "claims/taken.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "aliaslaw",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FactoryClaims#aliasLaw",
+      "relation": "calibration",
+      "claim": "claims/aliasLaw.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "unchanged",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FactoryClaims#unchanged",
+      "relation": "calibration",
+      "claim": "claims/unchanged.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "revision": "original",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle",
+      "kind": "oracle",
+      "revision": "original",
+      "path": "controls/original.json"
+    }
+  ]
+}

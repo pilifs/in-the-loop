@@ -1589,9 +1589,32 @@ impl ClassPath {
             "java/util/LinkedList" => matches!((owner, name, desc),
                 ("java/util/LinkedList" | "java/util/AbstractSequentialList" | "java/util/AbstractList" | "java/util/AbstractCollection", "<init>", "()V")
                 | ("java/util/LinkedList" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")
-                | ("java/util/LinkedList", "linkFirst", "(Ljava/lang/Object;)V")),
+                | ("java/util/LinkedList", "linkFirst" | "linkLast", "(Ljava/lang/Object;)V")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/Collection", "add", "(Ljava/lang/Object;)Z")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/Collection", "addAll", "(Ljava/util/Collection;)Z")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/AbstractCollection" | "java/util/Collection", "isEmpty", "()Z")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/AbstractCollection" | "java/util/Collection", "size", "()I")
+                | ("java/util/LinkedList" | "java/util/List", "remove", "(I)Ljava/lang/Object;")
+                | ("java/util/LinkedList", "addAll", "(ILjava/util/Collection;)Z")
+                | ("java/util/LinkedList", "checkElementIndex" | "checkPositionIndex", "(I)V")
+                | ("java/util/LinkedList", "isElementIndex" | "isPositionIndex", "(I)Z")
+                | ("java/util/LinkedList", "outOfBoundsMsg", "(I)Ljava/lang/String;")
+                | ("java/util/LinkedList", "node", "(I)Ljava/util/LinkedList$Node;")
+                | ("java/util/LinkedList", "unlink", "(Ljava/util/LinkedList$Node;)Ljava/lang/Object;")),
             "java/util/LinkedList$Node" => owner == receiver && name == "<init>"
                 && desc == "(Ljava/util/LinkedList$Node;Ljava/lang/Object;Ljava/util/LinkedList$Node;)V",
+            "java/util/concurrent/CopyOnWriteArrayList" => matches!((owner,name,desc),
+                ("java/util/concurrent/CopyOnWriteArrayList","<init>","()V")
+                | ("java/util/concurrent/CopyOnWriteArrayList","getArray","()[Ljava/lang/Object;")
+                | ("java/util/concurrent/CopyOnWriteArrayList","setArray","([Ljava/lang/Object;)V")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/util/Collection","size","()I")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/util/Collection","isEmpty","()Z")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/lang/Iterable" | "java/util/Collection","iterator","()Ljava/util/Iterator;")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/util/Collection","add","(Ljava/lang/Object;)Z")),
+            "java/util/concurrent/CopyOnWriteArrayList$COWIterator" => matches!((owner,name,desc),
+                ("java/util/concurrent/CopyOnWriteArrayList$COWIterator","<init>","([Ljava/lang/Object;I)V")
+                | ("java/util/concurrent/CopyOnWriteArrayList$COWIterator" | "java/util/Iterator","hasNext","()Z")
+                | ("java/util/concurrent/CopyOnWriteArrayList$COWIterator" | "java/util/Iterator","next","()Ljava/lang/Object;")),
             QUEUE => matches!((owner, name, desc),
                 (QUEUE, "<init>", "()V" | "(I)V") | (QUEUE, "size" | "remainingCapacity", "()I") | ("java/util/AbstractCollection", "size", "()I")
                 | ("java/util/AbstractCollection" | QUEUE, "isEmpty", "()Z")),
@@ -1942,11 +1965,12 @@ impl ClassPath {
         let interface = match (name, descriptor) {
             ("putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;") if class == "java/util/EnumMap" => "java/util/Map",
             ("end", "()V") if class.starts_with("java/util/stream/ReduceOps$") => "java/util/stream/Sink",
-            ("stream", "()Ljava/util/stream/Stream;") if class == "java/util/Arrays$ArrayList"
+            ("stream", "()Ljava/util/stream/Stream;") if matches!(class, "java/util/Arrays$ArrayList" | "java/util/Collections$EmptySet")
                 || class == "java/util/ArrayList" && !self.runs_model(class) => "java/util/Collection",
             ("begin", "(J)V") | ("end", "()V") if class.starts_with("java/util/stream/FindOps$FindSink") => "java/util/stream/Sink",
-            ("getExactSizeIfKnown", "()J") if class == "java/util/Spliterators$ArraySpliterator" => "java/util/Spliterator",
+            ("getExactSizeIfKnown", "()J") if matches!(class, "java/util/Spliterators$ArraySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef") => "java/util/Spliterator",
             ("forEachRemaining", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/util/Iterator",
+            ("forEach", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/lang/Iterable",
             ("getExactSizeIfKnown", "()J") | ("hasCharacteristics", "(I)Z") if class == "java/util/Spliterators$IteratorSpliterator" => "java/util/Spliterator",
             _ => return None,
         };
@@ -2035,7 +2059,7 @@ impl ClassPath {
             | "java/util/stream/FindOps" | "java/util/stream/FindOps$FindOp" | "java/util/stream/FindOps$FindSink" | "java/util/stream/FindOps$FindSink$OfRef"
             | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"
             | "java/util/Spliterators$EmptySpliterator$OfLong" | "java/util/Spliterators$EmptySpliterator$OfDouble"
-            | "java/util/Collections$EmptySet" | "java/util/Collections$UnmodifiableSet" | "java/util/Collections$UnmodifiableCollection"
+            | "java/util/Collections$EmptyMap" | "java/util/Collections$EmptySet" | "java/util/Collections$UnmodifiableSet" | "java/util/Collections$UnmodifiableCollection"
             | "java/util/stream/Collectors" | "java/util/stream/Collectors$CollectorImpl" | "java/util/stream/Collector$Characteristics"
             | "java/util/stream/ReduceOps" | "java/util/stream/StreamShape"
             | "java/util/EnumMap" | "java/util/EnumMap$1" | "java/util/EnumSet" | "java/util/RegularEnumSet"

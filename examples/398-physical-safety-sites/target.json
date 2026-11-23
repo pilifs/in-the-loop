@@ -1,0 +1,83 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "physical-safety-sites",
+    "family": "physical-safety-sites",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "revision": "original",
+      "target": "SafetyClaims#caught",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "caught",
+      "kind": "prove",
+      "revision": "original",
+      "target": "SafetyClaims#caught",
+      "relation": "calibration",
+      "claim": "claims/caught.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "sum",
+      "kind": "prove",
+      "revision": "original",
+      "target": "SafetyClaims#sum",
+      "relation": "calibration",
+      "claim": "claims/sum.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "revision": "original",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle",
+      "kind": "oracle",
+      "revision": "original",
+      "path": "controls/original.json"
+    }
+  ]
+}

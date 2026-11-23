@@ -1,0 +1,190 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-220814-recount-ordinary-csv-decisions-on-the-re",
+  "title": "Recount ordinary CSV decisions on the receiver campaign opening",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.0s, peak 138.9 MiB (estimated 2m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-220814-recount-ordinary-csv-decisions-on-the-re.json",
+    "sha256": "f7db0db5098de650593d9b914bb2a856c22d2031d490469334ef41815023e115",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-220814-recount-ordinary-csv-decisions-on-the-re",
+      "title": "Recount ordinary CSV decisions on the receiver campaign opening",
+      "description": "Repeat all four strict native claims on Commons CSV PR 218 with their original public builder and reader and validate every fresh receipt against the registered guard and assertion.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:08:14+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "Measure 366",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening 366",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/opening/366"
+      ]
+    }
+  },
+  "sourceCommit": "52b851bb76067dfe9f730298390b870c578dc7d0",
+  "startedAt": "2026-11-23T22:17:35+00:00",
+  "finishedAt": "2026-11-23T22:20:46+00:00",
+  "wallSeconds": 191.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3192283,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 145645568,
+    "wallSeconds": 5.0,
+    "cpuSeconds": 7.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure 366",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening 366",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 5.012,
+      "cpuSeconds": 7.313,
+      "cpuThrottledSeconds": 0.406,
+      "peakMemoryBytes": 145645568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-366.log",
+        "lines": 1,
+        "bytes": 123,
+        "sha256": "eec9751150d120188feee5316e7e35a0d4434682d4267de91948b82324b7e39e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"fields-parent\": \"refuted\", \"fields-fix\": \"established\", \"prefixes-parent\": \"established\", \"prefixes-fix\": \"established\"}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/opening/366/measurement.json",
+      "change": "added",
+      "bytes": 1205,
+      "sha256": "28f5ce5f87770c1c2214e22bb7e2b09104294b8a670bc6c83d8ab3bfc9e04015",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/opening/366/receipts.tar.gz",
+      "change": "added",
+      "bytes": 7860,
+      "sha256": "11fe42d8be0fdbf928f19b9663ab4165e2ef7a91fef9aa8d32866b9fe80fc909",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/opening/366/workflow.log",
+      "change": "added",
+      "bytes": 962,
+      "sha256": "d206798bac577c4b308bc072525a8e65a92f624be3eb179f99cd6cbe2eb8fccc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:21:13+00:00",
+    "applied": [
+      "verification/receiver-discovery/opening/366/measurement.json",
+      "verification/receiver-discovery/opening/366/receipts.tar.gz",
+      "verification/receiver-discovery/opening/366/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "559abf5ae9b419691eabad507b55a542062ae943",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/559abf5ae9b419691eabad507b55a542062ae943/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T222046Z-266017b5663520ee",
+      "outputs": "20261123T222046Z-2864939113f7f957",
+      "diff": "20261123T222046Z-3061779022ad15a0"
+    }
+  }
+}
