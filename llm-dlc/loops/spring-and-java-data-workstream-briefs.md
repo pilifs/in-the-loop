@@ -230,4 +230,6 @@ The ordinary native Spring score is now **4/16**. Both historical legacy role hi
 
 The pre-feature and landed JVMs and four strict native proofs also reproduced the loss of an indirect grant when B → D is removed, with the direct-D and C-only controls. [Role control](../../examples/370-spring-role-hierarchy/README.md#removing-the-indirect-grant)
 
-- Status: waiting on jobs 20261123-012155-check-spring-startup-changes-against-the
+Both proof-tier conformance tests passed under JBMC, automatic selection and automatic confirmation. [Conformance result](../../verification/results/2026/11/23/20261123-012155-check-spring-startup-changes-against-the/result.json)
+
+- Status: done
