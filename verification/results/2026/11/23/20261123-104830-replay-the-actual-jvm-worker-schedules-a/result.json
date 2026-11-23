@@ -1,0 +1,249 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-104830-replay-the-actual-jvm-worker-schedules-a",
+  "title": "Replay the actual JVM worker schedules and test the reference-array plan",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.2s, peak 83.7 MiB (estimated 4m00s, 4.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-104830-replay-the-actual-jvm-worker-schedules-a.json",
+    "sha256": "0173c2dbd12f24baba536011d8d9506c15910e6c6183ba8af3e0d3f0ee3e4974",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-104830-replay-the-actual-jvm-worker-schedules-a",
+      "title": "Replay the actual JVM worker schedules and test the reference-array plan",
+      "description": "Pause the original caller at its shared read with JDI. Observe the worker blocked on the identical class mirror or having written six while the instance lock is held. Compare the narrower in-lock Java assertions under JBMC threading. At the same source run the direct Item[] claim with an explicit two-cell construction plan.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "Every named original entry has a measured result, evidence hashes and an explicit disposition. The scorecard independently verifies the original domain and every native refutation on its JVM.",
+      "submitted": {
+        "at": "2026-11-23T10:48:30+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 14,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "4m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "Class locks and array construction",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/heap_and_monitors.py",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/heap-and-monitors"
+      ]
+    }
+  },
+  "sourceCommit": "f17b8fb17723b29b5985e257f420cc3b21d7c2d9",
+  "startedAt": "2026-11-23T10:56:23+00:00",
+  "finishedAt": "2026-11-23T11:00:06+00:00",
+  "wallSeconds": 223.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 130452,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 87805952,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 6.5,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Class locks and array construction",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/heap_and_monitors.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 4.209,
+      "cpuSeconds": 6.498,
+      "cpuThrottledSeconds": 0.26,
+      "peakMemoryBytes": 87805952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-class-locks-and-array-construc.log",
+        "lines": 1,
+        "bytes": 443,
+        "sha256": "02e71263f150a0c64d24adf8ef75651f122292f1c1a8eb8e07d6b3d704ebcea3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'matched': {'observations': ['matched before the original read=5 workerBlockedOnClass=true', 'original result=protected'], 'seconds': 0.191}, 'mixed': {'observations': ['mixed before the original read=6 workerBlockedOnClass=false', 'original result=exposed'], 'seconds': 0.19}, 'synchronizedMethod':"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/measurement.json",
+      "change": "added",
+      "bytes": 10153,
+      "sha256": "23e969bf23741a9f71ee4ccb6d888a7cfc85152f6e5a2f4d033139a670f194c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/planned.json",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/planned.stderr",
+      "change": "added",
+      "bytes": 163,
+      "sha256": "6fcacc6f81f2044d8cf0b0d969cb5cf271d028ba48c9705f9d26cf28d13cbc10",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/reached-matched.json.gz",
+      "change": "added",
+      "bytes": 7441,
+      "sha256": "0c74ac5ace508f1a0bbec5eb56cfa67c8e6953481507c0d541c1c74bdb611448",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/reached-mixed.json.gz",
+      "change": "added",
+      "bytes": 7546,
+      "sha256": "6fe97fcba7c7a384502376ea2d257bcbe4fe834d321fe698ab8691f882d5e939",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/reached-staticMethod.json.gz",
+      "change": "added",
+      "bytes": 7451,
+      "sha256": "aa4e314e1fa6c5ca0ee5fa46107e9cf64c97ffb2d4302e1a1dd502ad8c1b8c5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/reference-array-plan.json",
+      "change": "added",
+      "bytes": 750,
+      "sha256": "df1c0d2b0e0771371befe47517923a673077404cd7bf5476ee3e125ce1ce51c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/target-matched.json.gz",
+      "change": "added",
+      "bytes": 1246,
+      "sha256": "9f6fd180eb249951b2e0a3e74145935298b5fb5a723e910f891a3cfbcdce94af",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/target-mixed.json.gz",
+      "change": "added",
+      "bytes": 7552,
+      "sha256": "4d71151bef184dba1598135368f38ca19eaa26a1c08281888fadddd73192e06e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-monitors/target-staticMethod.json.gz",
+      "change": "added",
+      "bytes": 7413,
+      "sha256": "c0c3a3335816de964fa30a5e3c5ef7a5effdd7efb09f278bcfc71a6765c41b17",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T11:02:25+00:00",
+    "applied": [
+      "verification/java-semantics-gap/heap-and-monitors/measurement.json",
+      "verification/java-semantics-gap/heap-and-monitors/planned.json",
+      "verification/java-semantics-gap/heap-and-monitors/planned.stderr",
+      "verification/java-semantics-gap/heap-and-monitors/reached-matched.json.gz",
+      "verification/java-semantics-gap/heap-and-monitors/reached-mixed.json.gz",
+      "verification/java-semantics-gap/heap-and-monitors/reached-staticMethod.json.gz",
+      "verification/java-semantics-gap/heap-and-monitors/reference-array-plan.json",
+      "verification/java-semantics-gap/heap-and-monitors/target-matched.json.gz",
+      "verification/java-semantics-gap/heap-and-monitors/target-mixed.json.gz",
+      "verification/java-semantics-gap/heap-and-monitors/target-staticMethod.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "02a3027a37ffd923d7139e28a719a65849bd71ee",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/02a3027a37ffd923d7139e28a719a65849bd71ee/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T110006Z-457711b3293a0672",
+      "outputs": "20261123T110006Z-4782607c6890228d",
+      "diff": "20261123T110006Z-493944fbc28a1766"
+    }
+  }
+}
