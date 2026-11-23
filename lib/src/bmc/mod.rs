@@ -5541,10 +5541,12 @@ impl<'a> Engine<'a> {
             }
             if let Some(step) = self.object_hash(path, o, special, member) { return step; }
             if let Some(step) = self.fresh_thread_local(path, o, special, member, &args) { return step; }
-            // Set12 puts the bootstrap EMPTY object in its second slot. Its virtual equals
-            // runs Object's reference comparison. Keep normal dispatch for every subclass.
+            // Set12's bootstrap EMPTY and the Class mirrors used as cache keys run
+            // Object.equals. Other receivers keep their own virtual dispatch.
             if !special && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z"
-                && path.objects[o].class == "java/lang/Object" && !path.objects[o].given
+                && (path.objects[o].class == "java/lang/Object" || path.objects[o].class == "java/lang/Class"
+                    && self.cp.find_method("java/lang/Class", &member.name, &member.descriptor).is_some_and(|(cf, _)| cf.name == "java/lang/Object"))
+                && !path.objects[o].given
                 && !path.objects[o].assumed && !path.objects[o].unknown {
                 if let Some((cf, method)) = self.cp.library_image_method("java/lang/Object", "equals", &member.descriptor) {
                     let mut full = vec![Val::R(Some(o))];

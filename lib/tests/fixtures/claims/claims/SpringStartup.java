@@ -108,7 +108,9 @@ public final class SpringStartup {
     public static boolean cacheKeys() {
         ConstantHash key = new ConstantHash();
         ClassLoader loader = SpringStartup.class.getClassLoader();
-        return key.hashCode() == 17 && key.inherited() == System.identityHashCode(key)
+        Object mirror = Component.class;
+        return mirror.equals(Component.class) && !mirror.equals(Extra.class) && !mirror.equals(null)
+            && key.hashCode() == 17 && key.inherited() == System.identityHashCode(key)
             && loader.hashCode() == System.identityHashCode(loader);
     }
 

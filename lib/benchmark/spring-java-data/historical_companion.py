@@ -4,11 +4,29 @@ from pathlib import Path
 import shutil
 import subprocess
 
-from measure import ROOT, digest, read
-from targets import class_binding, runtime_jdk
+from measure import ROOT, digest, read, seed
+from targets import class_binding, route, runtime_jdk, sidecar
 
 CLASSPATH = ["classes", "original.jar"]
 LOADED = ROOT / "examples/tools/targets/java/LoadedClasses.java"
+
+
+def prepare_graph(folder, side, task, work):
+    seed(folder)
+    example = read(folder / "example.json")
+    plan = route.resolve(folder, example, sidecar.load(folder, example), task)
+    original = read(ROOT / "verification/spring-java-data/exact-classpaths/classes.json")[folder.name.split("-", 1)[0]][side]
+    jdk = Path(runtime_jdk.home("21"))
+    prep = work / "prepared"
+    target = route.prepare_revision(plan, side, prep, {})
+    if target.stage != "artifacts-ready":
+        raise ValueError(target.diagnostic)
+    paths = [prep / path for path in target.classpath]
+    bound = [{"path": path.relative_to(prep).as_posix(), "sha256": digest(path)} for path in paths]
+    if (bound != original["orderedJars"] or bound[0]["path"] != "driver.jar"
+            or runtime_jdk.release(jdk) != original["jdk"]):
+        raise ValueError("different historical classpath or subject JDK")
+    return jdk, original, paths, bound
 
 
 def prepare(folder, side, work, original, sources):

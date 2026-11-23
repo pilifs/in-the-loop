@@ -5,10 +5,10 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from measure import ROOT, digest, read, seed, write
-from historical_companion import bind
+from measure import ROOT, digest, write
+from historical_companion import bind, prepare_graph
 import checker_output
-from targets import route, runtime, runtime_jdk, sidecar
+from targets import runtime
 
 FOLDER = ROOT / "examples/370-spring-role-hierarchy"
 SOURCE = FOLDER / "companions/HierarchyEdge.java"
@@ -38,22 +38,9 @@ def qualify(raw, method):
 
 
 def measure(side, replay, checker):
-    seed(FOLDER)
-    example = read(FOLDER / "example.json")
-    plan = route.resolve(FOLDER, example, sidecar.load(FOLDER, example), "legacy-decision-" + side)
-    original = read(ROOT / "verification/spring-java-data/exact-classpaths/classes.json")["370"][side]
-    jdk = Path(runtime_jdk.home("21"))
     with tempfile.TemporaryDirectory(prefix="spring-role-edge-") as scratch:
         work = Path(scratch)
-        prep = work / "prepared"
-        target = route.prepare_revision(plan, side, prep, {})
-        if target.stage != "artifacts-ready":
-            raise ValueError(target.diagnostic)
-        paths = [prep / path for path in target.classpath]
-        bound = [{"path": path.relative_to(prep).as_posix(), "sha256": digest(path)} for path in paths]
-        if (bound != original["orderedJars"] or bound[0]["path"] != "driver.jar"
-                or runtime_jdk.release(jdk) != original["jdk"]):
-            raise ValueError("different historical classpath or subject JDK")
+        jdk, original, paths, bound = prepare_graph(FOLDER, side, "legacy-decision-" + side, work)
         classes = work / "classes"
         classes.mkdir()
         classpath = os.pathsep.join(map(str, paths[1:]))
