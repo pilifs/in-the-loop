@@ -119,6 +119,7 @@ mod array_list;
 mod calendar;
 mod class_tables;
 mod jar_resources;
+mod generic_interfaces;
 mod map_views;
 mod enum_universe;
 pub mod bits;
@@ -5616,7 +5617,8 @@ impl<'a> Engine<'a> {
                     // with it. Once a later reference exists, the GC could enqueue it.
                     if path.objects[o + 1..].iter().any(|r| self.cp.is_subtype(&r.class, "java/lang/ref/Reference")
                         && !matches!(r.fields.get(runtime::REGISTERED_QUEUE), Some(Val::R(q)) if *q != Some(o))) {
-                        return unsupported("polling a reference queue after a possible GC registration");
+                        let calls = path.frames.iter().rev().take(6).map(|frame| site(frame).display()).collect::<Vec<_>>();
+                        return unsupported(format!("polling a reference queue after a possible GC registration in {}", calls.join(" called by ")));
                     }
                     if let Some((cf, method)) = self.cp.find_method(QUEUE, &member.name, &member.descriptor) {
                         return self.enter_method(path, QUEUE, cf, method, vec![Val::R(Some(o))]);
@@ -5750,6 +5752,14 @@ impl<'a> Engine<'a> {
             }
             // A class literal's name and loader ([`runtime`]).
             if !special {
+                if path.objects[o].class == STRING && member.owner == STRING && member.name == "contains" {
+                    if let Some((cf, method)) = self.cp.library_image_method(STRING, "contains", &member.descriptor) {
+                        let mut full = vec![Val::R(Some(o))];
+                        full.extend(args);
+                        return self.enter_method(path, STRING, cf, method, full);
+                    }
+                }
+                if let Some(step) = self.generic_interface_call(path, o, member, &args) { return step; }
                 if let Some(step) = self.reflection_method(path, o, member, &args) { return step; }
             }
             if let Some(step) = self.class_method(path, o, &member.owner, &member.name, &member.descriptor) {

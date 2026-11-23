@@ -3,6 +3,24 @@ package claims;
 import java.util.*;
 
 public final class ClassTableChecks {
+    public static boolean genericInterfaces() {
+        var interfaces = StartupType.class.getGenericInterfaces();
+        if (interfaces.length != 2 || interfaces[1] != StartupMarker.class) return false;
+        var first = (java.lang.reflect.ParameterizedType) interfaces[0];
+        if (first.getOwnerType() != null || first.getRawType() != StartupPair.class) return false;
+        var args = first.getActualTypeArguments();
+        if (args.length != 2 || args[0] != String.class || args[1] != Number.class) return false;
+        args[0] = Long.class;
+        interfaces[0] = Object.class;
+        var again = StartupType.class.getGenericInterfaces();
+        var reverse = (java.lang.reflect.ParameterizedType) StartupReverse.class.getGenericInterfaces()[1];
+        return again != interfaces && again[0] == first && first.getActualTypeArguments()[0] == String.class
+            && reverse.getActualTypeArguments()[0] == Number.class && reverse.getActualTypeArguments()[1] == String.class;
+    }
+
+    public static boolean nestedArgument() {
+        return StartupNested.class.getGenericInterfaces().length == 1;
+    }
     static final class Tables {
         private static final Class<?>[] EMPTY = {};
         private static final Map<Class<?>, Class<?>> keys = new IdentityHashMap<>(3);
@@ -98,6 +116,9 @@ public final class ClassTableChecks {
         var one = urls.nextElement();
         var two = urls.nextElement();
         if (other.nextElement() == one || one == two || urls.hasMoreElements()) return false;
+        if (!one.getPath().startsWith("file:/") || !one.getPath().endsWith("/first.jar!/" + name)
+                || !two.getPath().endsWith("/second.jar!/" + name)
+                || one.getPath() != one.getFile() || one.getPath() != one.getPath()) return false;
         try { urls.nextElement(); return false; }
         catch (NoSuchElementException exhausted) {}
         var connection = one.openConnection();
@@ -113,6 +134,13 @@ public final class ClassTableChecks {
     }
 
     public static void main(String[] args) throws Exception {
-        if (!lookups() || !exportedOrder() || !classSet() || !orderedSet() || !resources()) throw new AssertionError();
+        if (!lookups() || !exportedOrder() || !classSet() || !orderedSet() || !resources()
+                || !genericInterfaces() || !nestedArgument()) throw new AssertionError();
     }
 }
+
+interface StartupPair<A, B> {}
+interface StartupMarker {}
+final class StartupType implements StartupPair<String, Number>, StartupMarker {}
+final class StartupReverse implements StartupMarker, StartupPair<Number, String> {}
+final class StartupNested implements StartupPair<List<String>, Number> {}

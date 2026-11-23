@@ -22,10 +22,64 @@ DEST = lines.FOLDER / "records/fluent-counterexample"
 METHODS = {"names": "fluentNames", "decision": "fluentDecision"}
 
 
+def replay_name(method):
+    return METHODS[method][0].upper() + METHODS[method][1:] + "Replay"
+
+
+def fresh_replay(method):
+    return """package springwork;
+public final class %s {
+    public static void main(String[] args) {
+        int value = RoleChecks.%s(1);
+        System.out.print(value);
+        String separator = System.lineSeparator();
+        for (int i = 0; i < separator.length(); i++) {
+            System.out.print(" ");
+            System.out.print((int) separator.charAt(i));
+        }
+        System.out.print("\\n");
+    }
+}
+""" % (replay_name(method), METHODS[method])
+
+
+def qualify_replay(data, method):
+    pool, methods, _ = runtime_jar._declarations(data, with_code=True)
+    flags, code, handlers = methods["main", "([Ljava/lang/String;)V"]
+    shape = bytearray.fromhex("04 b8 0000 3c b2 0000 1b b6 0000 b8 0000 4d 03 3e 1d 2c b6 0000 "
+                              "a2 001c b2 0000 12 00 b6 0000 b2 0000 2c 1d b6 0000 b6 0000 84 03 01 "
+                              "a7 ffe2 b2 0000 12 00 b6 0000 b1")
+    launch.require(runtime_jar.this_class(data) == "springwork/" + replay_name(method)
+                   and runtime_jar.super_class(data) == "java/lang/Object" and not runtime_jar.interfaces(data)
+                   and ("<clinit>", "()V") not in methods and flags == 9 and not handlers and len(code) == len(shape),
+                   "fresh JVM replay must start with the original observer at selector 1")
+    printer = "java/io/PrintStream"
+    for at, expected in [(1, (launch.CHECKS, METHODS[method], "(I)I")), (9, (printer, "print", "(I)V")),
+                         (12, ("java/lang/System", "lineSeparator", "()Ljava/lang/String;")),
+                         (20, ("java/lang/String", "length", "()I")), (31, (printer, "print", "(Ljava/lang/String;)V")),
+                         (39, ("java/lang/String", "charAt", "(I)C")), (42, (printer, "print", "(I)V")),
+                         (56, (printer, "print", "(Ljava/lang/String;)V"))]:
+        launch.require(launch.ref(pool, code, at) == expected, "different fresh replay entry or observer")
+        shape[at + 1:at + 3] = code[at + 1:at + 3]
+    for at in (5, 26, 34, 51):
+        tag, (owner, pair) = pool[int.from_bytes(code[at + 1:at + 3], "big")]
+        kind, (name, desc) = pool[pair]
+        launch.require(tag == 9 and kind == 12 and runtime_jar._class_name(pool, owner) == "java/lang/System"
+                       and runtime_jar._utf8(pool, name) == "out" and runtime_jar._utf8(pool, desc) == "Ljava/io/PrintStream;",
+                       "different JVM output stream")
+        shape[at + 1:at + 3] = code[at + 1:at + 3]
+    for at, literal in [(29, " "), (54, "\n")]:
+        tag, index = pool[code[at + 1]]
+        launch.require(tag == 8 and runtime_jar._utf8(pool, index) == literal, "different replay output delimiter")
+        shape[at + 1] = code[at + 1]
+    launch.require(code == shape, "different reported result or startup separator")
+
+
 def qualify_caller(data):
     """The active arm returns one exactly when the unchanged observer returns zero at selector 1."""
     pool, methods, _ = runtime_jar._declarations(data, with_code=True)
     launch.require(runtime_jar.this_class(data) == CALLER.replace(".", "/")
+                   and runtime_jar.super_class(data) == "java/lang/Object" and not runtime_jar.interfaces(data)
                    and ("<clinit>", "()V") not in methods, "different witness class or initializer")
     for method, original in METHODS.items():
         flags, code, handlers = methods[method, "()I"]
@@ -70,21 +124,36 @@ def measure(replay=False):
         classes = work / "classes"
         classes.mkdir()
         cp = os.pathsep.join(map(str, [classes, *jars]))
-        subprocess.run([jdk / "bin/javac", "-g:none", "-proc:none", "-cp", cp, "-d", classes, SOURCE],
+        sources = []
+        for method in METHODS:
+            src = work / (replay_name(method) + ".java")
+            src.write_text(fresh_replay(method))
+            sources.append(src)
+        subprocess.run([jdk / "bin/javac", "-g:none", "-proc:none", "-cp", cp, "-d", classes, SOURCE, *sources],
                        env=launch.ENV, check=True)
         caller = classes / "springwork/FluentWitness.class"
         qualify_caller(caller.read_bytes())
         outputs = {}
+        independent = {}
+        for method in METHODS:
+            qualify_replay((caller.parent / (replay_name(method) + ".class")).read_bytes(), method)
         for profile, sep in lines.PROFILES.items():
             opts = [] if profile == "default" else ["-Dline.separator=" + sep]
             raw = subprocess.check_output([jdk / "bin/java", *opts, "-cp", cp, CALLER], env=launch.ENV)
             launch.require(raw == ("\n".join(rows(sep)) + "\n").encode("ascii"), "different original JVM observation")
             outputs[profile] = raw
+            for method in METHODS:
+                binary = "springwork." + replay_name(method)
+                raw = subprocess.check_output([jdk / "bin/java", *opts, "-cp", cp, binary], env=launch.ENV)
+                expected = [int(sep != "|"), *map(ord, sep)]
+                launch.require(raw == (" ".join(map(str, expected)) + "\n").encode(), "different fresh JVM counterexample")
+                independent[f"{profile}-{method}"] = raw
         print("A alone grants on LF and CRLF. On pipe the reachable names contain three pipe-suffixed or joined terms and D is denied.")
         if replay:
             return
         checker = Path(os.environ["JVMCONTRACT"])
         env = runtime._verifier_env({"home": str(jdk)})
+        env["JVMCONTRACT_JAR_RELEASE"] = "21"
         inputs = [(CALLER, m, "()I", classes, digest(caller)) for m in METHODS]
         for b in prior["bindings"]:
             if b["class"] != lines.CALLER:
@@ -93,7 +162,10 @@ def measure(replay=False):
         providers = bind(checker, env, work, "landed", inputs, classpath=[classes, *jars])
         DEST.mkdir(parents=True, exist_ok=True)
         (DEST / "FluentWitness.jvm-bytecode").write_bytes(caller.read_bytes())
-        for name, raw in outputs.items():
+        for method, src in zip(METHODS, sources, strict=True):
+            (DEST / src.name).write_bytes(src.read_bytes())
+            (DEST / (replay_name(method) + ".jvm-bytecode")).write_bytes((caller.parent / (replay_name(method) + ".class")).read_bytes())
+        for name, raw in {**outputs, **independent}.items():
             (DEST / (name + ".stdout")).write_bytes(raw)
         claims = {}
         for method in METHODS:
@@ -105,6 +177,7 @@ def measure(replay=False):
               "classpath": bound[1:], "bindings": providers, "jdk": graph["jdk"], "sourceSha256": digest(SOURCE),
               "environment": launch.ENV, "runtimeSha256": {name: digest(jdk / name) for name in launch.VM_FILES},
               "selector": 1, "startupUnits": [124], "profiles": {k: hashlib.sha256(v).hexdigest() for k, v in outputs.items()},
+              "independentReplays": {k: hashlib.sha256(v).hexdigest() for k, v in independent.items()},
               "claims": claims})
 
 

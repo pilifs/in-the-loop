@@ -384,6 +384,7 @@ pub struct ClassPath {
     thread_local_keys: std::cell::OnceCell<bool>,
     class_table_image: std::cell::OnceCell<bool>,
     jar_resource_image: std::cell::OnceCell<bool>,
+    generic_interface_image: std::cell::OnceCell<bool>,
     explicit_utc: std::cell::OnceCell<bool>,
     string_buffer_layout: std::cell::OnceCell<Option<bool>>,
     basic_base64: std::cell::OnceCell<bool>,
@@ -412,7 +413,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -590,6 +591,20 @@ impl ClassPath {
             }
         }
         Some(urls)
+    }
+
+    /// URLClassPath canonicalizes an input JAR before constructing its file URL.
+    /// These ASCII characters survive ParseUtil.encodePath on the selected Unix image.
+    /// A relative entry depends on the launching JVM's user.dir. Its bytes can still
+    /// be enumerated, but the checker cannot supply the lexical path.
+    pub(crate) fn local_jar_url_path(&self, index: usize, resource: &str) -> Option<String> {
+        let Entry::Jar(_, jar, _) = self.entries.get(index)? else { return None };
+        if !cfg!(unix) || !jar.is_absolute() { return None; }
+        let canonical = jar.canonicalize().ok()?;
+        let path = canonical.to_str()?;
+        if !path.starts_with('/') || !path.bytes().all(|b| b.is_ascii_alphanumeric()
+            || matches!(b, b'.' | b'-' | b'_' | b'+' | b'/')) { return None; }
+        Some(format!("file:{path}!/{resource}"))
     }
 
     /// Every application class name, in entry order and sorted within an entry.
@@ -1161,6 +1176,7 @@ impl ClassPath {
             | ("java/lang/StringUTF16", "newBytesLength", "(I)I")
             | ("java/lang/Character", "toLowerCase", "(C)C" | "(I)I")
             | ("java/lang/reflect/Modifier", "isStatic", "(I)Z")
+            | ("java/net/URLDecoder", "decode", "(Ljava/lang/String;Ljava/nio/charset/Charset;)Ljava/lang/String;")
             | ("java/util/Set", "of", "([Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/lang/Character", "isJavaIdentifierPart" | "isUpperCase", "(C)Z" | "(I)Z")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
@@ -1168,6 +1184,8 @@ impl ClassPath {
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
             | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
             | ("java/util/Arrays", "checkLength", "(II)V")
+            | ("java/util/ArrayDeque", "dec", "(II)I")
+            | ("java/util/ArrayDeque", "sub", "(III)I")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
             | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
             | ("java/nio/channels/Channels", "newChannel", "(Ljava/io/OutputStream;)Ljava/nio/channels/WritableByteChannel;")
@@ -1192,6 +1210,7 @@ impl ClassPath {
             | ("java/util/concurrent/ConcurrentHashMap", "spread" | "tableSizeFor", "(I)I")
             | ("java/util/Collections", "unmodifiableList", "(Ljava/util/List;)Ljava/util/List;")
             | ("java/util/Collections", "singletonList", "(Ljava/lang/Object;)Ljava/util/List;")
+            | ("java/util/Collections", "singleton", "(Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/util/Collections", "singletonIterator", "(Ljava/lang/Object;)Ljava/util/Iterator;")
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
@@ -1260,6 +1279,17 @@ impl ClassPath {
               "java/util/ImmutableCollections$SetN", "java/lang/Class", "java/lang/Object",
               "java/lang/String"],
             &["6cf0ee476e559857d5d5703d8fea3ca2a46299cfd6c6c2071fdea3001f33f348"])) // Temurin 21.0.13
+    }
+
+    /// ClassRepository clones its interfaces array, retaining the reified Type objects on the mirror.
+    pub(crate) fn generic_interface_image(&self) -> bool {
+        *self.generic_interface_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/Class", "java/lang/reflect/ParameterizedType", "sun/reflect/generics/parser/SignatureParser",
+              "sun/reflect/generics/repository/AbstractRepository", "sun/reflect/generics/repository/GenericDeclRepository",
+              "sun/reflect/generics/repository/ClassRepository", "sun/reflect/generics/tree/ClassTypeSignature",
+              "sun/reflect/generics/visitor/Reifier", "sun/reflect/generics/factory/CoreReflectionFactory",
+              "sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl"],
+            &["2a3e1317a03c92f25c934d15f147c3131377073096b550db598de8a053912063"])) // Temurin 21.0.13
     }
 
     pub(crate) fn jar_resource_image(&self) -> bool {
@@ -1467,7 +1497,16 @@ impl ClassPath {
                 | ("java/util/HashSet" | "java/util/Set" | "java/util/Collection", "isEmpty", "()Z")),
             "java/util/ArrayDeque" => matches!((owner, name, desc),
                 ("java/util/ArrayDeque" | "java/util/AbstractCollection", "<init>", "()V")
-                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "isEmpty", "()Z")),
+                | ("java/util/ArrayDeque", "<init>", "(I)V")
+                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "isEmpty", "()Z")
+                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "size", "()I")
+                | ("java/util/ArrayDeque" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")),
+            "java/util/LinkedList" => matches!((owner, name, desc),
+                ("java/util/LinkedList" | "java/util/AbstractSequentialList" | "java/util/AbstractList" | "java/util/AbstractCollection", "<init>", "()V")
+                | ("java/util/LinkedList" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")
+                | ("java/util/LinkedList", "linkFirst", "(Ljava/lang/Object;)V")),
+            "java/util/LinkedList$Node" => owner == receiver && name == "<init>"
+                && desc == "(Ljava/util/LinkedList$Node;Ljava/lang/Object;Ljava/util/LinkedList$Node;)V",
             QUEUE => matches!((owner, name, desc),
                 (QUEUE, "<init>", "()V" | "(I)V") | (QUEUE, "size" | "remainingCapacity", "()I") | ("java/util/AbstractCollection", "size", "()I")
                 | ("java/util/AbstractCollection" | QUEUE, "isEmpty", "()Z")),
@@ -1481,6 +1520,8 @@ impl ClassPath {
                 && self.is_subtype(receiver, "java/lang/ref/SoftReference") =>
                 name == "<init>" && desc == "(Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V",
             "java/lang/ref/ReferenceQueue" => owner == receiver && name == "<init>" && desc == "()V",
+            "java/util/Properties$LineReader" => owner == receiver && matches!((name, desc),
+                ("<init>", "(Ljava/io/InputStream;)V") | ("readLine", "()I")),
             "java/lang/StringBuffer" => owner == "java/lang/AbstractStringBuilder" && name == "<init>" && desc == "(I)V",
             SYNC => matches!((owner,name,desc), (SYNC | "java/util/concurrent/locks/ReentrantLock$Sync"
                 | "java/util/concurrent/locks/AbstractQueuedSynchronizer" | "java/util/concurrent/locks/AbstractOwnableSynchronizer", "<init>","()V")
@@ -1521,6 +1562,8 @@ impl ClassPath {
         let declaring = if special { owner } else { PROPS };
         if !matches!((declaring, name, desc),
             (PROPS, "<init>", "()V" | "(I)V" | "(Ljava/util/Properties;)V" | "(Ljava/util/Properties;I)V")
+            | (PROPS, "load", "(Ljava/io/InputStream;)V")
+            | (PROPS, "load0", "(Ljava/util/Properties$LineReader;)V")
             | ("java/util/Hashtable", "<init>", "(Ljava/lang/Void;)V") | ("java/util/Dictionary", "<init>", "()V")
             | (PROPS, "size", "()I") | (PROPS, "isEmpty", "()Z") | (PROPS, "containsKey", "(Ljava/lang/Object;)Z")
             | (PROPS, "get", "(Ljava/lang/Object;)Ljava/lang/Object;")
@@ -1583,6 +1626,7 @@ impl ClassPath {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
         if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/lang/String", "contains", "(Ljava/lang/CharSequence;)Z")
             | ("java/lang/Object", "equals", "(Ljava/lang/Object;)Z")
             | ("java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;")
             | ("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;")
@@ -1824,7 +1868,7 @@ impl ClassPath {
             | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"
             | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
             | "java/util/TimSort" | "java/util/ComparableTimSort" | "java/util/BitSet"
-            | "java/util/Stack" | "java/util/Vector" | "java/util/Collections$SingletonList" | "java/util/Collections$1"
+            | "java/util/Stack" | "java/util/Vector" | "java/util/Collections$SingletonList" | "java/util/Collections$SingletonSet" | "java/util/Collections$1"
             | "java/util/Collections$UnmodifiableList" | "java/util/Collections$UnmodifiableRandomAccessList"
             | "java/util/Collections$UnmodifiableCollection$1"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"

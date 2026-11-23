@@ -50,6 +50,19 @@ public final class L {
     public static boolean alwaysCached407() { return Integer.valueOf(407) == Integer.valueOf(407); }
     public static boolean neverCached407() { return Integer.valueOf(407) != Integer.valueOf(407); }
 
+    public static boolean symbolicBoxes(int x, int y) {
+        Integer seven = Integer.valueOf(7);
+        Integer optional = Integer.valueOf(407);
+        Integer a = Integer.valueOf(x);
+        Integer b = Integer.valueOf(y);
+        Integer repeat = Integer.valueOf(x);
+        if (a.intValue() != x || b.intValue() != y || (x != y && a == b)) return false;
+        if (x == 7 && a != seven || y == -4 && b != Integer.valueOf(-4)) return false;
+        if (x == 407 && (a == optional) != (optional == Integer.valueOf(407))) return false;
+        if (x >= -128 && x <= 127 && a != repeat || x < -128 && a == repeat) return false;
+        return x != y || (a == b) == (a == repeat);
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length == 1 && args[0].equals("cache-image")) {
             var sha = java.security.MessageDigest.getInstance("SHA-256");
@@ -59,6 +72,9 @@ public final class L {
             return;
         }
         if (!optionalIntegerCache()) throw new AssertionError("cache value or ordering");
+        int[] samples = {Integer.MIN_VALUE, -129, -128, -4, 7, 127, 128, 407, 408, Integer.MAX_VALUE};
+        for (int x : samples) for (int y : samples)
+            if (!symbolicBoxes(x, y)) throw new AssertionError("cache entry " + x + ", " + y);
         System.out.print(alwaysCached407() + "/" + (Integer.valueOf(408) == Integer.valueOf(408)));
     }
 

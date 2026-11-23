@@ -14,6 +14,7 @@ const POSITION: &str = "<JDK.resourcePosition>";
 const CLOSED: &str = "<JDK.closed>";
 const OPENED: &str = "<JDK.opened>";
 const SOURCE_URL: &str = "<JDK.sourceURL>";
+const URL_PATH: &str = "<JDK.jarURLPath>";
 
 impl Engine<'_> {
     pub(super) fn app_resources(&mut self, path: &mut Path, o: usize, m: &MemberRef, args: &[Val]) -> Option<Step> {
@@ -32,6 +33,10 @@ impl Engine<'_> {
             let data = self.alloc(path, "[B");
             path.objects[data].array = Some(Array { element: Type::Byte, length: self.b.constant(bytes.len() as i64, 32),
                 cells: bytes.iter().map(|b| self.b.constant(i64::from(*b), 8)).collect(), refs: vec![] });
+            if let Some(file) = self.cp.local_jar_url_path(provider, &name) {
+                let text = self.string(path, &file.encode_utf16().collect::<Vec<_>>());
+                path.objects[data].fields.insert(URL_PATH.into(), Val::R(Some(text)));
+            }
             path.objects[cursor].fields.insert(format!("<url/{index}>"), Val::R(Some(data)));
         }
         path.objects[cursor].fields.insert(RESOURCE.into(), Val::I(self.b.constant(bindings.len() as i64, 32)));
@@ -73,6 +78,15 @@ impl Engine<'_> {
                 }
             }
             (URL, "getUserInfo", "()Ljava/lang/String;", []) => Some(Val::R(None)),
+            (URL, "getPath" | "getFile", "()Ljava/lang/String;", []) => {
+                let Val::R(Some(data)) = content else { return unsupported("unbound JAR resource"); };
+                let Some(Val::R(Some(text))) = path.objects[data].fields.get(URL_PATH).cloned()
+                    else { return unsupported("the canonical local JAR URL path needs an absolute unescaped classpath entry"); };
+                let units = self.constant_units(path, text).ok_or_else(|| Stop::Unsupported("unbound JAR URL path".into()))?;
+                let file = String::from_utf16(&units).map_err(|_| Stop::Unsupported("invalid JAR URL path".into()))?;
+                self.assumed.insert(format!("the ordinary Unix application loader resolves this JAR entry at the same canonical URL path as the checker (UTF-8 SHA-256 {})", crate::digest::sha256_hex(file.as_bytes())));
+                Some(Val::R(Some(text)))
+            }
             (URL, "openConnection", "()Ljava/net/URLConnection;", []) => {
                 self.keeps(path, None, "opens a local JAR resource connection")?;
                 let con = self.resource_object(path, CONNECTION, content);
@@ -113,7 +127,8 @@ impl Engine<'_> {
                 path.objects[o].fields.insert(POSITION.into(), Val::I(self.b.constant(next, 32)));
                 Some(value)
             }
-            _ => return unsupported(format!("{}.{}{} on a classpath JAR resource", class.replace('/', "."), m.name, m.descriptor)),
+            _ => return unsupported(format!("{}.{}{} on a classpath JAR resource at {}", class.replace('/', "."), m.name, m.descriptor,
+                site(path.frames.last().expect("a frame")).display())),
         };
         if let Some(value) = result { self.push(path, value); }
         self.advance(path);

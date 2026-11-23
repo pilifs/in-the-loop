@@ -84,11 +84,14 @@ fn class_lookup_folds_and_local_resource_order_match_the_launch() {
         assert!(Command::new("java").args(args).arg("-cp").arg(&cp).arg("claims.ClassTableChecks").status().unwrap().success());
     }
     if !String::from_utf8_lossy(&Command::new("java").arg("-version").output().unwrap().stderr).contains("Temurin-21.0.13+9") { return; }
-    for method in ["lookups", "classSet", "orderedSet", "resources", "lastWriter", "exportedOrder"] {
+    for method in ["lookups", "classSet", "orderedSet", "resources", "genericInterfaces", "nestedArgument", "lastWriter", "exportedOrder"] {
         let mut o = options(classes, &format!("claims.ClassTableChecks#{method}"), 64, method);
         o.classpath = jars.clone();
         let result = run(&o);
-        if matches!(method, "lastWriter" | "exportedOrder") {
+        if method == "nestedArgument" {
+            assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
+            assert!(result.output.contains("getGenericInterfaces"), "{}", result.output);
+        } else if matches!(method, "lastWriter" | "exportedOrder") {
             assert_eq!(result.verdict, Verdict::Unverifiable, "{method}: {}", result.output);
             assert!(result.output.contains("entrySet"), "{}", result.output);
         } else {
@@ -205,6 +208,7 @@ fn lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_f
             assert_eq!(String::from_utf8_lossy(&actual.stdout), expected);
         }
         proved(classes, "claims.L#optionalIntegerCache", 3);
+        proved(classes, "claims.L#symbolicBoxes", 3);
         for method in ["alwaysCached407", "neverCached407"] {
             let outcome = run(&options(classes, &format!("claims.L#{method}"), 3, method));
             assert_ne!(outcome.verdict, Verdict::Verified, "the VM can choose either identity");
@@ -612,7 +616,7 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
 }
 
 /// A stack of `java.util.ArrayDeque`, as Spring's `AbstractErrors` keeps its nested paths (`claims.Deques`, example
-/// 286): the JDK's, its constructor a gap, until a check asks for the model (`--model java.util.ArrayDeque`); then
+/// 286): the JDK's until a check asks for the model (`--model java.util.ArrayDeque`); then
 /// the model is the definition written out on every input of the bound, and a method it does not keep (`offer`) is
 /// still the JDK call it names. The same methods hold on a JVM, over sampled inputs, on the JDK's deque.
 #[test]
@@ -624,8 +628,8 @@ fn an_array_deque_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defi
 
     let unasked = run(&options(classes, "claims.Deques#stacked", 3, "Deques-unasked"));
     assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
-    // With the JDK image the fresh constructor runs and the first missing operation is size.
-    assert!(unasked.output.contains("java.util.Deque.size()I") || unasked.output.contains("java.util.ArrayDeque.<init>()V"),
+    // The original deque now constructs its array and reports its size before the first peek.
+    assert!(unasked.output.contains("java.util.Deque.peek()Ljava/lang/Object;") || unasked.output.contains("java.util.ArrayDeque.<init>()V"),
             "{}", unasked.output);
 
     let asking = |method: &str| {

@@ -591,6 +591,10 @@ On Temurin 21.0.13 the native checker can follow a fresh thread-local key throug
 
 The native checker can build class lookup tables from ordinary initialization on Temurin 21.0.13. It recognizes the bytecode that inverts an identity map of class mirrors, indexes their names, and indexes a temporary union of class mirrors and array types. Conflicting writes to a key, an observable last entry, or a helper with other effects leave the traversal open. Lookups retain the exact class references. A fresh linked hash set runs its backing map and iterators from the JDK image. On the same image the built-in loader can enumerate fixed local JARs for a flat `META-INF` resource. The proof records the ordered providers and content digests. Each URL and opened stream has its own identity, and the checker can follow individual bytes or a complete read. [Class-table, ordered-set and resource controls](tests/fixtures/claims/claims/ClassTableChecks.java)
 
+On that JDK the loader also supplies the lexical path of an unescaped, absolute local JAR entry. A proof that reads it records the canonical path digest. Generic reflection reads a concrete application's class-file Signature and resolves its top-level interfaces in declaration order. The checker returns fresh arrays of interfaces and type arguments, sharing the parameterized type on later reads of the same class. A nested parameter, an unresolved type or a mismatched declaration leaves the lookup open. The original JDK methods expose the raw type and arguments. [JAR and generic reflection controls](tests/fixtures/claims/claims/ClassTableChecks.java)
+
+On supported Integer cache images the checker boxes arbitrary signed ints, including a hash computed from class identities. Repeated calls agree on cached identity throughout one execution, including the VM's optional cache above 127. Each uncached call allocates a distinct box. The native fixture checks two independent ints, and the JVM repeats the boundary cases under three cache limits. [Integer cache controls](tests/fixtures/claims/claims/L.java)
+
 
 ## Library use
 

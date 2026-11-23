@@ -452,6 +452,9 @@ impl Engine<'_> {
     /// Outside the mandatory cache the selected JDK's factory decides what it constructs.
     pub(super) fn cached_integral(&mut self, path: &mut Path, class: &'static str, word: &Bits) -> Option<Step> {
         let minimum = if class == "java/lang/Character" { 0 } else { i8::MIN };
+        if class == "java/lang/Integer" && path.statics.contains_key(&("java/lang/Integer$IntegerCache".into(), "<symbolic>".into())) {
+            return self.symbolic_integer(path, word);
+        }
         let boxed = if let Some(n) = self.b.constant_value(word) {
             if class == "java/lang/Integer" && i8::try_from(n).is_err() {
                 return self.wide_integer(path, word, i32::try_from(n).ok()?);
@@ -471,6 +474,7 @@ impl Engine<'_> {
                     Err(stop) => return Some(Err(stop)),
                 }
             }
+            if range.is_none() && class == "java/lang/Integer" { return self.symbolic_integer(path, word); }
             let mut choices = Vec::new();
             for n in range? {
                 let guard = self.b.eq(word, &self.b.constant(i64::from(n), word.len()));
@@ -479,6 +483,56 @@ impl Engine<'_> {
             choice(&mut self.b, choices)
         };
         self.push(path, boxed);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// Materialize the cache entries a path asks for, even when the key is an arbitrary
+    /// int. For each concrete assignment the oldest candidate with equal value is the
+    /// cached object. Outside the single VM-wide cache interval every call allocates.
+    fn symbolic_integer(&mut self, path: &mut Path, word: &Bits) -> Option<Step> {
+        const INTEGER: &str = "java/lang/Integer";
+        const CACHE: &str = "java/lang/Integer$IntegerCache";
+        const ENTRIES: &str = "<Integer.valueOf entries>";
+        if word.len() != 32 || self.gap_mode != GapMode::Strict
+            || self.previous.is_some() || self.pure.is_some() || self.frame.is_some() { return None; }
+        let marker = (CACHE.into(), "<symbolic>".into());
+        if !path.statics.contains_key(&marker) {
+            if !self.cp.known_integer_cache() { return None; }
+            for (index, &object) in path.literals.iter().filter_map(|(key, o)|
+                matches!(key, Literal::CachedIntegral(INTEGER, _)).then_some(o)).enumerate() {
+                path.statics.insert((ENTRIES.into(), format!("{index:08}")), Val::R(Some(object)));
+            }
+            path.statics.insert(marker, Val::I(self.b.constant(1, 32)));
+        }
+        let mut entries = Vec::new();
+        let candidates = path.statics.range((ENTRIES.to_string(), String::new())..);
+        for (_, value) in candidates.take_while(|((owner, _), _)| owner == ENTRIES) {
+            let Val::R(Some(object)) = value else { return Some(unsupported("merged symbolic Integer cache entries")); };
+            let Some(Val::I(bits)) = path.objects[*object].fields.get("value") else { return Some(unsupported("unbound Integer cache entry")); };
+            entries.push((*object, bits.clone()));
+        }
+        let fresh = self.alloc(path, INTEGER);
+        path.objects[fresh].fields.insert("value".into(), Val::I(word.clone()));
+        if !entries.iter().any(|(_, bits)| bits == word) {
+            if entries.len() >= 512 { return Some(unsupported("more than 512 distinct Integer cache candidates on one path")); }
+            path.statics.insert((ENTRIES.into(), format!("{:08}", entries.len())), Val::R(Some(fresh)));
+        }
+        let mut cached = Val::R(Some(fresh));
+        for (object, bits) in entries.iter().rev() {
+            let equal = self.b.eq(word, bits);
+            if equal != FALSE { cached = choose(&mut self.b, equal, &Val::R(Some(*object)), &cached)?; }
+        }
+        let high = path.statics.entry((CACHE.into(), "<qualified-high>".into())).or_insert_with(|| Val::I(self.b.fresh(32)));
+        let Val::I(high) = high else { return Some(unsupported("unbound Integer cache cutoff")); };
+        let below = self.b.slt(word, &self.b.constant(-128, 32));
+        let above_mandatory = self.b.slt(&self.b.constant(127, 32), word);
+        let above_vm = self.b.slt(high, word);
+        let above = self.b.and(above_mandatory, above_vm);
+        let outside = self.b.or(below, above);
+        let value = choose(&mut self.b, outside, &Val::R(Some(fresh)), &cached)?;
+        path.unbound_platform_value = Some("the JVM's Integer cache limit");
+        self.push(path, value);
         self.advance(path);
         Some(Ok(None))
     }
