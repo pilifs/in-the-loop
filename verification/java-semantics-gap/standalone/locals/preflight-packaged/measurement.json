@@ -1,0 +1,326 @@
+{
+  "key": "locals",
+  "profile": "packaged",
+  "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
+  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
+  "classpath": [
+    "assertions",
+    "caller",
+    "spring-core-6.2.0.jar",
+    "spring-jcl-6.2.0.jar",
+    "core-models.jar"
+  ],
+  "classes": {
+    "ThreadLocalHistory.class": "e9fa436ab7c58c6ec260a256006c8ea91ff614b5a68ff9af95070b28e3265e01",
+    "ThreadLocalHistory$1.class": "9bd464d8236500957ab434532228f1de748c59311aef3e80474d4b73eaacba08",
+    "ThreadLocalHistory$Factory.class": "18cd1a5b7c67ebfbf67e021c6103bb4a253767802aa67dc15a84c9ed012189aa",
+    "ThreadLocalHistory$Cell.class": "0bf6e1d2d24b6ff8b172ba33b563e2876d993e45129b6170063b32f5895a64a7"
+  },
+  "jars": {
+    "spring-core-6.2.0.jar": "3b82629da38717dd616a70ec1055f9a8e208d58132071a6314a32159f8bce162",
+    "spring-jcl-6.2.0.jar": "2b59288f030ce77a89ec88aa426f32eb9a309056f3646dd5157f9f31f0204fd7"
+  },
+  "selectedModels": {},
+  "originalJvm": {
+    "checks": 10,
+    "sourceSha256": "5d1484a8aed067f2c71e86781bbfbe222d63306431545acf78988cf34ed0f341",
+    "stdout": "10 original checks passed"
+  },
+  "job": "20261123-094337-compare-deque-enum-thread-local-and-moni",
+  "runs": [
+    {
+      "method": "kernel",
+      "flags": [
+        "--unwind",
+        "16",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "8",
+        "--max-nondet-tree-depth",
+        "4",
+        "--max-nondet-string-length",
+        "8",
+        "--sat-solver",
+        "cadical",
+        "--trace",
+        "--json-ui"
+      ],
+      "wrapperSha256": "187808928355e34ffa24f1f09d7884f9f49acf886d993b599290ca116c0db594",
+      "target": {
+        "status": "FAILURE",
+        "exit": 10,
+        "target": {
+          "property": "java::GapAssertions.target:(I)V.assertion.1",
+          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
+          "status": "FAILURE",
+          "sourceLocation": {
+            "bytecodeIndex": "20",
+            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
+            "file": "GapAssertions.java",
+            "function": "java::GapAssertions.target:(I)V",
+            "line": "2",
+            "propertyClass": "assertion",
+            "propertyId": "java::GapAssertions.target:(I)V.assertion.1"
+          }
+        },
+        "totalProperties": 2,
+        "otherFailures": [],
+        "warnings": [],
+        "inputs": {
+          "choice": {
+            "binary": "00000000000000000000000000000000",
+            "data": "0",
+            "name": "integer",
+            "type": "int",
+            "width": 32
+          }
+        },
+        "seconds": 0.192,
+        "raw": "kernel-target.json.gz",
+        "sha256": "8387de4ff03bbf40d063952a9d16c0a7766e406fa0f906ff5029018072be18bd",
+        "jvmReplay": {
+          "outcome": "held",
+          "inputs": [
+            {
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "sourceSha256": "f65f445ea60e6a2c2c92f5481294336143e41669a3312cbcd2bd7e82c7b5d368",
+          "exit": 0,
+          "diagnostic": ""
+        }
+      },
+      "reached": {
+        "status": "FAILURE",
+        "exit": 10,
+        "target": {
+          "property": "java::GapAssertions.reached:(I)V.assertion.1",
+          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
+          "status": "FAILURE",
+          "sourceLocation": {
+            "bytecodeIndex": "16",
+            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
+            "file": "GapAssertions.java",
+            "function": "java::GapAssertions.reached:(I)V",
+            "line": "3",
+            "propertyClass": "assertion",
+            "propertyId": "java::GapAssertions.reached:(I)V.assertion.1"
+          }
+        },
+        "totalProperties": 2,
+        "otherFailures": [],
+        "warnings": [],
+        "inputs": {
+          "choice": {
+            "binary": "00000000000000000000000000000000",
+            "data": "0",
+            "name": "integer",
+            "type": "int",
+            "width": 32
+          }
+        },
+        "seconds": 0.203,
+        "raw": "kernel-reached.json.gz",
+        "sha256": "964dde0d2b2f71d6f5314680d958a422f75f9494801ca15b1f760bfa7e672113"
+      }
+    },
+    {
+      "method": "spring",
+      "flags": [
+        "--unwind",
+        "16",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "8",
+        "--max-nondet-tree-depth",
+        "4",
+        "--max-nondet-string-length",
+        "8",
+        "--sat-solver",
+        "cadical",
+        "--trace",
+        "--json-ui"
+      ],
+      "wrapperSha256": "9b7d0d491bbc41234b1889b18b6bf3ce1af842ddd20c49a127e841767a575581",
+      "target": {
+        "status": "FAILURE",
+        "exit": 10,
+        "target": {
+          "property": "java::GapAssertions.target:(I)V.assertion.1",
+          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
+          "status": "FAILURE",
+          "sourceLocation": {
+            "bytecodeIndex": "20",
+            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
+            "file": "GapAssertions.java",
+            "function": "java::GapAssertions.target:(I)V",
+            "line": "2",
+            "propertyClass": "assertion",
+            "propertyId": "java::GapAssertions.target:(I)V.assertion.1"
+          }
+        },
+        "totalProperties": 2,
+        "otherFailures": [],
+        "warnings": [],
+        "inputs": {
+          "choice": {
+            "binary": "00000000000000000000000000000000",
+            "data": "0",
+            "name": "integer",
+            "type": "int",
+            "width": 32
+          }
+        },
+        "seconds": 0.213,
+        "raw": "spring-target.json.gz",
+        "sha256": "40efff45a2a016bd25ec2e37e1baff31fba342716b7bdff7047e0460ec7b6133",
+        "jvmReplay": {
+          "outcome": "held",
+          "inputs": [
+            {
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "sourceSha256": "1e18ad61fd31ed67770da221ef1f35c7b528411ec0453bb973279a76902b190b",
+          "exit": 0,
+          "diagnostic": ""
+        }
+      },
+      "reached": {
+        "status": "FAILURE",
+        "exit": 10,
+        "target": {
+          "property": "java::GapAssertions.reached:(I)V.assertion.1",
+          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
+          "status": "FAILURE",
+          "sourceLocation": {
+            "bytecodeIndex": "16",
+            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
+            "file": "GapAssertions.java",
+            "function": "java::GapAssertions.reached:(I)V",
+            "line": "3",
+            "propertyClass": "assertion",
+            "propertyId": "java::GapAssertions.reached:(I)V.assertion.1"
+          }
+        },
+        "totalProperties": 2,
+        "otherFailures": [],
+        "warnings": [],
+        "inputs": {
+          "choice": {
+            "binary": "00000000000000000000000000000000",
+            "data": "0",
+            "name": "integer",
+            "type": "int",
+            "width": 32
+          }
+        },
+        "seconds": 0.261,
+        "raw": "spring-reached.json.gz",
+        "sha256": "b211ba7daa6129ad506ad81182884a1e74333838756cbf94d10d8beb1b1499f4"
+      }
+    },
+    {
+      "method": "nullInitializes",
+      "flags": [
+        "--unwind",
+        "16",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "8",
+        "--max-nondet-tree-depth",
+        "4",
+        "--max-nondet-string-length",
+        "8",
+        "--sat-solver",
+        "cadical",
+        "--trace",
+        "--json-ui"
+      ],
+      "wrapperSha256": "803e5d08ffd404de26d134755f64e7f3487731ca162a01031e489f8af82ebf96",
+      "target": {
+        "status": "FAILURE",
+        "exit": 10,
+        "target": {
+          "property": "java::GapAssertions.target:(Z)V.assertion.1",
+          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
+          "status": "FAILURE",
+          "sourceLocation": {
+            "bytecodeIndex": "14",
+            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
+            "file": "GapAssertions.java",
+            "function": "java::GapAssertions.target:(Z)V",
+            "line": "2",
+            "propertyClass": "assertion",
+            "propertyId": "java::GapAssertions.target:(Z)V.assertion.1"
+          }
+        },
+        "totalProperties": 2,
+        "otherFailures": [],
+        "warnings": [],
+        "inputs": {
+          "spring": {
+            "binary": "00000000",
+            "data": "false",
+            "name": "integer",
+            "type": "const boolean",
+            "width": 8
+          }
+        },
+        "seconds": 0.184,
+        "raw": "nullInitializes-target.json.gz",
+        "sha256": "38aa48ef79b756e19d71b41e6d12b06e688332330d36a919b72f5bde3b33b984",
+        "jvmReplay": {
+          "outcome": "refuted",
+          "inputs": [
+            {
+              "type": "boolean",
+              "value": false
+            }
+          ],
+          "sourceSha256": "b5296fe4f6b521881bf9c446a93ddb0c195451e9815a7474b3ece0dff89a90a9",
+          "exit": 0,
+          "diagnostic": ""
+        }
+      },
+      "reached": {
+        "status": "FAILURE",
+        "exit": 10,
+        "target": {
+          "property": "java::GapAssertions.reached:(Z)V.assertion.1",
+          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
+          "status": "FAILURE",
+          "sourceLocation": {
+            "bytecodeIndex": "10",
+            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
+            "file": "GapAssertions.java",
+            "function": "java::GapAssertions.reached:(Z)V",
+            "line": "3",
+            "propertyClass": "assertion",
+            "propertyId": "java::GapAssertions.reached:(Z)V.assertion.1"
+          }
+        },
+        "totalProperties": 2,
+        "otherFailures": [],
+        "warnings": [],
+        "inputs": {
+          "spring": {
+            "binary": "00000000",
+            "data": "false",
+            "name": "integer",
+            "type": "const boolean",
+            "width": 8
+          }
+        },
+        "seconds": 0.163,
+        "raw": "nullInitializes-reached.json.gz",
+        "sha256": "082bd6198751766be7f3e5b73cc8adb5104abe57b92c3721b14f1b12fbbeb822"
+      }
+    }
+  ]
+}

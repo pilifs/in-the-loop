@@ -1,0 +1,355 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-094336-compare-standalone-jbmc-list-models-on-t",
+  "title": "Compare standalone JBMC list models on the four frozen statements",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 9.8s, peak 89.8 MiB (estimated 15m00s, 4.0 GiB); 18 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-094336-compare-standalone-jbmc-list-models-on-t.json",
+    "sha256": "a73ba68da3d445614eb5409c2ef7e6e90cb6f17c3734f633b3e88fc754915f45",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-094336-compare-standalone-jbmc-list-models-on-t",
+      "title": "Compare standalone JBMC list models on the four frozen statements",
+      "description": "Run an independent Java assertion wrapper and reachability assertion for each bound entry with the Ubuntu 22.04 JBMC 6.11.0 executable and model bytes. Preserve target IDs, all other failing properties, warnings, traces and JVM checks. Record disagreements as measurements.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "Every requested assertion and its reachability control retain their original raw result or the exact timeout. Only matched outcomes and independently replayable refutations can be credited.",
+      "submitted": {
+        "at": "2026-11-23T09:43:36+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 8,
+      "requires": [
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "registered-lists six-lists",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py six-lists registered-lists",
+          "cwd": "."
+        },
+        {
+          "name": "registered-lists packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged registered-lists",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists",
+        "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:54:59+00:00",
+  "finishedAt": "2026-11-23T09:55:16+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 94183424,
+    "wallSeconds": 9.8,
+    "cpuSeconds": 15.9,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "registered-lists six-lists",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py six-lists registered-lists",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 4.608,
+      "cpuSeconds": 7.285,
+      "cpuThrottledSeconds": 0.286,
+      "peakMemoryBytes": 93503488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-registered-lists-six-lists.log",
+        "lines": 4,
+        "bytes": 219,
+        "sha256": "3a4a9f6a9451c260b6146892e6aedc08772f826047183b9ce00d385ba152afcf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "registered-lists six-lists guardedArray SUCCESS FAILURE",
+        "registered-lists six-lists allArrays FAILURE FAILURE",
+        "registered-lists six-lists guardedSearch SUCCESS FAILURE",
+        "registered-lists six-lists allSearch FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "registered-lists packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged registered-lists",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.21,
+      "cpuSeconds": 8.64,
+      "cpuThrottledSeconds": 0.3,
+      "peakMemoryBytes": 94183424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-registered-lists-packaged.log",
+        "lines": 4,
+        "bytes": 215,
+        "sha256": "686bfac7384023856375596ccc0f4d386b783b82a491dffe8ab3b885bf4707a4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "registered-lists packaged guardedArray FAILURE FAILURE",
+        "registered-lists packaged allArrays FAILURE FAILURE",
+        "registered-lists packaged guardedSearch FAILURE FAILURE",
+        "registered-lists packaged allSearch FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allArrays-reached.json.gz",
+      "change": "added",
+      "bytes": 17435,
+      "sha256": "31dcf32ab09e2f92344ee461f69a77944b9e159c5345144fe758d160c12bd857",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allArrays-target.json.gz",
+      "change": "added",
+      "bytes": 7080,
+      "sha256": "610f8d7365dd6258620cdf9a5bf737e16314c73f38adc161941bf5e4121b8223",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allSearch-reached.json.gz",
+      "change": "added",
+      "bytes": 15538,
+      "sha256": "3c589d3fe8b0c8dcb78524269b6072b081b933a77e03f70d5b66dab6265cffaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allSearch-target.json.gz",
+      "change": "added",
+      "bytes": 15575,
+      "sha256": "66640df917a15da97b69c1ff5334cba408df1f78bd4b56dc11c927b5f6a6fc82",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedArray-reached.json.gz",
+      "change": "added",
+      "bytes": 17444,
+      "sha256": "9b5f925aa0dc4893aed02bc2653ffbc48dd899e57ac5312122cc6e9e6ec6478b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedArray-target.json.gz",
+      "change": "added",
+      "bytes": 1098,
+      "sha256": "e41e036bc35ff0a0698de9f7a39e27e3f7058662843f9802aa0fa365bf05b345",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedSearch-reached.json.gz",
+      "change": "added",
+      "bytes": 17667,
+      "sha256": "c08b00a9529f6f5e70634ec2a3a0e989b0459fd3a8ea33089529f4733f0468de",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedSearch-target.json.gz",
+      "change": "added",
+      "bytes": 942,
+      "sha256": "3eb3b555d620809accde9f4c577f000cd86a08d5316ce2dfeb870c9eb5719a4e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/measurement.json",
+      "change": "added",
+      "bytes": 17970,
+      "sha256": "60ad5ddc5364fd2a4839d047e209b51da0d91572f3b3e8ca3932f41af2397209",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allArrays-reached.json.gz",
+      "change": "added",
+      "bytes": 13217,
+      "sha256": "dc5bb125202bb1a3d1158e490260f1c4a801e423126cdb113626a4828fbb68f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allArrays-target.json.gz",
+      "change": "added",
+      "bytes": 13243,
+      "sha256": "d7bbaa2f3269f00f7704acc43d4fd621f168a4f92f5f9d05fa4f71680bebff3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allSearch-reached.json.gz",
+      "change": "added",
+      "bytes": 11122,
+      "sha256": "937e4d61afa2c31f1bb0f477e4c9b701ca254d0e9511cfef11f482ce02251b3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allSearch-target.json.gz",
+      "change": "added",
+      "bytes": 10446,
+      "sha256": "5c3a1fb0d3ec1213536820490d015c415813318d09dd83d3f8b8f369cd5a952d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedArray-reached.json.gz",
+      "change": "added",
+      "bytes": 13230,
+      "sha256": "8e292b5ac2935b656d33498cd496d90c1b0bbcba21fc2cabbac9919852fb2473",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedArray-target.json.gz",
+      "change": "added",
+      "bytes": 13246,
+      "sha256": "937ccab5ce50afda6a454ede11cb6fc09059fecd6d5f3a5dddf0706f2f7c96e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedSearch-reached.json.gz",
+      "change": "added",
+      "bytes": 11050,
+      "sha256": "7f6d0b5414136d9889cf691e464ab7996f6b21b7c482893a4aecd6c9d8ca1eda",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedSearch-target.json.gz",
+      "change": "added",
+      "bytes": 11075,
+      "sha256": "6e785d4359523b22faa1150c364e549fa50d2c150c33222f8dddb717c046b5a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 18331,
+      "sha256": "d8b55db0e227dfa789d5a4b2aee86d46d98c2b2767be788c4cb6d237105a8464",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:54+00:00",
+    "applied": [
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allArrays-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allArrays-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allSearch-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/allSearch-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedArray-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedArray-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedSearch-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/guardedSearch-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-six-lists/measurement.json",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allArrays-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allArrays-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allSearch-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/allSearch-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedArray-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedArray-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedSearch-reached.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/guardedSearch-target.json.gz",
+      "verification/java-semantics-gap/standalone/registered-lists/preflight-packaged/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095516Z-399078a83d934ef9",
+      "outputs": "20261123T095516Z-42595659ea36efb8",
+      "diff": "20261123T095516Z-4480804dfe3a40a6"
+    }
+  }
+}

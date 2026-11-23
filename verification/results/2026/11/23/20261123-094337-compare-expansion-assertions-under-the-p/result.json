@@ -1,0 +1,772 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-094337-compare-expansion-assertions-under-the-p",
+  "title": "Compare expansion assertions under the pinned model profiles",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 40.7s, peak 1.2 GiB (estimated 15m00s, 4.0 GiB); 43 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-094337-compare-expansion-assertions-under-the-p.json",
+    "sha256": "5fc7de3a6b0e6613eb1cdd5da17463d40e1c32ce03718c03341428f1b35f6815",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-094337-compare-expansion-assertions-under-the-p",
+      "title": "Compare expansion assertions under the pinned model profiles",
+      "description": "Run an independent Java assertion wrapper and reachability assertion for each bound entry with the Ubuntu 22.04 JBMC 6.11.0 executable and model bytes. Preserve target IDs, all other failing properties, warnings, traces and JVM checks. Record disagreements as measurements.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "Every requested assertion and its reachability control retain their original raw result or the exact timeout. Only matched outcomes and independently replayable refutations can be credited.",
+      "submitted": {
+        "at": "2026-11-23T09:43:37+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 8,
+      "requires": [
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "dispatch packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged dispatch",
+          "cwd": "."
+        },
+        {
+          "name": "endian packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged endian",
+          "cwd": "."
+        },
+        {
+          "name": "surrogates packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged surrogates",
+          "cwd": "."
+        },
+        {
+          "name": "construction packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged construction",
+          "cwd": "."
+        },
+        {
+          "name": "radix packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged radix",
+          "cwd": "."
+        },
+        {
+          "name": "nibble packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged nibble",
+          "cwd": "."
+        },
+        {
+          "name": "radix ordinary",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py ordinary radix",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/standalone/dispatch/preflight-packaged",
+        "verification/java-semantics-gap/standalone/endian/preflight-packaged",
+        "verification/java-semantics-gap/standalone/surrogates/preflight-packaged",
+        "verification/java-semantics-gap/standalone/construction/preflight-packaged",
+        "verification/java-semantics-gap/standalone/radix/preflight-packaged",
+        "verification/java-semantics-gap/standalone/nibble/preflight-packaged",
+        "verification/java-semantics-gap/standalone/radix/preflight-ordinary"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:55:34+00:00",
+  "finishedAt": "2026-11-23T09:56:23+00:00",
+  "wallSeconds": 49.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1268776960,
+    "wallSeconds": 40.7,
+    "cpuSeconds": 52.4,
+    "memoryOfEstimate": 0.3,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "dispatch packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged dispatch",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.404,
+      "cpuSeconds": 3.596,
+      "cpuThrottledSeconds": 0.041,
+      "peakMemoryBytes": 67932160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-dispatch-packaged.log",
+        "lines": 2,
+        "bytes": 91,
+        "sha256": "0c60c0463ebe580443e70b3c01c75e4351df17ec1119e1f176caf20acd867194",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dispatch packaged dispatch SUCCESS FAILURE",
+        "dispatch packaged firstDeclared FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "endian packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged endian",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.009,
+      "cpuSeconds": 7.409,
+      "cpuThrottledSeconds": 0.188,
+      "peakMemoryBytes": 87449600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-endian-packaged.log",
+        "lines": 4,
+        "bytes": 172,
+        "sha256": "c7e8c14e55d0ec2fcf0df1069c1a4500ce1bdbdf02d363112bdd2edeec66276f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "endian packaged reverseInt SUCCESS FAILURE",
+        "endian packaged reverseLong SUCCESS FAILURE",
+        "endian packaged rotateInt FAILURE FAILURE",
+        "endian packaged rotateLong FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "surrogates packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged surrogates",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 1.805,
+      "cpuSeconds": 2.905,
+      "cpuThrottledSeconds": 0.088,
+      "peakMemoryBytes": 72921088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-surrogates-packaged.log",
+        "lines": 2,
+        "bytes": 170,
+        "sha256": "5241d426f534ebc0a6745e6cd347f81d6e3af4bad50ba38faaf74bb14fae2cfc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "surrogates packaged translate incomplete property report incomplete property report",
+        "surrogates packaged removeEvery incomplete property report incomplete property report"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "construction packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged construction",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 21.856,
+      "cpuSeconds": 24.036,
+      "cpuThrottledSeconds": 0.22,
+      "peakMemoryBytes": 1268776960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-construction-packaged.log",
+        "lines": 5,
+        "bytes": 435,
+        "sha256": "7043ec37acb079201bb19b9abfacd78691126b0a9dbd170f9b795980451f7d4f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261123-094337-compare-expansion-assertions-under-the-p/examples/386-commons-lang-constructor-dispatch/adapter/ConstructorPhase.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "construction packaged history SUCCESS FAILURE",
+        "construction packaged emptySkips FAILURE FAILURE",
+        "construction packaged alreadyInitialized FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "radix packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged radix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.806,
+      "cpuSeconds": 4.111,
+      "cpuThrottledSeconds": 0.134,
+      "peakMemoryBytes": 68911104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-radix-packaged.log",
+        "lines": 2,
+        "bytes": 75,
+        "sha256": "e289bcb34917dd6c66c516cd29e5cbb3c8aab0661e6240b461d295dc7530e3b9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "radix packaged hex SUCCESS FAILURE",
+        "radix packaged lowFirst FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "nibble packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged nibble",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.211,
+      "cpuSeconds": 7.668,
+      "cpuThrottledSeconds": 0.224,
+      "peakMemoryBytes": 78082048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-nibble-packaged.log",
+        "lines": 3,
+        "bytes": 124,
+        "sha256": "0874aa3c4b76d22af05d7fb525531ba03e595e3c95d296d7a1c04caddcb7c570",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "nibble packaged nibble FAILURE FAILURE",
+        "nibble packaged left FAILURE FAILURE",
+        "nibble packaged acceptsNegative FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "radix ordinary",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py ordinary radix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 1.604,
+      "cpuSeconds": 2.668,
+      "cpuThrottledSeconds": 0.031,
+      "peakMemoryBytes": 67883008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-radix-ordinary.log",
+        "lines": 2,
+        "bytes": 151,
+        "sha256": "1322f33f49662becd1212760d915157f9355374e46ea15f3aaa72b75be74f6d2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "radix ordinary hex incomplete property report incomplete property report",
+        "radix ordinary lowFirst incomplete property report incomplete property report"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/dispatch-reached.json.gz",
+      "change": "added",
+      "bytes": 5395,
+      "sha256": "fb7f098e5d29ba0377dae9e325e885393f5982194c046703fd2a2723b1cd670e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/dispatch-target.json.gz",
+      "change": "added",
+      "bytes": 973,
+      "sha256": "543e62e71a77abfc8ff48a1a607a2184c5b31dcd556187c6a9ed35d2adb994a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/firstDeclared-reached.json.gz",
+      "change": "added",
+      "bytes": 5296,
+      "sha256": "ce7dcfb576783958efb8bf7b1ee14ced354c861080f7051b6277a092e1525865",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/firstDeclared-target.json.gz",
+      "change": "added",
+      "bytes": 5279,
+      "sha256": "5b61a7993fe8a0e0aff65591d1e32de8b92c9128e481cb1991ad0cc71e203fb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 7577,
+      "sha256": "58fa9f29dc22fc57fd2548d202489e8f4771f3d7ff011352739ca55ac4aca450",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 13175,
+      "sha256": "827d0911f7c55939a0b523e32fc15cd8f8da1d359ec7c219e3ff006141335b37",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseInt-reached.json.gz",
+      "change": "added",
+      "bytes": 7319,
+      "sha256": "df54796f44d6fd8cf475fc3353d7a0c37ed39f2f99588e04cdd95c8b0bbf0cc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseInt-target.json.gz",
+      "change": "added",
+      "bytes": 989,
+      "sha256": "e489a14748df9f834d7376c6992e4553f2a6c9b35da81eb70835e9b18aaf5220",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseLong-reached.json.gz",
+      "change": "added",
+      "bytes": 7408,
+      "sha256": "0c164fc4033831d49f99473f1a93ff8cf9cbfb1ab5e66e7351300db07824e0ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseLong-target.json.gz",
+      "change": "added",
+      "bytes": 985,
+      "sha256": "b80d8fa634faf9643a9a6ab484348ec689c410c49a484e228a8c4cd9f0461b9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateInt-reached.json.gz",
+      "change": "added",
+      "bytes": 7361,
+      "sha256": "4656dee59c97acc5876e0f9a093438da65cc7bd0c79119947a7ff8e54beeb3da",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateInt-target.json.gz",
+      "change": "added",
+      "bytes": 7442,
+      "sha256": "61bdb3d4e81ed3b88b333d820efe1dd705e5d3ed59fd89245ab9abf3d7bae1c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateLong-reached.json.gz",
+      "change": "added",
+      "bytes": 7424,
+      "sha256": "89853dc782544653aa640b409392e28d5dfb08b2ce77860359352583c6f39eca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateLong-target.json.gz",
+      "change": "added",
+      "bytes": 7494,
+      "sha256": "5a2852b5e9975e2692ae6b27b4ae56d1333e3a45e3e12d49a990ddfd2baf9e5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 4257,
+      "sha256": "9472f3306ecad03728722cce25332204ac08651287e1f2513c2836bd87ed5364",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/removeEvery-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/removeEvery-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/translate-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/translate-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/construction/preflight-packaged/alreadyInitialized-reached.json.gz",
+      "change": "added",
+      "bytes": 8891,
+      "sha256": "64a7d344dc80fae0804cf2ec58badbdd565a2d0965cc30328270f1a19ddb49be",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/construction/preflight-packaged/alreadyInitialized-target.json.gz",
+      "change": "added",
+      "bytes": 8927,
+      "sha256": "4bf7eb61cfa30c0517d69c8a2e19f5079e4e4fd64c4081cbd36a90f8ea83dd39",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/construction/preflight-packaged/emptySkips-reached.json.gz",
+      "change": "added",
+      "bytes": 7848,
+      "sha256": "b00e05e2cd6dc04e77a367121343a225c5c6bf277795a0f5e1f630858d181a9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/construction/preflight-packaged/emptySkips-target.json.gz",
+      "change": "added",
+      "bytes": 7881,
+      "sha256": "77cca097aa25132e987ddf9e80aacde9a70210bb90803fddb07579f7ff778201",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/construction/preflight-packaged/history-reached.json.gz",
+      "change": "added",
+      "bytes": 10325,
+      "sha256": "eb8e3eb839e24811326004af31bcfd2458893c69e7d39e893be9f64620b221dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/construction/preflight-packaged/history-target.json.gz",
+      "change": "added",
+      "bytes": 1408,
+      "sha256": "cb56d95b6af624a5ecf0fc44ed736972e63a6ae1d46a22ec364d8dffbfbc339d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/construction/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 9497,
+      "sha256": "519d4b62b1f23943cb92e8cce358592170403eaf6a337e09976925939d1e323a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-packaged/hex-reached.json.gz",
+      "change": "added",
+      "bytes": 9495,
+      "sha256": "5124e4a6f88009bc5f302fcc98a477eaf494ccf98ead55f2bce39e02aded4869",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-packaged/hex-target.json.gz",
+      "change": "added",
+      "bytes": 1010,
+      "sha256": "0c1ae4f03d89de222bb1c28575cf8012d992de0ddce1fb2775231bf9d4bbcb6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-packaged/lowFirst-reached.json.gz",
+      "change": "added",
+      "bytes": 9033,
+      "sha256": "c6aa934a079386b18e81ecc02689a16cf22c1b58777aa4ca483504e4f533a0a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-packaged/lowFirst-target.json.gz",
+      "change": "added",
+      "bytes": 9062,
+      "sha256": "3a3b3be5789a9d6600d31903f4b47084f4794f4a6363860f2acf1af6c9714399",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 6799,
+      "sha256": "c14fa565b22ed662dc83f98c75e631421c20871c8c532b5a24cf1f8cce7918a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/nibble/preflight-packaged/acceptsNegative-reached.json.gz",
+      "change": "added",
+      "bytes": 25112,
+      "sha256": "8f92cb628dcbe119ff819724277137ed2fb212783cf79215f27d577935acec57",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/nibble/preflight-packaged/acceptsNegative-target.json.gz",
+      "change": "added",
+      "bytes": 25150,
+      "sha256": "78ea500eabd40e95ce0661544a882bc283c1379b81408fd8cb5c39db36ecacb8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/nibble/preflight-packaged/left-reached.json.gz",
+      "change": "added",
+      "bytes": 17741,
+      "sha256": "231f4c50b1c5885f3d5ec9ddf259c2f7d07960502f3847c016d3b925f61603f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/nibble/preflight-packaged/left-target.json.gz",
+      "change": "added",
+      "bytes": 17763,
+      "sha256": "deae6ff7ade52c5250c0e8dd736eb975549cdb860ee65b3ec50a9f3b714903e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/nibble/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 10779,
+      "sha256": "4bb45070586fb1152fb6eb782f8cc700d19b0051c60a33315e675c86e5a6ccd0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/nibble/preflight-packaged/nibble-reached.json.gz",
+      "change": "added",
+      "bytes": 19123,
+      "sha256": "87ecc870a519b8a0f61fe5c72e6aaae7a2f8f3f4755e20d8f8eb91b02fafdecd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/nibble/preflight-packaged/nibble-target.json.gz",
+      "change": "added",
+      "bytes": 27403,
+      "sha256": "9a1c84fa4a1f0ccb0e239dd1583d95f08e90cb27447fbde6dbea48bb222c4440",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-ordinary/hex-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-ordinary/hex-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-ordinary/lowFirst-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-ordinary/lowFirst-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/radix/preflight-ordinary/measurement.json",
+      "change": "added",
+      "bytes": 3750,
+      "sha256": "035d9bbdb6be6febb1493fd1bb91a771986a7a3d94a616334829af2b7ee5cf3e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:54+00:00",
+    "applied": [
+      "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/dispatch-reached.json.gz",
+      "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/dispatch-target.json.gz",
+      "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/firstDeclared-reached.json.gz",
+      "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/firstDeclared-target.json.gz",
+      "verification/java-semantics-gap/standalone/dispatch/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseInt-reached.json.gz",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseInt-target.json.gz",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseLong-reached.json.gz",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/reverseLong-target.json.gz",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateInt-reached.json.gz",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateInt-target.json.gz",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateLong-reached.json.gz",
+      "verification/java-semantics-gap/standalone/endian/preflight-packaged/rotateLong-target.json.gz",
+      "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/removeEvery-reached.json.gz",
+      "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/removeEvery-target.json.gz",
+      "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/translate-reached.json.gz",
+      "verification/java-semantics-gap/standalone/surrogates/preflight-packaged/translate-target.json.gz",
+      "verification/java-semantics-gap/standalone/construction/preflight-packaged/alreadyInitialized-reached.json.gz",
+      "verification/java-semantics-gap/standalone/construction/preflight-packaged/alreadyInitialized-target.json.gz",
+      "verification/java-semantics-gap/standalone/construction/preflight-packaged/emptySkips-reached.json.gz",
+      "verification/java-semantics-gap/standalone/construction/preflight-packaged/emptySkips-target.json.gz",
+      "verification/java-semantics-gap/standalone/construction/preflight-packaged/history-reached.json.gz",
+      "verification/java-semantics-gap/standalone/construction/preflight-packaged/history-target.json.gz",
+      "verification/java-semantics-gap/standalone/construction/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/radix/preflight-packaged/hex-reached.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-packaged/hex-target.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-packaged/lowFirst-reached.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-packaged/lowFirst-target.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/nibble/preflight-packaged/acceptsNegative-reached.json.gz",
+      "verification/java-semantics-gap/standalone/nibble/preflight-packaged/acceptsNegative-target.json.gz",
+      "verification/java-semantics-gap/standalone/nibble/preflight-packaged/left-reached.json.gz",
+      "verification/java-semantics-gap/standalone/nibble/preflight-packaged/left-target.json.gz",
+      "verification/java-semantics-gap/standalone/nibble/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/nibble/preflight-packaged/nibble-reached.json.gz",
+      "verification/java-semantics-gap/standalone/nibble/preflight-packaged/nibble-target.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-ordinary/hex-reached.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-ordinary/hex-target.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-ordinary/lowFirst-reached.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-ordinary/lowFirst-target.json.gz",
+      "verification/java-semantics-gap/standalone/radix/preflight-ordinary/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095623Z-3076321251413db5",
+      "outputs": "20261123T095623Z-33997988a382d873",
+      "diff": "20261123T095623Z-36334368951d4621"
+    }
+  }
+}

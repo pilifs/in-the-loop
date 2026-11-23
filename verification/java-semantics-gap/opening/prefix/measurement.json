@@ -1,0 +1,300 @@
+{
+  "subject": "prefix",
+  "phase": "opening",
+  "source": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "job": "20261123-092651-open-the-utf-16-array-entry-and-covarian",
+  "adapterSha256": "be92694694f8fa66b142f7fcc7e9bd9ac12fe03a55537be29e7edb631775f441",
+  "classes": {
+    "OffsetPrefix.class": "71d6f8ecec5f58b550d36d7567a418747a7da6c5481c997e070a9b4f0d47d9f9"
+  },
+  "classpath": [
+    "adapter"
+  ],
+  "jdk": [
+    "IMPLEMENTOR=\"Eclipse Adoptium\"",
+    "IMPLEMENTOR_VERSION=\"Temurin-21.0.13+9\"",
+    "JAVA_RUNTIME_VERSION=\"21.0.13+9-LTS\"",
+    "JAVA_VERSION=\"21.0.13\"",
+    "JAVA_VERSION_DATE=\"2026-10-20\"",
+    "LIBC=\"gnu\"",
+    "MODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom\"",
+    "OS_ARCH=\"x86_64\"",
+    "OS_NAME=\"Linux\"",
+    "SOURCE=\".:git:2ab10ca20c19\"",
+    "BUILD_SOURCE=\"git:1cf43d7a3e77886bfea7d550a902e151a87d724d\"",
+    "BUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"",
+    "SOURCE_REPO=\"https://github.com/adoptium/jdk21u.git\"",
+    "FULL_VERSION=\"21.0.13+9-LTS\"",
+    "SEMANTIC_VERSION=\"21.0.13+9\"",
+    "BUILD_INFO=\"OS: Linux Version: 6.8.0-1070-azure\"",
+    "JVM_VARIANT=\"Hotspot\"",
+    "JVM_VERSION=\"21.0.13+9-LTS\"",
+    "IMAGE_TYPE=\"JDK\""
+  ],
+  "jvmSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "modulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "scope": {
+    "example": 378,
+    "owner": "OffsetPrefix",
+    "graph": "jdk",
+    "claims": [
+      {
+        "method": "small",
+        "parameters": "int off, boolean empty",
+        "guard": "off >= -1 && off <= 6",
+        "holds": [
+          [
+            "-1",
+            "true"
+          ],
+          [
+            "-1",
+            "false"
+          ],
+          [
+            "0",
+            "true"
+          ],
+          [
+            "0",
+            "false"
+          ],
+          [
+            "1",
+            "true"
+          ],
+          [
+            "1",
+            "false"
+          ],
+          [
+            "2",
+            "true"
+          ],
+          [
+            "2",
+            "false"
+          ],
+          [
+            "3",
+            "true"
+          ],
+          [
+            "3",
+            "false"
+          ],
+          [
+            "4",
+            "true"
+          ],
+          [
+            "4",
+            "false"
+          ],
+          [
+            "5",
+            "true"
+          ],
+          [
+            "5",
+            "false"
+          ],
+          [
+            "6",
+            "true"
+          ],
+          [
+            "6",
+            "false"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "beforeEnd",
+        "parameters": "int off",
+        "guard": "off >= -1 && off <= 6",
+        "holds": [
+          [
+            "-1"
+          ],
+          [
+            "0"
+          ],
+          [
+            "4"
+          ],
+          [
+            "6"
+          ]
+        ],
+        "fails": [
+          [
+            "5"
+          ]
+        ],
+        "nullable": ""
+      },
+      {
+        "method": "wide",
+        "parameters": "String text, String prefix, int off",
+        "guard": "",
+        "holds": [
+          [
+            "\"abab\"",
+            "\"\"",
+            "4"
+          ],
+          [
+            "\"abab\"",
+            "\"ba\"",
+            "1"
+          ],
+          [
+            "\"a\"",
+            "\"a\"",
+            "Integer.MIN_VALUE"
+          ],
+          [
+            "\"a\"",
+            "\"\"",
+            "Integer.MAX_VALUE"
+          ],
+          [
+            "\"a\"",
+            "new String(\"a\")",
+            "0"
+          ],
+          [
+            "\"\\uD800\"",
+            "\"\\uD800\"",
+            "0"
+          ],
+          [
+            "\"\\uDBFF\\uDFFF\"",
+            "\"\\uDFFF\"",
+            "1"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "nullPrefix",
+        "parameters": "int off",
+        "guard": "off >= 0 && off <= 5",
+        "holds": [
+          [
+            "0"
+          ],
+          [
+            "5"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      }
+    ],
+    "bound": 4,
+    "unwind": 16
+  },
+  "claimsSha256": {
+    "small": "a7ece23e873303c9bf6de027397bc220b6ff476635a9a1859776c4f4cb60496d",
+    "beforeEnd": "5db9fe3e1485e0f0ff501b9f84a4766410a701ac7a960f98ae646a923252c8d8",
+    "wide": "383f4b80adc4efcfa62139968e31d2112dbaa69a27141f7b6368a803b5fd3669",
+    "nullPrefix": "edcf1078f9b4806a00d326815126b4a54bab7dff44d3011cb021898dd38b8d1e"
+  },
+  "originalJvm": {
+    "checks": 30,
+    "sourceSha256": "08b7641f4a94933d0d1b1247bed69f41b357b37710fb60cbb2d0694a01f19792",
+    "stdout": "30 original checks passed"
+  },
+  "runs": [
+    {
+      "method": "small",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.018,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at OffsetPrefix.small:9). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    },
+    {
+      "method": "small",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.21,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample small(off=6, empty=false) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "beforeEnd",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.019,
+      "expected": "violation",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at OffsetPrefix.beforeEnd:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    },
+    {
+      "method": "beforeEnd",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.219,
+      "expected": "violation",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample beforeEnd(off=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "wide",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.018,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at OffsetPrefix.wide:14). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    },
+    {
+      "method": "wide",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.003,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "wide takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 4 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+    },
+    {
+      "method": "nullPrefix",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.019,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at OffsetPrefix.nullPrefix:17). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    },
+    {
+      "method": "nullPrefix",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.223,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample nullPrefix(off=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    }
+  ],
+  "checkerSha256": "dda801d8638d8a6f095fd7db0059bb882be3cb8837f4603971eaf220c6188c6d",
+  "libTree": "19c1c9c274fbcf750cbf07318387217da7d2e50d",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "packagedModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "rawSha256": "a657dcca3e8253585a9f9b29386e06a38ada7131872c58a0cf09349f356eedc5"
+}

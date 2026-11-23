@@ -1,0 +1,317 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-092652-open-enum-identity-spring-thread-local-b",
+  "title": "Open enum identity, Spring thread-local bindings and monitor identity",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 9.4s, peak 75.9 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-092652-open-enum-identity-spring-thread-local-b.json",
+    "sha256": "98574c96a4d14e485c3083744ab07b8053e52bdb67c21e0282dca08033c039b5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-092652-open-enum-identity-spring-thread-local-b",
+      "title": "Open enum identity, Spring thread-local bindings and monitor identity",
+      "description": "Exercise the original generated enum lookup, the Spring supplier and both lock identities on an explicit JVM worker. Keep any unresolved start, unsupported class or model divergence visible. Use the unchanged opening checker on both explicit engines at 120 seconds per claim. Retain each raw response and replay actual primitive counterexamples on the original JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "The job records every requested native and integrated JBMC outcome, or the exact frontend or model refusal, against the bound original JVM checks.",
+      "submitted": {
+        "at": "2026-11-23T09:26:52+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "10m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "enum",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening enum",
+          "cwd": "."
+        },
+        {
+          "name": "locals",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening locals",
+          "cwd": "."
+        },
+        {
+          "name": "monitors",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening monitors",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/opening/enum",
+        "verification/java-semantics-gap/opening/locals",
+        "verification/java-semantics-gap/opening/monitors"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:54:03+00:00",
+  "finishedAt": "2026-11-23T09:58:00+00:00",
+  "wallSeconds": 237.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 79536128,
+    "wallSeconds": 9.4,
+    "cpuSeconds": 11.4,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "enum",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening enum",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.805,
+      "cpuSeconds": 3.62,
+      "cpuThrottledSeconds": 0.107,
+      "peakMemoryBytes": 75476992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-enum.log",
+        "lines": 6,
+        "bytes": 210,
+        "sha256": "1afd9a605b0a2affa0695327dd3807d4d86f8f232317fb539790d9a2ed7158cc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "enum lookup-native unsupported 0.019",
+        "enum lookup-jbmc unsupported 0.236",
+        "enum ordinal-native correct 0.022",
+        "enum ordinal-jbmc correct 0.137",
+        "enum alwaysZero-native correct 0.033",
+        "enum alwaysZero-jbmc correct 0.149"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "locals",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening locals",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 4.609,
+      "cpuSeconds": 5.686,
+      "cpuThrottledSeconds": 0.268,
+      "peakMemoryBytes": 79536128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-locals.log",
+        "lines": 6,
+        "bytes": 238,
+        "sha256": "b1170245e6a6cee50ef9ac1037fb26b3e76204d3462fd3e948dfc51bcd246f6a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "locals kernel-native unsupported 0.022",
+        "locals kernel-jbmc unsupported 0.675",
+        "locals spring-native unsupported 0.024",
+        "locals spring-jbmc unsupported 0.821",
+        "locals nullInitializes-native correct 0.135",
+        "locals nullInitializes-jbmc correct 0.657"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "monitors",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening monitors",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.006,
+      "cpuSeconds": 2.079,
+      "cpuThrottledSeconds": 0.065,
+      "peakMemoryBytes": 72036352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-monitors.log",
+        "lines": 6,
+        "bytes": 262,
+        "sha256": "c5afa19fae67e2407ccfe9f0d390101244e09e49b001ba2da95869079260b7b6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "monitors matched-native unsupported 0.02",
+        "monitors matched-jbmc unsupported 0.26",
+        "monitors mixed-native unsupported 0.019",
+        "monitors mixed-jbmc unsupported 0.257",
+        "monitors synchronizedMethod-native unsupported 0.017",
+        "monitors synchronizedMethod-jbmc unsupported 0.267"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/opening/enum/measurement.json",
+      "change": "added",
+      "bytes": 15684,
+      "sha256": "86fac05b1409d9af4aa774cc0b0ea8e12dd2bada08a09da8fef83585bc4996c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/enum/raw.tar.gz",
+      "change": "added",
+      "bytes": 4842,
+      "sha256": "770e4df00bbc694ea15b7496db59971422badf43fba2f688285f33f30eb6070a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/locals/measurement.json",
+      "change": "added",
+      "bytes": 12945,
+      "sha256": "76e684735448b982130d563a44f41ddd20d97ae4a93c21ac05bfe7ad6e4ae030",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/locals/raw.tar.gz",
+      "change": "added",
+      "bytes": 5449,
+      "sha256": "2e0ce0eac79d20d25b1e927142a7a3600af8a53e47196be248f66195a602e2f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/monitors/measurement.json",
+      "change": "added",
+      "bytes": 8856,
+      "sha256": "f53f65eae28f59235e8e866c20a4c50c7b56a6f278a4ba74c1c435ded365b721",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/monitors/raw.tar.gz",
+      "change": "added",
+      "bytes": 4075,
+      "sha256": "09475a6a52647d5a39af70d7235ab8aafcb6410a5e8c339a08aad1e0d39989e4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:53+00:00",
+    "applied": [
+      "verification/java-semantics-gap/opening/enum/measurement.json",
+      "verification/java-semantics-gap/opening/enum/raw.tar.gz",
+      "verification/java-semantics-gap/opening/locals/measurement.json",
+      "verification/java-semantics-gap/opening/locals/raw.tar.gz",
+      "verification/java-semantics-gap/opening/monitors/measurement.json",
+      "verification/java-semantics-gap/opening/monitors/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "19c1c9c274fbcf750cbf07318387217da7d2e50d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/19c1c9c274fbcf750cbf07318387217da7d2e50d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095800Z-313975e1e6aa2cf6",
+      "outputs": "20261123T095800Z-338620bd5eaa5368",
+      "diff": "20261123T095800Z-36056330c5064744"
+    }
+  }
+}

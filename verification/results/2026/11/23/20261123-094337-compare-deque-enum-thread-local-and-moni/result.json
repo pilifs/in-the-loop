@@ -1,0 +1,755 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-094337-compare-deque-enum-thread-local-and-moni",
+  "title": "Compare deque, enum, thread-local and monitor model boundaries",
+  "status": "passed",
+  "summary": "passed: 6 passed step(s) in 23.4s, peak 80.7 MiB (estimated 15m00s, 4.0 GiB); 46 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-094337-compare-deque-enum-thread-local-and-moni.json",
+    "sha256": "ddf3dd9da0e3cd296fd981839545159956f23e13847b49f94066a02e1778cafa",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-094337-compare-deque-enum-thread-local-and-moni",
+      "title": "Compare deque, enum, thread-local and monitor model boundaries",
+      "description": "Run an independent Java assertion wrapper and reachability assertion for each bound entry with the Ubuntu 22.04 JBMC 6.11.0 executable and model bytes. Preserve target IDs, all other failing properties, warnings, traces and JVM checks. Record disagreements as measurements.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "Every requested assertion and its reachability control retain their original raw result or the exact timeout. Only matched outcomes and independently replayable refutations can be credited.",
+      "submitted": {
+        "at": "2026-11-23T09:43:37+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 8,
+      "requires": [
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "deque packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged deque",
+          "cwd": "."
+        },
+        {
+          "name": "enum packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged enum",
+          "cwd": "."
+        },
+        {
+          "name": "locals packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged locals",
+          "cwd": "."
+        },
+        {
+          "name": "monitors packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged monitors",
+          "cwd": "."
+        },
+        {
+          "name": "deque eight-deque",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py eight-deque deque",
+          "cwd": "."
+        },
+        {
+          "name": "enum repo-enum",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py repo-enum enum",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/standalone/deque/preflight-packaged",
+        "verification/java-semantics-gap/standalone/enum/preflight-packaged",
+        "verification/java-semantics-gap/standalone/locals/preflight-packaged",
+        "verification/java-semantics-gap/standalone/monitors/preflight-packaged",
+        "verification/java-semantics-gap/standalone/deque/preflight-eight-deque",
+        "verification/java-semantics-gap/standalone/enum/preflight-repo-enum"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:55:18+00:00",
+  "finishedAt": "2026-11-23T09:55:49+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 84656128,
+    "wallSeconds": 23.4,
+    "cpuSeconds": 36.7,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "deque packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged deque",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.013,
+      "cpuSeconds": 7.943,
+      "cpuThrottledSeconds": 0.323,
+      "peakMemoryBytes": 80015360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-deque-packaged.log",
+        "lines": 4,
+        "bytes": 164,
+        "sha256": "5144719f8b4ff81833481c898c35982b30cb2402442087185861b7f0a44f3f30",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "deque packaged history FAILURE FAILURE",
+        "deque packaged stillReturns FAILURE FAILURE",
+        "deque packaged singleton SUCCESS FAILURE",
+        "deque packaged filtered FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "enum packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged enum",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.809,
+      "cpuSeconds": 5.683,
+      "cpuThrottledSeconds": 0.121,
+      "peakMemoryBytes": 73326592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-enum-packaged.log",
+        "lines": 3,
+        "bytes": 116,
+        "sha256": "98d0d58a5732a55b2a52e32c644005a132dcc1c9581aec792dca52a77c625b7d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "enum packaged lookup FAILURE FAILURE",
+        "enum packaged ordinal SUCCESS FAILURE",
+        "enum packaged alwaysZero FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "locals packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged locals",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 4.743,
+      "cpuSeconds": 7.541,
+      "cpuThrottledSeconds": 0.364,
+      "peakMemoryBytes": 84656128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-locals-packaged.log",
+        "lines": 3,
+        "bytes": 126,
+        "sha256": "6caf36c437d04ce0abdd1122633955d5aaf96a193959da18c55e033d4454fc4f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "locals packaged kernel FAILURE FAILURE",
+        "locals packaged spring FAILURE FAILURE",
+        "locals packaged nullInitializes FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "monitors packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged monitors",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.63,
+      "cpuSeconds": 5.504,
+      "cpuThrottledSeconds": 0.165,
+      "peakMemoryBytes": 71614464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-monitors-packaged.log",
+        "lines": 3,
+        "bytes": 135,
+        "sha256": "d36da22c97bb19056c98b105f89ce2b764644ff1c157d2410da94e75d7d52c08",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "monitors packaged matched FAILURE FAILURE",
+        "monitors packaged mixed FAILURE FAILURE",
+        "monitors packaged synchronizedMethod FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "deque eight-deque",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py eight-deque deque",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.605,
+      "cpuSeconds": 4.605,
+      "cpuThrottledSeconds": 0.266,
+      "peakMemoryBytes": 82108416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-deque-eight-deque.log",
+        "lines": 4,
+        "bytes": 328,
+        "sha256": "10be9383fad0df344b23234e627adf7d307933906310d39c2b89c69e434db710",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "deque eight-deque history incomplete property report incomplete property report",
+        "deque eight-deque stillReturns incomplete property report incomplete property report",
+        "deque eight-deque singleton incomplete property report incomplete property report",
+        "deque eight-deque filtered incomplete property report incomplete property report"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "enum repo-enum",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py repo-enum enum",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.605,
+      "cpuSeconds": 5.449,
+      "cpuThrottledSeconds": 0.173,
+      "peakMemoryBytes": 71000064,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-enum-repo-enum.log",
+        "lines": 3,
+        "bytes": 119,
+        "sha256": "8b1245fa4cde06d92b659ec1a8b3700532733767f2426b4a0dea070f1db1b8df",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "enum repo-enum lookup FAILURE FAILURE",
+        "enum repo-enum ordinal SUCCESS FAILURE",
+        "enum repo-enum alwaysZero FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/filtered-reached.json.gz",
+      "change": "added",
+      "bytes": 14972,
+      "sha256": "295ba734e835934a931d7438e200e9c5f54de1c4ede522c820c49def296292ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/filtered-target.json.gz",
+      "change": "added",
+      "bytes": 15030,
+      "sha256": "8bc113c13965f40e288f06ef793d88635fe39727505b77d4afc643ca5497cea1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/history-reached.json.gz",
+      "change": "added",
+      "bytes": 5631,
+      "sha256": "bc700796b04679df0e8ae35e6de0ea2de577b81225d07326f61b51cf1a9bfb57",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/history-target.json.gz",
+      "change": "added",
+      "bytes": 5667,
+      "sha256": "67939535870da09e31ad054503766baf2efb27e139d22e0ee05e95d87e2e35a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 14028,
+      "sha256": "f977e42bf1acb0ce42b06d02ec60280f821a46d79ba5acf8a2d3a1d3255fdb2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/singleton-reached.json.gz",
+      "change": "added",
+      "bytes": 10746,
+      "sha256": "fbfef301c2c34f16b9ea1316ef2a8fb7e612108552c46294c77d2ee7853ccb4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/singleton-target.json.gz",
+      "change": "added",
+      "bytes": 1016,
+      "sha256": "8b26f1ce3b92c0098acf6a0c039b20570898e7d1c70f370e7708b11b05ae806f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/stillReturns-reached.json.gz",
+      "change": "added",
+      "bytes": 5985,
+      "sha256": "2c44774d83d902494e735b82ef4d8944d6aacdec8df61831d90460b271746422",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-packaged/stillReturns-target.json.gz",
+      "change": "added",
+      "bytes": 6013,
+      "sha256": "29ef4fb013bee8fe5b2dfbac139f32d5e10c5d1643776a6472eb362b0cd533ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-packaged/alwaysZero-reached.json.gz",
+      "change": "added",
+      "bytes": 7179,
+      "sha256": "5cad80f2d1de1cfcad4f2301b11769947ba49600747462375b6800f6cf355f2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-packaged/alwaysZero-target.json.gz",
+      "change": "added",
+      "bytes": 7202,
+      "sha256": "c63cb48ceb93f0debbc5df8273dadb370c8d07492135bda2eb4120f041f177ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-packaged/lookup-reached.json.gz",
+      "change": "added",
+      "bytes": 13828,
+      "sha256": "0c94cfec5ad3a7723afdd166f80650e05063fcdd14f94dc349f49c9717c633fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-packaged/lookup-target.json.gz",
+      "change": "added",
+      "bytes": 13853,
+      "sha256": "05a525f3dc9beb23fdebafa8d057ba0fa8eb25a498da79f4275467b5d14b9779",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 10203,
+      "sha256": "74a05dc8064cb24a96c4141ed40cc47bb00ea94544cc7459feb83f9e5fade861",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-packaged/ordinal-reached.json.gz",
+      "change": "added",
+      "bytes": 7200,
+      "sha256": "bce991c644d6d6e42e69e47f1edf69e3220144382210b297defc2fe1f358541b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-packaged/ordinal-target.json.gz",
+      "change": "added",
+      "bytes": 1019,
+      "sha256": "8892c225da4ec16afb339cc8ac65d64d8c2abfe1a53530c0ba56cb43d498f564",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/locals/preflight-packaged/kernel-reached.json.gz",
+      "change": "added",
+      "bytes": 8346,
+      "sha256": "964dde0d2b2f71d6f5314680d958a422f75f9494801ca15b1f760bfa7e672113",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/locals/preflight-packaged/kernel-target.json.gz",
+      "change": "added",
+      "bytes": 8374,
+      "sha256": "8387de4ff03bbf40d063952a9d16c0a7766e406fa0f906ff5029018072be18bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/locals/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 11247,
+      "sha256": "5de45ae5bab9d2685eaabbb7ecab88e611828596c087eb959f7ccc574d71d158",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/locals/preflight-packaged/nullInitializes-reached.json.gz",
+      "change": "added",
+      "bytes": 6887,
+      "sha256": "082bd6198751766be7f3e5b73cc8adb5104abe57b92c3721b14f1b12fbbeb822",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/locals/preflight-packaged/nullInitializes-target.json.gz",
+      "change": "added",
+      "bytes": 6920,
+      "sha256": "38aa48ef79b756e19d71b41e6d12b06e688332330d36a919b72f5bde3b33b984",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/locals/preflight-packaged/spring-reached.json.gz",
+      "change": "added",
+      "bytes": 11647,
+      "sha256": "b211ba7daa6129ad506ad81182884a1e74333838756cbf94d10d8beb1b1499f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/locals/preflight-packaged/spring-target.json.gz",
+      "change": "added",
+      "bytes": 11676,
+      "sha256": "40efff45a2a016bd25ec2e37e1baff31fba342716b7bdff7047e0460ec7b6133",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/monitors/preflight-packaged/matched-reached.json.gz",
+      "change": "added",
+      "bytes": 8158,
+      "sha256": "8d5965b20fa99b291d210b360a589360c840cb7d72766a1d7180ad19442c0c6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/monitors/preflight-packaged/matched-target.json.gz",
+      "change": "added",
+      "bytes": 8184,
+      "sha256": "48c05fd4de58a8a28fd73a2f6db376899ed89706a9ba3eb15299d95112eaf68a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/monitors/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 10179,
+      "sha256": "1e007a95b9d8acdb4c7cdd543b6ba20ae18a49c3a2c8a68f2c52ffc0085c8ca4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/monitors/preflight-packaged/mixed-reached.json.gz",
+      "change": "added",
+      "bytes": 8197,
+      "sha256": "46f2c9ed16e7438f19ad7ee31364d77389dfe8ca90c74c3ad334a646429cd284",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/monitors/preflight-packaged/mixed-target.json.gz",
+      "change": "added",
+      "bytes": 8236,
+      "sha256": "83c144408b956fbd81aca149a1c512e1591155b77606fbd5fba6cfa8dd558dc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/monitors/preflight-packaged/synchronizedMethod-reached.json.gz",
+      "change": "added",
+      "bytes": 8052,
+      "sha256": "44c3b475f5d1ccdb88b53c42086b93579753f07daaa64e3c78ae18970f0badf6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/monitors/preflight-packaged/synchronizedMethod-target.json.gz",
+      "change": "added",
+      "bytes": 8068,
+      "sha256": "e8a29ad8a62d32ddb410c87ac41459c2a94e678ca5c9e10a616a43387f4030a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/filtered-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/filtered-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/history-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/history-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/measurement.json",
+      "change": "added",
+      "bytes": 7787,
+      "sha256": "036a38ca135fc0212558aca86d74ce8d073da1e39eac768f80327b0840252e64",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/singleton-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/singleton-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/stillReturns-reached.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/stillReturns-target.json.gz",
+      "change": "added",
+      "bytes": 185,
+      "sha256": "ce6c6cb78bdb2b5dbe95fe5d6e25b309bc3d2c8dead5a83624e70f80e59e0b02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/alwaysZero-reached.json.gz",
+      "change": "added",
+      "bytes": 7174,
+      "sha256": "5bd3931025d3b7028574e484d08dac88daba22168a8ea914e24b66d72b1e77b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/alwaysZero-target.json.gz",
+      "change": "added",
+      "bytes": 7199,
+      "sha256": "19522dc6f1672f901f02102aae8c43e5831898dd20336f9968f24318cee280ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/lookup-reached.json.gz",
+      "change": "added",
+      "bytes": 11103,
+      "sha256": "586536e8e793ee9e363f2fae0fdf9c72b50af6f47cbe0cb0e88f9ba2ba25d2d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/lookup-target.json.gz",
+      "change": "added",
+      "bytes": 11126,
+      "sha256": "1e8c49cdac6b0e7c6068c95a4e20df1112d4fa167b0e2b75a6aca55ce0c51f01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/measurement.json",
+      "change": "added",
+      "bytes": 10319,
+      "sha256": "a62203f7d141a737ca84e690f994a61a24ff82247f6929428415819d42024bc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/ordinal-reached.json.gz",
+      "change": "added",
+      "bytes": 7198,
+      "sha256": "77942cbbda41cadf7bc0765240afba8513d48e09d5a61c56e77f237e3b32cf2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/ordinal-target.json.gz",
+      "change": "added",
+      "bytes": 1018,
+      "sha256": "42bfe2156b756c81d726ab635fa3225cb5a48eb119bd94b6d0270c9c4f198aac",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:54+00:00",
+    "applied": [
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/filtered-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/filtered-target.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/history-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/history-target.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/singleton-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/singleton-target.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/stillReturns-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-packaged/stillReturns-target.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-packaged/alwaysZero-reached.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-packaged/alwaysZero-target.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-packaged/lookup-reached.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-packaged/lookup-target.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/enum/preflight-packaged/ordinal-reached.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-packaged/ordinal-target.json.gz",
+      "verification/java-semantics-gap/standalone/locals/preflight-packaged/kernel-reached.json.gz",
+      "verification/java-semantics-gap/standalone/locals/preflight-packaged/kernel-target.json.gz",
+      "verification/java-semantics-gap/standalone/locals/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/locals/preflight-packaged/nullInitializes-reached.json.gz",
+      "verification/java-semantics-gap/standalone/locals/preflight-packaged/nullInitializes-target.json.gz",
+      "verification/java-semantics-gap/standalone/locals/preflight-packaged/spring-reached.json.gz",
+      "verification/java-semantics-gap/standalone/locals/preflight-packaged/spring-target.json.gz",
+      "verification/java-semantics-gap/standalone/monitors/preflight-packaged/matched-reached.json.gz",
+      "verification/java-semantics-gap/standalone/monitors/preflight-packaged/matched-target.json.gz",
+      "verification/java-semantics-gap/standalone/monitors/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/monitors/preflight-packaged/mixed-reached.json.gz",
+      "verification/java-semantics-gap/standalone/monitors/preflight-packaged/mixed-target.json.gz",
+      "verification/java-semantics-gap/standalone/monitors/preflight-packaged/synchronizedMethod-reached.json.gz",
+      "verification/java-semantics-gap/standalone/monitors/preflight-packaged/synchronizedMethod-target.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/filtered-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/filtered-target.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/history-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/history-target.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/measurement.json",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/singleton-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/singleton-target.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/stillReturns-reached.json.gz",
+      "verification/java-semantics-gap/standalone/deque/preflight-eight-deque/stillReturns-target.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/alwaysZero-reached.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/alwaysZero-target.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/lookup-reached.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/lookup-target.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/measurement.json",
+      "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/ordinal-reached.json.gz",
+      "verification/java-semantics-gap/standalone/enum/preflight-repo-enum/ordinal-target.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095549Z-776213c7d0a4bdfc",
+      "outputs": "20261123T095549Z-8000930c2869f09f",
+      "diff": "20261123T095549Z-815278a30d3b62d3"
+    }
+  }
+}

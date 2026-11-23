@@ -1,0 +1,260 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-092651-open-the-list-transfers-and-full-width-c",
+  "title": "Open the list transfers and full-width Commons Lang numeric claims",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 16.6s, peak 301.7 MiB (estimated 12m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-092651-open-the-list-transfers-and-full-width-c.json",
+    "sha256": "a1041dedd731f1314b20b8ba389c124b22f60b8908e9c82968c134f05bcf4f5f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-092651-open-the-list-transfers-and-full-width-c",
+      "title": "Open the list transfers and full-width Commons Lang numeric claims",
+      "description": "Test list slot isolation and element mutation, both full numeric intervals, the direct opcode twins and deliberately false alternatives. Use the unchanged opening checker on both explicit engines at 120 seconds per claim. Retain each raw response and replay actual primitive counterexamples on the original JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "The job records every requested native and integrated JBMC outcome, or the exact frontend or model refusal, against the bound original JVM checks.",
+      "submitted": {
+        "at": "2026-11-23T09:26:51+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "12m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "lists",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening lists",
+          "cwd": "."
+        },
+        {
+          "name": "numbers",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening numbers",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/opening/lists",
+        "verification/java-semantics-gap/opening/numbers"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:54:03+00:00",
+  "finishedAt": "2026-11-23T09:58:07+00:00",
+  "wallSeconds": 244.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 316387328,
+    "wallSeconds": 16.6,
+    "cpuSeconds": 17.7,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "lists",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening lists",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 10.42,
+      "cpuSeconds": 10.946,
+      "cpuThrottledSeconds": 0.061,
+      "peakMemoryBytes": 316387328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-lists.log",
+        "lines": 6,
+        "bytes": 244,
+        "sha256": "d9ac53c08e45ffaae258294cab66dc3f82b547c1fef1e735741e4016b49524bc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "lists fromArray-native unsupported 0.019",
+        "lists fromArray-jbmc correct 0.286",
+        "lists fromCollection-native unsupported 0.016",
+        "lists fromCollection-jbmc unsupported 8.3",
+        "lists followsSlot-native unsupported 0.015",
+        "lists followsSlot-jbmc correct 0.149"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "numbers",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening numbers",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 6.214,
+      "cpuSeconds": 6.774,
+      "cpuThrottledSeconds": 0.149,
+      "peakMemoryBytes": 81698816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-numbers.log",
+        "lines": 12,
+        "bytes": 492,
+        "sha256": "021d40680fe02d3f8f375aee939bfc2268e2ade230927526f34f81de9f415dac",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "numbers fraction-native unsupported 0.019",
+        "numbers fraction-jbmc unsupported 1.323",
+        "numbers fractionOpcode-native unsupported 0.028",
+        "numbers fractionOpcode-jbmc correct 0.258",
+        "numbers floorOnly-native unsupported 0.018",
+        "numbers floorOnly-jbmc correct 1.439",
+        "numbers narrow-native unsupported 0.017",
+        "numbers narrow-jbmc unsupported 0.293",
+        "numbers narrowOpcode-native unsupported 0.016",
+        "numbers narrowOpcode-jbmc unsupported 0.236",
+        "numbers wraps-native unsupported 0.015",
+        "numbers wraps-jbmc correct 0.501"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/opening/lists/measurement.json",
+      "change": "added",
+      "bytes": 12511,
+      "sha256": "0752696d5b2db41d41d6b9b000becb6b732e5ac817b24025329bd21ebd0d2f12",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/lists/raw.tar.gz",
+      "change": "added",
+      "bytes": 4933,
+      "sha256": "fcbf375510ac083dde62099222875f9040e46242c9e4ccd1555e069042bc37e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/numbers/measurement.json",
+      "change": "added",
+      "bytes": 18398,
+      "sha256": "5989869cfd12351aab35cfc9e259fa74078af829d48ba2c2f676fe147d9621e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/numbers/raw.tar.gz",
+      "change": "added",
+      "bytes": 7269,
+      "sha256": "7af49549ac0edd51c719141786d1a48044b793246be57fb93f7b1d0824caa617",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:53+00:00",
+    "applied": [
+      "verification/java-semantics-gap/opening/lists/measurement.json",
+      "verification/java-semantics-gap/opening/lists/raw.tar.gz",
+      "verification/java-semantics-gap/opening/numbers/measurement.json",
+      "verification/java-semantics-gap/opening/numbers/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "19c1c9c274fbcf750cbf07318387217da7d2e50d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/19c1c9c274fbcf750cbf07318387217da7d2e50d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095807Z-521558ea47199904",
+      "outputs": "20261123T095807Z-5500559235a04d21",
+      "diff": "20261123T095807Z-5664983e8fbd3e10"
+    }
+  }
+}
