@@ -1,0 +1,101 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "immutable-array-list",
+    "family": "immutable-array-list",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "lists": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay-lists",
+      "kind": "replay",
+      "revision": "lists",
+      "target": "ListHistory#fromArray",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "lists-from-array",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "lists",
+      "target": "ListHistory#fromArray",
+      "claim": "claims/listhistory-from-array.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-lists"
+      ]
+    },
+    {
+      "id": "lists-from-collection",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "lists",
+      "target": "ListHistory#fromCollection",
+      "claim": "claims/listhistory-from-collection.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-lists"
+      ]
+    },
+    {
+      "id": "lists-follows-slot",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "lists",
+      "target": "ListHistory#followsSlot",
+      "claim": "claims/listhistory-follows-slot.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-lists"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-lists",
+      "revision": "lists",
+      "kind": "driver",
+      "path": "driver/lists/Cases.java"
+    },
+    {
+      "id": "oracle-lists",
+      "revision": "lists",
+      "kind": "oracle",
+      "path": "controls/lists.json"
+    }
+  ]
+}

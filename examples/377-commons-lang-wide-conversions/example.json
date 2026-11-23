@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "377",
+  "title": "Wide conversions on Commons Lang fractions and mutable doubles",
+  "summary": "Fraction rounding covers every numerator in [2\u00b2\u2074, 2\u00b2\u2075). MutableDouble narrowing covers every binary64 value in [2\u00b3\u00b9, 2\u00b3\u00b2), before and after a sign change.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "rounding",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Wide conversions on Commons Lang fractions and mutable doubles",
+    "file": "adapter/WideNumbers.java",
+    "symbol": "WideNumbers#fraction"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Fraction rounding covers every numerator in [2\u00b2\u2074, 2\u00b2\u2075). MutableDouble narrowing covers every binary64 value in [2\u00b3\u00b9, 2\u00b3\u00b2), before and after a sign change."
+  },
+  "target": "target.json",
+  "verdictLabel": "Opening claims frozen",
+  "notes": [
+    "The numbers JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening numbers."
+  ]
+}

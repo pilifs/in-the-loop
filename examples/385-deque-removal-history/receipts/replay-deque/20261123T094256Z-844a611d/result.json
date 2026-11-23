@@ -1,0 +1,210 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "78547a645a096c0a",
+    "format": 1,
+    "example": "385",
+    "statement": {
+      "approach": "target",
+      "task": "replay-deque",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "DequeRemoval#history",
+      "revisions": [
+        "deque"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-deque",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "DequeRemoval#history",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-deque",
+            "kind": "driver",
+            "path": "driver/deque/Cases.java",
+            "sha256": "477e0dd35e0a862d591b6f91bcddab6871e1fc35230e2f5919ee1d2990456ce5"
+          },
+          {
+            "id": "oracle-deque",
+            "kind": "oracle",
+            "path": "controls/deque.json",
+            "sha256": "19e0728c4f91acf2efd7aa460e0a48868cd996944b46c6d2dac25b4dc14fb251"
+          }
+        ],
+        "key": "5063be05c8c5a117"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "be9acd34a9bbfe6d0b7a8cf54426415c611f42670d9b7a8967ab53df431a338d",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-deque",
+      "sidecar": "518cb91b12fa4a73a26a1ec116de02fdf8331ccea2ec160b8d596991bfc2ab7a",
+      "revisions": {
+        "deque": "5941de0b837b501f13b4748c0680ae18d2ded538"
+      },
+      "dependencies": [
+        {
+          "revision": "deque",
+          "position": 0,
+          "role": "driver",
+          "sha256": "d32ed0e44fbbd2cf7d99bf2e64c89f603b5e581070363fdc3ba33e4374338c6c"
+        },
+        {
+          "revision": "deque",
+          "position": 1,
+          "role": "original",
+          "sha256": "03d5f57e8a4e701775ad7512f13f889e7a9dcd390dace93d4fd4571b09af5193"
+        },
+        {
+          "revision": "deque",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+          "coordinates": "org.apache.commons:commons-collections4:4.5.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/deque.json": "19e0728c4f91acf2efd7aa460e0a48868cd996944b46c6d2dac25b4dc14fb251",
+        "driver/deque/Cases.java": "477e0dd35e0a862d591b6f91bcddab6871e1fc35230e2f5919ee1d2990456ce5"
+      },
+      "claimKey": "5063be05c8c5a117"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094256Z-844a611d",
+    "claim": "78547a645a096c0a",
+    "startedAt": "2026-11-23T09:42:56+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "abdb3f4fe3ab0933a9cd0b4bb55d716537289d1128bcc3fd6c6d63319bb55fca",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control deque on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-deque-jdk21.stdout",
+        "stderr": "records/control-deque-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "78547a645a096c0a",
+    "attempt": "20261123T094256Z-844a611d",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: deque holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"deque\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/deque.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "55b8f2b83c862bc3047fca1a37341b2e5352a8621ee758447e4d606db38c4049",
+        "bytes": 4756
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "979864cc405eb5c641441c80f862674c37e63a532c53c1e7cc76cdbe77a2a4c2",
+        "bytes": 176
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "fd4970ebdd5a12d260e00f9fdf2d8747f2b153bdc53a1326a5694c6e20f97b96",
+        "bytes": 1021
+      },
+      {
+        "path": "records/control-deque-jdk21.stdout",
+        "sha256": "ec620bcdf263e239437fb8a249b7a9d6364972687969c99a407d5baad39ba37f",
+        "bytes": 674
+      },
+      {
+        "path": "records/control-deque-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "c72327414fc9704466bfbfb3d08b0e55f1e5932d378faf62901b37c4f1b3487b",
+        "bytes": 4968
+      }
+    ]
+  }
+}

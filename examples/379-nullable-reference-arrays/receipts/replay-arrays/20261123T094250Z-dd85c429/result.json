@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "2b499afb89d8a71c",
+    "format": 1,
+    "example": "379",
+    "statement": {
+      "approach": "target",
+      "task": "replay-arrays",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "ReferenceCells#categories",
+      "revisions": [
+        "arrays"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-arrays",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "ReferenceCells#categories",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-arrays",
+            "kind": "driver",
+            "path": "driver/arrays/Cases.java",
+            "sha256": "555763814d123c1f01aad580bf8b8596668c5a1db52b944136f7828c955ff030"
+          },
+          {
+            "id": "oracle-arrays",
+            "kind": "oracle",
+            "path": "controls/arrays.json",
+            "sha256": "15256090eb9d0ff167e99a53c895202b1d2292c8cdc8dd050e18b56ef6947799"
+          }
+        ],
+        "key": "7968427fbbf24b1e"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "417fc4ee39471c716cefa07e6a1b867f430f4235610e238d9fe0d58857a98030",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-arrays",
+      "sidecar": "12bd087c877c9445ba0816ecc16c7a4f47802b2a01fd49627e9b13d8702eb4bc",
+      "revisions": {
+        "arrays": "2843afd79bfd586b955c8bbc75f892a22a47af74"
+      },
+      "dependencies": [
+        {
+          "revision": "arrays",
+          "position": 0,
+          "role": "driver",
+          "sha256": "18ab4dc4f2603169ed28ec7ca3d52a0cbc226c2f51fc7f21efca9e26763a6820"
+        },
+        {
+          "revision": "arrays",
+          "position": 1,
+          "role": "original",
+          "sha256": "2928bd5d281cb0b7db7d75d1119b70d009f6bdb11840a7a70add3f2ae9725432"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/arrays.json": "15256090eb9d0ff167e99a53c895202b1d2292c8cdc8dd050e18b56ef6947799",
+        "driver/arrays/Cases.java": "555763814d123c1f01aad580bf8b8596668c5a1db52b944136f7828c955ff030"
+      },
+      "claimKey": "7968427fbbf24b1e"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094250Z-dd85c429",
+    "claim": "2b499afb89d8a71c",
+    "startedAt": "2026-11-23T09:42:50+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a1530b1e0e57b784f01898c616606e6177e4a72a33228a103cdb089cd7702660",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control arrays on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-arrays-jdk21.stdout",
+        "stderr": "records/control-arrays-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "2b499afb89d8a71c",
+    "attempt": "20261123T094250Z-dd85c429",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: arrays holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"arrays\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/arrays.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "115b01db7b3be305e6cffede087965a7ba3622671cb51e47d3d434eb10acf717",
+        "bytes": 7205
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "96221ff16f58ffcd02023f92c5df96e348c99c018b786356733aff5acb4cd6d0",
+        "bytes": 178
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "060d276f4ba6f8967c97a2c79c141e298f9d4bfc640325f7a067926a67d135b0",
+        "bytes": 1029
+      },
+      {
+        "path": "records/control-arrays-jdk21.stdout",
+        "sha256": "12e89efb82e8e302ec626383385120e8dba7bd1a190522181ee851ae3641751a",
+        "bytes": 1845
+      },
+      {
+        "path": "records/control-arrays-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "7087be750c1e51960608964600f84e399c614bbd748df246840f9ee4623ed6ff",
+        "bytes": 7420
+      }
+    ]
+  }
+}

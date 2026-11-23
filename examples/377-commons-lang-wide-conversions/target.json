@@ -1,0 +1,150 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-lang-wide-conversions",
+    "family": "commons-lang-wide-conversions",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "numbers": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "lang-historical"
+        ],
+        "runtimeLibraries": [
+          "lang-historical"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-numbers",
+      "kind": "replay",
+      "revision": "numbers",
+      "target": "WideNumbers#fraction",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "numbers-fraction",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numbers",
+      "target": "WideNumbers#fraction",
+      "claim": "claims/widenumbers-fraction.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numbers"
+      ]
+    },
+    {
+      "id": "numbers-fraction-opcode",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numbers",
+      "target": "WideNumbers#fractionOpcode",
+      "claim": "claims/widenumbers-fraction-opcode.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numbers"
+      ]
+    },
+    {
+      "id": "numbers-floor-only",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numbers",
+      "target": "WideNumbers#floorOnly",
+      "claim": "claims/widenumbers-floor-only.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-numbers"
+      ]
+    },
+    {
+      "id": "numbers-narrow",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numbers",
+      "target": "WideNumbers#narrow",
+      "claim": "claims/widenumbers-narrow.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numbers"
+      ]
+    },
+    {
+      "id": "numbers-narrow-opcode",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numbers",
+      "target": "WideNumbers#narrowOpcode",
+      "claim": "claims/widenumbers-narrow-opcode.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numbers"
+      ]
+    },
+    {
+      "id": "numbers-wraps",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numbers",
+      "target": "WideNumbers#wraps",
+      "claim": "claims/widenumbers-wraps.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-numbers"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-numbers",
+      "revision": "numbers",
+      "kind": "driver",
+      "path": "driver/numbers/Cases.java"
+    },
+    {
+      "id": "oracle-numbers",
+      "revision": "numbers",
+      "kind": "oracle",
+      "path": "controls/numbers.json"
+    }
+  ]
+}

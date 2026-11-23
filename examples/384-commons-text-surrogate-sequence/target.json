@@ -1,0 +1,96 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-text-surrogate-sequence",
+    "family": "commons-text-surrogate-sequence",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "surrogates": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "commons-text",
+          "commons-lang3"
+        ],
+        "runtimeLibraries": [
+          "commons-text",
+          "commons-lang3"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-surrogates",
+      "kind": "replay",
+      "revision": "surrogates",
+      "target": "SurrogateUnits#translate",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "surrogates-translate",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "surrogates",
+      "target": "SurrogateUnits#translate",
+      "claim": "claims/surrogateunits-translate.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-surrogates"
+      ]
+    },
+    {
+      "id": "surrogates-remove-every",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "surrogates",
+      "target": "SurrogateUnits#removeEvery",
+      "claim": "claims/surrogateunits-remove-every.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-surrogates"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-surrogates",
+      "revision": "surrogates",
+      "kind": "driver",
+      "path": "driver/surrogates/Cases.java"
+    },
+    {
+      "id": "oracle-surrogates",
+      "revision": "surrogates",
+      "kind": "oracle",
+      "path": "controls/surrogates.json"
+    }
+  ]
+}

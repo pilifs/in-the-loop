@@ -1,0 +1,70 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-094336-check-original-numeric-list-prefix-and-r",
+  "title": "Check original numeric, list, prefix and reference-array assertions in standalone JBMC",
+  "description": "Run an independent Java assertion wrapper and reachability assertion for each bound entry with the Ubuntu 22.04 JBMC 6.11.0 executable and model bytes. Preserve target IDs, all other failing properties, warnings, traces and JVM checks. Record disagreements as measurements.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc"
+  ],
+  "links": {},
+  "expected": "Every requested assertion and its reachability control retain their original raw result or the exact timeout. Only matched outcomes and independently replayable refutations can be credited.",
+  "submitted": {
+    "at": "2026-11-23T09:43:36+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 8,
+  "requires": [
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "15m",
+    "timeout": "100m"
+  },
+  "steps": [
+    {
+      "name": "lists packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged lists",
+      "cwd": "."
+    },
+    {
+      "name": "numbers packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged numbers",
+      "cwd": "."
+    },
+    {
+      "name": "prefix packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged prefix",
+      "cwd": "."
+    },
+    {
+      "name": "arrays packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged arrays",
+      "cwd": "."
+    },
+    {
+      "name": "receiver packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged receiver",
+      "cwd": "."
+    },
+    {
+      "name": "prefix ordinary",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py ordinary prefix",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/standalone/lists/preflight-packaged",
+    "verification/java-semantics-gap/standalone/numbers/preflight-packaged",
+    "verification/java-semantics-gap/standalone/prefix/preflight-packaged",
+    "verification/java-semantics-gap/standalone/arrays/preflight-packaged",
+    "verification/java-semantics-gap/standalone/receiver/preflight-packaged",
+    "verification/java-semantics-gap/standalone/prefix/preflight-ordinary"
+  ]
+}

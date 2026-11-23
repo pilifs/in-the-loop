@@ -1,0 +1,115 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "utf16-offset-prefix",
+    "family": "utf16-offset-prefix",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "prefix": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay-prefix",
+      "kind": "replay",
+      "revision": "prefix",
+      "target": "OffsetPrefix#small",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "prefix-small",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "prefix",
+      "target": "OffsetPrefix#small",
+      "claim": "claims/offsetprefix-small.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-prefix"
+      ]
+    },
+    {
+      "id": "prefix-before-end",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "prefix",
+      "target": "OffsetPrefix#beforeEnd",
+      "claim": "claims/offsetprefix-before-end.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-prefix"
+      ]
+    },
+    {
+      "id": "prefix-wide",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "prefix",
+      "target": "OffsetPrefix#wide",
+      "claim": "claims/offsetprefix-wide.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-prefix"
+      ]
+    },
+    {
+      "id": "prefix-null-prefix",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "prefix",
+      "target": "OffsetPrefix#nullPrefix",
+      "claim": "claims/offsetprefix-null-prefix.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-prefix"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-prefix",
+      "revision": "prefix",
+      "kind": "driver",
+      "path": "driver/prefix/Cases.java"
+    },
+    {
+      "id": "oracle-prefix",
+      "revision": "prefix",
+      "kind": "oracle",
+      "path": "controls/prefix.json"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "391",
+  "title": "A static monitor and an instance monitor protect different reads",
+  "summary": "One JVM worker writes under its class monitor. The caller\u2019s lock and the worker\u2019s explicit or implicit synchronized method determine whether five is protected.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "race-condition",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "A static monitor and an instance monitor protect different reads",
+    "file": "adapter/MonitorIdentity.java",
+    "symbol": "MonitorIdentity#matched"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "One JVM worker writes under its class monitor. The caller\u2019s lock and the worker\u2019s explicit or implicit synchronized method determine whether five is protected."
+  },
+  "target": "target.json",
+  "verdictLabel": "Opening claims frozen",
+  "notes": [
+    "The monitors JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening monitors."
+  ]
+}

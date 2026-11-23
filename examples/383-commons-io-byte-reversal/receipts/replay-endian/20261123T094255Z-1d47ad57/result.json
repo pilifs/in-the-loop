@@ -1,0 +1,210 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "828825eb8379a73f",
+    "format": 1,
+    "example": "383",
+    "statement": {
+      "approach": "target",
+      "task": "replay-endian",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "ByteReversal#reverseInt",
+      "revisions": [
+        "endian"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-endian",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "ByteReversal#reverseInt",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-endian",
+            "kind": "driver",
+            "path": "driver/endian/Cases.java",
+            "sha256": "d0e8cc2db8fda282a7234ce01f1d141dac27f26386445855b1bcdeaf81c00743"
+          },
+          {
+            "id": "oracle-endian",
+            "kind": "oracle",
+            "path": "controls/endian.json",
+            "sha256": "fab1534a6c7ce0fca1f3c4034e3885b1418497f87bc9d187afe41564dd2601b6"
+          }
+        ],
+        "key": "c5f1da602b8efd2a"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "288660b58e93e44437e82bad39972294636679fa1cac4f17c01d9c97cf50e1ae",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-endian",
+      "sidecar": "4ba60902fae82e9a0fbca5efd558326f3683a588399d5b90740413654f9851ae",
+      "revisions": {
+        "endian": "033d5aced71a4406c7c23143130b847ac0ea236a"
+      },
+      "dependencies": [
+        {
+          "revision": "endian",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c4c442133527781d480ae6303bcfcb39fbba6bf11a47490a1f574c4107ad4bf4"
+        },
+        {
+          "revision": "endian",
+          "position": 1,
+          "role": "original",
+          "sha256": "b4a4d62391ce49bafa4f8389f0f2c2c16a03de5ff88136060ed96f8a76a29919"
+        },
+        {
+          "revision": "endian",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
+          "coordinates": "commons-io:commons-io:2.19.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/endian.json": "fab1534a6c7ce0fca1f3c4034e3885b1418497f87bc9d187afe41564dd2601b6",
+        "driver/endian/Cases.java": "d0e8cc2db8fda282a7234ce01f1d141dac27f26386445855b1bcdeaf81c00743"
+      },
+      "claimKey": "c5f1da602b8efd2a"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094255Z-1d47ad57",
+    "claim": "828825eb8379a73f",
+    "startedAt": "2026-11-23T09:42:55+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a333fff11d6e5ca4ae738f09d2dda1ecd2f98a169f7ca0d412ebfc19162174a9",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control endian on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-endian-jdk21.stdout",
+        "stderr": "records/control-endian-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "828825eb8379a73f",
+    "attempt": "20261123T094255Z-1d47ad57",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: endian holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"endian\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/endian.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "c0d135e530ff255e88e8bec89f0ba755914b9459ef7395f0889543d94c075216",
+        "bytes": 7119
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "447d9adf6542f7d07d8006be6d1eb6e12e0f7a4b01a6f31ded4adfed34b6c637",
+        "bytes": 178
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "a6a404b15479e7f263c98a09743cbf518c855665647a534f2368aedaafd4bbe4",
+        "bytes": 1029
+      },
+      {
+        "path": "records/control-endian-jdk21.stdout",
+        "sha256": "8f05b7c287cdc434cb599ff193153411cbad2bc3a0a0c97012ef9933af51cfdb",
+        "bytes": 1598
+      },
+      {
+        "path": "records/control-endian-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "476398d93cddbef89ee5ebe73298f744c65461c19dc8c6452890d39a259a627c",
+        "bytes": 7334
+      }
+    ]
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-lang-constructor-dispatch",
+    "family": "commons-lang-constructor-dispatch",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "construction": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "commons-lang3"
+        ],
+        "runtimeLibraries": [
+          "commons-lang3"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-construction",
+      "kind": "replay",
+      "revision": "construction",
+      "target": "ConstructorPhase#history",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "construction-history",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "construction",
+      "target": "ConstructorPhase#history",
+      "claim": "claims/constructorphase-history.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-construction"
+      ]
+    },
+    {
+      "id": "construction-empty-skips",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "construction",
+      "target": "ConstructorPhase#emptySkips",
+      "claim": "claims/constructorphase-empty-skips.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-construction"
+      ]
+    },
+    {
+      "id": "construction-already-initialized",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "construction",
+      "target": "ConstructorPhase#alreadyInitialized",
+      "claim": "claims/constructorphase-already-initialized.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-construction"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-construction",
+      "revision": "construction",
+      "kind": "driver",
+      "path": "driver/construction/Cases.java"
+    },
+    {
+      "id": "oracle-construction",
+      "revision": "construction",
+      "kind": "oracle",
+      "path": "controls/construction.json"
+    }
+  ]
+}

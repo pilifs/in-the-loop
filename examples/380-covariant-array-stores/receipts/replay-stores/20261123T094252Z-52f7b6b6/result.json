@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "87e1e41e70825de3",
+    "format": 1,
+    "example": "380",
+    "statement": {
+      "approach": "target",
+      "task": "replay-stores",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "ArrayStores#history",
+      "revisions": [
+        "stores"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-stores",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "ArrayStores#history",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-stores",
+            "kind": "driver",
+            "path": "driver/stores/Cases.java",
+            "sha256": "1774566c2c06b7a89f0435cdbf4ab97f8490993411e18981c796631eb39a4b03"
+          },
+          {
+            "id": "oracle-stores",
+            "kind": "oracle",
+            "path": "controls/stores.json",
+            "sha256": "31a18120ace70eb60182f35b74ec19ccb0b08cbae725f83fb81e23a0b36a936c"
+          }
+        ],
+        "key": "07d88b53f0d4050e"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "a3a735f590256bdc851c8ef533930e2740b2c1f0332fec821e7e65a99a3b1f88",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-stores",
+      "sidecar": "e8fe1e7d3ae1095bb930a98601397251db3c2d8830b23808947b09502213fcea",
+      "revisions": {
+        "stores": "f9be86716371e5cda90bc4e64dc4a796bf50c685"
+      },
+      "dependencies": [
+        {
+          "revision": "stores",
+          "position": 0,
+          "role": "driver",
+          "sha256": "b96c047ae931243d1bf091c123c245c5c7efe028c6ead74c906a660b6b98fdc6"
+        },
+        {
+          "revision": "stores",
+          "position": 1,
+          "role": "original",
+          "sha256": "49893dd749255963437832139f3eeadbdbd77bde9dce82ff2c7503b7861a0c54"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/stores.json": "31a18120ace70eb60182f35b74ec19ccb0b08cbae725f83fb81e23a0b36a936c",
+        "driver/stores/Cases.java": "1774566c2c06b7a89f0435cdbf4ab97f8490993411e18981c796631eb39a4b03"
+      },
+      "claimKey": "07d88b53f0d4050e"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094252Z-52f7b6b6",
+    "claim": "87e1e41e70825de3",
+    "startedAt": "2026-11-23T09:42:52+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a11682ef6dcf9d33974eaf63bf7b97c636f3922f9d37fc753e2e16cf504b4d1c",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control stores on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-stores-jdk21.stdout",
+        "stderr": "records/control-stores-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "87e1e41e70825de3",
+    "attempt": "20261123T094252Z-52f7b6b6",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: stores holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"stores\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/stores.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "37c773bfec5ebfdea5963cfd815e0a1146491a6cce53b1856d3c2e03752e2122",
+        "bytes": 8273
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "b6c173792aa0c5983d074e7494f6d058e1764f722faf3477725c4d76786fbdc8",
+        "bytes": 178
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "7973726d067b2634c9eedb516d67595f7640ac703ddbab4a9f31ddfedd7a3bf5",
+        "bytes": 1029
+      },
+      {
+        "path": "records/control-stores-jdk21.stdout",
+        "sha256": "3922e5097860c10cd615181d44b064e0a04098c19dfec2bc9b344176770b4f45",
+        "bytes": 1975
+      },
+      {
+        "path": "records/control-stores-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "e24c0aa2b91eed1f09f515e3c5c3b524bd1e259b6875aa91dc11eb6026efa4d5",
+        "bytes": 8488
+      }
+    ]
+  }
+}

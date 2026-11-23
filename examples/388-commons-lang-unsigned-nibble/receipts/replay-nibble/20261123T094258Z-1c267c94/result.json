@@ -1,0 +1,209 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "6aca4c7369b88f8c",
+    "format": 1,
+    "example": "388",
+    "statement": {
+      "approach": "target",
+      "task": "replay-nibble",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "UnsignedNibble#nibble",
+      "revisions": [
+        "nibble"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-nibble",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "UnsignedNibble#nibble",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-nibble",
+            "kind": "driver",
+            "path": "driver/nibble/Cases.java",
+            "sha256": "52f1d0bcab913fa325dc9c0dc0e107c156a649358747a0dbfbe8e66d63d97d34"
+          },
+          {
+            "id": "oracle-nibble",
+            "kind": "oracle",
+            "path": "controls/nibble.json",
+            "sha256": "3a4f6ca429ecb51a9f5e6b168efdb62609c00e7ee2e7ddfb90274767f203cb19"
+          }
+        ],
+        "key": "3678d274d3fac854"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "07ae0fc576c368da3c33e8041bdc6e523b2ac3b0b73cf2cf6d700447cea75745",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-nibble",
+      "sidecar": "671093e30a1080deca85a31b6c1054bf89fcf71cdd4445e603a747668fc6693c",
+      "revisions": {
+        "nibble": "349192a7893b0f2e1d477819e96c3f121023667c"
+      },
+      "dependencies": [
+        {
+          "revision": "nibble",
+          "position": 0,
+          "role": "driver",
+          "sha256": "0d7f0f57c29bb482ef942e16e5b902c8699f1ebe30fc10abc89bf81896fb6354"
+        },
+        {
+          "revision": "nibble",
+          "position": 1,
+          "role": "original",
+          "sha256": "8dae866e378af1adc87998a7793bcfa5dd58f7d229e76ae7aaf22e6ec11203cf"
+        },
+        {
+          "revision": "nibble",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "5489541c16fe228f13443d8c7bb951722da80b25c56b73412707cab4011b032c"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/nibble.json": "3a4f6ca429ecb51a9f5e6b168efdb62609c00e7ee2e7ddfb90274767f203cb19",
+        "driver/nibble/Cases.java": "52f1d0bcab913fa325dc9c0dc0e107c156a649358747a0dbfbe8e66d63d97d34"
+      },
+      "claimKey": "3678d274d3fac854"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094258Z-1c267c94",
+    "claim": "6aca4c7369b88f8c",
+    "startedAt": "2026-11-23T09:42:58+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "c540c725fcfe03dd0e4703f480fecd1cf380c5732e9a0e47f97d6403ed5d1af3",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control nibble on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-nibble-jdk21.stdout",
+        "stderr": "records/control-nibble-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "6aca4c7369b88f8c",
+    "attempt": "20261123T094258Z-1c267c94",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: nibble holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"nibble\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/nibble.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "5024f85aa19bdf644defcae747c3dc17e208623e2485da1fe2a5215df3e65ce7",
+        "bytes": 9474
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "3f7c048a6d1135f3abb30c7368708a7b2f08f1244e13c135f4f886157bfb8b01",
+        "bytes": 178
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "e38ba1e0e302c1ff6721894ea52cf2631351ccf17e6f91335091ada6af590d20",
+        "bytes": 1029
+      },
+      {
+        "path": "records/control-nibble-jdk21.stdout",
+        "sha256": "d3553f31831485cc66079701dd2bb10f6450ca2a059e5f51d816e375789cf638",
+        "bytes": 2400
+      },
+      {
+        "path": "records/control-nibble-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "17b36342685c84706ea8990e524990885db80688f191b172635317fd760ff19e",
+        "bytes": 9689
+      }
+    ]
+  }
+}

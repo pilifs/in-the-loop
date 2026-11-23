@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T09:13:13.849Z",
-  "duration_seconds": 76167,
+  "ended": "2026-11-23T09:51:22.387Z",
+  "duration_seconds": 78455,
   "stats": {
     "turns": 17,
-    "api_calls": 2725,
-    "tool_calls": 6409,
-    "tool_errors": 175,
+    "api_calls": 2840,
+    "tool_calls": 6656,
+    "tool_errors": 187,
     "compactions": 12,
     "peak_context_tokens": 525653,
     "usage": {
-      "input_tokens": 4013083,
-      "output_tokens": 1276067,
-      "cache_read_input_tokens": 678447104,
+      "input_tokens": 4148191,
+      "output_tokens": 1318952,
+      "cache_read_input_tokens": 708000128,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 3561,
-    "exec": 2472,
-    "apply_patch": 225,
-    "wait": 59,
+    "Bash": 3683,
+    "exec": 2569,
+    "apply_patch": 236,
+    "wait": 76,
     "sleep": 31,
     "send_message": 23,
     "wait_agent": 16,
@@ -66,6 +66,8 @@
     "examples/376-immutable-array-list/adapter/ListHistory.java",
     "examples/377-commons-lang-wide-conversions/adapter/WideNumbers.java",
     "examples/378-utf16-offset-prefix/adapter/OffsetPrefix.java",
+    "examples/379-nullable-reference-arrays/adapter/GsonRequestedClass.java",
+    "examples/379-nullable-reference-arrays/adapter/ReceiverScope.java",
     "examples/379-nullable-reference-arrays/adapter/ReferenceCells.java",
     "examples/380-covariant-array-stores/adapter/ArrayStores.java",
     "examples/380-covariant-array-stores/adapter/IteratorStores.java",
@@ -80,6 +82,8 @@
     "examples/389-enum-name-identity/adapter/EnumNames.java",
     "examples/390-thread-local-presence/adapter/ThreadLocalHistory.java",
     "examples/391-class-monitor-identity/adapter/MonitorIdentity.java",
+    "examples/tools/targets/test_packets.py",
+    "examples/tools/targets/workflow_ingest.py",
     "lib/README.md",
     "lib/benchmark/java-domain-proof/DirectParser.java",
     "lib/benchmark/java-domain-proof/NameChecks.java",
@@ -95,7 +99,10 @@
     "lib/benchmark/java-domain-proof/ready_parser.py",
     "lib/benchmark/java-domain-proof/scorecard.py",
     "lib/benchmark/java-domain-proof/transfer.py",
+    "lib/benchmark/java-semantics-gap/campaign.py",
     "lib/benchmark/java-semantics-gap/historical.py",
+    "lib/benchmark/java-semantics-gap/standalone.py",
+    "lib/benchmark/java-semantics-gap/subjects.py",
     "lib/benchmark/run.py",
     "lib/benchmark/spring-java-data/domains.py",
     "lib/benchmark/spring-java-data/factory_results.py",
@@ -325,24 +332,24 @@
     {
       "index": 12,
       "started": "2026-11-23T07:23:47.826Z",
-      "ended": "2026-11-23T09:13:13.849Z",
+      "ended": "2026-11-23T09:51:22.387Z",
       "turns": 2,
-      "api_calls": 54,
+      "api_calls": 169,
       "usage": {
-        "input_tokens": 220684,
-        "output_tokens": 31348,
-        "cache_read_input_tokens": 5641728,
+        "input_tokens": 355792,
+        "output_tokens": 74233,
+        "cache_read_input_tokens": 35194752,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 190189
+      "peak_context_tokens": 317521
     }
   ],
   "log": {
-    "sha256": "8997e66e97188a865c0f420d574a1e3ab9fef721e93c915b75f7b6e4db6d993b",
-    "bytes": 42195557,
-    "lines": 20852,
-    "gzip_bytes": 8139937,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/8997e66e97188a865c0f420d574a1e3ab9fef721e93c915b75f7b6e4db6d993b.jsonl.gz"
+    "sha256": "26272f5372b3afeb543de0d3d24f71b8fb5df5652183039e560776d4ebefb00c",
+    "bytes": 43805004,
+    "lines": 21642,
+    "gzip_bytes": 8401419,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/26272f5372b3afeb543de0d3d24f71b8fb5df5652183039e560776d4ebefb00c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1305,6 +1312,14 @@
       "summary": "Freeze the Java semantics comparison (verification pending)",
       "body": "Recount the 187 strict benchmark claims from the original November receipt, bind its digest, and rerun its 13 staged JBMC leads and 24 native-only controls with the ordinary benchmark. The extra list-search establishment stays separate. Record the model and binary digests, original JVM replays, selected class bytes and costs.\n\nThe selection reproduced the original 133/24/13/17 partition and 38 distinct requested entries, all present. All 59 selected Rust test binaries and five Python suites passed. Jobs 20261123-090557-freeze-strict-native-and-staged-jbmc-on and 20261123-090613-freeze-the-24-original-native-only-regre measure the unchanged opening checker.",
       "log_sha256": "8997e66e97188a865c0f420d574a1e3ab9fef721e93c915b75f7b6e4db6d993b"
+    },
+    {
+      "change_id": "uzwyonrkorqqqprvmsqwpzvntronpqmu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze 60 Java semantics claims and JVM controls (verification pending)",
+      "body": "Freeze 60 claims on 21 ordered graphs in examples 376 through 391, including both entire Commons Lang numeric intervals, the original Guava and Gson revisions, and each of the ten expansion families. Explicit native, integrated staged JBMC and standalone Java assertions keep their own scopes, tool identities, raw output and JVM witnesses. A single-revision oracle can state its expected observation, and preparation locks the driver and oracle for the requested revision.\n\nAll sixteen example validators, the 21 normal replay tasks and 258 original JVM observations passed on Temurin 21. The 59 Rust binaries and affected Python suites ran, and a timing-dependent launcher check passed on retry. Native probes found Double.to-int tuple enumeration and the unsupported Integer.reverseBytes call. Jobs prefixed 20261123-092651 and 20261123-092652 open every new family. Job 20261123-092937-open-the-original-decimal-and-formatter checks the five transfer tasks. The five jobs prefixed 20261123-094336 and 20261123-094337 compare the standalone profiles and assertion reachability.",
+      "log_sha256": "26272f5372b3afeb543de0d3d24f71b8fb5df5652183039e560776d4ebefb00c"
     }
   ],
   "logs": {
@@ -1343,6 +1358,12 @@
       "lines": 8593,
       "gzip_bytes": 9576671,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/22c589baf69c059a2599559f5d34a03259e9fb7294c42e72bb9dcdddd2cd5fe4.jsonl.gz"
+    },
+    "26272f5372b3afeb543de0d3d24f71b8fb5df5652183039e560776d4ebefb00c": {
+      "bytes": 43805004,
+      "lines": 21642,
+      "gzip_bytes": 8401419,
+      "url": null
     },
     "2ba5782582ca803c6c46d8b66ff449b1b08ff43e0fca68be7801f34530b0171b": {
       "bytes": 24531065,

@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "bbfe56425c1624b0",
+    "format": 1,
+    "example": "376",
+    "statement": {
+      "approach": "target",
+      "task": "replay-lists",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "ListHistory#fromArray",
+      "revisions": [
+        "lists"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-lists",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "ListHistory#fromArray",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-lists",
+            "kind": "driver",
+            "path": "driver/lists/Cases.java",
+            "sha256": "97ba1cc48d0dfdb24dc52b57c03f6d4695960e3e0c7fd1ad266014792d38a859"
+          },
+          {
+            "id": "oracle-lists",
+            "kind": "oracle",
+            "path": "controls/lists.json",
+            "sha256": "db17e5538c0b6694b7772f7da380ae7f7dab0cdcfa0b94eddeb2998237676c33"
+          }
+        ],
+        "key": "0cb3bf35063e8074"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "47b060972ac46b82cf8a3f78db380da07ecd3ec389da36df075fa92bc81e8018",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-lists",
+      "sidecar": "ecd06950394639dbcc4dbfbf9fb3584caaac11f76b604716647cefd7b3db75f9",
+      "revisions": {
+        "lists": "6a0f683521621bcd69430dd6ba751fffe796fc97"
+      },
+      "dependencies": [
+        {
+          "revision": "lists",
+          "position": 0,
+          "role": "driver",
+          "sha256": "58a01360cb37dcc4b23d66e28845e4396409e086aeafc2c43e0103b9af15966a"
+        },
+        {
+          "revision": "lists",
+          "position": 1,
+          "role": "original",
+          "sha256": "a771bd38b1cbac7d6460614afdbfe477c6d264add5e431194b6bda3b8e1b761d"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/lists.json": "db17e5538c0b6694b7772f7da380ae7f7dab0cdcfa0b94eddeb2998237676c33",
+        "driver/lists/Cases.java": "97ba1cc48d0dfdb24dc52b57c03f6d4695960e3e0c7fd1ad266014792d38a859"
+      },
+      "claimKey": "0cb3bf35063e8074"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094249Z-30511e89",
+    "claim": "bbfe56425c1624b0",
+    "startedAt": "2026-11-23T09:42:49+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "30505cfe66fa2f5f7f25571d8b6240bafbff70ceacce1dea01c47251a1502d14",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control lists on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-lists-jdk21.stdout",
+        "stderr": "records/control-lists-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "bbfe56425c1624b0",
+    "attempt": "20261123T094249Z-30511e89",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: lists holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"lists\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/lists.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "afde86a6292343c1f7c88b35592fdfd8368ee0d66fa211dc6649636e515a9ac4",
+        "bytes": 6687
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "aba55e6b58c06d523ff36568a85227d4055556beb81f0a1c67b183ccdd5becde",
+        "bytes": 176
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "83f03bc32d36d185313671f73480804b70decbe52dce2bf372c8c290ba63ea97",
+        "bytes": 1023
+      },
+      {
+        "path": "records/control-lists-jdk21.stdout",
+        "sha256": "138ef128ab3a4f55b69ad981da9fca5cc48a6293e3c8cbb2d9ce54fccf26a859",
+        "bytes": 1554
+      },
+      {
+        "path": "records/control-lists-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "660add9d8aa269a3ae3a18bab45522c7e5f48949cd1956366432b84d4185f77c",
+        "bytes": 6899
+      }
+    ]
+  }
+}

@@ -212,10 +212,11 @@ def _main_class(folder, relative):
     return ".".join(path.relative_to(_source_root(folder, path)).with_suffix("").parts)
 
 
-def _controls_source(folder, entry):
+def _controls_source(folder, entry, revision, task):
     """The parts a preparation compiles or copies besides the original, from the example's folder: the adapter (the
     entry's `adapters`), the driver and oracle (the sidecar's controls), and the JDKs the controls run on."""
-    listed = _sidecar(folder).get("controls", [])
+    listed = [c for c in _sidecar(folder).get("controls", [])
+              if c.get("revision", revision) == revision and c.get("task", task) == task]
     controls = {c["kind"]: c for c in listed if c["kind"] in ("driver", "oracle")}
     oracle = None
     if "oracle" in controls:
@@ -249,7 +250,7 @@ def _lock_fixture(plan, revision, entry, folder):
         "original": {"roots": sorted({top.relative_to(folder).as_posix()}
                                      | ({shared.relative_to(folder).as_posix()} if shared.is_dir() else set())),
                      "files": _hashed(folder, original)},
-        **_controls_source(folder, entry),
+        **_controls_source(folder, entry, revision, plan.task),
         "recipe": {"tool": "javac", "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe", **_fixture_recipe()},
     }
     if entry.get("fixtureClasspath"):
@@ -304,7 +305,7 @@ def _lock_published(plan, revision, entry, folder):
                     "status": "recorded, not checked against the published bytes: a release label supports no source "
                               "rebuild or introducing-commit experiment"},
         "published": items,
-        **_controls_source(folder, entry),
+        **_controls_source(folder, entry, revision, plan.task),
         "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
                                           "the published JARs are used as fetched", **_fixture_recipe()},
     }
@@ -351,7 +352,7 @@ def _lock_upstream(plan, revision, entry, folder):
                        "the original sources stay untouched"),
         "history": {"commit": recipe["commit"], **({"parent": recipe["parent"]} if recipe["parent"] else {})},
         "upstream": {k: recipe[k] for k in ("tool", "argv", "jdk")},
-        **_controls_source(folder, entry),
+        **_controls_source(folder, entry, revision, plan.task),
         "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
                                           "the original is built by the upstream recipe", **_fixture_recipe()},
     }
@@ -410,7 +411,7 @@ def _lock_slice(plan, revision, entry, folder):
                   "scope": SCOPES["extracted-source-slice"]},
         "published": items,
         **({"orderedClasses": list(entry["orderedClasses"])} if entry.get("orderedClasses") else {}),
-        **_controls_source(folder, entry),
+        **_controls_source(folder, entry, revision, plan.task),
         "recipe": {"tool": "javac", "by": "the fixture recipe's --release and JAR date, for the adapter and driver only; "
                                           "the slice is compiled by its own recorded JDK and flags", **_fixture_recipe()},
     }

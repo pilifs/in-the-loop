@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "nibble",
+  "statement": "For offset zero through three the method returns the right-shifted digit. Other offsets raise exactly IndexOutOfBoundsException.",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 8
+  },
+  "assert": "result",
+  "assume": "m >= 0 && m < 16"
+}

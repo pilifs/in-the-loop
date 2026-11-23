@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-092652-open-deque-histories-constructor-dispatc",
+  "title": "Open deque histories, constructor dispatch, radix and unsigned offsets",
+  "description": "Check JDK and Commons iterator mutations, subclass initialization order, signed hexadecimal digits and all int offsets through the original APIs. Use the unchanged opening checker on both explicit engines at 120 seconds per claim. Retain each raw response and replay actual primitive counterexamples on the original JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc"
+  ],
+  "links": {},
+  "expected": "The job records every requested native and integrated JBMC outcome, or the exact frontend or model refusal, against the bound original JVM checks.",
+  "submitted": {
+    "at": "2026-11-23T09:26:52+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 12,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "15m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "deque",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening deque",
+      "cwd": "."
+    },
+    {
+      "name": "construction",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening construction",
+      "cwd": "."
+    },
+    {
+      "name": "radix",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening radix",
+      "cwd": "."
+    },
+    {
+      "name": "nibble",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening nibble",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/opening/deque",
+    "verification/java-semantics-gap/opening/construction",
+    "verification/java-semantics-gap/opening/radix",
+    "verification/java-semantics-gap/opening/nibble"
+  ]
+}

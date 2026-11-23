@@ -1,0 +1,142 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "covariant-array-stores",
+    "family": "covariant-array-stores",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "stores": {
+        "fixture": "adapter/ArrayStores",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      },
+      "store-iterator": {
+        "fixture": "adapter/IteratorStores",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "commons-collections4"
+        ],
+        "runtimeLibraries": [
+          "commons-collections4"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-stores",
+      "kind": "replay",
+      "revision": "stores",
+      "target": "ArrayStores#history",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "replay-store-iterator",
+      "kind": "replay",
+      "revision": "store-iterator",
+      "target": "IteratorStores#history",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "stores-history",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "stores",
+      "target": "ArrayStores#history",
+      "claim": "claims/arraystores-history.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-stores"
+      ]
+    },
+    {
+      "id": "stores-always-succeeds",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "stores",
+      "target": "ArrayStores#alwaysSucceeds",
+      "claim": "claims/arraystores-always-succeeds.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-stores"
+      ]
+    },
+    {
+      "id": "store-iterator-history",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "store-iterator",
+      "target": "IteratorStores#history",
+      "claim": "claims/iteratorstores-history.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-store-iterator"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-stores",
+      "revision": "stores",
+      "kind": "driver",
+      "path": "driver/stores/Cases.java"
+    },
+    {
+      "id": "oracle-stores",
+      "revision": "stores",
+      "kind": "oracle",
+      "path": "controls/stores.json"
+    },
+    {
+      "id": "driver-store-iterator",
+      "revision": "store-iterator",
+      "kind": "driver",
+      "path": "driver/store-iterator/Cases.java"
+    },
+    {
+      "id": "oracle-store-iterator",
+      "revision": "store-iterator",
+      "kind": "oracle",
+      "path": "controls/store-iterator.json"
+    }
+  ]
+}

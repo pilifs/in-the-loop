@@ -1,0 +1,87 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "negative-radix-format",
+    "family": "negative-radix-format",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "radix": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay-radix",
+      "kind": "replay",
+      "revision": "radix",
+      "target": "RadixDigits#hex",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "radix-hex",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "radix",
+      "target": "RadixDigits#hex",
+      "claim": "claims/radixdigits-hex.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-radix"
+      ]
+    },
+    {
+      "id": "radix-low-first",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "radix",
+      "target": "RadixDigits#lowFirst",
+      "claim": "claims/radixdigits-low-first.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-radix"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-radix",
+      "revision": "radix",
+      "kind": "driver",
+      "path": "driver/radix/Cases.java"
+    },
+    {
+      "id": "oracle-radix",
+      "revision": "radix",
+      "kind": "oracle",
+      "path": "controls/radix.json"
+    }
+  ]
+}

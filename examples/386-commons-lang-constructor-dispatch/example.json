@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "386",
+  "title": "Observe an override during superclass construction",
+  "summary": "Commons Lang\u2019s StrBuilder constructor calls the subclass before its field initializer. A second call observes the initialized receiver and contents.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "class-initialization",
+    "side-effecting-read",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Observe an override during superclass construction",
+    "file": "adapter/ConstructorPhase.java",
+    "symbol": "ConstructorPhase#history"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Commons Lang\u2019s StrBuilder constructor calls the subclass before its field initializer. A second call observes the initialized receiver and contents."
+  },
+  "target": "target.json",
+  "verdictLabel": "Opening claims frozen",
+  "notes": [
+    "The construction JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening construction."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "381",
+  "title": "Guava formatting preserves the caller\u2019s varargs",
+  "summary": "The historical formatters receive Integer[] and Object[] with the same three references. The caller observes returned text, the exact exception and the final slots.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Guava formatting preserves the caller\u2019s varargs",
+    "file": "adapter/FormatHistory.java",
+    "symbol": "FormatHistory#retained"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "The historical formatters receive Integer[] and Object[] with the same three references. The caller observes returned text, the exact exception and the final slots."
+  },
+  "target": "target.json",
+  "verdictLabel": "Opening claims frozen",
+  "notes": [
+    "The guava-parent JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening guava-parent.",
+    "The guava-fix JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening guava-fix."
+  ]
+}

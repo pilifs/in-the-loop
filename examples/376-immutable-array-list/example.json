@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "376",
+  "title": "A list copied from a caller-owned array",
+  "summary": "List construction isolates later slot replacement and retains aliases to the mutable elements.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "A list copied from a caller-owned array",
+    "file": "adapter/ListHistory.java",
+    "symbol": "ListHistory#fromArray"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "List construction isolates later slot replacement and retains aliases to the mutable elements."
+  },
+  "target": "target.json",
+  "verdictLabel": "Opening claims frozen",
+  "notes": [
+    "The lists JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening lists."
+  ]
+}

@@ -417,6 +417,11 @@ def expected_sides(target, task, revisions):
     if task.get("pair"):
         sides = kind_sides(next((p for p in pairs if p.get("name") == task["pair"]), {}))
         return dict(zip(revisions, sides)) if sides else {}
+    if (task.get("kind") == "replay" and task.get("revision") == revisions[0]
+            and not any(revisions[0] in (p.get("before"), p.get("after")) for p in pairs)):
+        # A single original can have an independently frozen JVM oracle without a historical pair.
+        outcome = {"established": "holds", "refuted": "violates"}.get(task.get("expected"))
+        return {revisions[0]: outcome} if outcome else {}
     said = {kind_sides(p)[i] for p in pairs if kind_sides(p)
             for i, side in enumerate(("before", "after")) if p.get(side) == revisions[0]}
     return {revisions[0]: said.pop()} if len(said) == 1 else {}
