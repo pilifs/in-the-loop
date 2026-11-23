@@ -218,7 +218,7 @@ pub struct Typed {
     pub ty: String,
     /// The value: a boolean; a number for `byte`, `short` and `int`, and for `char` its UTF-16 code unit; a string
     /// for `long` (in decimal, exact past 2^53) and for `float` and `double` (Java's `toString` of it, which reads
-    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; null; or `{"same": i}` for
+    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`, with `bits:0x...` for a noncanonical NaN); an array of those; null; or `{"same": i}` for
     /// the same array as the `i`th input. Absent for a record, whose components give it. For an object parameter a
     /// choice made null or the same object as another (step H2), null or `{"same": "a"}` by that one's name.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -290,6 +290,8 @@ pub fn exact(v: Value, t: &Type) -> serde_json::Value {
         (Type::Char, Value::Int(x)) => J::from(x as u16),
         (_, Value::Int(x)) => J::from(x),
         (_, Value::Long(x)) => J::String(x.to_string()),
+        (_, Value::Float(x)) if x.is_nan() && x.to_bits() != f32::NAN.to_bits() => J::String(format!("bits:0x{:08x}", x.to_bits())),
+        (_, Value::Double(x)) if x.is_nan() && x.to_bits() != f64::NAN.to_bits() => J::String(format!("bits:0x{:016x}", x.to_bits())),
         (_, Value::Float(x)) => J::String(render::float_to_string(x)),
         (_, Value::Double(x)) => J::String(render::double_to_string(x)),
         (_, Value::Ref(_)) => J::Null,
@@ -1190,6 +1192,10 @@ mod tests {
         assert_eq!(exact(Value::Double(0.1), &Type::Double), json!("0.1"));
         assert_eq!(exact(Value::Double(-0.0), &Type::Double), json!("-0.0"));
         assert_eq!(exact(Value::Double(f64::NAN), &Type::Double), json!("NaN"));
+        let payload = 0xfff8_0000_0000_0123;
+        let exact_nan = exact(Value::Double(f64::from_bits(payload)), &Type::Double);
+        let Value::Double(restored) = crate::jbmc::parse_value(&Type::Double, exact_nan.as_str().unwrap()).unwrap() else { unreachable!() };
+        assert_eq!(restored.to_bits(), payload);
         assert_eq!(exact(Value::Double(f64::NEG_INFINITY), &Type::Double), json!("-Infinity"));
         // The smallest float reads as "1.0E-45" (Java writes 1.4E-45): either reads back as the same float.
         for x in [1.0e-45f32, 0.1, f32::MAX, -3.5] {

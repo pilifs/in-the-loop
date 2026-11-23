@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T16:29:50.137Z",
-  "duration_seconds": 102363,
+  "ended": "2026-11-23T16:45:54.158Z",
+  "duration_seconds": 103327,
   "stats": {
     "turns": 21,
-    "api_calls": 3994,
-    "tool_calls": 9287,
-    "tool_errors": 239,
+    "api_calls": 4051,
+    "tool_calls": 9396,
+    "tool_errors": 243,
     "compactions": 16,
     "peak_context_tokens": 550118,
     "usage": {
-      "input_tokens": 5893626,
-      "output_tokens": 1825859,
-      "cache_read_input_tokens": 1070104576,
+      "input_tokens": 5951336,
+      "output_tokens": 1849155,
+      "cache_read_input_tokens": 1087584384,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5014,
-    "exec": 3636,
-    "apply_patch": 397,
+    "Bash": 5065,
+    "exec": 3692,
+    "apply_patch": 399,
     "wait": 132,
     "sleep": 38,
     "send_message": 25,
@@ -200,6 +200,7 @@
     "lib/tests/fixtures/claims/claims/SpringStartup.java",
     "lib/tests/fixtures/claims/claims/T.java",
     "lib/tests/fixtures/claims/claims/ValueConstants.java",
+    "lib/tests/fixtures/floating/FloatingChecks.java",
     "lib/tests/fixtures/observed-countermodels/app/oc/PublishedLookup.java",
     "lib/tests/fixtures/values/values/Lists.java",
     "lib/tests/fixtures/values/values/Operations.java",
@@ -445,24 +446,24 @@
     {
       "index": 16,
       "started": "2026-11-23T14:53:32.104Z",
-      "ended": "2026-11-23T16:29:50.137Z",
+      "ended": "2026-11-23T16:45:54.158Z",
       "turns": 2,
-      "api_calls": 118,
+      "api_calls": 175,
       "usage": {
-        "input_tokens": 280309,
-        "output_tokens": 72927,
-        "cache_read_input_tokens": 24028288,
+        "input_tokens": 338019,
+        "output_tokens": 96223,
+        "cache_read_input_tokens": 41508096,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 286039
+      "peak_context_tokens": 339464
     }
   ],
   "log": {
-    "sha256": "ff0396bdc10e652145f9e85d9c8c0d8b43f7c6e5546749a1e6d585fa79fbcfe9",
-    "bytes": 60562654,
-    "lines": 30228,
-    "gzip_bytes": 11458898,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/ff0396bdc10e652145f9e85d9c8c0d8b43f7c6e5546749a1e6d585fa79fbcfe9.jsonl.gz"
+    "sha256": "dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71",
+    "bytes": 61266686,
+    "lines": 30643,
+    "gzip_bytes": 11573555,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1825,6 +1826,14 @@
       "summary": "Adapt method-reference arguments and results (verification pending)",
       "body": "Follow the erased and instantiated SAM descriptors through the implementation handle. Cast and unbox each argument in invocation order, apply legal primitive widening, and adapt only the normal result. The native checker uses its existing word conversions and the interpreter now passes the JVM stack width to the target. A regression exercises the normal staged CLI replay for three distinct javac adapters.\n\nThe original integrated Guava check that exited 101 now returns a typed violation at (0, 1), which the original JVM reproduces. A bounded native run established the boxed Guava comparison for every pair of signed ints. The CLI regression, legacy lambda controls, cost lint and all seven changed-test groups passed, including 59 Rust test binaries. Job 20261123-162554-qualify-original-guava-method-reference freezes the ten Guava engine outcomes before the Commons Lang and ComparisonChain transfers. Job 20261123-162554-recheck-proof-tier-conformance-after-met checks proof-tier conformance.",
       "log_sha256": "ff0396bdc10e652145f9e85d9c8c0d8b43f7c6e5546749a1e6d585fa79fbcfe9"
+    },
+    {
+      "change_id": "nwuzqtkqtrvtplpmnmkptwmqxxyzumyn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Round wide Java operands directly to binary32 (verification pending)",
+      "body": "Encode signed int and long to binary32 and binary64 and non-NaN binary64 narrowing with exact ties to even, including subnormal and overflow boundaries. Pass direct floating parameters at their JVM widths, preserve witness bits through the original JVM and cache, and avoid double rounding when a boxed Long returns a float. The fallback regression now uses unbounded multiplication, since a raw floating parameter is supported.\n\nThe native Jackson LongNode establishes the independent rounding rule over all 2^54 inputs. The direct DoubleNode negative produced the exact 2^-150 counterexample. Constant-circuit checks, a noncanonical NaN round trip, the direct-double post-return regression and all 23 changed-test groups passed. Job 20261123-163612-qualify-wide-jackson-and-commons-lang-co checks all five primary statements and proceeds to the exact two-path disagreement classification only if the primary checks pass.\n\nThe earlier Guava comparison on source 550cf8a2 established three statements and replayed two violations on each engine. Job 20261123-163524-transfer-proven-guava-adapters-to-common holds that source fixed for Commons Lang return widening and the public ComparisonChain transfer.",
+      "log_sha256": "dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71"
     }
   ],
   "logs": {
@@ -2163,6 +2172,12 @@
       "lines": 2149,
       "gzip_bytes": 2126217,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/d84e774cc5be9e73aa8bfc8dfe16955668ccd9951649fbc1bd014a7db2a2a2f5.jsonl.gz"
+    },
+    "dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71": {
+      "bytes": 61266686,
+      "lines": 30643,
+      "gzip_bytes": 11573555,
+      "url": null
     },
     "e7acf5b22cbfa03b155fedc7af2be318272f0387bbc0e6a80a18b92f86a4170d": {
       "bytes": 51631902,

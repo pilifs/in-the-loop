@@ -93,9 +93,15 @@ def replay_literal(typ, value):
         if -(1 << (width-1)) <= number < 1 << (width-1):
             return f"({typ}){number}"
         raise ValueError(f"out-of-range {typ}")
-    if typ == "double" and type(value) in (float, int, str):
-        bits = struct.pack(">d", float(value)).hex()
-        return f"Double.longBitsToDouble(0x{bits}L)"
+    if typ in ("float", "double") and type(value) in (float, int, str):
+        wide = typ == "double"
+        if isinstance(value, str) and value.startswith("bits:0x"):
+            bits = value[7:]
+            if not re.fullmatch(r"[0-9a-fA-F]{16}" if wide else r"[0-9a-fA-F]{8}", bits):
+                raise ValueError(f"invalid {typ} bits")
+        else:
+            bits = struct.pack(">d" if wide else ">f", float(value)).hex()
+        return f"Double.longBitsToDouble(0x{bits}L)" if wide else f"Float.intBitsToFloat(0x{bits})"
     if typ == "boolean" and type(value) is bool:
         return str(value).lower()
     if typ == "char" and isinstance(value, str) and len(value) == 1:

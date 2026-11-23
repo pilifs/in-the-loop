@@ -647,6 +647,7 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         ("correlated", "n >= 0 && n <= 64", "result == n * (n + 1)", Verdict::Unverifiable),
         ("rotated", "true", "result", Verdict::Verified),
         ("wideningSign", "true", "result", Verdict::Verified),
+        ("halfwayReturnsPositive", "true", "result", Verdict::Violation),
     ] {
         let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.FloatingChecks#{method}"));
         options.engine = jvmcontract::Engine::Native;
@@ -654,6 +655,12 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         options.assert = Some(assertion.into());
         let result = property::run(&options).unwrap();
         assert_eq!(result.verdict, expected, "{method}: {}", result.output);
+        if method == "halfwayReturnsPositive" {
+            let witness = result.counterexample.as_ref().unwrap();
+            let value = witness.inputs[0].value.as_ref().unwrap().as_str().unwrap().parse::<f64>().unwrap();
+            assert_eq!(value.to_bits(), 0x3690_0000_0000_0000);
+            assert_eq!(witness.outcome, "false");
+        }
         if method == "zeroAngle" && expected == Verdict::Violation {
             assert!(result.replay.as_ref().is_some_and(|r| r.reproduced));
         }
@@ -2829,8 +2836,8 @@ fn jbmc_applies_the_contracts_for_its_gaps() {
     assert!(search.gaps.iter().any(|g| g.id.starts_with("monitor:") && g.treatment == Some(GapTreatment::Refused)), "{:?}", search.gaps);
     assert!(o.problem.as_deref().unwrap().contains("(--gaps advised): monitor:fixtures.Contracted.lockedCapacity(I)I"), "{}", o.output);
 
-    // Under auto, JBMC's turn applies the own checker's contracts: the own checker refuses the floating point after
-    // the call, and JBMC proves the method through the same contract.
+    // Under auto, JBMC applies the same contract when the unbounded floating-point
+    // multiplication after the constructor exceeds native arithmetic coverage.
     let file = dir.join("scaled.contracts");
     std::fs::write(&file, format!("kind: gap-contracts\n{throwing}")).unwrap();
     let mut options = property::Options::new(std::slice::from_ref(&classes), "fixtures.Contracted#scaled");
@@ -3002,7 +3009,7 @@ public class Contracted {
     public static int bits(int n) { return 32 - Integer.numberOfTrailingZeros(n); }
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
     public static int lockedCapacity(int n) { synchronized (Contracted.class) { new java.util.ArrayList<Object>(n); } return 1; }
-    public static int scaled(int n, float f) { new java.util.ArrayList<Object>(n); return f == f ? 1 : 1; }
+    public static int scaled(int n, float f) { new java.util.ArrayList<Object>(n); float square = f * f; return square == square ? 1 : 1; }
 }
 "#;
 

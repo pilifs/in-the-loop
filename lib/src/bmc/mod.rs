@@ -588,7 +588,7 @@ impl Stats {
 /// component and accompanying parameters must pass the classpath check in `reference_inputs::shape`.
 pub fn unsupported_parameter(t: &Type) -> Option<String> {
     match t {
-        Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long => None,
+        t if t.is_primitive() => None,
         Type::Array(element) if matches!(**element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) => None,
         Type::Array(element) if is_string(element) => None,
         t if reference_inputs::component(t).is_some() => None,
@@ -1812,12 +1812,13 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
                     engine.b.sext(&small, 32)
                 }
                 Type::Int => engine.b.int_input(options_in.int_intervals.get(&slot).copied()),
-                Type::Long => engine.b.fresh(64),
+                Type::Float => engine.b.fresh(32),
+                Type::Long | Type::Double => engine.b.fresh(64),
                 _ => unreachable!(),
             };
             engine.params.push((slot, t.clone(), bits.clone()));
-            locals.push(Some(if *t == Type::Long { Val::J(bits) } else { Val::I(bits) }));
-            if *t == Type::Long {
+            locals.push(Some(if t.slots() == 2 { Val::J(bits) } else { Val::I(bits) }));
+            if t.slots() == 2 {
                 locals.push(None);
             }
             slot += u32::from(t.slots());
@@ -2270,6 +2271,10 @@ impl<'a> Engine<'a> {
             if t == Type::Boolean {
                 continue;
             }
+            if matches!(t, Type::Float | Type::Double) {
+                lits.push(floating::in_interval(&mut self.b, &bits, lo, hi));
+                continue;
+            }
             let width = bits.len();
             let low = self.b.constant(lo, width);
             let high = self.b.constant(hi, width);
@@ -2395,7 +2400,13 @@ impl<'a> Engine<'a> {
         };
         let mut input = Input::default();
         for (slot, t, bits) in &self.params {
-            input.scalars.insert(*slot, unsigned(t, self.b.eval(bits)).to_string());
+            let value = self.b.eval(bits);
+            let text = match t {
+                Type::Float => format!("bits:0x{:08x}", value as u32),
+                Type::Double => format!("bits:0x{:016x}", value as u64),
+                _ => unsigned(t, value).to_string(),
+            };
+            input.scalars.insert(*slot, text);
         }
         let contents = |own: u32| -> Option<Vec<String>> {
             if let Some(array) = self.object_arrays.iter().find(|a| a.slot == own) {

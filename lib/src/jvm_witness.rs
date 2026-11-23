@@ -73,6 +73,7 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
         if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::component(t).is_some() {
             continue;
         }
+        if matches!(t, Type::Float | Type::Double) { continue; }
         let element = match t {
             Type::Array(e) => e.as_ref(),
             other => other,
@@ -146,12 +147,20 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
         main.bind(end);
         match &call.ret {
             Type::Void => print_line(&mut main, &mut writer, &format!("@call {k} void")),
-            Type::Long => {
-                main.store(Kind::Long, 1);
+            ty @ (Type::Long | Type::Float | Type::Double) => {
+                // Carry floating results as raw bits, including signed zero and NaN payloads.
+                let wide = *ty != Type::Float;
+                if matches!(ty, Type::Double | Type::Float) {
+                    let raw = if wide { ("java/lang/Double", "doubleToRawLongBits", "(D)J") }
+                        else { ("java/lang/Float", "floatToRawIntBits", "(F)I") };
+                    main.op_u16(0xb8, writer.pool.method_ref(raw.0, raw.1, raw.2));
+                }
+                let kind = if wide { Kind::Long } else { Kind::Int };
+                main.store(kind, 1);
                 print(&mut main, &mut writer, &format!("@call {k} value "));
                 out(&mut main, &mut writer);
-                main.load(Kind::Long, 1);
-                let println = writer.pool.method_ref("java/io/PrintStream", "println", "(J)V");
+                main.load(kind, 1);
+                let println = writer.pool.method_ref("java/io/PrintStream", "println", if wide { "(J)V" } else { "(I)V" });
                 main.op_u16(0xb6, println);
             }
             Type::Array(element) => {
@@ -348,6 +357,8 @@ fn parse(text: &str, jdk: String, types: &[Type], slots: &[u16], calls: &[Direct
                 "object" => r.outcome = "<an object>".into(),
                 "value" => {
                     let v = match calls[k].ret {
+                        Type::Float => Value::Float(f32::from_bits(value.parse::<i32>().map_err(|_| format!("unreadable line {line}"))? as u32)),
+                        Type::Double => Value::Double(f64::from_bits(value.parse::<i64>().map_err(|_| format!("unreadable line {line}"))? as u64)),
                         Type::Long => Value::Long(value.parse().map_err(|_| format!("unreadable line {line}"))?),
                         _ => Value::Int(value.parse().map_err(|_| format!("unreadable line {line}"))?),
                     };
@@ -601,6 +612,11 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
 }
 
 fn push_scalar(v: Value, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter) {
+    match v {
+        Value::Float(x) => { code.ldc(writer.pool.float(x)); return; }
+        Value::Double(x) => { code.ldc2(writer.pool.double(x)); return; }
+        _ => {}
+    }
     let wide = match v {
         Value::Long(x) => x,
         Value::Int(x) => i64::from(x),

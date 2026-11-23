@@ -1495,7 +1495,7 @@ fn boxed_method(m: &mut Machine, _r: Ref, class: &str, value: Value, name: &str,
         "shortValue" => Value::Int(as_i64(value) as i16 as i32),
         "byteValue" => Value::Int(as_i64(value) as i8 as i32),
         "doubleValue" => Value::Double(as_f64(value)),
-        "floatValue" => Value::Float(as_f64(value) as f32),
+        "floatValue" => super::convert(value, crate::classfile::Narrow::To(crate::classfile::Kind::Float)),
         "booleanValue" | "charValue" => value,
         "compareTo" | "compare" => {
             let other = unbox(m, args[0])?;

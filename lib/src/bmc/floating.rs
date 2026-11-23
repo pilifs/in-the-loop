@@ -1,5 +1,5 @@
 //! JVM comparisons over IEEE 754 interchange bits. The stack carries the raw word until an
-//! opcode or a method descriptor supplies its interpretation. Integer widening and comparisons are
+//! opcode or a method descriptor supplies its interpretation. Primitive conversions and comparisons use
 //! bit-vector circuits. Arithmetic uses the JVM rounding rules on exhaustively covered operand tuples.
 
 use super::{unsupported, ArithOp, Bits, Blaster, Engine, Kind, Lit, Model, Narrow, Path, Step, Stop, Val, FALSE, TRUE};
@@ -196,46 +196,82 @@ impl Engine<'_> {
     }
 }
 
-/// An int's magnitude has at most 32 significant bits. Normalization into the 53-bit
-/// binary64 significand is therefore exact even for Integer.MIN_VALUE.
-fn int_to_double(b: &mut Blaster, x: &Bits) -> Bits {
+/// True when discarding the low `count` significand bits rounds the retained
+/// part up under round-to-nearest, ties-to-even. A missing retained bit is zero.
+fn round_up(b: &mut Blaster, bits: &Bits, count: usize) -> Lit {
+    let sticky = -b.is_zero(&bits[..count - 1].to_vec());
+    let odd = bits.get(count).copied().unwrap_or(FALSE);
+    let above_or_odd = b.or(sticky, odd);
+    b.and(bits[count - 1], above_or_odd)
+}
+
+/// Normalize a two's-complement magnitude at its highest one. Accumulate a
+/// single rounding decision so a carry from all ones advances the exponent.
+fn integral_to_floating(b: &mut Blaster, x: &Bits, width: usize) -> Bits {
+    let fraction = if width == 64 { 52 } else { 23 };
+    let bias = if width == 64 { 1023 } else { 127 };
     let sign = b.negative(x);
-    let negated = b.neg(x);
-    let magnitude = b.ite_bits(sign, &negated, x);
-    let mut word = b.constant(0, 64);
-    for lead in 0..32 {
-        let mut normalized = b.constant(((1023 + lead) as i64) << 52, 64);
-        normalized[52 - lead..52].copy_from_slice(&magnitude[..lead]);
-        word = b.ite_bits(magnitude[lead], &normalized, &word);
+    let minus = b.neg(x);
+    let magnitude = b.ite_bits(sign, &minus, x);
+    let mut word = b.constant(0, width);
+    let mut increment = FALSE;
+    for lead in 0..magnitude.len() {
+        let mut candidate = b.constant(((bias + lead) as i64) << fraction, width);
+        let discarded = lead.saturating_sub(fraction);
+        candidate[fraction - (lead - discarded)..fraction].copy_from_slice(&magnitude[discarded..lead]);
+        let up = if discarded == 0 { FALSE } else { round_up(b, &magnitude, discarded) };
+        increment = b.ite(magnitude[lead], up, increment);
+        word = b.ite_bits(magnitude[lead], &candidate, &word);
     }
-    word[63] = sign;
+    let mut word = b.add(&word, &b.zext(&vec![increment], width));
+    word[width - 1] = sign;
     word
 }
 
-/// Normalize the unsigned magnitude, including abs(MIN_VALUE). The guard bit is exactly
-/// half a unit in the last place. Sticky bits or an odd retained significand round it up.
-fn int_to_float(b: &mut Blaster, x: &Bits) -> Bits {
-    let sign = b.negative(x);
-    let negated = b.neg(x);
-    let magnitude = b.ite_bits(sign, &negated, x);
-    let mut result = b.constant(0, 32);
-    for lead in 0..32 {
-        let mut word = b.constant(((127 + lead) as i64) << 23, 32);
-        if lead <= 23 {
-            word[23 - lead..23].copy_from_slice(&magnitude[..lead]);
-        } else {
-            let discard = lead - 23;
-            word[..23].copy_from_slice(&magnitude[discard..lead]);
-            let sticky = magnitude[..discard-1].iter().fold(FALSE, |seen, &bit| b.or(seen, bit));
-            let above_or_odd = b.or(sticky, magnitude[discard]);
-            let round = b.and(magnitude[discard-1], above_or_odd);
-            // A carry from an all-ones significand advances the exponent too.
-            word = b.add(&word, &b.zext(&vec![round], 32));
-        }
-        result = b.ite_bits(magnitude[lead], &word, &result);
+/// Narrow binary64 to binary32, retaining the complete guard and sticky
+/// region even when the answer is a subnormal or signed zero. NaNs are
+/// excluded by the caller because their result payload is platform-dependent.
+fn double_to_float(b: &mut Blaster, x: &Bits) -> Bits {
+    let exp = x[52..63].to_vec();
+    let mut significand = x[..52].to_vec();
+    significand.push(TRUE); // used only for normal binary64 inputs
+    let mut normal = b.constant(0, 32);
+    normal[..23].copy_from_slice(&x[29..52]);
+    let biased = b.sub(&exp, &b.constant(1023 - 127, 11));
+    normal[23..31].copy_from_slice(&biased[..8]);
+    let mut rounded = round_up(b, &significand, 29);
+    // At a binary64 exponent of -150 the hidden bit is exactly half the
+    // least binary32 subnormal. Below it even the largest fraction rounds to zero.
+    let mut tiny = b.constant(0, 32);
+    let mut tiny_up = FALSE;
+    for power in -150i32..-126 {
+        let discard = (52 - power - 149) as usize;
+        let retained = significand.len() - discard;
+        let mut candidate = b.constant(0, 32);
+        candidate[..retained].copy_from_slice(&significand[discard..]);
+        let select = b.eq(&exp, &b.constant(i64::from(1023 + power), 11));
+        let up = round_up(b, &significand, discard);
+        tiny = b.ite_bits(select, &candidate, &tiny);
+        tiny_up = b.ite(select, up, tiny_up);
     }
-    result[31] = sign;
-    result
+    let subnormal = b.ult(&exp, &b.constant(1023 - 126, 11));
+    let base = b.ite_bits(subnormal, &tiny, &normal);
+    rounded = b.ite(subnormal, tiny_up, rounded);
+    let finite = b.add(&base, &b.zext(&vec![rounded], 32));
+    let overflow = b.ult(&b.constant(1023 + 127, 11), &exp);
+    let mut word = b.ite_bits(overflow, &b.constant(0x7f80_0000, 32), &finite);
+    word[31] = x[63];
+    word
+}
+
+/// The staged witness search uses numeric bounds, including both encodings of zero.
+pub(super) fn in_interval(b: &mut Blaster, word: &Bits, lo: i64, hi: i64) -> Lit {
+    let bits = |n: i64| if word.len() == 32 { i64::from((n as f32).to_bits()) } else { (n as f64).to_bits() as i64 };
+    let low = b.constant(bits(lo), word.len());
+    let high = b.constant(bits(hi), word.len());
+    let above = cmp(b, word, &low, -1);
+    let below = cmp(b, &high, word, -1);
+    b.and(-b.negative(&above), -b.negative(&below))
 }
 
 /// JVM f2i/f2l/d2i/d2l. Align the implicit leading one with the sign position, shift
@@ -366,8 +402,16 @@ impl Engine<'_> {
     }
 
     pub(super) fn convert_word(&mut self, path: &Path, x: Bits, from: Kind, to: Kind) -> Result<Val, Stop> {
-        if from == Kind::Int && to == Kind::Double { return Ok(Val::J(int_to_double(&mut self.b, &x))); }
-        if from == Kind::Int && to == Kind::Float { return Ok(Val::I(int_to_float(&mut self.b, &x))); }
+        if matches!(from, Kind::Int | Kind::Long) && matches!(to, Kind::Float | Kind::Double) {
+            let wide = to == Kind::Double;
+            let bits = integral_to_floating(&mut self.b, &x, if wide { 64 } else { 32 });
+            return Ok(if wide { Val::J(bits) } else { Val::I(bits) });
+        }
+        if from == Kind::Double && to == Kind::Float {
+            let is_nan = nan(&mut self.b, &x);
+            self.exclude_float_case(path, is_nan, "Double to Float with an unspecified NaN result encoding")?;
+            return Ok(Val::I(double_to_float(&mut self.b, &x)));
+        }
         if from == Kind::Float && to == Kind::Double {
             let is_nan = nan(&mut self.b, &x);
             self.exclude_float_case(path, is_nan, "Float to Double with an unspecified NaN result encoding")?;
@@ -442,8 +486,33 @@ mod tests {
                 let n = center.wrapping_add(delta);
                 for i in [n, n.wrapping_neg()] {
                     let input = b.constant(i64::from(i), 32);
-                    let result = int_to_float(&mut b, &input);
+                    let result = integral_to_floating(&mut b, &input, 32);
                     assert_eq!(b.constant_value(&result).unwrap() as u32, (i as f32).to_bits());
+                }
+            }
+        }
+        for lead in [0, 23, 24, 31, 52, 53, 54, 62, 63] {
+            let power = 1i64.wrapping_shl(lead);
+            for offset in [-3, -1, 0, 1, 2, 3, (1 << 30) + 1] {
+                let n = power.wrapping_add(offset);
+                for value in [n, n.wrapping_neg()] {
+                    let input = b.constant(value, 64);
+                    let narrow = integral_to_floating(&mut b, &input, 32);
+                    let wide = integral_to_floating(&mut b, &input, 64);
+                    assert_eq!(b.constant_value(&narrow).unwrap() as u32, (value as f32).to_bits());
+                    assert_eq!(b.constant_value(&wide).unwrap() as u64, (value as f64).to_bits());
+                }
+            }
+        }
+        for exp in [0, 1, 872, 873, 874, 895, 896, 897, 1023, 1150, 1151, 2046, 2047] {
+            for fraction in [0, 1, (1u64 << 28) - 1, 1 << 28, (1 << 28) + 1, 3 << 28, (1 << 52) - 1] {
+                for sign in [0, 1] {
+                    let raw = (sign << 63) | (exp << 52) | fraction;
+                    let value = f64::from_bits(raw);
+                    if value.is_nan() { continue; }
+                    let input = b.constant(raw as i64, 64);
+                    let result = double_to_float(&mut b, &input);
+                    assert_eq!(b.constant_value(&result).unwrap() as u32, (value as f32).to_bits(), "{raw:x}");
                 }
             }
         }

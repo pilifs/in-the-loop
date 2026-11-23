@@ -810,6 +810,13 @@ fn scalar(value: &serde_json::Value) -> Option<String> {
 
 /// `Float.NaN`, `-Double.POSITIVE_INFINITY`, and an array element's `(byte)-128`).
 pub fn parse_value(t: &Type, raw: &str) -> Result<Value, Error> {
+    if let Some(hex) = raw.strip_prefix("bits:0x") {
+        return match t {
+            Type::Float if hex.len() == 8 => u32::from_str_radix(hex, 16).ok().map(f32::from_bits).map(Value::Float),
+            Type::Double if hex.len() == 16 => u64::from_str_radix(hex, 16).ok().map(f64::from_bits).map(Value::Double),
+            _ => None,
+        }.ok_or_else(|| Error::new(format!("invalid {} input bits: {raw}", t.java_name())));
+    }
     // An array element carries its type as a cast: `(byte)-128`, `(short)7`.
     let raw = match raw.strip_prefix('(').and_then(|r| r.split_once(')')) {
         Some(("byte" | "short" | "char" | "int" | "long", rest)) => rest.trim_start(),

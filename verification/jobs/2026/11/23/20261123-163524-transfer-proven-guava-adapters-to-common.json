@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-163524-transfer-proven-guava-adapters-to-common",
+  "title": "Transfer proven Guava adapters to Commons Lang and ComparisonChain",
+  "description": "The preceding same-source Guava run decided all five statements on both engines. Recheck all seven registered method-reference statements and direct-call twins with independent JVM witness replay, then measure the active, settled, active-null and skipped-null Guava ComparisonChain entries on both engines. Stock and image-backed Comparator profiles were recorded at opening.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/392-method-reference-conversions/target.json"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T16:35:24+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "revision": "550cf8a2cee3cb35a35362360684a3b76a06b3c7",
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "1m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Seven callbacks and direct twins",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py qualified callbacks paired --cohort callbacks direct --require",
+      "cwd": "."
+    },
+    {
+      "name": "ComparisonChain native transfer",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py transfer callbacks native --cohort chain --require",
+      "cwd": "."
+    },
+    {
+      "name": "ComparisonChain integrated comparison",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py transfer callbacks jbmc --cohort chain",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/qualified/callbacks/paired",
+    "verification/jbmc-fast-follow/transfer/callbacks/native",
+    "verification/jbmc-fast-follow/transfer/callbacks/jbmc"
+  ]
+}
