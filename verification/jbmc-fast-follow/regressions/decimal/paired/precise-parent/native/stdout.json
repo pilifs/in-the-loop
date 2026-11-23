@@ -1,0 +1,194 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "datawork.Decimals#precise",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 3",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "precise(code=0)",
+      "outcome": "0",
+      "values": [
+        "0"
+      ],
+      "found": "precise(code=2)",
+      "shrink_runs": 1,
+      "inputs": [
+        {
+          "name": "code",
+          "type": "int",
+          "value": 0
+        }
+      ],
+      "found_inputs": [
+        {
+          "name": "code",
+          "type": "int",
+          "value": 2
+        }
+      ],
+      "call": {
+        "class": "datawork.Decimals",
+        "class_file": "datawork/Decimals.class",
+        "classes": "after",
+        "method": "precise",
+        "descriptor": "(I)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "code",
+            "type": "int",
+            "value": 0,
+            "from": "code"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as precise(code=2), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain code: int",
+    "problem": null,
+    "statement": "/tmp/decimal-transfer-bvzrm97f/precise-parent/native/proof/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of datawork.Decimals#precise violated: `result == 1` where code >= 0 && code < 3:\n  precise(code=0)\n    outcome: 0",
+        "uri": null,
+        "line": 15
+      }
+    ],
+    "output": "✗ Property of datawork.Decimals#precise violated: `result == 1` where code >= 0 && code < 3:\n  precise(code=0)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as precise(code=2), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/tmp/decimal-transfer-bvzrm97f/precise-parent/native/proof",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.005921878,
+      "properties": 1,
+      "unwind": 256,
+      "max_array_length": 16384,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 6,
+        "solving_seconds": 0.000049432,
+        "gates_evaluated": 154,
+        "evaluating_seconds": 4.81e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 250,
+        "clauses": 713,
+        "seconds": 0.004784997,
+        "loading_seconds": 0.001356685,
+        "decoding_seconds": 0.000380264,
+        "encoding_seconds": 0.000198091,
+        "witness_seconds": 0.000019537
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.005,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.003,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 250,
+            "clauses": 713
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.025,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.005,
+        "replay": 0.009,
+        "jvm": 0.0,
+        "other": 0.01
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 3",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

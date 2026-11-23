@@ -1,0 +1,145 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "datawork.Decimals#precise",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 3",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "JBMC's counterexample precise(code=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+    "statement": "/tmp/decimal-transfer-bvzrm97f/precise-landed/jbmc/proof/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "datawork.Decimals#precise cannot be verified: JBMC's counterexample precise(code=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+        "uri": null,
+        "line": 15
+      }
+    ],
+    "output": "note: JBMC's call graph reaches 39 stubs that its symbolic execution of the proof (0.4 s, nothing solved) never enters, on no path within the bounds, so no gaps: java.lang.CharSequence.charAt(int), java.lang.CharSequence.length(), java.lang.Character.isWhitespace(char), java.lang.Double.doubleValue(), java.lang.Double.isInfinite(), java.lang.Double.toString(), java.lang.Double.valueOf(double), java.lang.Double.valueOf(java.lang.String), java.lang.Float.floatValue(), java.lang.Float.isInfinite(), java.lang.Float.toString(), java.lang.Float.valueOf(float), java.lang.Float.valueOf(java.lang.String), java.lang.NumberFormatException.forCharSequence(java.lang.CharSequence, int, int, int), java.lang.NumberFormatException.forInputString(java.lang.String, int), java.lang.String.charAt(int), java.lang.String.equals(java.lang.Object), java.lang.String.indexOf(int), java.lang.String.isEmpty(), java.lang.String.length(), java.lang.String.startsWith(java.lang.String, int), java.lang.String.substring(int), java.lang.String.substring(int, int), java.lang.StringBuilder.<init>(), java.lang.StringBuilder.append(int), java.lang.StringBuilder.append(java.lang.String), java.lang.StringBuilder.toString(), java.math.BigDecimal.<init>(java.lang.String), java.math.BigDecimal.compareTo(java.math.BigDecimal), java.math.BigDecimal.scale(), java.math.BigDecimal.unscaledValue(), java.math.BigDecimal.valueOf(double), java.math.BigInteger.<init>(java.lang.String, int), java.math.BigInteger.equals(java.lang.Object), java.math.BigInteger.negate(), java.math.BigInteger.valueOf(long), java.util.Objects.checkFromToIndex(int, int, int), java.util.Objects.requireNonNull(java.lang.Object), java.util.regex.Pattern.compile(java.lang.String)\n✗ datawork.Decimals#precise cannot be verified: JBMC's counterexample precise(code=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value\n",
+    "work": "/tmp/decimal-transfer-bvzrm97f/precise-landed/jbmc/proof",
+    "search": {
+      "engine": "jbmc",
+      "checker": "JBMC 6.11.0",
+      "seconds": 1.345901995,
+      "properties": 2,
+      "unwind": 256,
+      "max_array_length": 16384,
+      "stage": "[0:20]",
+      "staging": "staged",
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": "[0:20]",
+          "budget_seconds": 15.0,
+          "seconds": 0.452,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.234,
+            "lowering": 0.11,
+            "symbolic": 0.009,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.007,
+            "other": 0.091
+          },
+          "formula": {
+            "steps": 443,
+            "conditions": 1,
+            "variables": 3533,
+            "clauses": 1406
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 1.377,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.889,
+        "contracts": 0.0,
+        "runs": 0.452,
+        "replay": 0.008,
+        "jvm": 0.0,
+        "other": 0.027
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": false
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 3",
+          "basis": "stated"
+        },
+        {
+          "kind": "library",
+          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "jbmc",
+        "name": "JBMC 6.11.0",
+        "solver": "cadical",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "3.0.0",
+          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+          "configuration": [
+            "--trace",
+            "--throw-runtime-exceptions",
+            "--unwinding-assertions",
+            "--json-ui",
+            "--timestamp",
+            "monotonic",
+            "--no-refine-strings",
+            "--sat-solver",
+            "cadical"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
