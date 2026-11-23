@@ -1,5 +1,5 @@
 {
-  "schema": "llm-trace-metrics/v1",
+  "schema": "llm-trace-metrics/v2",
   "session_id": "bb39c22a-5d6e-48b2-af0a-45d8b973d822",
   "source": {"log_sha256":"ca92bc66a8c77d43720e0cc46814fa3d6e585e58c2d92ace81fa356be1ada00e","log_lines":61,"redaction_policy":4},
   "pricing_as_of": "2026-10-31",
@@ -23,6 +23,9 @@
   "by_cache_cause": [
     {"cause":"session_start","events":1,"tokens":17672,"write_usd":0.070688,"excess_usd":0.067154,"reread_usd":0}
   ],
+  "by_day": [
+    {"date":"2026-11-03","api_calls":3,"tool_calls":2,"input_tokens":6,"output_tokens":453,"thinking_tokens":91,"cache_read_tokens":126090,"cache_write_tokens":20191,"cache_write_5m_tokens":0,"cache_write_1h_tokens":20191,"usd":0.110524,"uncached_usd":0.297104,"unpriced_calls":0}
+  ],
   "windows": [
     {"index":0,"started":"2026-11-03T13:40:09.433Z","ended":"2026-11-03T13:40:19.566Z","prompts":0,"peak_context_tokens":49729,"api_calls":3,"tool_calls":2,"input_tokens":6,"output_tokens":453,"thinking_tokens":91,"cache_read_tokens":126090,"cache_write_tokens":20191,"cache_write_5m_tokens":0,"cache_write_1h_tokens":20191,"usd":0.110524,"uncached_usd":0.297104,"unpriced_calls":0}
   ],
@@ -34,17 +37,9 @@
     {"index":0,"change_id":"pvvynlxnvttoyqwprywvqrzwwtuplqqx","summary":"Add an allow list for false-positive findings: an agent proposes a finding by id, a person approves it at a terminal, and check stops raising that value without a rescan","log_sha256":"ca92bc66a8c77d43720e0cc46814fa3d6e585e58c2d92ace81fa356be1ada00e","log_lines":61,"log_bytes":412087,"log_gzip_bytes":108822,"ts":"2026-11-03T14:17:19.922Z","api_calls":3,"tool_calls":2,"input_tokens":6,"output_tokens":453,"thinking_tokens":91,"cache_read_tokens":126090,"cache_write_tokens":20191,"cache_write_5m_tokens":0,"cache_write_1h_tokens":20191,"usd":0.110524,"uncached_usd":0.297104,"unpriced_calls":0,"prompts":0,"agent_ms":10494,"tool_errors":1}
   ],
   "prompts": [
-    {"index":0,"kind":"command","ts":"2026-11-03T13:40:09.072Z","end":"2026-11-03T13:40:19.566Z","line":6,"window":0,"commit":0,"chars":17,"text":"/run-verification","api_calls":3,"tool_calls":2,"input_tokens":6,"output_tokens":453,"thinking_tokens":91,"cache_read_tokens":126090,"cache_write_tokens":20191,"cache_write_5m_tokens":0,"cache_write_1h_tokens":20191,"usd":0.110524,"uncached_usd":0.297104,"unpriced_calls":0,"tool_errors":1,"models":["claude-sonnet-5-5"],"agent_ms":10494,"model_ms":8203,"tool_ms":1832,"busy_ms":10035}
+    {"index":0,"kind":"command","ts":"2026-11-03T13:40:09.072Z","end":"2026-11-03T13:40:19.566Z","line":6,"window":0,"commit":0,"chars":17,"text":"/run-verification","api_calls":3,"tool_calls":2,"input_tokens":6,"output_tokens":453,"thinking_tokens":91,"cache_read_tokens":126090,"cache_write_tokens":20191,"cache_write_5m_tokens":0,"cache_write_1h_tokens":20191,"usd":0.110524,"uncached_usd":0.297104,"unpriced_calls":0,"tool_errors":1,"models":["claude-sonnet-5-5"],"agent_ms":10494,"model_ms":8203,"tool_ms":1832,"busy_ms":10035,"peak_context_tokens":49729,"efforts":["medium"],"by_model":[{"model":"claude-sonnet-5-5","api_calls":3,"usd":0.110524}]}
   ],
-  "calls": [
-    {"seq":0,"agent":null,"line":36,"start":"2026-11-03T13:40:09.433Z","end":"2026-11-03T13:40:11.890Z","window":0,"prompt":0,"commit":0,"model":"claude-sonnet-5-5","effort":"medium","stop_reason":"tool_use","context_tokens":47210,"input_tokens":2,"output_tokens":122,"thinking_tokens":0,"cache_read_tokens":29536,"cache_write_tokens":17672,"cache_write_5m_tokens":0,"cache_write_1h_tokens":17672,"thinking_ms":0,"tool_calls":1,"tools":["Bash"],"usd":0.077819,"uncached_usd":0.09564},
-    {"seq":1,"agent":null,"line":48,"start":"2026-11-03T13:40:13.286Z","end":"2026-11-03T13:40:15.856Z","window":0,"prompt":0,"commit":0,"model":"claude-sonnet-5-5","effort":"medium","stop_reason":"tool_use","context_tokens":49348,"input_tokens":2,"output_tokens":216,"thinking_tokens":91,"cache_read_tokens":47208,"cache_write_tokens":2138,"cache_write_5m_tokens":0,"cache_write_1h_tokens":2138,"thinking_ms":900,"tool_calls":1,"tools":["Bash"],"usd":0.020158,"uncached_usd":0.100856},
-    {"seq":2,"agent":null,"line":54,"start":"2026-11-03T13:40:16.390Z","end":"2026-11-03T13:40:19.566Z","window":0,"prompt":0,"commit":0,"model":"claude-sonnet-5-5","effort":"medium","stop_reason":"end_turn","context_tokens":49729,"input_tokens":2,"output_tokens":115,"thinking_tokens":0,"cache_read_tokens":49346,"cache_write_tokens":381,"cache_write_5m_tokens":0,"cache_write_1h_tokens":381,"thinking_ms":0,"tool_calls":0,"tools":[],"usd":0.012547,"uncached_usd":0.100608}
-  ],
-  "tools": [
-    {"seq":0,"agent":null,"line":36,"name":"Bash","call":0,"prompt":0,"start":"2026-11-03T13:40:11.890Z","end":"2026-11-03T13:40:13.241Z","ms":1351,"status":"error","error_kind":"exit_code","result_chars":4838,"family":"jj","label":"","error":"Exit code 4 The working copy has no changes. Working copy (@) : pvvynlxn 61cdd4ae (empty) (no description set) Parent commit (@-): wzlvuvkk 89e4ae2b Add throws lines to boundary contracts: under each…","commit":0},
-    {"seq":1,"agent":null,"line":49,"name":"Bash","call":1,"prompt":0,"start":"2026-11-03T13:40:15.856Z","end":"2026-11-03T13:40:16.337Z","ms":481,"status":"ok","error_kind":null,"result_chars":426,"family":"python3","label":"","error":null,"commit":0}
-  ],
+  "events": {"schema":"llm-trace-metrics-events/v1","calls":3,"tools":2,"bytes":2463,"sha256":"778cafbf260174e6c8a38a63187a07e3bcbdce3bdf0c5978d105218111cd13a5"},
   "cache_events": [
     {"seq":0,"agent":null,"start":"2026-11-03T13:40:09.433Z","window":0,"prompt":0,"cause":"session_start","also":[],"tokens":17672,"cache_read_tokens":29536,"previous_context_tokens":null,"gap_ms":null,"after_tools":[],"later_calls":0,"write_usd":0.070688,"excess_usd":0.067154,"reread_usd":0}
   ]

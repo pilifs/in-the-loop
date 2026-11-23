@@ -3050,9 +3050,171 @@ The user's brief, copied unchanged from their analysis folder, for a single-agen
 
 ### Record the watcher's continue after cycle 2 of dlc-process-plumbing
 
-change `qywlynvkllrs` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`626b4790f65c`](https://github.com/pilifs/in-the-loop/commit/626b4790f65c54cde1e15ba32fab108416e049d2) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 single-dlc-process-plumbing-D002: continue. Cycle 2 built promote, delegated redaction (off), deferred trace rendering, the job-id resolver and packed per-case records, and fixed the checkpoint scan's gzip hole; a false pass it caught itself has a replacement job running. Bounded session metrics, receipt arrays and local measurements remain. Decision record only.
+
+### Record verification results for 1 job(s)
+
+[`4fb13d35e51e`](https://github.com/pilifs/in-the-loop/commit/4fb13d35e51e4d98ca60980c87282fde2d14dbf2) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261121-221235-the-proof-tier-after-the-proof-output-mo: passed: 1 passed step(s) in 43m08s, peak 4.4 GiB (estimated 45m00s, 6.0 GiB); signals: cargo:tests×59 Collected by the watcher of the lib-architecture-fast-follow run, which keeps the queue while the run is under way.
+
+### Merge the single-agent run lib-architecture-fast-follow into the line
+
+[`3b9d82ef7513`](https://github.com/pilifs/in-the-loop/commit/3b9d82ef7513e702b0d2fbc9b0638b6e03012a8d) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The single-agent run lib-architecture-fast-follow (session b9b56f5e-fc0e-48ca-a64e-7a46495d814f) worked in the workspace dlc-plumbing while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
+
+### Record verification results for 1 job(s)
+
+[`121bc685ea6b`](https://github.com/pilifs/in-the-loop/commit/121bc685ea6b4ff50bc0ae6e5cb0ec9aedab703d) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-234853-restore-the-original-receiver-cohort-bef: passed: 1 passed step(s) in 47.9s, peak 299.3 MiB (estimated 6m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Record verification results for 3 job(s)
+
+[`0a3d61a0bc9e`](https://github.com/pilifs/in-the-loop/commit/0a3d61a0bc9e8022c59fd866c7e3b5b04131ef9b) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 3 of the 3 job(s). 20261121-235615-rebuild-receiver-cohort-group-03-on-its: passed: 2 passed step(s) in 41.5s, peak 799.0 MiB (estimated 9m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-235615-rebuild-receiver-cohort-group-04-on-its: passed: 2 passed step(s) in 40.5s, peak 861.1 MiB (estimated 9m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-235615-rebuild-receiver-cohort-group-06-on-its: passed: 1 passed step(s) in 38.1s, peak 1.2 GiB (estimated 9m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`b7a571cb8717`](https://github.com/pilifs/in-the-loop/commit/b7a571cb871751a40a1161121da95421243a4cf0) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-235615-rebuild-receiver-cohort-group-05-on-its: passed: 2 passed step(s) in 1m04s, peak 1.0 GiB (estimated 9m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261121-235615-rebuild-receiver-cohort-group-07-on-its: passed: 1 passed step(s) in 1m12s, peak 2.7 GiB (estimated 9m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`6bafe1a2b097`](https://github.com/pilifs/in-the-loop/commit/6bafe1a2b0970e3e589b3d44e30086701201aee8) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261121-235615-rebuild-receiver-cohort-group-01-on-its: passed: 3 passed step(s) in 2m00s, peak 1.5 GiB (estimated 9m00s, 3.0 GiB); 5 output file(s) changed Applied 5 output(s). 20261121-235615-rebuild-receiver-cohort-group-02-on-its: passed: 2 passed step(s) in 1m55s, peak 1.3 GiB (estimated 9m00s, 3.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+[`678b39a50f4c`](https://github.com/pilifs/in-the-loop/commit/678b39a50f4c0f841c949e57ba2038d80a30290c) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261121-234701-qualify-bounded-heap-buffer-facts-across: passed: 1 passed step(s) in 31.5s, peak 269.9 MiB (estimated 3m00s, 2.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Record the watcher's stop after cycle 1 of domain-foundations-strategy
+
+[`c946f273b3f6`](https://github.com/pilifs/in-the-loop/commit/c946f273b3f612db06b509b877ad1f893e1b9550) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+single-domain-foundations-strategy-D001 (medium confidence): stop at the brief's end-of-pilot decision. Avro #729 went from 0/4 to 2/4 at original native scope, with both fixes proved under the recorded startup; each shortfall has its first outstanding producer named; 9 of 23 blocked upgrade receivers advanced. The next direction (startup probes, receiver construction, or the next Avro consumer) is the user's to choose. Decision record only.
+
+### Allow list: The watcher of domain-foundations-strategy approved 0c9d8472
+
+[`fc991035c264`](https://github.com/pilifs/in-the-loop/commit/fc991035c2646b088dd0a1a8a50e28922a987086) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The watcher of domain-foundations-strategy approved 1 value(s) under the delegation a person granted, each with evidence in the record; the command committed the decision itself.
+
+0c9d8472  long-token  dGV…VO (48 chars): Base64 test output in example 350's replay controls, already published on main.
+
+### Record verification results for 1 job(s)
+
+[`9a4b2234e5f6`](https://github.com/pilifs/in-the-loop/commit/9a4b2234e5f6b65915a475f94fa661ea26a7f6b6) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261122-024332-check-javaparser-traversals-with-only-th: failed: 1 failed step(s) in 4m10s, peak 427.7 MiB (estimated 4m00s, 3.0 GiB); 124 output file(s) changed Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Allow list: The watcher of domain-foundations-strategy approved 4b6414c2
+
+[`21d8d7984ecf`](https://github.com/pilifs/in-the-loop/commit/21d8d7984ecfbce0693ca4439c43cf69c859e51e) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The watcher of domain-foundations-strategy approved 1 value(s) under the delegation a person granted, each with evidence in the record; the command committed the decision itself.
+
+4b6414c2  long-token  yv6…A= (568 chars): A test-case argument in the CompSuite i-39 scenario, already published on main.
+
+### Record verification results for 13 job(s)
+
+[`25c2ef55a99f`](https://github.com/pilifs/in-the-loop/commit/25c2ef55a99f0d44f5fa01742f100636b90b43e2) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 10 of the 13 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261122-044515-avro-198-encoder-baseline-on-packaged-ar: failed: 1 failed step(s) in 8.8s, peak 148.1 MiB (estimated 4m00s, 3.0 GiB); 74 output file(s) changed 20261122-044515-avro-198-encoder-current-on-packaged-art: failed: 1 passed, 1 failed step(s) in 19.9s, peak 153.2 MiB (estimated 4m00s, 3.0 GiB); 81 output file(s) changed 20261122-044515-exercise-javaparser-parent-traversals-wi: passed: 1 passed step(s) in 2m22s, peak 320.2 MiB (estimated 6m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261122-044516-01-receiver-rescore-after-literal-decodi: passed: 1 passed step(s) in 42.4s, peak 372.3 MiB (estimated 5m00s, 3.0 GiB); 20 output file(s) changed Applied 20 output(s). 20261122-044516-02-receiver-rescore-after-literal-decodi: passed: 1 passed step(s) in 1m10s, peak 386.5 MiB (estimated 5m00s, 3.0 GiB); 24 output file(s) changed Applied 24 output(s). 20261122-044516-03-receiver-rescore-after-literal-decodi: passed: 1 passed step(s) in 1m39s, peak 247.7 MiB (estimated 5m00s, 3.0 GiB); 24 output file(s) changed Applied 24 output(s). 20261122-044516-04-receiver-rescore-after-literal-decodi: passed: 1 passed step(s) in 2m00s, peak 421.0 MiB (estimated 5m00s, 3.0 GiB); 24 output file(s) changed Applied 24 output(s). 20261122-044516-check-original-spreadsheet-and-date-rece: passed: 1 passed step(s) in 5.3s, peak 392.0 MiB (estimated 2m00s, 2.0 GiB); 16 output file(s) changed Applied 16 output(s). 20261122-044516-exercise-javaparser-fix-traversals-with: passed: 1 passed step(s) in 2m23s, peak 315.8 MiB (estimated 6m00s, 3.0 GiB); 7 output file(s) changed Applied 7 output(s). 20261122-044516-measure-avro-198-reuse-at-its-actual-enc: passed: 1 passed step(s) in 44.4s, peak 141.4 MiB (estimated 4m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261122-044516-repeat-original-frozen-startup-scopes-af: failed: 3 failed, 1 passed step(s) in 1m40s, peak 486.2 MiB (estimated 5m00s, 3.0 GiB); 325 output file(s) changed 20261122-044517-05-receiver-rescore-after-literal-decodi: passed: 1 passed step(s) in 1m45s, peak 295.6 MiB (estimated 5m00s, 3.0 GiB); 24 output file(s) changed Applied 24 output(s). 20261122-044517-06-receiver-rescore-after-literal-decodi: passed: 1 passed step(s) in 31.1s, peak 164.3 MiB (estimated 5m00s, 3.0 GiB); 8 output file(s) changed Applied 8 output(s). Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`d18418a28f79`](https://github.com/pilifs/in-the-loop/commit/d18418a28f79670acd5fb40a9a14c148839ac9b7) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261122-044517-07-receiver-rescore-after-literal-decodi: passed: 1 passed step(s) in 17.9s, peak 910.4 MiB (estimated 5m00s, 3.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261122-044517-prove-avro-encoder-paths-and-check-inter: failed: 1 failed step(s) in 1.8s, peak 77.1 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`e945826a6cfb`](https://github.com/pilifs/in-the-loop/commit/e945826a6cfb42a2bc74171d5ab3f60a71d85384) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261122-045304-complete-avro-355-startup-and-reducer-ev: passed: 1 passed step(s) in 27.3s, peak 1.1 GiB (estimated 3m00s, 3.0 GiB); 30 output file(s) changed Applied 30 output(s). 20261122-045304-complete-avro-361-startup-and-reducer-ev: passed: 1 passed step(s) in 2.6s, peak 102.7 MiB (estimated 3m00s, 3.0 GiB); 12 output file(s) changed Applied 12 output(s). Collected by the watcher of the domain-foundations-strategy run, which keeps the queue while the run is under way.
+
+### Allow list: The watcher of domain-foundations-strategy approved be2b3922
+
+[`1ea5d88130cb`](https://github.com/pilifs/in-the-loop/commit/1ea5d88130cb300a9460fb6bfd2268484e5148df) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The watcher of domain-foundations-strategy approved 1 value(s) under the delegation a person granted, each with evidence in the record; the command committed the decision itself.
+
+be2b3922  long-token  sup…wi (62 chars): A verification job id named in the expansion scorecard.
+
+### Allow list: The watcher of domain-foundations-strategy approved 7e727511
+
+[`a38f7907f484`](https://github.com/pilifs/in-the-loop/commit/a38f7907f4847645c3538ff851bbb5db2e3cc986) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The watcher of domain-foundations-strategy approved 1 value(s) under the delegation a person granted, each with evidence in the record; the command committed the decision itself.
+
+7e727511  long-token  sup…he (62 chars): A verification job id named in the expansion scorecard.
+
+### Allow list: The watcher of domain-foundations-strategy approved 85f0fb2d
+
+[`209ecb6e4eb6`](https://github.com/pilifs/in-the-loop/commit/209ecb6e4eb61fec5b72ad03113b066a9e204ce5) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+The watcher of domain-foundations-strategy approved 1 value(s) under the delegation a person granted, each with evidence in the record; the command committed the decision itself.
+
+85f0fb2d  public-ip  1.…6: A Maven dependency version (public-ip by shape only) in example 362's replay receipts.
+
+### Record verification results for 1 job(s)
+
+[`90393c64d1c3`](https://github.com/pilifs/in-the-loop/commit/90393c64d1c3806753240c7a4cec00018b397409) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261122-123429-price-the-avro-buffer-fact-at-the-parque: passed: 1 passed step(s) in 6m38s, peak 1.6 GiB (estimated 7m00s, 4.0 GiB); 52 output file(s) changed Applied 52 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`7d09481f52a3`](https://github.com/pilifs/in-the-loop/commit/7d09481f52a36f0acce9d4ae7655b7dca78942f1) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261122-124440-csv-short-reads-at-three-reader-caps: passed: 1 passed step(s) in 5.6s, peak 96.1 MiB (estimated 3m00s, 3.0 GiB); 58 output file(s) changed Applied 58 output(s). 20261122-124440-jackson-logical-offsets-with-an-explicit: passed: 1 passed step(s) in 1.8s, peak 99.7 MiB (estimated 3m00s, 3.0 GiB); 22 output file(s) changed Applied 22 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`4b9ed4dae26f`](https://github.com/pilifs/in-the-loop/commit/4b9ed4dae26f8a4c527f602a6ae6224727ec2882) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261122-124846-trace-and-check-the-original-avro-reader: passed: 1 passed step(s) in 17.4s, peak 140.3 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed Applied 46 output(s). 20261122-124847-check-367-fast-reader-producers-and-call: passed: 1 passed step(s) in 19.8s, peak 147.5 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed Applied 46 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+[`e323347fa055`](https://github.com/pilifs/in-the-loop/commit/e323347fa05565fbbc3dc980104ceda31a23c164) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261122-123429-price-the-avro-buffer-fact-at-the-parque: passed: 1 passed step(s) in 6m38s, peak 1.6 GiB (estimated 7m00s, 4.0 GiB); 52 output file(s) changed Applied 52 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`5e0c938f2c51`](https://github.com/pilifs/in-the-loop/commit/5e0c938f2c51097cb03fcb36984a6deeaaf75a2f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261122-124440-csv-short-reads-at-three-reader-caps: passed: 1 passed step(s) in 5.6s, peak 96.1 MiB (estimated 3m00s, 3.0 GiB); 58 output file(s) changed Applied 58 output(s). 20261122-124440-jackson-logical-offsets-with-an-explicit: passed: 1 passed step(s) in 1.8s, peak 99.7 MiB (estimated 3m00s, 3.0 GiB); 22 output file(s) changed Applied 22 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.
+
+### Record verification results for 2 job(s)
+
+[`c14bd9e2a24a`](https://github.com/pilifs/in-the-loop/commit/c14bd9e2a24ac75ff853f5e9f6f1130de1e14435) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 2 of the 2 job(s). 20261122-124846-trace-and-check-the-original-avro-reader: passed: 1 passed step(s) in 17.4s, peak 140.3 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed Applied 46 output(s). 20261122-124847-check-367-fast-reader-producers-and-call: passed: 1 passed step(s) in 19.8s, peak 147.5 MiB (estimated 5m00s, 4.0 GiB); 46 output file(s) changed Applied 46 output(s). Collected by the watcher of the java-domain-proof-campaign-2 run, which keeps the queue while the run is under way.
+
+### Record the watcher's continue after cycle 2 of java-domain-proof-campaign-2
+
+[`e5ce221c7e73`](https://github.com/pilifs/in-the-loop/commit/e5ce221c7e73a187f884d3cfee9401d3f8720c65) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+single-java-domain-proof-campaign-2-D002: continue. The checker gained native ASCII Character.isLetterOrDigit and proved 10/10 Avro name-validation claims (up from 0/10); the public score held at 8/20 ordinary, 20/20 finite. Jackson is still open and is the next target. Decision record only.
+
+### Collect Security, boxed row and gated binding evidence
+
+[`ce8d665006ba`](https://github.com/pilifs/in-the-loop/commit/ce8d665006bab2e2f65cbad967eea9bebc710c51) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Six jobs applied 229 outputs, all independently checked against their recorded sizes and SHA-256 digests. Security’s six historical finite claims passed on both prefixes. The independent JVM grid held for all 33,729 boxed matrices. Both gated binding routes produced 56 third writes and eight skips on 64 histories, preserving the earlier error on all 64.
+
+The selector jobs identify the measured verifier and stopped locations. Native results that depend on the preliminary optional Integer cache model await its corrected checker. The domain worker owns the manifests needed to regenerate the router after merging these results.
 
 ## Conversation
 
