@@ -1,0 +1,174 @@
+{
+  "phase": "transfer",
+  "family": "callbacks",
+  "lane": "jbmc",
+  "predecessor": {
+    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
+    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
+  },
+  "measuredSource": "550cf8a2cee3cb35a35362360684a3b76a06b3c7",
+  "job": "20261123-163524-transfer-proven-guava-adapters-to-common",
+  "checkerSha256": "7bd267a80e504a7ea6eca87e5b92596d0c37aa06b4ddf4f3ee005de143cbc8aa",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "jars": [
+    {
+      "name": "guava-33.4.8-jre.jar",
+      "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+    },
+    {
+      "name": "failureaccess-1.0.3.jar",
+      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb"
+    },
+    {
+      "name": "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+    },
+    {
+      "name": "jspecify-1.0.0.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    },
+    {
+      "name": "error_prone_annotations-2.36.0.jar",
+      "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+    },
+    {
+      "name": "j2objc-annotations-3.0.0.jar",
+      "sha256": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
+    },
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    }
+  ],
+  "productClasses": {
+    "Chain.class": "a1db67411e70b0eeaeb73ec921f5356f63939e748f485e65843d443a451142d4",
+    "Lift$Bi.class": "5466268a192eb8b85768548350300430dafece0eb76c171bfe8058a4d40f1d44",
+    "Lift$Box.class": "0ca1ed8ec88d37a1e7b4892e4f74a61c2bcd45c3c668b9f53dc359cc5b07d196",
+    "Lift$Twice.class": "dc6e836acd55d30c3461c38015ad36d81638d32d043282e85f803cc348df7cee",
+    "Lift.class": "ee0c373652c8dde67a9a3082da379e9a4d01bd2d3408ce7fe768e4e116d23980"
+  },
+  "driverClasses": {
+    "Cases.class": "2d92c233fb930451c6f1ed53c94a18df13f4225f58fe701e050203de2ca885fa",
+    "ChainTests.class": "966db3a950dc45a5e90de54a42ebe9b6529bb5c3fff72a0989a7d8c63b3c63d4",
+    "LiftChecks.class": "88bd60fd6c64fe23493b6356200041eb320a24d4f4f5a7da7db812c60ed58b01",
+    "Replay.class": "b7a45904d6313dd78f46debfdd840eaefc068a19d4349e6d02037f3b5d1bded9",
+    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
+  },
+  "originalJvm": {
+    "Cases": {
+      "sha256": "fcf1d6bb0e24f2aa688521efc9748307ca8d903a30f5e07dea5b997caaaf1bd6",
+      "seconds": 0.074,
+      "cases": 32
+    },
+    "LiftChecks": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.044
+    },
+    "Replay": {
+      "sha256": "821a831c5f2f0bfbef9b31675b161abe87e7babe3b5c64bb72f19ae26110c86c",
+      "seconds": 0.057
+    },
+    "ChainTests": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "seconds": 0.044
+    }
+  },
+  "rows": [
+    {
+      "task": "chain-good",
+      "cohort": "chain",
+      "parameters": "int x, int y",
+      "reachGuard": "true",
+      "standalone": "ChainTests.good",
+      "target": "Chain#good",
+      "expected": "established",
+      "specSha256": "e3875e55a8d9f024079b87a5b17dbe644ae6e68bd3f6bc9882008070eac0a4c9",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.694,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "JBMC's counterexample good(x=0, y=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:compare()Ljava/util/Comparator;): a stub returns any value of its type, which may be one the JDK's call never returns"
+      }
+    },
+    {
+      "task": "chain-wrong",
+      "cohort": "chain",
+      "parameters": "int x, int y",
+      "reachGuard": "true",
+      "standalone": "ChainTests.wrong",
+      "target": "Chain#wrong",
+      "expected": "refuted",
+      "specSha256": "91340246a413e90e63c6d939997020ba8694c3e4027c7775e81f39efb9c4be04",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.632,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "JBMC's counterexample wrong(x=0, y=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:compare()Ljava/util/Comparator;): a stub returns any value of its type, which may be one the JDK's call never returns"
+      }
+    },
+    {
+      "task": "chain-skips-null",
+      "cohort": "chain",
+      "parameters": "",
+      "reachGuard": "true",
+      "standalone": "ChainTests.skips",
+      "target": "Chain#skipsNull",
+      "expected": "established",
+      "specSha256": "213eafe097fb9ad5e57cb95c6e8255be88415920b824e3c0b2812b6de45056d1",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.512,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:compare()Ljava/util/Comparator;; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
+      }
+    },
+    {
+      "task": "chain-rejects-null",
+      "cohort": "chain",
+      "parameters": "",
+      "reachGuard": "true",
+      "standalone": "ChainTests.rejects",
+      "target": "Chain#rejectsNull",
+      "expected": "established",
+      "specSha256": "c8d42fc39dc573e80d7e3844455bc014aba68dcbe5882a90085451a434b5763e",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.509,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:compare()Ljava/util/Comparator;; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
+      }
+    }
+  ],
+  "rawSha256": "ce98614f55e5dd52c5cebe63876410a4c1139680b31a56904a877cba8e4449b5"
+}

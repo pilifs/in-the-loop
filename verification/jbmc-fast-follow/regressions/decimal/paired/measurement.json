@@ -1,0 +1,616 @@
+{
+  "job": "20261123-165951-recheck-the-historical-38-and-decimal-pa",
+  "source": "ef88d38e671f6336704789d3b651f13b1c69a3c1",
+  "checkerSha256": "21f641888609ff2e60ccb8744e175b2ff4ac8f9a6cd8f7ae7e4bea858841b1f2",
+  "libTree": "915b544117fdba1354c04611c4d136a19b526f98",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "staging": "staged",
+  "secondsPerClaim": 120,
+  "tasks": {
+    "precise-parent": {
+      "claimKey": "e306676095e52b78",
+      "entry": "datawork.Decimals#precise(I)I",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38",
+          "role": "original"
+        }
+      ],
+      "runs": {
+        "native": {
+          "engine": "native",
+          "exit": 1,
+          "seconds": 0.029,
+          "expected": "violation",
+          "verdict": "violation",
+          "disposition": "correct",
+          "firstUnproved": "",
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "jvmReplay": {
+            "outcome": "refuted",
+            "inputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 0
+              }
+            ],
+            "sourceSha256": "c0ed4b36ff9e83a104f80ca1e92e0986cf621ed5f1dab44da37529c97c027557",
+            "exit": 0,
+            "diagnostic": ""
+          },
+          "stdoutSha256": "1bd70c24bed953d6c5c044dc6c3040682e3d9f5efad800c6cfe5fd5af526b852",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jbmc": {
+          "engine": "jbmc",
+          "exit": 1,
+          "seconds": 1.257,
+          "expected": "violation",
+          "verdict": "violation",
+          "disposition": "correct",
+          "firstUnproved": "",
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "library",
+                "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "jbmc",
+              "name": "JBMC 6.11.0",
+              "solver": "cadical",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "3.0.0",
+                "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+                "configuration": [
+                  "--trace",
+                  "--throw-runtime-exceptions",
+                  "--unwinding-assertions",
+                  "--json-ui",
+                  "--timestamp",
+                  "monotonic",
+                  "--no-refine-strings",
+                  "--sat-solver",
+                  "cadical"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "jvmReplay": {
+            "outcome": "refuted",
+            "inputs": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 0
+              }
+            ],
+            "sourceSha256": "c0ed4b36ff9e83a104f80ca1e92e0986cf621ed5f1dab44da37529c97c027557",
+            "exit": 0,
+            "diagnostic": ""
+          },
+          "stdoutSha256": "a43f709cdd45955dcfb8e2e39297fa138e370c9ec6350595167baeb593690662",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "preserved-parent": {
+      "claimKey": "b5f0874cc73601d9",
+      "entry": "datawork.Decimals#preserved(I)I",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38",
+          "role": "original"
+        }
+      ],
+      "runs": {
+        "native": {
+          "engine": "native",
+          "exit": 0,
+          "seconds": 0.029,
+          "expected": "verified",
+          "verdict": "verified",
+          "disposition": "correct",
+          "firstUnproved": "",
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "max_array_length": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found preserved(code=0).",
+              "witness": "preserved(code=0)"
+            }
+          },
+          "stdoutSha256": "d57568673965b6418596803a636c5e0fb9bb40e3fcec4242fa8259a0dfbc593a",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jbmc": {
+          "engine": "jbmc",
+          "exit": 1,
+          "seconds": 1.483,
+          "expected": "verified",
+          "verdict": "unverifiable",
+          "disposition": "unsupported",
+          "firstUnproved": "JBMC's counterexample preserved(code=2) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+          "stdoutSha256": "3dad7d42099016cbd7dac406ba737ebf5feaab7450ea896343b6039a2259294c",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "precise-landed": {
+      "claimKey": "e306676095e52b78",
+      "entry": "datawork.Decimals#precise(I)I",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "classpath": [
+        {
+          "path": "adapter-landed.jar",
+          "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+          "role": "original"
+        }
+      ],
+      "runs": {
+        "native": {
+          "engine": "native",
+          "exit": 0,
+          "seconds": 0.053,
+          "expected": "verified",
+          "verdict": "verified",
+          "disposition": "correct",
+          "firstUnproved": "",
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "max_array_length": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found precise(code=0).",
+              "witness": "precise(code=0)"
+            }
+          },
+          "stdoutSha256": "42fe709a55bf822684a928b13fb33ed66efbe6c45688e8410cb6c8ca306cc94b",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jbmc": {
+          "engine": "jbmc",
+          "exit": 1,
+          "seconds": 1.383,
+          "expected": "verified",
+          "verdict": "unverifiable",
+          "disposition": "unsupported",
+          "firstUnproved": "JBMC's counterexample precise(code=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+          "stdoutSha256": "f8d7dc038de9ce00c3b514ebb26b4e74d31b52ac327e237b0f004b6b47f4cb5e",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "preserved-landed": {
+      "claimKey": "b5f0874cc73601d9",
+      "entry": "datawork.Decimals#preserved(I)I",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "classpath": [
+        {
+          "path": "adapter-landed.jar",
+          "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+          "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c",
+          "role": "original"
+        }
+      ],
+      "runs": {
+        "native": {
+          "engine": "native",
+          "exit": 0,
+          "seconds": 0.037,
+          "expected": "verified",
+          "verdict": "verified",
+          "disposition": "correct",
+          "firstUnproved": "",
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 256,
+              "max_array_length": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found preserved(code=0).",
+              "witness": "preserved(code=0)"
+            }
+          },
+          "stdoutSha256": "62db85b8899ae09e3fbb09172f3a9b7927e42559cf44e83a2a2224370b5e6cc6",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "jbmc": {
+          "engine": "jbmc",
+          "exit": 1,
+          "seconds": 1.472,
+          "expected": "verified",
+          "verdict": "unverifiable",
+          "disposition": "unsupported",
+          "firstUnproved": "JBMC's counterexample preserved(code=2) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+          "stdoutSha256": "a0ffd25aaf7b8ae1b59e5426d91a3ad42db80bf33755453355aa7bbb38b7b847",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  },
+  "originalJvm": {
+    "parent": {
+      "sourceSha256": "2eeb9fc3c9308391d56e8fdb9ee0a4f4ac91d5402b07ed5137f88e9b91bd2514",
+      "classSha256": "fc358854995e769822480436a665ec943e3b792504accea3a6fe2218c0509a19",
+      "stdoutSha256": "da9c39f27931a23dfa84497edfba1a594be613013f74d18d2aa3709c77d87ee8",
+      "rows": [
+        [
+          "0",
+          "0.100000001490116121",
+          "java.lang.Float 1036831949",
+          "0.1",
+          "java.lang.Float 1036831949",
+          "java.lang.NumberFormatException"
+        ],
+        [
+          "1",
+          "0.100000001490116122",
+          "java.lang.Float 1036831949",
+          "0.5",
+          "java.lang.Float 1056964608",
+          "java.lang.NumberFormatException"
+        ],
+        [
+          "2",
+          "-0.100000001490116121",
+          "java.lang.Float -1110651699",
+          "17",
+          "java.lang.Integer 17",
+          "java.lang.NumberFormatException"
+        ]
+      ]
+    },
+    "landed": {
+      "sourceSha256": "2eeb9fc3c9308391d56e8fdb9ee0a4f4ac91d5402b07ed5137f88e9b91bd2514",
+      "classSha256": "fc358854995e769822480436a665ec943e3b792504accea3a6fe2218c0509a19",
+      "stdoutSha256": "3c254732e6ed0f903b65b040528c182b448f9c99b596e8e0cf554f309b3b8f72",
+      "rows": [
+        [
+          "0",
+          "0.100000001490116121",
+          "java.math.BigDecimal 100000001490116121 18",
+          "0.1",
+          "java.lang.Float 1036831949",
+          "java.lang.NumberFormatException"
+        ],
+        [
+          "1",
+          "0.100000001490116122",
+          "java.math.BigDecimal 100000001490116122 18",
+          "0.5",
+          "java.lang.Float 1056964608",
+          "java.lang.NumberFormatException"
+        ],
+        [
+          "2",
+          "-0.100000001490116121",
+          "java.math.BigDecimal -100000001490116121 18",
+          "17",
+          "java.lang.Integer 17",
+          "java.lang.NumberFormatException"
+        ]
+      ]
+    }
+  }
+}

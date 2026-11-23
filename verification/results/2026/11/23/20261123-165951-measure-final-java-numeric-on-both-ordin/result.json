@@ -1,0 +1,202 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-165951-measure-final-java-numeric-on-both-ordin",
+  "title": "Measure final Java numeric on both ordinary engines",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m12s, peak 392.2 MiB (estimated 2m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-165951-measure-final-java-numeric-on-both-ordin.json",
+    "sha256": "a2fb895ffd376e0ce2234388d1a1222431cb36f9bf46e687cce0db086f42d767",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-165951-measure-final-java-numeric-on-both-ordin",
+      "title": "Measure final Java numeric on both ordinary engines",
+      "description": "Five original numeric claims, the full Jackson disagreement predicate, a direct opcode and a mantissa adapter. Bind original JAR and class hashes on the JVM and checker, inspect the actual method descriptors, keep complete raw responses and replay each candidate on the original JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T16:59:51+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 20,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "2m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Measure final Java numeric on both ordinary engines",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py final numeric paired",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/final/numeric/paired"
+      ]
+    }
+  },
+  "sourceCommit": "ef88d38e671f6336704789d3b651f13b1c69a3c1",
+  "startedAt": "2026-11-23T17:13:36+00:00",
+  "finishedAt": "2026-11-23T17:18:34+00:00",
+  "wallSeconds": 298.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 10143,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 411299840,
+    "wallSeconds": 72.2,
+    "cpuSeconds": 74.7,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.6
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure final Java numeric on both ordinary engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py final numeric paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 72.212,
+      "cpuSeconds": 74.687,
+      "cpuThrottledSeconds": 0.302,
+      "peakMemoryBytes": 411299840,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-final-java-numeric-on.log",
+        "lines": 16,
+        "bytes": 624,
+        "sha256": "7b6ec1785adc416cedcc1cfc6d96f1ea81f9454eca9030533a97ccc3a168abce",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "NodeChecks#direct native correct",
+        "NodeChecks#direct jbmc correct",
+        "NodeChecks#same native correct",
+        "NodeChecks#same jbmc correct",
+        "NodeChecks#publicSubnormal native correct",
+        "NodeChecks#publicSubnormal jbmc correct",
+        "NodeChecks#wrongSubnormal native correct",
+        "NodeChecks#wrongSubnormal jbmc correct",
+        "NodeChecks#commons native correct",
+        "NodeChecks#commons jbmc correct",
+        "ConversionEquivalence#classified native correct",
+        "ConversionEquivalence#classified jbmc correct",
+        "NodeChecks#intrinsicSubnormal native correct",
+        "NodeChecks#intrinsicSubnormal jbmc correct",
+        "NodeChecks#mantissaSubnormal native correct",
+        "NodeChecks#mantissaSubnormal jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/final/numeric/paired/measurement.json",
+      "change": "added",
+      "bytes": 46825,
+      "sha256": "a442d37a39a74382c8ad3aea035234ed62d40487be3893993e202e9f50104aa2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/final/numeric/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 10518,
+      "sha256": "c61a43eacbb6a4e44015f09ef959dec43d33fef21c5817d645a2b6022c0659f0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T17:24:31+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/final/numeric/paired/measurement.json",
+      "verification/jbmc-fast-follow/final/numeric/paired/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "915b544117fdba1354c04611c4d136a19b526f98",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/915b544117fdba1354c04611c4d136a19b526f98/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T171834Z-387243408da27a32",
+      "outputs": "20261123T171834Z-451214e03dea402c",
+      "diff": "20261123T171834Z-494675f7d6cf58ba"
+    }
+  }
+}

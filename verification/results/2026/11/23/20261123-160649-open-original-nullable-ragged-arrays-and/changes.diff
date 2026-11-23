@@ -1,0 +1,2934 @@
+--- /dev/null
++++ b/verification/jbmc-fast-follow/opening/rows/paired/measurement.json
+@@ -0,0 +1,901 @@
++{
++  "phase": "opening",
++  "family": "rows",
++  "lane": "paired",
++  "predecessor": {
++    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
++    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
++  },
++  "measuredSource": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
++  "job": "20261123-160649-open-original-nullable-ragged-arrays-and",
++  "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jars": [
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    },
++    {
++      "name": "commons-collections4-4.5.0.jar",
++      "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++    },
++    {
++      "name": "commons-math3-3.6.1.jar",
++      "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
++    }
++  ],
++  "productClasses": {
++    "MadeRows.class": "29e80e6d0d1b99237e2076c84840dc9213e30a29b776e5a4fe0a6c1b47c71de3",
++    "MatrixRows.class": "8b37921bc877009913616e2e8328ff66c929acdca081d2c86aa69b3415aa383c",
++    "RaggedProof.class": "87e4a583c1f1c03fc0aa6f06d300ebdf79b148e184b88e0f5da2502bc75d35a3",
++    "RowIdentities.class": "1e792f376017596375bd8ae6a27fc007d4e20853b4ec7f8a6d0803d2621b59ae"
++  },
++  "driverClasses": {
++    "Cases.class": "8310b34eea77f06afd434d53ff7ae72e1cb1e8c61573a5ef55407e8b75a0fd65",
++    "MatrixJvm.class": "8171567bb856fd2001526206d09187844859cedefdf9db8fdc22010b0d985b1f",
++    "Ragged.class": "e7df29c8277805ea5537d73cd59f27922c3dbf85d796b99ccb7eacacd078b15c",
++    "RaggedJvm$Op.class": "bf7ef5e45c6493e4cfdf4cf97d30375972514eb0cc7d4f0a93c3cc14d9f57a51",
++    "RaggedJvm.class": "f7a1441e9fea7215ecdac93eee98a960d52a0342566fb7b6dbd8c30bdfc62e15",
++    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
++  },
++  "originalJvm": {
++    "Cases": {
++      "sha256": "6d205f5fe900d4a5ea15563f2d9efaaaa1473768e001f35311275687aad2c070",
++      "seconds": 0.067,
++      "cases": 44
++    },
++    "RaggedJvm": {
++      "sha256": "8dd61149fc0a33a907da56bda24cd55298ef951156b8c1ac2c552862faf5972a",
++      "seconds": 0.059
++    },
++    "MatrixJvm": {
++      "sha256": "44cfcc0c0f2b7c8bbac7434d1ed231021114958f7baa22643a1dbc8e92220e53",
++      "seconds": 0.052
++    }
++  },
++  "rows": [
++    {
++      "task": "ragged-proof-reversed",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testReverse",
++      "target": "RaggedProof#reversed",
++      "expected": "established",
++      "specSha256": "68b0b29fca113fd3812a735660d82fa020e2fa453a57b3538cbc3dd60f725560",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.006,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.007,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "ragged-proof-wrong",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testWrong",
++      "target": "RaggedProof#wrong",
++      "expected": "refuted",
++      "specSha256": "19a83fc042fde7dd80294010977a2e69f9ad715a9f2ad0e99767b0a66bbc53d2",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.005,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "ragged-proof-iter",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testIter",
++      "target": "RaggedProof#iter",
++      "expected": "established",
++      "specSha256": "60e1cf017d0f0e30402f30077cad6faa17b460829c2c591b073c3e9a440f44b2",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.005,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.005,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "ragged-proof-snapshot",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testSnapshot",
++      "target": "RaggedProof#snapshot",
++      "expected": "refuted",
++      "specSha256": "a2708c6fa75cd15754f2aa873adf35e399520e372c71fef46647e5fce25931b4",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "ragged-proof-distinct",
++      "cohort": "identity",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testDistinct",
++      "target": "RaggedProof#distinct",
++      "expected": "refuted",
++      "specSha256": "56f7b7495728db175e6a9336c58b8a650a93c0aedad3426ba667eaffccb1b771",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.005,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "row-identities-non-null-outer",
++      "cohort": "identity",
++      "parameters": "int[][] rows",
++      "reachGuard": "true",
++      "target": "RowIdentities#nonNullOuter",
++      "expected": "refuted",
++      "specSha256": "7a3bebe9ed40c357dc68fe9bc2f0b4abe474d0f3dffb37da388a03e4615a8708",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "row-identities-no-empty-outer",
++      "cohort": "identity",
++      "parameters": "int[][] rows",
++      "reachGuard": "true",
++      "target": "RowIdentities#noEmptyOuter",
++      "expected": "refuted",
++      "specSha256": "f3fa67453987964230fa0c573ebf76a97f0b890209906b24b4bef682e73c2bbd",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.005,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "row-identities-no-distinct-equal-rows",
++      "cohort": "identity",
++      "parameters": "int[][] rows",
++      "reachGuard": "rows != null && rows.length == 2",
++      "target": "RowIdentities#noDistinctEqualRows",
++      "expected": "refuted",
++      "specSha256": "48dff34114afc8f44944aa6f5f2ac22be5325452a28ad71e7e8719eb3c068903",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "made-rows-reverse",
++      "cohort": "builder",
++      "parameters": "int x, int y, boolean tied",
++      "reachGuard": "true",
++      "target": "MadeRows#reverse",
++      "expected": "established",
++      "specSha256": "922412ed4f2121083ea33e8635baaea15f6efcc4df113d61695e9d33eb767a1b",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.023,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 1.486,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
++      }
++    },
++    {
++      "task": "made-rows-iterator",
++      "cohort": "builder",
++      "parameters": "int x, int y, boolean tied",
++      "reachGuard": "true",
++      "target": "MadeRows#iterator",
++      "expected": "established",
++      "specSha256": "4fa23763ed342038d7cb302a3fe6dc35db394b3e0b96388cccee49ba1879c099",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.02,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 1.273,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
++      }
++    },
++    {
++      "task": "made-rows-always-distinct",
++      "cohort": "builder",
++      "parameters": "int x, int y, boolean tied",
++      "reachGuard": "true",
++      "target": "MadeRows#alwaysDistinct",
++      "expected": "refuted",
++      "specSha256": "13b32706e56c0271c801927f4505b1b797f9a07d12ce31f084f66d1307d79273",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.036,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "y",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "tied",
++              "type": "boolean",
++              "value": true
++            }
++          ],
++          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.89,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "y",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "tied",
++              "type": "boolean",
++              "value": true
++            }
++          ],
++          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    },
++    {
++      "task": "matrix-rows-rectangular",
++      "cohort": "matrix",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null && a[0].length == a[1].length",
++      "standalone": "MatrixRows.good",
++      "target": "MatrixRows#rectangular",
++      "expected": "established",
++      "specSha256": "845ceb4be5038bb6861babd7789eef81d6f19e58873121646d99f073ea9d0538",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.006,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "matrix-rows-single-shape",
++      "cohort": "matrix",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 1 && a[0] == null",
++      "standalone": "MatrixRows.singleGood",
++      "target": "MatrixRows#singleShape",
++      "expected": "established",
++      "specSha256": "637aa3a48fc3b09259460ae31a9da50e594b5853f3dc4bb0785084b0d61c9d08",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "matrix-rows-shape",
++      "cohort": "matrix-exceptions",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
++      "standalone": "MatrixRows.correct",
++      "target": "MatrixRows#shape",
++      "expected": "established",
++      "specSha256": "a599064b103d697aa04b4ddc4c4be31a46c0746fc46ffbecb0a7e51bfdd8e829",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.003,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "matrix-rows-same",
++      "cohort": "matrix-exceptions",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
++      "standalone": "MatrixRows.wrong",
++      "target": "MatrixRows#same",
++      "expected": "refuted",
++      "specSha256": "4ac6a6b3325a70d95d039f1bbe5048eb6206b6562458ee30a576d9100ed7f31c",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.003,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    },
++    {
++      "task": "matrix-rows-no-null",
++      "cohort": "matrix-exceptions",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 1 && a[0] == null",
++      "standalone": "MatrixRows.singleton",
++      "target": "MatrixRows#noNull",
++      "expected": "refuted",
++      "specSha256": "6f4f42bd605198e1976c3df58c769279899dad4b3d4138906b56979cac831233",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.004,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.005,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++      }
++    }
++  ],
++  "rawSha256": "71d3e117daa0951ad76ae24dc3413a16183d3fb64cb6a603307f7e0e8f8a2e03"
++}
+Binary file verification/jbmc-fast-follow/opening/rows/paired/raw.tar.gz changed
+--- /dev/null
++++ b/verification/jbmc-fast-follow/opening/rows/packaged/measurement.json
+@@ -0,0 +1,1744 @@
++{
++  "phase": "opening",
++  "family": "rows",
++  "lane": "packaged",
++  "predecessor": {
++    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
++    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
++  },
++  "measuredSource": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
++  "job": "20261123-160649-open-original-nullable-ragged-arrays-and",
++  "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jars": [
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    },
++    {
++      "name": "commons-collections4-4.5.0.jar",
++      "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++    },
++    {
++      "name": "commons-math3-3.6.1.jar",
++      "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
++    }
++  ],
++  "productClasses": {
++    "MadeRows.class": "29e80e6d0d1b99237e2076c84840dc9213e30a29b776e5a4fe0a6c1b47c71de3",
++    "MatrixRows.class": "8b37921bc877009913616e2e8328ff66c929acdca081d2c86aa69b3415aa383c",
++    "RaggedProof.class": "87e4a583c1f1c03fc0aa6f06d300ebdf79b148e184b88e0f5da2502bc75d35a3",
++    "RowIdentities.class": "1e792f376017596375bd8ae6a27fc007d4e20853b4ec7f8a6d0803d2621b59ae"
++  },
++  "driverClasses": {
++    "Cases.class": "8310b34eea77f06afd434d53ff7ae72e1cb1e8c61573a5ef55407e8b75a0fd65",
++    "MatrixJvm.class": "8171567bb856fd2001526206d09187844859cedefdf9db8fdc22010b0d985b1f",
++    "Ragged.class": "e7df29c8277805ea5537d73cd59f27922c3dbf85d796b99ccb7eacacd078b15c",
++    "RaggedJvm$Op.class": "bf7ef5e45c6493e4cfdf4cf97d30375972514eb0cc7d4f0a93c3cc14d9f57a51",
++    "RaggedJvm.class": "f7a1441e9fea7215ecdac93eee98a960d52a0342566fb7b6dbd8c30bdfc62e15",
++    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
++  },
++  "originalJvm": {
++    "Cases": {
++      "sha256": "6d205f5fe900d4a5ea15563f2d9efaaaa1473768e001f35311275687aad2c070",
++      "seconds": 0.07,
++      "cases": 44
++    },
++    "RaggedJvm": {
++      "sha256": "8dd61149fc0a33a907da56bda24cd55298ef951156b8c1ac2c552862faf5972a",
++      "seconds": 0.083
++    },
++    "MatrixJvm": {
++      "sha256": "44cfcc0c0f2b7c8bbac7434d1ed231021114958f7baa22643a1dbc8e92220e53",
++      "seconds": 0.058
++    }
++  },
++  "rows": [
++    {
++      "task": "ragged-proof-reversed",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testReverse",
++      "target": "RaggedProof#reversed",
++      "expected": "established",
++      "specSha256": "68b0b29fca113fd3812a735660d82fa020e2fa453a57b3538cbc3dd60f725560",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "b296d0ad4e9b514e348bbf0af7df07ac557764b21162f6589719efdcf8ef272a",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::RaggedProof.testReverse:([[I)V.assertion.1",
++            "description": "assertion at file RaggedProof.java line 33 function java::RaggedProof.testReverse:([[I)V bytecode-index 8",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file RaggedProof.java line 33 function java::RaggedProof.testReverse:([[I)V bytecode-index 8",
++              "file": "RaggedProof.java",
++              "function": "java::RaggedProof.testReverse:([[I)V",
++              "line": "33",
++              "propertyClass": "assertion",
++              "propertyId": "java::RaggedProof.testReverse:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.498,
++          "entry": "RaggedProof.testReverse"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "15",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.558,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "ragged-proof-wrong",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testWrong",
++      "target": "RaggedProof#wrong",
++      "expected": "refuted",
++      "specSha256": "19a83fc042fde7dd80294010977a2e69f9ad715a9f2ad0e99767b0a66bbc53d2",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "985ba6ffd2948da4746431d631ef84db3d93f857555201513da8ad26c030be2c",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::RaggedProof.testWrong:([[I)V.assertion.1",
++            "description": "assertion at file RaggedProof.java line 34 function java::RaggedProof.testWrong:([[I)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file RaggedProof.java line 34 function java::RaggedProof.testWrong:([[I)V bytecode-index 8",
++              "file": "RaggedProof.java",
++              "function": "java::RaggedProof.testWrong:([[I)V",
++              "line": "34",
++              "propertyClass": "assertion",
++              "propertyId": "java::RaggedProof.testWrong:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.565,
++          "entry": "RaggedProof.testWrong"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "15",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.559,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "ragged-proof-iter",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testIter",
++      "target": "RaggedProof#iter",
++      "expected": "established",
++      "specSha256": "60e1cf017d0f0e30402f30077cad6faa17b460829c2c591b073c3e9a440f44b2",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "a440c1f4b1d95ae12e2defb957f0a8900bed971f8660cdb02ce6c63be6d80027",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::RaggedProof.testIter:([[I)V.assertion.1",
++            "description": "assertion at file RaggedProof.java line 35 function java::RaggedProof.testIter:([[I)V bytecode-index 8",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file RaggedProof.java line 35 function java::RaggedProof.testIter:([[I)V bytecode-index 8",
++              "file": "RaggedProof.java",
++              "function": "java::RaggedProof.testIter:([[I)V",
++              "line": "35",
++              "propertyClass": "assertion",
++              "propertyId": "java::RaggedProof.testIter:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.289,
++          "entry": "RaggedProof.testIter"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "15",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.333,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "ragged-proof-snapshot",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testSnapshot",
++      "target": "RaggedProof#snapshot",
++      "expected": "refuted",
++      "specSha256": "a2708c6fa75cd15754f2aa873adf35e399520e372c71fef46647e5fce25931b4",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "34475b346db9da4203533bfdd4cf81f679f9f70f0b8c2ad8838ac64863264ad1",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::RaggedProof.testSnapshot:([[I)V.assertion.1",
++            "description": "assertion at file RaggedProof.java line 36 function java::RaggedProof.testSnapshot:([[I)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file RaggedProof.java line 36 function java::RaggedProof.testSnapshot:([[I)V bytecode-index 8",
++              "file": "RaggedProof.java",
++              "function": "java::RaggedProof.testSnapshot:([[I)V",
++              "line": "36",
++              "propertyClass": "assertion",
++              "propertyId": "java::RaggedProof.testSnapshot:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.292,
++          "entry": "RaggedProof.testSnapshot"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "15",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.29,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "ragged-proof-distinct",
++      "cohort": "identity",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testDistinct",
++      "target": "RaggedProof#distinct",
++      "expected": "refuted",
++      "specSha256": "56f7b7495728db175e6a9336c58b8a650a93c0aedad3426ba667eaffccb1b771",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "050d62c2c9c61590af9adcdd14349c9e9b775d070a521f67795dfd95b4c01c51",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::RaggedProof.testDistinct:([[I)V.assertion.1",
++            "description": "assertion at file RaggedProof.java line 37 function java::RaggedProof.testDistinct:([[I)V bytecode-index 8",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file RaggedProof.java line 37 function java::RaggedProof.testDistinct:([[I)V bytecode-index 8",
++              "file": "RaggedProof.java",
++              "function": "java::RaggedProof.testDistinct:([[I)V",
++              "line": "37",
++              "propertyClass": "assertion",
++              "propertyId": "java::RaggedProof.testDistinct:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.269,
++          "entry": "RaggedProof.testDistinct"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "15",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.281,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "row-identities-non-null-outer",
++      "cohort": "identity",
++      "parameters": "int[][] rows",
++      "reachGuard": "true",
++      "target": "RowIdentities#nonNullOuter",
++      "expected": "refuted",
++      "specSha256": "7a3bebe9ed40c357dc68fe9bc2f0b4abe474d0f3dffb37da388a03e4615a8708",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "3d7876f028e771737cd4b10cbf077aa611cdec9ade8a830e7bab59a397cb61b9",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.target:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[I)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[I)V bytecode-index 8",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:([[I)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "rows": {
++              "data": "null",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.087,
++          "entry": "FollowAssertions.target"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 8",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "rows": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.082,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "row-identities-no-empty-outer",
++      "cohort": "identity",
++      "parameters": "int[][] rows",
++      "reachGuard": "true",
++      "target": "RowIdentities#noEmptyOuter",
++      "expected": "refuted",
++      "specSha256": "f3fa67453987964230fa0c573ebf76a97f0b890209906b24b4bef682e73c2bbd",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "1c384bdaeec47ca6f0c1440c786981b5cae8fe522de7c1062bd4bb17719a84f5",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.target:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[I)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[I)V bytecode-index 8",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:([[I)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "rows": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.099,
++          "entry": "FollowAssertions.target"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 8",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "rows": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.094,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "row-identities-no-distinct-equal-rows",
++      "cohort": "identity",
++      "parameters": "int[][] rows",
++      "reachGuard": "rows != null && rows.length == 2",
++      "target": "RowIdentities#noDistinctEqualRows",
++      "expected": "refuted",
++      "specSha256": "48dff34114afc8f44944aa6f5f2ac22be5325452a28ad71e7e8719eb3c068903",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "49506baf9a2513d54f239cd69504025f5df49e2dc3414a01c90ce20024800ea2",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.target:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[I)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[I)V bytecode-index 8",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:([[I)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "rows": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.089,
++          "entry": "FollowAssertions.target"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[I)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "15",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[I)V bytecode-index 15",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[I)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[I)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "rows": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 0.087,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "made-rows-reverse",
++      "cohort": "builder",
++      "parameters": "int x, int y, boolean tied",
++      "reachGuard": "true",
++      "target": "MadeRows#reverse",
++      "expected": "established",
++      "specSha256": "922412ed4f2121083ea33e8635baaea15f6efcc4df113d61695e9d33eb767a1b",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "fceda23106ef5ece8774f1debb5ed6548701bff50d7a892a1a93695eace58919",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::FollowAssertions.target:(IIZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(IIZ)V bytecode-index 10",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "10",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(IIZ)V bytecode-index 10",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:(IIZ)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:(IIZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.489,
++          "entry": "FollowAssertions.target"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:(IIZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(IIZ)V bytecode-index 10",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "10",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(IIZ)V bytecode-index 10",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:(IIZ)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:(IIZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "x": {
++              "binary": "00000000000000000000000000000001",
++              "data": "1",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "y": {
++              "binary": "00000000000000000000000000000000",
++              "data": "0",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "tied": {
++              "binary": "00000001",
++              "data": "true",
++              "name": "integer",
++              "type": "const boolean",
++              "width": 8
++            }
++          },
++          "seconds": 0.506,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "made-rows-iterator",
++      "cohort": "builder",
++      "parameters": "int x, int y, boolean tied",
++      "reachGuard": "true",
++      "target": "MadeRows#iterator",
++      "expected": "established",
++      "specSha256": "4fa23763ed342038d7cb302a3fe6dc35db394b3e0b96388cccee49ba1879c099",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "a90913d3b099c1eccb87e590b443a710b045dbf964dca057b70ba8927cc20b66",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::FollowAssertions.target:(IIZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(IIZ)V bytecode-index 10",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "10",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(IIZ)V bytecode-index 10",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:(IIZ)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:(IIZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.311,
++          "entry": "FollowAssertions.target"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:(IIZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(IIZ)V bytecode-index 10",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "10",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(IIZ)V bytecode-index 10",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:(IIZ)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:(IIZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "x": {
++              "binary": "00000000000000000000000000000000",
++              "data": "0",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "y": {
++              "binary": "00000000000000000000000000000000",
++              "data": "0",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "tied": {
++              "binary": "00000001",
++              "data": "true",
++              "name": "integer",
++              "type": "const boolean",
++              "width": 8
++            }
++          },
++          "seconds": 0.296,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "made-rows-always-distinct",
++      "cohort": "builder",
++      "parameters": "int x, int y, boolean tied",
++      "reachGuard": "true",
++      "target": "MadeRows#alwaysDistinct",
++      "expected": "refuted",
++      "specSha256": "13b32706e56c0271c801927f4505b1b797f9a07d12ce31f084f66d1307d79273",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "014b11d6e2f09e7ba1b753c539a8f3774344fc0bb63cdcb0fe0c3c66fc8623f5",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.target:(IIZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(IIZ)V bytecode-index 10",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "10",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(IIZ)V bytecode-index 10",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:(IIZ)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:(IIZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "x": {
++              "binary": "00000000000000000000000000000000",
++              "data": "0",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "y": {
++              "binary": "00000000000000000000000000000000",
++              "data": "0",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "tied": {
++              "binary": "00000001",
++              "data": "true",
++              "name": "integer",
++              "type": "const boolean",
++              "width": 8
++            }
++          },
++          "seconds": 0.283,
++          "entry": "FollowAssertions.target",
++          "jvmReplay": {
++            "outcome": "refuted",
++            "inputs": [
++              {
++                "type": "int",
++                "value": 0
++              },
++              {
++                "type": "int",
++                "value": 0
++              },
++              {
++                "type": "boolean",
++                "value": true
++              }
++            ],
++            "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
++            "exit": 0,
++            "diagnostic": ""
++          }
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:(IIZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(IIZ)V bytecode-index 10",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "10",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(IIZ)V bytecode-index 10",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:(IIZ)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:(IIZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "x": {
++              "binary": "00000000000000000000000000000000",
++              "data": "0",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "y": {
++              "binary": "00000000000000000000000000000000",
++              "data": "0",
++              "name": "integer",
++              "type": "int",
++              "width": 32
++            },
++            "tied": {
++              "binary": "00000001",
++              "data": "true",
++              "name": "integer",
++              "type": "const boolean",
++              "width": 8
++            }
++          },
++          "seconds": 0.295,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "matrix-rows-rectangular",
++      "cohort": "matrix",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null && a[0].length == a[1].length",
++      "standalone": "MatrixRows.good",
++      "target": "MatrixRows#rectangular",
++      "expected": "established",
++      "specSha256": "845ceb4be5038bb6861babd7789eef81d6f19e58873121646d99f073ea9d0538",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "0744add1bd8dd75697c9dbce2d69eab969c2e82960842ca48c90d1af8fcff232",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::MatrixRows.good:([[J)V.assertion.1",
++            "description": "assertion at file MatrixRows.java line 26 function java::MatrixRows.good:([[J)V bytecode-index 8",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file MatrixRows.java line 26 function java::MatrixRows.good:([[J)V bytecode-index 8",
++              "file": "MatrixRows.java",
++              "function": "java::MatrixRows.good:([[J)V",
++              "line": "26",
++              "propertyClass": "assertion",
++              "propertyId": "java::MatrixRows.good:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 6.503,
++          "entry": "MatrixRows.good"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[J)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 32",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "32",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 32",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[J)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 7.984,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "matrix-rows-single-shape",
++      "cohort": "matrix",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 1 && a[0] == null",
++      "standalone": "MatrixRows.singleGood",
++      "target": "MatrixRows#singleShape",
++      "expected": "established",
++      "specSha256": "637aa3a48fc3b09259460ae31a9da50e594b5853f3dc4bb0785084b0d61c9d08",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "fdb1435e3c7c5b2e238bbccbdf1064b33bff457453afea8084df0f9dd00ac805",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::MatrixRows.singleGood:([[J)V.assertion.1",
++            "description": "assertion at file MatrixRows.java line 27 function java::MatrixRows.singleGood:([[J)V bytecode-index 8",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file MatrixRows.java line 27 function java::MatrixRows.singleGood:([[J)V bytecode-index 8",
++              "file": "MatrixRows.java",
++              "function": "java::MatrixRows.singleGood:([[J)V",
++              "line": "27",
++              "propertyClass": "assertion",
++              "propertyId": "java::MatrixRows.singleGood:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 4.182,
++          "entry": "MatrixRows.singleGood"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[J)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 19",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "19",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 19",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[J)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 5.141,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "matrix-rows-shape",
++      "cohort": "matrix-exceptions",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
++      "standalone": "MatrixRows.correct",
++      "target": "MatrixRows#shape",
++      "expected": "established",
++      "specSha256": "a599064b103d697aa04b4ddc4c4be31a46c0746fc46ffbecb0a7e51bfdd8e829",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "227057fdd35ad5badc5fbb4a890c084f27dfdb3a953f4056c958114deda7bce9",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 10,
++          "target": {
++            "property": "java::MatrixRows.correct:([[J)V.assertion.1",
++            "description": "assertion at file MatrixRows.java line 28 function java::MatrixRows.correct:([[J)V bytecode-index 8",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file MatrixRows.java line 28 function java::MatrixRows.correct:([[J)V bytecode-index 8",
++              "file": "MatrixRows.java",
++              "function": "java::MatrixRows.correct:([[J)V",
++              "line": "28",
++              "propertyClass": "assertion",
++              "propertyId": "java::MatrixRows.correct:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [
++            {
++              "property": "java::MatrixRows.correct:([[J)V.1",
++              "description": "no uncaught exception",
++              "status": "FAILURE",
++              "sourceLocation": {
++                "comment": "no uncaught exception",
++                "file": "MatrixRows.java",
++                "function": "java::MatrixRows.correct:([[J)V",
++                "line": "28",
++                "propertyId": "java::MatrixRows.correct:([[J)V.1"
++              }
++            }
++          ],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 8.608,
++          "entry": "MatrixRows.correct"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[J)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 23",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "23",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 23",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[J)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [
++            {
++              "property": "java::FollowAssertions.reached:([[J)V.1",
++              "description": "no uncaught exception",
++              "status": "FAILURE",
++              "sourceLocation": {
++                "comment": "no uncaught exception",
++                "file": "FollowAssertions.java",
++                "function": "java::FollowAssertions.reached:([[J)V",
++                "line": "3",
++                "propertyId": "java::FollowAssertions.reached:([[J)V.1"
++              }
++            }
++          ],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 10.2,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "matrix-rows-same",
++      "cohort": "matrix-exceptions",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
++      "standalone": "MatrixRows.wrong",
++      "target": "MatrixRows#same",
++      "expected": "refuted",
++      "specSha256": "4ac6a6b3325a70d95d039f1bbe5048eb6206b6562458ee30a576d9100ed7f31c",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "5194606910c726a49d3cccaa214de7855429e194b83a1ee9c095fa445c9c842d",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::MatrixRows.wrong:([[J)V.assertion.1",
++            "description": "assertion at file MatrixRows.java line 29 function java::MatrixRows.wrong:([[J)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file MatrixRows.java line 29 function java::MatrixRows.wrong:([[J)V bytecode-index 8",
++              "file": "MatrixRows.java",
++              "function": "java::MatrixRows.wrong:([[J)V",
++              "line": "29",
++              "propertyClass": "assertion",
++              "propertyId": "java::MatrixRows.wrong:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [
++            {
++              "property": "java::MatrixRows.wrong:([[J)V.1",
++              "description": "no uncaught exception",
++              "status": "FAILURE",
++              "sourceLocation": {
++                "comment": "no uncaught exception",
++                "file": "MatrixRows.java",
++                "function": "java::MatrixRows.wrong:([[J)V",
++                "line": "29",
++                "propertyId": "java::MatrixRows.wrong:([[J)V.1"
++              }
++            }
++          ],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 10.435,
++          "entry": "MatrixRows.wrong"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[J)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 23",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "23",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 23",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[J)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [
++            {
++              "property": "java::FollowAssertions.reached:([[J)V.1",
++              "description": "no uncaught exception",
++              "status": "FAILURE",
++              "sourceLocation": {
++                "comment": "no uncaught exception",
++                "file": "FollowAssertions.java",
++                "function": "java::FollowAssertions.reached:([[J)V",
++                "line": "3",
++                "propertyId": "java::FollowAssertions.reached:([[J)V.1"
++              }
++            }
++          ],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 10.165,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "matrix-rows-no-null",
++      "cohort": "matrix-exceptions",
++      "parameters": "long[][] a",
++      "reachGuard": "a != null && a.length == 1 && a[0] == null",
++      "standalone": "MatrixRows.singleton",
++      "target": "MatrixRows#noNull",
++      "expected": "refuted",
++      "specSha256": "6f4f42bd605198e1976c3df58c769279899dad4b3d4138906b56979cac831233",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "packaged": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "ef5e8c357568959934c50d15fa30ac29e04b758148eeec7e65b30b5c6f800956",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::MatrixRows.singleton:([[J)V.assertion.1",
++            "description": "assertion at file MatrixRows.java line 30 function java::MatrixRows.singleton:([[J)V bytecode-index 8",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "8",
++              "comment": "assertion at file MatrixRows.java line 30 function java::MatrixRows.singleton:([[J)V bytecode-index 8",
++              "file": "MatrixRows.java",
++              "function": "java::MatrixRows.singleton:([[J)V",
++              "line": "30",
++              "propertyClass": "assertion",
++              "propertyId": "java::MatrixRows.singleton:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 5.567,
++          "entry": "MatrixRows.singleton"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[J)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 19",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "19",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[J)V bytecode-index 19",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[J)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[J)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            }
++          },
++          "seconds": 5.656,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    }
++  ],
++  "rawSha256": "3e3c745c4dee074d019576b5036bd1847f9abb5a9e9e317ef26120bec172e34c"
++}
+Binary file verification/jbmc-fast-follow/opening/rows/packaged/raw.tar.gz changed
+--- /dev/null
++++ b/verification/jbmc-fast-follow/opening/rows/alias/measurement.json
+@@ -0,0 +1,277 @@
++{
++  "phase": "opening",
++  "family": "rows",
++  "lane": "alias",
++  "predecessor": {
++    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
++    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
++  },
++  "measuredSource": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
++  "job": "20261123-160649-open-original-nullable-ragged-arrays-and",
++  "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jars": [
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    },
++    {
++      "name": "commons-collections4-4.5.0.jar",
++      "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++    },
++    {
++      "name": "commons-math3-3.6.1.jar",
++      "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
++    }
++  ],
++  "productClasses": {
++    "MadeRows.class": "29e80e6d0d1b99237e2076c84840dc9213e30a29b776e5a4fe0a6c1b47c71de3",
++    "MatrixRows.class": "8b37921bc877009913616e2e8328ff66c929acdca081d2c86aa69b3415aa383c",
++    "RaggedProof.class": "87e4a583c1f1c03fc0aa6f06d300ebdf79b148e184b88e0f5da2502bc75d35a3",
++    "RowIdentities.class": "1e792f376017596375bd8ae6a27fc007d4e20853b4ec7f8a6d0803d2621b59ae"
++  },
++  "driverClasses": {
++    "Cases.class": "8310b34eea77f06afd434d53ff7ae72e1cb1e8c61573a5ef55407e8b75a0fd65",
++    "MatrixJvm.class": "8171567bb856fd2001526206d09187844859cedefdf9db8fdc22010b0d985b1f",
++    "Ragged.class": "e7df29c8277805ea5537d73cd59f27922c3dbf85d796b99ccb7eacacd078b15c",
++    "RaggedJvm$Op.class": "bf7ef5e45c6493e4cfdf4cf97d30375972514eb0cc7d4f0a93c3cc14d9f57a51",
++    "RaggedJvm.class": "f7a1441e9fea7215ecdac93eee98a960d52a0342566fb7b6dbd8c30bdfc62e15",
++    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
++  },
++  "originalJvm": {
++    "Cases": {
++      "sha256": "6d205f5fe900d4a5ea15563f2d9efaaaa1473768e001f35311275687aad2c070",
++      "seconds": 0.061,
++      "cases": 44
++    },
++    "RaggedJvm": {
++      "sha256": "8dd61149fc0a33a907da56bda24cd55298ef951156b8c1ac2c552862faf5972a",
++      "seconds": 0.055
++    },
++    "MatrixJvm": {
++      "sha256": "44cfcc0c0f2b7c8bbac7434d1ed231021114958f7baa22643a1dbc8e92220e53",
++      "seconds": 0.058
++    }
++  },
++  "rows": [
++    {
++      "task": "ragged-proof-reversed",
++      "cohort": "ragged",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testReverse",
++      "target": "RaggedProof#reversed",
++      "expected": "established",
++      "specSha256": "68b0b29fca113fd3812a735660d82fa020e2fa453a57b3538cbc3dd60f725560",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "alias": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "cc79e8e6824381e97756e3dbaf323365d0c764793180a764e1a45448971a3f64",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::FollowAssertions.target:([[IZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[IZ)V bytecode-index 22",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "22",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[IZ)V bytecode-index 22",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:([[IZ)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:([[IZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.548,
++          "entry": "FollowAssertions.target"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[IZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[IZ)V bytecode-index 29",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "29",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[IZ)V bytecode-index 29",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[IZ)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[IZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 3,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            },
++            "tie": {
++              "binary": "00000000",
++              "data": "false",
++              "name": "integer",
++              "type": "const boolean",
++              "width": 8
++            }
++          },
++          "seconds": 0.633,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    },
++    {
++      "task": "ragged-proof-distinct",
++      "cohort": "identity",
++      "parameters": "int[][] a",
++      "reachGuard": "a != null && a.length == 2",
++      "standalone": "RaggedProof.testDistinct",
++      "target": "RaggedProof#distinct",
++      "expected": "refuted",
++      "specSha256": "56f7b7495728db175e6a9336c58b8a650a93c0aedad3426ba667eaffccb1b771",
++      "bounds": {
++        "unwind": 7,
++        "maxArrayLength": 2
++      },
++      "alias": {
++        "flags": [
++          "--unwind",
++          "7",
++          "--unwinding-assertions",
++          "--throw-runtime-exceptions",
++          "--sat-solver",
++          "cadical",
++          "--trace",
++          "--json-ui",
++          "--max-nondet-array-length",
++          "2",
++          "--max-nondet-tree-depth",
++          "5"
++        ],
++        "driverSha256": "0992123eff92ffbdf50258e13260d5d8eb84c2eb8ce6354d3cb31442f1090783",
++        "classpath": [
++          "assertions",
++          "drivers",
++          "product",
++          "commons-lang3-3.17.0.jar",
++          "commons-collections4-4.5.0.jar",
++          "commons-math3-3.6.1.jar",
++          "core-models.jar"
++        ],
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.target:([[IZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[IZ)V bytecode-index 22",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "22",
++              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:([[IZ)V bytecode-index 22",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.target:([[IZ)V",
++              "line": "2",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.target:([[IZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            },
++            "tie": {
++              "binary": "00000001",
++              "data": "true",
++              "name": "integer",
++              "type": "const boolean",
++              "width": 8
++            }
++          },
++          "seconds": 0.295,
++          "entry": "FollowAssertions.target"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::FollowAssertions.reached:([[IZ)V.assertion.1",
++            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[IZ)V bytecode-index 29",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "29",
++              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:([[IZ)V bytecode-index 29",
++              "file": "FollowAssertions.java",
++              "function": "java::FollowAssertions.reached:([[IZ)V",
++              "line": "3",
++              "propertyClass": "assertion",
++              "propertyId": "java::FollowAssertions.reached:([[IZ)V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {
++            "a": {
++              "data": "dynamic_object",
++              "name": "pointer",
++              "type": "struct java::array[reference] *"
++            },
++            "tie": {
++              "binary": "00000000",
++              "data": "false",
++              "name": "integer",
++              "type": "const boolean",
++              "width": 8
++            }
++          },
++          "seconds": 0.297,
++          "entry": "FollowAssertions.reached"
++        }
++      }
++    }
++  ],
++  "rawSha256": "47df67ad7ae486b1a48fdbf7a1713030605a6070cccbd173db42f83824b3ed76"
++}
+Binary file verification/jbmc-fast-follow/opening/rows/alias/raw.tar.gz changed

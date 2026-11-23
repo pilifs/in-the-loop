@@ -1,0 +1,345 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-160648-open-the-seven-method-reference-claims-a",
+  "title": "Open the seven method reference claims and Guava ComparisonChain",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 34.3s, peak 133.3 MiB (estimated 3m00s, 4.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-160648-open-the-seven-method-reference-claims-a.json",
+    "sha256": "ea09a500e7da70c3544d3ca76c53d5d2edbab550fe8bf653f5eddf989f3158c7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-160648-open-the-seven-method-reference-claims-a",
+      "title": "Open the seven method reference claims and Guava ComparisonChain",
+      "description": "Run strict native and staged integrated JBMC through the original Lift and Chain entries, alongside direct controls, named standalone assertions, the stock package and the pinned Comparator overlay.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow/measure.py"
+        ]
+      },
+      "expected": "Opening dispositions, raw named properties, hashed classpath and physical controls for every registered entry.",
+      "submitted": {
+        "at": "2026-11-23T16:06:48+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 18,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "callbacks paired",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening callbacks paired",
+          "cwd": "."
+        },
+        {
+          "name": "callbacks packaged",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening callbacks packaged",
+          "cwd": "."
+        },
+        {
+          "name": "callbacks comparator",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening callbacks comparator",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/opening/callbacks/paired",
+        "verification/jbmc-fast-follow/opening/callbacks/packaged",
+        "verification/jbmc-fast-follow/opening/callbacks/comparator"
+      ]
+    }
+  },
+  "sourceCommit": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
+  "startedAt": "2026-11-23T16:25:11+00:00",
+  "finishedAt": "2026-11-23T16:29:38+00:00",
+  "wallSeconds": 267.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3488092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 139730944,
+    "wallSeconds": 34.3,
+    "cpuSeconds": 47.2,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "callbacks paired",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening callbacks paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 12.825,
+      "cpuSeconds": 14.347,
+      "cpuThrottledSeconds": 0.502,
+      "peakMemoryBytes": 139730944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-callbacks-paired.log",
+        "lines": 26,
+        "bytes": 854,
+        "sha256": "ddf7de3b993479cdaa3f16e4867f4a7fbbe0a24445d2093dfe88f85af3a93a05",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Lift#primitiveGood native unsupported",
+        "Lift#primitiveGood jbmc correct",
+        "Lift#primitiveWrong native unsupported",
+        "Lift#primitiveWrong jbmc process error",
+        "Lift#boxedGood native unsupported",
+        "Lift#boxedGood jbmc correct",
+        "Lift#boxedWrong native unsupported",
+        "Lift#boxedWrong jbmc process error",
+        "Lift#returnGood native unsupported",
+        "Lift#returnGood jbmc correct",
+        "Lift#returnWrong native unsupported",
+        "Lift#returnWrong jbmc process error",
+        "Lift#boxedNull native unsupported",
+        "Lift#boxedNull jbmc correct",
+        "Lift#staticGood native correct",
+        "Lift#staticGood jbmc correct",
+        "Lift#staticWrong native correct",
+        "Lift#staticWrong jbmc correct",
+        "Chain#good native unsupported",
+        "Chain#good jbmc unsupported",
+        "Chain#wrong native unsupported",
+        "Chain#wrong jbmc unsupported",
+        "Chain#skipsNull native correct",
+        "Chain#skipsNull jbmc unsupported",
+        "Chain#rejectsNull native unsupported",
+        "Chain#rejectsNull jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "callbacks packaged",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening callbacks packaged",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 16.032,
+      "cpuSeconds": 24.006,
+      "cpuThrottledSeconds": 1.334,
+      "peakMemoryBytes": 126906368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-callbacks-packaged.log",
+        "lines": 13,
+        "bytes": 429,
+        "sha256": "8b03ee5a97fa7eeeb00b707bbe5d0c044387752ae1e4b9f2152a659846ab15e8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Lift#primitiveGood packaged SUCCESS",
+        "Lift#primitiveWrong packaged FAILURE",
+        "Lift#boxedGood packaged SUCCESS",
+        "Lift#boxedWrong packaged FAILURE",
+        "Lift#returnGood packaged SUCCESS",
+        "Lift#returnWrong packaged FAILURE",
+        "Lift#boxedNull packaged SUCCESS",
+        "Lift#staticGood packaged SUCCESS",
+        "Lift#staticWrong packaged FAILURE",
+        "Chain#good packaged SUCCESS",
+        "Chain#wrong packaged SUCCESS",
+        "Chain#skipsNull packaged SUCCESS",
+        "Chain#rejectsNull packaged SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "callbacks comparator",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening callbacks comparator",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 5.411,
+      "cpuSeconds": 8.894,
+      "cpuThrottledSeconds": 0.692,
+      "peakMemoryBytes": 107778048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-callbacks-comparator.log",
+        "lines": 4,
+        "bytes": 133,
+        "sha256": "ea26ee8de72811b7ab6d69eaba1c13b7b9df251f7a43ee6362f2845847eebbd5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Chain#good comparator SUCCESS",
+        "Chain#wrong comparator FAILURE",
+        "Chain#skipsNull comparator SUCCESS",
+        "Chain#rejectsNull comparator SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/opening/callbacks/paired/measurement.json",
+      "change": "added",
+      "bytes": 40206,
+      "sha256": "27b88dec985ee5b39e92ec6facef4dfdf5e178cecdebcd239494bc2fb77690e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/callbacks/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 17219,
+      "sha256": "dc38fa6455f42e28e7bdffd2131f8f82b273571fe17c007dd99d317d40290286",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/callbacks/packaged/measurement.json",
+      "change": "added",
+      "bytes": 54187,
+      "sha256": "6593d876b01497636a67c47727edcf9949424089a28e8f57edb0c2b7692278d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/callbacks/packaged/raw.tar.gz",
+      "change": "added",
+      "bytes": 173105,
+      "sha256": "5eeda23fd6fec7835fb8aa6685995fd3af4130b9460101a15b7d9df6f3dc9c70",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/callbacks/comparator/measurement.json",
+      "change": "added",
+      "bytes": 18155,
+      "sha256": "bdb02b6d13df6f4b673c54a082f022a2f6d63fd5091940d451f7dd95b6a4fd15",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/callbacks/comparator/raw.tar.gz",
+      "change": "added",
+      "bytes": 71123,
+      "sha256": "3fc43da241986d02e7477f6be4e59fe4905cc0f80a544265c729ecea6d2189c2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T16:29:45+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/opening/callbacks/paired/measurement.json",
+      "verification/jbmc-fast-follow/opening/callbacks/paired/raw.tar.gz",
+      "verification/jbmc-fast-follow/opening/callbacks/packaged/measurement.json",
+      "verification/jbmc-fast-follow/opening/callbacks/packaged/raw.tar.gz",
+      "verification/jbmc-fast-follow/opening/callbacks/comparator/measurement.json",
+      "verification/jbmc-fast-follow/opening/callbacks/comparator/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6f934935ac0808dbe9da7733231f752d1144c779",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6f934935ac0808dbe9da7733231f752d1144c779/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T162938Z-7304379a5aeff0a0",
+      "outputs": "20261123T162938Z-761883126de8d671",
+      "diff": "20261123T162938Z-78248186f6f29357"
+    }
+  }
+}

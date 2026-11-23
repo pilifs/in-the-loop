@@ -1,0 +1,340 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-170333-check-the-original-commons-math-matrix-d",
+  "title": "Check the original Commons Math matrix descriptor and mismatch fields",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m18s, peak 4.5 GiB (estimated 1m00s, 3.0 GiB); 21 output file(s) changed",
+  "attention": [
+    "step 1 (Original descriptor and exact metadata) passed, but the kernel killed 2 process(es) in it at the memory limit",
+    "took 5m18s, 5.32× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-170333-check-the-original-commons-math-matrix-d.json",
+    "sha256": "b7a8b256e86629244891f84fa5531e553129e8ed8d46bd94ad2fda6590109329",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-170333-check-the-original-commons-math-matrix-d",
+      "title": "Check the original Commons Math matrix descriptor and mismatch fields",
+      "description": "Call MathArrays.checkRectangular([[J)V itself on two non-null equal-width rows, a singleton null row, and unequal widths with the declared exception. Separately check both fields of DimensionMismatchException and refute swapping the actual and expected widths on a freshly reconstructed JVM matrix.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow/matrix_transfer.py"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:03:33+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 20,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "1m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Original descriptor and exact metadata",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/matrix_transfer.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/matrix"
+      ]
+    }
+  },
+  "sourceCommit": "ef88d38e671f6336704789d3b651f13b1c69a3c1",
+  "startedAt": "2026-11-23T17:13:36+00:00",
+  "finishedAt": "2026-11-23T17:22:41+00:00",
+  "wallSeconds": 545.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 10143,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 4831838208,
+    "wallSeconds": 319.0,
+    "cpuSeconds": 324.2,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 5.32
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Original descriptor and exact metadata",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/matrix_transfer.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 318.991,
+      "cpuSeconds": 324.212,
+      "cpuThrottledSeconds": 0.657,
+      "peakMemoryBytes": 4831838208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 2,
+      "memoryHighEvents": 93,
+      "log": {
+        "path": "logs/1-original-descriptor-and-exact.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/matrix/correct/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/correct/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 11192,
+      "sha256": "9cd184d189cc17dc74cb40322fbe9c677efd05bfeb436592bffd5b5119407aeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/correct/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/correct/native/stdout.json",
+      "change": "added",
+      "bytes": 4995,
+      "sha256": "1b8ba50197a0b1383fa976ab6199b3b70aad3fd0e89bf6b946f4d831a9d4e682",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/equal-width/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/equal-width/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 10263,
+      "sha256": "f1bd8206d82986969380a257c1230a5c53bff49e7981324d9e56ce0695e88dfb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/equal-width/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/equal-width/native/stdout.json",
+      "change": "added",
+      "bytes": 6487,
+      "sha256": "1e31e36063667176df6cd53c5c9034d34f6e79664538a6f93e382d472f728249",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/measurement.json",
+      "change": "added",
+      "bytes": 12402,
+      "sha256": "2276f5afe81e7e876b0a51c60f377007182cd85d6869cef1b7f03ed300304838",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/singleton-null/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/singleton-null/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 10278,
+      "sha256": "bf9da8896329631d104c8cec9d716d0a23a96c8914e16d25bd98ef78700560a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/singleton-null/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/singleton-null/native/stdout.json",
+      "change": "added",
+      "bytes": 6261,
+      "sha256": "d56295a562228d0186ac1060183e74acb5f4f07de97284bc4e87538f9cd6825d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/swapped/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/swapped/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 11829,
+      "sha256": "3d37c18cf445b99cb27ae579b707cc33f34a270190bc16e5f39b5f865e3470d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/swapped/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/swapped/native/stdout.json",
+      "change": "added",
+      "bytes": 6529,
+      "sha256": "91a461e5484b72761a1aa5e1833636df677ee944d570f4dab1fdb6a95ec0d88a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/unequal-width/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/unequal-width/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 10643,
+      "sha256": "944b10d3934a795144da7de74290b4dd110be6cf859b18f3c6345462ffc4a234",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/unequal-width/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/matrix/unequal-width/native/stdout.json",
+      "change": "added",
+      "bytes": 6824,
+      "sha256": "a15ebd7027450ce1027b91f8de0b832d214982130438af77ce0699d68a8e6186",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T17:24:31+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/matrix/correct/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/correct/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/matrix/correct/native/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/correct/native/stdout.json",
+      "verification/jbmc-fast-follow/matrix/equal-width/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/equal-width/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/matrix/equal-width/native/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/equal-width/native/stdout.json",
+      "verification/jbmc-fast-follow/matrix/measurement.json",
+      "verification/jbmc-fast-follow/matrix/singleton-null/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/singleton-null/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/matrix/singleton-null/native/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/singleton-null/native/stdout.json",
+      "verification/jbmc-fast-follow/matrix/swapped/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/swapped/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/matrix/swapped/native/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/swapped/native/stdout.json",
+      "verification/jbmc-fast-follow/matrix/unequal-width/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/unequal-width/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/matrix/unequal-width/native/stderr.txt",
+      "verification/jbmc-fast-follow/matrix/unequal-width/native/stdout.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "915b544117fdba1354c04611c4d136a19b526f98",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/915b544117fdba1354c04611c4d136a19b526f98/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T172241Z-173196a64a9af8ef",
+      "outputs": "20261123T172241Z-19476380518c96f5",
+      "diff": "20261123T172241Z-2136169ea20a02e3"
+    }
+  }
+}

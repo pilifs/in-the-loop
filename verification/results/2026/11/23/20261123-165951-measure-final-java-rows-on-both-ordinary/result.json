@@ -1,0 +1,218 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-165951-measure-final-java-rows-on-both-ordinary",
+  "title": "Measure final Java rows on both ordinary engines",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m12s, peak 2.8 GiB (estimated 2m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-165951-measure-final-java-rows-on-both-ordinary.json",
+    "sha256": "2bb2e16cbda818ba9b8cae154528636e03f9688caa749143209a45aef4ab4bf4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-165951-measure-final-java-rows-on-both-ordinary",
+      "title": "Measure final Java rows on both ordinary engines",
+      "description": "Four direct public operations, shared and equal-valued distinct rows, null and empty roots, primitive builders and five original Commons Math matrix claims. Bind original JAR and class hashes on the JVM and checker, inspect the actual method descriptors, keep complete raw responses and replay each candidate on the original JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T16:59:51+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 20,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "2m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Measure final Java rows on both ordinary engines",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py final rows paired",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/final/rows/paired"
+      ]
+    }
+  },
+  "sourceCommit": "ef88d38e671f6336704789d3b651f13b1c69a3c1",
+  "startedAt": "2026-11-23T17:13:36+00:00",
+  "finishedAt": "2026-11-23T17:20:34+00:00",
+  "wallSeconds": 418.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 10143,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2997346304,
+    "wallSeconds": 192.7,
+    "cpuSeconds": 203.8,
+    "memoryOfEstimate": 0.7,
+    "durationOfEstimate": 1.61
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure final Java rows on both ordinary engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py final rows paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 192.676,
+      "cpuSeconds": 203.82,
+      "cpuThrottledSeconds": 1.286,
+      "peakMemoryBytes": 2997346304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-final-java-rows-on-bot.log",
+        "lines": 32,
+        "bytes": 1180,
+        "sha256": "c6ffc06189e1ab3159e7ee65d38067b7c2501c1725475a2e212c09b95155bf12",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "RaggedProof#reversed native correct",
+        "RaggedProof#reversed jbmc unsupported",
+        "RaggedProof#wrong native unsupported",
+        "RaggedProof#wrong jbmc correct",
+        "RaggedProof#iter native correct",
+        "RaggedProof#iter jbmc unsupported",
+        "RaggedProof#snapshot native unsupported",
+        "RaggedProof#snapshot jbmc correct",
+        "RaggedProof#distinct native unsupported",
+        "RaggedProof#distinct jbmc correct",
+        "RowIdentities#nonNullOuter native correct",
+        "RowIdentities#nonNullOuter jbmc correct",
+        "RowIdentities#noEmptyOuter native correct",
+        "RowIdentities#noEmptyOuter jbmc correct",
+        "RowIdentities#noDistinctEqualRows native correct",
+        "RowIdentities#noDistinctEqualRows jbmc correct",
+        "MadeRows#reverse native correct",
+        "MadeRows#reverse jbmc unsupported",
+        "MadeRows#iterator native correct",
+        "MadeRows#iterator jbmc unsupported",
+        "MadeRows#alwaysDistinct native correct",
+        "MadeRows#alwaysDistinct jbmc correct",
+        "MatrixRows#rectangular native correct",
+        "MatrixRows#rectangular jbmc unsupported",
+        "MatrixRows#singleShape native correct",
+        "MatrixRows#singleShape jbmc unsupported",
+        "MatrixRows#shape native correct",
+        "MatrixRows#shape jbmc unsupported",
+        "MatrixRows#same native unsupported",
+        "MatrixRows#same jbmc correct",
+        "MatrixRows#noNull native unsupported",
+        "MatrixRows#noNull jbmc correct"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/final/rows/paired/measurement.json",
+      "change": "added",
+      "bytes": 78359,
+      "sha256": "449186dd6d379461175af0b0f726ea22a149d5b74adcdccee4945b4fd869a1e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/final/rows/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 21743,
+      "sha256": "97b0de4d599f65ef26633cb33731906148c190c6f7e4b6744aeda8808cdb621a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T17:24:31+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/final/rows/paired/measurement.json",
+      "verification/jbmc-fast-follow/final/rows/paired/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "915b544117fdba1354c04611c4d136a19b526f98",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/915b544117fdba1354c04611c4d136a19b526f98/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T172034Z-836261ba593e4fc3",
+      "outputs": "20261123T172034Z-858888ed8b88680b",
+      "diff": "20261123T172034Z-8766711bf88da003"
+    }
+  }
+}

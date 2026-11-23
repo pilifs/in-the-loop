@@ -1,0 +1,580 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-165951-recheck-the-sixty-java-callers-on-the-di",
+  "title": "Recheck the sixty Java callers on the direct-row checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m51s, peak 663.3 MiB (estimated 5m00s, 4.0 GiB); 42 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-165951-recheck-the-sixty-java-callers-on-the-di.json",
+    "sha256": "80743cd3d42240c5db3d59777753ba4ada13af5500d45cf906973b6fa2f6f97e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-165951-recheck-the-sixty-java-callers-on-the-di",
+      "title": "Recheck the sixty Java callers on the direct-row checker",
+      "description": "Run all 120 native and integrated entries on the predecessor’s frozen graphs. Compare the original classes, claim files, JVM controls and qualified decisions at identical bounds.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T16:59:51+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 20,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Recheck the sixty Java callers on the direct-row checker",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/regressions/callers"
+      ]
+    }
+  },
+  "sourceCommit": "ef88d38e671f6336704789d3b651f13b1c69a3c1",
+  "startedAt": "2026-11-23T17:13:36+00:00",
+  "finishedAt": "2026-11-23T17:21:13+00:00",
+  "wallSeconds": 457.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 10143,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 695549952,
+    "wallSeconds": 231.2,
+    "cpuSeconds": 259.5,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.77
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 205.744,
+      "cpuSeconds": 205.901,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2301018112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "e3feb07ba6bccfd4fa87d08ab0e1a9d09dbc4cfb8881b8d8c455c85605d1086b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-165951-recheck-the-sixty-java-callers-on-the-di/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 25s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Recheck the sixty Java callers on the direct-row checker",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 231.17,
+      "cpuSeconds": 259.5,
+      "cpuThrottledSeconds": 3.231,
+      "peakMemoryBytes": 695549952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-the-sixty-java-callers.log",
+        "lines": 122,
+        "bytes": 5059,
+        "sha256": "c6a44e1e1de1158b98b74e37df2a3245ab0274cafd3d36c3f51d4ee91c5b4d89",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "nibble nibble-native correct 6.868",
+        "nibble nibble-jbmc unsupported 1.454",
+        "nibble left-native correct 0.046",
+        "nibble left-jbmc correct 1.294",
+        "nibble acceptsNegative-native correct 0.048",
+        "nibble acceptsNegative-jbmc correct 1.01",
+        "enum lookup-native correct 0.027",
+        "enum lookup-jbmc unsupported 0.242",
+        "enum ordinal-native correct 0.016",
+        "enum ordinal-jbmc correct 0.144",
+        "enum alwaysZero-native correct 0.045",
+        "enum alwaysZero-jbmc correct 0.155",
+        "locals kernel-native correct 0.044",
+        "locals kernel-jbmc unsupported 0.569",
+        "locals spring-native correct 0.02",
+        "locals spring-jbmc unsupported 0.884",
+        "locals nullInitializes-native correct 0.156",
+        "locals nullInitializes-jbmc correct 0.73",
+        "monitors matched-native unsupported 0.013",
+        "monitors matched-jbmc unsupported 0.272",
+        "monitors mixed-native unsupported 0.029",
+        "monitors mixed-jbmc unsupported 0.258",
+        "monitors synchronizedMethod-native unsupported 0.022",
+        "monitors synchronizedMethod-jbmc unsupported 0.264",
+        "gson-parent compatible-native correct 8.587",
+        "gson-parent compatible-jbmc unsupported 18.445",
+        "gson-parent syntax-native correct 11.434",
+        "gson-parent syntax-jbmc unsupported 20.341",
+        "guava-parent retained-native correct 0.036",
+        "guava-parent retained-jbmc correct 1.674",
+        "guava-parent parentBehavior-native correct 0.025",
+        "guava-parent parentBehavior-jbmc unsupported 1.674",
+        "gson-fix compatible-native correct 9.222",
+        "gson-fix compatible-jbmc unsupported 19.687",
+        "gson-fix syntax-native correct 0.124",
+        "gson-fix syntax-jbmc unsupported 21.803",
+        "guava-fix retained-native correct 0.032",
+        "guava-fix retained-jbmc unsupported 1.781",
+        "guava-fix parentBehavior-native correct 0.05",
+        "guava-fix parentBehavior-jbmc correct 2.031"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/arrays/measurement.json",
+      "change": "added",
+      "bytes": 25245,
+      "sha256": "32e4a71c6d84c480554543ce65b1618d3c4bb0bc1304cb32b91aa570d378cf72",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/arrays/raw.tar.gz",
+      "change": "added",
+      "bytes": 6109,
+      "sha256": "b675aa695ca5780750a1ecd98e10e2e0ec9dd90f6894dead5029e999bc6af92e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/construction/measurement.json",
+      "change": "added",
+      "bytes": 18331,
+      "sha256": "30ae6ac30bfe761229844e02c627c68f884fa4531fe382504fe9ced52a1fc25a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/construction/raw.tar.gz",
+      "change": "added",
+      "bytes": 5448,
+      "sha256": "2532e622d413b9debd15c816cf74baefeee911e308d1448ef3edee0ed2536b42",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/deque/measurement.json",
+      "change": "added",
+      "bytes": 18814,
+      "sha256": "eec1e5a340be8fec236f8a2ebcfb893f8f41c569abbd5a27fbc5b2a4e2ff821a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/deque/raw.tar.gz",
+      "change": "added",
+      "bytes": 6398,
+      "sha256": "f5dbe312abb8292be6a54eb77e28d66611cf009baebd9c61aeef99923b5fcd59",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/dispatch/measurement.json",
+      "change": "added",
+      "bytes": 13399,
+      "sha256": "c2d923b40bb804ace2f7b4c6b43678fd066a780792ec50f438ad46aaf7c65ed2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/dispatch/raw.tar.gz",
+      "change": "added",
+      "bytes": 3766,
+      "sha256": "e35ff895a5775d1d624f4ce442aaf686f5acb9ad1e861e19ae8c7064348165f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/endian/measurement.json",
+      "change": "added",
+      "bytes": 24956,
+      "sha256": "b13766da52ee11e4ea836de295428fffac9b2f4e8d88f3234beec05e7164102a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/endian/raw.tar.gz",
+      "change": "added",
+      "bytes": 4877,
+      "sha256": "b1a92694e866a5c62067510e4e0358b7a27b4d3f9ce8cffb08b64bc9084dc931",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/enum/measurement.json",
+      "change": "added",
+      "bytes": 17514,
+      "sha256": "9718b6808e693f209d8a7765428198fea5161a944cb1977cd54f8653f3c7c376",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/enum/raw.tar.gz",
+      "change": "added",
+      "bytes": 4714,
+      "sha256": "dc4aba3d378580ec2d43a8b44bab37ffe6a8e8dfd4be92592a53761dcacded19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/gson-fix/measurement.json",
+      "change": "added",
+      "bytes": 10396,
+      "sha256": "98ccbfa304715663bfc05a3b01b9b94ae18be058fd94cbe1fb2a4e3a24803544",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/gson-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 13291,
+      "sha256": "3e37eb056fe9a25d3d519b7b826049ae6c8b65d74ed07a8f607d01779217fd05",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/gson-parent/measurement.json",
+      "change": "added",
+      "bytes": 10491,
+      "sha256": "131aa0c83276d4ea04586187b415ed5ed7c8dbb07f6acd13275f8eed2769cb47",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/gson-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 13495,
+      "sha256": "60a6042671465d9e9f1789aa196620103a10419fb4de99d2f1cd841055f2e70f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/guava-fix/measurement.json",
+      "change": "added",
+      "bytes": 13863,
+      "sha256": "bcf09f56c53649b682b94fae89e1775471b9479876e0217df4f2e195d6ab8e7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/guava-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 5956,
+      "sha256": "ff74c426a4ba3dff1ee10f9242b56ac89c991d6320e68aead7dc94ce626fef0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/guava-parent/measurement.json",
+      "change": "added",
+      "bytes": 13879,
+      "sha256": "4fa37c19a6a0cf9a1574fb9baabc5156419024e27c5c53819903c7eff59a87ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/guava-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 5167,
+      "sha256": "5c4ac689e5f8d84fba575acbbcb7dffbd075ae7c363fd9ef279554b45c0fd21b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/lists/measurement.json",
+      "change": "added",
+      "bytes": 17767,
+      "sha256": "700ecf2b3f8e94b70ec16e984c246216e57c0f546b81ce7628338e57662f54fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/lists/raw.tar.gz",
+      "change": "added",
+      "bytes": 4811,
+      "sha256": "5d62b622732360777a17ffee712843b05843ccbb387af86e9ee8dc4397404b11",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/locals/measurement.json",
+      "change": "added",
+      "bytes": 17711,
+      "sha256": "f76e3045ad2bfc5af7f73d85d7eb8a762d7dd5d3b48a372ff18b9eab0b9b339b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/locals/raw.tar.gz",
+      "change": "added",
+      "bytes": 5848,
+      "sha256": "d7532c03382bdef24f8df74db1332d0c9641c9ba01063e29a4c871272e73f168",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/monitors/measurement.json",
+      "change": "added",
+      "bytes": 8858,
+      "sha256": "790b033f1e5ef9634a230130c9ec338efabdee8b0c6578532d37a4645f46d0d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/monitors/raw.tar.gz",
+      "change": "added",
+      "bytes": 4106,
+      "sha256": "84dc9abd1bb4a79e2328588ecab6bcf45356d34d7170f86d434dcabc3f273391",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/nibble/measurement.json",
+      "change": "added",
+      "bytes": 19629,
+      "sha256": "e7b4d5ddaad9473dbdbdbc81b6470f87fcfc4761076eb670307667f56c5a77ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/nibble/raw.tar.gz",
+      "change": "added",
+      "bytes": 6272,
+      "sha256": "9ce2df59a3e2447466dd269ea63a82516bdbfe6de56b842820924ff82f551993",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/numbers/measurement.json",
+      "change": "added",
+      "bytes": 30983,
+      "sha256": "2f20f4ce02b7a6a730a3a212391cc3acf8222c3eafbb675a197596b4a0799c01",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/numbers/raw.tar.gz",
+      "change": "added",
+      "bytes": 7411,
+      "sha256": "7cfa5c521f87d779740ff5f1e4836f3546e34fb41429ac0cb352fa452f653262",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/prefix/measurement.json",
+      "change": "added",
+      "bytes": 20994,
+      "sha256": "b872bd0194c8edadae458a465959762f4b84c254339351489957387e7fc85e22",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/prefix/raw.tar.gz",
+      "change": "added",
+      "bytes": 6125,
+      "sha256": "54bba28555779cd6e9b8a94bed1656cfd9d6003e4bafe7c761f9b5396d31c599",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/radix/measurement.json",
+      "change": "added",
+      "bytes": 12522,
+      "sha256": "fd628502c13537910a9121072e4ce9671bec4381d7428c690e9805c599e91128",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/radix/raw.tar.gz",
+      "change": "added",
+      "bytes": 4561,
+      "sha256": "eea21aa991084afffb8f9da4508f71c410ad432149c5e54cb28e547349fb8a68",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/receiver/measurement.json",
+      "change": "added",
+      "bytes": 13968,
+      "sha256": "9a286ec24325bd4698417376f5d8889344e2eafa3c50f74399bc3e7dd6ff3998",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/receiver/raw.tar.gz",
+      "change": "added",
+      "bytes": 3538,
+      "sha256": "c5b27394a105d09cad1fe833a002a5442c3fd200e522a97567d126588be84c74",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/store-iterator/measurement.json",
+      "change": "added",
+      "bytes": 8213,
+      "sha256": "f6f46803bb75b8a91d4142366fbdd40a3ab615c30dacf8c39f806d8bba759d47",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/store-iterator/raw.tar.gz",
+      "change": "added",
+      "bytes": 3122,
+      "sha256": "2936cddbabc40462c49418929f7a2dbd89e23568de410a637939a7731774ea30",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/stores/measurement.json",
+      "change": "added",
+      "bytes": 12874,
+      "sha256": "56ad005b07f498c8b3288c488141aa9f3caa329e577a2eae5b9789e697904fa2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/stores/raw.tar.gz",
+      "change": "added",
+      "bytes": 3640,
+      "sha256": "38bf661521c37487d45f70200dcd8180cf7a88a680d2513d15c8c20773ca6807",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/surrogates/measurement.json",
+      "change": "added",
+      "bytes": 12469,
+      "sha256": "3648d5c1554a783ea080a66660cf1035f856fe6f197d4fa87d2d9a41b0710707",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/regressions/callers/surrogates/raw.tar.gz",
+      "change": "added",
+      "bytes": 4226,
+      "sha256": "e47f657245576d69439a08a494b68bf97a74adaa260805fc3d63c9f22953ecd4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T17:24:31+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/regressions/callers/arrays/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/arrays/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/construction/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/construction/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/deque/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/deque/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/dispatch/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/dispatch/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/endian/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/endian/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/enum/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/enum/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/gson-fix/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/gson-fix/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/gson-parent/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/gson-parent/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/guava-fix/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/guava-fix/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/guava-parent/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/guava-parent/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/lists/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/lists/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/locals/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/locals/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/monitors/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/monitors/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/nibble/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/nibble/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/numbers/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/numbers/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/prefix/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/prefix/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/radix/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/radix/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/receiver/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/receiver/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/store-iterator/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/store-iterator/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/stores/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/stores/raw.tar.gz",
+      "verification/jbmc-fast-follow/regressions/callers/surrogates/measurement.json",
+      "verification/jbmc-fast-follow/regressions/callers/surrogates/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "915b544117fdba1354c04611c4d136a19b526f98",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/915b544117fdba1354c04611c4d136a19b526f98/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T172113Z-5086385068b5d281",
+      "outputs": "20261123T172113Z-544034bc86127dac",
+      "diff": "20261123T172113Z-5662383ae14feb2c"
+    }
+  }
+}

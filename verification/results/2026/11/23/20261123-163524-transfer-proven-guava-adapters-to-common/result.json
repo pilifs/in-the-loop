@@ -1,0 +1,327 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-163524-transfer-proven-guava-adapters-to-common",
+  "title": "Transfer proven Guava adapters to Commons Lang and ComparisonChain",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 21.6s, peak 135.6 MiB (estimated 1m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-163524-transfer-proven-guava-adapters-to-common.json",
+    "sha256": "69fb03598868964707a45c06e6608974e0ea85bd0bee62820df44375cbd5712d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-163524-transfer-proven-guava-adapters-to-common",
+      "title": "Transfer proven Guava adapters to Commons Lang and ComparisonChain",
+      "description": "The preceding same-source Guava run decided all five statements on both engines. Recheck all seven registered method-reference statements and direct-call twins with independent JVM witness replay, then measure the active, settled, active-null and skipped-null Guava ComparisonChain entries on both engines. Stock and image-backed Comparator profiles were recorded at opening.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/392-method-reference-conversions/target.json"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T16:35:24+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "revision": "550cf8a2cee3cb35a35362360684a3b76a06b3c7",
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "1m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Seven callbacks and direct twins",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py qualified callbacks paired --cohort callbacks direct --require",
+          "cwd": "."
+        },
+        {
+          "name": "ComparisonChain native transfer",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py transfer callbacks native --cohort chain --require",
+          "cwd": "."
+        },
+        {
+          "name": "ComparisonChain integrated comparison",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py transfer callbacks jbmc --cohort chain",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/qualified/callbacks/paired",
+        "verification/jbmc-fast-follow/transfer/callbacks/native",
+        "verification/jbmc-fast-follow/transfer/callbacks/jbmc"
+      ]
+    }
+  },
+  "sourceCommit": "550cf8a2cee3cb35a35362360684a3b76a06b3c7",
+  "startedAt": "2026-11-23T16:48:46+00:00",
+  "finishedAt": "2026-11-23T16:49:16+00:00",
+  "wallSeconds": 30.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3488092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 142229504,
+    "wallSeconds": 21.6,
+    "cpuSeconds": 29.2,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.36
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Seven callbacks and direct twins",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py qualified callbacks paired --cohort callbacks direct --require",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 14.233,
+      "cpuSeconds": 18.43,
+      "cpuThrottledSeconds": 0.962,
+      "peakMemoryBytes": 142229504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-seven-callbacks-and-direct-twi.log",
+        "lines": 18,
+        "bytes": 554,
+        "sha256": "62583978654fa5e8672a89780550b068f7f1d3307f56e35234bd42dcdea95542",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Lift#primitiveGood native correct",
+        "Lift#primitiveGood jbmc correct",
+        "Lift#primitiveWrong native correct",
+        "Lift#primitiveWrong jbmc correct",
+        "Lift#boxedGood native correct",
+        "Lift#boxedGood jbmc correct",
+        "Lift#boxedWrong native correct",
+        "Lift#boxedWrong jbmc correct",
+        "Lift#returnGood native correct",
+        "Lift#returnGood jbmc correct",
+        "Lift#returnWrong native correct",
+        "Lift#returnWrong jbmc correct",
+        "Lift#boxedNull native correct",
+        "Lift#boxedNull jbmc correct",
+        "Lift#staticGood native correct",
+        "Lift#staticGood jbmc correct",
+        "Lift#staticWrong native correct",
+        "Lift#staticWrong jbmc correct"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "ComparisonChain native transfer",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py transfer callbacks native --cohort chain --require",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 2.806,
+      "cpuSeconds": 4.748,
+      "cpuThrottledSeconds": 0.399,
+      "peakMemoryBytes": 107032576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-comparisonchain-native-transfe.log",
+        "lines": 4,
+        "bytes": 117,
+        "sha256": "e458a576f7ff4ba4456cc8b695851e96e0b75c93a54de16b60274a254b338f7e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Chain#good native correct",
+        "Chain#wrong native correct",
+        "Chain#skipsNull native correct",
+        "Chain#rejectsNull native correct"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "ComparisonChain integrated comparison",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py transfer callbacks jbmc --cohort chain",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 4.611,
+      "cpuSeconds": 5.991,
+      "cpuThrottledSeconds": 0.438,
+      "peakMemoryBytes": 94105600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-comparisonchain-integrated-com.log",
+        "lines": 4,
+        "bytes": 125,
+        "sha256": "d0459ad6befb59916e0ec52585b44de757fb6d958d5ff23cc60c40ad07e49e40",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Chain#good jbmc unsupported",
+        "Chain#wrong jbmc unsupported",
+        "Chain#skipsNull jbmc unsupported",
+        "Chain#rejectsNull jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/qualified/callbacks/paired/measurement.json",
+      "change": "added",
+      "bytes": 56924,
+      "sha256": "132feafd6fbc82b69e4e1a69470857b2b2e716314b5c02d084758e6ef303a1ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/qualified/callbacks/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 15045,
+      "sha256": "1c16605085d778c9897bfc9cc6b6f64c54698b83f1296176e5b3430573be6144",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/transfer/callbacks/native/measurement.json",
+      "change": "added",
+      "bytes": 15089,
+      "sha256": "57d07aa5c7b99ea59660fbbb34b6f8abf22d67646aadcecf3d6786869499c161",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/transfer/callbacks/native/raw.tar.gz",
+      "change": "added",
+      "bytes": 8418,
+      "sha256": "adc151c26eed66b52bbce42ee2d50901c9c56d4c5a43d9b2df22bd72ed345e55",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/transfer/callbacks/jbmc/measurement.json",
+      "change": "added",
+      "bytes": 7316,
+      "sha256": "8454e657c5fe9fa3eb44a7ac569d52126448f6fb98b73c949d9ac925f0b4ff0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/transfer/callbacks/jbmc/raw.tar.gz",
+      "change": "added",
+      "bytes": 8527,
+      "sha256": "ce98614f55e5dd52c5cebe63876410a4c1139680b31a56904a877cba8e4449b5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T16:49:41+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/qualified/callbacks/paired/measurement.json",
+      "verification/jbmc-fast-follow/qualified/callbacks/paired/raw.tar.gz",
+      "verification/jbmc-fast-follow/transfer/callbacks/native/measurement.json",
+      "verification/jbmc-fast-follow/transfer/callbacks/native/raw.tar.gz",
+      "verification/jbmc-fast-follow/transfer/callbacks/jbmc/measurement.json",
+      "verification/jbmc-fast-follow/transfer/callbacks/jbmc/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "46250c10f35e39aa8c510296d0c36d68edf3f895",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/46250c10f35e39aa8c510296d0c36d68edf3f895/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T164916Z-492836eb23077be3",
+      "outputs": "20261123T164916Z-5182769a0bc1140e",
+      "diff": "20261123T164916Z-5375252356c315d4"
+    }
+  }
+}

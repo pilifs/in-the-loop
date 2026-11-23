@@ -1,0 +1,559 @@
+{
+  "phase": "opening",
+  "family": "queue",
+  "lane": "packaged",
+  "predecessor": {
+    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
+    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
+  },
+  "measuredSource": "1b5d1ce10919f895658810583e6f08abd29b04bc",
+  "job": "20261123-171546-freeze-the-java-queue-reserve-comparison",
+  "checkerSha256": "21f641888609ff2e60ccb8744e175b2ff4ac8f9a6cd8f7ae7e4bea858841b1f2",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "jars": [
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    },
+    {
+      "name": "commons-collections4-4.5.0.jar",
+      "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+    }
+  ],
+  "productClasses": {
+    "QueueFill$Cell.class": "92a18e4794e9d30839daf67cb44ce11c1d132b8fc5cedb182b637546f6299c0f",
+    "QueueFill.class": "574e582b1311809cc9babe8dc64d7e25009e584bb7d03e5f595d8869a2eab616"
+  },
+  "driverClasses": {
+    "Cases.class": "298252c333ff3369e0a3f8bc5afcf1304467307dbebd0d54bb0c30cf7a25e4dc",
+    "QueueGrid.class": "5f69c828f06b0594605825100e941c82fc4596ccd793355c7d3820b7bc3ff529",
+    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
+  },
+  "originalJvm": {
+    "Cases": {
+      "sha256": "739a529d02cea610e5dfb2d43d3fa338ee2cef6e74730db4c8cc22b25b9fe8ca",
+      "seconds": 0.05,
+      "cases": 13
+    },
+    "QueueGrid": {
+      "sha256": "db817efb8e0e0273cef2a233b950b70873bd3342340a5b149f4e391c5e87f569",
+      "seconds": 0.047
+    }
+  },
+  "rows": [
+    {
+      "task": "queue-fill-queue",
+      "cohort": "queue",
+      "parameters": "int script",
+      "reachGuard": "script >= 0 && script <= 255",
+      "target": "QueueFill#queue",
+      "expected": "established",
+      "specSha256": "60fe4d4514cd3329f83db312becb2c71052afca4be27b7ca72be19f778d39e29",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "148aeb9e163997f13af91aaa3bde1378428b6cf3784290c807ae3a0835fe8ff7",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "commons-lang3-3.17.0.jar",
+          "commons-collections4-4.5.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(I)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 7.415,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 14",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "14",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 14",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(I)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "script": {
+              "binary": "00000000000000000000000011111111",
+              "data": "255",
+              "name": "integer",
+              "type": "int",
+              "width": 32
+            }
+          },
+          "seconds": 6.504,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "queue-fill-full-means-occupied",
+      "cohort": "queue",
+      "parameters": "int script",
+      "reachGuard": "script >= 0 && script <= 255",
+      "target": "QueueFill#fullMeansOccupied",
+      "expected": "refuted",
+      "specSha256": "922309aedc2af9458cc1bd800126aed875c8b9bc4178735766c649c616249770",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "982b83e49769880fcd017df500905820646f50659ea0ea673f73d40552396864",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "commons-lang3-3.17.0.jar",
+          "commons-collections4-4.5.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.target:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(I)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "script": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "int",
+              "width": 32
+            }
+          },
+          "seconds": 20.53,
+          "entry": "FollowAssertions.target",
+          "jvmReplay": {
+            "outcome": "refuted",
+            "inputs": [
+              {
+                "type": "int",
+                "value": 0
+              }
+            ],
+            "sourceSha256": "c7eb1ead2e0ce5f08eee8b3a55ef4c56cf3e0fb5b71889843dbc2711db4df2b9",
+            "exit": 0,
+            "diagnostic": ""
+          }
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 14",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "14",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 14",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(I)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "script": {
+              "binary": "00000000000000000000000011111111",
+              "data": "255",
+              "name": "integer",
+              "type": "int",
+              "width": 32
+            }
+          },
+          "seconds": 5.678,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "queue-fill-fill",
+      "cohort": "fill",
+      "parameters": "int value",
+      "reachGuard": "true",
+      "target": "QueueFill#fill",
+      "expected": "established",
+      "specSha256": "ea062dda3fc65f904c8ee448d07c2208721f143e99f5878bdb6b4ced23ec1473",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "b6bd176db8d786bdd5431a7734408406d8821bb73d700f8b963b3a2654162d2f",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "commons-lang3-3.17.0.jar",
+          "commons-collections4-4.5.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.target:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(I)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "int",
+              "width": 32
+            }
+          },
+          "seconds": 0.09,
+          "entry": "FollowAssertions.target",
+          "jvmReplay": {
+            "outcome": "held",
+            "inputs": [
+              {
+                "type": "int",
+                "value": 0
+              }
+            ],
+            "sourceSha256": "851f4e57ca4d39dd6f7e8d81f066953445d5404eb4942ed777a4cce50c6f2a68",
+            "exit": 0,
+            "diagnostic": ""
+          }
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(I)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "int",
+              "width": 32
+            }
+          },
+          "seconds": 0.082,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "queue-fill-stale-survives",
+      "cohort": "fill",
+      "parameters": "int value",
+      "reachGuard": "true",
+      "target": "QueueFill#staleSurvives",
+      "expected": "refuted",
+      "specSha256": "2147b7d5e89635f17e1a4853ffdc8b200f9585cb6980469df42908e342431567",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "82014caccf56697883350a3d065b1c463e334e0437cec5384706bd0bc85f9a8e",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "commons-lang3-3.17.0.jar",
+          "commons-collections4-4.5.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(I)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(I)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 0.094,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(I)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(I)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(I)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(I)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "value": {
+              "binary": "00000000000000000000000000000000",
+              "data": "0",
+              "name": "integer",
+              "type": "int",
+              "width": 32
+            }
+          },
+          "seconds": 0.099,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "queue-fill-covariant",
+      "cohort": "fill",
+      "parameters": "boolean empty",
+      "reachGuard": "true",
+      "target": "QueueFill#covariant",
+      "expected": "established",
+      "specSha256": "5a47a3a4f367c9b5092972b871d5ebb5f99a13461bffb1417039ca3022af4ce0",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "65cf273832aaaf30b273b48aedc4c134290be069e69692781ff7c2294ca91db6",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "commons-lang3-3.17.0.jar",
+          "commons-collections4-4.5.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.target:(Z)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Z)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Z)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Z)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Z)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "empty": {
+              "binary": "00000000",
+              "data": "false",
+              "name": "integer",
+              "type": "const boolean",
+              "width": 8
+            }
+          },
+          "seconds": 0.098,
+          "entry": "FollowAssertions.target",
+          "jvmReplay": {
+            "outcome": "held",
+            "inputs": [
+              {
+                "type": "boolean",
+                "value": false
+              }
+            ],
+            "sourceSha256": "9a6d7f590c9e648a2de86ddcd1d1a1310d551e8de950d9a89a5c3963a4d0a8b9",
+            "exit": 0,
+            "diagnostic": ""
+          }
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Z)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Z)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Z)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Z)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Z)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "empty": {
+              "binary": "00000001",
+              "data": "true",
+              "name": "integer",
+              "type": "const boolean",
+              "width": 8
+            }
+          },
+          "seconds": 0.101,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    }
+  ],
+  "rawSha256": "a1f06bedbf5e1ea437f383373aef1ec8544e3fbbc336f396314de61cab5af489"
+}

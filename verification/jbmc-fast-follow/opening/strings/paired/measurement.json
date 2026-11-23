@@ -1,0 +1,285 @@
+{
+  "phase": "opening",
+  "family": "strings",
+  "lane": "paired",
+  "predecessor": {
+    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
+    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
+  },
+  "measuredSource": "1b5d1ce10919f895658810583e6f08abd29b04bc",
+  "job": "20261123-171546-freeze-the-java-strings-reserve-comparis",
+  "checkerSha256": "21f641888609ff2e60ccb8744e175b2ff4ac8f9a6cd8f7ae7e4bea858841b1f2",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "jars": [
+    {
+      "name": "guava-33.4.8-jre.jar",
+      "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+    },
+    {
+      "name": "failureaccess-1.0.3.jar",
+      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb"
+    },
+    {
+      "name": "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+    },
+    {
+      "name": "jspecify-1.0.0.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    },
+    {
+      "name": "error_prone_annotations-2.36.0.jar",
+      "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+    },
+    {
+      "name": "j2objc-annotations-3.0.0.jar",
+      "sha256": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
+    },
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    }
+  ],
+  "productClasses": {
+    "ExactOrder.class": "3e4063033bb7de780a425680089c697f0515cda8ba9e53dd03ac640a3dfb92fd"
+  },
+  "driverClasses": {
+    "Cases.class": "4acc8ee353a4020017b6b502c13c315f31f44cc9d0aa4bb7f1de995ad35b9507",
+    "OrderGrid.class": "8b2f8f163c269de0ce3cd4ab85f9f0c797f465ee938344d9e7e933bdd9875b9f",
+    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
+  },
+  "originalJvm": {
+    "Cases": {
+      "sha256": "5a9bccf70c2c56f9c321deae884d53f8a3afc3475d528ac5b73bea194dff076a",
+      "seconds": 0.064,
+      "cases": 24
+    },
+    "OrderGrid": {
+      "sha256": "15e3b09566e33594ec96f43ee5f803a62ad897118f6fea8a4ee5d95055c5b707",
+      "seconds": 0.061
+    }
+  },
+  "rows": [
+    {
+      "task": "exact-order-commons",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#commons",
+      "expected": "established",
+      "specSha256": "a1959bcc694c522a0e6718ae2ea24bc6c31763313d1554a119b5837b84bc2129",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.021,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13 (java.lang.Comparable.compareTo(java.lang.Object) at org.apache.commons.lang3.ObjectUtils.compare:321). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "commons takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+      }
+    },
+    {
+      "task": "exact-order-only-sign",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#onlySign",
+      "expected": "refuted",
+      "specSha256": "50a0d3c2be5dccd097d2fa69963714d267c7c49a582abba2a9b446e94da84877",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.023,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13 (java.lang.Comparable.compareTo(java.lang.Object) at org.apache.commons.lang3.ObjectUtils.compare:321). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "onlySign takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+      }
+    },
+    {
+      "task": "exact-order-guava",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#guava",
+      "expected": "established",
+      "specSha256": "22d0d721df8018bf2fbffeea9a7cc96f4c1e1043bc85f15d6c319b117193441a",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.021,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13 (java.lang.Comparable.compareTo(java.lang.Object) at com.google.common.collect.NaturalOrdering.compare:42). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "guava takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+      }
+    },
+    {
+      "task": "exact-order-first-on-tie",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#firstOnTie",
+      "expected": "established",
+      "specSha256": "7123dc9a37d6007e2cf25ca1215ac17a07a60c598f62bf9ce5054e60586959e5",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.023,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13 (java.lang.Comparable.compareTo(java.lang.Object) at com.google.common.collect.NaturalOrdering.compare:42). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "firstOnTie takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+      }
+    },
+    {
+      "task": "exact-order-second-on-tie",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#secondOnTie",
+      "expected": "refuted",
+      "specSha256": "53b51c249f3f56d7ce2d261a11f6f9cd32c73bdcabb07f62cbe838c8310cd5ea",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.022,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13 (java.lang.Comparable.compareTo(java.lang.Object) at com.google.common.collect.NaturalOrdering.compare:42). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "secondOnTie takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+      }
+    },
+    {
+      "task": "exact-order-direct",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#direct",
+      "expected": "established",
+      "specSha256": "06ad3ba679be893122a6fc2611c057b9b87271db225aba56d6058b367cfc6dd1",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.026,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.String.compareTo(Ljava/lang/String;)I@jdk-21.0.13 (java.lang.String.compareTo(java.lang.String) at ExactOrder.direct:41). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "direct takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+      }
+    },
+    {
+      "task": "exact-order-same-reference",
+      "cohort": "string-alias",
+      "parameters": "String a",
+      "reachGuard": "a != null && a.length() <= 2",
+      "target": "ExactOrder#sameReference",
+      "expected": "established",
+      "specSha256": "468dea702ff2bc29a91206990b00853e8bbdea4518bd1892af6d39cae85ebe61",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.022,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13 (java.lang.Comparable.compareTo(java.lang.Object) at com.google.common.collect.NaturalOrdering.compare:42). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "sameReference takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
+      }
+    }
+  ],
+  "rawSha256": "c5b9f0888215afc8656829bb83eb2d079e96e11dd6bb88da163e9c24228dc198"
+}

@@ -1,0 +1,231 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-162554-qualify-original-guava-method-reference",
+  "title": "Qualify original Guava method-reference arguments and returns",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 12.6s, peak 133.5 MiB (estimated 1m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-162554-qualify-original-guava-method-reference.json",
+    "sha256": "af583c040bd90b67ca85f3e196bf3b1106354f88cb4028c57143f4ff16774087",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-162554-qualify-original-guava-method-reference",
+      "title": "Qualify original Guava method-reference arguments and returns",
+      "description": "Check the five original Guava Lift statements on every pair of signed ints and on null unboxing, through the strict native and staged integrated CLI. Independently compile and replay each reported counterexample on Temurin 21, retaining raw results and bootstrap descriptors before the Commons Lang transfer.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "examples/392-method-reference-conversions/adapter/Lift.java"
+        ]
+      },
+      "expected": "Six proofs and four original JVM refutations across ten matched engine runs, all at the registered scope.",
+      "submitted": {
+        "at": "2026-11-23T16:25:54+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "1m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Guava and the original JVM",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py guava callbacks paired --methods primitiveGood primitiveWrong boxedGood boxedWrong boxedNull --require",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/guava/callbacks/paired"
+      ]
+    }
+  },
+  "sourceCommit": "550cf8a2cee3cb35a35362360684a3b76a06b3c7",
+  "startedAt": "2026-11-23T16:30:26+00:00",
+  "finishedAt": "2026-11-23T16:34:19+00:00",
+  "wallSeconds": 233.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3488092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 140034048,
+    "wallSeconds": 12.6,
+    "cpuSeconds": 16.1,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 212.135,
+      "cpuSeconds": 212.411,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2301120512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "603918a8121878cee34e3e71e982421d4a653f92ce6a0c1f9e36bb8452e76c04",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-162554-qualify-original-guava-method-reference/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 32s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Guava and the original JVM",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py guava callbacks paired --methods primitiveGood primitiveWrong boxedGood boxedWrong boxedNull --require",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 12.638,
+      "cpuSeconds": 16.063,
+      "cpuThrottledSeconds": 0.775,
+      "peakMemoryBytes": 140034048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-guava-and-the-original-jvm.log",
+        "lines": 10,
+        "bytes": 310,
+        "sha256": "39d6d2838d0c71ad23471573ca924ff8cabf0e2ad83c8fed9566ebdf4daedf60",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Lift#primitiveGood native correct",
+        "Lift#primitiveGood jbmc correct",
+        "Lift#primitiveWrong native correct",
+        "Lift#primitiveWrong jbmc correct",
+        "Lift#boxedGood native correct",
+        "Lift#boxedGood jbmc correct",
+        "Lift#boxedWrong native correct",
+        "Lift#boxedWrong jbmc correct",
+        "Lift#boxedNull native correct",
+        "Lift#boxedNull jbmc correct"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/guava/callbacks/paired/measurement.json",
+      "change": "added",
+      "bytes": 32703,
+      "sha256": "1a4d64cc380537efe67b4748d6ac57e23e11da3b53c24c6eb1ccbbe473558148",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/guava/callbacks/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 11315,
+      "sha256": "c5ca881a8f212003d81d02a0ab901093cdb6d6324a7d8b4e3f014cfa94072edd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T16:34:50+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/guava/callbacks/paired/measurement.json",
+      "verification/jbmc-fast-follow/guava/callbacks/paired/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "46250c10f35e39aa8c510296d0c36d68edf3f895",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/46250c10f35e39aa8c510296d0c36d68edf3f895/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T163419Z-131742ddfa0ca668",
+      "outputs": "20261123T163419Z-1773654ae5f3bd16",
+      "diff": "20261123T163419Z-2102638f940eca6f"
+    }
+  }
+}
