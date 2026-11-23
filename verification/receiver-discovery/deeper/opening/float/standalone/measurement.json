@@ -1,0 +1,103 @@
+{
+  "schema": "receiver-deep-case/v1",
+  "job": "20261123-225414-check-the-full-paired-float-comparator-a",
+  "source": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "classes": {
+    "FloatHistory.class": "f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5"
+  },
+  "jars": [
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    }
+  ],
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "originalJvm": [
+    "100081 pairs; x=3f800001 y=3f800000 original=34000000 translated=00000000"
+  ],
+  "jbmc": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
+  "coreModels": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
+  "results": {
+    "packaged/exact": {
+      "flags": [
+        "--function",
+        "DeepAssertions.exact",
+        "--unwind",
+        "11",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "10",
+        "--max-nondet-string-length",
+        "9",
+        "--trace",
+        "--json-ui"
+      ],
+      "exit": 0,
+      "properties": 2,
+      "user": [
+        [
+          "java::DeepAssertions.exact:(FF)V.assertion.1",
+          "SUCCESS"
+        ]
+      ],
+      "otherFailures": [],
+      "rawSha256": "8cb4a6c798840309bf3c9ab154bf43629a6987cf559f0eaf44f0c299568dd660",
+      "overlay": {}
+    },
+    "packaged/translated": {
+      "flags": [
+        "--function",
+        "DeepAssertions.translated",
+        "--unwind",
+        "11",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "10",
+        "--max-nondet-string-length",
+        "9",
+        "--trace",
+        "--json-ui"
+      ],
+      "exit": 10,
+      "properties": 2,
+      "user": [
+        [
+          "java::DeepAssertions.translated:(FF)V.assertion.1",
+          "FAILURE"
+        ]
+      ],
+      "otherFailures": [],
+      "rawSha256": "bc8e15e86eaa9c356e46c260383cc985aacfb8e9a9bba452659e51d3ab41714c",
+      "overlay": {}
+    },
+    "packaged/floatReach": {
+      "flags": [
+        "--function",
+        "DeepAssertions.floatReach",
+        "--unwind",
+        "11",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "10",
+        "--max-nondet-string-length",
+        "9",
+        "--trace",
+        "--json-ui"
+      ],
+      "exit": 10,
+      "properties": 2,
+      "user": [
+        [
+          "java::DeepAssertions.floatReach:(FF)V.assertion.1",
+          "FAILURE"
+        ]
+      ],
+      "otherFailures": [],
+      "rawSha256": "7b08fba068c657cc6ad469bb8eee8fdf42785aca89fa5289783758a6e1dee8f7",
+      "overlay": {}
+    }
+  }
+}

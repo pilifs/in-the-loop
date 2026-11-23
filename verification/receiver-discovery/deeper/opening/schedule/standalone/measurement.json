@@ -1,0 +1,130 @@
+{
+  "schema": "receiver-deep-case/v1",
+  "job": "20261123-225415-check-atomic-split-and-terminal-assertio",
+  "source": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "classes": {
+    "Duty.class": "ac0e3a77edcff82cbcdd02289788c5db2f2cdd0261ec4fa65560e728f4b589fe",
+    "Duty$Board.class": "36780c8adf7a34aa4fbcc1bc5a223db639633bbaa306083e3b815edf6a2fbdfc",
+    "Duty$Worker.class": "51ccaa85c2501c09d56a2e1f5762422dabbc62a27ad553a81198bd2e6be39469",
+    "Duty$Gates.class": "e39e95a5aadcde210de4ea47ea1795ee997f45224c82c9fa04f8853a4d1e04f7"
+  },
+  "jars": [],
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "originalJvm": null,
+  "jbmc": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
+  "coreModels": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
+  "results": {
+    "packaged/atomic": {
+      "flags": [
+        "--function",
+        "Duty.atomic",
+        "--unwind",
+        "6",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "10",
+        "--max-nondet-string-length",
+        "9",
+        "--trace",
+        "--json-ui",
+        "--java-threading"
+      ],
+      "exit": 0,
+      "properties": 3,
+      "user": [
+        [
+          "java::Duty$Board.commit:(IZ)V.assertion.1",
+          "SUCCESS"
+        ]
+      ],
+      "otherFailures": [],
+      "rawSha256": "cb582b5836cc18220c686ba14f26508c89ad3960b647b50c3c285778639d1fdb",
+      "overlay": {}
+    },
+    "packaged/split": {
+      "flags": [
+        "--function",
+        "Duty.split",
+        "--unwind",
+        "6",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "10",
+        "--max-nondet-string-length",
+        "9",
+        "--trace",
+        "--json-ui",
+        "--java-threading"
+      ],
+      "exit": 10,
+      "properties": 3,
+      "user": [
+        [
+          "java::Duty$Board.commit:(IZ)V.assertion.1",
+          "FAILURE"
+        ]
+      ],
+      "otherFailures": [],
+      "rawSha256": "e1f01c4a9344b1d571a343d89f40c712d130e7fef47e1cb6da9c939b9b987c71",
+      "overlay": {}
+    },
+    "packaged/atomicTerminal": {
+      "flags": [
+        "--function",
+        "Duty.atomicTerminal",
+        "--unwind",
+        "6",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "10",
+        "--max-nondet-string-length",
+        "9",
+        "--trace",
+        "--json-ui",
+        "--java-threading"
+      ],
+      "exit": 0,
+      "properties": 3,
+      "user": [
+        [
+          "java::Duty$Board.commit:(IZ)V.assertion.1",
+          "SUCCESS"
+        ]
+      ],
+      "otherFailures": [],
+      "rawSha256": "76a381b882d277ce474e7c746746486dcf1658bc93c83da49e9ee27ef10daf31",
+      "overlay": {}
+    },
+    "packaged/splitTerminal": {
+      "flags": [
+        "--function",
+        "Duty.splitTerminal",
+        "--unwind",
+        "6",
+        "--unwinding-assertions",
+        "--throw-runtime-exceptions",
+        "--max-nondet-array-length",
+        "10",
+        "--max-nondet-string-length",
+        "9",
+        "--trace",
+        "--json-ui",
+        "--java-threading"
+      ],
+      "exit": 10,
+      "properties": 3,
+      "user": [
+        [
+          "java::Duty$Board.commit:(IZ)V.assertion.1",
+          "FAILURE"
+        ]
+      ],
+      "otherFailures": [],
+      "rawSha256": "a9098b12188ce6ee2dff091301f46ca85f11fb493da938316105c7254e617d03",
+      "overlay": {}
+    }
+  }
+}
