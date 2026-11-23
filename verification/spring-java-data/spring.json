@@ -14,6 +14,11 @@
     "finite": {
       "established": 14,
       "refuted": 2
+    },
+    "ordinaryWithStartupWitnesses": {
+      "unresolved": 6,
+      "established": 7,
+      "refuted": 3
     }
   },
   "examples": {
@@ -50,6 +55,12 @@
           "status": "passed",
           "source": "2ea9d9d7578ab20775e8c32178391266d6f9a2e2",
           "result": "verification/results/2026/11/23/20261123-040519-check-ordinary-spring-class-tables-and-r/result.json"
+        },
+        "factoryStartup": {
+          "id": "20261123-052111-recheck-spring-factory-filenames-and-con",
+          "status": "passed",
+          "source": "2132a16578eca1f3b35e7441a3cc8dd9636e7d4c",
+          "result": "verification/results/2026/11/23/20261123-052111-recheck-spring-factory-filenames-and-con/result.json"
         }
       },
       "claims": {
@@ -103,11 +114,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/result.json",
+            "record": "records/native-selectors/release/20261123T053439Z-0fca434f/tasks/beans-release/result.json",
             "admitted": 12,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.net.URL.getPath()Ljava/lang/String; on a classpath JAR resource",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/beans-release/result.json",
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T053439Z-0fca434f/tasks/beans-release/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -227,6 +238,50 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/release/20261123T053439Z-0fca434f/tasks/beans-release/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T053439Z-0fca434f/tasks/beans-release/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.3604,
+              "peakRssBytes": 116600832,
+              "log": "release.log",
+              "logSha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary Unix application loader resolves this JAR entry at the same canonical URL path as the checker (UTF-8 SHA-256 d84eb2486db80c9bb75b933c0b05aec40fec9d008a0ecf421ed4ca1dcdb6923b)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [5:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "ledger-release": {
@@ -279,11 +334,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/result.json",
+            "record": "records/native-selectors/release/20261123T053439Z-0fca434f/tasks/ledger-release/result.json",
             "admitted": 12,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.net.URL.getPath()Ljava/lang/String; on a classpath JAR resource",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T042153Z-cd47d107/tasks/ledger-release/result.json",
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T053439Z-0fca434f/tasks/ledger-release/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -403,6 +458,50 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/release/20261123T053439Z-0fca434f/tasks/ledger-release/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T053439Z-0fca434f/tasks/ledger-release/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.3604,
+              "peakRssBytes": 116600832,
+              "log": "release.log",
+              "logSha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary Unix application loader resolves this JAR entry at the same canonical URL path as the checker (UTF-8 SHA-256 d84eb2486db80c9bb75b933c0b05aec40fec9d008a0ecf421ed4ca1dcdb6923b)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [5:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "beans-combined": {
@@ -457,11 +556,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/result.json",
+            "record": "records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/beans-combined/result.json",
             "admitted": 12,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.net.URL.getPath()Ljava/lang/String; on a classpath JAR resource",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/beans-combined/result.json",
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/beans-combined/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -581,6 +680,50 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/beans-combined/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/beans-combined/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.2964,
+              "peakRssBytes": 129077248,
+              "log": "combined.log",
+              "logSha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary Unix application loader resolves this JAR entry at the same canonical URL path as the checker (UTF-8 SHA-256 3c9cca67fdb8134b3b06c945afe01066db2c87ceeb4a1affc0d8a6a9b98317eb)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [6:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "ledger-combined": {
@@ -635,11 +778,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/result.json",
+            "record": "records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/ledger-combined/result.json",
             "admitted": 12,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.net.URL.getPath()Ljava/lang/String; on a classpath JAR resource",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T042158Z-53fd95ab/tasks/ledger-combined/result.json",
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/ledger-combined/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -751,6 +894,50 @@
               {
                 "kind": "library",
                 "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [6:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
+                "basis": "engine"
+              }
+            ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/ledger-combined/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream.read([B)I on a classpath JAR resource at java.util.Properties$LineReader.readLine:504",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T053443Z-4c0ad4c5/tasks/ledger-combined/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.2964,
+              "peakRssBytes": 129077248,
+              "log": "combined.log",
+              "logSha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the ordinary Unix application loader resolves this JAR entry at the same canonical URL path as the checker (UTF-8 SHA-256 3c9cca67fdb8134b3b06c945afe01066db2c87ceeb4a1affc0d8a6a9b98317eb)",
                 "basis": "engine"
               },
               {
@@ -996,6 +1183,12 @@
           "status": "passed",
           "source": "2ea9d9d7578ab20775e8c32178391266d6f9a2e2",
           "result": "verification/results/2026/11/23/20261123-040519-check-ordinary-spring-class-tables-and-r/result.json"
+        },
+        "factoryStartup": {
+          "id": "20261123-052111-recheck-spring-factory-filenames-and-con",
+          "status": "passed",
+          "source": "2132a16578eca1f3b35e7441a3cc8dd9636e7d4c",
+          "result": "verification/results/2026/11/23/20261123-052111-recheck-spring-factory-filenames-and-con/result.json"
         }
       },
       "claims": {
@@ -1151,6 +1344,39 @@
               "exit": 0,
               "seconds": 9.1367,
               "peakRssBytes": 124538880,
+              "log": "before.log",
+              "logSha256": "080d36fbfcead30b005c88afcaf485709022e5fd11b2d7ee680c8a78bba940c2"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
+          },
+          "factorySelectors": {
+            "status": "established",
+            "record": "records/native-selectors/before/20261123T053447Z-d63db8ed/tasks/legacy-names-before/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T053447Z-d63db8ed/tasks/legacy-names-before/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 0,
+              "seconds": 8.7565,
+              "peakRssBytes": 124358656,
               "log": "before.log",
               "logSha256": "080d36fbfcead30b005c88afcaf485709022e5fd11b2d7ee680c8a78bba940c2"
             },
@@ -1345,6 +1571,39 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/legacy-names-landed/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/legacy-names-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.1356,
+              "peakRssBytes": 116535296,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "legacy-decision-before": {
@@ -1499,6 +1758,39 @@
               "exit": 0,
               "seconds": 9.1367,
               "peakRssBytes": 124538880,
+              "log": "before.log",
+              "logSha256": "080d36fbfcead30b005c88afcaf485709022e5fd11b2d7ee680c8a78bba940c2"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
+          },
+          "factorySelectors": {
+            "status": "established",
+            "record": "records/native-selectors/before/20261123T053447Z-d63db8ed/tasks/legacy-decision-before/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T053447Z-d63db8ed/tasks/legacy-decision-before/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 0,
+              "seconds": 8.7565,
+              "peakRssBytes": 124358656,
               "log": "before.log",
               "logSha256": "080d36fbfcead30b005c88afcaf485709022e5fd11b2d7ee680c8a78bba940c2"
             },
@@ -1693,6 +1985,39 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/legacy-decision-landed/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/legacy-decision-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.1356,
+              "peakRssBytes": 116535296,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "fluent-names-landed": {
@@ -1747,11 +2072,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-names-landed/result.json",
             "admitted": 32,
             "checked": 1,
             "firstBlocker": "outside the fragment: the contents and external string identity of the JVM's initial line separator are not bound",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-names-landed/result.json",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-names-landed/result.json",
             "blockedSelector": 1
           },
           "nativeSelectors": {
@@ -1856,6 +2181,51 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-names-landed/result.json",
+            "admitted": 32,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: the contents and external string identity of the JVM's initial line separator are not bound",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-names-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.1356,
+              "peakRssBytes": 116535296,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "blockedSelector": 1,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
+          },
+          "startupWitness": {
+            "status": "refuted",
+            "claimKey": "acbbca7210cad938",
+            "record": "examples/370-spring-role-hierarchy/records/fluent-counterexample/measurement.json",
+            "nativeImplication": "examples/370-spring-role-hierarchy/records/fluent-counterexample/names.stdout",
+            "originalEntry": "springwork.RoleChecks#fluentNames(I)I",
+            "selector": 1,
+            "startupUnits": [
+              124
+            ],
+            "vmOptions": [
+              "-Dline.separator=|"
+            ],
+            "originalResult": 0,
+            "freshJVMReplay": "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-names.stdout"
           }
         },
         "fluent-decision-landed": {
@@ -1910,11 +2280,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-decision-landed/result.json",
             "admitted": 32,
             "checked": 1,
             "firstBlocker": "outside the fragment: the contents and external string identity of the JVM's initial line separator are not bound",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T042212Z-0c8120db/tasks/fluent-decision-landed/result.json",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-decision-landed/result.json",
             "blockedSelector": 1
           },
           "nativeSelectors": {
@@ -2019,6 +2389,51 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-decision-landed/result.json",
+            "admitted": 32,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: the contents and external string identity of the JVM's initial line separator are not bound",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T053456Z-9f7946d7/tasks/fluent-decision-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.1356,
+              "peakRssBytes": 116535296,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "blockedSelector": 1,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
+          },
+          "startupWitness": {
+            "status": "refuted",
+            "claimKey": "6192effcca91108a",
+            "record": "examples/370-spring-role-hierarchy/records/fluent-counterexample/measurement.json",
+            "nativeImplication": "examples/370-spring-role-hierarchy/records/fluent-counterexample/decision.stdout",
+            "originalEntry": "springwork.RoleChecks#fluentDecision(I)I",
+            "selector": 1,
+            "startupUnits": [
+              124
+            ],
+            "vmOptions": [
+              "-Dline.separator=|"
+            ],
+            "originalResult": 0,
+            "freshJVMReplay": "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-decision.stdout"
           }
         }
       },
@@ -2057,6 +2472,13 @@
             "skipped": 0
           }
         }
+      },
+      "fluentBindingAttempt": {
+        "id": "20261123-050140-certify-the-startup-counterexample-to-bo",
+        "status": "failed",
+        "source": "8df7051ba2b41726cd08b52b3b1bde4a13786a23",
+        "result": "verification/results/2026/11/23/20261123-050140-certify-the-startup-counterexample-to-bo/result.json",
+        "reason": "The physical launch controls ran. The class-binding protocol lacked the Java 21 release setting and stopped before proof."
       },
       "loadedClasses": {
         "record": "verification/spring-java-data/exact-classpaths/classes.json",
@@ -2502,6 +2924,12 @@
           "status": "passed",
           "source": "2ea9d9d7578ab20775e8c32178391266d6f9a2e2",
           "result": "verification/results/2026/11/23/20261123-040519-check-ordinary-spring-class-tables-and-r/result.json"
+        },
+        "factoryStartup": {
+          "id": "20261123-052111-recheck-spring-factory-filenames-and-con",
+          "status": "passed",
+          "source": "2132a16578eca1f3b35e7441a3cc8dd9636e7d4c",
+          "result": "verification/results/2026/11/23/20261123-052111-recheck-spring-factory-filenames-and-con/result.json"
         }
       },
       "claims": {
@@ -2654,6 +3082,47 @@
               "exit": 0,
               "seconds": 3.9452,
               "peakRssBytes": 117714944,
+              "log": "parent.log",
+              "logSha256": "f837744544e49d53127a3b12e48d738a909db39befe9a5a6e029db330e9fd8bc"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ],
+            "witness": {
+              "inputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 0
+                }
+              ],
+              "values": [
+                0,
+                null
+              ]
+            }
+          },
+          "factorySelectors": {
+            "status": "refuted",
+            "record": "records/native-selectors/parent/20261123T053507Z-1e7e9e51/tasks/components-parent/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": null,
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T053507Z-1e7e9e51/tasks/components-parent/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 0,
+              "seconds": 3.9931,
+              "peakRssBytes": 109924352,
               "log": "parent.log",
               "logSha256": "f837744544e49d53127a3b12e48d738a909db39befe9a5a6e029db330e9fd8bc"
             },
@@ -2835,6 +3304,34 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T053511Z-1f638dd0/tasks/components-landed/result.json",
+            "admitted": 3,
+            "checked": 3,
+            "firstBlocker": null,
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T053511Z-1f638dd0/tasks/components-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 0,
+              "seconds": 3.7781,
+              "peakRssBytes": 109137920,
+              "log": "landed.log",
+              "logSha256": "fa0934bdf09f0590364795f73eb0d90ca0ea7255d831cb0a3284a8388afb1948"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "getters-parent": {
@@ -2988,6 +3485,34 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "established",
+            "record": "records/native-selectors/parent/20261123T053507Z-1e7e9e51/tasks/getters-parent/result.json",
+            "admitted": 3,
+            "checked": 3,
+            "firstBlocker": null,
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T053507Z-1e7e9e51/tasks/getters-parent/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 0,
+              "seconds": 3.9931,
+              "peakRssBytes": 109924352,
+              "log": "parent.log",
+              "logSha256": "f837744544e49d53127a3b12e48d738a909db39befe9a5a6e029db330e9fd8bc"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "getters-landed": {
@@ -3126,6 +3651,34 @@
               "exit": 0,
               "seconds": 3.6388,
               "peakRssBytes": 111947776,
+              "log": "landed.log",
+              "logSha256": "fa0934bdf09f0590364795f73eb0d90ca0ea7255d831cb0a3284a8388afb1948"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
+          },
+          "factorySelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T053511Z-1f638dd0/tasks/getters-landed/result.json",
+            "admitted": 3,
+            "checked": 3,
+            "firstBlocker": null,
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T053511Z-1f638dd0/tasks/getters-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 0,
+              "seconds": 3.7781,
+              "peakRssBytes": 109137920,
               "log": "landed.log",
               "logSha256": "fa0934bdf09f0590364795f73eb0d90ca0ea7255d831cb0a3284a8388afb1948"
             },
@@ -3331,6 +3884,12 @@
           "status": "passed",
           "source": "2ea9d9d7578ab20775e8c32178391266d6f9a2e2",
           "result": "verification/results/2026/11/23/20261123-040519-check-ordinary-spring-class-tables-and-r/result.json"
+        },
+        "factoryStartup": {
+          "id": "20261123-052111-recheck-spring-factory-filenames-and-con",
+          "status": "passed",
+          "source": "2132a16578eca1f3b35e7441a3cc8dd9636e7d4c",
+          "result": "verification/results/2026/11/23/20261123-052111-recheck-spring-factory-filenames-and-con/result.json"
         }
       },
       "claims": {
@@ -3382,11 +3941,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/result.json",
+            "record": "records/native-selectors/parent/20261123T053515Z-271b4375/tasks/annotated-parent/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.Class.getGenericInterfaces on an object the engine does not model",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/annotated-parent/result.json",
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T053515Z-271b4375/tasks/annotated-parent/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -3501,6 +4060,45 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261123T053515Z-271b4375/tasks/annotated-parent/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T053515Z-271b4375/tasks/annotated-parent/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 5.757,
+              "peakRssBytes": 114331648,
+              "log": "parent.log",
+              "logSha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "annotated-landed": {
@@ -3551,11 +4149,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/annotated-landed/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.Class.getGenericInterfaces on an object the engine does not model",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/annotated-landed/result.json",
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/annotated-landed/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -3670,6 +4268,45 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/annotated-landed/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/annotated-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 5.57,
+              "peakRssBytes": 114651136,
+              "log": "landed.log",
+              "logSha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "preservation-parent": {
@@ -3720,11 +4357,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/result.json",
+            "record": "records/native-selectors/parent/20261123T053515Z-271b4375/tasks/preservation-parent/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.Class.getGenericInterfaces on an object the engine does not model",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T042230Z-c49c5315/tasks/preservation-parent/result.json",
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T053515Z-271b4375/tasks/preservation-parent/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -3839,6 +4476,45 @@
                 "basis": "engine"
               }
             ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261123T053515Z-271b4375/tasks/preservation-parent/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T053515Z-271b4375/tasks/preservation-parent/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 5.757,
+              "peakRssBytes": 114331648,
+              "log": "parent.log",
+              "logSha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "preservation-landed": {
@@ -3889,11 +4565,11 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/preservation-landed/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.Class.getGenericInterfaces on an object the engine does not model",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T042236Z-3755255c/tasks/preservation-landed/result.json",
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/preservation-landed/result.json",
             "blockedSelector": 0
           },
           "nativeSelectors": {
@@ -4000,6 +4676,45 @@
               {
                 "kind": "library",
                 "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
+                "basis": "engine"
+              }
+            ]
+          },
+          "factorySelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/preservation-landed/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "outside the fragment: polling a reference queue after a possible GC registration in org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager.pollForPurge:1014 called by org.springframework.util.ConcurrentReferenceHashMap$Segment.restructureIfNecessary:574 called by org.springframework.util.ConcurrentReferenceHashMap.purgeUnreferencedEntries:382 called by org.springframework.core.ResolvableType.forType:1413 called by org.springframework.core.ResolvableType.forType:1385 called by org.springframework.core.ResolvableType.forType:1361",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T053520Z-e81baf14/tasks/preservation-landed/result.json",
+            "checkerSha256": "b0667c7c49fdfc592db567d153ee8be667d9f0326ba7c32735a9d9666be80c34",
+            "cost": {
+              "exit": 1,
+              "seconds": 5.57,
+              "peakRssBytes": 114651136,
+              "log": "landed.log",
+              "logSha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
                 "basis": "engine"
               },
               {
@@ -4950,6 +5665,124 @@
           }
         }
       }
+    },
+    "factoryStartup": {
+      "id": "20261123-052111-check-the-spring-factory-registrations-a",
+      "status": "passed",
+      "source": "2132a16578eca1f3b35e7441a3cc8dd9636e7d4c",
+      "result": "verification/results/2026/11/23/20261123-052111-check-the-spring-factory-registrations-a/result.json",
+      "filename": {
+        "release": {
+          "record": "examples/368-spring-binding-history/records/factory-startup/release/measurement.json",
+          "receipt": "examples/368-spring-binding-history/records/factory-startup/release/native.stdout",
+          "originalJVM": "examples/368-spring-binding-history/records/factory-startup/release/jvm.stdout",
+          "filename": "spring.factories",
+          "canonicalURLPathSha256": "03ebb6b2cd6b055918cbe01cd5355adcef84257d4ee873495913f1da0233278d",
+          "bytes": 161,
+          "originalFirstRead": 161,
+          "fixedRefillCaps": [
+            1,
+            161
+          ],
+          "entrySha256": "ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a"
+        },
+        "combined": {
+          "record": "examples/368-spring-binding-history/records/factory-startup/combined/measurement.json",
+          "receipt": "examples/368-spring-binding-history/records/factory-startup/combined/native.stdout",
+          "originalJVM": "examples/368-spring-binding-history/records/factory-startup/combined/jvm.stdout",
+          "filename": "spring.factories",
+          "canonicalURLPathSha256": "2bbe5530cdc8c8b7dc15bfea8a009c17f1e83e0f23cd4ce4d50110b1bd70b1d5",
+          "bytes": 161,
+          "originalFirstRead": 161,
+          "fixedRefillCaps": [
+            1,
+            161
+          ],
+          "entrySha256": "ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a"
+        }
+      },
+      "signature": {
+        "parent": {
+          "record": "examples/374-spring-formatter-binding/records/factory-startup/parent/measurement.json",
+          "receipt": "examples/374-spring-formatter-binding/records/factory-startup/parent/native.stdout",
+          "originalJVM": "examples/374-spring-formatter-binding/records/factory-startup/parent/jvm.stdout",
+          "factory": "org.springframework.core.convert.support.NumberToNumberConverterFactory",
+          "rawType": "ConverterFactory",
+          "arguments": [
+            "Number",
+            "Number"
+          ],
+          "registrationReturned": true,
+          "physicalRegistration": "examples/374-spring-formatter-binding/records/converter-interfaces/parent/measurement.json"
+        },
+        "landed": {
+          "record": "examples/374-spring-formatter-binding/records/factory-startup/landed/measurement.json",
+          "receipt": "examples/374-spring-formatter-binding/records/factory-startup/landed/native.stdout",
+          "originalJVM": "examples/374-spring-formatter-binding/records/factory-startup/landed/jvm.stdout",
+          "factory": "org.springframework.core.convert.support.NumberToNumberConverterFactory",
+          "rawType": "ConverterFactory",
+          "arguments": [
+            "Number",
+            "Number"
+          ],
+          "registrationReturned": true,
+          "physicalRegistration": "examples/374-spring-formatter-binding/records/converter-interfaces/landed/measurement.json"
+        }
+      },
+      "fluent": {
+        "record": "examples/370-spring-role-hierarchy/records/fluent-counterexample/measurement.json",
+        "selector": 1,
+        "startupUnits": [
+          124
+        ],
+        "witnesses": {
+          "fluent-names-landed": {
+            "status": "refuted",
+            "claimKey": "acbbca7210cad938",
+            "record": "examples/370-spring-role-hierarchy/records/fluent-counterexample/measurement.json",
+            "nativeImplication": "examples/370-spring-role-hierarchy/records/fluent-counterexample/names.stdout",
+            "originalEntry": "springwork.RoleChecks#fluentNames(I)I",
+            "selector": 1,
+            "startupUnits": [
+              124
+            ],
+            "vmOptions": [
+              "-Dline.separator=|"
+            ],
+            "originalResult": 0,
+            "freshJVMReplay": "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-names.stdout"
+          },
+          "fluent-decision-landed": {
+            "status": "refuted",
+            "claimKey": "6192effcca91108a",
+            "record": "examples/370-spring-role-hierarchy/records/fluent-counterexample/measurement.json",
+            "nativeImplication": "examples/370-spring-role-hierarchy/records/fluent-counterexample/decision.stdout",
+            "originalEntry": "springwork.RoleChecks#fluentDecision(I)I",
+            "selector": 1,
+            "startupUnits": [
+              124
+            ],
+            "vmOptions": [
+              "-Dline.separator=|"
+            ],
+            "originalResult": 0,
+            "freshJVMReplay": "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-decision.stdout"
+          }
+        }
+      }
+    },
+    "factoryConformance": {
+      "id": "20261123-052111-check-spring-generic-reflection-and-boxe",
+      "status": "passed",
+      "source": "2132a16578eca1f3b35e7441a3cc8dd9636e7d4c",
+      "result": "verification/results/2026/11/23/20261123-052111-check-spring-generic-reflection-and-boxe/result.json",
+      "log": "verification/results/2026/11/23/20261123-052111-check-spring-generic-reflection-and-boxe/logs/1-jbmc-auto-and-confirmed-native.log",
+      "tests": [
+        "the_corpus_agrees_with_the_jvm_under_jbmc_and_auto",
+        "the_corpus_agrees_with_the_jvm_under_auto_confirm"
+      ],
+      "stepSeconds": 1433.401,
+      "peakBytes": 2434945024
     },
     "gatedHistories": {
       "id": "20261122-190127-check-every-role-gated-spring-edit-histo",

@@ -242,4 +242,8 @@ Each timing includes preparing the cached historical JARs, compiling and binding
 
 The two JBMC, automatic-selection and automatic-confirmation corpus checks passed on the same source revision as the ordinary Spring recheck. The full step took 24.8 minutes and peaked at 2.25 GiB. [Conformance record](../../verification/results/2026/11/23/20261123-040530-check-class-table-and-jar-resource-seman/result.json)
 
+The two unrestricted fluent claims now have strict native failure proofs and independent original-JVM counterexamples at selector 1. A startup pipe leaves the requested `ROLE_D` unreachable. Both ordinary LF and CRLF launches grant. Direct native checks decide **8/16**. Including the two counterexamples decides **10/16**, with six binder and formatter claims open. Both binders reach the JDK properties bulk read. Both formatters finish registering their first converter and reach a potentially nonempty reference queue. [Ordinary recheck](../../verification/results/2026/11/23/20261123-052111-recheck-spring-factory-filenames-and-con/result.json) · [Factory and launch witnesses](../../verification/results/2026/11/23/20261123-052111-check-the-spring-factory-registrations-a/result.json)
+
+Both proof-tier conformance tests passed on the source of the factory and hierarchy rechecks. [JBMC and automatic confirmation](../../verification/results/2026/11/23/20261123-052111-check-spring-generic-reflection-and-boxe/result.json)
+
 - Status: done

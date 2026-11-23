@@ -40,6 +40,10 @@ CLASS_TABLES = "20261123-040519-check-ordinary-spring-class-tables-and-r"
 DEPLOYMENT_CONTROLS = "20261123-042108-bind-four-spring-startup-controls-to-the"
 CLASS_TABLE_CONFORMANCE = "20261123-040530-check-class-table-and-jar-resource-seman"
 CLASS_TABLE_COST = "20261123-042542-compare-ordinary-and-recorded-spring-met"
+FACTORY_STARTUP = "20261123-052111-recheck-spring-factory-filenames-and-con"
+FACTORY_CONTROLS = "20261123-052111-check-the-spring-factory-registrations-a"
+FACTORY_CONFORMANCE = "20261123-052111-check-spring-generic-reflection-and-boxe"
+FLUENT_BINDING_ATTEMPT = "20261123-050140-certify-the-startup-counterexample-to-bo"
 MATRIX_REFERENCES = "20261122-221543-prove-reference-identity-through-both-hi"
 
 def require(ok,what):
@@ -220,7 +224,7 @@ def selector_result(folder, plan, row, task, run, job, startup=False):
     return answer
 
 
-def case(n, startup_job=None, cache_job=None, tables_job=None):
+def case(n, startup_job=None, cache_job=None, tables_job=None, factory_job=None):
     folder,=(ROOT/"examples").glob(f"{n}-*")
     from domains import GRIDS, table
     entry, grid=GRIDS[n]
@@ -236,11 +240,14 @@ def case(n, startup_job=None, cache_job=None, tables_job=None):
             cache_job = managed(CACHE_WRITERS)
         if tables_job is None:
             tables_job = managed(CLASS_TABLES)
+        if factory_job is None:
+            factory_job = managed(FACTORY_STARTUP)
     runs = [("nativeSelectors", end, final)]
     spring_tasks = {t["id"] for t in spec["tasks"] if t["kind"] == "prove"}
     for key, stage, summary, job in (("springStartup", "spring-startup", "startupSelectors", startup_job),
                                      ("cacheWriters", "spring-cache-writers", "cacheSelectors", cache_job),
-                                     ("classTables", "spring-class-tables", "tableSelectors", tables_job)):
+                                     ("classTables", "spring-class-tables", "tableSelectors", tables_job),
+                                     ("factoryStartup", "spring-factory-signatures", "factorySelectors", factory_job)):
         if job:
             run = run_report(job, folder, stage)
             require(job.record["status"] == "passed" and set(run["tasks"]) == spring_tasks,
@@ -260,13 +267,13 @@ def case(n, startup_job=None, cache_job=None, tables_job=None):
         for key, run, job in runs:
             if name not in run.get("tasks", {}):
                 continue
-            answer = selector_result(folder, plan, row, task, run, job, startup=key in ("startupSelectors", "cacheSelectors", "tableSelectors"))
+            answer = selector_result(folder, plan, row, task, run, job, startup=key in ("startupSelectors", "cacheSelectors", "tableSelectors", "factorySelectors"))
             row[key] = answer
-            if key in ("cacheSelectors", "tableSelectors") and row["ordinary"]["status"] in ("refuted", "established"):
+            if key in ("cacheSelectors", "tableSelectors", "factorySelectors") and row["ordinary"]["status"] in ("refuted", "established"):
                 require(answer["status"] == row["ordinary"]["status"], "previously decided Spring claim has regressed")
             if row.get("ordinary", {}).get("status") not in ("refuted", "established"):
                 row["ordinary"] = {k: answer[k] for k in ("status", "record", "admitted", "checked", "firstBlocker", "receipt")}
-                if key == "tableSelectors" and "witness" in answer:
+                if key in ("tableSelectors", "factorySelectors") and "witness" in answer:
                     row["ordinary"]["witness"] = answer["witness"]
                 if "blockedSelector" in answer:
                     row["ordinary"]["blockedSelector"] = answer["blockedSelector"]
@@ -541,9 +548,9 @@ def gated_histories(job):
             "trials": trials, "controls": controls}
 
 
-def class_table_conformance(job, primary):
+def spring_conformance(job, primary):
     require(job.record["status"] == "passed" and job.record["sourceCommit"] == primary.record["sourceCommit"],
-            "conformance did not cover the source of the ordinary class-table proofs")
+            "conformance did not cover the source of the ordinary Spring proofs")
     step, = job.record["steps"]
     log = step["log"]
     path = job.folder / log["path"]
@@ -563,7 +570,8 @@ def recount(complete):
         startup_job = managed(SPRING_STARTUP) if track == "spring" else None
         cache_job = managed(CACHE_WRITERS) if track == "spring" else None
         tables_job = managed(CLASS_TABLES) if track == "spring" else None
-        cases={str(n):case(n, startup_job, cache_job, tables_job) for n in numbers}
+        factory_job = managed(FACTORY_STARTUP) if track == "spring" else None
+        cases={str(n):case(n, startup_job, cache_job, tables_job, factory_job) for n in numbers}
         totals={}
         rows=[r for c in cases.values() for r in c["claims"].values() if r["primary"]]
         for field in ("opening","ordinary","finite"):
@@ -586,7 +594,7 @@ def recount(complete):
                 companions["ordinaryRegistrar"] = registrar
             conformance = managed(CLASS_TABLE_CONFORMANCE)
             if conformance and tables_job:
-                companions["classTableConformance"] = class_table_conformance(conformance, tables_job)
+                companions["classTableConformance"] = spring_conformance(conformance, tables_job)
             deployment = managed(DEPLOYMENT_CONTROLS)
             if deployment and tables_job and controls:
                 from deployment_results import measured_deployments
@@ -599,6 +607,31 @@ def recount(complete):
                         timing, cases["372"], companions["classTableControls"])}
             elif complete:
                 raise ValueError("awaiting the Spring startup controls")
+            factory_controls = managed(FACTORY_CONTROLS)
+            if factory_controls and factory_job:
+                from factory_results import measurements
+                require(factory_controls.record["sourceCommit"] == factory_job.record["sourceCommit"],
+                        "factory controls and primary tasks used different sources")
+                latest = measurements(factory_controls, cases, companions)
+                companions["factoryStartup"] = {**job_info(factory_controls), **latest}
+                for name, witness in latest["fluent"]["witnesses"].items():
+                    cases["370"]["claims"][name]["startupWitness"] = witness
+                # A realizable failed setting refutes an unrestricted statement. Keep
+                # the existing direct-selector metric and its raw first refusal intact.
+                totals["ordinaryWithStartupWitnesses"] = dict(Counter(r.get("startupWitness", r["ordinary"])["status"] for r in rows))
+                failed = managed(FLUENT_BINDING_ATTEMPT)
+                if failed:
+                    step = failed.record["steps"][-1]
+                    log = failed.folder / step["log"]["path"]
+                    require(failed.record["status"] == "failed" and step["exitCode"] != 0
+                            and sha(log) == step["log"]["sha256"] and "different bytecode release" in log.read_text()
+                            and not any(p.name.endswith(".stdout") for p in failed.files),
+                            "different initial fluent binding failure")
+                    cases["370"]["fluentBindingAttempt"] = {**job_info(failed), "reason":
+                        "The physical launch controls ran. The class-binding protocol lacked the Java 21 release setting and stopped before proof."}
+            factory_corpus = managed(FACTORY_CONFORMANCE)
+            if factory_corpus and factory_job:
+                companions["factoryConformance"] = spring_conformance(factory_corpus, factory_job)
             histories_job = managed(GATED_HISTORIES)
             if histories_job:
                 companions["gatedHistories"] = gated_histories(histories_job)
@@ -651,8 +684,8 @@ def recount(complete):
             require((a["jarSha256"],a["classSha256"])==(b["jarSha256"],b["classSha256"]),"B1/B4 parser artifacts differ")
         if complete:
             if track == "spring":
-                require({"classTableControls", "metadataStartupCost", "classTableConformance"} <= set(companions), "missing Spring launch or equal-scope lookup controls")
-                require(all("startupSelectors" in row and "cacheSelectors" in row and "tableSelectors" in row for row in rows), "missing ordinary Spring startup comparison")
+                require({"classTableControls", "metadataStartupCost", "classTableConformance", "factoryStartup", "factoryConformance"} <= set(companions), "missing Spring launch or equal-scope lookup controls")
+                require(all("startupSelectors" in row and "cacheSelectors" in row and "tableSelectors" in row and "factorySelectors" in row for row in rows), "missing ordinary Spring startup comparison")
             require(bound and bound.record["status"]=="passed" and all("nativeFinal" in c["stages"] for c in cases.values()),"outstanding native or loaded-class jobs")
             for n in numbers:
                 require(cases[str(n)]["stages"]["nativeFinal"]["status"]=="passed"

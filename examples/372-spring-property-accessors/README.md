@@ -6,7 +6,7 @@ Run `python3 examples/tools/build.py 372 --task replay` on the bound artifacts. 
 
 ## Recorded results
 
-The ordinary native checker and the finite JVM each established three of the four primary obligations and refuted the parent component claim.
+The ordinary native checker and the finite JVM each established three of the four primary obligations and refuted the parent component claim. The factory-startup recheck reproduced all four ordinary decisions and replayed the empty parent property name for `budget()`. [Latest ordinary results](../../verification/results/2026/11/23/20261123-052111-recheck-spring-factory-filenames-and-con/result.json)
 
 The preceding checker constructed the cache segments, resolved the caller’s zero-argument method, inserted the nine wrapper/primitive pairs and reached `Map.entrySet()` in `ClassUtils.<clinit>:174` on all four ordinary claims. [First startup recheck](../../verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json) · [Cache and writer recheck](../../verification/results/2026/11/23/20261123-024401-trace-the-four-spring-cache-and-writer-s/result.json)
 

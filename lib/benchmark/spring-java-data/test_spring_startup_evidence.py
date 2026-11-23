@@ -33,5 +33,20 @@ class FluentLaunchEvidence(unittest.TestCase):
                 launch.observers(replace_instruction(caller, method, descriptor, -2, 0x05))
 
 
+    def test_pipe_witness_needs_the_original_zero_and_a_replay_that_reports_it(self):
+        import fluent_witness as witness
+        caller = (witness.DEST / "FluentWitness.jvm-bytecode").read_bytes()
+        for method in witness.METHODS:
+            witness.qualify_caller(caller)
+            for offset, opcode in [(8, 0x99), (10, 4), (11, 3), (14, 5), (15, 0xb6), (18, 0x60)]:
+                with self.subTest(method=method, offset=offset), self.assertRaises(ValueError):
+                    witness.qualify_caller(replace_instruction(caller, method, "()I", offset, opcode))
+            replay = (witness.DEST / (witness.replay_name(method) + ".jvm-bytecode")).read_bytes()
+            witness.qualify_replay(replay, method)
+            for offset, opcode in [(0, 3), (8, 3), (23, 0xa1), (46, 2), (50, 0xe3), (59, 0xac)]:
+                with self.subTest(method=method, offset=offset), self.assertRaises(ValueError):
+                    witness.qualify_replay(replace_instruction(replay, "main", "([Ljava/lang/String;)V", offset, opcode), method)
+
+
 if __name__ == "__main__":
     unittest.main()

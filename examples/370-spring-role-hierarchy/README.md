@@ -4,7 +4,7 @@ The legacy graph runs on the pre-feature and landed artifacts. The fluent builde
 
 ## Recorded results
 
-The ordinary native checker established four of the six primary claims. Both fluent claims remain open. The finite JVM established all six.
+The ordinary selectors established all four legacy claims. Two additional strict native proofs and fresh JVM counterexamples refute the unrestricted fluent name and decision claims. The default finite JVM established all six.
 
 The strict native checker established all 32 configurations for each legacy claim on the pre-feature and landed JARs, giving 128 completed selector proofs. Each prefix granted 14 of 16 starting subsets. The fluent builder writes the first role text into its StringWriter and needs the JVM’s initial line separator to complete the line. [First startup recheck](../../verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json) · [Cache and writer recheck](../../verification/results/2026/11/23/20261123-024401-trace-the-four-spring-cache-and-writer-s/result.json)
 
@@ -33,3 +33,7 @@ Run `python3 -B lib/benchmark/spring-java-data/fluent_lines.py --replay`. Each J
 ## Binding the fluent proof to a launch
 
 Run `python3 -B lib/benchmark/spring-java-data/fluent_launch.py --replay`. The consumer checks the archived guard bytecode, both public observers’ zero-or-one returns and the raw native proof for each selector. The exact default Linux and explicit CRLF launches enter the proved branch on all 32 configurations. That branch checks reachable names first and the manager decision second. Changing the live property after startup preserved the initial separator in both. On the pipe launch the guard remained inactive and supplied zero native coverage. [Launch witness](companions/FluentLaunch.java) · [Runtime digests and outcomes](records/fluent-launches/measurement.json) · [Four startup measurements](../../verification/results/2026/11/23/20261123-042108-bind-four-spring-startup-controls-to-the/result.json)
+
+## A startup counterexample with A alone
+
+A literal pipe at startup refutes both unrestricted fluent claims at selector 1. The checker proves that each original observer returns zero when that launch premise holds. A fresh JVM executes that observer before any other application call and reports the startup code units afterwards. The public hierarchy returns `ROLE_B|ROLE_B`, `ROLE_C|ROLE_B` and `ROLE_D|` alongside `ROLE_A`. The actual manager denies `ROLE_D`. The LF and CRLF controls grant and yield exactly A, B, C and D. Run `python3 lib/benchmark/spring-java-data/fluent_witness.py --replay`. [Bytecode-qualified native implications and three launches](records/fluent-counterexample/measurement.json) · [Managed evidence](../../verification/results/2026/11/23/20261123-052111-check-the-spring-factory-registrations-a/result.json)
