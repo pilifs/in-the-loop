@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "ended",
+  "status": "open",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-23T18:53:38.443Z",
-  "duration_seconds": 540955,
+  "ended": "2026-11-23T19:27:51.611Z",
+  "duration_seconds": 543008,
   "stats": {
-    "turns": 173,
-    "api_calls": 1290,
-    "tool_calls": 1183,
+    "turns": 174,
+    "api_calls": 1302,
+    "tool_calls": 1193,
     "tool_errors": 21,
     "compactions": 7,
     "peak_context_tokens": 565519,
     "usage": {
-      "input_tokens": 3054,
-      "output_tokens": 876097,
-      "cache_read_input_tokens": 318310973,
-      "cache_creation_input_tokens": 4182740
+      "input_tokens": 3082,
+      "output_tokens": 882136,
+      "cache_read_input_tokens": 320652748,
+      "cache_creation_input_tokens": 4193579
     }
   },
   "tools": {
-    "Bash": 1035,
+    "Bash": 1044,
     "Edit": 48,
-    "Read": 27,
+    "Read": 28,
     "SendMessage": 19,
     "Write": 16,
     "ToolSearch": 13,
@@ -179,24 +179,24 @@
     {
       "index": 7,
       "started": "2026-11-23T13:17:01.528Z",
-      "ended": "2026-11-23T18:53:38.443Z",
-      "turns": 11,
-      "api_calls": 67,
+      "ended": "2026-11-23T19:27:51.611Z",
+      "turns": 12,
+      "api_calls": 79,
       "usage": {
-        "input_tokens": 176,
-        "output_tokens": 34250,
-        "cache_read_input_tokens": 10280221,
-        "cache_creation_input_tokens": 149246
+        "input_tokens": 204,
+        "output_tokens": 40289,
+        "cache_read_input_tokens": 12621996,
+        "cache_creation_input_tokens": 160085
       },
-      "peak_context_tokens": 188990
+      "peak_context_tokens": 199829
     }
   ],
   "log": {
-    "sha256": "e7dadfc7ec4057f693b49b666c855a89bb765185f07a6aad1a53d83fee9e6aa7",
-    "bytes": 25019450,
-    "lines": 9809,
-    "gzip_bytes": 4556962,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/e7dadfc7ec4057f693b49b666c855a89bb765185f07a6aad1a53d83fee9e6aa7.jsonl.gz"
+    "sha256": "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491",
+    "bytes": 25140747,
+    "lines": 9880,
+    "gzip_bytes": 4573701,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491.jsonl.gz"
   },
   "subagents": [
     {
@@ -7659,6 +7659,46 @@
       "summary": "Key a checkpoint's cached verdicts on its scan room",
       "body": "A blob once refused as compressed-beyond-scan stayed refused from the cache after OPENED_MAX grew, because the cache's fingerprint did not include it. It does now, so a change to the room reads such blobs again. test_checkpoint passes.",
       "log_sha256": "e7dadfc7ec4057f693b49b666c855a89bb765185f07a6aad1a53d83fee9e6aa7"
+    },
+    {
+      "change_id": "upuzmovsrtnnswnurlyqqptwzuwpkmqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decision D001 on trusted-kernel-setup (stop, complete)",
+      "body": "The Opus setup phase for the trusted-kernel experiment brief finished in one cycle within setup's scope (only its setup record committed). Decision record only.",
+      "log_sha256": "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491"
+    },
+    {
+      "change_id": "wlwpusoypuvxxsqmkymslyuwpzkruynw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up the trusted-kernel experiment",
+      "body": "Mechanical setup for the trusted-kernel experiment brief, recorded in llm-dlc/loops/in-the-loop-trusted-kernel-experiment-brief-setup.md with notes for the domain agent. The Guava 33.4.8-jre jar and its runtime graph were checked against Maven Central's SHA-1s and their signatures in a keyring of this setup's own (11 of 11); the Ints, IntsMethodsForWeb and Longs class entries were extracted, and their digests equal those in examples 336 and 346's records; the release commit f06690fa was checked out and its sources equal the signed sources jar. CaDiCaL 1.9.5 (rel-1.9.5, the same solver the checker's cadical crate bundles, apart from Windows portability code) and cake_lpr 033aad53 were fetched and built, and an LRAT round trip on made-up formulas showed cake_lpr accepts a good proof and rejects damaged or foreign ones, always with exit 0. The installed Lean v4.35.0 and v4.36.0 toolchains were checked file by file against their release archives' GitHub digests. The checker was built at this head. A JVM probe on Temurin 21.0.13 replayed the brief's release inputs (first match, empty, singleton, extrema, longs differing by 2^32): 14 of 14 as the brief says, arrays unchanged. No claims, examples, adapters or checker code were written, no verifier ran on a claim, and no job was needed; the Stage 1 baselines are left to the domain agent.",
+      "log_sha256": "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491"
+    },
+    {
+      "change_id": "oluqurqomtluuzvlpookwzonlysnwvvn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run trusted-kernel-setup into the line",
+      "body": "The single-agent run trusted-kernel-setup (session b53d5b36-fee3-4a5e-b939-28eab58a6dff) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491"
+    },
+    {
+      "change_id": "ouxrwqsokswttnqkutquokkqrznxzuls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add the setup agent's notes to the trusted-kernel experiment brief",
+      "body": "single_run.py notes copied the '## Setup Agent Notes' section of the setup record into the brief's repository copy and the user's copy in ~/code/scripts/analysis (the original is backed up), so that the Astra run reads what setup prepared and found. Brief text only.",
+      "log_sha256": "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491"
+    },
+    {
+      "change_id": "synktvmpormrokwvrvrvuqvrptlyrrup",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-191504-reproduce-both-guava-any-length-producer: passed: 2 passed step(s) in 7.8s, peak 137.3 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
+      "log_sha256": "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491"
     }
   ],
   "logs": {
@@ -8453,6 +8493,12 @@
       "lines": 6770,
       "gzip_bytes": 3474868,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f46dc07853d514a8683eae1f4d14170966b15113b016344c562f5be46890ca8c.jsonl.gz"
+    },
+    "f4931a2c5b1debf0f7111aad6252e96053810c2c404cc63c6fc321706d5b6491": {
+      "bytes": 25140747,
+      "lines": 9880,
+      "gzip_bytes": 4573701,
+      "url": null
     },
     "f59ff51d71b8a62c5c1ce401b66ddc3ba6c3c96c467b1ecb7870c9244e2967c2": {
       "bytes": 24909033,
