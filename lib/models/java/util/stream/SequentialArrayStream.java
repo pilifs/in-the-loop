@@ -1,6 +1,7 @@
 package java.util.stream;
 
 import java.util.function.Function;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.BiConsumer;
@@ -24,7 +25,8 @@ import java.util.function.Supplier;
  * stream's from when it is made; its elements are read when the terminal operation runs.
  *
  * <p>Collection uses the supplied collector's callbacks in the sequential JDK pipeline's order.
- * Left out: every other operation ({@code filter}, {@code forEach}, parallel streams, ...),
+ * A sequential forEach visits each mapped value in encounter order.
+ * Left out: every other operation ({@code filter}, parallel streams, ...),
  * and the messages of the exceptions, which no check reads.
  */
 final class SequentialArrayStream<T> implements Stream<T> {
@@ -110,6 +112,16 @@ final class SequentialArrayStream<T> implements Stream<T> {
         }
         use();
         return new SequentialArrayStream<R>(source, length, this, (Function<Object, Object>) (Function<?, ?>) mapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void forEach(Consumer<? super T> action) {
+        // The head hands out its spliterator before checking the action. A
+        // mapped stage checks it while constructing its terminal operation.
+        if (upstream != null) java.util.Objects.requireNonNull(action);
+        use();
+        if (upstream == null) java.util.Objects.requireNonNull(action);
+        for (int i = 0; i < length; i++) action.accept((T) element(i));
     }
 
     @SuppressWarnings("unchecked")

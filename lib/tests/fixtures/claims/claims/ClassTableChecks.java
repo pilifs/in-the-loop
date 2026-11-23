@@ -133,9 +133,33 @@ public final class ClassTableChecks {
         }
     }
 
+    private static java.io.InputStream stream(String name) throws Exception {
+        return ClassTableChecks.class.getClassLoader().getResources(name).nextElement().openStream();
+    }
+
+    public static boolean properties() throws Exception {
+        var p = new java.util.Properties();
+        try (var in = stream("META-INF/good.fixture")) {
+            p.load(in);
+            return p.size() == 2 && "second".equals(p.getProperty("Aa"))
+                && "12".equals(p.getProperty("BB")) && in.read() == -1;
+        }
+    }
+
+    public static boolean abandonedRefill() throws Exception {
+        try (var in = stream("META-INF/bad.fixture")) {
+            try { new java.util.Properties().load(in); return false; }
+            catch (IllegalArgumentException malformed) { return in.read() == -1; }
+        }
+    }
+
+    public static boolean externalRefill() throws Exception {
+        try (var in = stream("META-INF/good.fixture")) { return in.read(new byte[8192]) > 0; }
+    }
+
     public static void main(String[] args) throws Exception {
         if (!lookups() || !exportedOrder() || !classSet() || !orderedSet() || !resources()
-                || !genericInterfaces() || !nestedArgument()) throw new AssertionError();
+                || !genericInterfaces() || !nestedArgument() || !properties() || !externalRefill()) throw new AssertionError();
     }
 }
 

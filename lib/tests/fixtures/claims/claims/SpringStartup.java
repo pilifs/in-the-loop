@@ -145,6 +145,45 @@ public final class SpringStartup {
         return empty;
     }
 
+    public static boolean queueDelivery() {
+        var left = new java.lang.ref.ReferenceQueue<Object>();
+        var right = new java.lang.ref.ReferenceQueue<Object>();
+        var a = new java.lang.ref.SoftReference<>(new Object(), left);
+        var b = new java.lang.ref.SoftReference<>(new Object(), left);
+        var c = new java.lang.ref.SoftReference<>(new Object(), right);
+        var first = left.poll();
+        var second = left.poll();
+        var other = right.poll();
+        return (first == null || first == a || first == b) && (second == null || second == a || second == b)
+            && (first == null || first != second && first.get() == null)
+            && (other == null || other == c && c.get() == null)
+            && (a.get() != null || a.get() == null);
+    }
+
+    public static boolean arrayForEach() {
+        String[] source = {"first", "before"};
+        String[] seen = new String[2];
+        int[] index = {0};
+        var mapped = java.util.Arrays.stream(source).map(String::trim);
+        try { mapped.forEach(null); return false; } catch (NullPointerException expected) {}
+        mapped.forEach(s -> { seen[index[0]++] = s; source[1] = "after"; });
+        if (index[0] != 2 || !"first".equals(seen[0]) || !"after".equals(seen[1])) return false;
+        var head = java.util.Arrays.stream(source);
+        try { head.forEach(null); return false; } catch (NullPointerException expected) {}
+        try { head.forEach(s -> {}); return false; } catch (IllegalStateException expected) {}
+        return true;
+    }
+
+    public static boolean nestedHolds(boolean extra) {
+        var lock = new java.util.concurrent.locks.ReentrantLock();
+        if (extra) lock.lock();
+        if (lock.isHeldByCurrentThread() != extra || !lock.tryLock()) return false;
+        if (lock.getHoldCount() != (extra ? 2 : 1)) return false;
+        lock.unlock();
+        if (extra) lock.unlock();
+        return !lock.isLocked() && lock.getHoldCount() == 0;
+    }
+
     public static boolean mapCallbacks() {
         var map = new java.util.LinkedHashMap<String, Integer>();
         try { map.forEach(null); return false; }
@@ -210,6 +249,7 @@ public final class SpringStartup {
     public static void main(String[] args) throws Exception {
         if (!metadata() || !bindings() || !overridingInitialValue() || !split() || !locks() || !writer() || !membership()
                 || !cacheKeys() || !indexSize() || !queueState() || !registeredQueue() || !mapCallbacks()
+                || !queueDelivery() || !arrayForEach() || !nestedHolds(true) || !nestedHolds(false)
                 || !zones() || !writeRanges() || !guardedLines())
             throw new AssertionError();
     }

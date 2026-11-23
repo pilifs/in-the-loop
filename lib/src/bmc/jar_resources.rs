@@ -15,6 +15,7 @@ const CLOSED: &str = "<JDK.closed>";
 const OPENED: &str = "<JDK.opened>";
 const SOURCE_URL: &str = "<JDK.sourceURL>";
 const URL_PATH: &str = "<JDK.jarURLPath>";
+const READER: &str = "<JDK.privatePropertiesReader>";
 
 impl Engine<'_> {
     pub(super) fn app_resources(&mut self, path: &mut Path, o: usize, m: &MemberRef, args: &[Val]) -> Option<Step> {
@@ -54,6 +55,55 @@ impl Engine<'_> {
         o
     }
 
+    /// The pinned readLine refills only at the end of a window. In its ordinary loop,
+    /// comment loop and CR lookahead, a positive refill preserves the next logical byte
+    /// and EOF is tested at the same position. Only indices below its returned length
+    /// are read. The size of a positive window (and the unspecified tail of an inflater
+    /// buffer) is consequently invisible to this private consumer. Use one representative
+    /// window. No other observer may use the physical stream position until the reader
+    /// actually requests EOF, including when load exits early on a malformed escape.
+    fn properties_refill(&mut self, path: &mut Path, stream: usize, buffer: usize, data: usize, pos: i64) -> Step {
+        const PROPS: &str = "java/util/Properties";
+        const LINE: &str = "java/util/Properties$LineReader";
+        let [.., load, load0, line] = path.frames.as_slice() else { return unsupported("a bulk read outside the JDK properties reader"); };
+        let Some(Some(Val::R(Some(reader)))) = line.locals.first() else { return unsupported("an unknown properties reader"); };
+        let reader = *reader;
+        if (line.class.name.as_str(), line.method.as_str(), line.code.descriptor.as_str()) != (LINE, "readLine", "()I")
+            || (load0.class.name.as_str(), load0.method.as_str(), load0.code.descriptor.as_str()) != (PROPS, "load0", "(Ljava/util/Properties$LineReader;)V")
+            || (load.class.name.as_str(), load.method.as_str(), load.code.descriptor.as_str()) != (PROPS, "load", "(Ljava/io/InputStream;)V")
+            || !matches!(load.locals.first(), Some(Some(Val::R(Some(p)))) if path.objects[*p].class == PROPS)
+            || path.objects[reader].class != LINE || !self.cp.properties_reader_image()
+            || !matches!(path.objects[reader].fields.get("inStream"), Some(Val::R(Some(o))) if *o == stream)
+            || !matches!(path.objects[reader].fields.get("inByteBuf"), Some(Val::R(Some(o))) if *o == buffer)
+            || path.objects[stream].fields.get(READER).is_some_and(|r| !matches!(r, Val::R(Some(o)) if *o == reader)) {
+            return unsupported("a bulk JAR read whose refill lengths are observable outside one private JDK properties reader");
+        }
+        let src = path.objects[data].as_array().ok_or_else(|| Stop::Unsupported("unknown resource bytes".into()))?;
+        let dest = path.objects[buffer].as_array().ok_or_else(|| Stop::Unsupported("unknown properties buffer".into()))?;
+        let cap = dest.cells.len();
+        if dest.element != Type::Byte || cap != 8192 || self.b.constant_value(&dest.length) != Some(cap as i64) {
+            return unsupported("a different JDK properties refill buffer");
+        }
+        let remaining = usize::try_from(pos).ok().and_then(|at| src.cells.get(at..))
+            .ok_or_else(|| Stop::Unsupported("invalid JAR refill position".into()))?;
+        self.keeps(path, Some(stream), "advances a properties input stream")?;
+        let count = remaining.len().min(cap);
+        let n = if count == 0 {
+            path.objects[stream].fields.remove(READER);
+            -1
+        } else {
+            self.keeps(path, Some(buffer), "refills the private properties buffer")?;
+            let bytes = remaining[..count].to_vec();
+            path.objects[buffer].array.as_mut().expect("checked buffer").cells[..count].clone_from_slice(&bytes);
+            path.objects[stream].fields.insert(READER.into(), Val::R(Some(reader)));
+            path.objects[stream].fields.insert(POSITION.into(), Val::I(self.b.constant(pos + count as i64, 32)));
+            count as i64
+        };
+        self.push(path, Val::I(self.b.constant(n, 32)));
+        self.advance(path);
+        Ok(None)
+    }
+
     pub(super) fn resource_call(&mut self, path: &mut Path, o: usize, m: &MemberRef, args: &[Val], special: bool) -> Step {
         let class = path.objects[o].class.clone();
         if special || !self.cp.is_subtype(&class, &m.owner) { return unsupported("incompatible call on a classpath resource"); }
@@ -62,6 +112,14 @@ impl Engine<'_> {
         let content = fields[RESOURCE].clone();
         let Val::I(position) = &fields[POSITION] else { return unsupported("an unknown resource cursor"); };
         let Some(pos) = self.b.constant_value(position) else { return unsupported("a symbolic resource cursor"); };
+        if class == STREAM && m.name == "read" && m.descriptor == "([B)I" && !fields.contains_key(CLOSED) {
+            if let ([Val::R(Some(buffer))], Val::R(Some(data))) = (args, &content) {
+                return self.properties_refill(path, o, *buffer, *data, pos);
+            }
+        }
+        if fields.contains_key(READER) {
+            return unsupported("the JAR stream's physical cursor while a properties reader may hold unread bytes");
+        }
         let result = match (class.as_str(), m.name.as_str(), m.descriptor.as_str(), args) {
             (_, "getClass", "()Ljava/lang/Class;", []) =>
                 Some(Val::R(Some(self.literal(path, Literal::Class(class.clone()), "java/lang/Class")))),

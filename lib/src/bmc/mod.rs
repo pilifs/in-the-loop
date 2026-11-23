@@ -119,6 +119,7 @@ mod array_list;
 mod calendar;
 mod class_tables;
 mod jar_resources;
+mod reference_queues;
 mod generic_interfaces;
 mod map_views;
 mod enum_universe;
@@ -3484,6 +3485,10 @@ impl<'a> Engine<'a> {
     /// with their constructors in the harness's fresh state, and a caller's were made in the caller's, so a final
     /// field holds what its constructor made of a state the proof never had.
     fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
+        if path.objects[o].fields.contains_key(reference_queues::FRESH_QUEUE) && matches!(name, "head" | "queueLength")
+            && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ref/ReferenceQueue") {
+            return unsupported("the asynchronous internal state of a reference queue");
+        }
         if path.objects[o].fields.contains_key(runtime::REGISTERED_QUEUE) && matches!(name, "referent" | "queue" | "next" | "discovered")
             && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ref/Reference") {
             return unsupported("a GC-sensitive field of a registered reference");
@@ -4035,7 +4040,7 @@ impl<'a> Engine<'a> {
                 }
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/ref/SoftReference", "clock", "J")
-                    && class.name == declaring && path.frames.last().is_some_and(|f| f.method == "<init>") {
+                    && class.name == declaring && path.frames.last().is_some_and(|f| matches!(f.method.as_str(), "<init>" | "get")) {
                     self.reads(path, || "reads the GC soft-reference clock".into())?;
                     path.unbound_platform_value = Some("the GC soft-reference clock");
                     let stamp = Val::J(self.b.fresh(64));
@@ -5113,6 +5118,11 @@ impl<'a> Engine<'a> {
     /// a model's is called, a JDK method the engine models is computed, and any other is a gap or refused. A
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
+        if caller == crate::models::CONCURRENT_MAP && member.owner == caller && member.name == "casTabAt"
+            && member.descriptor == "([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$Node;)Z"
+            && !self.cp.runs_model(caller) && self.cp.known_concurrent_table() {
+            return self.concurrent_slot_cas(path);
+        }
         if self.cp.concurrent_table_read(&member.owner, &member.name, &member.descriptor) {
             let stack = &path.frames.last().expect("a frame").stack;
             if let [.., Val::R(Some(o)), Val::I(index)] = stack.as_slice() {
@@ -5423,9 +5433,12 @@ impl<'a> Engine<'a> {
             }
         }
         let captured: Vec<Val> = (0..lambda.captured).map(|i| path.objects[o].fields.get(&captured_key(i)).cloned().ok_or_else(|| Stop::Unsupported("a lambda with a captured value missing".into()))).collect::<Result<_, _>>()?;
-        // A captured reference that is not known could not be made known by the call either.
-        if captured.iter().any(|v| matches!(v, Val::C(_))) && !(kind == 6 && self.cp.is_application(&target.owner)) {
-            return unsupported(format!("a lambda that stands for {}.{} and captured a reference that is one of several objects", target.owner.replace('/', "."), target.name));
+        // Resolve the capture on the intact SAM call. Each path substitutes the chosen
+        // object in the closure and all its aliases before adapting the stack.
+        if !(kind == 6 && self.cp.is_application(&target.owner)) {
+            if let Some(Val::C(options)) = captured.iter().find(|v| matches!(v, Val::C(_))) {
+                return self.split_choice(path, options);
+            }
         }
         let made = (kind == 8).then(|| self.alloc(path, &target.owner));
         let frame = path.frames.last_mut().expect("a frame");
@@ -5563,13 +5576,13 @@ impl<'a> Engine<'a> {
             }
             if let Some(step) = self.object_hash(path, o, special, member) { return step; }
             if let Some(step) = self.fresh_thread_local(path, o, special, member, &args) { return step; }
-            // Set12's bootstrap EMPTY and the Class mirrors used as cache keys run
-            // Object.equals. Other receivers keep their own virtual dispatch.
-            if !special && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z"
-                && (path.objects[o].class == "java/lang/Object" || path.objects[o].class == "java/lang/Class"
-                    && self.cp.find_method("java/lang/Class", &member.name, &member.descriptor).is_some_and(|(cf, _)| cf.name == "java/lang/Object"))
-                && !path.objects[o].given
-                && !path.objects[o].assumed && !path.objects[o].unknown {
+            // A hash collision between two Spring entry references reaches their
+            // inherited Object.equals. An override still dispatches to its own body.
+            if member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z"
+                && !path.objects[o].given && !path.objects[o].assumed && !path.objects[o].unknown
+                && (special && member.owner == "java/lang/Object" || !special
+                    && self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor)
+                        .is_some_and(|(cf, _)| cf.name == "java/lang/Object")) {
                 if let Some((cf, method)) = self.cp.library_image_method("java/lang/Object", "equals", &member.descriptor) {
                     let mut full = vec![Val::R(Some(o))];
                     full.extend(args);
@@ -5595,7 +5608,6 @@ impl<'a> Engine<'a> {
             if let Some(step) = self.image_map_call(path, o, special, member, &args) { return step; }
             if !path.objects[o].assumed && !path.objects[o].given {
                 const QUEUE: &str = "java/lang/ref/ReferenceQueue";
-                const FRESH_QUEUE: &str = "<JDK.freshReferenceQueue>";
                 const COUNTER: &str = "java/util/concurrent/atomic/AtomicInteger";
                 const FRESH_COUNTER: &str = "<JDK.freshAtomicInteger>";
                 if !special && member.owner == COUNTER && member.name == "incrementAndGet" && member.descriptor == "()I"
@@ -5610,19 +5622,13 @@ impl<'a> Engine<'a> {
                     self.advance(path);
                     return Ok(None);
                 }
-                if path.objects[o].fields.contains_key(FRESH_QUEUE) && member.owner == QUEUE
-                    && matches!((member.name.as_str(), member.descriptor.as_str()),
-                        ("poll", "()Ljava/lang/ref/Reference;") | ("headIsNull", "()Z")) {
-                    // A reference allocated before a fresh queue cannot have been registered
-                    // with it. Once a later reference exists, the GC could enqueue it.
-                    if path.objects[o + 1..].iter().any(|r| self.cp.is_subtype(&r.class, "java/lang/ref/Reference")
-                        && !matches!(r.fields.get(runtime::REGISTERED_QUEUE), Some(Val::R(q)) if *q != Some(o))) {
-                        let calls = path.frames.iter().rev().take(6).map(|frame| site(frame).display()).collect::<Vec<_>>();
-                        return unsupported(format!("polling a reference queue after a possible GC registration in {}", calls.join(" called by ")));
-                    }
-                    if let Some((cf, method)) = self.cp.find_method(QUEUE, &member.name, &member.descriptor) {
-                        return self.enter_method(path, QUEUE, cf, method, vec![Val::R(Some(o))]);
-                    }
+                if !special && path.objects[o].fields.contains_key(reference_queues::FRESH_QUEUE) && member.owner == QUEUE
+                    && member.name == "poll" && member.descriptor == "()Ljava/lang/ref/Reference;" {
+                    return self.poll_reference_queue(path, o);
+                }
+                if path.objects[o].fields.contains_key(runtime::REGISTERED_QUEUE) && member.name == "get"
+                    && member.descriptor == "()Ljava/lang/Object;" {
+                    if let Some(step) = self.soft_reference_get(path, o, &member.owner, special) { return step; }
                 }
                 if member.owner == "java/util/concurrent/atomic/AtomicReference" && path.objects[o].class == member.owner
                     && !path.objects[o].unknown {
@@ -5637,10 +5643,10 @@ impl<'a> Engine<'a> {
                         path.objects[o].fields.insert(FRESH_COUNTER.into(), Val::I(self.b.constant(1, 32)));
                     }
                     if special && member.owner == "java/lang/ref/Reference" {
-                        path.objects[o].fields.insert(runtime::REGISTERED_QUEUE.into(), args[1].clone());
+                        self.register_reference(path, o, &args[1]);
                     }
                     if special && member.owner == QUEUE && member.name == "<init>" {
-                        path.objects[o].fields.insert(FRESH_QUEUE.into(), Val::I(self.b.constant(1, 32)));
+                        path.objects[o].fields.insert(reference_queues::FRESH_QUEUE.into(), Val::I(self.b.constant(1, 32)));
                     }
                     if special && member.owner == runtime::REENTRANT_LOCK {
                         // The original constructor initializes sync. The existing single-thread

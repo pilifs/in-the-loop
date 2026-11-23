@@ -384,6 +384,9 @@ pub struct ClassPath {
     thread_local_keys: std::cell::OnceCell<bool>,
     class_table_image: std::cell::OnceCell<bool>,
     jar_resource_image: std::cell::OnceCell<bool>,
+    properties_reader_image: std::cell::OnceCell<bool>,
+    linked_map_image: std::cell::OnceCell<bool>,
+    soft_queue_image: std::cell::OnceCell<bool>,
     generic_interface_image: std::cell::OnceCell<bool>,
     explicit_utc: std::cell::OnceCell<bool>,
     string_buffer_layout: std::cell::OnceCell<Option<bool>>,
@@ -413,7 +416,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -498,6 +501,9 @@ impl ClassPath {
         self.thread_local_keys.take();
         self.class_table_image.take();
         self.jar_resource_image.take();
+        self.properties_reader_image.take();
+        self.linked_map_image.take();
+        self.soft_queue_image.take();
         self.explicit_utc.take();
         self.string_buffer_layout.take();
         self.basic_base64.take();
@@ -1302,6 +1308,23 @@ impl ClassPath {
             &["eece9c2f142cba64068daceb85c70c2e8e426132f588ca4a402c53448e758ef0"])) // Temurin 21.0.13
     }
 
+    pub(crate) fn properties_reader_image(&self) -> bool {
+        *self.properties_reader_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/Properties", "java/util/Properties$LineReader"],
+            &["5557162135c0a12b872b1c44af1171fe8e91a104ef7495da7777c47ea6a614fa"]))
+    }
+
+    pub(crate) fn linked_map_image(&self) -> bool {
+        *self.linked_map_image.get_or_init(|| self.matches_jdk_classes(&["java/util/HashMap", "java/util/LinkedHashMap"],
+            &["b26ef44090b682e76fe299447ad1189e4321f62f343f0c4f633568024b7fb754"]))
+    }
+
+    pub(crate) fn soft_queue_image(&self) -> bool {
+        *self.soft_queue_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/ref/Reference", "java/lang/ref/SoftReference", "java/lang/ref/ReferenceQueue"],
+            &["ab6102d8fb7c8cfc1945a9186c510bff4e994618c3224b4a5ca0aac9d5bdb1eb"]))
+    }
+
     /// The bounded StringBuffer copy uses this image's growth rule and its actual UTF-16 byte order.
     pub(crate) fn string_buffer_byte_order(&self) -> Option<bool> {
         *self.string_buffer_layout.get_or_init(|| {
@@ -1512,7 +1535,7 @@ impl ClassPath {
                 | ("java/util/AbstractCollection" | QUEUE, "isEmpty", "()Z")),
             "java/util/concurrent/LinkedBlockingQueue$Node" => owner == receiver && name == "<init>" && desc == "(Ljava/lang/Object;)V",
             COUNT => matches!((owner, name, desc), (COUNT, "<init>", "()V" | "(I)V")
-                | ("java/lang/Number", "<init>", "()V") | (COUNT, "get", "()I")),
+                | ("java/lang/Number", "<init>", "()V") | (COUNT, "get", "()I") | (COUNT, "set", "(I)V")),
             LOCK => owner == LOCK && matches!((name, desc), ("<init>", "()V") | ("newCondition", "()Ljava/util/concurrent/locks/Condition;")),
             // invokespecial selects the named superclass constructor even on a user-defined segment.
             _ if special && owner == LOCK && self.is_subtype(receiver, LOCK) => name == "<init>" && desc == "()V",
@@ -1548,6 +1571,10 @@ impl ClassPath {
         if self.runs_model(crate::models::CONCURRENT_MAP) || !matches!((name, desc),
             ("<init>", "()V" | "(I)V" | "(IFI)V") | ("isEmpty", "()Z") | ("size", "()I") | ("sumCount", "()J")
             | ("get", "(Ljava/lang/Object;)Ljava/lang/Object;") | ("containsKey", "(Ljava/lang/Object;)Z")
+            | ("put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+            | ("putVal", "(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;")
+            | ("initTable", "()[Ljava/util/concurrent/ConcurrentHashMap$Node;")
+            | ("forEach", "(Ljava/util/function/BiConsumer;)V")
             | ("putAll", "(Ljava/util/Map;)V") | ("tryPresize", "(I)V") | ("entrySet", "()Ljava/util/Set;")
             | ("keySet", "()Ljava/util/Set;" | "()Ljava/util/concurrent/ConcurrentHashMap$KeySetView;")) { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(crate::models::CONCURRENT_MAP).ok()?? else { return None };
@@ -1564,11 +1591,13 @@ impl ClassPath {
             (PROPS, "<init>", "()V" | "(I)V" | "(Ljava/util/Properties;)V" | "(Ljava/util/Properties;I)V")
             | (PROPS, "load", "(Ljava/io/InputStream;)V")
             | (PROPS, "load0", "(Ljava/util/Properties$LineReader;)V")
+            | (PROPS, "loadConvert", "([CIILjava/lang/StringBuilder;)Ljava/lang/String;")
             | ("java/util/Hashtable", "<init>", "(Ljava/lang/Void;)V") | ("java/util/Dictionary", "<init>", "()V")
             | (PROPS, "size", "()I") | (PROPS, "isEmpty", "()Z") | (PROPS, "containsKey", "(Ljava/lang/Object;)Z")
             | (PROPS, "get", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
             | (PROPS, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+            | (PROPS, "forEach", "(Ljava/util/function/BiConsumer;)V")
             | (PROPS, "putAll", "(Ljava/util/Map;)V") | (PROPS, "entrySet", "()Ljava/util/Set;")
             | (PROPS, "getProperty", "(Ljava/lang/String;)Ljava/lang/String;" | "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) {
             return None;
@@ -1594,7 +1623,7 @@ impl ClassPath {
 
     /// These images initialize SIZECTL from their own sizeCtl field and calculate ABASE
     /// and ASHIFT from Node[]. Only the typed operations below use these layout facts.
-    fn known_concurrent_table(&self) -> bool {
+    pub(crate) fn known_concurrent_table(&self) -> bool {
         *self.concurrent_table_layout.get_or_init(|| self.matches_jdk_classes(&[crate::models::CONCURRENT_MAP, "jdk/internal/misc/Unsafe"],
             &["fa36342584f8299066a80758c30abd00754753468be0fb36e921303dca9031d8",
               "01af927c892eb74ad558ef33d7b2d79b7bf0f67bce07b8a12c9fd3926204a361"]))
@@ -1610,7 +1639,7 @@ impl ClassPath {
     /// instruction expression before returning the local holding its expected value.
     pub(crate) fn concurrent_size_cas(&self, class: &Rc<ClassFile>, method: &str, code: &[crate::classfile::Insn]) -> Option<usize> {
         use crate::classfile::{Insn, Kind};
-        if class.name != crate::models::CONCURRENT_MAP || method != "tryPresize" { return None; }
+        if class.name != crate::models::CONCURRENT_MAP || !matches!(method, "tryPresize" | "initTable") { return None; }
         let [Insn::GetStatic(u), Insn::Load(Kind::Ref, 0), Insn::GetStatic(offset), Insn::Load(Kind::Int, expected),
             Insn::IConst(-1), Insn::InvokeVirtual(cas), ..] = code else { return None };
         let is = |i, owner: &str, name: &str, desc: &str| class.pool.member(i).is_ok_and(|m|
@@ -1634,6 +1663,7 @@ impl ClassPath {
             | ("java/lang/Class", "cannotCastMsg", "(Ljava/lang/Object;)Ljava/lang/String;")
             | ("java/util/ArrayList", "<init>", "()V" | "(I)V" | "(Ljava/util/Collection;)V")
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
+            | ("java/util/ArrayList", "spliterator", "()Ljava/util/Spliterator;")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "clear", "()V")
             | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
@@ -1792,7 +1822,8 @@ impl ClassPath {
         let interface = match (name, descriptor) {
             ("putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;") if class == "java/util/EnumMap" => "java/util/Map",
             ("end", "()V") if class.starts_with("java/util/stream/ReduceOps$") => "java/util/stream/Sink",
-            ("stream", "()Ljava/util/stream/Stream;") if class == "java/util/Arrays$ArrayList" => "java/util/Collection",
+            ("stream", "()Ljava/util/stream/Stream;") if class == "java/util/Arrays$ArrayList"
+                || class == "java/util/ArrayList" && !self.runs_model(class) => "java/util/Collection",
             ("begin", "(J)V") | ("end", "()V") if class.starts_with("java/util/stream/FindOps$FindSink") => "java/util/stream/Sink",
             ("getExactSizeIfKnown", "()J") if class == "java/util/Spliterators$ArraySpliterator" => "java/util/Spliterator",
             ("forEachRemaining", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/util/Iterator",
@@ -1846,7 +1877,7 @@ impl ClassPath {
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }
         if matches!(name, "java/io/PrintWriter$1" | "java/util/Collections$UnmodifiableMap" | "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
-            | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
+            | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$Node" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
             | "java/util/concurrent/ConcurrentHashMap$EntryIterator" | "java/util/concurrent/ConcurrentHashMap$BaseIterator"
             | "java/util/concurrent/ConcurrentHashMap$Traverser" | "java/util/Properties$EntrySet"
@@ -1874,7 +1905,9 @@ impl ClassPath {
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
             | "java/util/Collections$EmptyList" | "java/util/Collections$EmptyIterator" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
-            | "java/util/Spliterators$ArraySpliterator" | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
+            | "java/util/Spliterators$ArraySpliterator" | "java/util/ArrayList$ArrayListSpliterator"
+            | "java/util/stream/DistinctOps" | "java/util/stream/DistinctOps$1" | "java/util/stream/ReferencePipeline$StatefulOp"
+            | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
             | "java/util/stream/ReferencePipeline$3" | "java/util/stream/ReferencePipeline$3$1"
             | "java/util/stream/ReferencePipeline$StatelessOp" | "java/util/stream/Sink$ChainedReference"
             | "java/util/stream/FindOps" | "java/util/stream/FindOps$FindOp" | "java/util/stream/FindOps$FindSink" | "java/util/stream/FindOps$FindSink$OfRef"
@@ -1911,7 +1944,9 @@ impl ClassPath {
         // LinkedHashMap model objects and explicitly selected set models keep their layouts.
         if matches!(name, "java/util/LinkedHashSet" | "java/util/LinkedHashMap" | "java/util/LinkedHashMap$Entry"
             | "java/util/LinkedHashMap$LinkedKeySet" | "java/util/LinkedHashMap$LinkedHashIterator"
-            | "java/util/LinkedHashMap$LinkedKeyIterator") {
+            | "java/util/LinkedHashMap$LinkedKeyIterator" | "java/util/LinkedHashMap$LinkedValues"
+            | "java/util/LinkedHashMap$LinkedValueIterator" | "java/util/LinkedHashMap$LinkedEntrySet"
+            | "java/util/LinkedHashMap$LinkedEntryIterator") {
             if name == "java/util/LinkedHashSet" && (self.runs_model(name) || self.runs_model("java/util/HashSet")
                 || self.observed_initializers.borrow().contains(name) || self.native_map_image_class("java/util/HashSet").is_none()) {
                 return None;

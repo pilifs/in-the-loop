@@ -83,7 +83,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
         && matches!(
             (name, descriptor),
             ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V") | ("setLength", "(I)V")
-                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
+                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "([CII)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
                 | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
@@ -801,6 +801,24 @@ impl Engine<'_> {
             }
             return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model")));
         };
+        if name == "append" && descriptor == "([CII)Ljava/lang/StringBuilder;" {
+            let [Val::R(Some(chars)), Val::I(start), Val::I(count)] = args else { return None };
+            let array = path.objects[*chars].as_array()?;
+            let start = usize::try_from(self.b.constant_value(start)?).ok()?;
+            let count = usize::try_from(self.b.constant_value(count)?).ok()?;
+            let end = start.checked_add(count)?;
+            if array.element != Type::Char || end > usize::try_from(self.b.constant_value(&array.length)?).ok()?
+                || s.cells.len().checked_add(count)? > MOST_BUILDER_CONTENT { return None; }
+            if self.there_before(path, *chars) {
+                if let Err(e) = self.reads(path, || "reads a character array slice".into()) { return Some(Err(e)); }
+            }
+            let slice = Array { element: Type::Char, length: self.b.constant(count as i64, 32),
+                cells: array.cells.get(start..end)?.to_vec(), refs: vec![] };
+            path.objects[o].array = Some(self.joined(&s, &slice));
+            self.push(path, Val::R(Some(o)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         Some(match (name, args) {
             ("length", []) => {
                 self.push(path, Val::I(s.length));

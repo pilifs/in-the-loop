@@ -76,7 +76,16 @@ fn class_lookup_folds_and_local_resource_order_match_the_launch() {
     for (name, bytes) in [("first.jar", &[254, 17][..]), ("second.jar", &[34][..])] {
         let jar = scratch.path().join(name);
         std::fs::write(scratch.path().join(entry), bytes).unwrap();
-        assert!(Command::new("jar").arg("cf").arg(&jar).arg("-C").arg(scratch.path()).arg(entry).status().unwrap().success());
+        let mut pack = Command::new("jar");
+        pack.arg("cf").arg(&jar).arg("-C").arg(scratch.path()).arg(entry);
+        if name == "first.jar" {
+            for (file, body) in [("META-INF/good.fixture", "# comment\r\nAa=1\nBB=1\\\r\n  2\nAa=second"),
+                                 ("META-INF/bad.fixture", "bad=\\u00xx\nunread=yes\nlast=value")] {
+                std::fs::write(scratch.path().join(file), body).unwrap();
+                pack.arg("-C").arg(scratch.path()).arg(file);
+            }
+        }
+        assert!(pack.status().unwrap().success());
         jars.push(jar);
     }
     let cp = std::env::join_paths(std::iter::once(classes).chain(jars.iter().map(PathBuf::as_path))).unwrap();
@@ -84,6 +93,18 @@ fn class_lookup_folds_and_local_resource_order_match_the_launch() {
         assert!(Command::new("java").args(args).arg("-cp").arg(&cp).arg("claims.ClassTableChecks").status().unwrap().success());
     }
     if !String::from_utf8_lossy(&Command::new("java").arg("-version").output().unwrap().stderr).contains("Temurin-21.0.13+9") { return; }
+    for (method, gap) in [("properties", None), ("abandonedRefill", Some("physical cursor")), ("externalRefill", Some("bulk"))] {
+        let mut o = options(classes, &format!("claims.ClassTableChecks#{method}"), 8192, method);
+        o.classpath = jars.clone();
+        o.unwind = 128;
+        let result = run(&o);
+        if let Some(reason) = gap {
+            assert_eq!(result.verdict, Verdict::Unverifiable, "{method}: {}", result.output);
+            assert!(result.output.contains(reason), "{method}: {}", result.output);
+        } else {
+            assert_eq!(result.verdict, Verdict::Verified, "{method}: {}", result.output);
+        }
+    }
     for method in ["lookups", "classSet", "orderedSet", "resources", "genericInterfaces", "nestedArgument", "lastWriter", "exportedOrder"] {
         let mut o = options(classes, &format!("claims.ClassTableChecks#{method}"), 64, method);
         o.classpath = jars.clone();
@@ -115,7 +136,7 @@ fn spring_cache_entries_writers_and_zones_follow_the_original_jvm() {
     proved(classes, "claims.SpringStartup#mapCallbacks", 32);
     let version = Command::new("java").arg("-version").output().unwrap();
     if String::from_utf8_lossy(&version.stderr).contains("Temurin-21.0.13+9") {
-        for method in ["queueState", "zones", "writeRanges", "guardedLines"] {
+        for method in ["queueState", "queueDelivery", "arrayForEach", "nestedHolds", "zones", "writeRanges", "guardedLines"] {
             proved(classes, &format!("claims.SpringStartup#{method}"), 128);
         }
         let custom = run(&options(classes, "claims.SpringStartup#excludesCRLF", 16, "platform-separator"));
@@ -123,7 +144,7 @@ fn spring_cache_entries_writers_and_zones_follow_the_original_jvm() {
         assert!(custom.output.contains("initial line separator"), "{}", custom.output);
         let result = run(&options(classes, "claims.SpringStartup#registeredQueue", 16, "registered-reference"));
         assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
-        assert!(result.output.contains("possible GC registration"), "{}", result.output);
+        assert!(result.output.contains("reachabilityFence"), "{}", result.output);
     }
 }
 

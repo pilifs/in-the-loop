@@ -114,6 +114,10 @@ path and never replaces a JDK class there: a JDK call enters a stream model by a
 and the checker runs its bytecode as an application's. Its conformance is the proofs of `tests/claims.rs`, where
 each stream operation is the loop it stands for.
 
+The sequential array stream runs a `forEach` consumer after mapping each element. A direct array
+stream consumes its spliterator before checking for a null action. A mapped stage checks the action
+first. The Spring factory loader uses this operation to add each trimmed implementation name.
+
 `java.util.LinkedHashMap` (with its `LinkedValues` and `LinkedValueIterator`) is such a model too, entered by its
 own constructor: it extends the `HashMap` model, whose one chain of entries is in insertion order, and adds
 `values()`, the collection's `size()` and `iterator()`, and the iterator's `hasNext()` and fail-fast `next()`.
@@ -121,6 +125,10 @@ Left out, each the JDK call it names: the other constructors (a capacity, a load
 map), `keySet`, `entrySet`, `remove`, `clear`, the rest of the collection (it extends the JDK's
 `AbstractCollection`) and the iterator's `remove`. Its conformance is `claims.M` in `tests/claims.rs`: the values
 against the order written out over an array, on every input of a bound, and the same method on a JVM. Its `forEach` calls the supplied action in insertion order, reads replaced values on later visits, and checks structural modification after the final callback.
+
+On Temurin 21.0.13, an ordinary strict native check of a fresh no-argument `LinkedHashMap` can run
+the JDK's own map and live views. Spring uses its `computeIfAbsent` and `replaceAll` callbacks while
+building the list for a factory key.
 
 `java.util.ArrayAsList` (what `Arrays.asList(T...)` returns; not a JDK class, entered by `models::entry`) is a
 model only the checker runs too ([`java/util/lists`](java/util/lists/)). It extends the JDK's `AbstractList`, so

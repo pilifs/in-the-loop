@@ -357,13 +357,16 @@ impl Engine<'_> {
         if !self.cp.is_subtype(&path.objects[o].class, REENTRANT_LOCK) || path.objects[o].assumed {
             return unsupported("a reentrant lock without a known implementation");
         }
+        if name != "<init>" && self.there_before(path, o) { self.reads(path, || "reads a pre-existing lock's hold count".into())?; }
         let count = if name == "<init>" { 0 } else {
             match path.objects[o].fields.get(HOLD_COUNT) {
-                Some(Val::I(word)) => self.b.constant_value(word).ok_or_else(|| Stop::Unsupported("a symbolic reentrant hold count".into()))?,
+                Some(Val::I(word)) => match self.b.constant_value(word) {
+                    Some(count) => count,
+                    None => return self.symbolic_lock(path, o, name, word.clone()),
+                },
                 _ => return unsupported("a lock whose initial hold count is unknown"),
             }
         };
-        if name != "<init>" && self.there_before(path, o) { self.reads(path, || "reads a pre-existing lock's hold count".into())?; }
         let Some((write, returned)) = sequential_lock_transition(name, count as i32) else {
             return unsupported("an unbalanced unlock or excessive recursion on a reentrant lock");
         };
@@ -372,6 +375,29 @@ impl Engine<'_> {
             path.objects[o].fields.insert(HOLD_COUNT.into(), Val::I(self.b.constant(i64::from(next), 32)));
         }
         if let Some(v) = returned { self.push(path, Val::I(self.b.constant(i64::from(v), 32))); }
+        self.advance(path);
+        Ok(None)
+    }
+
+    fn symbolic_lock(&mut self, path: &mut Path, o: usize, name: &str, count: Bits) -> Step {
+        let zero = self.b.eq(&count, &self.b.constant(0, 32));
+        let one = self.b.constant(1, 32);
+        match name {
+            "getHoldCount" => self.push(path, Val::I(count)),
+            "isHeldByCurrentThread" | "isLocked" => self.push(path, Val::I(self.b.zext(&vec![-zero], 32))),
+            "lock" | "tryLock" | "unlock" => {
+                let releasing = name == "unlock";
+                let invalid = if releasing { zero } else { self.b.eq(&count, &self.b.constant(i32::MAX.into(), 32)) };
+                let mut cond = path.cond.clone();
+                cond.push(invalid);
+                if self.solve(&cond)? { return unsupported("a possible unbalanced unlock or excessive recursion on a reentrant lock"); }
+                self.keeps(path, Some(o), "changes a reentrant lock's hold count")?;
+                let next = if releasing { self.b.sub(&count, &one) } else { self.b.add(&count, &one) };
+                path.objects[o].fields.insert(HOLD_COUNT.into(), Val::I(next));
+                if name == "tryLock" { self.push(path, Val::I(one)); }
+            }
+            _ => return unsupported("an unknown reentrant lock operation"),
+        }
         self.advance(path);
         Ok(None)
     }

@@ -92,8 +92,12 @@ impl Engine<'_> {
             || !self.cp.generic_interface_image() || self.gap_mode != GapMode::Strict
             || self.previous.is_some() || !self.contracts.is_empty() { return None; }
         let declaring = self.class_named(path, o)?;
-        let cf = self.cp.application(&declaring).ok()??;
-        let description = interfaces(self.cp, &cf)?;
+        let cf = self.cp.application(&declaring).ok().flatten();
+        let Some(description) = cf.as_ref().and_then(|cf| interfaces(self.cp, cf)) else {
+            let calls = path.frames.iter().rev().take(6).map(|f| site(f).display()).collect::<Vec<_>>();
+            return Some(unsupported(format!("Class.getGenericInterfaces on {} with {} at {}", declaring.replace('/', "."),
+                cf.and_then(|c| c.generic_signature()).as_deref().unwrap_or("no bound application Signature"), calls.join(" called by "))));
+        };
         if let Err(stop) = self.keeps(path, None, "consults the class mirror's generic repository") { return Some(Err(stop)); }
         self.assumed.insert(runtime::CLASS_PATH_ASSUMPTION.into());
         let refs = if let Some(Val::R(Some(storage))) = path.objects[o].fields.get(CACHE) {
