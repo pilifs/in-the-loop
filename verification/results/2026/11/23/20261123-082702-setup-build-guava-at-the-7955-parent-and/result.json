@@ -1,0 +1,378 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-082702-setup-build-guava-at-the-7955-parent-and",
+  "title": "Setup: build Guava at the #7955 parent and fix, run StringsTest, and the fix's test on the parent",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 3m11s, peak 2.0 GiB (estimated 10m00s, 4.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-082702-setup-build-guava-at-the-7955-parent-and.json",
+    "sha256": "0693b9ca8dd6a956750dcf67ac672176fd571f17080a5ea7096c8afc08144065",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-082702-setup-build-guava-at-the-7955-parent-and",
+      "title": "Setup: build Guava at the #7955 parent and fix, run StringsTest, and the fix's test on the parent",
+      "description": "Setup for llm-dlc/loops/jbmc-java-semantics-gap-brief.md (section 5, organic change), no claims. In the worktrees ~/.cache/in-the-loop/jbmc-java-semantics-gap/src/guava-7955-{parent,fix} (47b7e9e5 and 148cea07), with the project's own Maven wrapper (3.9.9, sha256-pinned), the JDK 24 toolchain Guava asks for (Temurin 24.0.2, checked against Adoptium's sha256 and signature, in the cache) and tests on JDK 21.0.13. Maven's user.home and toolchains.xml point into the cache folder so nothing is written to ~/.m2. Each side builds guava, guava-testlib and guava-tests and runs com.google.common.base.StringsTest, then packages the guava jar to artifacts/guava-7955-SIDE.jar and prints its sha256 and classpath. The fix's StringsTest (which adds the Integer[] lenientFormat assertion) is then run on the parent's code and must fail testLenientFormat; the fix's test is rerun offline; the build trees are removed. Script: ~/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh (sha256 in the setup record). Second attempt: the first (20261123-075049-setup-build-guava-at-the-7955-parent-and) ran Maven's test phase and failed at guava-testlib's compile-java9 with 'module not found: com.google.common', because guava's module-info.class sits only in META-INF/versions/9 of target/classes and is found only in the packaged jar. Every Maven call in the script now runs verify (with javadoc and source jars skipped), as upstream CI does; nothing is installed, so the two sides' identical SNAPSHOT versions cannot overwrite each other in the cache's m2. Third attempt: the second (20261123-081114-setup-build-guava-at-the-7955-parent-and) built the fix side, passed StringsTest (21 tests, 0 failures) and packaged its jar, then failed printing the classpath: dependency:build-classpath ran offline and Guava's pom pins maven-dependency-plugin 3.1.1, which the build never fetches. That call now runs online with --strict-checksums (checked inline on the fix tree: 5.8 s). Script sha256 414466e7f964ec0e8b74cda90891ce398900cfa61ee10591d673cc16f65ea2c4.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md"
+        ]
+      },
+      "expected": "StringsTest passes on both sides; on the parent the transplanted fix test fails testLenientFormat with ArrayStoreException; the offline rerun passes; both jars are built",
+      "submitted": {
+        "at": "2026-11-23T08:27:02+00:00",
+        "session": "970bfd4f-5faa-49d7-bcbc-626f36895cc8",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 6.0,
+        "memory": "4G",
+        "duration": "10m",
+        "notes": "second attempt built the fix side (guava, guava-testlib, guava-tests verify + StringsTest) in 48 s at peak 1.9 GiB before the classpath print failed; two sides, a transplanted rerun and an offline rerun at roughly that each"
+      },
+      "steps": [
+        {
+          "name": "guava-7955-fix: build, StringsTest, jar",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side fix",
+          "cwd": "."
+        },
+        {
+          "name": "guava-7955-parent: build, StringsTest, jar",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side parent",
+          "cwd": "."
+        },
+        {
+          "name": "the fix's StringsTest on the parent (expected to fail testLenientFormat)",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh transplant",
+          "cwd": "."
+        },
+        {
+          "name": "the fix's StringsTest offline",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh offline",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh clean",
+          "cwd": "."
+        }
+      ],
+      "outputs": [],
+      "supersedes": "20261123-081114-setup-build-guava-at-the-7955-parent-and",
+      "revision": "072a56272891"
+    }
+  },
+  "sourceCommit": "072a56272891384d6e810484261eae1aabdb05ea",
+  "startedAt": "2026-11-23T08:33:26+00:00",
+  "finishedAt": "2026-11-23T08:36:45+00:00",
+  "wallSeconds": 199.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3027468,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 6.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 6.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 600.0,
+    "notes": "second attempt built the fix side (guava, guava-testlib, guava-tests verify + StringsTest) in 48 s at peak 1.9 GiB before the classpath print failed; two sides, a transplanted rerun and an offline rerun at roughly that each"
+  },
+  "usage": {
+    "peakMemoryBytes": 2126360576,
+    "wallSeconds": 191.6,
+    "cpuSeconds": 658.0,
+    "memoryOfEstimate": 0.5,
+    "durationOfEstimate": 0.32
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "guava-7955-fix: build, StringsTest, jar",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 44.898,
+      "cpuSeconds": 152.253,
+      "cpuThrottledSeconds": 8.582,
+      "peakMemoryBytes": 1988378624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-guava-7955-fix-build-stringste.log",
+        "lines": 22,
+        "bytes": 2058,
+        "sha256": "b47112cf9b55c5741d1248a8ba936079c2c2a7023c2ec1f5bf861995f0edaa3d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commit 148cea0778b7ea2e362c794c02b29a62bd93daa2",
+        "[INFO] --- source:3.3.1:test-jar (attach-test-sources) @ guava-tests ---",
+        "[INFO] Skipping source per configuration.",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Reactor Summary for Guava Maven Parent 999.0.0-HEAD-jre-SNAPSHOT:",
+        "[INFO] ",
+        "[INFO] Guava Maven Parent ................................. SUCCESS [  0.118 s]",
+        "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [  3.044 s]",
+        "[INFO] Guava Testing Library .............................. SUCCESS [ 15.913 s]",
+        "[INFO] Guava Unit Tests ................................... SUCCESS [ 22.761 s]",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  42.237 s",
+        "[INFO] Finished at: 2026-11-23T08:34:16Z",
+        "[INFO] ------------------------------------------------------------------------",
+        "junit tests=21 failures=0 errors=0",
+        "1ca60c0343aaf457839388c04069d2e6c725d9ad6fd034b3a6deedf0c7db518d  /home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/artifacts/guava-7955-fix.jar",
+        "a52306c3c5cd7fca60c8cd7b503f521cae9e7198c023abc4c337c179d0d03a04  Strings.class",
+        "[INFO] Finished at: 2026-11-23T08:34:18Z",
+        "[INFO] ------------------------------------------------------------------------",
+        "/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/m2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar:/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/m2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "guava-7955-parent: build, StringsTest, jar",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 59.537,
+      "cpuSeconds": 207.255,
+      "cpuThrottledSeconds": 12.08,
+      "peakMemoryBytes": 1994641408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-guava-7955-parent-build-string.log",
+        "lines": 22,
+        "bytes": 2061,
+        "sha256": "f519045495364e39fa6c6eefa1c3d77eec7723ed452705bc2aafbf1778474026",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commit 47b7e9e5ef3f2267f8ac327d68cc56b99e186aa8",
+        "[INFO] --- source:3.3.1:test-jar (attach-test-sources) @ guava-tests ---",
+        "[INFO] Skipping source per configuration.",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Reactor Summary for Guava Maven Parent 999.0.0-HEAD-jre-SNAPSHOT:",
+        "[INFO] ",
+        "[INFO] Guava Maven Parent ................................. SUCCESS [  0.117 s]",
+        "[INFO] Guava: Google Core Libraries for Java .............. SUCCESS [ 17.944 s]",
+        "[INFO] Guava Testing Library .............................. SUCCESS [ 15.426 s]",
+        "[INFO] Guava Unit Tests ................................... SUCCESS [ 23.272 s]",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  57.145 s",
+        "[INFO] Finished at: 2026-11-23T08:35:16Z",
+        "[INFO] ------------------------------------------------------------------------",
+        "junit tests=21 failures=0 errors=0",
+        "3e0c1d182ff80b9dca3b3c4aa427285c1eae944418218a0ae28186156e41b945  /home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/artifacts/guava-7955-parent.jar",
+        "d24f83be16502bed4f5b145aea08cf112b9cf06e04b4e850c86eb5b1dc2fe038  Strings.class",
+        "[INFO] Finished at: 2026-11-23T08:35:18Z",
+        "[INFO] ------------------------------------------------------------------------",
+        "/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/m2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar:/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/m2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "the fix's StringsTest on the parent (expected to fail testLenientFormat)",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 43.51,
+      "cpuSeconds": 148.776,
+      "cpuThrottledSeconds": 9.245,
+      "peakMemoryBytes": 1946451968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-the-fix-s-stringstest-on-the-p.log",
+        "lines": 4,
+        "bytes": 232,
+        "sha256": "13ead068753332604ff72630906ee6141f4176240ba42425ab8ac65addaab8ad",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "transplanted guava-tests/test/com/google/common/base/StringsTest.java from 148cea07",
+        "maven exit=1 (non-zero expected)",
+        "junit tests=21 failures=0 errors=1",
+        "junit failed testLenientFormat: java.lang.ArrayStoreException: java.lang.String"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "the fix's StringsTest offline",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh offline",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 43.102,
+      "cpuSeconds": 149.376,
+      "cpuThrottledSeconds": 9.385,
+      "peakMemoryBytes": 2126360576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-the-fix-s-stringstest-offline.log",
+        "lines": 5,
+        "bytes": 265,
+        "sha256": "a5b5177dc1ad7cb4d0238f883e2cedeb3ae1b531ff24f2833a289ebdfef02447",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[INFO] ------------------------------------------------------------------------",
+        "[INFO] Total time:  42.021 s",
+        "[INFO] Finished at: 2026-11-23T08:36:44Z",
+        "[INFO] ------------------------------------------------------------------------",
+        "junit tests=21 failures=0 errors=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "remove the build trees",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.386,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 8425472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-remove-the-build-trees.log",
+        "lines": 4,
+        "bytes": 168,
+        "sha256": "bdc2e8e913a76a3d70851a4dbded015270227a94ea5610156949857d20153c4c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent dirty files: 0",
+        "fix dirty files: 0",
+        "249M\t/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/src",
+        "441M\t/home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/m2"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-23T08:37:18+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T083645Z-469568a2d7375737"
+    }
+  }
+}
